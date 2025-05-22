@@ -52,11 +52,5 @@ LEANMAKER/
 - SQL Server
 - Git
 
-## Instalación
-(Instrucciones de instalación pendientes)
-
-## Desarrollo
-(Instrucciones de desarrollo pendientes)
-
 ## Licencia
 Todos los derechos reservados - INACAP 
