@@ -13,3 +13,8 @@ if __name__ == "__main__":
     print(f"Fibonacci sequence up to {n} terms: {fibonacci(n)}")
 
 ## PROBANDO SI PODEMOS HACER UN COMMIT 
+
+## arreglando los nombres de los REPOSITORIOS
+## arreglando los nombres de los REPOSITORIOS
+## arreglando los nombres de los REPOSITORIOS
+## arreglando los nombres de los REPOSITORIOS
