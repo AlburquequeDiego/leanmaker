@@ -4,18 +4,22 @@
 LEANMAKER es una plataforma web que conecta estudiantes de INACAP con empresas, facilitando la gestión de proyectos académicos y prácticas profesionales. El sistema permite la gestión de proyectos, postulaciones, seguimiento de horas de práctica y evaluación de desempeño.
 
 ## Estructura del Proyecto
-```
 LEANMAKER/
 ├── frontend/          # Aplicación React
 ├── backend/           # API Django
-└── docs/             # Documentación del proyecto
-```
+├── docs/              # Documentación del proyecto
+└── file-server/       # Servidor para documentos PDF y Word
 
 ## Tecnologías Utilizadas
-- **Frontend**: React
-- **Backend**: Django
-- **Base de Datos**: SQL Server
+- **Frontend**: React, React Router DOM
+- **Backend**: Django, Node.js
+- **Base de Datos**: SQL Server, PostgreSQL
 - **Control de Versiones**: Git
+- **Contenedores**: Docker (empaquetado y despliegue de frontend, backend y base de datos)
+- **Editores de Código**: Visual Studio Code, Cursor, Replit
+- **Autenticación**: Sistema de credenciales de Microsoft
+- **Despliegue**: Servidores/Data Center INACAP
+- **Gestión de Documentos**: Servidor dedicado para archivos PDF y Word
 
 ## Características Principales
 - Sistema de autenticación y autorización
@@ -26,6 +30,7 @@ LEANMAKER/
 - Gestión de entrevistas y calendarios
 - Sistema de notificaciones
 - Portafolio de estudiantes
+- Almacenamiento y gestión de documentos (PDF, Word)
 
 ## Tipos de Usuarios
 1. **Estudiantes**
@@ -46,11 +51,32 @@ LEANMAKER/
    - Gestión de niveles API
    - Control de acceso
 
+## Herramientas a Utilizar
+- **Git**: Control de versiones
+- **Docker**: Empaquetado y despliegue
+- **Visual Studio Code / Cursor / Replit**: Editores de código
+- **React Router DOM**: Ruteo en frontend
+- **Sistema de credenciales de Microsoft**: Autenticación
+
+## Entorno de Desarrollo
+- **Lenguajes**: Python 3.8+, JavaScript (Node.js 16+)
+- **Bases de Datos**: SQL Server, PostgreSQL
+- **Contenedores**: Docker
+- **Editores**: VS Code, Cursor, Replit
+
+## Metodología
+- **Metodología**: LITERA incremental (desarrollo iterativo y por etapas)
+
+## Pruebas y Despliegue
+- **Pruebas de estrés**: Para asegurar la escalabilidad y rendimiento
+- **Despliegue**: Servidores/Data Center INACAP usando Docker
+
 ## Requisitos Previos
 - Python 3.8+
 - Node.js 16+
-- SQL Server
+- SQL Server y/o PostgreSQL
+- Docker
 - Git
 
 ## Licencia
-Todos los derechos reservados - INACAP 
+Todos los derechos reservados 
