@@ -5,15 +5,45 @@ LEANMAKER es una plataforma web que conecta estudiantes de INACAP con empresas, 
 
 ## Estructura del Proyecto
 LEANMAKER/
-├── frontend/          # Aplicación React
-├── backend/           # API Django
-├── docs/              # Documentación del proyecto
-└── file-server/       # Servidor para documentos PDF y Word
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── assets/
+│   │   ├── styles/
+│   │   ├── utils/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   └── context/
+│   └── public/
+├── backend/
+│   ├── apps/
+│   ├── config/
+│   ├── templates/
+│   ├── static/
+│   ├── media/
+│   ├── utils/
+│   └── tests/
+├── database/
+│   ├── migrations/
+│   ├── scripts/
+│   ├── backups/
+│   └── schemas/
+├── docs/
+│   ├── api/
+│   ├── frontend/
+│   ├── backend/
+│   ├── database/
+│   └── deployment/
+└── file-server/
+    ├── uploads/
+    ├── temp/
+    └── logs/
 
 ## Tecnologías Utilizadas
 - **Frontend**: React, React Router DOM
-- **Backend**: Django, Node.js
-- **Base de Datos**: SQL Server, PostgreSQL
+- **Backend**: Django
+- **Base de Datos**: SQL Server
 - **Control de Versiones**: Git
 - **Contenedores**: Docker (empaquetado y despliegue de frontend, backend y base de datos)
 - **Editores de Código**: Visual Studio Code, Cursor, Replit
@@ -54,13 +84,13 @@ LEANMAKER/
 ## Herramientas a Utilizar
 - **Git**: Control de versiones
 - **Docker**: Empaquetado y despliegue
-- **Visual Studio Code / Cursor / Replit**: Editores de código
+- **Visual Studio Code / Cursor**: Editores de código
 - **React Router DOM**: Ruteo en frontend
 - **Sistema de credenciales de Microsoft**: Autenticación
 
 ## Entorno de Desarrollo
-- **Lenguajes**: Python 3.8+, JavaScript (Node.js 16+)
-- **Bases de Datos**: SQL Server, PostgreSQL
+- **Lenguajes**: Python 3.8+, JavaScript
+- **Bases de Datos**: SQL Server
 - **Contenedores**: Docker
 - **Editores**: VS Code, Cursor, Replit
 
@@ -74,7 +104,7 @@ LEANMAKER/
 ## Requisitos Previos
 - Python 3.8+
 - Node.js 16+
-- SQL Server y/o PostgreSQL
+- SQL Server 
 - Docker
 - Git
 
