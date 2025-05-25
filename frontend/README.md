@@ -145,3 +145,14 @@ Mejorar la colaboración entre desarrolladores
 Acelerar el desarrollo con autocompletado inteligente
 Documentar automáticamente la estructura de datos
 Hacer refactorizaciones más seguras
+
+
+
+
+
+
+
+siempre mantener las notas de cambio o procesos 
+con su respectivo registro de como y porque se hizo a si 
+
+
