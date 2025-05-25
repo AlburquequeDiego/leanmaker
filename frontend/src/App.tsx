@@ -8,7 +8,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          esta sera el front en para el sistema <code> LEANMAKER </code>
+          esta sera el front end para el sistema <code> LEANMAKER </code>
         </p>
         <a
           className="App-link"
