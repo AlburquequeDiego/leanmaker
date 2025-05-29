@@ -1,0 +1,227 @@
+// Database schema for LEANMAKER in dbdiagram.io format
+
+// User and Role Tables
+Table Usuario {
+  id_usuario int [pk, increment]
+  nombre varchar(100) [not null]
+  correo varchar(100) [not null, unique]
+  contraseña varchar(255) [not null]
+  rol varchar(20) [not null, note: 'estudiante, empresa, admin']
+  estado varchar(20) [not null, default: 'activo', note: 'activo, inactivo']
+  verificado bit [default: false]
+  fecha_registro datetime [default: `GETDATE()`]
+  ultima_modificacion datetime [default: `GETDATE()`]
+}
+
+Table Administrador {
+  id_administrador int [pk, ref: > Usuario.id_usuario]
+  departamento varchar(100) [not null]
+  nivel_acceso int [not null, note: '1-5']
+  permisos text
+  ultimo_acceso datetime
+}
+
+Table Estudiante {
+  id_estudiante int [pk, ref: > Usuario.id_usuario]
+  carrera varchar(100) [not null]
+  semestre int [not null, note: '1-12']
+  estado_actividad varchar(20) [default: 'disponible', note: 'disponible, ocupado, inactivo']
+  strikes int [default: 0, note: '>= 0']
+}
+
+Table Empresa {
+  id_empresa int [pk, ref: > Usuario.id_usuario]
+  nombre_empresa varchar(100) [not null]
+  rubro varchar(100) [not null]
+  descripcion text
+  fecha_registro datetime [default: `GETDATE()`]
+}
+
+// Project Management Tables
+Table NivelAPI {
+  id_nivel int [pk, increment]
+  nivel varchar(1) [not null, unique, note: '1,2,3,4']
+  descripcion text [not null]
+  requisitos text [not null]
+  fecha_creacion datetime [default: `GETDATE()`]
+}
+
+Table EstadoProyecto {
+  id_estado int [pk, increment]
+  nombre varchar(50) [not null, unique]
+  descripcion text
+}
+
+Table Proyecto {
+  id_proyecto int [pk, increment]
+  id_empresa int [ref: > Empresa.id_empresa, not null]
+  id_estado_actual int [ref: > EstadoProyecto.id_estado, not null]
+  titulo varchar(200) [not null]
+  descripcion text [not null]
+  area varchar(100) [not null]
+  nivel_api_requerido varchar(1) [ref: > NivelAPI.nivel, not null]
+  trl int [note: '1-9']
+  fecha_publicacion datetime [default: `GETDATE()`]
+  fecha_inicio date
+  fecha_estimada_fin date
+  fecha_real_fin date
+  ultima_modificacion datetime [default: `GETDATE()`]
+}
+
+Table HistorialEstadoProyecto {
+  id_historial int [pk, increment]
+  id_proyecto int [ref: > Proyecto.id_proyecto, not null]
+  id_estado int [ref: > EstadoProyecto.id_estado, not null]
+  id_usuario int [ref: > Usuario.id_usuario, not null]
+  fecha_cambio datetime [default: `GETDATE()`]
+  comentario text
+}
+
+// Application and Assignment Tables
+Table Postulacion {
+  id_postulacion int [pk, increment]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null]
+  id_proyecto int [ref: > Proyecto.id_proyecto, not null]
+  fecha_postulacion datetime [default: `GETDATE()`]
+  estado_postulacion varchar(20) [default: 'pendiente', note: 'pendiente, aceptada, rechazada, cancelada']
+  motivo_rechazo text
+}
+
+Table Asignacion {
+  id_asignacion int [pk, increment]
+  id_postulacion int [ref: > Postulacion.id_postulacion, not null, unique]
+  fecha_inicio date [not null]
+  fecha_fin date
+  tareas text
+  horas_registradas int [default: 0, note: '>= 0']
+  estado varchar(20) [default: 'en curso', note: 'en curso, completado, cancelado']
+}
+
+Table AsignacionAPI {
+  id_asignacion int [pk, increment]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null]
+  id_nivel int [ref: > NivelAPI.id_nivel, not null]
+  id_administrador int [ref: > Administrador.id_administrador, not null]
+  fecha_asignacion datetime [default: `GETDATE()`]
+  fecha_vencimiento date
+  estado varchar(20) [default: 'activo', note: 'activo, vencido, revocado']
+  motivo text
+}
+
+// Evaluation and Profile Tables
+Table EvaluacionProyecto {
+  id_evaluacion int [pk, increment]
+  id_asignacion int [ref: > Asignacion.id_asignacion, not null]
+  calificacion int [note: '1-5']
+  comentarios text
+  fecha_evaluacion datetime [default: `GETDATE()`]
+}
+
+Table Strike {
+  id_strike int [pk, increment]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null]
+  motivo text [not null]
+  fecha datetime [default: `GETDATE()`]
+  estado varchar(20) [default: 'activo', note: 'activo, resuelto, anulado']
+  id_administrador int [ref: > Administrador.id_administrador, not null]
+}
+
+Table Certificado {
+  id_certificado int [pk, increment]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null]
+  nombre varchar(100)
+  archivo_url varchar(255)
+  fecha_subida datetime [default: `GETDATE()`]
+  tipo_certificado varchar(50) [not null]
+  valido_hasta date
+}
+
+Table Notificacion {
+  id_notificacion int [pk, increment]
+  id_usuario int [ref: > Usuario.id_usuario, not null]
+  mensaje text [not null]
+  tipo varchar(20) [not null, note: 'sistema, proyecto, postulacion, evaluacion']
+  fecha_envio datetime [default: `GETDATE()`]
+  leido bit [default: false]
+  fecha_lectura datetime
+}
+
+Table PerfilEstudiante {
+  id_perfil int [pk, increment]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null, unique]
+  horas_totales_proyectos int [default: 0, note: '>= 0']
+  experiencia_laboral text
+  habilidades text
+  portafolio_url varchar(255)
+  biografia text
+  fecha_actualizacion datetime [default: `GETDATE()`]
+  visibilidad bit [default: true]
+}
+
+Table ExperienciaProyecto {
+  id_experiencia int [pk, increment]
+  id_perfil int [ref: > PerfilEstudiante.id_perfil, not null]
+  id_proyecto int [ref: > Proyecto.id_proyecto, not null]
+  id_empresa int [ref: > Empresa.id_empresa, not null]
+  rol_desempeñado varchar(100) [not null]
+  descripcion_tareas text
+  habilidades_aplicadas text
+  fecha_inicio date [not null]
+  fecha_fin date
+  horas_trabajadas int [not null, note: '> 0']
+  calificacion_empresa int [note: '1-5']
+  comentarios_empresa text
+  fecha_registro datetime [default: `GETDATE()`]
+}
+
+// Interview and Calendar Tables
+Table Entrevista {
+  id_entrevista int [pk, increment]
+  id_proyecto int [ref: > Proyecto.id_proyecto, not null]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null]
+  id_empresa int [ref: > Empresa.id_empresa, not null]
+  fecha date [not null]
+  hora time [not null]
+  link_reunion varchar(255)
+  estado varchar(20) [default: 'pendiente', note: 'pendiente, confirmada, realizada, cancelada']
+  comentarios text
+  duracion_minutos int [default: 30, note: '> 0']
+}
+
+Table CalendarioReunion {
+  id_reunion int [pk, increment]
+  id_usuario int [ref: > Usuario.id_usuario, not null]
+  titulo varchar(100) [not null]
+  descripcion text
+  fecha date [not null]
+  hora_inicio time [not null]
+  hora_fin time [not null]
+  tipo varchar(20) [not null, note: 'entrevista, reunion, presentacion']
+  link_reunion varchar(255)
+}
+
+// TRL and Self-evaluation Tables
+Table CuestionarioAutoevaluacion {
+  id_cuestionario int [pk, increment]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null]
+  nivel_api varchar(1) [ref: > NivelAPI.nivel, not null]
+  preparado bit [not null]
+  comentarios text
+  fecha datetime [default: `GETDATE()`]
+}
+
+Table PreguntaTRL {
+  id_pregunta int [pk, increment]
+  texto_pregunta text [not null]
+  id_padre int [ref: > PreguntaTRL.id_pregunta]
+  tipo_respuesta varchar(20) [not null, note: 'texto, numero, opcion, multiple']
+  nivel_trl int [note: '1-9']
+}
+
+Table RespuestaTRL {
+  id_respuesta int [pk, increment]
+  id_pregunta int [ref: > PreguntaTRL.id_pregunta, not null]
+  id_proyecto int [ref: > Proyecto.id_proyecto, not null]
+  respuesta text [not null]
+  fecha_respuesta datetime [default: `GETDATE()`]
+} 
