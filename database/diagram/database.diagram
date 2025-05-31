@@ -27,6 +27,8 @@ Table Estudiante {
   semestre int [not null, note: '1-12']
   estado_actividad varchar(20) [default: 'disponible', note: 'disponible, ocupado, inactivo']
   strikes int [default: 0, note: '>= 0']
+  horas_acumuladas int [default: 0, note: '>= 0, <= 360']
+  horas_restantes int [default: 360, note: '>= 0, <= 360']
 }
 
 Table Empresa {
@@ -37,7 +39,15 @@ Table Empresa {
   fecha_registro datetime [default: `GETDATE()`]
 }
 
-// Project Management Tables
+// Area and Project Management Tables
+Table Area {
+  id_area int [pk, increment]
+  nombre varchar(50) [not null, unique]
+  descripcion text
+  estado bit [default: true, note: 'activo/inactivo']
+  fecha_creacion datetime [default: `GETDATE()`]
+}
+
 Table NivelAPI {
   id_nivel int [pk, increment]
   nivel varchar(1) [not null, unique, note: '1,2,3,4']
@@ -56,11 +66,12 @@ Table Proyecto {
   id_proyecto int [pk, increment]
   id_empresa int [ref: > Empresa.id_empresa, not null]
   id_estado_actual int [ref: > EstadoProyecto.id_estado, not null]
+  id_area int [ref: > Area.id_area, not null]
   titulo varchar(200) [not null]
   descripcion text [not null]
-  area varchar(100) [not null]
   nivel_api_requerido varchar(1) [ref: > NivelAPI.nivel, not null]
   trl int [note: '1-9']
+  horas_requeridas int [not null, note: '> 0']
   fecha_publicacion datetime [default: `GETDATE()`]
   fecha_inicio date
   fecha_estimada_fin date
@@ -93,8 +104,21 @@ Table Asignacion {
   fecha_inicio date [not null]
   fecha_fin date
   tareas text
-  horas_registradas int [default: 0, note: '>= 0']
   estado varchar(20) [default: 'en curso', note: 'en curso, completado, cancelado']
+}
+
+Table RegistroHoras {
+  id_registro int [pk, increment]
+  id_asignacion int [ref: > Asignacion.id_asignacion, not null]
+  id_estudiante int [ref: > Estudiante.id_estudiante, not null]
+  id_empresa int [ref: > Empresa.id_empresa, not null]
+  fecha_registro date [not null]
+  horas_trabajadas int [not null, note: '> 0']
+  descripcion_actividades text [not null]
+  estado_validacion varchar(20) [default: 'pendiente', note: 'pendiente, aprobado, rechazado']
+  fecha_validacion datetime
+  comentario_validacion text
+  id_validador int [ref: > Usuario.id_usuario]
 }
 
 Table AsignacionAPI {
@@ -140,7 +164,7 @@ Table Notificacion {
   id_notificacion int [pk, increment]
   id_usuario int [ref: > Usuario.id_usuario, not null]
   mensaje text [not null]
-  tipo varchar(20) [not null, note: 'sistema, proyecto, postulacion, evaluacion']
+  tipo varchar(20) [not null, note: 'sistema, proyecto, postulacion, evaluacion, horas']
   fecha_envio datetime [default: `GETDATE()`]
   leido bit [default: false]
   fecha_lectura datetime
