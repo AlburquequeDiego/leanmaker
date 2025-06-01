@@ -1,6 +1,4 @@
-// Database schema for LEANMAKER in dbdiagram.io format
 
-// User and Role Tables
 Table Usuario {
   id_usuario int [pk, increment]
   nombre varchar(100) [not null]
@@ -39,7 +37,6 @@ Table Empresa {
   fecha_registro datetime [default: `GETDATE()`]
 }
 
-// Area and Project Management Tables
 Table Area {
   id_area int [pk, increment]
   nombre varchar(50) [not null, unique]
@@ -88,7 +85,6 @@ Table HistorialEstadoProyecto {
   comentario text
 }
 
-// Application and Assignment Tables
 Table Postulacion {
   id_postulacion int [pk, increment]
   id_estudiante int [ref: > Estudiante.id_estudiante, not null]
@@ -132,7 +128,6 @@ Table AsignacionAPI {
   motivo text
 }
 
-// Evaluation and Profile Tables
 Table EvaluacionProyecto {
   id_evaluacion int [pk, increment]
   id_asignacion int [ref: > Asignacion.id_asignacion, not null]
@@ -198,7 +193,6 @@ Table ExperienciaProyecto {
   fecha_registro datetime [default: `GETDATE()`]
 }
 
-// Interview and Calendar Tables
 Table Entrevista {
   id_entrevista int [pk, increment]
   id_proyecto int [ref: > Proyecto.id_proyecto, not null]
@@ -224,7 +218,6 @@ Table CalendarioReunion {
   link_reunion varchar(255)
 }
 
-// TRL and Self-evaluation Tables
 Table CuestionarioAutoevaluacion {
   id_cuestionario int [pk, increment]
   id_estudiante int [ref: > Estudiante.id_estudiante, not null]
