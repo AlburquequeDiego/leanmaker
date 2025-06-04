@@ -1,112 +1,95 @@
-# LEANMAKER - Plataforma de Gestión de Proyectos Académicos
+# LeanMaker
 
 ## Descripción
-LEANMAKER es una plataforma web que conecta estudiantes de INACAP con empresas, facilitando la gestión de proyectos académicos y prácticas profesionales. El sistema permite la gestión de proyectos, postulaciones, seguimiento de horas de práctica y evaluación de desempeño.
-
-## Estructura del Proyecto
-LEANMAKER/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── assets/
-│   │   ├── styles/
-│   │   ├── utils/
-│   │   ├── services/
-│   │   ├── hooks/
-│   │   └── context/
-│   └── public/
-├── backend/
-│   ├── apps/
-│   ├── config/
-│   ├── templates/
-│   ├── static/
-│   ├── media/
-│   ├── utils/
-│   └── tests/
-├── database/
-│   ├── migrations/
-│   ├── scripts/
-│   ├── backups/
-│   └── schemas/
-├── docs/
-│   ├── api/
-│   ├── frontend/
-│   ├── backend/
-│   ├── database/
-│   └── deployment/
-└── file-server/
-    ├── uploads/
-    ├── temp/
-    └── logs/
-
-## Tecnologías Utilizadas
-- **Frontend**: React, React Router DOM
-- **Backend**: Django
-- **Base de Datos**: SQL Server
-- **Control de Versiones**: Git
-- **Contenedores**: Docker (empaquetado y despliegue de frontend, backend y base de datos)
-- **Editores de Código**: Visual Studio Code, Cursor, Replit
-- **Autenticación**: Sistema de credenciales de Microsoft
-- **Despliegue**: Servidores/Data Center INACAP
-- **Gestión de Documentos**: Servidor dedicado para archivos PDF y Word
+LeanMaker es una plataforma de vinculación que conecta a estudiantes con empresas, facilitando la búsqueda y gestión de prácticas profesionales. El sistema permite a los estudiantes encontrar oportunidades de práctica que se alineen con sus intereses y carrera, mientras que las empresas pueden publicar y gestionar sus proyectos y ofertas de práctica.
 
 ## Características Principales
-- Sistema de autenticación y autorización
-- Gestión de proyectos empresariales
-- Sistema de postulaciones
-- Seguimiento de horas de práctica
-- Sistema de evaluación y feedback
-- Gestión de entrevistas y calendarios
-- Sistema de notificaciones
-- Portafolio de estudiantes
-- Almacenamiento y gestión de documentos (PDF, Word)
+- Portal para estudiantes:
+  - Búsqueda de prácticas profesionales
+  - Perfil profesional personalizable
+  - Seguimiento de postulaciones
+  - Historial de prácticas
+  - Notificaciones de nuevas oportunidades
 
-## Tipos de Usuarios
-1. **Estudiantes**
-   - Niveles API (1-4)
-   - Gestión de postulaciones
-   - Portafolio personal
-   - Seguimiento de horas
+- Portal para empresas:
+  - Publicación de proyectos y ofertas de práctica
+  - Gestión de postulantes
+  - Seguimiento de estudiantes en práctica
+  - Evaluación de prácticas
+  - Reportes de vinculación
 
-2. **Empresas**
-   - Publicación de proyectos
-   - Gestión de postulaciones
-   - Evaluación de estudiantes
-   - Calendario de entrevistas
+- Portal administrativo:
+  - Gestión de usuarios (estudiantes y empresas)
+  - Validación de documentos
+  - Estadísticas de vinculación
+  - Gestión de convenios
+  - Dashboard de métricas
 
-3. **Administrador**
-   - Gestión de usuarios
-   - Supervisión del sistema
-   - Gestión de niveles API
-   - Control de acceso
+## Requisitos del Sistema
+- Python 3.8 o superior
+- Base de datos PostgreSQL
+- Navegador web moderno
+- Conexión a internet
 
-## Herramientas a Utilizar
-- **Git**: Control de versiones
-- **Docker**: Empaquetado y despliegue
-- **Visual Studio Code / Cursor**: Editores de código
-- **React Router DOM**: Ruteo en frontend
-- **Sistema de credenciales de Microsoft**: Autenticación
+## Instalación
+1. Clonar el repositorio
+```bash
+git clone https://github.com/tu-usuario/leanmaker.git
+```
 
-## Entorno de Desarrollo
-- **Lenguajes**: Python 3.8+, JavaScript
-- **Bases de Datos**: SQL Server
-- **Contenedores**: Docker
-- **Editores**: VS Code, Cursor, Replit
+2. Instalar dependencias
+```bash
+pip install -r requirements.txt
+```
 
-## Metodología
-- **Metodología**: LITERA incremental (desarrollo iterativo y por etapas)
+3. Configurar la base de datos
+```bash
+python manage.py migrate
+```
 
-## Pruebas y Despliegue
-- **Pruebas de estrés**: Para asegurar la escalabilidad y rendimiento
-- **Despliegue**: Servidores/Data Center INACAP usando Docker
+4. Iniciar el servidor
+```bash
+python manage.py runserver
+```
 
-## Requisitos Previos
-- Python 3.8+
-- Node.js 16+
-- SQL Server 
-- Docker
-- Git
+## Uso
+
+### Para Estudiantes
+1. Crear una cuenta de estudiante
+2. Completar el perfil profesional
+3. Subir documentos requeridos (CV, certificados, etc.)
+4. Explorar ofertas de práctica disponibles
+5. Postular a las prácticas de interés
+6. Seguimiento de postulaciones
+
+### Para Empresas
+1. Registrarse como empresa
+2. Completar información de la empresa
+3. Publicar ofertas de práctica
+4. Revisar postulaciones recibidas
+5. Gestionar estudiantes en práctica
+6. Generar evaluaciones
+
+## Contribución
+Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/NuevaFuncionalidad`)
+3. Commit tus cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/NuevaFuncionalidad`)
+5. Abre un Pull Request
 
 ## Licencia
-Todos los derechos reservados 
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## Contacto
+Para soporte o consultas, por favor contacta a través de:
+- Email: vinculacion@leanmaker.com
+- Sitio web: www.leanmaker.com
+- Teléfono: +XX XXX XXX XXX
+
+## Agradecimientos
+- Equipo de desarrollo LeanMaker
+- Instituciones educativas colaboradoras
+- Empresas asociadas
+- Estudiantes que han proporcionado feedback valioso
+- Comunidad de usuarios
