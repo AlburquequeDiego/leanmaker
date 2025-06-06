@@ -1,2 +1,2 @@
 // Exportar componentes comunes aquí
-export {}; 
+export { default as LoadingButton } from './LoadingButton'; 

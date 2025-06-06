@@ -1,7 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense } from 'react';
 import { CircularProgress, Box } from '@mui/material';
-import { Home, Login, Register, Dashboard } from '../pages';
+import { Home, Login, Register, Dashboard, ForgotPassword } from '../pages';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { useAuth } from '../hooks/useAuth';
 
 // Componente de carga
 const LoadingFallback = () => (
@@ -15,6 +17,26 @@ const LoadingFallback = () => (
   </Box>
 );
 
+// Componente que renderiza el dashboard según el rol del usuario
+const RoleBasedDashboard = () => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  switch (user.role) {
+    case 'admin':
+      return <Navigate to="/dashboard/admin" replace />;
+    case 'company':
+      return <Navigate to="/dashboard/company" replace />;
+    case 'student':
+      return <Navigate to="/dashboard/student" replace />;
+    default:
+      return <Navigate to="/login" replace />;
+  }
+};
+
 export const AppRoutes = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
@@ -23,9 +45,43 @@ export const AppRoutes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Rutas protegidas */}
-        <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleBasedDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Rutas específicas por rol */}
+        <Route
+          path="/dashboard/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Dashboard userRole="admin" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/company/*"
+          element={
+            <ProtectedRoute allowedRoles={['company']}>
+              <Dashboard userRole="company" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/student/*"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Dashboard userRole="student" />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,73 +1,91 @@
-import { Paper, Typography, Box } from '@mui/material';
-import {
-  Assignment as AssignmentIcon,
-  Notifications as NotificationsIcon,
-  CalendarMonth as CalendarIcon,
-} from '@mui/icons-material';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
+import { useAuth } from '../../hooks/useAuth';
 
-const DashboardCard = ({
-  title,
-  value,
-  icon,
-}: {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-}) => (
-  <Paper
-    sx={{
-      p: 3,
-      display: 'flex',
-      flexDirection: 'column',
-      height: 140,
-    }}
-  >
-    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-      <Typography color="text.secondary" variant="h6" gutterBottom>
-        {title}
-      </Typography>
-      {icon}
-    </Box>
-    <Typography component="p" variant="h4">
-      {value}
-    </Typography>
-  </Paper>
+// Componentes de dashboard específicos por rol
+const AdminDashboard = () => (
+  <div>
+    <h1>Dashboard de Administrador</h1>
+    {/* Aquí irá el contenido específico del admin */}
+  </div>
 );
 
-export const Dashboard = () => {
-  // Aquí se obtendrían los datos reales de la API
-  const stats = {
-    activeProjects: 3,
-    pendingNotifications: 5,
-    upcomingEvents: 2,
+const CompanyDashboard = () => (
+  <div>
+    <h1>Dashboard de Empresa</h1>
+    {/* Aquí irá el contenido específico de la empresa */}
+  </div>
+);
+
+const StudentDashboard = () => (
+  <div>
+    <h1>Dashboard de Estudiante</h1>
+    {/* Aquí irá el contenido específico del estudiante */}
+  </div>
+);
+
+interface DashboardProps {
+  userRole: 'admin' | 'company' | 'student';
+}
+
+export const Dashboard = ({ userRole }: DashboardProps) => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const getDashboardContent = () => {
+    switch (userRole) {
+      case 'admin':
+        return <AdminDashboard />;
+      case 'company':
+        return <CompanyDashboard />;
+      case 'student':
+        return <StudentDashboard />;
+      default:
+        return <Navigate to="/login" replace />;
+    }
   };
 
   return (
-    <DashboardLayout>
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom>
-          Dashboard
-        </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
-          <DashboardCard
-            title="Proyectos Activos"
-            value={stats.activeProjects}
-            icon={<AssignmentIcon color="primary" />}
-          />
-          <DashboardCard
-            title="Notificaciones Pendientes"
-            value={stats.pendingNotifications}
-            icon={<NotificationsIcon color="primary" />}
-          />
-          <DashboardCard
-            title="Próximos Eventos"
-            value={stats.upcomingEvents}
-            icon={<CalendarIcon color="primary" />}
-          />
-          {/* Aquí se pueden agregar más tarjetas o secciones según sea necesario */}
-        </Box>
-      </Box>
+    <DashboardLayout userRole={userRole}>
+      <Routes>
+        <Route index element={getDashboardContent()} />
+        {/* Aquí irán las rutas específicas de cada dashboard */}
+        <Route path="profile" element={<div>Perfil de Usuario</div>} />
+        <Route path="notifications" element={<div>Notificaciones</div>} />
+        {/* Rutas específicas del admin */}
+        {userRole === 'admin' && (
+          <>
+            <Route path="users" element={<div>Gestión de Usuarios</div>} />
+            <Route path="companies" element={<div>Gestión de Empresas</div>} />
+            <Route path="students" element={<div>Gestión de Estudiantes</div>} />
+            <Route path="projects" element={<div>Gestión de Proyectos</div>} />
+            <Route path="evaluations" element={<div>Evaluaciones</div>} />
+            <Route path="settings" element={<div>Configuración</div>} />
+          </>
+        )}
+        {/* Rutas específicas de la empresa */}
+        {userRole === 'company' && (
+          <>
+            <Route path="my-projects" element={<div>Mis Proyectos</div>} />
+            <Route path="applicants" element={<div>Postulantes</div>} />
+            <Route path="evaluations" element={<div>Evaluaciones</div>} />
+            <Route path="calendar" element={<div>Calendario</div>} />
+          </>
+        )}
+        {/* Rutas específicas del estudiante */}
+        {userRole === 'student' && (
+          <>
+            <Route path="available-projects" element={<div>Proyectos Disponibles</div>} />
+            <Route path="my-applications" element={<div>Mis Aplicaciones</div>} />
+            <Route path="my-projects" element={<div>Mis Proyectos</div>} />
+            <Route path="evaluations" element={<div>Evaluaciones</div>} />
+            <Route path="calendar" element={<div>Calendario</div>} />
+          </>
+        )}
+      </Routes>
     </DashboardLayout>
   );
 };

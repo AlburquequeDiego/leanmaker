@@ -18,38 +18,31 @@ const validationSchema = yup.object({
     .string()
     .email('Ingrese un email válido')
     .required('El email es requerido'),
-  password: yup
-    .string()
-    .min(8, 'La contraseña debe tener al menos 8 caracteres')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial'
-    )
-    .required('La contraseña es requerida'),
 });
 
-export const Login = () => {
+export const ForgotPassword = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
       email: '',
-      password: '',
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       setIsLoading(true);
       setError(null);
+      setSuccess(null);
       try {
-        // Aquí irá la lógica de autenticación
-        console.log('Login attempt:', values);
+        // Aquí irá la lógica de recuperación de contraseña
+        console.log('Password recovery attempt:', values);
         // Simulamos una llamada a la API
         await new Promise(resolve => setTimeout(resolve, 1000));
-        navigate('/dashboard');
+        setSuccess('Se ha enviado un correo con las instrucciones para recuperar tu contraseña.');
       } catch (err) {
-        setError('Error al iniciar sesión. Por favor, verifique sus credenciales.');
+        setError('Error al procesar la solicitud. Por favor, intente nuevamente.');
       } finally {
         setIsLoading(false);
       }
@@ -57,20 +50,15 @@ export const Login = () => {
   });
 
   return (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'background.default',
-      }}
-    >
-      <Container component="main" maxWidth={false} disableGutters sx={{ width: '400px' }}>
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Paper
           elevation={3}
           sx={{
@@ -82,11 +70,16 @@ export const Login = () => {
           }}
         >
           <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-            Iniciar Sesión
+            Recuperar Contraseña
           </Typography>
           {error && (
             <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
               {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ width: '100%', mb: 2 }}>
+              {success}
             </Alert>
           )}
           <Box
@@ -109,31 +102,6 @@ export const Login = () => {
               helperText={formik.touched.email && formik.errors.email}
               disabled={isLoading}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-              disabled={isLoading}
-            />
-            <Box sx={{ mt: 1, mb: 2 }}>
-              <Link
-                component={RouterLink}
-                to="/forgot-password"
-                variant="body2"
-                sx={{ textDecoration: 'none' }}
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
-            </Box>
             <LoadingButton
               type="submit"
               fullWidth
@@ -141,23 +109,23 @@ export const Login = () => {
               loading={isLoading}
               sx={{ mt: 3, mb: 2 }}
             >
-              Iniciar Sesión
+              Enviar Instrucciones
             </LoadingButton>
             <Box sx={{ textAlign: 'center' }}>
               <Link
                 component={RouterLink}
-                to="/register"
+                to="/login"
                 variant="body2"
                 sx={{ textDecoration: 'none' }}
               >
-                ¿No tienes una cuenta? Regístrate
+                Volver al inicio de sesión
               </Link>
             </Box>
           </Box>
         </Paper>
-      </Container>
-    </Box>
+      </Box>
+    </Container>
   );
 };
 
-export default Login; 
+export default ForgotPassword; 

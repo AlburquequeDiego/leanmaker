@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
-  Button,
   Container,
   TextField,
   Typography,
@@ -17,6 +16,7 @@ import {
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import type { UserRole } from '../../types';
+import LoadingButton from '../../components/common/LoadingButton';
 
 const validationSchema = yup.object({
   name: yup.string().required('El nombre es requerido'),
@@ -26,12 +26,16 @@ const validationSchema = yup.object({
     .required('El email es requerido'),
   password: yup
     .string()
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial'
+    )
     .required('La contraseña es requerida'),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref('password')], 'Las contraseñas deben coincidir')
-    .required('La confirmación de contraseña es requerida'),
+    .required('Confirma tu contraseña'),
   role: yup
     .string()
     .oneOf(['student', 'company'] as UserRole[], 'Seleccione un rol válido')
@@ -41,6 +45,7 @@ const validationSchema = yup.object({
 export const Register = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -52,26 +57,37 @@ export const Register = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      setIsLoading(true);
+      setError(null);
       try {
         // Aquí irá la lógica de registro
         console.log('Register attempt:', values);
+        // Simulamos una llamada a la API
+        await new Promise(resolve => setTimeout(resolve, 1000));
         navigate('/login');
-      } catch {
-        setError('Error al registrar usuario. Por favor, intente nuevamente.');
+      } catch (err) {
+        setError('Error al registrarse. Por favor, intente nuevamente.');
+      } finally {
+        setIsLoading(false);
       }
     },
   });
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'background.default',
+      }}
+    >
+      <Container component="main" maxWidth={false} disableGutters sx={{ width: '400px' }}>
         <Paper
           elevation={3}
           sx={{
@@ -82,18 +98,18 @@ export const Register = () => {
             width: '100%',
           }}
         >
-          <Typography component="h1" variant="h5">
-            Registro
+          <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+            Registrarse
           </Typography>
           {error && (
-            <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
               {error}
             </Alert>
           )}
           <Box
             component="form"
             onSubmit={formik.handleSubmit}
-            sx={{ mt: 1, width: '100%' }}
+            sx={{ width: '100%' }}
           >
             <TextField
               margin="normal"
@@ -103,11 +119,11 @@ export const Register = () => {
               label="Nombre Completo"
               name="name"
               autoComplete="name"
-              autoFocus
               value={formik.values.name}
               onChange={formik.handleChange}
               error={formik.touched.name && Boolean(formik.errors.name)}
               helperText={formik.touched.name && formik.errors.name}
+              disabled={isLoading}
             />
             <TextField
               margin="normal"
@@ -121,6 +137,7 @@ export const Register = () => {
               onChange={formik.handleChange}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
+              disabled={isLoading}
             />
             <TextField
               margin="normal"
@@ -135,6 +152,7 @@ export const Register = () => {
               onChange={formik.handleChange}
               error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
+              disabled={isLoading}
             />
             <TextField
               margin="normal"
@@ -144,15 +162,12 @@ export const Register = () => {
               label="Confirmar Contraseña"
               type="password"
               id="confirmPassword"
+              autoComplete="new-password"
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
-              error={
-                formik.touched.confirmPassword &&
-                Boolean(formik.errors.confirmPassword)
-              }
-              helperText={
-                formik.touched.confirmPassword && formik.errors.confirmPassword
-              }
+              error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+              helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+              disabled={isLoading}
             />
             <FormControl fullWidth margin="normal">
               <InputLabel id="role-label">Tipo de Usuario</InputLabel>
@@ -169,23 +184,29 @@ export const Register = () => {
                 <MenuItem value="company">Empresa</MenuItem>
               </Select>
             </FormControl>
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
+              loading={isLoading}
               sx={{ mt: 3, mb: 2 }}
             >
               Registrarse
-            </Button>
+            </LoadingButton>
             <Box sx={{ textAlign: 'center' }}>
-              <Link component={RouterLink} to="/login" variant="body2">
+              <Link
+                component={RouterLink}
+                to="/login"
+                variant="body2"
+                sx={{ textDecoration: 'none' }}
+              >
                 ¿Ya tienes una cuenta? Inicia sesión
               </Link>
             </Box>
           </Box>
         </Paper>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 
