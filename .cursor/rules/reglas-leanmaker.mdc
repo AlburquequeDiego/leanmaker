@@ -1,0 +1,62 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+I am developing a web platform called Leanmaker, aimed at connecting students from INACAP with companies for temporary projects, with the goal of improving students' employability. The system architecture is divided into:
+Frontend: React with TypeScript.
+Backend: Django (which connects to SQL Server).
+Database: SQL Server.
+I want the development to follow best programming practices, ensuring that the code is structured efficiently, scalable, and easy to maintain.
+General Requirements for the Frontend Project (React with TypeScript)
+Use of TypeScript:
+Declare the type of each variable and function (parameters and return values).
+Avoid using any. Create the necessary types.
+Use JSDoc to document public classes and methods.
+Do not leave blank lines within functions.
+One export per file.
+Nomenclature:
+Use PascalCase for classes.
+Use camelCase for variables, functions, and methods.
+Use kebab-case for file and directory names.
+Use UPPERCASE for environment variables.
+Avoid magic numbers and define constants.
+Function names should start with a verb (e.g., getUser, saveProject).
+Boolean function names should start with is, has, can (e.g., isLoading, canDelete).
+Functions:
+Functions should be short, with a single purpose. Less than 20 instructions.
+Use arrow functions for simple functions (less than 3 instructions).
+Use named functions for non-simple functions.
+Avoid nesting blocks by using early returns and extracting to utility functions when necessary.
+Use higher-order functions (like map, filter, reduce) to avoid function nesting.
+Use default values for parameters instead of checking for null or undefined.
+Use an object to pass multiple parameters and also to return results.
+Components:
+Use functional components and Hooks instead of classes whenever possible.
+Components should be small and focused on a single responsibility.
+Keep components modular and reusable.
+State:
+Use React Context or Redux if necessary for global state management.
+Avoid excessive prop passing by using a global context when needed.
+Styles:
+Use CSS Modules or styled-components for better modularity and encapsulation of styles.
+Ensure that the design is responsive using media queries or frameworks like Bootstrap.
+Routes and Navigation:
+Use React Router to handle navigation between different screens (e.g., Home, Login, Dashboard).
+Keep navigation simple and accessible to the user.
+Requirements for the Backend (Django with SQL Server)
+Modular Structure for Django Project:
+Use a modular architecture in Django. Each module should represent a main domain or route of the application.
+Use models to define the entities in the database.
+Use serializers to convert models into JSON data and vice versa.
+Use Django Rest Framework (DRF) to expose RESTful APIs.
+Databases (SQL Server):
+Use Migrations for managing database changes.
+Ensure that Django models are well-defined and efficient to work with SQL Server.
+Use Django ORM to interact with the database efficiently.
+Security Practices:
+Implement a robust authentication system (e.g., JWT or token-based).
+Ensure that all input data is validated using DRF serializers.
+
+Use Django middleware to handle authorization and authenticatio
