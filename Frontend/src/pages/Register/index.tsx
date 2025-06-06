@@ -17,6 +17,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import type { UserRole } from '../../types';
 import LoadingButton from '../../components/common/LoadingButton';
+import { useAuth } from '../../hooks/useAuth';
 
 const validationSchema = yup.object({
   name: yup.string().required('El nombre es requerido'),
@@ -44,6 +45,7 @@ const validationSchema = yup.object({
 
 export const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,11 +62,8 @@ export const Register = () => {
       setIsLoading(true);
       setError(null);
       try {
-        // Aquí irá la lógica de registro
-        console.log('Register attempt:', values);
-        // Simulamos una llamada a la API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        navigate('/login');
+        await register(values.email, values.password, values.role, values.name);
+        navigate('/dashboard');
       } catch (err) {
         setError('Error al registrarse. Por favor, intente nuevamente.');
       } finally {

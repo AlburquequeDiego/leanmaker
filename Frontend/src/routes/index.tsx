@@ -1,7 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense } from 'react';
 import { CircularProgress, Box } from '@mui/material';
-import { Home, Login, Register, Dashboard, ForgotPassword } from '../pages';
+import { Home, Login, Register, ForgotPassword } from '../pages';
+import StudentDashboard from '../pages/Dashboard/Student';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 
@@ -62,7 +63,7 @@ export const AppRoutes = () => {
           path="/dashboard/admin/*"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <Dashboard userRole="admin" />
+              <Navigate to="/dashboard" replace />
             </ProtectedRoute>
           }
         />
@@ -70,7 +71,7 @@ export const AppRoutes = () => {
           path="/dashboard/company/*"
           element={
             <ProtectedRoute allowedRoles={['company']}>
-              <Dashboard userRole="company" />
+              <Navigate to="/dashboard" replace />
             </ProtectedRoute>
           }
         />
@@ -78,7 +79,7 @@ export const AppRoutes = () => {
           path="/dashboard/student/*"
           element={
             <ProtectedRoute allowedRoles={['student']}>
-              <Dashboard userRole="student" />
+              <StudentDashboard />
             </ProtectedRoute>
           }
         />

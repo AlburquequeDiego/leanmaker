@@ -1,54 +1,152 @@
-# React + TypeScript + Vite
+# LeanMaker - Plataforma de Inserción Laboral
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descripción
+LeanMaker es una plataforma web diseñada para conectar estudiantes con oportunidades laborales reales. Facilita la participación de estudiantes en proyectos temporales y mejora su empleabilidad a través de la gestión de proyectos reales y prácticas laborales.
 
-Currently, two official plugins are available:
+## Características Principales
+- Sistema de autenticación multi-rol (Estudiantes, Empresas, Administradores)
+- Dashboard personalizado según el rol del usuario
+- Gestión de proyectos y aplicaciones
+- Sistema de evaluaciones
+- Notificaciones en tiempo real
+- Calendario de actividades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Estado Actual del Proyecto
+El proyecto se encuentra en fase de desarrollo. Actualmente:
+- ✅ Frontend básico implementado
+- ✅ Sistema de autenticación (simulado)
+- ✅ Rutas protegidas y navegación
+- ✅ Dashboard de estudiante (UI básica)
+- ⏳ Backend en desarrollo
+- ⏳ Base de datos pendiente
+- ⏳ Integración con API pendiente
 
-## Expanding the ESLint configuration
+## Tecnologías Utilizadas
+- **Frontend:**
+  - React 18
+  - TypeScript
+  - Vite
+  - Material-UI (MUI)
+  - React Router v6
+  - Formik + Yup (validación de formularios)
+  - Context API (gestión de estado)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Estructura del Proyecto
+```
+Frontend/
+├── src/
+│   ├── components/         # Componentes reutilizables
+│   │   ├── auth/          # Componentes de autenticación
+│   │   ├── common/        # Componentes comunes (botones, inputs, etc.)
+│   │   ├── features/      # Componentes específicos de funcionalidades
+│   │   └── layout/        # Componentes de estructura (DashboardLayout)
+│   ├── hooks/             # Custom hooks
+│   │   └── useAuth.tsx    # Hook de autenticación
+│   ├── pages/             # Páginas de la aplicación
+│   │   ├── Dashboard/     # Dashboards por rol
+│   │   ├── Home/          # Página principal
+│   │   ├── Login/         # Página de inicio de sesión
+│   │   ├── Register/      # Página de registro
+│   │   └── ForgotPassword/# Página de recuperación de contraseña
+│   ├── routes/            # Configuración de rutas
+│   ├── types/             # Definiciones de tipos TypeScript
+│   ├── App.tsx           # Componente raíz
+│   └── main.tsx          # Punto de entrada
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Roles de Usuario
+1. **Estudiante**
+   - Ver proyectos disponibles
+   - Aplicar a proyectos
+   - Gestionar aplicaciones
+   - Ver evaluaciones
+   - Acceder a calendario
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. **Empresa**
+   - Publicar proyectos
+   - Gestionar postulantes
+   - Evaluar estudiantes
+   - Gestionar calendario
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+3. **Administrador**
+   - Gestionar usuarios
+   - Gestionar empresas
+   - Gestionar estudiantes
+   - Gestionar proyectos
+   - Configuración del sistema
+
+## Instalación y Ejecución
+
+### Prerrequisitos
+- Node.js (v16 o superior)
+- npm o yarn
+
+### Pasos de Instalación
+1. Clonar el repositorio
+```bash
+git clone [URL_DEL_REPOSITORIO]
+cd Frontend
 ```
+
+2. Instalar dependencias
+```bash
+npm install
+# o
+yarn install
+```
+
+3. Ejecutar en modo desarrollo
+```bash
+npm run dev
+# o
+yarn dev
+```
+
+4. Construir para producción
+```bash
+npm run build
+# o
+yarn build
+```
+
+## Estado de Desarrollo
+### Completado
+- ✅ Estructura base del proyecto
+- ✅ Sistema de autenticación (simulado)
+- ✅ Rutas protegidas
+- ✅ UI de login y registro
+- ✅ Dashboard de estudiante (UI básica)
+- ✅ Recuperación de contraseña (UI)
+
+### En Desarrollo
+- 🔄 Integración con backend
+- 🔄 Sistema de notificaciones
+- 🔄 Gestión de proyectos
+- 🔄 Sistema de evaluaciones
+
+### Pendiente
+- ⏳ Dashboard de empresa
+- ⏳ Dashboard de administrador
+- ⏳ Sistema de mensajería
+- ⏳ Calendario de actividades
+- ⏳ Reportes y estadísticas
+
+## Notas de Desarrollo
+- Actualmente el sistema usa datos simulados (mock data)
+- La autenticación está implementada con localStorage
+- Las rutas están protegidas según el rol del usuario
+- El diseño sigue las guías de Material-UI
+
+## Contribución
+1. Clonar el repositorio Front-end.inicial
+2. Crear una nueva rama para tu feature (`git add .`)
+3. Realizar los cambios necesarios
+4. Commit tus cambios (`git commit -m ' '`)
+5. Push a la rama (`git push`)
+6. Abrir un Pull Request hacia la rama main del repositorio Front-end.inicial
+
+## Licencia
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.md) para más detalles.
+
+## Contacto
+[Información de contacto pendiente] 
