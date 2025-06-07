@@ -81,11 +81,7 @@ yarn dev
 - Mantener los componentes pequeños y reutilizables
 - Documentar props y funciones importantes
 
-## Contribución
-1. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-2. Commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
-3. Push a la rama (`git push origin feature/AmazingFeature`)
-4. Abrir un Pull Request
+
 
 ## Licencia
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.md) para más detalles.
