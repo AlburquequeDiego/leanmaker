@@ -1,107 +1,128 @@
-import { Box, Paper, Typography, Grid } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
+import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { DashboardLayout } from '../../../components/layout/DashboardLayout';
 
 export const StudentDashboard = () => {
+  // Mock de horas acumuladas - esto vendría de la API
+  const totalHours = 156;
+
   return (
     <DashboardLayout userRole="student">
       <Box sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h4" gutterBottom>
           Bienvenido a tu Dashboard
         </Typography>
-        
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          {/* Horas Acumuladas */}
+          <Paper
+            sx={{
+              p: 3,
+              flex: '1 1 300px',
+              minWidth: 250,
+              maxWidth: 400,
+              display: 'flex',
+              flexDirection: 'column',
+              height: 140,
+              bgcolor: 'info.light',
+              color: 'info.contrastText',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <AccessTimeIcon sx={{ mr: 1 }} />
+              <Typography variant="h6">
+                Horas Acumuladas
+              </Typography>
+            </Box>
+            <Typography variant="h4">{totalHours}</Typography>
+            <Typography variant="body2">
+              Horas de experiencia en proyectos
+            </Typography>
+          </Paper>
           {/* Resumen de Proyectos Disponibles */}
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6', lg: 'span 4' } }}>
-            <Paper
-              sx={{
-                p: 3,
-                display: 'flex',
-                flexDirection: 'column',
-                height: 140,
-                bgcolor: 'primary.light',
-                color: 'primary.contrastText',
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Proyectos Disponibles
-              </Typography>
-              <Typography variant="h4">12</Typography>
-              <Typography variant="body2">
-                Nuevas oportunidades para ti
-              </Typography>
-            </Paper>
-          </Grid>
-
+          <Paper
+            sx={{
+              p: 3,
+              flex: '1 1 300px',
+              minWidth: 250,
+              maxWidth: 400,
+              display: 'flex',
+              flexDirection: 'column',
+              height: 140,
+              bgcolor: 'primary.light',
+              color: 'primary.contrastText',
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Proyectos Disponibles
+            </Typography>
+            <Typography variant="h4">12</Typography>
+            <Typography variant="body2">
+              Nuevas oportunidades para ti
+            </Typography>
+          </Paper>
           {/* Resumen de Aplicaciones */}
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6', lg: 'span 4' } }}>
-            <Paper
-              sx={{
-                p: 3,
-                display: 'flex',
-                flexDirection: 'column',
-                height: 140,
-                bgcolor: 'secondary.light',
-                color: 'secondary.contrastText',
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Mis Aplicaciones
-              </Typography>
-              <Typography variant="h4">3</Typography>
-              <Typography variant="body2">
-                Aplicaciones en proceso
-              </Typography>
-            </Paper>
-          </Grid>
-
+          <Paper
+            sx={{
+              p: 3,
+              flex: '1 1 300px',
+              minWidth: 250,
+              maxWidth: 400,
+              display: 'flex',
+              flexDirection: 'column',
+              height: 140,
+              bgcolor: 'secondary.light',
+              color: 'secondary.contrastText',
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Mis Aplicaciones
+            </Typography>
+            <Typography variant="h4">3</Typography>
+            <Typography variant="body2">
+              Aplicaciones en proceso
+            </Typography>
+          </Paper>
           {/* Resumen de Proyectos Activos */}
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6', lg: 'span 4' } }}>
-            <Paper
-              sx={{
-                p: 3,
-                display: 'flex',
-                flexDirection: 'column',
-                height: 140,
-                bgcolor: 'success.light',
-                color: 'success.contrastText',
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Proyectos Activos
-              </Typography>
-              <Typography variant="h4">2</Typography>
-              <Typography variant="body2">
-                Proyectos en curso
-              </Typography>
-            </Paper>
-          </Grid>
-
+          <Paper
+            sx={{
+              p: 3,
+              flex: '1 1 300px',
+              minWidth: 250,
+              maxWidth: 400,
+              display: 'flex',
+              flexDirection: 'column',
+              height: 140,
+              bgcolor: 'success.light',
+              color: 'success.contrastText',
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Proyectos Activos
+            </Typography>
+            <Typography variant="h4">2</Typography>
+            <Typography variant="body2">
+              Proyectos en curso
+            </Typography>
+          </Paper>
           {/* Próximas Fechas */}
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Próximas Fechas
-              </Typography>
-              {/* Aquí irá el componente de próximas fechas */}
-              <Typography variant="body2" color="text.secondary">
-                No hay fechas próximas
-              </Typography>
-            </Paper>
-          </Grid>
-
+          <Paper sx={{ p: 3, flex: '1 1 300px', minWidth: 250, maxWidth: 400, height: 140 }}>
+            <Typography variant="h6" gutterBottom>
+              Próximas Fechas
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              No hay fechas próximas
+            </Typography>
+          </Paper>
           {/* Últimas Evaluaciones */}
-          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Últimas Evaluaciones
-              </Typography>
-              {/* Aquí irá el componente de evaluaciones */}
-              <Typography variant="body2" color="text.secondary">
-                No hay evaluaciones recientes
-              </Typography>
-            </Paper>
-          </Grid>
-        </Grid>
+          <Paper sx={{ p: 3, flex: '1 1 300px', minWidth: 250, maxWidth: 400, height: 140 }}>
+            <Typography variant="h6" gutterBottom>
+              Últimas Evaluaciones
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              No hay evaluaciones recientes
+            </Typography>
+          </Paper>
+        </Box>
       </Box>
     </DashboardLayout>
   );

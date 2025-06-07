@@ -2,7 +2,14 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense } from 'react';
 import { CircularProgress, Box } from '@mui/material';
 import { Home, Login, Register, ForgotPassword } from '../pages';
-import StudentDashboard from '../pages/Dashboard/Student';
+import StudentDashboard from '../pages/Dashboard/Student/StudentDashboard';
+import Profile from '../pages/Dashboard/Student/Profile';
+import Notifications from '../pages/Dashboard/Student/Notifications';
+import MyApplications from '../pages/Dashboard/Student/MyApplications';
+import MyProjects from '../pages/Dashboard/Student/MyProjects';
+import Evaluations from '../pages/Dashboard/Student/Evaluations';
+import Calendar from '../pages/Dashboard/Student/Calendar';
+import { AvailableProjects } from '../pages/Dashboard/Student/Projects';
 import CompanyDashboard from '../pages/Dashboard/Company';
 import AdminDashboard from '../pages/Dashboard/Admin';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
@@ -77,15 +84,71 @@ export const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        {/* Rutas del estudiante */}
         <Route
-          path="/dashboard/student/*"
+          path="/dashboard/student"
           element={
             <ProtectedRoute allowedRoles={['student']}>
               <StudentDashboard />
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/dashboard/profile"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/notifications"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/available-projects"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <AvailableProjects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/my-applications"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <MyApplications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/my-projects"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <MyProjects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/evaluations"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Evaluations />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/calendar"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Calendar />
+            </ProtectedRoute>
+          }
+        />
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

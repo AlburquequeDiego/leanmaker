@@ -1,5 +1,10 @@
 {
   "dependencies": {
-    "@mui/material": "^7.1.1"
+    "@mui/material": "^7.1.1",
+    "@mui/x-date-pickers": "^8.5.1",
+    "@mui/x-license": "^8.5.1",
+    "dayjs": "^1.11.13",
+    "pro": "^0.3.0",
+    "react-calendar": "^6.0.0"
   }
 }
