@@ -8,7 +8,7 @@ interface AuthContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (email: string, password: string, role: UserRole, name: string) => Promise<void>;
+  register: (email: string, role: UserRole, name: string) => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -32,21 +32,51 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, /* password: string - Se usará en la implementación de la API */) => {
+  const login = async (email: string, password: string) => {
     try {
       setLoading(true);
       setError(null);
       
       // TODO: Implementar llamada real a la API
-      // Por ahora, simulamos una respuesta exitosa
-      const mockUser: User = {
-        id: '1',
-        email,
-        role: 'student',
-        name: 'Usuario de Prueba',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      // Por ahora, simulamos una respuesta exitosa con credenciales mock
+      let mockUser: User;
+
+      // Credenciales de administrador
+      if (email === 'admin@leanmaker.com' && password === 'Admin123!') {
+        mockUser = {
+          id: '1',
+          email,
+          role: 'admin',
+          name: 'Administrador',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      } 
+      // Credenciales de empresa
+      else if (email === 'empresa@leanmaker.com' && password === 'Empresa123!') {
+        mockUser = {
+          id: '2',
+          email,
+          role: 'company',
+          name: 'Empresa Demo',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      // Credenciales de estudiante
+      else if (email === 'estudiante@leanmaker.com' && password === 'Estudiante123!') {
+        mockUser = {
+          id: '3',
+          email,
+          role: 'student',
+          name: 'Estudiante Demo',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      else {
+        throw new Error('Credenciales inválidas');
+      }
 
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));
@@ -63,7 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem('user');
   };
 
-  const register = async (email: string, password: string, role: UserRole, name: string) => {
+  const register = async (email: string, role: UserRole, name: string) => {
     try {
       setLoading(true);
       setError(null);

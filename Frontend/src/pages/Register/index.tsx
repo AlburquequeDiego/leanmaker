@@ -62,7 +62,7 @@ export const Register = () => {
       setIsLoading(true);
       setError(null);
       try {
-        await register(values.email, values.password, values.role, values.name);
+        await register(values.email, values.role, values.name);
         navigate('/dashboard');
       } catch (err) {
         setError('Error al registrarse. Por favor, intente nuevamente.');

@@ -12,6 +12,7 @@ import {
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import LoadingButton from '../../components/common/LoadingButton';
+import { useAuth } from '../../hooks/useAuth';
 
 const validationSchema = yup.object({
   email: yup
@@ -30,6 +31,7 @@ const validationSchema = yup.object({
 
 export const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,10 +45,7 @@ export const Login = () => {
       setIsLoading(true);
       setError(null);
       try {
-        // Aquí irá la lógica de autenticación
-        console.log('Login attempt:', values);
-        // Simulamos una llamada a la API
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await login(values.email, values.password);
         navigate('/dashboard');
       } catch (err) {
         setError('Error al iniciar sesión. Por favor, verifique sus credenciales.');

@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import { CircularProgress, Box } from '@mui/material';
 import { Home, Login, Register, ForgotPassword } from '../pages';
 import StudentDashboard from '../pages/Dashboard/Student';
+import CompanyDashboard from '../pages/Dashboard/Company';
+import AdminDashboard from '../pages/Dashboard/Admin';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 
@@ -63,7 +65,7 @@ export const AppRoutes = () => {
           path="/dashboard/admin/*"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <Navigate to="/dashboard" replace />
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
@@ -71,7 +73,7 @@ export const AppRoutes = () => {
           path="/dashboard/company/*"
           element={
             <ProtectedRoute allowedRoles={['company']}>
-              <Navigate to="/dashboard" replace />
+              <CompanyDashboard />
             </ProtectedRoute>
           }
         />
