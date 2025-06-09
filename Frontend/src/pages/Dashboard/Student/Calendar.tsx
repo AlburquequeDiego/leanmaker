@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   Paper,
-  Grid,
   Card,
   CardContent,
   IconButton,
@@ -12,7 +11,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Chip,
   List,
   ListItem,
@@ -149,19 +147,6 @@ export const Calendar = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'upcoming':
-        return 'primary';
-      case 'completed':
-        return 'success';
-      case 'cancelled':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'upcoming':
@@ -193,9 +178,9 @@ export const Calendar = () => {
         </Button>
       </Box>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
         {/* Próximos Eventos */}
-        <Grid item xs={12} md={6}>
+        <Box sx={{ width: { xs: '100%', md: '48%' }, mb: 3 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Próximos Eventos ({upcomingEvents.length})
@@ -269,10 +254,10 @@ export const Calendar = () => {
               ))}
             </List>
           </Paper>
-        </Grid>
+        </Box>
 
         {/* Eventos Completados */}
-        <Grid item xs={12} md={6}>
+        <Box sx={{ width: { xs: '100%', md: '48%' }, mb: 3 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Eventos Completados ({completedEvents.length})
@@ -325,16 +310,16 @@ export const Calendar = () => {
               ))}
             </List>
           </Paper>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Estadísticas */}
       <Paper sx={{ p: 3, mt: 3 }}>
         <Typography variant="h6" gutterBottom>
           Resumen del Calendario
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={3}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="primary">
@@ -345,8 +330,8 @@ export const Calendar = () => {
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
+          </Box>
+          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="success.main">
@@ -357,8 +342,8 @@ export const Calendar = () => {
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
+          </Box>
+          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="warning.main">
@@ -369,8 +354,8 @@ export const Calendar = () => {
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
+          </Box>
+          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="info.main">
@@ -381,8 +366,8 @@ export const Calendar = () => {
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Paper>
 
       {/* Dialog para mostrar/editar eventos */}
@@ -400,8 +385,8 @@ export const Calendar = () => {
                 {selectedEvent.title}
               </Typography>
 
-              <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                <Box sx={{ width: { xs: '100%', md: '48%' }, mb: 3 }}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
@@ -439,9 +424,9 @@ export const Calendar = () => {
                       </Box>
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                <Box sx={{ width: { xs: '100%', md: '48%' }, mb: 3 }}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
@@ -474,9 +459,9 @@ export const Calendar = () => {
                       </Box>
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12}>
+                <Box sx={{ width: '100%' }}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
@@ -487,8 +472,8 @@ export const Calendar = () => {
                       </Typography>
                     </CardContent>
                   </Card>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Box>
           )}
         </DialogContent>

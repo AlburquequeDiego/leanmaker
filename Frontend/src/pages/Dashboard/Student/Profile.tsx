@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   Avatar,
-  Grid,
   Divider,
   Chip,
   Alert,
@@ -14,10 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  IconButton,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -30,7 +26,10 @@ import {
   Grade as GradeIcon,
   AccessTime as AccessTimeIcon,
   Warning as WarningIcon,
+  CloudUpload as CloudUploadIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
+import Stack from '@mui/material/Stack';
 
 export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -50,6 +49,9 @@ export const Profile = () => {
   });
 
   const [editData, setEditData] = useState(profileData);
+  const [newSkill, setNewSkill] = useState('');
+  const [certFile, setCertFile] = useState<File | null>(null);
+  const [cvFile, setCvFile] = useState<File | null>(null);
 
   const handleEdit = () => {
     setEditData(profileData);
@@ -69,6 +71,28 @@ export const Profile = () => {
   const handleInputChange = (field: string, value: string | number) => {
     setEditData(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !editData.skills.includes(newSkill.trim())) {
+      setEditData(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
+      setNewSkill('');
+    }
+  };
+
+  const handleDeleteSkill = (skill: string) => {
+    setEditData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
+  };
+
+  const handleCertChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) setCertFile(e.target.files[0]);
+  };
+
+  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) setCvFile(e.target.files[0]);
+  };
+
+  const handleRemoveCert = () => setCertFile(null);
+  const handleRemoveCv = () => setCvFile(null);
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -102,168 +126,228 @@ export const Profile = () => {
         )}
       </Box>
 
-      <Grid container spacing={3}>
-        {/* Información Personal */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Información Personal
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Nombre Completo"
-                  value={isEditing ? editData.name : profileData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Correo Electrónico"
-                  value={isEditing ? editData.email : profileData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Teléfono"
-                  value={isEditing ? editData.phone : profileData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Carrera"
-                  value={isEditing ? editData.career : profileData.career}
-                  onChange={(e) => handleInputChange('career', e.target.value)}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <SchoolIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Semestre"
-                  type="number"
-                  value={isEditing ? editData.semester : profileData.semester}
-                  onChange={(e) => handleInputChange('semester', Number(e.target.value))}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <GradeIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="GPA"
-                  type="number"
-                  value={isEditing ? editData.gpa : profileData.gpa}
-                  onChange={(e) => handleInputChange('gpa', Number(e.target.value))}
-                  disabled={!isEditing}
-                  inputProps={{ step: 0.1, min: 0, max: 5 }}
-                />
-              </Grid>
-            </Grid>
-          </Paper>
-
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Biografía
-            </Typography>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              value={isEditing ? editData.bio : profileData.bio}
-              onChange={(e) => handleInputChange('bio', e.target.value)}
-              disabled={!isEditing}
-              placeholder="Cuéntanos sobre ti..."
-            />
-          </Paper>
-        </Grid>
-
-        {/* Sidebar con estadísticas */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
-            <Avatar
-              sx={{ width: 100, height: 100, mx: 'auto', mb: 2, bgcolor: 'primary.main' }}
-            >
-              <PersonIcon sx={{ fontSize: 50 }} />
-            </Avatar>
-            <Typography variant="h6" gutterBottom>
-              {profileData.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              {profileData.career} - {profileData.semester}° Semestre
-            </Typography>
-            <Chip
-              label={`GPA: ${profileData.gpa}`}
-              color="primary"
-              variant="outlined"
-              sx={{ mb: 1 }}
-            />
-          </Paper>
-
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Estadísticas
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <AccessTimeIcon sx={{ mr: 1, color: 'info.main' }} />
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography variant="body2">Horas Acumuladas</Typography>
-                <Typography variant="h6">{profileData.totalHours}</Typography>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+        <Box sx={{ flex: 2, minWidth: 0 }}>
+          <Stack spacing={3}>
+            {/* Información Personal */}
+            <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ width: 64, height: 64, mr: 2 }}>
+                  <PersonIcon fontSize="large" />
+                </Avatar>
+                <Box>
+                  <Typography variant="h5" fontWeight={700}>{isEditing ? editData.name : profileData.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">{isEditing ? editData.email : profileData.email}</Typography>
+                </Box>
               </Box>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <SchoolIcon sx={{ mr: 1, color: 'success.main' }} />
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography variant="body2">Proyectos Completados</Typography>
-                <Typography variant="h6">{profileData.completedProjects}</Typography>
-              </Box>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <WarningIcon sx={{ mr: 1, color: profileData.strikes > 0 ? 'warning.main' : 'success.main' }} />
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography variant="body2">Strikes</Typography>
-                <Typography variant="h6" color={profileData.strikes > 0 ? 'warning.main' : 'success.main'}>
-                  {profileData.strikes}/3
-                </Typography>
-              </Box>
-            </Box>
-          </Paper>
+              <Divider sx={{ mb: 2 }} />
+              <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1}>
+                  <TextField
+                    fullWidth
+                    label="Nombre Completo"
+                    value={isEditing ? editData.name : profileData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Correo Electrónico"
+                    value={isEditing ? editData.email : profileData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Teléfono"
+                    value={isEditing ? editData.phone : profileData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Carrera"
+                    value={isEditing ? editData.career : profileData.career}
+                    onChange={(e) => handleInputChange('career', e.target.value)}
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <SchoolIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Semestre"
+                    type="number"
+                    value={isEditing ? editData.semester : profileData.semester}
+                    onChange={(e) => handleInputChange('semester', Number(e.target.value))}
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <GradeIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="GPA"
+                    type="number"
+                    value={isEditing ? editData.gpa : profileData.gpa}
+                    onChange={(e) => handleInputChange('gpa', Number(e.target.value))}
+                    disabled={!isEditing}
+                    inputProps={{ step: 0.1, min: 0, max: 5 }}
+                  />
+                </Stack>
+              </Stack>
+            </Paper>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Habilidades
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {profileData.skills.map((skill) => (
-                <Chip key={skill} label={skill} size="small" variant="outlined" />
-              ))}
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+            {/* Habilidades */}
+            <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 2 }}>
+              <Typography variant="h6" gutterBottom>Habilidades</Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                {(isEditing ? editData.skills : profileData.skills).map((skill) => (
+                  <Chip
+                    key={skill}
+                    label={skill}
+                    color="primary"
+                    onDelete={isEditing ? () => handleDeleteSkill(skill) : undefined}
+                    sx={{ fontWeight: 500 }}
+                  />
+                ))}
+              </Box>
+              {isEditing && (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <TextField
+                    size="small"
+                    label="Agregar habilidad"
+                    value={newSkill}
+                    onChange={e => setNewSkill(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSkill(); } }}
+                  />
+                  <Button variant="contained" onClick={handleAddSkill}>Agregar</Button>
+                </Box>
+              )}
+            </Paper>
+
+            {/* Certificados y CV */}
+            <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 2 }}>
+              <Typography variant="h6" gutterBottom>Documentos</Typography>
+              <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1}>
+                  <Typography variant="subtitle1">Certificado</Typography>
+                  {certFile ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                      <Chip label={certFile.name} color="info" />
+                      <IconButton onClick={handleRemoveCert}><DeleteIcon /></IconButton>
+                    </Box>
+                  ) : isEditing && (
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      startIcon={<CloudUploadIcon />}
+                    >
+                      Subir Certificado
+                      <input type="file" hidden accept="application/pdf,image/*" onChange={handleCertChange} />
+                    </Button>
+                  )}
+                </Stack>
+                <Stack direction="column" spacing={1}>
+                  <Typography variant="subtitle1">CV</Typography>
+                  {cvFile ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                      <Chip label={cvFile.name} color="info" />
+                      <IconButton onClick={handleRemoveCv}><DeleteIcon /></IconButton>
+                    </Box>
+                  ) : isEditing && (
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      startIcon={<CloudUploadIcon />}
+                    >
+                      Subir CV
+                      <input type="file" hidden accept="application/pdf" onChange={handleCvChange} />
+                    </Button>
+                  )}
+                </Stack>
+              </Stack>
+            </Paper>
+
+            {/* Biografía */}
+            <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Biografía
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                value={isEditing ? editData.bio : profileData.bio}
+                onChange={(e) => handleInputChange('bio', e.target.value)}
+                disabled={!isEditing}
+                placeholder="Cuéntanos sobre ti..."
+              />
+            </Paper>
+          </Stack>
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Stack spacing={3}>
+            <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
+              <Avatar
+                sx={{ width: 100, height: 100, mx: 'auto', mb: 2, bgcolor: 'primary.main' }}
+              >
+                <PersonIcon sx={{ fontSize: 50 }} />
+              </Avatar>
+              <Typography variant="h6" gutterBottom>
+                {profileData.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {profileData.career} - {profileData.semester}° Semestre
+              </Typography>
+              <Chip
+                label={`GPA: ${profileData.gpa}`}
+                color="primary"
+                variant="outlined"
+                sx={{ mb: 1 }}
+              />
+            </Paper>
+
+            <Paper sx={{ p: 3, mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Estadísticas
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <AccessTimeIcon sx={{ mr: 1, color: 'info.main' }} />
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body2">Horas Acumuladas</Typography>
+                  <Typography variant="h6">{profileData.totalHours}</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <SchoolIcon sx={{ mr: 1, color: 'success.main' }} />
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body2">Proyectos Completados</Typography>
+                  <Typography variant="h6">{profileData.completedProjects}</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <WarningIcon sx={{ mr: 1, color: profileData.strikes > 0 ? 'warning.main' : 'success.main' }} />
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body2">Strikes</Typography>
+                  <Typography variant="h6" color={profileData.strikes > 0 ? 'warning.main' : 'success.main'}>
+                    {profileData.strikes}/3
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Stack>
+        </Box>
+      </Box>
 
       {/* Alert de strikes */}
       {profileData.strikes > 0 && (

@@ -126,7 +126,7 @@ export const ConfiguracionPlataformaAdmin = () => {
       type: 'select',
       category: 'academic',
       description: 'Nivel API asignado por defecto a nuevos estudiantes',
-      options: ['1', '2', '3'],
+      options: ['1', '2', '3', '4'],
     },
     {
       id: '6',

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
   CardActions,
@@ -14,7 +13,6 @@ import {
   Alert,
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
-import { DashboardLayout } from '../../../../components/layout/DashboardLayout';
 
 const mockProjects = [
   {
@@ -63,87 +61,85 @@ export default function AvailableProjects() {
   };
 
   return (
-    <DashboardLayout userRole="student">
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Proyectos Disponibles
-        </Typography>
-        {/* Barra de búsqueda */}
-        <Box sx={{ mb: 4 }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Buscar proyectos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Box>
-        {/* Lista de proyectos */}
-        <Grid container spacing={3}>
-          {filteredProjects.map((project) => (
-            <Box key={project.id} sx={{ width: { xs: '100%', md: '50%', lg: '33.33%' }, p: 1, display: 'flex' }}>
-              <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {project.title}
-                  </Typography>
-                  <Typography color="textSecondary" gutterBottom>
-                    {project.company}
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    {project.description}
-                  </Typography>
-                  <Box sx={{ mb: 2 }}>
-                    {project.requirements.map((req, index) => (
-                      <Chip
-                        key={index}
-                        label={req}
-                        size="small"
-                        sx={{ mr: 1, mb: 1 }}
-                      />
-                    ))}
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Duración: {project.duration}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Publicado: {new Date(project.publishedAt).toLocaleDateString('es-ES')}
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ mt: 'auto', p: 2 }}>
-                  <Button
-                    size="small"
-                    color="primary"
-                    variant="contained"
-                    fullWidth
-                    disabled={applied.includes(project.id)}
-                    onClick={() => handleApply(project.id)}
-                  >
-                    {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Box>
-          ))}
-        </Grid>
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={3000}
-          onClose={() => setSnackbar({ open: false, message: '' })}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert severity="success" sx={{ width: '100%' }}>
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Proyectos Disponibles
+      </Typography>
+      {/* Barra de búsqueda */}
+      <Box sx={{ mb: 4 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Buscar proyectos..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
       </Box>
-    </DashboardLayout>
+      {/* Lista de proyectos */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}>
+        {filteredProjects.map((project) => (
+          <Box key={project.id} sx={{ width: { xs: '100%', sm: '48%', md: '32%' }, mb: 3, display: 'flex' }}>
+            <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  {project.title}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  {project.company}
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  {project.description}
+                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  {project.requirements.map((req, index) => (
+                    <Chip
+                      key={index}
+                      label={req}
+                      size="small"
+                      sx={{ mr: 1, mb: 1 }}
+                    />
+                  ))}
+                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  Duración: {project.duration}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Publicado: {new Date(project.publishedAt).toLocaleDateString('es-ES')}
+                </Typography>
+              </CardContent>
+              <CardActions sx={{ mt: 'auto', p: 2 }}>
+                <Button
+                  size="small"
+                  color="primary"
+                  variant="contained"
+                  fullWidth
+                  disabled={applied.includes(project.id)}
+                  onClick={() => handleApply(project.id)}
+                >
+                  {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
+                </Button>
+              </CardActions>
+            </Card>
+          </Box>
+        ))}
+      </Box>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ open: false, message: '' })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 } 

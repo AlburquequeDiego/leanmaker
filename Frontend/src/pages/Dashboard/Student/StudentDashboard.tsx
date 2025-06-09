@@ -11,32 +11,34 @@ export const StudentDashboard = () => {
   const strikeText = strikes === 3 ? '¡Has alcanzado el máximo de strikes!' : `Tienes ${strikes} de 3 strikes asignados por no entregar proyectos.`;
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ flexGrow: 1, p: { xs: 0.5, sm: 1, md: 2 }, pt: 0 }}>
+      <Typography variant="h4" gutterBottom sx={{ mt: 0, mb: 1, fontWeight: 700 }}>
         Bienvenido a tu Dashboard
       </Typography>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: { xs: 'center', md: 'flex-start' }, mt: 0 }}>
         {/* Horas Acumuladas */}
         <Paper
           sx={{
-            p: 3,
-            flex: '1 1 300px',
-            minWidth: 250,
-            maxWidth: 400,
+            p: 2.5,
+            flex: '1 1 260px',
+            minWidth: 220,
+            maxWidth: 340,
             display: 'flex',
             flexDirection: 'column',
-            height: 140,
+            height: 120,
             bgcolor: 'info.light',
             color: 'info.contrastText',
+            boxShadow: 2,
+            borderRadius: 2,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
             <AccessTimeIcon sx={{ mr: 1 }} />
-            <Typography variant="h6">
+            <Typography variant="subtitle1" fontWeight={600}>
               Horas Acumuladas
             </Typography>
           </Box>
-          <Typography variant="h4">{totalHours}</Typography>
+          <Typography variant="h5">{totalHours}</Typography>
           <Typography variant="body2">
             Horas de experiencia en proyectos
           </Typography>
@@ -44,13 +46,13 @@ export const StudentDashboard = () => {
         {/* Resumen de Proyectos Disponibles */}
         <Paper
           sx={{
-            p: 3,
-            flex: '1 1 300px',
-            minWidth: 250,
-            maxWidth: 400,
+            p: 2.5,
+            flex: '1 1 260px',
+            minWidth: 220,
+            maxWidth: 340,
             display: 'flex',
             flexDirection: 'column',
-            height: 140,
+            height: 120,
             bgcolor: 'primary.light',
             color: 'primary.contrastText',
           }}
@@ -66,13 +68,13 @@ export const StudentDashboard = () => {
         {/* Resumen de Aplicaciones */}
         <Paper
           sx={{
-            p: 3,
-            flex: '1 1 300px',
-            minWidth: 250,
-            maxWidth: 400,
+            p: 2.5,
+            flex: '1 1 260px',
+            minWidth: 220,
+            maxWidth: 340,
             display: 'flex',
             flexDirection: 'column',
-            height: 140,
+            height: 120,
             bgcolor: 'secondary.light',
             color: 'secondary.contrastText',
           }}
@@ -88,34 +90,34 @@ export const StudentDashboard = () => {
         {/* Strikes */}
         <Paper
           sx={{
-            p: 3,
-            flex: '1 1 300px',
-            minWidth: 250,
-            maxWidth: 400,
+            p: 2.5,
+            flex: '1 1 260px',
+            minWidth: 220,
+            maxWidth: 340,
             display: 'flex',
             flexDirection: 'column',
-            height: 140,
+            height: 120,
             bgcolor: strikeBg,
             color: 'white',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
             <WarningAmberIcon sx={{ mr: 1 }} />
-            <Typography variant="h6">Strikes</Typography>
+            <Typography variant="subtitle1" fontWeight={600}>Strikes</Typography>
           </Box>
-          <Typography variant="h4">{strikes} / {maxStrikes}</Typography>
+          <Typography variant="h5">{strikes} / {maxStrikes}</Typography>
           <Typography variant="body2">{strikeText}</Typography>
         </Paper>
         {/* Resumen de Proyectos Activos */}
         <Paper
           sx={{
-            p: 3,
-            flex: '1 1 300px',
-            minWidth: 250,
-            maxWidth: 400,
+            p: 2.5,
+            flex: '1 1 260px',
+            minWidth: 220,
+            maxWidth: 340,
             display: 'flex',
             flexDirection: 'column',
-            height: 140,
+            height: 120,
             bgcolor: 'success.light',
             color: 'success.contrastText',
           }}
@@ -129,7 +131,7 @@ export const StudentDashboard = () => {
           </Typography>
         </Paper>
         {/* Próximas Fechas */}
-        <Paper sx={{ p: 3, flex: '1 1 300px', minWidth: 250, maxWidth: 400, height: 140 }}>
+        <Paper sx={{ p: 2.5, flex: '1 1 260px', minWidth: 220, maxWidth: 340, height: 120 }}>
           <Typography variant="h6" gutterBottom>
             Próximas Fechas
           </Typography>
@@ -138,7 +140,7 @@ export const StudentDashboard = () => {
           </Typography>
         </Paper>
         {/* Últimas Evaluaciones */}
-        <Paper sx={{ p: 3, flex: '1 1 300px', minWidth: 250, maxWidth: 400, height: 140 }}>
+        <Paper sx={{ p: 2.5, flex: '1 1 260px', minWidth: 220, maxWidth: 340, height: 120 }}>
           <Typography variant="h6" gutterBottom>
             Últimas Evaluaciones
           </Typography>

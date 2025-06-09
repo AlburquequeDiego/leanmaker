@@ -66,11 +66,23 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   };
 
   const getMenuItems = () => {
-    const commonItems = [
-      { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-      { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/admin/perfil' },
-      { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/admin/notificaciones' },
-    ];
+    const commonItems = {
+      admin: [
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/admin' },
+        { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/admin/perfil' },
+        { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/admin/notificaciones' },
+      ],
+      company: [
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/company' },
+        { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/company/profile' },
+        { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/company/notifications' },
+      ],
+      student: [
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/student' },
+        { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/student/profile' },
+        { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/student/notifications' },
+      ],
+    };
 
     const roleSpecificItems = {
       admin: [
@@ -83,21 +95,21 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Configuración de Plataforma', icon: <SettingsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
       ],
       company: [
-        { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/my-projects' },
-        { text: 'Postulantes', icon: <PeopleIcon />, path: '/dashboard/applicants' },
-        { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/evaluations' },
-        { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/calendar' },
+        { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/company/my-projects' },
+        { text: 'Postulantes', icon: <PeopleIcon />, path: '/dashboard/company/applicants' },
+        { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/company/evaluations' },
+        { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/company/calendar' },
       ],
       student: [
-        { text: 'Proyectos Disponibles', icon: <AssignmentIcon />, path: '/dashboard/available-projects' },
-        { text: 'Mis Aplicaciones', icon: <AssignmentIcon />, path: '/dashboard/my-applications' },
-        { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/my-projects' },
-        { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/evaluations' },
-        { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/calendar' },
+        { text: 'Proyectos Disponibles', icon: <AssignmentIcon />, path: '/dashboard/student/available-projects' },
+        { text: 'Mis Aplicaciones', icon: <AssignmentIcon />, path: '/dashboard/student/my-applications' },
+        { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/student/my-projects' },
+        { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/student/evaluations' },
+        { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/student/calendar' },
       ],
     };
 
-    return [...commonItems, ...roleSpecificItems[userRole]];
+    return [...commonItems[userRole], ...roleSpecificItems[userRole]];
   };
 
   const drawer = (
@@ -112,7 +124,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         {getMenuItems().map((item) => (
           <ListItem key={item.text} disablePadding>
             <ListItemButton
-              selected={location.pathname === item.path}
+              selected={location.pathname === item.path || (item.path !== '/dashboard/student' && location.pathname.startsWith(item.path))}
               onClick={() => navigate(item.path)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
@@ -162,7 +174,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             open={Boolean(anchorEl)}
             onClose={handleProfileMenuClose}
           >
-            <MenuItem onClick={() => navigate('/dashboard/profile')}>
+            <MenuItem onClick={() => navigate(`/dashboard/${userRole === 'admin' ? 'admin/perfil' : userRole === 'student' ? 'student/profile' : 'company/profile'}`)}>
               <ListItemIcon>
                 <AccountCircleIcon fontSize="small" />
               </ListItemIcon>

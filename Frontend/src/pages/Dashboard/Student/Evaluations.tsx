@@ -3,8 +3,6 @@ import {
   Box,
   Typography,
   Paper,
-  Chip,
-  Stack,
   Card,
   CardContent,
   Dialog,
@@ -12,118 +10,158 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Tabs,
-  Tab,
-  Divider,
   Rating,
-  LinearProgress,
   Avatar,
-  Grid,
+  IconButton,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
 } from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
   AccessTime as AccessTimeIcon,
-  Star as StarIcon,
-  StarHalf as StarHalfIcon,
   Business as BusinessIcon,
   Person as PersonIcon,
   Assignment as AssignmentIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   Schedule as ScheduleIcon,
+  TrendingUp as TrendingUpIcon,
+  Assessment as AssessmentIcon,
+  EmojiEvents as EmojiEventsIcon,
+  Psychology as PsychologyIcon,
+  Code as CodeIcon,
+  Group as GroupIcon,
+  ScheduleSend as ScheduleSendIcon,
 } from '@mui/icons-material';
 
-// Mock de evaluaciones
+// Mock de evaluaciones mejorado
 const mockEvaluations = [
   {
     id: '1',
-    projectTitle: 'Desarrollo de Aplicación Web',
+    projectTitle: 'Desarrollo de Aplicación Web E-commerce',
     company: 'Tech Solutions',
     evaluator: 'Juan Pérez',
-    evaluatorRole: 'Mentor Técnico',
+    evaluatorRole: 'Mentor Técnico Senior',
     date: '2024-06-10',
     status: 'completed',
-    type: 'intermediate',
+    type: 'final',
     overallRating: 4.5,
     categories: [
-      { name: 'Calidad del Código', rating: 4.5 },
-      { name: 'Cumplimiento de Plazos', rating: 5 },
-      { name: 'Trabajo en Equipo', rating: 4 },
-      { name: 'Comunicación', rating: 4.5 },
+      { name: 'Calidad del Código', rating: 4.5, icon: <CodeIcon /> },
+      { name: 'Cumplimiento de Plazos', rating: 5, icon: <ScheduleSendIcon /> },
+      { name: 'Trabajo en Equipo', rating: 4, icon: <GroupIcon /> },
+      { name: 'Comunicación', rating: 4.5, icon: <PsychologyIcon /> },
+      { name: 'Documentación', rating: 4, icon: <AssessmentIcon /> },
+      { name: 'Innovación', rating: 4.5, icon: <TrendingUpIcon /> },
     ],
     comments: 'Excelente trabajo en la implementación de la autenticación y el dashboard. La calidad del código es muy buena y la documentación está bien estructurada. Se sugiere mejorar la comunicación en las reuniones de equipo.',
     strengths: [
       'Buen manejo de Git y control de versiones',
       'Documentación clara y concisa',
       'Implementación eficiente de funcionalidades',
+      'Excelente resolución de problemas',
+      'Código limpio y bien estructurado',
     ],
     areasForImprovement: [
       'Participación más activa en las reuniones',
-      'Mejorar la cobertura de pruebas',
+      'Mejorar la cobertura de pruebas unitarias',
+      'Optimizar consultas a la base de datos',
     ],
+    projectDuration: '3 meses',
+    technologies: ['React', 'Node.js', 'MongoDB', 'JWT'],
+    deliverables: ['Frontend completo', 'API REST', 'Documentación técnica'],
   },
   {
     id: '2',
-    projectTitle: 'Análisis de Datos',
+    projectTitle: 'Análisis de Datos y Machine Learning',
     company: 'Data Analytics Corp',
     evaluator: 'María García',
     evaluatorRole: 'Líder de Proyecto',
     date: '2024-06-15',
-    status: 'pending',
+    status: 'completed',
     type: 'final',
-    overallRating: null,
+    overallRating: 4.8,
     categories: [
-      { name: 'Análisis de Datos', rating: null },
-      { name: 'Visualización', rating: null },
-      { name: 'Documentación', rating: null },
-      { name: 'Presentación', rating: null },
+      { name: 'Análisis de Datos', rating: 5, icon: <AssessmentIcon /> },
+      { name: 'Machine Learning', rating: 4.5, icon: <TrendingUpIcon /> },
+      { name: 'Visualización', rating: 4.8, icon: <PsychologyIcon /> },
+      { name: 'Documentación', rating: 4.5, icon: <AssessmentIcon /> },
+      { name: 'Presentación', rating: 5, icon: <EmojiEventsIcon /> },
     ],
-    comments: null,
-    strengths: null,
-    areasForImprovement: null,
+    comments: 'Destacable trabajo en el análisis exploratorio de datos y la implementación de modelos de ML. Las visualizaciones son muy claras y la presentación final fue excepcional.',
+    strengths: [
+      'Excelente análisis estadístico',
+      'Visualizaciones impactantes',
+      'Documentación técnica completa',
+      'Presentación profesional',
+      'Innovación en metodologías',
+    ],
+    areasForImprovement: [
+      'Optimizar tiempo de entrenamiento de modelos',
+      'Mejorar la interpretabilidad de resultados',
+    ],
+    projectDuration: '4 meses',
+    technologies: ['Python', 'Pandas', 'Scikit-learn', 'Matplotlib', 'Power BI'],
+    deliverables: ['Modelo predictivo', 'Dashboard interactivo', 'Reporte ejecutivo'],
   },
   {
     id: '3',
-    projectTitle: 'Diseño de UI/UX',
-    company: 'Creative Design',
+    projectTitle: 'Diseño de UI/UX para App Móvil',
+    company: 'Creative Design Studio',
     evaluator: 'Carlos López',
     evaluatorRole: 'Diseñador Senior',
     date: '2024-05-28',
     status: 'completed',
     type: 'intermediate',
-    overallRating: 4.8,
+    overallRating: 4.2,
     categories: [
-      { name: 'Diseño Visual', rating: 5 },
-      { name: 'Experiencia de Usuario', rating: 4.5 },
-      { name: 'Prototipado', rating: 4.8 },
-      { name: 'Documentación', rating: 4.5 },
+      { name: 'Diseño Visual', rating: 4.5, icon: <PsychologyIcon /> },
+      { name: 'Experiencia de Usuario', rating: 4, icon: <AssessmentIcon /> },
+      { name: 'Prototipado', rating: 4.8, icon: <CodeIcon /> },
+      { name: 'Documentación', rating: 4, icon: <AssessmentIcon /> },
+      { name: 'Creatividad', rating: 4.5, icon: <EmojiEventsIcon /> },
     ],
-    comments: 'Destacable trabajo en la creación de prototipos y la atención al detalle en el diseño visual. La documentación de los componentes es muy completa. Se sugiere profundizar en la investigación de usuarios.',
+    comments: 'Destacable trabajo en la creación de prototipos y la atención al detalle en el diseño visual. La documentación de los componentes es muy completa.',
     strengths: [
       'Excelente manejo de Figma',
       'Prototipos interactivos de alta calidad',
       'Documentación detallada de componentes',
+      'Creatividad en soluciones de diseño',
     ],
     areasForImprovement: [
       'Realizar más pruebas con usuarios',
       'Mejorar la accesibilidad de los diseños',
     ],
+    projectDuration: '2 meses',
+    technologies: ['Figma', 'Adobe XD', 'Principle', 'Sketch'],
+    deliverables: ['Prototipos interactivos', 'Sistema de diseño', 'Guía de componentes'],
+  },
+  {
+    id: '4',
+    projectTitle: 'Sistema de Gestión de Inventarios',
+    company: 'Logistics Solutions',
+    evaluator: 'Ana Rodríguez',
+    evaluatorRole: 'Project Manager',
+    date: '2024-06-20',
+    status: 'pending',
+    type: 'final',
+    overallRating: null,
+    categories: [
+      { name: 'Desarrollo Backend', rating: null, icon: <CodeIcon /> },
+      { name: 'Base de Datos', rating: null, icon: <AssessmentIcon /> },
+      { name: 'Testing', rating: null, icon: <AssessmentIcon /> },
+      { name: 'Documentación', rating: null, icon: <AssessmentIcon /> },
+    ],
+    comments: null,
+    strengths: null,
+    areasForImprovement: null,
+    projectDuration: '3 meses',
+    technologies: ['Java', 'Spring Boot', 'PostgreSQL', 'JUnit'],
+    deliverables: ['API REST', 'Base de datos', 'Tests automatizados'],
   },
 ];
-
-const statusConfig = {
-  completed: {
-    label: 'Completada',
-    color: 'success',
-    icon: <CheckCircleIcon />,
-  },
-  pending: {
-    label: 'Pendiente',
-    color: 'warning',
-    icon: <AccessTimeIcon />,
-  },
-};
 
 const typeConfig = {
   intermediate: {
@@ -139,346 +177,415 @@ const typeConfig = {
 export const Evaluations = () => {
   const [selectedEvaluation, setSelectedEvaluation] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [actionType, setActionType] = useState<'view' | 'edit' | 'delete' | null>(null);
 
-  const handleAction = (evaluation: any, type: 'view' | 'edit' | 'delete') => {
+  const handleAction = (evaluation: any) => {
     setSelectedEvaluation(evaluation);
-    setActionType(type);
     setDialogOpen(true);
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'received':
-        return 'primary';
-      case 'given':
-        return 'success';
-      default:
-        return 'default';
-    }
-  };
-
-  const getTypeText = (type: string) => {
-    switch (type) {
-      case 'received':
-        return 'Recibida';
-      case 'given':
-        return 'Dada';
-      default:
-        return type;
-    }
-  };
-
-  const getCategoryText = (category: string) => {
-    switch (category) {
-      case 'technical':
-        return 'Técnico';
-      case 'soft_skills':
-        return 'Habilidades Blandas';
-      case 'punctuality':
-        return 'Puntualidad';
-      case 'teamwork':
-        return 'Trabajo en Equipo';
-      case 'communication':
-        return 'Comunicación';
-      case 'overall':
-        return 'General';
-      default:
-        return category;
-    }
-  };
-
-  const receivedEvaluations = mockEvaluations.filter(e => e.type === 'received');
-  const givenEvaluations = mockEvaluations.filter(e => e.type === 'given');
+  const completedEvaluations = mockEvaluations.filter(e => e.status === 'completed');
+  const pendingEvaluations = mockEvaluations.filter(e => e.status === 'pending');
+  const averageRating = completedEvaluations.length > 0 
+    ? (completedEvaluations.reduce((acc, e) => acc + (e.overallRating ?? 0), 0) / completedEvaluations.length).toFixed(1)
+    : '0';
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Evaluaciones
+      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
+        Mis Evaluaciones
       </Typography>
 
-      <Grid container spacing={3}>
-        {/* Evaluaciones Recibidas */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Evaluaciones Recibidas ({receivedEvaluations.length})
-            </Typography>
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Proyecto</TableCell>
-                    <TableCell>Empresa</TableCell>
-                    <TableCell>Calificación</TableCell>
-                    <TableCell>Fecha</TableCell>
-                    <TableCell>Acciones</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {receivedEvaluations.map((evaluation) => (
-                    <TableRow key={evaluation.id}>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight="bold">
-                          {evaluation.projectTitle}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 20, height: 20 }}>
-                            <BusinessIcon fontSize="small" />
-                          </Avatar>
-                          <Typography variant="body2">
-                            {evaluation.company}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Rating value={evaluation.overallRating} readOnly size="small" />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {evaluation.date}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => handleAction(evaluation, 'view')}
-                        >
-                          <VisibilityIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Grid>
+      {/* Estadísticas Generales */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
+        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {completedEvaluations.length}
+              </Typography>
+              <Typography variant="body2">
+                Evaluaciones Completadas
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <Card sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {pendingEvaluations.length}
+              </Typography>
+              <Typography variant="body2">
+                Evaluaciones Pendientes
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <Card sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {averageRating}
+              </Typography>
+              <Typography variant="body2">
+                Promedio General
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <Card sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" fontWeight="bold">
+                {mockEvaluations.length}
+              </Typography>
+              <Typography variant="body2">
+                Total Proyectos
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
 
-        {/* Evaluaciones Dadas */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Evaluaciones Dadas ({givenEvaluations.length})
-            </Typography>
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Proyecto</TableCell>
-                    <TableCell>Empresa</TableCell>
-                    <TableCell>Calificación</TableCell>
-                    <TableCell>Fecha</TableCell>
-                    <TableCell>Acciones</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {givenEvaluations.map((evaluation) => (
-                    <TableRow key={evaluation.id}>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight="bold">
-                          {evaluation.projectTitle}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 20, height: 20 }}>
-                            <BusinessIcon fontSize="small" />
-                          </Avatar>
-                          <Typography variant="body2">
-                            {evaluation.company}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Rating value={evaluation.overallRating} readOnly size="small" />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {evaluation.date}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => handleAction(evaluation, 'view')}
-                        >
-                          <VisibilityIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => handleAction(evaluation, 'edit')}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      {/* Estadísticas */}
-      <Paper sx={{ p: 3, mt: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Estadísticas de Evaluaciones
+      {/* Evaluaciones Completadas */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h5" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+          <CheckCircleIcon sx={{ mr: 1, color: 'success.main' }} />
+          Evaluaciones Completadas ({completedEvaluations.length})
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="primary">
-                  {receivedEvaluations.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Evaluaciones Recibidas
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="success.main">
-                  {givenEvaluations.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Evaluaciones Dadas
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="warning.main">
-                  {receivedEvaluations.length > 0 ? (receivedEvaluations.reduce((acc, e) => acc + e.overallRating, 0) / receivedEvaluations.length).toFixed(1) : '0'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Promedio Recibido
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="info.main">
-                  {givenEvaluations.length > 0 ? (givenEvaluations.reduce((acc, e) => acc + e.overallRating, 0) / givenEvaluations.length).toFixed(1) : '0'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Promedio Dado
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          {completedEvaluations.map((evaluation) => (
+            <Box key={evaluation.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+              <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleAction(evaluation)}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {evaluation.projectTitle}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                          <BusinessIcon fontSize="small" />
+                        </Avatar>
+                        <Typography variant="body2" color="text.secondary">
+                          {evaluation.company}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Chip
+                      label={typeConfig[evaluation.type as keyof typeof typeConfig].label}
+                      color={typeConfig[evaluation.type as keyof typeof typeConfig].color as any}
+                      size="small"
+                    />
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Rating value={evaluation.overallRating} readOnly size="small" />
+                    <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
+                      {evaluation.overallRating}/5
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    {evaluation.comments?.substring(0, 100)}...
+                  </Typography>
+
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                    {evaluation.technologies?.slice(0, 3).map((tech: string) => (
+                      <Chip key={tech} label={tech} size="small" variant="outlined" />
+                    ))}
+                    {evaluation.technologies?.length > 3 && (
+                      <Chip label={`+${evaluation.technologies.length - 3}`} size="small" variant="outlined" />
+                    )}
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="caption" color="text.secondary">
+                      {evaluation.date} • {evaluation.projectDuration}
+                    </Typography>
+                    <IconButton size="small" color="primary">
+                      <VisibilityIcon />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
+          ))}
+        </Box>
       </Paper>
 
+      {/* Evaluaciones Pendientes */}
+      {pendingEvaluations.length > 0 && (
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+            <AccessTimeIcon sx={{ mr: 1, color: 'warning.main' }} />
+            Evaluaciones Pendientes ({pendingEvaluations.length})
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+            {pendingEvaluations.map((evaluation) => (
+              <Box key={evaluation.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+                <Card sx={{ height: '100%', opacity: 0.7 }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {evaluation.projectTitle}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                            <BusinessIcon fontSize="small" />
+                          </Avatar>
+                          <Typography variant="body2" color="text.secondary">
+                            {evaluation.company}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Chip
+                        label="Pendiente"
+                        color="warning"
+                        size="small"
+                      />
+                    </Box>
+                    
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Evaluación en proceso...
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                      {evaluation.technologies?.slice(0, 3).map((tech: string) => (
+                        <Chip key={tech} label={tech} size="small" variant="outlined" />
+                      ))}
+                    </Box>
+
+                    <Typography variant="caption" color="text.secondary">
+                      {evaluation.date} • {evaluation.projectDuration}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            ))}
+          </Box>
+        </Paper>
+      )}
+
       {/* Dialog para mostrar detalles de la evaluación */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="lg" fullWidth>
         <DialogTitle>
-          {actionType === 'view' && 'Detalles de la Evaluación'}
-          {actionType === 'edit' && 'Editar Evaluación'}
-          {actionType === 'delete' && 'Eliminar Evaluación'}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">
+              Detalles de la Evaluación
+            </Typography>
+            <Chip
+              label={selectedEvaluation?.status === 'completed' ? 'Completada' : 'Pendiente'}
+              color={selectedEvaluation?.status === 'completed' ? 'success' : 'warning'}
+              size="small"
+            />
+          </Box>
         </DialogTitle>
         <DialogContent>
           {selectedEvaluation && (
             <Box>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h5" gutterBottom>
                 {selectedEvaluation.projectTitle}
               </Typography>
 
-              <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid item xs={12} md={6}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Información General
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Empresa:</strong> {selectedEvaluation.company}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {/* Información General y Calificación */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                  {/* Información General */}
+                  <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Información del Proyecto
                         </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <ScheduleIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Fecha:</strong> {selectedEvaluation.date}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <StarIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Tipo:</strong> {getTypeText(selectedEvaluation.type)}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <AssignmentIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Categoría:</strong> {getCategoryText(selectedEvaluation.category)}
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                        <List dense>
+                          <ListItem>
+                            <ListItemIcon>
+                              <BusinessIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Empresa"
+                              secondary={selectedEvaluation.company}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <PersonIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Evaluador"
+                              secondary={`${selectedEvaluation.evaluator} - ${selectedEvaluation.evaluatorRole}`}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <ScheduleIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Fecha"
+                              secondary={selectedEvaluation.date}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <AssignmentIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Duración"
+                              secondary={selectedEvaluation.projectDuration}
+                            />
+                          </ListItem>
+                        </List>
+                      </CardContent>
+                    </Card>
+                  </Box>
 
-                <Grid item xs={12} md={6}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Calificación
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Rating value={selectedEvaluation.overallRating} readOnly size="large" />
-                        <Typography variant="h6" sx={{ ml: 2 }}>
-                          {selectedEvaluation.overallRating}/5
+                  {/* Calificación General */}
+                  <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Calificación General
                         </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        <strong>Evaluador:</strong> {selectedEvaluation.evaluator}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Rating value={selectedEvaluation.overallRating} readOnly size="large" />
+                          <Typography variant="h4" sx={{ ml: 2, fontWeight: 'bold' }}>
+                            {selectedEvaluation.overallRating}/5
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Evaluación {typeConfig[selectedEvaluation.type as keyof typeof typeConfig].label}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                </Box>
 
-                <Grid item xs={12}>
+                {/* Categorías de Evaluación */}
+                <Box>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
-                        Comentario
+                        Evaluación por Categorías
                       </Typography>
-                      <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                        "{selectedEvaluation.comments}"
-                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                        {selectedEvaluation.categories?.map((category: any, index: number) => (
+                          <Box key={index} sx={{ flex: '1 1 250px', minWidth: 0 }}>
+                            <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                {category.icon}
+                                <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
+                                  {category.name}
+                                </Typography>
+                              </Box>
+                              <Rating value={category.rating} readOnly size="small" />
+                              <Typography variant="body2" color="text.secondary">
+                                {category.rating}/5
+                              </Typography>
+                            </Box>
+                          </Box>
+                        ))}
+                      </Box>
                     </CardContent>
                   </Card>
-                </Grid>
-              </Grid>
+                </Box>
+
+                {/* Tecnologías y Entregables */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                  <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Tecnologías Utilizadas
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {selectedEvaluation.technologies?.map((tech: string) => (
+                            <Chip key={tech} label={tech} color="primary" variant="outlined" />
+                          ))}
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Box>
+
+                  <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Entregables
+                        </Typography>
+                        <List dense>
+                          {selectedEvaluation.deliverables?.map((deliverable: string, index: number) => (
+                            <ListItem key={index}>
+                              <ListItemIcon>
+                                <CheckCircleIcon color="success" />
+                              </ListItemIcon>
+                              <ListItemText primary={deliverable} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                </Box>
+
+                {/* Comentarios */}
+                {selectedEvaluation.comments && (
+                  <Box>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Comentarios del Evaluador
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontStyle: 'italic', mb: 3 }}>
+                          "{selectedEvaluation.comments}"
+                        </Typography>
+
+                        {selectedEvaluation.strengths && (
+                          <Box sx={{ mb: 3 }}>
+                            <Typography variant="subtitle1" gutterBottom sx={{ color: 'success.main' }}>
+                              Fortalezas
+                            </Typography>
+                            <List dense>
+                              {selectedEvaluation.strengths.map((strength: string, index: number) => (
+                                <ListItem key={index}>
+                                  <ListItemIcon>
+                                    <CheckCircleIcon color="success" />
+                                  </ListItemIcon>
+                                  <ListItemText primary={strength} />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Box>
+                        )}
+
+                        {selectedEvaluation.areasForImprovement && (
+                          <Box>
+                            <Typography variant="subtitle1" gutterBottom sx={{ color: 'warning.main' }}>
+                              Áreas de Mejora
+                            </Typography>
+                            <List dense>
+                              {selectedEvaluation.areasForImprovement.map((area: string, index: number) => (
+                                <ListItem key={index}>
+                                  <ListItemIcon>
+                                    <AccessTimeIcon color="warning" />
+                                  </ListItemIcon>
+                                  <ListItemText primary={area} />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Box>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Box>
+                )}
+              </Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
-          {actionType === 'edit' && (
-            <Button variant="contained" color="primary">
-              Guardar Cambios
-            </Button>
-          )}
-          {actionType === 'delete' && (
-            <Button variant="contained" color="error">
-              Eliminar
-            </Button>
-          )}
         </DialogActions>
       </Dialog>
     </Box>
