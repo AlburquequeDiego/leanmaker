@@ -16,6 +16,7 @@ import {
   CardActions,
   Alert,
   Stack,
+  MenuItem,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -71,8 +72,8 @@ const initialProfile: ProfileData = {
   personalInfo: {
     name: 'Juan Pérez',
     email: 'juan.perez@email.com',
-    phone: '+51 999 888 777',
-    location: 'Lima, Perú',
+    phone: '+56 999 999 999',
+    location: 'Santiago, Chile',
     bio: 'Estudiante de Ingeniería de Software apasionado por el desarrollo web y la inteligencia artificial.',
     linkedin: 'linkedin.com/in/juanperez',
     github: 'github.com/juanperez',
@@ -368,12 +369,11 @@ export default function Profile() {
                 label="Nivel"
                 value={newSkill.level}
                 onChange={(e: ReactChangeEvent<HTMLInputElement>) => setNewSkill(prev => ({ ...prev, level: e.target.value }))}
-                SelectProps={{ native: true }}
               >
-                <option value="">Seleccionar nivel</option>
-                <option value="Básico">Básico</option>
-                <option value="Intermedio">Intermedio</option>
-                <option value="Avanzado">Avanzado</option>
+                <MenuItem value="">Seleccionar nivel</MenuItem>
+                <MenuItem value="Básico">Básico</MenuItem>
+                <MenuItem value="Intermedio">Intermedio</MenuItem>
+                <MenuItem value="Avanzado">Avanzado</MenuItem>
               </TextField>
               <Button
                 fullWidth

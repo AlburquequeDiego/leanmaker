@@ -1,10 +1,16 @@
 {
+  "scripts": {
+    "dev": "cd Frontend && npm run dev",
+    "install:frontend": "cd Frontend && npm install",
+    "build:frontend": "cd Frontend && npm run build"
+  },
   "dependencies": {
-    "@mui/material": "^7.1.1",
-    "@mui/x-date-pickers": "^8.5.1",
-    "@mui/x-license": "^8.5.1",
-    "dayjs": "^1.11.13",
+    "@mui/material": "^5.15.10",
+    "@mui/icons-material": "^5.15.10",
+    "@mui/x-date-pickers": "^6.19.4",
+    "@mui/x-license": "^6.19.4",
+    "dayjs": "^1.11.10",
     "pro": "^0.3.0",
-    "react-calendar": "^6.0.0"
+    "react-calendar": "^4.8.0"
   }
 }

@@ -19,6 +19,14 @@ import type { UserRole } from '../../types';
 import LoadingButton from '../../components/common/LoadingButton';
 import { useAuth } from '../../hooks/useAuth';
 
+interface RegisterFormValues {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: UserRole;
+}
+
 const validationSchema = yup.object({
   name: yup.string().required('El nombre es requerido'),
   email: yup
@@ -58,7 +66,7 @@ export const Register = () => {
       role: '' as UserRole,
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values: RegisterFormValues) => {
       setIsLoading(true);
       setError(null);
       try {

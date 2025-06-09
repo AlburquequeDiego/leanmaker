@@ -1,10 +1,15 @@
 import { Box, Paper, Typography } from '@mui/material';
-import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
+import { AccessTime as AccessTimeIcon, WarningAmber as WarningAmberIcon } from '@mui/icons-material';
 import { DashboardLayout } from '../../../components/layout/DashboardLayout';
 
 export const StudentDashboard = () => {
   // Mock de horas acumuladas - esto vendría de la API
   const totalHours = 156;
+  // Mock de strikes
+  const strikes: number = 2;
+  const maxStrikes = 3;
+  const strikeBg = strikes === 3 ? 'error.main' : strikes === 2 ? 'orange' : 'warning.main';
+  const strikeText = strikes === 3 ? '¡Has alcanzado el máximo de strikes!' : `Tienes ${strikes} de 3 strikes asignados por no entregar proyectos.`;
 
   return (
     <DashboardLayout userRole="student">
@@ -81,6 +86,27 @@ export const StudentDashboard = () => {
             <Typography variant="body2">
               Aplicaciones en proceso
             </Typography>
+          </Paper>
+          {/* Strikes */}
+          <Paper
+            sx={{
+              p: 3,
+              flex: '1 1 300px',
+              minWidth: 250,
+              maxWidth: 400,
+              display: 'flex',
+              flexDirection: 'column',
+              height: 140,
+              bgcolor: strikeBg,
+              color: 'white',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <WarningAmberIcon sx={{ mr: 1 }} />
+              <Typography variant="h6">Strikes</Typography>
+            </Box>
+            <Typography variant="h4">{strikes} / {maxStrikes}</Typography>
+            <Typography variant="body2">{strikeText}</Typography>
           </Paper>
           {/* Resumen de Proyectos Activos */}
           <Paper
