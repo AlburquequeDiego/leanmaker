@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -31,17 +31,17 @@ import {
   School as SchoolIcon,
   Settings as SettingsIcon,
   Assessment as AssessmentIcon,
+  AccessTime as AccessTimeIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 
 const drawerWidth = 280;
 
 interface DashboardLayoutProps {
-  children: React.ReactNode;
   userRole: 'admin' | 'company' | 'student';
 }
 
-export const DashboardLayout = ({ children, userRole }: DashboardLayoutProps) => {
+export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
@@ -68,18 +68,19 @@ export const DashboardLayout = ({ children, userRole }: DashboardLayoutProps) =>
   const getMenuItems = () => {
     const commonItems = [
       { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-      { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/profile' },
-      { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/notifications' },
+      { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/admin/perfil' },
+      { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/admin/notificaciones' },
     ];
 
     const roleSpecificItems = {
       admin: [
-        { text: 'Usuarios', icon: <PeopleIcon />, path: '/dashboard/users' },
-        { text: 'Empresas', icon: <BusinessIcon />, path: '/dashboard/companies' },
-        { text: 'Estudiantes', icon: <SchoolIcon />, path: '/dashboard/students' },
-        { text: 'Proyectos', icon: <AssignmentIcon />, path: '/dashboard/projects' },
-        { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/evaluations' },
-        { text: 'Configuración', icon: <SettingsIcon />, path: '/dashboard/settings' },
+        { text: 'Gestión de Usuarios', icon: <PeopleIcon />, path: '/dashboard/admin/usuarios' },
+        { text: 'Validación de Horas', icon: <AccessTimeIcon />, path: '/dashboard/admin/validacion-horas' },
+        { text: 'Gestión de Empresas', icon: <BusinessIcon />, path: '/dashboard/admin/gestion-empresas' },
+        { text: 'Gestión de Estudiantes', icon: <SchoolIcon />, path: '/dashboard/admin/gestion-estudiantes' },
+        { text: 'Gestión de Proyectos', icon: <AssignmentIcon />, path: '/dashboard/admin/gestion-proyectos' },
+        { text: 'Gestión de Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/admin/gestion-evaluaciones' },
+        { text: 'Configuración de Plataforma', icon: <SettingsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
       ],
       company: [
         { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/my-projects' },
@@ -213,16 +214,10 @@ export const DashboardLayout = ({ children, userRole }: DashboardLayoutProps) =>
       </Box>
       <Box
         component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          minHeight: '100vh',
-          backgroundColor: 'background.default',
-        }}
+        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
-        {children}
+        <Outlet />
       </Box>
     </Box>
   );

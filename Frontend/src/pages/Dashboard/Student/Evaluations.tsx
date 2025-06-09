@@ -18,6 +18,7 @@ import {
   Rating,
   LinearProgress,
   Avatar,
+  Grid,
 } from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
@@ -26,8 +27,12 @@ import {
   StarHalf as StarHalfIcon,
   Business as BusinessIcon,
   Person as PersonIcon,
+  Assignment as AssignmentIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  Schedule as ScheduleIcon,
 } from '@mui/icons-material';
-import { DashboardLayout } from '../../../components/layout/DashboardLayout';
 
 // Mock de evaluaciones
 const mockEvaluations = [
@@ -131,391 +136,353 @@ const typeConfig = {
   },
 };
 
-export default function Evaluations() {
-  const [evaluations] = useState(mockEvaluations);
-  const [selectedTab, setSelectedTab] = useState('all');
-  const [selectedEvaluation, setSelectedEvaluation] = useState<string | null>(null);
-  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+export const Evaluations = () => {
+  const [selectedEvaluation, setSelectedEvaluation] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [actionType, setActionType] = useState<'view' | 'edit' | 'delete' | null>(null);
 
-  const filteredEvaluations = evaluations.filter(evaluation => 
-    selectedTab === 'all' || evaluation.status === selectedTab
-  );
-
-  const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
-    setSelectedTab(newValue);
+  const handleAction = (evaluation: any, type: 'view' | 'edit' | 'delete') => {
+    setSelectedEvaluation(evaluation);
+    setActionType(type);
+    setDialogOpen(true);
   };
 
-  const handleViewDetails = (id: string) => {
-    setSelectedEvaluation(id);
-    setDetailsDialogOpen(true);
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'received':
+        return 'primary';
+      case 'given':
+        return 'success';
+      default:
+        return 'default';
+    }
   };
 
-  const getSelectedEvaluation = () => {
-    return evaluations.find(e => e.id === selectedEvaluation);
+  const getTypeText = (type: string) => {
+    switch (type) {
+      case 'received':
+        return 'Recibida';
+      case 'given':
+        return 'Dada';
+      default:
+        return type;
+    }
   };
 
-  const getStatusCount = (status: string) => {
-    return evaluations.filter(evaluation => evaluation.status === status).length;
+  const getCategoryText = (category: string) => {
+    switch (category) {
+      case 'technical':
+        return 'Técnico';
+      case 'soft_skills':
+        return 'Habilidades Blandas';
+      case 'punctuality':
+        return 'Puntualidad';
+      case 'teamwork':
+        return 'Trabajo en Equipo';
+      case 'communication':
+        return 'Comunicación';
+      case 'overall':
+        return 'General';
+      default:
+        return category;
+    }
   };
 
-  // Calcular estadísticas
-  const completedEvaluations = evaluations.filter(e => e.status === 'completed');
-  const averageRating = completedEvaluations.length > 0
-    ? completedEvaluations.reduce((acc, curr) => acc + (curr.overallRating || 0), 0) / completedEvaluations.length
-    : 0;
+  const receivedEvaluations = mockEvaluations.filter(e => e.type === 'received');
+  const givenEvaluations = mockEvaluations.filter(e => e.type === 'given');
 
   return (
-    <DashboardLayout userRole="student">
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Evaluaciones
-        </Typography>
+    <Box sx={{ flexGrow: 1, p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Evaluaciones
+      </Typography>
 
-        {/* Estadísticas */}
-        <Box sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, 
-          gap: 3, 
-          mb: 4 
-        }}>
-          <Paper sx={{ p: 2, height: '100%' }}>
-            <Stack spacing={1}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Evaluaciones Completadas
-              </Typography>
-              <Typography variant="h4">
-                {completedEvaluations.length}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                de {evaluations.length} totales
-              </Typography>
-            </Stack>
-          </Paper>
-
-          <Paper sx={{ p: 2, height: '100%' }}>
-            <Stack spacing={1}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Calificación Promedio
-              </Typography>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Typography variant="h4">
-                  {averageRating.toFixed(1)}
-                </Typography>
-                <Rating 
-                  value={averageRating} 
-                  precision={0.5} 
-                  readOnly 
-                  size="small"
-                />
-              </Stack>
-              <Typography variant="body2" color="text.secondary">
-                basado en {completedEvaluations.length} evaluaciones
-              </Typography>
-            </Stack>
-          </Paper>
-
-          <Paper sx={{ p: 2, height: '100%' }}>
-            <Stack spacing={1}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Evaluaciones Pendientes
-              </Typography>
-              <Typography variant="h4">
-                {evaluations.filter(e => e.status === 'pending').length}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                por completar
-              </Typography>
-            </Stack>
-          </Paper>
-        </Box>
-
-        {/* Tabs de filtrado */}
-        <Paper sx={{ mb: 3 }}>
-          <Tabs
-            value={selectedTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{ borderBottom: 1, borderColor: 'divider' }}
-          >
-            <Tab 
-              label={`Todas (${evaluations.length})`} 
-              value="all"
-            />
-            <Tab 
-              label={`Completadas (${getStatusCount('completed')})`} 
-              value="completed"
-            />
-            <Tab 
-              label={`Pendientes (${getStatusCount('pending')})`} 
-              value="pending"
-            />
-          </Tabs>
-        </Paper>
-
-        {/* Lista de evaluaciones */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-          {filteredEvaluations.map((evaluation) => (
-            <Box key={evaluation.id}>
-              <Card 
-                sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  '&:hover': {
-                    boxShadow: 6,
-                  },
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Typography variant="h6" component="div" sx={{ pr: 4 }}>
-                      {evaluation.projectTitle}
-                    </Typography>
-                    <Stack direction="row" spacing={1}>
-                      <Chip
-                        icon={statusConfig[evaluation.status as keyof typeof statusConfig].icon}
-                        label={statusConfig[evaluation.status as keyof typeof statusConfig].label}
-                        color={statusConfig[evaluation.status as keyof typeof statusConfig].color as any}
-                        size="small"
-                      />
-                      <Chip
-                        label={typeConfig[evaluation.type as keyof typeof typeConfig].label}
-                        color={typeConfig[evaluation.type as keyof typeof typeConfig].color as any}
-                        size="small"
-                      />
-                    </Stack>
-                  </Stack>
-
-                  <Stack direction="row" alignItems="center" spacing={1} mb={2}>
-                    <BusinessIcon color="action" fontSize="small" />
-                    <Typography variant="body2" color="text.secondary">
-                      {evaluation.company}
-                    </Typography>
-                  </Stack>
-
-                  <Stack direction="row" alignItems="center" spacing={1} mb={2}>
-                    <PersonIcon color="action" fontSize="small" />
-                    <Typography variant="body2" color="text.secondary">
-                      Evaluador: {evaluation.evaluator} ({evaluation.evaluatorRole})
-                    </Typography>
-                  </Stack>
-
-                  {evaluation.status === 'completed' && (
-                    <Stack spacing={2}>
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <Typography variant="body2" color="text.secondary">
-                          Calificación:
-                        </Typography>
-                        <Rating 
-                          value={evaluation.overallRating || 0} 
-                          precision={0.5} 
-                          readOnly 
-                          size="small"
-                        />
-                        <Typography variant="body2" color="text.secondary">
-                          ({evaluation.overallRating?.toFixed(1)})
-                        </Typography>
-                      </Stack>
-                      <Typography variant="body2" color="text.secondary" noWrap>
-                        {evaluation.comments}
-                      </Typography>
-                    </Stack>
-                  )}
-
-                  <Divider sx={{ my: 2 }} />
-
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="body2" color="text.secondary">
-                      Fecha: {new Date(evaluation.date).toLocaleDateString('es-ES')}
-                    </Typography>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => handleViewDetails(evaluation.id)}
-                    >
-                      Ver Detalles
-                    </Button>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
-        </Box>
-
-        {/* Diálogo de detalles */}
-        <Dialog
-          open={detailsDialogOpen}
-          onClose={() => setDetailsDialogOpen(false)}
-          maxWidth="md"
-          fullWidth
-        >
-          {selectedEvaluation && getSelectedEvaluation() && (
-            <>
-              <DialogTitle>
-                <Stack spacing={2}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6">
-                      {getSelectedEvaluation()?.projectTitle}
-                    </Typography>
-                    <Stack direction="row" spacing={1}>
-                      <Chip
-                        icon={statusConfig[getSelectedEvaluation()!.status as keyof typeof statusConfig].icon}
-                        label={statusConfig[getSelectedEvaluation()!.status as keyof typeof statusConfig].label}
-                        color={statusConfig[getSelectedEvaluation()!.status as keyof typeof statusConfig].color as any}
-                        size="small"
-                      />
-                      <Chip
-                        label={typeConfig[getSelectedEvaluation()!.type as keyof typeof typeConfig].label}
-                        color={typeConfig[getSelectedEvaluation()!.type as keyof typeof typeConfig].color as any}
-                        size="small"
-                      />
-                    </Stack>
-                  </Stack>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar sx={{ bgcolor: 'primary.main' }}>
-                      <PersonIcon />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="subtitle2">
-                        {getSelectedEvaluation()?.evaluator}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {getSelectedEvaluation()?.evaluatorRole} - {getSelectedEvaluation()?.company}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Stack>
-              </DialogTitle>
-              <DialogContent>
-                {getSelectedEvaluation()?.status === 'completed' ? (
-                  <Stack spacing={3}>
-                    {/* Calificación general */}
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        Calificación General
-                      </Typography>
-                      <Stack direction="row" alignItems="center" spacing={2}>
-                        <Typography variant="h4">
-                          {getSelectedEvaluation()?.overallRating?.toFixed(1)}
-                        </Typography>
-                        <Rating 
-                          value={getSelectedEvaluation()?.overallRating || 0} 
-                          precision={0.5} 
-                          readOnly 
-                          size="large"
-                        />
-                      </Stack>
-                    </Box>
-
-                    {/* Calificaciones por categoría */}
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        Calificaciones por Categoría
-                      </Typography>
-                      <Stack spacing={2}>
-                        {getSelectedEvaluation()?.categories.map((category, index) => (
-                          <Box key={index}>
-                            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                              <Typography variant="body2">
-                                {category.name}
-                              </Typography>
-                              <Stack direction="row" alignItems="center" spacing={1}>
-                                <Rating 
-                                  value={category.rating || 0} 
-                                  precision={0.5} 
-                                  readOnly 
-                                  size="small"
-                                />
-                                <Typography variant="body2" color="text.secondary">
-                                  ({category.rating?.toFixed(1)})
-                                </Typography>
-                              </Stack>
-                            </Stack>
-                            <LinearProgress 
-                              variant="determinate" 
-                              value={(category.rating || 0) * 20} 
-                              color="primary"
-                            />
-                          </Box>
-                        ))}
-                      </Stack>
-                    </Box>
-
-                    {/* Comentarios */}
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        Comentarios
-                      </Typography>
-                      <Typography variant="body2" paragraph>
-                        {getSelectedEvaluation()?.comments}
-                      </Typography>
-                    </Box>
-
-                    {/* Fortalezas */}
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        Fortalezas
-                      </Typography>
-                      <Stack spacing={1}>
-                        {getSelectedEvaluation()?.strengths?.map((strength, index) => (
-                          <Stack key={index} direction="row" spacing={1} alignItems="center">
-                            <StarIcon color="success" fontSize="small" />
-                            <Typography variant="body2">
-                              {strength}
-                            </Typography>
-                          </Stack>
-                        ))}
-                      </Stack>
-                    </Box>
-
-                    {/* Áreas de mejora */}
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        Áreas de Mejora
-                      </Typography>
-                      <Stack spacing={1}>
-                        {getSelectedEvaluation()?.areasForImprovement?.map((area, index) => (
-                          <Stack key={index} direction="row" spacing={1} alignItems="center">
-                            <StarHalfIcon color="warning" fontSize="small" />
-                            <Typography variant="body2">
-                              {area}
-                            </Typography>
-                          </Stack>
-                        ))}
-                      </Stack>
-                    </Box>
-                  </Stack>
-                ) : (
-                  <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <AccessTimeIcon color="warning" sx={{ fontSize: 48, mb: 2 }} />
-                    <Typography variant="h6" gutterBottom>
-                      Evaluación Pendiente
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Esta evaluación será completada por el evaluador en la fecha programada.
-                    </Typography>
-                  </Box>
-                )}
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setDetailsDialogOpen(false)}>
-                  Cerrar
-                </Button>
-              </DialogActions>
-            </>
-          )}
-        </Dialog>
-
-        {filteredEvaluations.length === 0 && (
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              No hay evaluaciones {selectedTab !== 'all' ? `con estado ${statusConfig[selectedTab as keyof typeof statusConfig]?.label.toLowerCase()}` : ''}.
+      <Grid container spacing={3}>
+        {/* Evaluaciones Recibidas */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Evaluaciones Recibidas ({receivedEvaluations.length})
             </Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Proyecto</TableCell>
+                    <TableCell>Empresa</TableCell>
+                    <TableCell>Calificación</TableCell>
+                    <TableCell>Fecha</TableCell>
+                    <TableCell>Acciones</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {receivedEvaluations.map((evaluation) => (
+                    <TableRow key={evaluation.id}>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight="bold">
+                          {evaluation.projectTitle}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 20, height: 20 }}>
+                            <BusinessIcon fontSize="small" />
+                          </Avatar>
+                          <Typography variant="body2">
+                            {evaluation.company}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Rating value={evaluation.overallRating} readOnly size="small" />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {evaluation.date}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleAction(evaluation, 'view')}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Paper>
-        )}
-      </Box>
-    </DashboardLayout>
+        </Grid>
+
+        {/* Evaluaciones Dadas */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Evaluaciones Dadas ({givenEvaluations.length})
+            </Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Proyecto</TableCell>
+                    <TableCell>Empresa</TableCell>
+                    <TableCell>Calificación</TableCell>
+                    <TableCell>Fecha</TableCell>
+                    <TableCell>Acciones</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {givenEvaluations.map((evaluation) => (
+                    <TableRow key={evaluation.id}>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight="bold">
+                          {evaluation.projectTitle}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 20, height: 20 }}>
+                            <BusinessIcon fontSize="small" />
+                          </Avatar>
+                          <Typography variant="body2">
+                            {evaluation.company}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Rating value={evaluation.overallRating} readOnly size="small" />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {evaluation.date}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleAction(evaluation, 'view')}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleAction(evaluation, 'edit')}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Estadísticas */}
+      <Paper sx={{ p: 3, mt: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Estadísticas de Evaluaciones
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h4" color="primary">
+                  {receivedEvaluations.length}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Evaluaciones Recibidas
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h4" color="success.main">
+                  {givenEvaluations.length}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Evaluaciones Dadas
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h4" color="warning.main">
+                  {receivedEvaluations.length > 0 ? (receivedEvaluations.reduce((acc, e) => acc + e.overallRating, 0) / receivedEvaluations.length).toFixed(1) : '0'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Promedio Recibido
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h4" color="info.main">
+                  {givenEvaluations.length > 0 ? (givenEvaluations.reduce((acc, e) => acc + e.overallRating, 0) / givenEvaluations.length).toFixed(1) : '0'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Promedio Dado
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Dialog para mostrar detalles de la evaluación */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          {actionType === 'view' && 'Detalles de la Evaluación'}
+          {actionType === 'edit' && 'Editar Evaluación'}
+          {actionType === 'delete' && 'Eliminar Evaluación'}
+        </DialogTitle>
+        <DialogContent>
+          {selectedEvaluation && (
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {selectedEvaluation.projectTitle}
+              </Typography>
+
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                <Grid item xs={12} md={6}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Información General
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Typography variant="body2">
+                          <strong>Empresa:</strong> {selectedEvaluation.company}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <ScheduleIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Typography variant="body2">
+                          <strong>Fecha:</strong> {selectedEvaluation.date}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <StarIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Typography variant="body2">
+                          <strong>Tipo:</strong> {getTypeText(selectedEvaluation.type)}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <AssignmentIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Typography variant="body2">
+                          <strong>Categoría:</strong> {getCategoryText(selectedEvaluation.category)}
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Calificación
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Rating value={selectedEvaluation.overallRating} readOnly size="large" />
+                        <Typography variant="h6" sx={{ ml: 2 }}>
+                          {selectedEvaluation.overallRating}/5
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        <strong>Evaluador:</strong> {selectedEvaluation.evaluator}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Comentario
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                        "{selectedEvaluation.comments}"
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
+          {actionType === 'edit' && (
+            <Button variant="contained" color="primary">
+              Guardar Cambios
+            </Button>
+          )}
+          {actionType === 'delete' && (
+            <Button variant="contained" color="error">
+              Eliminar
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
-} 
+};
+
+export default Evaluations; 

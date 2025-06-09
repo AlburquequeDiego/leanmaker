@@ -23,7 +23,6 @@ import {
   Cancel as CancelIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
-import { DashboardLayout } from '../../../components/layout/DashboardLayout';
 
 // Mock de aplicaciones
 const mockApplications = [
@@ -109,140 +108,138 @@ export default function MyApplications() {
   };
 
   return (
-    <DashboardLayout userRole="student">
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Mis Aplicaciones
-        </Typography>
+    <Box sx={{ flexGrow: 1, p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Mis Aplicaciones
+      </Typography>
 
-        {/* Tabs de filtrado */}
-        <Paper sx={{ mb: 3 }}>
-          <Tabs
-            value={selectedTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{ borderBottom: 1, borderColor: 'divider' }}
-          >
-            <Tab 
-              label={`Todas (${applications.length})`} 
-              value="all"
-            />
-            <Tab 
-              label={`Pendientes (${getStatusCount('pending')})`} 
-              value="pending"
-            />
-            <Tab 
-              label={`Aceptadas (${getStatusCount('accepted')})`} 
-              value="accepted"
-            />
-            <Tab 
-              label={`Rechazadas (${getStatusCount('rejected')})`} 
-              value="rejected"
-            />
-          </Tabs>
-        </Paper>
-
-        {/* Lista de aplicaciones */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-          {filteredApplications.map((application) => (
-            <Box key={application.id}>
-              <Card 
-                sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  '&:hover': {
-                    boxShadow: 6,
-                  },
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Typography variant="h6" component="div" sx={{ pr: 4 }}>
-                      {application.projectTitle}
-                    </Typography>
-                    <Chip
-                      icon={statusConfig[application.status as keyof typeof statusConfig].icon}
-                      label={statusConfig[application.status as keyof typeof statusConfig].label}
-                      color={statusConfig[application.status as keyof typeof statusConfig].color as any}
-                      size="small"
-                    />
-                  </Stack>
-
-                  <Stack direction="row" alignItems="center" spacing={1} mb={2}>
-                    <BusinessIcon color="action" fontSize="small" />
-                    <Typography variant="body2" color="text.secondary">
-                      {application.company}
-                    </Typography>
-                  </Stack>
-
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    {application.description}
-                  </Typography>
-
-                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap mb={2}>
-                    {application.requirements.map((req, index) => (
-                      <Chip
-                        key={index}
-                        label={req}
-                        size="small"
-                        variant="outlined"
-                      />
-                    ))}
-                  </Stack>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="body2" color="text.secondary">
-                      Aplicado el {new Date(application.appliedAt).toLocaleDateString('es-ES')}
-                    </Typography>
-                    {application.status === 'pending' && (
-                      <Button
-                        size="small"
-                        color="error"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => handleDeleteClick(application.id)}
-                      >
-                        Cancelar
-                      </Button>
-                    )}
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
-        </Box>
-
-        {/* Diálogo de confirmación de eliminación */}
-        <Dialog
-          open={deleteDialogOpen}
-          onClose={() => setDeleteDialogOpen(false)}
+      {/* Tabs de filtrado */}
+      <Paper sx={{ mb: 3 }}>
+        <Tabs
+          value={selectedTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
         >
-          <DialogTitle>Cancelar Aplicación</DialogTitle>
-          <DialogContent>
-            <Typography>
-              ¿Estás seguro de que deseas cancelar esta aplicación? Esta acción no se puede deshacer.
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteDialogOpen(false)}>No, mantener</Button>
-            <Button onClick={handleDeleteConfirm} color="error" variant="contained">
-              Sí, cancelar
-            </Button>
-          </DialogActions>
-        </Dialog>
+          <Tab 
+            label={`Todas (${applications.length})`} 
+            value="all"
+          />
+          <Tab 
+            label={`Pendientes (${getStatusCount('pending')})`} 
+            value="pending"
+          />
+          <Tab 
+            label={`Aceptadas (${getStatusCount('accepted')})`} 
+            value="accepted"
+          />
+          <Tab 
+            label={`Rechazadas (${getStatusCount('rejected')})`} 
+            value="rejected"
+          />
+        </Tabs>
+      </Paper>
 
-        {filteredApplications.length === 0 && (
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              No hay aplicaciones {selectedTab !== 'all' ? `con estado ${statusConfig[selectedTab as keyof typeof statusConfig]?.label.toLowerCase()}` : ''}.
-            </Typography>
-          </Paper>
-        )}
+      {/* Lista de aplicaciones */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+        {filteredApplications.map((application) => (
+          <Box key={application.id}>
+            <Card 
+              sx={{ 
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                '&:hover': {
+                  boxShadow: 6,
+                },
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                  <Typography variant="h6" component="div" sx={{ pr: 4 }}>
+                    {application.projectTitle}
+                  </Typography>
+                  <Chip
+                    icon={statusConfig[application.status as keyof typeof statusConfig].icon}
+                    label={statusConfig[application.status as keyof typeof statusConfig].label}
+                    color={statusConfig[application.status as keyof typeof statusConfig].color as any}
+                    size="small"
+                  />
+                </Stack>
+
+                <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+                  <BusinessIcon color="action" fontSize="small" />
+                  <Typography variant="body2" color="text.secondary">
+                    {application.company}
+                  </Typography>
+                </Stack>
+
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  {application.description}
+                </Typography>
+
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap mb={2}>
+                  {application.requirements.map((req, index) => (
+                    <Chip
+                      key={index}
+                      label={req}
+                      size="small"
+                      variant="outlined"
+                    />
+                  ))}
+                </Stack>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2" color="text.secondary">
+                    Aplicado el {new Date(application.appliedAt).toLocaleDateString('es-ES')}
+                  </Typography>
+                  {application.status === 'pending' && (
+                    <Button
+                      size="small"
+                      color="error"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => handleDeleteClick(application.id)}
+                    >
+                      Cancelar
+                    </Button>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          </Box>
+        ))}
       </Box>
-    </DashboardLayout>
+
+      {/* Diálogo de confirmación de eliminación */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Cancelar Aplicación</DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Estás seguro de que deseas cancelar esta aplicación? Esta acción no se puede deshacer.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>No, mantener</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Sí, cancelar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {filteredApplications.length === 0 && (
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography color="text.secondary">
+            No hay aplicaciones {selectedTab !== 'all' ? `con estado ${statusConfig[selectedTab as keyof typeof statusConfig]?.label.toLowerCase()}` : ''}.
+          </Typography>
+        </Paper>
+      )}
+    </Box>
   );
 } 

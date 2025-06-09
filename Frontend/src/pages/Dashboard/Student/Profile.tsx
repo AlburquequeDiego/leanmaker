@@ -1,524 +1,312 @@
 import { useState } from 'react';
-import type { ChangeEvent as ReactChangeEvent, FormEvent as ReactFormEvent } from 'react';
 import {
   Box,
   Typography,
   Paper,
   TextField,
   Button,
+  Avatar,
+  Grid,
+  Divider,
   Chip,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Card,
-  CardContent,
-  CardActions,
   Alert,
-  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
   MenuItem,
 } from '@mui/material';
 import {
-  Add as AddIcon,
-  Delete as DeleteIcon,
   Edit as EditIcon,
-  Upload as UploadIcon,
-  LinkedIn as LinkedInIcon,
-  GitHub as GitHubIcon,
-  Language as LanguageIcon,
-  Phone as PhoneIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  Person as PersonIcon,
   Email as EmailIcon,
-  LocationOn as LocationIcon,
+  Phone as PhoneIcon,
+  School as SchoolIcon,
+  Grade as GradeIcon,
+  AccessTime as AccessTimeIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
-import { DashboardLayout } from '../../../components/layout/DashboardLayout';
 
-interface Skill {
-  id: number;
-  name: string;
-  level: string;
-}
-
-interface Certificate {
-  id: number;
-  name: string;
-  issuer: string;
-  date: string;
-  url: string;
-}
-
-interface PersonalInfo {
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
-  bio: string;
-  linkedin: string;
-  github: string;
-  website: string;
-}
-
-interface ProfileData {
-  personalInfo: PersonalInfo;
-  skills: Skill[];
-  certificates: Certificate[];
-  cv: {
-    url: string;
-    lastUpdated: string;
-  };
-}
-
-// Mock de datos iniciales
-const initialProfile: ProfileData = {
-  personalInfo: {
-    name: 'Juan Pérez',
-    email: 'juan.perez@email.com',
-    phone: '+56 999 999 999',
-    location: 'Santiago, Chile',
-    bio: 'Estudiante de Ingeniería de Software apasionado por el desarrollo web y la inteligencia artificial.',
-    linkedin: 'linkedin.com/in/juanperez',
-    github: 'github.com/juanperez',
-    website: 'juanperez.dev',
-  },
-  skills: [
-    { id: 1, name: 'React', level: 'Avanzado' },
-    { id: 2, name: 'Node.js', level: 'Intermedio' },
-    { id: 3, name: 'Python', level: 'Avanzado' },
-    { id: 4, name: 'SQL', level: 'Intermedio' },
-  ],
-  certificates: [
-    {
-      id: 1,
-      name: 'AWS Certified Developer',
-      issuer: 'Amazon Web Services',
-      date: '2024-01-15',
-      url: 'https://example.com/cert1',
-    },
-    {
-      id: 2,
-      name: 'React Advanced Concepts',
-      issuer: 'Udemy',
-      date: '2023-12-10',
-      url: 'https://example.com/cert2',
-    },
-  ],
-  cv: {
-    url: 'https://example.com/cv.pdf',
-    lastUpdated: '2024-03-01',
-  },
-};
-
-export default function Profile() {
-  const [profile, setProfile] = useState<ProfileData>(initialProfile);
-  const [editingSection, setEditingSection] = useState<string | null>(null);
-  const [newSkill, setNewSkill] = useState<Omit<Skill, 'id'>>({ name: '', level: '' });
-  const [newCertificate, setNewCertificate] = useState<Omit<Certificate, 'id'>>({
-    name: '',
-    issuer: '',
-    date: '',
-    url: '',
+export const Profile = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: 'María González',
+    email: 'maria.gonzalez@estudiante.edu',
+    phone: '+57 300 123 4567',
+    career: 'Ingeniería de Sistemas',
+    semester: 8,
+    gpa: 4.2,
+    totalHours: 180,
+    completedProjects: 3,
+    strikes: 1,
+    skills: ['React', 'Node.js', 'MySQL', 'JavaScript', 'Python'],
+    bio: 'Estudiante apasionada por el desarrollo de software y la innovación tecnológica. Busco oportunidades para aplicar mis conocimientos en proyectos reales.',
   });
-  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  const handleSavePersonalInfo = (e: ReactFormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setAlert({ type: 'success', message: 'Información personal actualizada' });
-    setEditingSection(null);
+  const [editData, setEditData] = useState(profileData);
+
+  const handleEdit = () => {
+    setEditData(profileData);
+    setIsEditing(true);
   };
 
-  const handleAddSkill = () => {
-    if (newSkill.name && newSkill.level) {
-      setProfile(prev => ({
-        ...prev,
-        skills: [...prev.skills, { id: Date.now(), ...newSkill }],
-      }));
-      setNewSkill({ name: '', level: '' });
-      setAlert({ type: 'success', message: 'Habilidad agregada' });
-    }
+  const handleSave = () => {
+    setProfileData(editData);
+    setIsEditing(false);
   };
 
-  const handleDeleteSkill = (id: number) => {
-    setProfile(prev => ({
-      ...prev,
-      skills: prev.skills.filter(skill => skill.id !== id),
-    }));
-    setAlert({ type: 'success', message: 'Habilidad eliminada' });
+  const handleCancel = () => {
+    setEditData(profileData);
+    setIsEditing(false);
   };
 
-  const handleAddCertificate = () => {
-    if (newCertificate.name && newCertificate.issuer) {
-      setProfile(prev => ({
-        ...prev,
-        certificates: [...prev.certificates, { id: Date.now(), ...newCertificate }],
-      }));
-      setNewCertificate({ name: '', issuer: '', date: '', url: '' });
-      setAlert({ type: 'success', message: 'Certificado agregado' });
-    }
-  };
-
-  const handleDeleteCertificate = (id: number) => {
-    setProfile(prev => ({
-      ...prev,
-      certificates: prev.certificates.filter(cert => cert.id !== id),
-    }));
-    setAlert({ type: 'success', message: 'Certificado eliminado' });
-  };
-
-  const handleCvUpload = (event: ReactChangeEvent<HTMLInputElement>) => {
-    if (event.target.files?.[0]) {
-      setAlert({ type: 'success', message: 'CV actualizado' });
-    }
+  const handleInputChange = (field: string, value: string | number) => {
+    setEditData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
-    <DashboardLayout userRole="student">
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Mi Perfil
-        </Typography>
-
-        {alert && (
-          <Alert 
-            severity={alert.type} 
-            onClose={() => setAlert(null)}
-            sx={{ mb: 3 }}
+    <Box sx={{ flexGrow: 1, p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4">Mi Perfil</Typography>
+        {!isEditing ? (
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={handleEdit}
           >
-            {alert.message}
-          </Alert>
+            Editar Perfil
+          </Button>
+        ) : (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="contained"
+              startIcon={<SaveIcon />}
+              onClick={handleSave}
+            >
+              Guardar
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={handleCancel}
+            >
+              Cancelar
+            </Button>
+          </Box>
         )}
-
-        {/* Información Personal */}
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6">Información Personal</Typography>
-            <IconButton onClick={() => setEditingSection('personal')}>
-              <EditIcon />
-            </IconButton>
-          </Box>
-          
-          {editingSection === 'personal' ? (
-            <form onSubmit={handleSavePersonalInfo}>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="Nombre Completo"
-                    value={profile.personalInfo.name}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, name: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    value={profile.personalInfo.email}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, email: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="Teléfono"
-                    value={profile.personalInfo.phone}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, phone: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="Ubicación"
-                    value={profile.personalInfo.location}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, location: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box sx={{ gridColumn: { md: 'span 2' } }}>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    label="Biografía"
-                    value={profile.personalInfo.bio}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, bio: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="LinkedIn"
-                    value={profile.personalInfo.linkedin}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, linkedin: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="GitHub"
-                    value={profile.personalInfo.github}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, github: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box sx={{ gridColumn: { md: 'span 2' } }}>
-                  <TextField
-                    fullWidth
-                    label="Sitio Web"
-                    value={profile.personalInfo.website}
-                    onChange={(e: ReactChangeEvent<HTMLInputElement>) => setProfile(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, website: e.target.value }
-                    }))}
-                  />
-                </Box>
-                <Box sx={{ gridColumn: { md: 'span 2' } }}>
-                  <Button type="submit" variant="contained" sx={{ mr: 1 }}>
-                    Guardar
-                  </Button>
-                  <Button onClick={() => setEditingSection(null)}>
-                    Cancelar
-                  </Button>
-                </Box>
-              </Box>
-            </form>
-          ) : (
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
-              <Box>
-                <Typography variant="h5" gutterBottom>
-                  {profile.personalInfo.name}
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  {profile.personalInfo.bio}
-                </Typography>
-                <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-                  <Button
-                    startIcon={<LinkedInIcon />}
-                    href={`https://${profile.personalInfo.linkedin}`}
-                    target="_blank"
-                  >
-                    LinkedIn
-                  </Button>
-                  <Button
-                    startIcon={<GitHubIcon />}
-                    href={`https://${profile.personalInfo.github}`}
-                    target="_blank"
-                  >
-                    GitHub
-                  </Button>
-                  <Button
-                    startIcon={<LanguageIcon />}
-                    href={`https://${profile.personalInfo.website}`}
-                    target="_blank"
-                  >
-                    Sitio Web
-                  </Button>
-                </Stack>
-              </Box>
-              <List>
-                <ListItem>
-                  <EmailIcon sx={{ mr: 1 }} />
-                  <ListItemText primary={profile.personalInfo.email} />
-                </ListItem>
-                <ListItem>
-                  <PhoneIcon sx={{ mr: 1 }} />
-                  <ListItemText primary={profile.personalInfo.phone} />
-                </ListItem>
-                <ListItem>
-                  <LocationIcon sx={{ mr: 1 }} />
-                  <ListItemText primary={profile.personalInfo.location} />
-                </ListItem>
-              </List>
-            </Box>
-          )}
-        </Paper>
-
-        {/* Habilidades */}
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Habilidades
-          </Typography>
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2, alignItems: 'center' }}>
-              <TextField
-                fullWidth
-                label="Nueva Habilidad"
-                value={newSkill.name}
-                onChange={(e: ReactChangeEvent<HTMLInputElement>) => setNewSkill(prev => ({ ...prev, name: e.target.value }))}
-              />
-              <TextField
-                fullWidth
-                select
-                label="Nivel"
-                value={newSkill.level}
-                onChange={(e: ReactChangeEvent<HTMLInputElement>) => setNewSkill(prev => ({ ...prev, level: e.target.value }))}
-              >
-                <MenuItem value="">Seleccionar nivel</MenuItem>
-                <MenuItem value="Básico">Básico</MenuItem>
-                <MenuItem value="Intermedio">Intermedio</MenuItem>
-                <MenuItem value="Avanzado">Avanzado</MenuItem>
-              </TextField>
-              <Button
-                fullWidth
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleAddSkill}
-                disabled={!newSkill.name || !newSkill.level}
-              >
-                Agregar
-              </Button>
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {profile.skills.map((skill) => (
-              <Chip
-                key={skill.id}
-                label={`${skill.name} (${skill.level})`}
-                onDelete={() => handleDeleteSkill(skill.id)}
-                color="primary"
-                variant="outlined"
-              />
-            ))}
-          </Box>
-        </Paper>
-
-        {/* Certificados */}
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Certificados
-          </Typography>
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, gap: 2 }}>
-              <TextField
-                fullWidth
-                label="Nombre del Certificado"
-                value={newCertificate.name}
-                onChange={(e: ReactChangeEvent<HTMLInputElement>) => setNewCertificate(prev => ({ ...prev, name: e.target.value }))}
-              />
-              <TextField
-                fullWidth
-                label="Institución"
-                value={newCertificate.issuer}
-                onChange={(e: ReactChangeEvent<HTMLInputElement>) => setNewCertificate(prev => ({ ...prev, issuer: e.target.value }))}
-              />
-              <TextField
-                fullWidth
-                type="date"
-                label="Fecha de Obtención"
-                value={newCertificate.date}
-                onChange={(e: ReactChangeEvent<HTMLInputElement>) => setNewCertificate(prev => ({ ...prev, date: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                fullWidth
-                label="URL del Certificado"
-                value={newCertificate.url}
-                onChange={(e: ReactChangeEvent<HTMLInputElement>) => setNewCertificate(prev => ({ ...prev, url: e.target.value }))}
-              />
-            </Box>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddCertificate}
-              disabled={!newCertificate.name || !newCertificate.issuer}
-              sx={{ mt: 2 }}
-            >
-              Agregar Certificado
-            </Button>
-          </Box>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
-            {profile.certificates.map((cert) => (
-              <Card key={cert.id}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {cert.name}
-                  </Typography>
-                  <Typography color="textSecondary" gutterBottom>
-                    {cert.issuer}
-                  </Typography>
-                  <Typography variant="body2">
-                    Obtenido: {new Date(cert.date).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    href={cert.url}
-                    target="_blank"
-                  >
-                    Ver Certificado
-                  </Button>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleDeleteCertificate(cert.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </CardActions>
-              </Card>
-            ))}
-          </Box>
-        </Paper>
-
-        {/* CV */}
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Curriculum Vitae
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {profile.cv.url ? (
-              <>
-                <Button
-                  variant="outlined"
-                  href={profile.cv.url}
-                  target="_blank"
-                  startIcon={<UploadIcon />}
-                >
-                  Ver CV Actual
-                </Button>
-                <Typography variant="body2" color="textSecondary">
-                  Última actualización: {new Date(profile.cv.lastUpdated).toLocaleDateString()}
-                </Typography>
-              </>
-            ) : (
-              <Typography variant="body2" color="textSecondary">
-                No hay CV subido
-              </Typography>
-            )}
-            <Button
-              variant="contained"
-              component="label"
-              startIcon={<UploadIcon />}
-            >
-              {profile.cv.url ? 'Actualizar CV' : 'Subir CV'}
-              <input
-                type="file"
-                hidden
-                accept=".pdf,.doc,.docx"
-                onChange={handleCvUpload}
-              />
-            </Button>
-          </Box>
-        </Paper>
       </Box>
-    </DashboardLayout>
+
+      <Grid container spacing={3}>
+        {/* Información Personal */}
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Información Personal
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Nombre Completo"
+                  value={isEditing ? editData.name : profileData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  disabled={!isEditing}
+                  InputProps={{
+                    startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Correo Electrónico"
+                  value={isEditing ? editData.email : profileData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  disabled={!isEditing}
+                  InputProps={{
+                    startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Teléfono"
+                  value={isEditing ? editData.phone : profileData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  disabled={!isEditing}
+                  InputProps={{
+                    startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Carrera"
+                  value={isEditing ? editData.career : profileData.career}
+                  onChange={(e) => handleInputChange('career', e.target.value)}
+                  disabled={!isEditing}
+                  InputProps={{
+                    startAdornment: <SchoolIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Semestre"
+                  type="number"
+                  value={isEditing ? editData.semester : profileData.semester}
+                  onChange={(e) => handleInputChange('semester', Number(e.target.value))}
+                  disabled={!isEditing}
+                  InputProps={{
+                    startAdornment: <GradeIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="GPA"
+                  type="number"
+                  value={isEditing ? editData.gpa : profileData.gpa}
+                  onChange={(e) => handleInputChange('gpa', Number(e.target.value))}
+                  disabled={!isEditing}
+                  inputProps={{ step: 0.1, min: 0, max: 5 }}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Biografía
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              value={isEditing ? editData.bio : profileData.bio}
+              onChange={(e) => handleInputChange('bio', e.target.value)}
+              disabled={!isEditing}
+              placeholder="Cuéntanos sobre ti..."
+            />
+          </Paper>
+        </Grid>
+
+        {/* Sidebar con estadísticas */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
+            <Avatar
+              sx={{ width: 100, height: 100, mx: 'auto', mb: 2, bgcolor: 'primary.main' }}
+            >
+              <PersonIcon sx={{ fontSize: 50 }} />
+            </Avatar>
+            <Typography variant="h6" gutterBottom>
+              {profileData.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {profileData.career} - {profileData.semester}° Semestre
+            </Typography>
+            <Chip
+              label={`GPA: ${profileData.gpa}`}
+              color="primary"
+              variant="outlined"
+              sx={{ mb: 1 }}
+            />
+          </Paper>
+
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Estadísticas
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <AccessTimeIcon sx={{ mr: 1, color: 'info.main' }} />
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="body2">Horas Acumuladas</Typography>
+                <Typography variant="h6">{profileData.totalHours}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <SchoolIcon sx={{ mr: 1, color: 'success.main' }} />
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="body2">Proyectos Completados</Typography>
+                <Typography variant="h6">{profileData.completedProjects}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <WarningIcon sx={{ mr: 1, color: profileData.strikes > 0 ? 'warning.main' : 'success.main' }} />
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="body2">Strikes</Typography>
+                <Typography variant="h6" color={profileData.strikes > 0 ? 'warning.main' : 'success.main'}>
+                  {profileData.strikes}/3
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
+
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Habilidades
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {profileData.skills.map((skill) => (
+                <Chip key={skill} label={skill} size="small" variant="outlined" />
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Alert de strikes */}
+      {profileData.strikes > 0 && (
+        <Alert severity="warning" sx={{ mt: 3 }}>
+          <Typography variant="body2">
+            <strong>Advertencia:</strong> Tienes {profileData.strikes} strike(s) asignado(s). 
+            Recuerda cumplir con los plazos de entrega para evitar más strikes.
+          </Typography>
+        </Alert>
+      )}
+
+      {/* Dialog para cambiar contraseña */}
+      <Dialog open={showPasswordDialog} onClose={() => setShowPasswordDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Cambiar Contraseña</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            type="password"
+            label="Contraseña Actual"
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            type="password"
+            label="Nueva Contraseña"
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            type="password"
+            label="Confirmar Nueva Contraseña"
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowPasswordDialog(false)}>Cancelar</Button>
+          <Button variant="contained" onClick={() => setShowPasswordDialog(false)}>
+            Cambiar Contraseña
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
-} 
+};
+
+export default Profile; 

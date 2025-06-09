@@ -12,8 +12,18 @@ import Calendar from '../pages/Dashboard/Student/Calendar';
 import { AvailableProjects } from '../pages/Dashboard/Student/Projects';
 import CompanyDashboard from '../pages/Dashboard/Company';
 import AdminDashboard from '../pages/Dashboard/Admin';
+import UsuariosAdmin from '../pages/Dashboard/Admin/UsuariosAdmin';
+import ValidacionHorasAdmin from '../pages/Dashboard/Admin/ValidacionHorasAdmin';
+import PerfilAdmin from '../pages/Dashboard/Admin/PerfilAdmin';
+import NotificacionesAdmin from '../pages/Dashboard/Admin/NotificacionesAdmin';
+import GestionEmpresasAdmin from '../pages/Dashboard/Admin/GestionEmpresasAdmin';
+import GestionEstudiantesAdmin from '../pages/Dashboard/Admin/GestionEstudiantesAdmin';
+import GestionProyectosAdmin from '../pages/Dashboard/Admin/GestionProyectosAdmin';
+import GestionEvaluacionesAdmin from '../pages/Dashboard/Admin/GestionEvaluacionesAdmin';
+import ConfiguracionPlataformaAdmin from '../pages/Dashboard/Admin/ConfiguracionPlataformaAdmin';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 // Componente de carga
 const LoadingFallback = () => (
@@ -67,15 +77,28 @@ export const AppRoutes = () => {
           }
         />
 
-        {/* Rutas específicas por rol */}
+        {/* Rutas del admin con layout persistente */}
         <Route
-          path="/dashboard/admin/*"
+          path="/dashboard/admin"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
+              <DashboardLayout userRole="admin" />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="usuarios" element={<UsuariosAdmin />} />
+          <Route path="validacion-horas" element={<ValidacionHorasAdmin />} />
+          <Route path="perfil" element={<PerfilAdmin />} />
+          <Route path="notificaciones" element={<NotificacionesAdmin />} />
+          <Route path="gestion-empresas" element={<GestionEmpresasAdmin />} />
+          <Route path="gestion-estudiantes" element={<GestionEstudiantesAdmin />} />
+          <Route path="gestion-proyectos" element={<GestionProyectosAdmin />} />
+          <Route path="gestion-evaluaciones" element={<GestionEvaluacionesAdmin />} />
+          <Route path="configuracion-plataforma" element={<ConfiguracionPlataformaAdmin />} />
+        </Route>
+
+        {/* Rutas específicas por rol */}
         <Route
           path="/dashboard/company/*"
           element={
@@ -89,66 +112,19 @@ export const AppRoutes = () => {
           path="/dashboard/student"
           element={
             <ProtectedRoute allowedRoles={['student']}>
-              <StudentDashboard />
+              <DashboardLayout userRole="student" />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/dashboard/profile"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/notifications"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <Notifications />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/available-projects"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <AvailableProjects />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/my-applications"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <MyApplications />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/my-projects"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <MyProjects />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/evaluations"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <Evaluations />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/calendar"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <Calendar />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route index element={<StudentDashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="available-projects" element={<AvailableProjects />} />
+          <Route path="my-applications" element={<MyApplications />} />
+          <Route path="my-projects" element={<MyProjects />} />
+          <Route path="evaluations" element={<Evaluations />} />
+          <Route path="calendar" element={<Calendar />} />
+        </Route>
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -2,165 +2,254 @@ import { useState } from 'react';
 import {
   Box,
   Typography,
+  Paper,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemText,
+  ListItemIcon,
+  ListItemAvatar,
   Avatar,
-  IconButton,
   Chip,
-  Stack,
-  Paper,
+  IconButton,
+  Badge,
+  Divider,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
-import EventIcon from '@mui/icons-material/Event';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import WorkIcon from '@mui/icons-material/Work';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { DashboardLayout } from '../../../components/layout/DashboardLayout';
+import {
+  Notifications as NotificationsIcon,
+  Assignment as AssignmentIcon,
+  Business as BusinessIcon,
+  CheckCircle as CheckCircleIcon,
+  Warning as WarningIcon,
+  Info as InfoIcon,
+  Delete as DeleteIcon,
+  MarkEmailRead as MarkEmailReadIcon,
+} from '@mui/icons-material';
 
-const mockNotifications = [
-  {
-    id: 1,
-    type: 'entrevista',
-    title: 'Tienes una entrevista programada',
-    description: 'Entrevista con Tech Solutions el 10/06/2024 a las 10:00 AM.',
-    date: '2024-06-10T10:00:00',
-    read: false,
-  },
-  {
-    id: 2,
-    type: 'asignacion',
-    title: 'Fuiste asignado a un proyecto',
-    description: 'Ahora eres parte del proyecto "Desarrollo de Aplicación Web".',
-    date: '2024-06-05T09:00:00',
-    read: false,
-  },
-  {
-    id: 3,
-    type: 'entrega',
-    title: 'Tienes una entrega de proyecto esta semana',
-    description: 'Entrega del módulo de autenticación el 12/06/2024.',
-    date: '2024-06-12T23:59:00',
-    read: false,
-  },
-  {
-    id: 4,
-    type: 'entrevista',
-    title: 'Tienes una entrevista esta semana',
-    description: 'Entrevista con Data Analytics Corp el 14/06/2024 a las 15:00.',
-    date: '2024-06-14T15:00:00',
-    read: true,
-  },
-];
+export const Notifications = () => {
+  const [selectedNotification, setSelectedNotification] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-const typeConfig = {
-  entrevista: {
-    icon: <EventIcon color="primary" />, label: 'Entrevista', color: 'primary',
-  },
-  asignacion: {
-    icon: <WorkIcon color="success" />, label: 'Asignación', color: 'success',
-  },
-  entrega: {
-    icon: <AssignmentTurnedInIcon color="warning" />, label: 'Entrega', color: 'warning',
-  },
-};
+  // Mock data for notifications
+  const notifications = [
+    {
+      id: 1,
+      type: 'application',
+      title: 'Aplicación Aceptada',
+      message: 'Tu aplicación para el proyecto "Sistema de Gestión de Inventarios" ha sido aceptada.',
+      company: 'TechCorp Solutions',
+      date: '2024-01-20',
+      read: false,
+      priority: 'high',
+    },
+    {
+      id: 2,
+      type: 'project',
+      title: 'Nuevo Proyecto Disponible',
+      message: 'Hay un nuevo proyecto que coincide con tus habilidades: "Aplicación Móvil de Delivery".',
+      company: 'Digital Dynamics',
+      date: '2024-01-19',
+      read: true,
+      priority: 'medium',
+    },
+    {
+      id: 3,
+      type: 'evaluation',
+      title: 'Evaluación Recibida',
+      message: 'Has recibido una evaluación de 4.5/5 estrellas por tu trabajo en el proyecto anterior.',
+      company: 'TechCorp Solutions',
+      date: '2024-01-18',
+      read: false,
+      priority: 'high',
+    },
+    {
+      id: 4,
+      type: 'reminder',
+      title: 'Recordatorio de Entrega',
+      message: 'Recuerda que tienes una entrega pendiente para el proyecto actual.',
+      company: 'InnovateLab',
+      date: '2024-01-17',
+      read: true,
+      priority: 'low',
+    },
+  ];
 
-export default function Notifications() {
-  const [notifications, setNotifications] = useState(mockNotifications);
-
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const handleNotificationClick = (notification: any) => {
+    setSelectedNotification(notification);
+    setDialogOpen(true);
   };
 
-  const deleteNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  const handleMarkAsRead = (notificationId: number) => {
+    // Aquí se implementaría la lógica para marcar como leída
+    console.log('Marcando como leída:', notificationId);
   };
+
+  const handleDeleteNotification = (notificationId: number) => {
+    // Aquí se implementaría la lógica para eliminar
+    console.log('Eliminando notificación:', notificationId);
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'application':
+        return <AssignmentIcon color="primary" />;
+      case 'project':
+        return <BusinessIcon color="info" />;
+      case 'evaluation':
+        return <CheckCircleIcon color="success" />;
+      case 'reminder':
+        return <WarningIcon color="warning" />;
+      default:
+        return <InfoIcon color="action" />;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'error';
+      case 'medium':
+        return 'warning';
+      case 'low':
+        return 'default';
+      default:
+        return 'default';
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <DashboardLayout userRole="student">
-      <Box sx={{ p: 3, width: '100%', minHeight: '80vh' }}>
-        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+    <Box sx={{ flexGrow: 1, p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4">
           Notificaciones
+          {unreadCount > 0 && (
+            <Badge badgeContent={unreadCount} color="error" sx={{ ml: 2 }}>
+              <NotificationsIcon />
+            </Badge>
+          )}
         </Typography>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <List sx={{ width: '100%', maxWidth: 700 }}>
-            {notifications.length === 0 && (
-              <Typography variant="body1" color="text.secondary">
-                No tienes notificaciones.
-              </Typography>
-            )}
-            {notifications.map((n) => (
-              <Paper
-                key={n.id}
-                elevation={n.read ? 0 : 3}
+        <Button variant="outlined" startIcon={<MarkEmailReadIcon />}>
+          Marcar Todas como Leídas
+        </Button>
+      </Box>
+
+      <Paper sx={{ maxHeight: 600, overflow: 'auto' }}>
+        <List>
+          {notifications.map((notification, index) => (
+            <Box key={notification.id}>
+              <ListItem
+                onClick={() => handleNotificationClick(notification)}
                 sx={{
-                  mb: 3,
-                  borderRadius: 3,
-                  bgcolor: n.read ? 'background.paper' : 'action.selected',
-                  p: 2.5,
-                  boxShadow: n.read ? undefined : 4,
-                  transition: 'box-shadow 0.2s',
+                  backgroundColor: notification.read ? 'transparent' : 'action.hover',
+                  '&:hover': {
+                    backgroundColor: 'action.selected',
+                  },
+                  cursor: 'pointer',
                 }}
               >
-                <ListItem
-                  alignItems="flex-start"
-                  disableGutters
-                  secondaryAction={
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      {!n.read && (
-                        <IconButton edge="end" aria-label="marcar como leída" onClick={() => markAsRead(n.id)}>
-                          <CheckCircleIcon color="success" />
-                        </IconButton>
-                      )}
-                      <IconButton edge="end" aria-label="eliminar" onClick={() => deleteNotification(n.id)}>
-                        <DeleteIcon color="error" />
-                      </IconButton>
-                    </Stack>
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: 'background.paper' }}>
+                    {getNotificationIcon(notification.type)}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="subtitle1" fontWeight={notification.read ? 'normal' : 'bold'}>
+                        {notification.title}
+                      </Typography>
+                      <Chip
+                        label={notification.priority === 'high' ? 'Alta' : notification.priority === 'medium' ? 'Media' : 'Baja'}
+                        size="small"
+                        color={getPriorityColor(notification.priority) as any}
+                      />
+                    </Box>
                   }
-                  sx={{ alignItems: 'center' }}
-                >
-                  <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: `${typeConfig[n.type as keyof typeof typeConfig].color}.main`, width: 48, height: 48 }}>
-                      {typeConfig[n.type as keyof typeof typeConfig].icon}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Stack direction="row" spacing={2} alignItems="center" mb={0.5}>
-                        <Typography fontWeight={n.read ? 'normal' : 'bold'} fontSize={18}>
-                          {n.title}
-                        </Typography>
-                        <Chip
-                          label={typeConfig[n.type as keyof typeof typeConfig].label}
-                          color={typeConfig[n.type as keyof typeof typeConfig].color as any}
-                          size="small"
-                          sx={{ fontWeight: 'bold', fontSize: 14 }}
-                        />
-                      </Stack>
-                    }
-                    secondary={
-                      <Box>
-                        <Typography variant="body2" color="text.secondary" mb={0.5}>
-                          {n.description}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(n.date).toLocaleString('es-ES', {
-                            dateStyle: 'medium',
-                            timeStyle: 'short',
-                          })}
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </ListItem>
-              </Paper>
-            ))}
-          </List>
-        </Box>
-      </Box>
-    </DashboardLayout>
+                  secondary={
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {notification.message}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {notification.company} • {notification.date}
+                      </Typography>
+                    </Box>
+                  }
+                />
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  {!notification.read && (
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMarkAsRead(notification.id);
+                      }}
+                    >
+                      <MarkEmailReadIcon />
+                    </IconButton>
+                  )}
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteNotification(notification.id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              </ListItem>
+              {index < notifications.length - 1 && <Divider />}
+            </Box>
+          ))}
+        </List>
+      </Paper>
+
+      {/* Dialog para mostrar detalles de la notificación */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {selectedNotification?.title}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" gutterBottom>
+            {selectedNotification?.message}
+          </Typography>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Empresa:</strong> {selectedNotification?.company}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Fecha:</strong> {selectedNotification?.date}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Prioridad:</strong> {selectedNotification?.priority === 'high' ? 'Alta' : selectedNotification?.priority === 'medium' ? 'Media' : 'Baja'}
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
+          {selectedNotification && !selectedNotification.read && (
+            <Button
+              onClick={() => {
+                handleMarkAsRead(selectedNotification.id);
+                setDialogOpen(false);
+              }}
+              variant="contained"
+            >
+              Marcar como Leída
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
-} 
+};
+
+export default Notifications; 

@@ -1,13 +1,18 @@
-import { Box, Paper, Typography, Grid, Button } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { DashboardLayout } from '../../../components/layout/DashboardLayout';
+import { Box, Paper, Typography, Grid, Button, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Add as AddIcon, ErrorOutline as ErrorOutlineIcon } from '@mui/icons-material';
 
-export const AdminDashboard = () => {
+export default function AdminDashboard() {
+  // Datos mock
+  const postulaciones = 87;
+  const alertas = [
+    'Estudiante Juan Pérez alcanzó 3 strikes',
+  ];
+
   return (
-    <DashboardLayout userRole="admin">
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+    <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4">
+          <Typography variant="h4" align="center">
             Panel de Administración
           </Typography>
           <Button
@@ -18,7 +23,6 @@ export const AdminDashboard = () => {
             Nuevo Usuario Admin
           </Button>
         </Box>
-        
         <Grid container spacing={3}>
           {/* Resumen de Usuarios */}
           <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6', lg: 'span 3' } }}>
@@ -108,6 +112,92 @@ export const AdminDashboard = () => {
             </Paper>
           </Grid>
 
+          {/* Postulaciones realizadas */}
+          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6', lg: 'span 3' } }}>
+            <Paper
+              sx={{
+                p: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                height: 140,
+                bgcolor: 'purple.light',
+                color: 'purple.contrastText',
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Postulaciones
+              </Typography>
+              <Typography variant="h4">{postulaciones}</Typography>
+              <Typography variant="body2">
+                Postulaciones realizadas
+              </Typography>
+            </Paper>
+          </Grid>
+
+          {/* Alertas pendientes */}
+          <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6', lg: 'span 3' } }}>
+            <Paper
+              sx={{
+                p: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                height: 180,
+                bgcolor: 'warning.main',
+                color: 'warning.contrastText',
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Alertas Pendientes
+              </Typography>
+              <Typography variant="h4" sx={{ mb: 1 }}>{alertas.length}</Typography>
+              <Box sx={{
+                bgcolor: 'warning.light',
+                color: 'warning.dark',
+                borderRadius: 1,
+                p: 1,
+                boxShadow: 0,
+                minHeight: 60,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 0.5,
+              }}>
+                <List dense sx={{ p: 0 }}>
+                  {alertas.slice(0, 3).map((alerta, idx) => (
+                    <ListItem key={idx} sx={{ py: 0.5, px: 0 }} disableGutters>
+                      <ListItemIcon sx={{ minWidth: 28, color: 'warning.dark' }}>
+                        <ErrorOutlineIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={alerta}
+                        primaryTypographyProps={{
+                          fontSize: 13,
+                          color: 'warning.dark',
+                          sx: {
+                            whiteSpace: 'normal',
+                            wordBreak: 'break-word'
+                          }
+                        }}
+                      />
+                    </ListItem>
+                  ))}
+                  {/* Mostrar '+N más...' solo si hay más de 3 alertas */}
+                  {alertas.length > 3 && (
+                    <ListItem sx={{ py: 0.5, px: 0 }} disableGutters>
+                      <ListItemText
+                        primary={`+${alertas.length - 3} más...`}
+                        primaryTypographyProps={{
+                          fontSize: 13,
+                          fontStyle: 'italic',
+                          color: 'warning.dark'
+                        }}
+                      />
+                    </ListItem>
+                  )}
+                </List>
+              </Box>
+            </Paper>
+          </Grid>
+
           {/* Últimos Usuarios Registrados */}
           <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
             <Paper sx={{ p: 3 }}>
@@ -148,8 +238,6 @@ export const AdminDashboard = () => {
           </Grid>
         </Grid>
       </Box>
-    </DashboardLayout>
+    </Box>
   );
-};
-
-export default AdminDashboard; 
+} 
