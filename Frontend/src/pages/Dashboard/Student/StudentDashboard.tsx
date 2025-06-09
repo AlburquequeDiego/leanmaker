@@ -1,5 +1,9 @@
 import { Box, Paper, Typography } from '@mui/material';
-import { AccessTime as AccessTimeIcon, WarningAmber as WarningAmberIcon } from '@mui/icons-material';
+import { 
+  AccessTime as AccessTimeIcon, 
+  WarningAmber as WarningAmberIcon,
+  Grade as GradeIcon 
+} from '@mui/icons-material';
 
 export const StudentDashboard = () => {
   // Mock de horas acumuladas - esto vendría de la API
@@ -9,6 +13,8 @@ export const StudentDashboard = () => {
   const maxStrikes = 3;
   const strikeBg = strikes === 3 ? 'error.main' : strikes === 2 ? 'orange' : 'warning.main';
   const strikeText = strikes === 3 ? '¡Has alcanzado el máximo de strikes!' : `Tienes ${strikes} de 3 strikes asignados por no entregar proyectos.`;
+  // Mock del GPA actual
+  const currentGPA = 4.2;
 
   return (
     <Box sx={{ flexGrow: 1, p: { xs: 0.5, sm: 1, md: 2 }, pt: 0 }}>
@@ -41,6 +47,33 @@ export const StudentDashboard = () => {
           <Typography variant="h5">{totalHours}</Typography>
           <Typography variant="body2">
             Horas de experiencia en proyectos
+          </Typography>
+        </Paper>
+        {/* GPA Actual */}
+        <Paper
+          sx={{
+            p: 2.5,
+            flex: '1 1 260px',
+            minWidth: 220,
+            maxWidth: 340,
+            display: 'flex',
+            flexDirection: 'column',
+            height: 120,
+            bgcolor: 'warning.light',
+            color: 'warning.contrastText',
+            boxShadow: 2,
+            borderRadius: 2,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+            <GradeIcon sx={{ mr: 1 }} />
+            <Typography variant="subtitle1" fontWeight={600}>
+              GPA Actual
+            </Typography>
+          </Box>
+          <Typography variant="h5">{currentGPA}</Typography>
+          <Typography variant="body2">
+            Promedio académico actual
           </Typography>
         </Paper>
         {/* Resumen de Proyectos Disponibles */}

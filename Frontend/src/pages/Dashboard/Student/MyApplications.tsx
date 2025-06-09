@@ -3,243 +3,427 @@ import {
   Box,
   Typography,
   Paper,
+  Card,
+  CardContent,
   Chip,
-  Stack,
   Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Avatar,
+  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Tabs,
-  Tab,
-  Card,
-  CardContent,
-  Divider,
+  Alert,
 } from '@mui/material';
 import {
+  Assignment as AssignmentIcon,
   Business as BusinessIcon,
-  AccessTime as AccessTimeIcon,
   CheckCircle as CheckCircleIcon,
+  Schedule as ScheduleIcon,
   Cancel as CancelIcon,
-  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 
-// Mock de aplicaciones
-const mockApplications = [
+interface Application {
+  id: string;
+  projectTitle: string;
+  company: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'completed';
+  appliedDate: string;
+  responseDate?: string;
+  requiredSkills: string[];
+  projectDuration: string;
+  salary: string;
+  location: string;
+  description: string;
+  compatibility: number;
+  notes?: string;
+}
+
+const mockApplications: Application[] = [
   {
     id: '1',
-    projectTitle: 'Desarrollo de Aplicación Web',
-    company: 'Tech Solutions',
-    appliedAt: '2024-06-01',
-    status: 'pending',
-    description: 'Desarrollo de una aplicación web full-stack utilizando React y Node.js.',
-    requirements: ['React', 'Node.js', 'MongoDB'],
-    duration: '3 meses',
+    projectTitle: 'Sistema de Gestión de Inventarios',
+    company: 'TechCorp Solutions',
+    status: 'accepted',
+    appliedDate: '2024-01-15',
+    responseDate: '2024-01-20',
+    requiredSkills: ['React', 'Node.js', 'MySQL'],
+    projectDuration: '3 meses',
+    salary: '$500,000 COP/mes',
+    location: 'Remoto',
+    description: 'Desarrollo de un sistema web para gestión de inventarios con base de datos MySQL y frontend en React.',
+    compatibility: 95,
+    notes: 'Proyecto aceptado. Inicio programado para febrero.',
   },
   {
     id: '2',
-    projectTitle: 'Análisis de Datos',
-    company: 'Data Analytics Corp',
-    appliedAt: '2024-05-28',
-    status: 'accepted',
-    description: 'Proyecto de análisis de datos y visualización para dashboard empresarial.',
-    requirements: ['Python', 'Pandas', 'Power BI'],
-    duration: '2 meses',
+    projectTitle: 'Aplicación Móvil de Delivery',
+    company: 'Digital Dynamics',
+    status: 'pending',
+    appliedDate: '2024-01-18',
+    requiredSkills: ['React Native', 'Firebase', 'JavaScript'],
+    projectDuration: '4 meses',
+    salary: '$600,000 COP/mes',
+    location: 'Bogotá',
+    description: 'Desarrollo de aplicación móvil para delivery de alimentos con geolocalización y pagos en línea.',
+    compatibility: 88,
   },
   {
     id: '3',
-    projectTitle: 'Diseño de UI/UX',
-    company: 'Creative Design',
-    appliedAt: '2024-05-25',
+    projectTitle: 'Plataforma de E-learning',
+    company: 'EduTech Solutions',
     status: 'rejected',
-    description: 'Diseño de interfaz de usuario y experiencia para aplicación móvil.',
-    requirements: ['Figma', 'Adobe XD', 'UI/UX'],
-    duration: '1 mes',
+    appliedDate: '2024-01-10',
+    responseDate: '2024-01-12',
+    requiredSkills: ['Vue.js', 'Laravel', 'PostgreSQL'],
+    projectDuration: '6 meses',
+    salary: '$550,000 COP/mes',
+    location: 'Medellín',
+    description: 'Plataforma web para cursos online con sistema de videoconferencias y evaluaciones automáticas.',
+    compatibility: 72,
+    notes: 'Rechazado por falta de experiencia en Vue.js.',
+  },
+  {
+    id: '4',
+    projectTitle: 'Dashboard de Analytics',
+    company: 'DataCorp',
+    status: 'completed',
+    appliedDate: '2023-09-01',
+    responseDate: '2023-09-05',
+    requiredSkills: ['Python', 'Pandas', 'Power BI'],
+    projectDuration: '2 meses',
+    salary: '$450,000 COP/mes',
+    location: 'Remoto',
+    description: 'Desarrollo de dashboard de analytics para visualización de datos empresariales.',
+    compatibility: 92,
+    notes: 'Proyecto completado exitosamente. Evaluación: 4.5/5.',
   },
 ];
 
-const statusConfig = {
-  pending: {
-    label: 'Pendiente',
-    color: 'warning',
-    icon: <AccessTimeIcon />,
-  },
-  accepted: {
-    label: 'Aceptada',
-    color: 'success',
-    icon: <CheckCircleIcon />,
-  },
-  rejected: {
-    label: 'Rechazada',
-    color: 'error',
-    icon: <CancelIcon />,
-  },
-};
+export const MyApplications = () => {
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-export default function MyApplications() {
-  const [applications, setApplications] = useState(mockApplications);
-  const [selectedTab, setSelectedTab] = useState('all');
-  const [selectedApplication, setSelectedApplication] = useState<string | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-  const filteredApplications = applications.filter(app => 
-    selectedTab === 'all' || app.status === selectedTab
-  );
-
-  const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
-    setSelectedTab(newValue);
+  const handleViewDetails = (application: Application) => {
+    setSelectedApplication(application);
+    setDialogOpen(true);
   };
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedApplication(id);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (selectedApplication) {
-      setApplications(prev => prev.filter(app => app.id !== selectedApplication));
-      setDeleteDialogOpen(false);
-      setSelectedApplication(null);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'warning';
+      case 'accepted':
+        return 'success';
+      case 'rejected':
+        return 'error';
+      case 'completed':
+        return 'info';
+      default:
+        return 'default';
     }
   };
 
-  const getStatusCount = (status: string) => {
-    return applications.filter(app => app.status === status).length;
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'Pendiente';
+      case 'accepted':
+        return 'Aceptada';
+      case 'rejected':
+        return 'Rechazada';
+      case 'completed':
+        return 'Completada';
+      default:
+        return status;
+    }
   };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <ScheduleIcon />;
+      case 'accepted':
+        return <CheckCircleIcon />;
+      case 'rejected':
+        return <CancelIcon />;
+      case 'completed':
+        return <TrendingUpIcon />;
+      default:
+        return <AssignmentIcon />;
+    }
+  };
+
+  const getCompatibilityColor = (compatibility: number) => {
+    if (compatibility >= 90) return 'success';
+    if (compatibility >= 80) return 'warning';
+    return 'error';
+  };
+
+  const pendingApplications = mockApplications.filter(app => app.status === 'pending');
+  const acceptedApplications = mockApplications.filter(app => app.status === 'accepted');
+  const completedApplications = mockApplications.filter(app => app.status === 'completed');
+  const rejectedApplications = mockApplications.filter(app => app.status === 'rejected');
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+        <AssignmentIcon sx={{ mr: 2, color: 'primary.main' }} />
         Mis Aplicaciones
       </Typography>
 
-      {/* Tabs de filtrado */}
-      <Paper sx={{ mb: 3 }}>
-        <Tabs
-          value={selectedTab}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Tab 
-            label={`Todas (${applications.length})`} 
-            value="all"
-          />
-          <Tab 
-            label={`Pendientes (${getStatusCount('pending')})`} 
-            value="pending"
-          />
-          <Tab 
-            label={`Aceptadas (${getStatusCount('accepted')})`} 
-            value="accepted"
-          />
-          <Tab 
-            label={`Rechazadas (${getStatusCount('rejected')})`} 
-            value="rejected"
-          />
-        </Tabs>
-      </Paper>
-
-      {/* Lista de aplicaciones */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-        {filteredApplications.map((application) => (
-          <Box key={application.id}>
-            <Card 
-              sx={{ 
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                '&:hover': {
-                  boxShadow: 6,
-                },
-              }}
-            >
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                  <Typography variant="h6" component="div" sx={{ pr: 4 }}>
-                    {application.projectTitle}
-                  </Typography>
-                  <Chip
-                    icon={statusConfig[application.status as keyof typeof statusConfig].icon}
-                    label={statusConfig[application.status as keyof typeof statusConfig].label}
-                    color={statusConfig[application.status as keyof typeof statusConfig].color as any}
-                    size="small"
-                  />
-                </Stack>
-
-                <Stack direction="row" alignItems="center" spacing={1} mb={2}>
-                  <BusinessIcon color="action" fontSize="small" />
-                  <Typography variant="body2" color="text.secondary">
-                    {application.company}
-                  </Typography>
-                </Stack>
-
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {application.description}
-                </Typography>
-
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap mb={2}>
-                  {application.requirements.map((req, index) => (
-                    <Chip
-                      key={index}
-                      label={req}
-                      size="small"
-                      variant="outlined"
-                    />
-                  ))}
-                </Stack>
-
-                <Divider sx={{ my: 2 }} />
-
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="body2" color="text.secondary">
-                    Aplicado el {new Date(application.appliedAt).toLocaleDateString('es-ES')}
-                  </Typography>
-                  {application.status === 'pending' && (
-                    <Button
-                      size="small"
-                      color="error"
-                      startIcon={<DeleteIcon />}
-                      onClick={() => handleDeleteClick(application.id)}
-                    >
-                      Cancelar
-                    </Button>
-                  )}
-                </Stack>
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
+      {/* Estadísticas */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="warning.main">
+              {pendingApplications.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Pendientes
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="success.main">
+              {acceptedApplications.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Aceptadas
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="info.main">
+              {completedApplications.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Completadas
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="error.main">
+              {rejectedApplications.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Rechazadas
+            </Typography>
+          </CardContent>
+        </Card>
       </Box>
 
-      {/* Diálogo de confirmación de eliminación */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-      >
-        <DialogTitle>Cancelar Aplicación</DialogTitle>
+      {/* Tabla de aplicaciones */}
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+          Historial de Aplicaciones ({mockApplications.length})
+        </Typography>
+        
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Proyecto</TableCell>
+                <TableCell>Empresa</TableCell>
+                <TableCell>Estado</TableCell>
+                <TableCell>Compatibilidad</TableCell>
+                <TableCell>Fecha Aplicación</TableCell>
+                <TableCell>Duración</TableCell>
+                <TableCell>Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {mockApplications.map((application) => (
+                <TableRow key={application.id}>
+                  <TableCell>
+                    <Box>
+                      <Typography variant="body1" fontWeight="bold">
+                        {application.projectTitle}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {application.description.substring(0, 60)}...
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                        <BusinessIcon fontSize="small" />
+                      </Avatar>
+                      {application.company}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      icon={getStatusIcon(application.status)}
+                      label={getStatusText(application.status)}
+                      color={getStatusColor(application.status) as any}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={`${application.compatibility}%`}
+                      color={getCompatibilityColor(application.compatibility) as any}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {new Date(application.appliedDate).toLocaleDateString('es-ES')}
+                  </TableCell>
+                  <TableCell>
+                    {application.projectDuration}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => handleViewDetails(application)}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
+      {/* Dialog para detalles */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">
+              Detalles de la Aplicación
+            </Typography>
+            {selectedApplication && (
+              <Chip
+                icon={getStatusIcon(selectedApplication.status)}
+                label={getStatusText(selectedApplication.status)}
+                color={getStatusColor(selectedApplication.status) as any}
+              />
+            )}
+          </Box>
+        </DialogTitle>
         <DialogContent>
-          <Typography>
-            ¿Estás seguro de que deseas cancelar esta aplicación? Esta acción no se puede deshacer.
-          </Typography>
+          {selectedApplication && (
+            <Box>
+              <Typography variant="h5" gutterBottom>
+                {selectedApplication.projectTitle}
+              </Typography>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ mr: 1, bgcolor: 'primary.main' }}>
+                  <BusinessIcon />
+                </Avatar>
+                <Typography variant="body1">
+                  {selectedApplication.company}
+                </Typography>
+              </Box>
+
+              <Typography variant="body1" sx={{ mb: 3 }}>
+                {selectedApplication.description}
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Duración
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedApplication.projectDuration}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Salario
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedApplication.salary}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Ubicación
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedApplication.location}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Compatibilidad
+                  </Typography>
+                  <Chip
+                    label={`${selectedApplication.compatibility}%`}
+                    color={getCompatibilityColor(selectedApplication.compatibility) as any}
+                  />
+                </Box>
+              </Box>
+
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Habilidades Requeridas:
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+                {selectedApplication.requiredSkills.map((skill) => (
+                  <Chip key={skill} label={skill} size="small" variant="outlined" />
+                ))}
+              </Box>
+
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Fecha de Aplicación
+                  </Typography>
+                  <Typography variant="body1">
+                    {new Date(selectedApplication.appliedDate).toLocaleDateString('es-ES')}
+                  </Typography>
+                </Box>
+                {selectedApplication.responseDate && (
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Fecha de Respuesta
+                    </Typography>
+                    <Typography variant="body1">
+                      {new Date(selectedApplication.responseDate).toLocaleDateString('es-ES')}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              {selectedApplication.notes && (
+                <Alert severity="info">
+                  <Typography variant="body2">
+                    <strong>Notas:</strong> {selectedApplication.notes}
+                  </Typography>
+                </Alert>
+              )}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>No, mantener</Button>
-          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
-            Sí, cancelar
+          <Button onClick={() => setDialogOpen(false)}>
+            Cerrar
           </Button>
         </DialogActions>
       </Dialog>
-
-      {filteredApplications.length === 0 && (
-        <Paper sx={{ p: 3, textAlign: 'center' }}>
-          <Typography color="text.secondary">
-            No hay aplicaciones {selectedTab !== 'all' ? `con estado ${statusConfig[selectedTab as keyof typeof statusConfig]?.label.toLowerCase()}` : ''}.
-          </Typography>
-        </Paper>
-      )}
     </Box>
   );
-} 
+};
+
+export default MyApplications; 

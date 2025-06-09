@@ -4,7 +4,6 @@ import {
   Typography,
   Paper,
   Chip,
-  Stack,
   Button,
   Card,
   CardContent,
@@ -15,7 +14,6 @@ import {
   DialogActions,
   Tabs,
   Tab,
-  Divider,
   IconButton,
   Tooltip,
   Table,
@@ -32,13 +30,13 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  Alert,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
   AccessTime as AccessTimeIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
-  CalendarToday as CalendarIcon,
   Assignment as AssignmentIcon,
   Description as DescriptionIcon,
   Chat as ChatIcon,
@@ -46,385 +44,464 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   Schedule as ScheduleIcon,
-  LocationOn as LocationIcon,
-  AttachMoney as MoneyIcon,
-  Group as GroupIcon,
-  Star as StarIcon,
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 
-// Mock de proyectos
-const mockProjects = [
+interface Project {
+  id: string;
+  title: string;
+  company: string;
+  status: 'active' | 'completed' | 'paused';
+  startDate: string;
+  endDate: string;
+  progress: number;
+  hoursWorked: number;
+  totalHours: number;
+  salary: string;
+  location: string;
+  description: string;
+  technologies: string[];
+  teamMembers: number;
+  mentor: string;
+  deliverables: string[];
+  nextMilestone: string;
+  nextMilestoneDate: string;
+}
+
+const mockProjects: Project[] = [
   {
     id: '1',
-    title: 'Desarrollo de Aplicación Web',
-    company: 'Tech Solutions',
-    status: 'in_progress',
+    title: 'Sistema de Gestión de Inventarios',
+    company: 'TechCorp Solutions',
+    status: 'active',
+    startDate: '2024-01-20',
+    endDate: '2024-04-20',
     progress: 65,
-    description: 'Desarrollo de una aplicación web full-stack utilizando React y Node.js.',
-    startDate: '2024-05-01',
-    endDate: '2024-07-31',
-    nextDeadline: '2024-06-15',
-    tasks: [
-      { id: 1, title: 'Implementar autenticación', status: 'completed' },
-      { id: 2, title: 'Desarrollar dashboard', status: 'in_progress' },
-      { id: 3, title: 'Integrar API', status: 'pending' },
-    ],
+    hoursWorked: 52,
+    totalHours: 80,
+    salary: '$500,000 COP/mes',
+    location: 'Remoto',
+    description: 'Desarrollo de un sistema web para gestión de inventarios con base de datos MySQL y frontend en React.',
+    technologies: ['React', 'Node.js', 'MySQL', 'JWT'],
+    teamMembers: 3,
     mentor: 'Juan Pérez',
-    mentorEmail: 'juan.perez@techsolutions.com',
+    deliverables: [
+      'Frontend completo con React',
+      'API REST con Node.js',
+      'Base de datos MySQL',
+      'Documentación técnica',
+    ],
+    nextMilestone: 'Implementación de reportes',
+    nextMilestoneDate: '2024-02-15',
   },
   {
     id: '2',
-    title: 'Análisis de Datos',
-    company: 'Data Analytics Corp',
-    status: 'on_track',
-    progress: 85,
-    description: 'Proyecto de análisis de datos y visualización para dashboard empresarial.',
-    startDate: '2024-04-15',
-    endDate: '2024-06-15',
-    nextDeadline: '2024-06-10',
-    tasks: [
-      { id: 1, title: 'Recolección de datos', status: 'completed' },
-      { id: 2, title: 'Análisis estadístico', status: 'completed' },
-      { id: 3, title: 'Visualización', status: 'in_progress' },
-    ],
+    title: 'Dashboard de Analytics',
+    company: 'DataCorp',
+    status: 'completed',
+    startDate: '2023-09-01',
+    endDate: '2023-11-01',
+    progress: 100,
+    hoursWorked: 60,
+    totalHours: 60,
+    salary: '$450,000 COP/mes',
+    location: 'Remoto',
+    description: 'Desarrollo de dashboard de analytics para visualización de datos empresariales.',
+    technologies: ['Python', 'Pandas', 'Power BI', 'SQL'],
+    teamMembers: 2,
     mentor: 'María García',
-    mentorEmail: 'maria.garcia@dataanalytics.com',
+    deliverables: [
+      'Dashboard interactivo',
+      'Scripts de procesamiento',
+      'Reportes automatizados',
+      'Documentación de uso',
+    ],
+    nextMilestone: 'Proyecto completado',
+    nextMilestoneDate: '2023-11-01',
   },
   {
     id: '3',
-    title: 'Diseño de UI/UX',
-    company: 'Creative Design',
-    status: 'at_risk',
-    progress: 30,
-    description: 'Diseño de interfaz de usuario y experiencia para aplicación móvil.',
-    startDate: '2024-06-01',
-    endDate: '2024-06-30',
-    nextDeadline: '2024-06-12',
-    tasks: [
-      { id: 1, title: 'Wireframes', status: 'completed' },
-      { id: 2, title: 'Prototipos', status: 'in_progress' },
-      { id: 3, title: 'Testing', status: 'pending' },
-    ],
+    title: 'Aplicación Móvil de Delivery',
+    company: 'Digital Dynamics',
+    status: 'paused',
+    startDate: '2024-02-01',
+    endDate: '2024-06-01',
+    progress: 25,
+    hoursWorked: 20,
+    totalHours: 160,
+    salary: '$600,000 COP/mes',
+    location: 'Bogotá',
+    description: 'Desarrollo de aplicación móvil para delivery de alimentos con geolocalización y pagos en línea.',
+    technologies: ['React Native', 'Firebase', 'JavaScript', 'Google Maps API'],
+    teamMembers: 4,
     mentor: 'Carlos López',
-    mentorEmail: 'carlos.lopez@creativedesign.com',
+    deliverables: [
+      'App móvil completa',
+      'Backend con Firebase',
+      'Sistema de pagos',
+      'Integración con mapas',
+    ],
+    nextMilestone: 'Reanudación del proyecto',
+    nextMilestoneDate: '2024-03-01',
   },
 ];
 
-const statusConfig = {
-  in_progress: {
-    label: 'En Progreso',
-    color: 'info',
-    icon: <AccessTimeIcon />,
-  },
-  on_track: {
-    label: 'En Tiempo',
-    color: 'success',
-    icon: <CheckCircleIcon />,
-  },
-  at_risk: {
-    label: 'En Riesgo',
-    color: 'warning',
-    icon: <WarningIcon />,
-  },
-};
-
-const taskStatusConfig = {
-  completed: {
-    label: 'Completado',
-    color: 'success',
-  },
-  in_progress: {
-    label: 'En Progreso',
-    color: 'info',
-  },
-  pending: {
-    label: 'Pendiente',
-    color: 'warning',
-  },
-};
-
 export const MyProjects = () => {
-  const projects = mockProjects;
-  const [selectedTab, setSelectedTab] = useState('all');
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [actionType, setActionType] = useState<'view' | 'edit' | 'delete' | null>(null);
 
-  const filteredProjects = projects.filter(project => 
-    selectedTab === 'all' || project.status === selectedTab
-  );
-
-  const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
-    setSelectedTab(newValue);
-  };
-
-  const handleAction = (project: any, type: 'view' | 'edit' | 'delete') => {
+  const handleViewDetails = (project: Project) => {
     setSelectedProject(project);
-    setActionType(type);
     setDialogOpen(true);
   };
 
-  const getSelectedProject = () => {
-    return projects.find(p => p.id === selectedProject);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'success';
+      case 'completed':
+        return 'info';
+      case 'paused':
+        return 'warning';
+      default:
+        return 'default';
+    }
   };
 
-  const getStatusCount = (status: string) => {
-    return projects.filter(project => project.status === status).length;
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'Activo';
+      case 'completed':
+        return 'Completado';
+      case 'paused':
+        return 'Pausado';
+      default:
+        return status;
+    }
   };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <TrendingUpIcon />;
+      case 'completed':
+        return <CheckCircleIcon />;
+      case 'paused':
+        return <ScheduleIcon />;
+      default:
+        return <AssignmentIcon />;
+    }
+  };
+
+  const activeProjects = mockProjects.filter(project => project.status === 'active');
+  const completedProjects = mockProjects.filter(project => project.status === 'completed');
+  const pausedProjects = mockProjects.filter(project => project.status === 'paused');
+  const totalHoursWorked = mockProjects.reduce((sum, project) => sum + project.hoursWorked, 0);
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+        <AssignmentIcon sx={{ mr: 2, color: 'primary.main' }} />
         Mis Proyectos
       </Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Proyecto</TableCell>
-              <TableCell>Empresa</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Progreso</TableCell>
-              <TableCell>Horas</TableCell>
-              <TableCell>Calificación</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredProjects.map((project) => (
-              <TableRow key={project.id}>
-                <TableCell>
-                  <Box>
-                    <Typography variant="body1" fontWeight="bold">
-                      {project.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {project.description.substring(0, 60)}...
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                      <BusinessIcon fontSize="small" />
-                    </Avatar>
-                    {project.company}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={statusConfig[project.status as keyof typeof statusConfig].label}
-                    color={statusConfig[project.status as keyof typeof statusConfig].color as any}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ width: '100%', mr: 1 }}>
-                      <LinearProgress
-                        variant="determinate"
-                        value={project.progress}
-                        sx={{ height: 8, borderRadius: 5 }}
-                      />
-                    </Box>
-                    <Box sx={{ minWidth: 35 }}>
+      {/* Estadísticas */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="success.main">
+              {activeProjects.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Proyectos Activos
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="info.main">
+              {completedProjects.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Completados
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="warning.main">
+              {pausedProjects.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Pausados
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="primary.main">
+              {totalHoursWorked}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Horas Trabajadas
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* Tabla de proyectos */}
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+          Proyectos ({mockProjects.length})
+        </Typography>
+        
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Proyecto</TableCell>
+                <TableCell>Empresa</TableCell>
+                <TableCell>Estado</TableCell>
+                <TableCell>Progreso</TableCell>
+                <TableCell>Horas</TableCell>
+                <TableCell>Próximo Hito</TableCell>
+                <TableCell>Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {mockProjects.map((project) => (
+                <TableRow key={project.id}>
+                  <TableCell>
+                    <Box>
+                      <Typography variant="body1" fontWeight="bold">
+                        {project.title}
+                      </Typography>
                       <Typography variant="body2" color="text.secondary">
+                        {project.description.substring(0, 60)}...
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                        <BusinessIcon fontSize="small" />
+                      </Avatar>
+                      {project.company}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      icon={getStatusIcon(project.status)}
+                      label={getStatusText(project.status)}
+                      color={getStatusColor(project.status) as any}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LinearProgress 
+                        variant="determinate" 
+                        value={project.progress} 
+                        sx={{ width: 60, height: 6, borderRadius: 3 }}
+                      />
+                      <Typography variant="body2">
                         {project.progress}%
                       </Typography>
                     </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">
-                    {project.progress}% completado
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Rating value={4.5} readOnly size="small" />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={() => handleAction(project, 'view')}
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={() => handleAction(project, 'edit')}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleAction(project, 'delete')}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {project.hoursWorked}/{project.totalHours}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box>
+                      <Typography variant="body2" fontWeight="bold">
+                        {project.nextMilestone}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {new Date(project.nextMilestoneDate).toLocaleDateString('es-ES')}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => handleViewDetails(project)}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
 
-      {/* Dialog para mostrar detalles del proyecto */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+      {/* Dialog para detalles */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="lg" fullWidth>
         <DialogTitle>
-          {actionType === 'view' && 'Detalles del Proyecto'}
-          {actionType === 'edit' && 'Editar Proyecto'}
-          {actionType === 'delete' && 'Eliminar Proyecto'}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">
+              Detalles del Proyecto
+            </Typography>
+            {selectedProject && (
+              <Chip
+                icon={getStatusIcon(selectedProject.status)}
+                label={getStatusText(selectedProject.status)}
+                color={getStatusColor(selectedProject.status) as any}
+              />
+            )}
+          </Box>
         </DialogTitle>
         <DialogContent>
           {selectedProject && (
             <Box>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h5" gutterBottom>
                 {selectedProject.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ mr: 1, bgcolor: 'primary.main' }}>
+                  <BusinessIcon />
+                </Avatar>
+                <Typography variant="body1">
+                  {selectedProject.company}
+                </Typography>
+              </Box>
+
+              <Typography variant="body1" sx={{ mb: 3 }}>
                 {selectedProject.description}
               </Typography>
 
-              <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid item xs={12} md={6}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Información General
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Empresa:</strong> {selectedProject.company}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <ScheduleIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Duración:</strong> {selectedProject.startDate} - {selectedProject.endDate}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <LocationIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Ubicación:</strong> {selectedProject.location}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <MoneyIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Salario:</strong> {selectedProject.salary}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <GroupIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Equipo:</strong> {selectedProject.teamSize} personas
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+              {/* Progreso */}
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="subtitle2">
+                    Progreso del Proyecto
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    {selectedProject.progress}%
+                  </Typography>
+                </Box>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={selectedProject.progress} 
+                  sx={{ height: 8, borderRadius: 4 }}
+                />
+              </Box>
 
-                <Grid item xs={12} md={6}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Progreso y Horas
-                      </Typography>
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="body2" gutterBottom>
-                          Progreso del proyecto
-                        </Typography>
-                        <LinearProgress
-                          variant="determinate"
-                          value={selectedProject.progress}
-                          sx={{ height: 10, borderRadius: 5 }}
-                        />
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                          {selectedProject.progress}% completado
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <AccessTimeIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Horas trabajadas:</strong> {selectedProject.hoursWorked}/{selectedProject.totalHours}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <StarIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Calificación:</strong> {selectedProject.rating}/5
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+              {/* Información del proyecto */}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Fecha Inicio
+                  </Typography>
+                  <Typography variant="body1">
+                    {new Date(selectedProject.startDate).toLocaleDateString('es-ES')}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Fecha Fin
+                  </Typography>
+                  <Typography variant="body1">
+                    {new Date(selectedProject.endDate).toLocaleDateString('es-ES')}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Horas Trabajadas
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.hoursWorked}/{selectedProject.totalHours}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Salario
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.salary}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Ubicación
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.location}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Mentor
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.mentor}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Equipo
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.teamMembers} miembros
+                  </Typography>
+                </Box>
+              </Box>
 
-                <Grid item xs={12}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Tecnologías Utilizadas
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {selectedProject.technologies.map((tech: string) => (
-                          <Chip key={tech} label={tech} size="small" variant="outlined" />
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+              {/* Tecnologías */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Tecnologías Utilizadas:
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {selectedProject.technologies.map((tech) => (
+                    <Chip key={tech} label={tech} size="small" variant="outlined" />
+                  ))}
+                </Box>
+              </Box>
 
-                <Grid item xs={12}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Tareas del Proyecto
+              {/* Entregables */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Entregables:
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {selectedProject.deliverables.map((deliverable, index) => (
+                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CheckCircleIcon color="success" fontSize="small" />
+                      <Typography variant="body2">
+                        {deliverable}
                       </Typography>
-                      <List>
-                        {selectedProject.tasks.map((task: any) => (
-                          <ListItem key={task.id}>
-                            <ListItemIcon>
-                              {task.completed ? (
-                                <CheckCircleIcon color="success" />
-                              ) : (
-                                <AssignmentIcon color="action" />
-                              )}
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={task.title}
-                              sx={{
-                                textDecoration: task.completed ? 'line-through' : 'none',
-                                color: task.completed ? 'text.secondary' : 'text.primary',
-                              }}
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+
+              {/* Próximo hito */}
+              <Alert severity="info">
+                <Typography variant="body2">
+                  <strong>Próximo Hito:</strong> {selectedProject.nextMilestone}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Fecha:</strong> {new Date(selectedProject.nextMilestoneDate).toLocaleDateString('es-ES')}
+                </Typography>
+              </Alert>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
-          {actionType === 'edit' && (
-            <Button variant="contained" color="primary">
-              Guardar Cambios
-            </Button>
-          )}
-          {actionType === 'delete' && (
-            <Button variant="contained" color="error">
-              Eliminar
-            </Button>
-          )}
+          <Button onClick={() => setDialogOpen(false)}>
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

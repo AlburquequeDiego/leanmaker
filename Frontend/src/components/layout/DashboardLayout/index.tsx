@@ -32,6 +32,7 @@ import {
   Settings as SettingsIcon,
   Assessment as AssessmentIcon,
   AccessTime as AccessTimeIcon,
+  Quiz as QuizIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 
@@ -106,6 +107,8 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/student/my-projects' },
         { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/student/evaluations' },
         { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/student/calendar' },
+        { text: 'Cuestionario API', icon: <QuizIcon />, path: '/dashboard/student/api-questionnaire' },
+        { text: 'Resultados API', icon: <AssessmentIcon />, path: '/dashboard/student/api-results' },
       ],
     };
 

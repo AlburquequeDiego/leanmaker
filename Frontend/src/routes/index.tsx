@@ -9,6 +9,8 @@ import MyApplications from '../pages/Dashboard/Student/MyApplications';
 import MyProjects from '../pages/Dashboard/Student/MyProjects';
 import Evaluations from '../pages/Dashboard/Student/Evaluations';
 import Calendar from '../pages/Dashboard/Student/Calendar';
+import APIQuestionnaire from '../pages/Dashboard/Student/APIQuestionnaire';
+import APIResults from '../pages/Dashboard/Student/APIResults';
 import { AvailableProjects } from '../pages/Dashboard/Student/Projects';
 import CompanyDashboard from '../pages/Dashboard/Company';
 import AdminDashboard from '../pages/Dashboard/Admin';
@@ -124,6 +126,8 @@ export const AppRoutes = () => {
           <Route path="my-projects" element={<MyProjects />} />
           <Route path="evaluations" element={<Evaluations />} />
           <Route path="calendar" element={<Calendar />} />
+          <Route path="api-questionnaire" element={<APIQuestionnaire />} />
+          <Route path="api-results" element={<APIResults />} />
         </Route>
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />
