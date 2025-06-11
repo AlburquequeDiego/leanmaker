@@ -59,7 +59,7 @@ export const ForgotPassword = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'background.default',
+        background: `url("/imagenes/fondode.png") no-repeat center center/cover`,
       }}
     >
       <Container component="main" maxWidth={false} disableGutters sx={{ width: '400px' }}>

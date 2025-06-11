@@ -282,9 +282,9 @@ export const CompanyInterviews: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom>
           Entrevistas
-        </Typography>
+      </Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -479,10 +479,10 @@ export const CompanyInterviews: React.FC = () => {
                         label={getOutcomeLabel(selectedInterview.outcome)}
                         color={getOutcomeColor(selectedInterview.outcome) as any}
                         size="small"
-                      />
+                />
                     )}
                   </Box>
-                </Box>
+              </Box>
               </Box>
 
               <Typography variant="h6" gutterBottom>
@@ -514,7 +514,7 @@ export const CompanyInterviews: React.FC = () => {
                   <ListItemText
                     primary="Email"
                     secondary={selectedInterview.studentEmail}
-                  />
+                />
                 </ListItem>
                 <ListItem>
                   <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
@@ -573,13 +573,13 @@ export const CompanyInterviews: React.FC = () => {
             <Button
               onClick={() => {
                 // Aquí se implementaría la lógica para completar la entrevista
-                setShowDialog(false);
+              setShowDialog(false);
               }}
               variant="contained"
               color="success"
             >
               Completar Entrevista
-            </Button>
+          </Button>
           )}
         </DialogActions>
       </Dialog>
@@ -714,4 +714,4 @@ export const CompanyInterviews: React.FC = () => {
   );
 };
 
-export default CompanyInterviews; 
+export default CompanyInterviews;
