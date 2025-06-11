@@ -1,0 +1,36 @@
+# Django y DRF
+Django==4.2.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+django-filter==23.3
+
+# Autenticación JWT
+djangorestframework-simplejwt==5.3.0
+
+# Base de datos SQL Server
+django-mssql-backend==2.8.1
+pyodbc==4.0.39
+
+# Utilidades
+python-decouple==3.8
+Pillow==10.1.0
+django-storages==1.14.2
+
+# Desarrollo y testing
+django-debug-toolbar==4.2.0
+pytest==7.4.3
+pytest-django==4.7.0
+
+# Documentación API
+drf-spectacular==0.26.5
+
+# Validación y serialización
+marshmallow==3.20.1
+
+# Cache y sesiones
+redis==5.0.1
+django-redis==5.4.0
+
+# Seguridad
+django-ratelimit==4.1.0
+django-axes==6.1.0 
