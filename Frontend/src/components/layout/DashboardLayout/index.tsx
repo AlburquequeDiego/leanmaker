@@ -33,6 +33,10 @@ import {
   Assessment as AssessmentIcon,
   AccessTime as AccessTimeIcon,
   Quiz as QuizIcon,
+  Add as AddIcon,
+  Search as SearchIcon,
+  VideoCall as VideoCallIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 
@@ -96,10 +100,13 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Configuración de Plataforma', icon: <SettingsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
       ],
       company: [
-        { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/company/my-projects' },
-        { text: 'Postulantes', icon: <PeopleIcon />, path: '/dashboard/company/applicants' },
+        { text: 'Proyectos', icon: <AssignmentIcon />, path: '/dashboard/company/projects' },
+        { text: 'Postulaciones', icon: <PeopleIcon />, path: '/dashboard/company/applications' },
+        { text: 'Buscar Estudiantes', icon: <SearchIcon />, path: '/dashboard/company/search-students' },
         { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/company/evaluations' },
+        { text: 'Entrevistas', icon: <VideoCallIcon />, path: '/dashboard/company/interviews' },
         { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/company/calendar' },
+        { text: 'Strikes', icon: <WarningIcon />, path: '/dashboard/company/strikes' },
       ],
       student: [
         { text: 'Proyectos Disponibles', icon: <AssignmentIcon />, path: '/dashboard/student/available-projects' },

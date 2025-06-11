@@ -49,44 +49,7 @@ export const Dashboard = ({ userRole }: DashboardProps) => {
   };
 
   return (
-    <DashboardLayout userRole={userRole}>
-      <Routes>
-        <Route index element={getDashboardContent()} />
-        {/* Aquí irán las rutas específicas de cada dashboard */}
-        <Route path="profile" element={<div>Perfil de Usuario</div>} />
-        <Route path="notifications" element={<div>Notificaciones</div>} />
-        {/* Rutas específicas del admin */}
-        {userRole === 'admin' && (
-          <>
-            <Route path="users" element={<div>Gestión de Usuarios</div>} />
-            <Route path="companies" element={<div>Gestión de Empresas</div>} />
-            <Route path="students" element={<div>Gestión de Estudiantes</div>} />
-            <Route path="projects" element={<div>Gestión de Proyectos</div>} />
-            <Route path="evaluations" element={<div>Evaluaciones</div>} />
-            <Route path="settings" element={<div>Configuración</div>} />
-          </>
-        )}
-        {/* Rutas específicas de la empresa */}
-        {userRole === 'company' && (
-          <>
-            <Route path="my-projects" element={<div>Mis Proyectos</div>} />
-            <Route path="applicants" element={<div>Postulantes</div>} />
-            <Route path="evaluations" element={<div>Evaluaciones</div>} />
-            <Route path="calendar" element={<div>Calendario</div>} />
-          </>
-        )}
-        {/* Rutas específicas del estudiante */}
-        {userRole === 'student' && (
-          <>
-            <Route path="available-projects" element={<div>Proyectos Disponibles</div>} />
-            <Route path="my-applications" element={<div>Mis Aplicaciones</div>} />
-            <Route path="my-projects" element={<div>Mis Proyectos</div>} />
-            <Route path="evaluations" element={<div>Evaluaciones</div>} />
-            <Route path="calendar" element={<div>Calendario</div>} />
-          </>
-        )}
-      </Routes>
-    </DashboardLayout>
+    <DashboardLayout userRole={userRole} />
   );
 };
 

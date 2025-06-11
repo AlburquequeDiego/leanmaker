@@ -12,7 +12,16 @@ import Calendar from '../pages/Dashboard/Student/Calendar';
 import APIQuestionnaire from '../pages/Dashboard/Student/APIQuestionnaire';
 import APIResults from '../pages/Dashboard/Student/APIResults';
 import { AvailableProjects } from '../pages/Dashboard/Student/Projects';
-import CompanyDashboard from '../pages/Dashboard/Company';
+import CompanyDashboard from '../pages/Dashboard/Company/CompanyDashboard';
+import CompanyProfile from '../pages/Dashboard/Company/Profile';
+import CompanyNotifications from '../pages/Dashboard/Company/Notifications';
+import CompanyProjects from '../pages/Dashboard/Company/Projects';
+import CompanyApplications from '../pages/Dashboard/Company/Applications';
+import SearchStudents from '../pages/Dashboard/Company/SearchStudents';
+import CompanyEvaluations from '../pages/Dashboard/Company/Evaluations';
+import CompanyInterviews from '../pages/Dashboard/Company/Interviews';
+import CompanyCalendar from '../pages/Dashboard/Company/Calendar';
+import CompanyStrikes from '../pages/Dashboard/Company/Strikes';
 import AdminDashboard from '../pages/Dashboard/Admin';
 import UsuariosAdmin from '../pages/Dashboard/Admin/UsuariosAdmin';
 import ValidacionHorasAdmin from '../pages/Dashboard/Admin/ValidacionHorasAdmin';
@@ -100,15 +109,27 @@ export const AppRoutes = () => {
           <Route path="configuracion-plataforma" element={<ConfiguracionPlataformaAdmin />} />
         </Route>
 
-        {/* Rutas específicas por rol */}
+        {/* Rutas de empresa con layout persistente - Consolidadas en 10 interfaces */}
         <Route
-          path="/dashboard/company/*"
+          path="/dashboard/company"
           element={
             <ProtectedRoute allowedRoles={['company']}>
-              <CompanyDashboard />
+              <DashboardLayout userRole="company" />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<CompanyDashboard />} />
+          <Route path="profile" element={<CompanyProfile />} />
+          <Route path="notifications" element={<CompanyNotifications />} />
+          <Route path="projects" element={<CompanyProjects />} />
+          <Route path="applications" element={<CompanyApplications />} />
+          <Route path="search-students" element={<SearchStudents />} />
+          <Route path="evaluations" element={<CompanyEvaluations />} />
+          <Route path="interviews" element={<CompanyInterviews />} />
+          <Route path="calendar" element={<CompanyCalendar />} />
+          <Route path="strikes" element={<CompanyStrikes />} />
+        </Route>
+
         {/* Rutas del estudiante */}
         <Route
           path="/dashboard/student"
