@@ -8,6 +8,7 @@ import {
   Link,
   Paper,
   Alert,
+  Button,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -123,6 +124,15 @@ export const Login = () => {
               helperText={formik.touched.password && formik.errors.password}
               disabled={isLoading}
             />
+            <LoadingButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              loading={isLoading}
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Iniciar Sesión
+            </LoadingButton>
             <Box sx={{ mt: 1, mb: 2 }}>
               <Link
                 component={RouterLink}
@@ -133,15 +143,20 @@ export const Login = () => {
                 ¿Olvidaste tu contraseña?
               </Link>
             </Box>
-            <LoadingButton
-              type="submit"
+            {/* Checkbox Recordar contraseña debajo de recuperar contraseña */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <input type="checkbox" id="remember" name="remember" style={{ marginRight: 8 }} />
+              <label htmlFor="remember" style={{ fontSize: 15, color: '#888' }}>Recordar contraseña</label>
+            </Box>
+            {/* Botón Volver al inicio */}
+            <Button
               fullWidth
-              variant="contained"
-              loading={isLoading}
-              sx={{ mt: 3, mb: 2 }}
+              variant="outlined"
+              sx={{ mb: 2, color: 'primary.main', borderColor: 'primary.main', fontWeight: 600, bgcolor: 'white', '&:hover': { bgcolor: '#f5faff', borderColor: 'primary.dark' } }}
+              onClick={() => navigate('/')}
             >
-              Iniciar Sesión
-            </LoadingButton>
+              Volver al inicio
+            </Button>
             <Box sx={{ textAlign: 'center' }}>
               <Link
                 component={RouterLink}

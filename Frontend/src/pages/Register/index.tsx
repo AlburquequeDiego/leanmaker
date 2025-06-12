@@ -94,18 +94,21 @@ export const Register = () => {
         background: `url("/imagenes/fondode.png") no-repeat center center/cover`,
       }}
     >
-      <Container component="main" maxWidth={false} disableGutters sx={{ width: '400px' }}>
+      <Container component="main" maxWidth={false} disableGutters sx={{ width: '100%', maxWidth: 340, my: 8 }}>
         <Paper
           elevation={3}
           sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            borderRadius: 3,
+            p: 3,
+            pt: 2,
+            pb: 2,
+            bgcolor: 'white',
+            minWidth: 0,
+            textAlign: 'center',
             width: '100%',
           }}
         >
-          <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+          <Typography component="h1" variant="h6" sx={{ mb: 2 }}>
             Registrarse
           </Typography>
           {error && (
@@ -119,7 +122,7 @@ export const Register = () => {
             sx={{ width: '100%' }}
           >
             <TextField
-              margin="normal"
+              margin="dense"
               required
               fullWidth
               id="name"
@@ -131,9 +134,10 @@ export const Register = () => {
               error={formik.touched.name && Boolean(formik.errors.name)}
               helperText={formik.touched.name && formik.errors.name}
               disabled={isLoading}
+              size="small"
             />
             <TextField
-              margin="normal"
+              margin="dense"
               required
               fullWidth
               id="email"
@@ -145,9 +149,10 @@ export const Register = () => {
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
               disabled={isLoading}
+              size="small"
             />
             <TextField
-              margin="normal"
+              margin="dense"
               required
               fullWidth
               name="password"
@@ -160,9 +165,10 @@ export const Register = () => {
               error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
               disabled={isLoading}
+              size="small"
             />
             <TextField
-              margin="normal"
+              margin="dense"
               required
               fullWidth
               name="confirmPassword"
@@ -175,8 +181,9 @@ export const Register = () => {
               error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
               helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
               disabled={isLoading}
+              size="small"
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="dense" size="small">
               <InputLabel id="role-label">Tipo de Usuario</InputLabel>
               <Select
                 labelId="role-label"
@@ -196,7 +203,8 @@ export const Register = () => {
               fullWidth
               variant="contained"
               loading={isLoading}
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 2, mb: 1 }}
+              size="small"
             >
               Registrarse
             </LoadingButton>

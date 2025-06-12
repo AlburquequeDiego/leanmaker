@@ -20,48 +20,42 @@ export default function Home() {
       {/* Hero Section */}
       <Box
         sx={{
-          pt: 6,
-          pb: 8,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          gap: 2,
-          minHeight: { xs: 300, md: 400 },
+          maxWidth: 500,
+          mx: 'auto',
+          my: 8,
+          p: 4,
+          bgcolor: 'white',
+          border: '2px solid #2196f3',
+          borderRadius: 3,
+          boxShadow: 2,
+          textAlign: 'center'
         }}
       >
-        <Box sx={{ flex: 1, textAlign: 'center' }}>
-          <Typography variant="h3" fontWeight={700} color="primary.main" gutterBottom>
-            Leanmaker
-          </Typography>
-          <Typography variant="h5" color="text.secondary" sx={{ mb: 3 }}>
-            Impulsando el Talento, Conectando Empresas y Estudiantes
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            align="center"
-            sx={{ mb: 4, maxWidth: 400 }}
-          >
-            Plataforma integral para la gestión de proyectos, prácticas y vinculación entre empresas y estudiantes universitarios.
-          </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            sx={{ mr: 2, mb: { xs: 2, md: 0 }, borderRadius: 50 }}
-            onClick={() => navigate('/login')}
-          >
-            Iniciar Sesión
-          </Button>
-          <Button
-            variant="outlined"
-            size="large"
-            sx={{ borderRadius: 50 }}
-            onClick={() => navigate('/register')}
-          >
-            Regístrate aquí
-          </Button>
-        </Box>
+        <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
+          Leanmaker
+        </Typography>
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          Impulsando el Talento, Conectando Empresas y Estudiantes
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Plataforma integral para la gestión de proyectos, prácticas y vinculación entre empresas y estudiantes universitarios.
+        </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{ mr: 2, mb: { xs: 2, md: 0 }, borderRadius: 50 }}
+          onClick={() => navigate('/login')}
+        >
+          Iniciar Sesión
+        </Button>
+        <Button
+          variant="outlined"
+          size="large"
+          sx={{ borderRadius: 50 }}
+          onClick={() => navigate('/register')}
+        >
+          Regístrate aquí
+        </Button>
       </Box>
 
       {/* Features Section */}
