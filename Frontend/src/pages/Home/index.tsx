@@ -165,7 +165,7 @@ export default function Home() {
             <Card elevation={1} sx={{ height: '100%' }}>
               <CardMedia
                 component="img"
-                image="/imagenes/fondo.png"
+                image="/imagenes/trabajando.png"
                 alt="Blog Leanmaker"
                 sx={{ height: 200, objectFit: 'cover' }}
               />

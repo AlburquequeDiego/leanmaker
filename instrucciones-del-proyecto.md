@@ -300,7 +300,13 @@ Una vez que el proyecto esté ejecutándose:
 1. **Actualiza Node.js a versión 18+** (https://nodejs.org/)
 2. **Limpia todo:**
    ```bash
-   cd Frontend
+
+
+
+   cd Frontend && npm run dev
+
+
+
    rm -rf node_modules package-lock.json
    npm cache clean --force
    ```
@@ -312,5 +318,3 @@ Una vez que el proyecto esté ejecutándose:
    ```bash
    npm run dev
    ```
-
-**¡Listo! Tu proyecto Leanmaker debería estar funcionando correctamente. 🎉** 
