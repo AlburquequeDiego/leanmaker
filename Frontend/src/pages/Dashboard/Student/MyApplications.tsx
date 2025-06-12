@@ -16,9 +16,6 @@ import {
   Avatar,
   IconButton,
   Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Alert,
 } from '@mui/material';
 import {
@@ -306,121 +303,103 @@ export const MyApplications = () => {
 
       {/* Dialog para detalles */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h6">
-              Detalles de la Aplicación
-            </Typography>
-            {selectedApplication && (
-              <Chip
-                icon={getStatusIcon(selectedApplication.status)}
-                label={getStatusText(selectedApplication.status)}
-                color={getStatusColor(selectedApplication.status) as any}
-              />
-            )}
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          {selectedApplication && (
-            <Box>
-              <Typography variant="h5" gutterBottom>
-                {selectedApplication.projectTitle}
-              </Typography>
-              
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ mr: 1, bgcolor: 'primary.main' }}>
-                  <BusinessIcon />
-                </Avatar>
-                <Typography variant="body1">
-                  {selectedApplication.company}
+        {selectedApplication && (
+          <Box sx={{ p: 2, pt: 3, pb: 1 }}>
+            {/* Encabezado */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56, boxShadow: 2 }}>
+                <AssignmentIcon fontSize="large" />
+              </Avatar>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 0.5 }}>
+                  {selectedApplication.projectTitle}
                 </Typography>
-              </Box>
-
-              <Typography variant="body1" sx={{ mb: 3 }}>
-                {selectedApplication.description}
-              </Typography>
-
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Duración
-                  </Typography>
-                  <Typography variant="body1">
-                    {selectedApplication.projectDuration}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Salario
-                  </Typography>
-                  <Typography variant="body1">
-                    {selectedApplication.salary}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Ubicación
-                  </Typography>
-                  <Typography variant="body1">
-                    {selectedApplication.location}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Compatibilidad
-                  </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Chip
-                    label={`${selectedApplication.compatibility}%`}
+                    icon={getStatusIcon(selectedApplication.status)}
+                    label={getStatusText(selectedApplication.status)}
+                    color={getStatusColor(selectedApplication.status) as any}
+                    sx={{ fontWeight: 600 }}
+                  />
+                  <Chip
+                    label={`Compatibilidad: ${selectedApplication.compatibility}%`}
                     color={getCompatibilityColor(selectedApplication.compatibility) as any}
+                    size="small"
                   />
                 </Box>
               </Box>
-
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                Habilidades Requeridas:
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                {selectedApplication.requiredSkills.map((skill) => (
-                  <Chip key={skill} label={skill} size="small" variant="outlined" />
-                ))}
+            </Box>
+            {/* Empresa */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, background: 'rgba(0,0,0,0.03)', borderRadius: 2, p: 2 }}>
+              <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}>
+                <BusinessIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="subtitle1" fontWeight={600}>{selectedApplication.company}</Typography>
+                <Typography variant="caption" color="text.secondary">Empresa</Typography>
               </Box>
-
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+            </Box>
+            {/* Descripción */}
+            <Typography variant="body1" sx={{ mb: 3, color: 'text.primary', background: 'rgba(0,0,0,0.02)', p: 2, borderRadius: 2 }}>
+              {selectedApplication.description}
+            </Typography>
+            {/* Datos clave */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+              <Box sx={{ minWidth: 120 }}>
+                <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
+                <Typography variant="body1">{selectedApplication.projectDuration}</Typography>
+              </Box>
+              <Box sx={{ minWidth: 120 }}>
+                <Typography variant="subtitle2" color="text.secondary">Salario</Typography>
+                <Typography variant="body1">{selectedApplication.salary}</Typography>
+              </Box>
+              <Box sx={{ minWidth: 120 }}>
+                <Typography variant="subtitle2" color="text.secondary">Ubicación</Typography>
+                <Typography variant="body1">{selectedApplication.location}</Typography>
+              </Box>
+            </Box>
+            {/* Habilidades requeridas */}
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Habilidades Requeridas:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+              {selectedApplication.requiredSkills.map((skill) => (
+                <Chip key={skill} label={skill} size="small" variant="outlined" />
+              ))}
+            </Box>
+            {/* Fechas */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Fecha de Aplicación</Typography>
+                <Typography variant="body1">
+                  {new Date(selectedApplication.appliedDate).toLocaleDateString('es-ES')}
+                </Typography>
+              </Box>
+              {selectedApplication.responseDate && (
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Fecha de Aplicación
-                  </Typography>
+                  <Typography variant="subtitle2" color="text.secondary">Fecha de Respuesta</Typography>
                   <Typography variant="body1">
-                    {new Date(selectedApplication.appliedDate).toLocaleDateString('es-ES')}
+                    {new Date(selectedApplication.responseDate).toLocaleDateString('es-ES')}
                   </Typography>
                 </Box>
-                {selectedApplication.responseDate && (
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Fecha de Respuesta
-                    </Typography>
-                    <Typography variant="body1">
-                      {new Date(selectedApplication.responseDate).toLocaleDateString('es-ES')}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-
-              {selectedApplication.notes && (
-                <Alert severity="info">
-                  <Typography variant="body2">
-                    <strong>Notas:</strong> {selectedApplication.notes}
-                  </Typography>
-                </Alert>
               )}
             </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>
-            Cerrar
-          </Button>
-        </DialogActions>
+            {/* Notas */}
+            {selectedApplication.notes && (
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>Notas:</strong> {selectedApplication.notes}
+                </Typography>
+              </Alert>
+            )}
+            {/* Botón cerrar */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Button onClick={() => setDialogOpen(false)} variant="contained" sx={{ minWidth: 140, borderRadius: 2 }}>
+                Cerrar
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Dialog>
     </Box>
   );

@@ -27,6 +27,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Stack,
+  Snackbar,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -34,6 +36,8 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
+  Assessment as AssessmentIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 
 interface Evaluation {
@@ -91,6 +95,8 @@ export const GestionEvaluacionesAdmin = () => {
   const [actionReason, setActionReason] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Mock data
   const evaluations: Evaluation[] = [
@@ -189,12 +195,112 @@ export const GestionEvaluacionesAdmin = () => {
     setSelectedEvaluation(evaluation);
     setActionType(type);
     setActionDialog(true);
+    setActionReason('');
   };
 
   const handleActionConfirm = () => {
-    console.log(`Aplicando acción ${actionType} a evaluación ${selectedEvaluation?.id}`, actionReason);
+    let message = '';
+    switch (actionType) {
+      case 'edit':
+        message = `Evaluación de ${selectedEvaluation?.fromUser} actualizada exitosamente`;
+        break;
+      case 'delete':
+        message = `Evaluación de ${selectedEvaluation?.fromUser} eliminada`;
+        break;
+      case 'view':
+        message = `Viendo detalles de la evaluación`;
+        break;
+    }
+    setSuccessMessage(message);
+    setShowSuccess(true);
     setActionDialog(false);
     setActionReason('');
+  };
+
+  const getDialogTitle = () => {
+    switch (actionType) {
+      case 'edit': return 'Editar Evaluación';
+      case 'delete': return 'Eliminar Evaluación';
+      case 'view': return 'Detalles de Evaluación';
+      default: return '';
+    }
+  };
+
+  const getDialogContent = () => {
+    if (!selectedEvaluation) return null;
+
+    if (actionType === 'view') {
+      return (
+        <Box>
+          <Typography variant="h6" gutterBottom>Evaluación del Proyecto</Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {selectedEvaluation.projectTitle}
+          </Typography>
+          
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" gutterBottom>Información General:</Typography>
+            <Typography><strong>De:</strong> {selectedEvaluation.fromUser} ({selectedEvaluation.fromUserType === 'student' ? 'Estudiante' : 'Empresa'})</Typography>
+            <Typography><strong>Para:</strong> {selectedEvaluation.toUser} ({selectedEvaluation.toUserType === 'student' ? 'Estudiante' : 'Empresa'})</Typography>
+            <Typography><strong>Fecha:</strong> {new Date(selectedEvaluation.date).toLocaleDateString()}</Typography>
+            <Typography><strong>Categoría:</strong> {selectedEvaluation.category === 'technical' ? 'Técnica' : 
+                                                      selectedEvaluation.category === 'soft_skills' ? 'Habilidades Blandas' :
+                                                      selectedEvaluation.category === 'punctuality' ? 'Puntualidad' :
+                                                      selectedEvaluation.category === 'teamwork' ? 'Trabajo en Equipo' :
+                                                      selectedEvaluation.category === 'communication' ? 'Comunicación' : 'General'}</Typography>
+          </Box>
+          
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" gutterBottom>Calificación:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Rating value={selectedEvaluation.rating} readOnly size="large" />
+              <Typography variant="h6" fontWeight={600}>
+                {selectedEvaluation.rating}/5
+              </Typography>
+            </Box>
+          </Box>
+          
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" gutterBottom>Comentario:</Typography>
+            <Paper sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+              <Typography variant="body2">
+                {selectedEvaluation.comment}
+              </Typography>
+            </Paper>
+          </Box>
+        </Box>
+      );
+    }
+
+    return (
+      <Box>
+        <Typography variant="h6" gutterBottom>Evaluación: {selectedEvaluation.projectTitle}</Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          De: {selectedEvaluation.fromUser} → Para: {selectedEvaluation.toUser}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          Estado actual: <strong>{selectedEvaluation.status === 'active' ? 'Activa' : 
+                                  selectedEvaluation.status === 'flagged' ? 'Marcada' : 'Eliminada'}</strong>
+        </Typography>
+        
+        {actionType === 'delete' && (
+          <>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Razón de eliminación"
+              value={actionReason}
+              onChange={(e) => setActionReason(e.target.value)}
+              sx={{ mt: 2, borderRadius: 2 }}
+              required
+            />
+            <Typography variant="body1" sx={{ mt: 2, p: 2, bgcolor: 'error.light', borderRadius: 2, color: 'error.contrastText' }}>
+              ⚠️ Esta acción es irreversible. La evaluación será eliminada permanentemente.
+            </Typography>
+          </>
+        )}
+      </Box>
+    );
   };
 
   const getCategoryText = (category: string) => {
@@ -253,75 +359,83 @@ export const GestionEvaluacionesAdmin = () => {
   });
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h4" gutterBottom>
-        Gestión de Evaluaciones
-      </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <AssessmentIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+        <Typography variant="h4">Gestión de Evaluaciones</Typography>
+      </Box>
 
-      <Paper sx={{ width: '100%', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="evaluation management tabs">
+      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange}
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
           <Tab label="Evaluaciones" />
-          <Tab label="Resumen por Usuario" />
-          <Tab label="Estadísticas" />
+          <Tab label="Resumen de Usuarios" />
         </Tabs>
 
-        {/* Tab: Evaluaciones */}
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Filtrar por Tipo</InputLabel>
-              <Select
-                value={filterType}
-                label="Filtrar por Tipo"
-                onChange={(e) => setFilterType(e.target.value)}
-              >
-                <MenuItem value="all">Todos</MenuItem>
-                <MenuItem value="student">Estudiantes</MenuItem>
-                <MenuItem value="company">Empresas</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Filtrar por Categoría</InputLabel>
-              <Select
-                value={filterCategory}
-                label="Filtrar por Categoría"
-                onChange={(e) => setFilterCategory(e.target.value)}
-              >
-                <MenuItem value="all">Todas</MenuItem>
-                <MenuItem value="technical">Técnico</MenuItem>
-                <MenuItem value="soft_skills">Habilidades Blandas</MenuItem>
-                <MenuItem value="punctuality">Puntualidad</MenuItem>
-                <MenuItem value="teamwork">Trabajo en Equipo</MenuItem>
-                <MenuItem value="communication">Comunicación</MenuItem>
-                <MenuItem value="overall">General</MenuItem>
-              </Select>
-            </FormControl>
+          {/* Filtros */}
+          <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+              <FormControl sx={{ minWidth: 150 }}>
+                <InputLabel>Tipo de Usuario</InputLabel>
+                <Select
+                  value={filterType}
+                  label="Tipo de Usuario"
+                  onChange={(e) => setFilterType(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="all">Todos</MenuItem>
+                  <MenuItem value="student">Estudiantes</MenuItem>
+                  <MenuItem value="company">Empresas</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 150 }}>
+                <InputLabel>Categoría</InputLabel>
+                <Select
+                  value={filterCategory}
+                  label="Categoría"
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="all">Todas</MenuItem>
+                  <MenuItem value="technical">Técnica</MenuItem>
+                  <MenuItem value="soft_skills">Habilidades Blandas</MenuItem>
+                  <MenuItem value="punctuality">Puntualidad</MenuItem>
+                  <MenuItem value="teamwork">Trabajo en Equipo</MenuItem>
+                  <MenuItem value="communication">Comunicación</MenuItem>
+                  <MenuItem value="overall">General</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
           </Box>
 
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>De</TableCell>
-                  <TableCell>Para</TableCell>
-                  <TableCell>Proyecto</TableCell>
-                  <TableCell>Categoría</TableCell>
-                  <TableCell>Calificación</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Fecha</TableCell>
-                  <TableCell>Acciones</TableCell>
+                <TableRow sx={{ bgcolor: 'primary.main' }}>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Evaluador</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Evaluado</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Proyecto</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Calificación</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Categoría</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fecha</TableCell>
+                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredEvaluations.map((evaluation) => (
-                  <TableRow key={evaluation.id}>
+                {filteredEvaluations.map(evaluation => (
+                  <TableRow key={evaluation.id} hover>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                          {evaluation.fromUserType === 'student' ? <PersonIcon fontSize="small" /> : <BusinessIcon fontSize="small" />}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Avatar sx={{ width: 32, height: 32, bgcolor: evaluation.fromUserType === 'student' ? 'primary.main' : 'secondary.main' }}>
+                          {evaluation.fromUserType === 'student' ? <PersonIcon /> : <BusinessIcon />}
                         </Avatar>
                         <Box>
-                          <Typography variant="body2" fontWeight="bold">
+                          <Typography variant="body2" fontWeight={600}>
                             {evaluation.fromUser}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
@@ -331,12 +445,12 @@ export const GestionEvaluacionesAdmin = () => {
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ mr: 1, bgcolor: 'secondary.main', width: 24, height: 24 }}>
-                          {evaluation.toUserType === 'student' ? <PersonIcon fontSize="small" /> : <BusinessIcon fontSize="small" />}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Avatar sx={{ width: 32, height: 32, bgcolor: evaluation.toUserType === 'student' ? 'primary.main' : 'secondary.main' }}>
+                          {evaluation.toUserType === 'student' ? <PersonIcon /> : <BusinessIcon />}
                         </Avatar>
                         <Box>
-                          <Typography variant="body2" fontWeight="bold">
+                          <Typography variant="body2" fontWeight={600}>
                             {evaluation.toUser}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
@@ -345,49 +459,56 @@ export const GestionEvaluacionesAdmin = () => {
                         </Box>
                       </Box>
                     </TableCell>
-                    <TableCell>{evaluation.projectTitle}</TableCell>
                     <TableCell>
-                      <Chip
-                        label={getCategoryText(evaluation.category)}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
+                      <Typography variant="body2" fontWeight={600}>
+                        {evaluation.projectTitle}
+                      </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Rating value={evaluation.rating} readOnly size="small" />
-                        <Typography variant="body2" sx={{ ml: 1 }}>
-                          ({evaluation.rating})
+                        <Typography variant="body2" fontWeight={600}>
+                          {evaluation.rating}
                         </Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={getStatusText(evaluation.status)}
-                        color={getStatusColor(evaluation.status) as any}
-                        size="small"
+                      <Chip 
+                        label={getCategoryText(evaluation.category)} 
+                        color="primary" 
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
                       />
                     </TableCell>
-                    <TableCell>{evaluation.date}</TableCell>
                     <TableCell>
-                      <IconButton
-                        size="small"
-                        color="primary"
+                      <Chip 
+                        label={getStatusText(evaluation.status)} 
+                        color={getStatusColor(evaluation.status) as any}
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </TableCell>
+                    <TableCell>{new Date(evaluation.date).toLocaleDateString()}</TableCell>
+                    <TableCell align="center">
+                      <IconButton 
+                        color="info" 
+                        title="Ver detalles"
                         onClick={() => handleAction(evaluation, 'view')}
+                        sx={{ mr: 1 }}
                       >
                         <VisibilityIcon />
                       </IconButton>
-                      <IconButton
-                        size="small"
-                        color="primary"
+                      <IconButton 
+                        color="primary" 
+                        title="Editar evaluación"
                         onClick={() => handleAction(evaluation, 'edit')}
+                        sx={{ mr: 1 }}
                       >
                         <EditIcon />
                       </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
+                      <IconButton 
+                        color="error" 
+                        title="Eliminar evaluación"
                         onClick={() => handleAction(evaluation, 'delete')}
                       >
                         <DeleteIcon />
@@ -452,122 +573,60 @@ export const GestionEvaluacionesAdmin = () => {
             ))}
           </Box>
         </TabPanel>
-
-        {/* Tab: Estadísticas */}
-        <TabPanel value={tabValue} index={2}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Total Evaluaciones
-                </Typography>
-                <Typography variant="h3" color="primary">
-                  156
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Evaluaciones en el sistema
-                </Typography>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Promedio General
-                </Typography>
-                <Typography variant="h3" color="success.main">
-                  4.2
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Calificación promedio
-                </Typography>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Evaluaciones Marcadas
-                </Typography>
-                <Typography variant="h3" color="warning.main">
-                  8
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Requieren revisión
-                </Typography>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Tasa de Participación
-                </Typography>
-                <Typography variant="h3" color="info.main">
-                  87%
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Usuarios que evalúan
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        </TabPanel>
       </Paper>
 
-      {/* Dialog para acciones */}
-      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {actionType === 'edit' && 'Editar Evaluación'}
-          {actionType === 'delete' && 'Eliminar Evaluación'}
-          {actionType === 'view' && 'Ver Evaluación'}
+      {/* Diálogo de acción */}
+      <Dialog 
+        open={actionDialog} 
+        onClose={() => setActionDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {actionType === 'edit' && <EditIcon color="primary" />}
+          {actionType === 'delete' && <DeleteIcon color="error" />}
+          {actionType === 'view' && <VisibilityIcon color="info" />}
+          {getDialogTitle()}
         </DialogTitle>
         <DialogContent>
-          {selectedEvaluation && (
-            <Box>
-              <Typography variant="body2" gutterBottom>
-                <strong>De:</strong> {selectedEvaluation.fromUser} ({selectedEvaluation.fromUserType === 'student' ? 'Estudiante' : 'Empresa'})
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Para:</strong> {selectedEvaluation.toUser} ({selectedEvaluation.toUserType === 'student' ? 'Estudiante' : 'Empresa'})
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Proyecto:</strong> {selectedEvaluation.projectTitle}
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Categoría:</strong> {getCategoryText(selectedEvaluation.category)}
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Calificación:</strong> {selectedEvaluation.rating}/5
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Comentario:</strong>
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 2, fontStyle: 'italic' }}>
-                "{selectedEvaluation.comment}"
-              </Typography>
-              {actionType !== 'view' && (
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Motivo"
-                  value={actionReason}
-                  onChange={(e) => setActionReason(e.target.value)}
-                />
-              )}
-            </Box>
-          )}
+          {getDialogContent()}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setActionDialog(false)}>Cancelar</Button>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setActionDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
           {actionType !== 'view' && (
-            <Button onClick={handleActionConfirm} variant="contained" color="primary">
-              Confirmar
+            <Button 
+              onClick={handleActionConfirm}
+              variant="contained"
+              color={actionType === 'edit' ? 'primary' : 'error'}
+              sx={{ borderRadius: 2 }}
+              disabled={actionType === 'delete' && !actionReason.trim()}
+            >
+              {actionType === 'edit' ? 'Actualizar' : 'Eliminar'}
             </Button>
           )}
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={4000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CheckCircleIcon color="success" />
+          <Typography color="success.main" fontWeight={600}>
+            {successMessage}
+          </Typography>
+        </Paper>
+      </Snackbar>
     </Box>
   );
 };

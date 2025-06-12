@@ -11,8 +11,10 @@ import {
   InputAdornment,
   Snackbar,
   Alert,
+  IconButton,
+  Dialog,
 } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 
 const mockProjects = [
   {
@@ -48,6 +50,8 @@ export default function AvailableProjects() {
   const [searchTerm, setSearchTerm] = useState('');
   const [applied, setApplied] = useState<string[]>([]);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const filteredProjects = mockProjects.filter(project =>
     project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -58,6 +62,11 @@ export default function AvailableProjects() {
   const handleApply = (id: string) => {
     setApplied((prev) => [...prev, id]);
     setSnackbar({ open: true, message: '¡Postulación enviada con éxito!' });
+  };
+
+  const handleOpenDetail = (project: any) => {
+    setSelectedProject(project);
+    setDetailOpen(true);
   };
 
   return (
@@ -88,9 +97,14 @@ export default function AvailableProjects() {
           <Box key={project.id} sx={{ width: { xs: '100%', sm: '48%', md: '32%' }, mb: 3, display: 'flex' }}>
             <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {project.title}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="h6" gutterBottom>
+                    {project.title}
+                  </Typography>
+                  <IconButton color="primary" onClick={e => { e.stopPropagation(); handleOpenDetail(project); }}>
+                    <VisibilityIcon />
+                  </IconButton>
+                </Box>
                 <Typography color="textSecondary" gutterBottom>
                   {project.company}
                 </Typography>
@@ -130,6 +144,52 @@ export default function AvailableProjects() {
           </Box>
         ))}
       </Box>
+      {/* Dialog de detalle de proyecto */}
+      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth>
+        {selectedProject && (
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h5" fontWeight={700} gutterBottom>
+              {selectedProject.title}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              {selectedProject.company}
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>{selectedProject.description}</Typography>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">Requisitos:</Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                {selectedProject.requirements.map((req: string, idx: number) => (
+                  <Chip key={idx} label={req} size="small" variant="outlined" />
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 3, mb: 2 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
+                <Typography variant="body1">{selectedProject.duration}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Publicado</Typography>
+                <Typography variant="body1">{new Date(selectedProject.publishedAt).toLocaleDateString('es-ES')}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={applied.includes(selectedProject.id)}
+                onClick={() => { handleApply(selectedProject.id); setDetailOpen(false); }}
+                sx={{ minWidth: 160, borderRadius: 2 }}
+              >
+                {applied.includes(selectedProject.id) ? 'Postulado' : 'Postularme'}
+              </Button>
+              <Button onClick={() => setDetailOpen(false)} sx={{ ml: 2, borderRadius: 2 }}>
+                Cerrar
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Dialog>
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}

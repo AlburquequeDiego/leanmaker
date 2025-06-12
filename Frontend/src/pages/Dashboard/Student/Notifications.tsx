@@ -14,9 +14,6 @@ import {
   Divider,
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -213,39 +210,81 @@ export const Notifications = () => {
 
       {/* Dialog para mostrar detalles de la notificación */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {selectedNotification?.title}
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" gutterBottom>
-            {selectedNotification?.message}
-          </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Empresa:</strong> {selectedNotification?.company}
+        {selectedNotification && (
+          <Box sx={{ p: 2, pt: 3, pb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Avatar sx={{ bgcolor: 'background.paper', width: 56, height: 56, boxShadow: 2 }}>
+                {getNotificationIcon(selectedNotification.type)}
+              </Avatar>
+              <Box>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 0.5 }}>
+                  {selectedNotification.title}
+                </Typography>
+                <Chip
+                  label={selectedNotification.priority === 'high' ? 'Alta' : selectedNotification.priority === 'medium' ? 'Media' : 'Baja'}
+                  size="small"
+                  color={getPriorityColor(selectedNotification.priority) as any}
+                  sx={{ fontWeight: 600 }}
+                />
+              </Box>
+            </Box>
+            <Typography variant="body1" sx={{ mb: 2, color: 'text.primary' }}>
+              {selectedNotification.message}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Fecha:</strong> {selectedNotification?.date}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Prioridad:</strong> {selectedNotification?.priority === 'high' ? 'Alta' : selectedNotification?.priority === 'medium' ? 'Media' : 'Baja'}
-            </Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
-          {selectedNotification && !selectedNotification.read && (
-            <Button
-              onClick={() => {
-                handleMarkAsRead(selectedNotification.id);
-                setDialogOpen(false);
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 2,
+                background: 'rgba(0,0,0,0.03)',
+                borderRadius: 2,
+                p: 2,
+                mb: 2,
+                alignItems: { sm: 'center' },
               }}
-              variant="contained"
             >
-              Marcar como Leída
-            </Button>
-          )}
-        </DialogActions>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <BusinessIcon fontSize="small" color="info" />
+                <Typography variant="body2" color="text.secondary">
+                  {selectedNotification.company}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <InfoIcon fontSize="small" color="action" />
+                <Typography variant="body2" color="text.secondary">
+                  {selectedNotification.date}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <WarningIcon fontSize="small" color={getPriorityColor(selectedNotification.priority) as any} />
+                <Typography variant="body2" color="text.secondary">
+                  Prioridad: {selectedNotification.priority === 'high' ? 'Alta' : selectedNotification.priority === 'medium' ? 'Media' : 'Baja'}
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+              <Button
+                onClick={() => setDialogOpen(false)}
+                variant="outlined"
+                sx={{ minWidth: 120, borderRadius: 2 }}
+              >
+                Cerrar
+              </Button>
+              {!selectedNotification.read && (
+                <Button
+                  onClick={() => {
+                    handleMarkAsRead(selectedNotification.id);
+                    setDialogOpen(false);
+                  }}
+                  variant="contained"
+                  sx={{ minWidth: 160, borderRadius: 2 }}
+                >
+                  Marcar como Leída
+                </Button>
+              )}
+            </Box>
+          </Box>
+        )}
       </Dialog>
     </Box>
   );

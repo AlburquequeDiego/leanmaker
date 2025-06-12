@@ -24,6 +24,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Snackbar,
+  Stack,
 } from '@mui/material';
 import {
   Settings as SettingsIcon,
@@ -37,6 +39,7 @@ import {
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
+  Build as BuildIcon,
 } from '@mui/icons-material';
 
 interface SystemConfig {
@@ -185,6 +188,8 @@ export const ConfiguracionPlataformaAdmin = () => {
 
   const [backupDialog, setBackupDialog] = useState(false);
   const [maintenanceDialog, setMaintenanceDialog] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -197,8 +202,26 @@ export const ConfiguracionPlataformaAdmin = () => {
   };
 
   const handleSaveConfig = () => {
+    setSuccessMessage('Configuración guardada exitosamente');
+    setShowSuccess(true);
     console.log('Guardando configuración:', configs);
-    // Aquí se implementaría la lógica para guardar en la API
+  };
+
+  const handleBackup = () => {
+    setSuccessMessage('Backup iniciado. Se completará en unos minutos.');
+    setShowSuccess(true);
+    setBackupDialog(false);
+  };
+
+  const handleMaintenance = () => {
+    setSuccessMessage('Modo mantenimiento activado. Solo los administradores pueden acceder.');
+    setShowSuccess(true);
+    setMaintenanceDialog(false);
+  };
+
+  const handleSystemAction = (action: string) => {
+    setSuccessMessage(`Acción "${action}" ejecutada exitosamente`);
+    setShowSuccess(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -250,6 +273,7 @@ export const ConfiguracionPlataformaAdmin = () => {
             onChange={(e) => handleConfigChange(config.id, e.target.value)}
             variant="outlined"
             size="small"
+            sx={{ borderRadius: 2 }}
           />
         );
       case 'number':
@@ -262,6 +286,7 @@ export const ConfiguracionPlataformaAdmin = () => {
             variant="outlined"
             size="small"
             inputProps={{ min: config.min, max: config.max }}
+            sx={{ borderRadius: 2 }}
           />
         );
       case 'boolean':
@@ -278,6 +303,7 @@ export const ConfiguracionPlataformaAdmin = () => {
             <Select
               value={config.value}
               onChange={(e) => handleConfigChange(config.id, e.target.value)}
+              sx={{ borderRadius: 2 }}
             >
               {config.options?.map((option) => (
                 <MenuItem key={option} value={option}>
@@ -293,13 +319,18 @@ export const ConfiguracionPlataformaAdmin = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h4" gutterBottom>
-        Configuración de Plataforma
-      </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BuildIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+        <Typography variant="h4">Configuración de Plataforma</Typography>
+      </Box>
 
-      <Paper sx={{ width: '100%', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="platform configuration tabs">
+      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange}
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
           <Tab label="Configuración General" />
           <Tab label="Estado del Sistema" />
           <Tab label="Mantenimiento" />
@@ -308,165 +339,207 @@ export const ConfiguracionPlataformaAdmin = () => {
 
         {/* Tab: Configuración General */}
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <SettingsIcon color="primary" />
               Configuración General
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" color="text.secondary">
               Ajusta los parámetros generales de la plataforma
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            {configs.filter(config => config.category === 'general').map((config) => (
-              <Card key={config.id} sx={{ flex: 1 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {config.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    {config.description}
-                  </Typography>
-                  {renderConfigField(config)}
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Configuración Académica
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              {configs.filter(config => config.category === 'academic').map((config) => (
-                <Card key={config.id} sx={{ flex: 1 }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {config.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {config.description}
-                    </Typography>
-                    {renderConfigField(config)}
-                  </CardContent>
-                </Card>
-              ))}
+          <Stack spacing={4}>
+            {/* Configuración General */}
+            <Box>
+              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+                Configuración General
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                {configs.filter(config => config.category === 'general').map((config) => (
+                  <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom color="primary">
+                        {config.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        {config.description}
+                      </Typography>
+                      {renderConfigField(config)}
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
             </Box>
-          </Box>
 
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Configuración de Notificaciones
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              {configs.filter(config => config.category === 'notifications').map((config) => (
-                <Card key={config.id} sx={{ flex: 1 }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {config.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {config.description}
-                    </Typography>
-                    {renderConfigField(config)}
-                  </CardContent>
-                </Card>
-              ))}
+            {/* Configuración Académica */}
+            <Box>
+              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+                Configuración Académica
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                {configs.filter(config => config.category === 'academic').map((config) => (
+                  <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom color="primary">
+                        {config.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        {config.description}
+                      </Typography>
+                      {renderConfigField(config)}
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
             </Box>
-          </Box>
 
-          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-            <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSaveConfig}>
-              Guardar Cambios
-            </Button>
-            <Button variant="outlined" startIcon={<RefreshIcon />}>
-              Restaurar Valores por Defecto
-            </Button>
-          </Box>
+            {/* Configuración de Notificaciones */}
+            <Box>
+              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+                Configuración de Notificaciones
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                {configs.filter(config => config.category === 'notifications').map((config) => (
+                  <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom color="primary">
+                        {config.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        {config.description}
+                      </Typography>
+                      {renderConfigField(config)}
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Botones de acción */}
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Button 
+                variant="contained" 
+                startIcon={<SaveIcon />} 
+                onClick={handleSaveConfig}
+                sx={{ borderRadius: 2, px: 4 }}
+              >
+                Guardar Cambios
+              </Button>
+              <Button 
+                variant="outlined" 
+                startIcon={<RefreshIcon />}
+                sx={{ borderRadius: 2, px: 4 }}
+              >
+                Restaurar Valores por Defecto
+              </Button>
+            </Box>
+          </Stack>
         </TabPanel>
 
         {/* Tab: Estado del Sistema */}
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <SpeedIcon color="primary" />
               Estado del Sistema
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" color="text.secondary">
               Monitoreo en tiempo real de los componentes del sistema
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>
             {systemStatus.map((status) => (
-              <Card key={status.component} sx={{ flex: 1 }}>
+              <Card key={status.component} sx={{ borderRadius: 3, boxShadow: 2 }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     {getStatusIcon(status.status)}
-                    <Typography variant="h6" sx={{ ml: 1 }}>
+                    <Typography variant="h6" sx={{ ml: 1, flex: 1 }}>
                       {status.component}
                     </Typography>
                     <Chip
                       label={getStatusText(status.status)}
                       color={getStatusColor(status.status) as any}
-                      size="small"
-                      sx={{ ml: 'auto' }}
+                      variant="filled"
+                      sx={{ fontWeight: 600 }}
                     />
                   </Box>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
                     Última verificación: {status.lastCheck}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Tiempo de respuesta: {status.responseTime}ms
+                    Tiempo de respuesta: <strong>{status.responseTime}ms</strong>
                   </Typography>
                 </CardContent>
               </Card>
             ))}
           </Box>
 
-          <Box sx={{ mt: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Acciones del Sistema
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                  <Button variant="outlined" startIcon={<BackupIcon />} onClick={() => setBackupDialog(true)}>
-                    Crear Backup Manual
-                  </Button>
-                  <Button variant="outlined" startIcon={<UpdateIcon />}>
-                    Verificar Actualizaciones
-                  </Button>
-                  <Button variant="outlined" startIcon={<SpeedIcon />}>
-                    Optimizar Base de Datos
-                  </Button>
-                  <Button variant="outlined" startIcon={<StorageIcon />}>
-                    Limpiar Cache
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
+          <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <SettingsIcon color="primary" />
+                Acciones del Sistema
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Button 
+                  variant="outlined" 
+                  startIcon={<BackupIcon />} 
+                  onClick={() => setBackupDialog(true)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  Crear Backup Manual
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  startIcon={<UpdateIcon />}
+                  onClick={() => handleSystemAction('Verificar Actualizaciones')}
+                  sx={{ borderRadius: 2 }}
+                >
+                  Verificar Actualizaciones
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  startIcon={<SpeedIcon />}
+                  onClick={() => handleSystemAction('Optimizar Base de Datos')}
+                  sx={{ borderRadius: 2 }}
+                >
+                  Optimizar Base de Datos
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  startIcon={<StorageIcon />}
+                  onClick={() => handleSystemAction('Limpiar Cache')}
+                  sx={{ borderRadius: 2 }}
+                >
+                  Limpiar Cache
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
         </TabPanel>
 
         {/* Tab: Mantenimiento */}
         <TabPanel value={tabValue} index={2}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <BuildIcon color="primary" />
               Mantenimiento del Sistema
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" color="text.secondary">
               Configuraciones para mantenimiento y administración del sistema
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>
             {configs.filter(config => config.category === 'system').map((config) => (
-              <Card key={config.id} sx={{ flex: 1 }}>
+              <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant="h6" gutterBottom color="primary">
                     {config.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                     {config.description}
                   </Typography>
                   {renderConfigField(config)}
@@ -475,46 +548,44 @@ export const ConfiguracionPlataformaAdmin = () => {
             ))}
           </Box>
 
-          <Box sx={{ mt: 3 }}>
-            <Alert severity="warning">
-              <Typography variant="body2">
-                <strong>Advertencia:</strong> El modo mantenimiento restringe el acceso a todos los usuarios excepto administradores. 
-                Úsalo solo cuando sea necesario realizar mantenimiento del sistema.
-              </Typography>
-            </Alert>
-          </Box>
+          <Alert severity="warning" sx={{ borderRadius: 2, mb: 3 }}>
+            <Typography variant="body2">
+              <strong>Advertencia:</strong> El modo mantenimiento restringe el acceso a todos los usuarios excepto administradores. 
+              Úsalo solo cuando sea necesario realizar mantenimiento del sistema.
+            </Typography>
+          </Alert>
 
-          <Box sx={{ mt: 3 }}>
-            <Button 
-              variant="contained" 
-              color="warning" 
-              startIcon={<SettingsIcon />}
-              onClick={() => setMaintenanceDialog(true)}
-            >
-              Activar Modo Mantenimiento
-            </Button>
-          </Box>
+          <Button 
+            variant="contained" 
+            color="warning" 
+            startIcon={<SettingsIcon />}
+            onClick={() => setMaintenanceDialog(true)}
+            sx={{ borderRadius: 2, px: 4 }}
+          >
+            Activar Modo Mantenimiento
+          </Button>
         </TabPanel>
 
         {/* Tab: Seguridad */}
         <TabPanel value={tabValue} index={3}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <SecurityIcon color="primary" />
               Configuración de Seguridad
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" color="text.secondary">
               Ajustes de seguridad y políticas de acceso
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>
             {configs.filter(config => config.category === 'security').map((config) => (
-              <Card key={config.id} sx={{ flex: 1 }}>
+              <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant="h6" gutterBottom color="primary">
                     {config.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                     {config.description}
                   </Typography>
                   {renderConfigField(config)}
@@ -523,59 +594,66 @@ export const ConfiguracionPlataformaAdmin = () => {
             ))}
           </Box>
 
-          <Box sx={{ mt: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Políticas de Seguridad
-                </Typography>
-                <List>
-                  <ListItem>
-                    <ListItemIcon>
-                      <SecurityIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Autenticación de dos factores"
-                      secondary="Recomendado para todos los usuarios"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch color="primary" />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <SecurityIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Registro de actividades"
-                      secondary="Mantener logs de todas las acciones"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch color="primary" defaultChecked />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <SecurityIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Encriptación de datos"
-                      secondary="Encriptar datos sensibles en la base de datos"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch color="primary" defaultChecked />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-              </CardContent>
-            </Card>
-          </Box>
+          <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <SecurityIcon color="primary" />
+                Políticas de Seguridad
+              </Typography>
+              <List>
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Autenticación de dos factores"
+                    secondary="Recomendado para todos los usuarios"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch color="primary" />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Registro de actividades"
+                    secondary="Mantener logs de todas las acciones"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch color="primary" defaultChecked />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Encriptación de datos"
+                    secondary="Encriptar datos sensibles en la base de datos"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch color="primary" defaultChecked />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
         </TabPanel>
       </Paper>
 
       {/* Dialog para Backup */}
-      <Dialog open={backupDialog} onClose={() => setBackupDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Crear Backup Manual</DialogTitle>
+      <Dialog 
+        open={backupDialog} 
+        onClose={() => setBackupDialog(false)} 
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <BackupIcon color="primary" />
+          Crear Backup Manual
+        </DialogTitle>
         <DialogContent>
           <Typography variant="body2" gutterBottom>
             ¿Estás seguro de que deseas crear un backup manual de la base de datos?
@@ -584,19 +662,38 @@ export const ConfiguracionPlataformaAdmin = () => {
             Esta acción puede tomar varios minutos dependiendo del tamaño de los datos.
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setBackupDialog(false)}>Cancelar</Button>
-          <Button onClick={() => setBackupDialog(false)} variant="contained" color="primary">
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setBackupDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleBackup}
+            variant="contained" 
+            color="primary"
+            sx={{ borderRadius: 2 }}
+          >
             Crear Backup
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Dialog para Mantenimiento */}
-      <Dialog open={maintenanceDialog} onClose={() => setMaintenanceDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Activar Modo Mantenimiento</DialogTitle>
+      <Dialog 
+        open={maintenanceDialog} 
+        onClose={() => setMaintenanceDialog(false)} 
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <WarningIcon color="warning" />
+          Activar Modo Mantenimiento
+        </DialogTitle>
         <DialogContent>
-          <Alert severity="warning" sx={{ mb: 2 }}>
+          <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
             <Typography variant="body2">
               <strong>¡Advertencia!</strong> El modo mantenimiento:
             </Typography>
@@ -610,13 +707,39 @@ export const ConfiguracionPlataformaAdmin = () => {
             ¿Estás seguro de que deseas activar el modo mantenimiento?
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setMaintenanceDialog(false)}>Cancelar</Button>
-          <Button onClick={() => setMaintenanceDialog(false)} variant="contained" color="warning">
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setMaintenanceDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleMaintenance}
+            variant="contained" 
+            color="warning"
+            sx={{ borderRadius: 2 }}
+          >
             Activar Modo Mantenimiento
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={4000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CheckCircleIcon color="success" />
+          <Typography color="success.main" fontWeight={600}>
+            {successMessage}
+          </Typography>
+        </Paper>
+      </Snackbar>
     </Box>
   );
 };

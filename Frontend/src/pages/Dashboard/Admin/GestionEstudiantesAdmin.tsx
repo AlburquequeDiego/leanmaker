@@ -32,6 +32,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  Snackbar,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -42,6 +43,8 @@ import {
   Visibility as VisibilityIcon,
   Add as AddIcon,
   History as HistoryIcon,
+  School as SchoolIcon,
+  Api as ApiIcon,
 } from '@mui/icons-material';
 
 interface Student {
@@ -51,7 +54,7 @@ interface Student {
   career: string;
   semester: number;
   status: 'pending' | 'approved' | 'rejected' | 'suspended';
-  apiLevel: 1 | 2 | 3;
+  apiLevel: 1 | 2 | 3 | 4;
   strikes: number;
   joinDate: string;
   lastActivity: string;
@@ -117,6 +120,8 @@ export const GestionEstudiantesAdmin = () => {
   const [actionType, setActionType] = useState<'approve' | 'reject' | 'strike' | 'api_level' | null>(null);
   const [actionReason, setActionReason] = useState('');
   const [selectedApiLevel, setSelectedApiLevel] = useState<number>(1);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Mock data
   const students: Student[] = [
@@ -157,7 +162,7 @@ export const GestionEstudiantesAdmin = () => {
       career: 'Ingeniería de Software',
       semester: 10,
       status: 'approved',
-      apiLevel: 3,
+      apiLevel: 4,
       strikes: 0,
       joinDate: '2022-09-20',
       lastActivity: '2024-01-22',
@@ -233,15 +238,83 @@ export const GestionEstudiantesAdmin = () => {
     setSelectedStudent(student);
     setActionType(type);
     setActionDialog(true);
+    setActionReason('');
     if (type === 'api_level') {
       setSelectedApiLevel(student.apiLevel);
     }
   };
 
   const handleActionConfirm = () => {
-    console.log(`Aplicando acción ${actionType} a ${selectedStudent?.name}`, actionReason);
+    let message = '';
+    switch (actionType) {
+      case 'approve':
+        message = `Estudiante ${selectedStudent?.name} aprobado exitosamente`;
+        break;
+      case 'reject':
+        message = `Estudiante ${selectedStudent?.name} rechazado`;
+        break;
+      case 'strike':
+        message = `Strike asignado a ${selectedStudent?.name}`;
+        break;
+      case 'api_level':
+        message = `Nivel API actualizado a ${selectedApiLevel} para ${selectedStudent?.name}`;
+        break;
+    }
+    setSuccessMessage(message);
+    setShowSuccess(true);
     setActionDialog(false);
     setActionReason('');
+  };
+
+  const getDialogTitle = () => {
+    switch (actionType) {
+      case 'approve': return 'Aprobar Estudiante';
+      case 'reject': return 'Rechazar Estudiante';
+      case 'strike': return 'Asignar Strike';
+      case 'api_level': return 'Cambiar Nivel API';
+      default: return '';
+    }
+  };
+
+  const getDialogContent = () => {
+    if (!selectedStudent) return null;
+
+    return (
+      <Box>
+        <Typography variant="h6" gutterBottom>Estudiante: {selectedStudent.name}</Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          {selectedStudent.email} - {selectedStudent.career}
+        </Typography>
+        
+        {actionType === 'api_level' ? (
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Nivel API</InputLabel>
+            <Select
+              value={selectedApiLevel}
+              label="Nivel API"
+              onChange={(e) => setSelectedApiLevel(Number(e.target.value))}
+              sx={{ borderRadius: 2 }}
+            >
+              <MenuItem value={1}>Nivel 1 - Básico</MenuItem>
+              <MenuItem value={2}>Nivel 2 - Intermedio</MenuItem>
+              <MenuItem value={3}>Nivel 3 - Avanzado</MenuItem>
+              <MenuItem value={4}>Nivel 4 - Experto</MenuItem>
+            </Select>
+          </FormControl>
+        ) : (
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label="Razón o comentario"
+            value={actionReason}
+            onChange={(e) => setActionReason(e.target.value)}
+            sx={{ mt: 2, borderRadius: 2 }}
+            required={actionType === 'reject' || actionType === 'strike'}
+          />
+        )}
+      </Box>
+    );
   };
 
   const getStatusColor = (status: string) => {
@@ -282,6 +355,8 @@ export const GestionEstudiantesAdmin = () => {
         return 'Nivel 2: Capacitado para tareas prácticas supervisadas';
       case 3:
         return 'Nivel 3: Ejecución autónoma de proyectos';
+      case 4:
+        return 'Nivel 4: Experto en el área';
       default:
         return `Nivel ${level}`;
     }
@@ -301,49 +376,52 @@ export const GestionEstudiantesAdmin = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h4" gutterBottom>
-        Gestión de Estudiantes
-      </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <SchoolIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+        <Typography variant="h4">Gestión de Estudiantes</Typography>
+      </Box>
 
-      <Paper sx={{ width: '100%', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="student management tabs">
+      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange}
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
           <Tab label="Estudiantes" />
-          <Tab label="Perfil Detallado" />
           <Tab label="Postulaciones" />
           <Tab label="Evaluaciones" />
-          <Tab label="Historial Disciplinario" />
-          <Tab label="Nivel API" />
+          <Tab label="Registros Disciplinarios" />
         </Tabs>
 
-        {/* Tab: Estudiantes */}
         <TabPanel value={tabValue} index={0}>
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Estudiante</TableCell>
-                  <TableCell>Carrera</TableCell>
-                  <TableCell>Semestre</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Nivel API</TableCell>
-                  <TableCell>Strikes</TableCell>
-                  <TableCell>GPA</TableCell>
-                  <TableCell>Proyectos</TableCell>
-                  <TableCell>Acciones</TableCell>
+                <TableRow sx={{ bgcolor: 'primary.main' }}>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estudiante</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Carrera</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Semestre</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Nivel API</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Strikes</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>GPA</TableCell>
+                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {students.map((student) => (
-                  <TableRow key={student.id}>
+                {students.map(student => (
+                  <TableRow key={student.id} hover>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                          <PersonIcon />
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Avatar sx={{ width: 32, height: 32 }}>
+                          {student.name.charAt(0)}
                         </Avatar>
                         <Box>
-                          <Typography variant="body1">{student.name}</Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" fontWeight={600}>
+                            {student.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
                             {student.email}
                           </Typography>
                         </Box>
@@ -352,59 +430,77 @@ export const GestionEstudiantesAdmin = () => {
                     <TableCell>{student.career}</TableCell>
                     <TableCell>{student.semester}°</TableCell>
                     <TableCell>
-                      <Chip
-                        label={getStatusText(student.status)}
-                        color={getStatusColor(student.status) as any}
-                        size="small"
+                      <Chip 
+                        label={student.status === 'approved' ? 'Aprobado' : 'Pendiente'} 
+                        color={student.status === 'approved' ? 'success' : 'warning'}
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
                       />
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={`Nivel ${student.apiLevel}`}
-                        color="primary"
-                        size="small"
+                      <Chip 
+                        label={`API ${student.apiLevel}`} 
+                        color="primary" 
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
                       />
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={`${student.strikes}/3`}
-                        color={student.strikes >= 3 ? 'error' : 'default'}
-                        size="small"
+                      <Chip 
+                        label={student.strikes} 
+                        color={student.strikes === 0 ? 'success' : student.strikes >= 3 ? 'error' : 'warning'}
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
                       />
                     </TableCell>
-                    <TableCell>{student.gpa}</TableCell>
-                    <TableCell>{student.completedProjects}</TableCell>
                     <TableCell>
-                      <IconButton size="small" color="primary">
+                      <Typography variant="body2" fontWeight={600}>
+                        {student.gpa}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <IconButton 
+                        color="info" 
+                        title="Ver detalles"
+                        onClick={() => handleAction(student, 'approve')}
+                        sx={{ mr: 1 }}
+                      >
                         <VisibilityIcon />
-                      </IconButton>
-                      <IconButton size="small" color="primary">
-                        <EditIcon />
                       </IconButton>
                       {student.status === 'pending' && (
                         <>
-                          <IconButton
-                            size="small"
-                            color="success"
+                          <IconButton 
+                            color="success" 
+                            title="Aprobar estudiante"
                             onClick={() => handleAction(student, 'approve')}
+                            sx={{ mr: 1 }}
                           >
                             <CheckCircleIcon />
                           </IconButton>
-                          <IconButton
-                            size="small"
-                            color="error"
+                          <IconButton 
+                            color="error" 
+                            title="Rechazar estudiante"
                             onClick={() => handleAction(student, 'reject')}
+                            sx={{ mr: 1 }}
                           >
                             <CancelIcon />
                           </IconButton>
                         </>
                       )}
-                      <IconButton
-                        size="small"
-                        color="warning"
+                      <IconButton 
+                        color="warning" 
+                        title="Asignar strike"
                         onClick={() => handleAction(student, 'strike')}
+                        sx={{ mr: 1 }}
                       >
-                        <AddIcon />
+                        <WarningIcon />
+                      </IconButton>
+                      <IconButton 
+                        color="primary" 
+                        title="Cambiar nivel API"
+                        onClick={() => handleAction(student, 'api_level')}
+                      >
+                        <ApiIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -594,103 +690,67 @@ export const GestionEstudiantesAdmin = () => {
             ))}
           </List>
         </TabPanel>
-
-        {/* Tab: Nivel API */}
-        <TabPanel value={tabValue} index={5}>
-          <Box sx={{ maxWidth: 600, mx: 'auto' }}>
-            <Typography variant="h6" gutterBottom>
-              Asignación de Nivel API
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              El Nivel API (Aptitud Profesional Institucional) determina el tipo de proyectos a los que puede postular el estudiante.
-            </Typography>
-            
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  María González
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Nivel API actual: <strong>Nivel 2</strong>
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  {getApiLevelText(2)}
-                </Typography>
-                
-                <FormControl fullWidth sx={{ mt: 2 }}>
-                  <InputLabel>Nuevo Nivel API</InputLabel>
-                  <Select
-                    value={selectedApiLevel}
-                    label="Nuevo Nivel API"
-                    onChange={(e) => setSelectedApiLevel(e.target.value as number)}
-                  >
-                    <MenuItem value={1}>Nivel 1: Habilidades básicas</MenuItem>
-                    <MenuItem value={2}>Nivel 2: Capacitado para tareas prácticas supervisadas</MenuItem>
-                    <MenuItem value={3}>Nivel 3: Ejecución autónoma de proyectos</MenuItem>
-                  </Select>
-                </FormControl>
-                
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 2 }}
-                  onClick={() => handleAction(students[0], 'api_level')}
-                >
-                  Actualizar Nivel API
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Alert severity="info">
-              <Typography variant="body2">
-                <strong>Nota:</strong> El cambio de nivel API debe estar justificado por el desempeño académico, 
-                evaluaciones recibidas y certificados del estudiante.
-              </Typography>
-            </Alert>
-          </Box>
-        </TabPanel>
       </Paper>
 
-      {/* Dialog para acciones */}
-      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {actionType === 'approve' && 'Aprobar Estudiante'}
-          {actionType === 'reject' && 'Rechazar Estudiante'}
-          {actionType === 'strike' && 'Asignar Strike'}
-          {actionType === 'api_level' && 'Cambiar Nivel API'}
+      {/* Diálogo de acción */}
+      <Dialog 
+        open={actionDialog} 
+        onClose={() => setActionDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {actionType === 'approve' && <CheckCircleIcon color="success" />}
+          {actionType === 'reject' && <CancelIcon color="error" />}
+          {actionType === 'strike' && <WarningIcon color="warning" />}
+          {actionType === 'api_level' && <ApiIcon color="primary" />}
+          {getDialogTitle()}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body2" gutterBottom>
-            Estudiante: {selectedStudent?.name}
-          </Typography>
-          {actionType === 'api_level' ? (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" gutterBottom>
-                Nivel API actual: {selectedStudent?.apiLevel}
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                Nuevo nivel: {selectedApiLevel}
-              </Typography>
-            </Box>
-          ) : (
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="Motivo"
-              value={actionReason}
-              onChange={(e) => setActionReason(e.target.value)}
-              sx={{ mt: 2 }}
-            />
-          )}
+          {getDialogContent()}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setActionDialog(false)}>Cancelar</Button>
-          <Button onClick={handleActionConfirm} variant="contained" color="primary">
-            Confirmar
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setActionDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleActionConfirm}
+            variant="contained"
+            color={
+              actionType === 'approve' ? 'success' : 
+              actionType === 'reject' ? 'error' : 
+              actionType === 'strike' ? 'warning' : 'primary'
+            }
+            sx={{ borderRadius: 2 }}
+            disabled={
+              (actionType === 'reject' || actionType === 'strike') && !actionReason.trim()
+            }
+          >
+            {actionType === 'approve' ? 'Aprobar' : 
+             actionType === 'reject' ? 'Rechazar' : 
+             actionType === 'strike' ? 'Asignar Strike' : 'Actualizar'}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={4000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CheckCircleIcon color="success" />
+          <Typography color="success.main" fontWeight={600}>
+            {successMessage}
+          </Typography>
+        </Paper>
+      </Snackbar>
     </Box>
   );
 };

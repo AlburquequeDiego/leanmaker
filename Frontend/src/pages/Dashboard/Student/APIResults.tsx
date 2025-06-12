@@ -14,6 +14,10 @@ import {
   Chip,
   LinearProgress,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Assessment as AssessmentIcon,
@@ -24,6 +28,9 @@ import {
   Psychology as PsychologyIcon,
   Code as CodeIcon,
 } from '@mui/icons-material';
+import Snackbar from '@mui/material/Snackbar';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface APIResult {
   id: string;
@@ -115,6 +122,10 @@ const apiLevelDescriptions = {
 export const APIResults = () => {
   const currentLevel = 3; // Nivel actual del estudiante
   const currentResult = mockResults[0]; // Resultado más reciente
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
+  const navigate = useNavigate();
 
   const getLevelColor = (level: number) => {
     switch (level) {
@@ -161,12 +172,9 @@ export const APIResults = () => {
           <Button
             variant="contained"
             startIcon={<QuizIcon />}
-            onClick={() => {
-              // Aquí se redirigiría al cuestionario
-              console.log('Redirigiendo al cuestionario...');
-            }}
+            onClick={() => navigate('/dashboard/student/api-questionnaire')}
           >
-            Rendir Nuevo Test
+            Hacer cuestionario
           </Button>
         </Box>
 
@@ -323,6 +331,39 @@ export const APIResults = () => {
           Puedes rendir un nuevo test cada 30 días para evaluar tu progreso.
         </Typography>
       </Alert>
+
+      {/* Dialog de confirmación de solicitud */}
+      <Dialog open={requestDialogOpen} onClose={() => setRequestDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Solicitar nuevo intento</DialogTitle>
+        <DialogContent>
+          <Typography>¿Estás seguro que deseas solicitar un nuevo intento del cuestionario? La administración deberá aprobar tu solicitud.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRequestDialogOpen(false)}>Cancelar</Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setRequestDialogOpen(false);
+              setShowSuccess(true);
+              setRequestSent(true);
+            }}
+          >
+            Enviar solicitud
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3500}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          Solicitud enviada a administración para aprobación
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -24,6 +24,7 @@ import {
   Avatar,
   Rating,
   Badge,
+  Snackbar,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -34,6 +35,7 @@ import {
   Block as BlockIcon,
   CheckCircle as CheckCircleIcon,
   People as PeopleIcon,
+  Work as WorkIcon,
 } from '@mui/icons-material';
 
 interface Project {
@@ -106,6 +108,8 @@ export const GestionProyectosAdmin = () => {
   const [actionDialog, setActionDialog] = useState(false);
   const [actionType, setActionType] = useState<'edit' | 'suspend' | 'delete' | 'view_candidates' | null>(null);
   const [actionReason, setActionReason] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Mock data
   const projects: Project[] = [
@@ -219,12 +223,102 @@ export const GestionProyectosAdmin = () => {
     setSelectedProject(project);
     setActionType(type);
     setActionDialog(true);
+    setActionReason('');
   };
 
   const handleActionConfirm = () => {
-    console.log(`Aplicando acción ${actionType} a ${selectedProject?.title}`, actionReason);
+    let message = '';
+    switch (actionType) {
+      case 'edit':
+        message = `Proyecto ${selectedProject?.title} actualizado exitosamente`;
+        break;
+      case 'suspend':
+        message = `Proyecto ${selectedProject?.title} suspendido`;
+        break;
+      case 'delete':
+        message = `Proyecto ${selectedProject?.title} eliminado`;
+        break;
+      case 'view_candidates':
+        message = `Viendo candidatos para ${selectedProject?.title}`;
+        break;
+    }
+    setSuccessMessage(message);
+    setShowSuccess(true);
     setActionDialog(false);
     setActionReason('');
+  };
+
+  const getDialogTitle = () => {
+    switch (actionType) {
+      case 'edit': return 'Editar Proyecto';
+      case 'suspend': return 'Suspender Proyecto';
+      case 'delete': return 'Eliminar Proyecto';
+      case 'view_candidates': return 'Candidatos del Proyecto';
+      default: return '';
+    }
+  };
+
+  const getDialogContent = () => {
+    if (!selectedProject) return null;
+
+    if (actionType === 'view_candidates') {
+      return (
+        <Box>
+          <Typography variant="h6" gutterBottom>Proyecto: {selectedProject.title}</Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Empresa: {selectedProject.company}
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            Candidatos: {selectedProject.applicationsCount} postulaciones
+          </Typography>
+          
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" gutterBottom>Candidatos Destacados:</Typography>
+            {applications.slice(0, 3).map(app => (
+              <Box key={app.id} sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 2, mb: 1 }}>
+                <Typography variant="body2" fontWeight={600}>{app.studentName}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  GPA: {app.gpa} | API: {app.apiLevel} | Compatibilidad: {app.compatibility}%
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      );
+    }
+
+    return (
+      <Box>
+        <Typography variant="h6" gutterBottom>Proyecto: {selectedProject.title}</Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          Empresa: {selectedProject.company}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          Estado actual: <strong>{selectedProject.status === 'active' ? 'Activo' : 
+                                  selectedProject.status === 'suspended' ? 'Suspendido' : 
+                                  selectedProject.status === 'completed' ? 'Completado' : 'Cancelado'}</strong>
+        </Typography>
+        
+        {(actionType === 'suspend' || actionType === 'delete') && (
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label="Razón de la acción"
+            value={actionReason}
+            onChange={(e) => setActionReason(e.target.value)}
+            sx={{ mt: 2, borderRadius: 2 }}
+            required
+          />
+        )}
+        
+        {actionType === 'delete' && (
+          <Typography variant="body1" sx={{ mt: 2, p: 2, bgcolor: 'error.light', borderRadius: 2, color: 'error.contrastText' }}>
+            ⚠️ Esta acción es irreversible. El proyecto y todas sus postulaciones serán eliminadas permanentemente.
+          </Typography>
+        )}
+      </Box>
+    );
   };
 
   const getStatusColor = (status: string) => {
@@ -264,118 +358,126 @@ export const GestionProyectosAdmin = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h4" gutterBottom>
-        Gestión de Proyectos
-      </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <WorkIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+        <Typography variant="h4">Gestión de Proyectos</Typography>
+      </Box>
 
-      <Paper sx={{ width: '100%', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="project management tabs">
+      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange}
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
           <Tab label="Proyectos" />
-          <Tab label="Aplicaciones" />
-          <Tab label="Candidatos Compatibles" />
-          <Tab label="Estadísticas" />
+          <Tab label="Postulaciones" />
+          <Tab label="Candidatos" />
         </Tabs>
 
-        {/* Tab: Proyectos */}
         <TabPanel value={tabValue} index={0}>
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Proyecto</TableCell>
-                  <TableCell>Empresa</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Nivel API</TableCell>
-                  <TableCell>Estudiantes</TableCell>
-                  <TableCell>Aplicaciones</TableCell>
-                  <TableCell>Calificación</TableCell>
-                  <TableCell>Acciones</TableCell>
+                <TableRow sx={{ bgcolor: 'primary.main' }}>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Proyecto</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Empresa</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estudiantes</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Postulaciones</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Nivel API</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Rating</TableCell>
+                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {projects.map((project) => (
-                  <TableRow key={project.id}>
+                {projects.map(project => (
+                  <TableRow key={project.id} hover>
                     <TableCell>
                       <Box>
-                        <Typography variant="body1" fontWeight="bold">
+                        <Typography variant="body2" fontWeight={600}>
                           {project.title}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {project.description.substring(0, 60)}...
+                        <Typography variant="caption" color="text.secondary">
+                          {project.location} • {project.salary}
                         </Typography>
                       </Box>
                     </TableCell>
+                    <TableCell>{project.company}</TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                          <BusinessIcon fontSize="small" />
-                        </Avatar>
-                        {project.company}
+                      <Chip 
+                        label={project.status === 'active' ? 'Activo' : 
+                               project.status === 'suspended' ? 'Suspendido' : 
+                               project.status === 'completed' ? 'Completado' : 'Cancelado'} 
+                        color={project.status === 'active' ? 'success' : 
+                               project.status === 'suspended' ? 'warning' : 
+                               project.status === 'completed' ? 'info' : 'error'}
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={`${project.studentsAssigned}/${project.studentsNeeded}`} 
+                        color="primary" 
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={project.applicationsCount} 
+                        color="secondary" 
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={`API ${project.requiredApiLevel}`} 
+                        color="warning" 
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Rating value={project.rating} readOnly size="small" />
+                        <Typography variant="body2" fontWeight={600}>
+                          {project.rating}
+                        </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={getStatusText(project.status)}
-                        color={getStatusColor(project.status) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={`Nivel ${project.requiredApiLevel}`}
-                        color="primary"
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {project.studentsAssigned}/{project.studentsNeeded}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Badge badgeContent={project.applicationsCount} color="primary">
-                        <PeopleIcon />
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Rating value={project.rating} readOnly size="small" />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        size="small"
-                        color="primary"
+                    <TableCell align="center">
+                      <IconButton 
+                        color="info" 
+                        title="Ver candidatos"
                         onClick={() => handleAction(project, 'view_candidates')}
+                        sx={{ mr: 1 }}
                       >
                         <PeopleIcon />
                       </IconButton>
-                      <IconButton
-                        size="small"
-                        color="primary"
+                      <IconButton 
+                        color="primary" 
+                        title="Editar proyecto"
                         onClick={() => handleAction(project, 'edit')}
+                        sx={{ mr: 1 }}
                       >
                         <EditIcon />
                       </IconButton>
-                      {project.status === 'active' ? (
-                        <IconButton
-                          size="small"
-                          color="warning"
+                      {project.status === 'active' && (
+                        <IconButton 
+                          color="warning" 
+                          title="Suspender proyecto"
                           onClick={() => handleAction(project, 'suspend')}
+                          sx={{ mr: 1 }}
                         >
                           <BlockIcon />
                         </IconButton>
-                      ) : (
-                        <IconButton
-                          size="small"
-                          color="success"
-                          onClick={() => handleAction(project, 'suspend')}
-                        >
-                          <CheckCircleIcon />
-                        </IconButton>
                       )}
-                      <IconButton
-                        size="small"
-                        color="error"
+                      <IconButton 
+                        color="error" 
+                        title="Eliminar proyecto"
                         onClick={() => handleAction(project, 'delete')}
                       >
                         <DeleteIcon />
@@ -388,7 +490,7 @@ export const GestionProyectosAdmin = () => {
           </TableContainer>
         </TabPanel>
 
-        {/* Tab: Aplicaciones */}
+        {/* Tab: Postulaciones */}
         <TabPanel value={tabValue} index={1}>
           <TableContainer>
             <Table>
@@ -537,100 +639,67 @@ export const GestionProyectosAdmin = () => {
             ))}
           </Box>
         </TabPanel>
-
-        {/* Tab: Estadísticas */}
-        <TabPanel value={tabValue} index={3}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Proyectos Activos
-                </Typography>
-                <Typography variant="h3" color="primary">
-                  12
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Proyectos en curso
-                </Typography>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Aplicaciones Pendientes
-                </Typography>
-                <Typography variant="h3" color="warning.main">
-                  28
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Por revisar
-                </Typography>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Estudiantes Asignados
-                </Typography>
-                <Typography variant="h3" color="success.main">
-                  45
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  En proyectos activos
-                </Typography>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Tasa de Éxito
-                </Typography>
-                <Typography variant="h3" color="info.main">
-                  87%
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Proyectos completados exitosamente
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        </TabPanel>
       </Paper>
 
-      {/* Dialog para acciones */}
-      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {actionType === 'edit' && 'Editar Proyecto'}
-          {actionType === 'suspend' && (selectedProject?.status === 'active' ? 'Suspender Proyecto' : 'Activar Proyecto')}
-          {actionType === 'delete' && 'Eliminar Proyecto'}
-          {actionType === 'view_candidates' && 'Candidatos Compatibles'}
+      {/* Diálogo de acción */}
+      <Dialog 
+        open={actionDialog} 
+        onClose={() => setActionDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {actionType === 'edit' && <EditIcon color="primary" />}
+          {actionType === 'suspend' && <BlockIcon color="warning" />}
+          {actionType === 'delete' && <DeleteIcon color="error" />}
+          {actionType === 'view_candidates' && <PeopleIcon color="info" />}
+          {getDialogTitle()}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body2" gutterBottom>
-            Proyecto: {selectedProject?.title}
-          </Typography>
-          {actionType !== 'view_candidates' && (
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="Motivo"
-              value={actionReason}
-              onChange={(e) => setActionReason(e.target.value)}
-              sx={{ mt: 2 }}
-            />
-          )}
+          {getDialogContent()}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setActionDialog(false)}>Cancelar</Button>
-          <Button onClick={handleActionConfirm} variant="contained" color="primary">
-            Confirmar
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setActionDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
           </Button>
+          {actionType !== 'view_candidates' && (
+            <Button 
+              onClick={handleActionConfirm}
+              variant="contained"
+              color={
+                actionType === 'edit' ? 'primary' : 
+                actionType === 'suspend' ? 'warning' : 'error'
+              }
+              sx={{ borderRadius: 2 }}
+              disabled={
+                (actionType === 'suspend' || actionType === 'delete') && !actionReason.trim()
+              }
+            >
+              {actionType === 'edit' ? 'Actualizar' : 
+               actionType === 'suspend' ? 'Suspender' : 'Eliminar'}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={4000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CheckCircleIcon color="success" />
+          <Typography color="success.main" fontWeight={600}>
+            {successMessage}
+          </Typography>
+        </Paper>
+      </Snackbar>
     </Box>
   );
 };

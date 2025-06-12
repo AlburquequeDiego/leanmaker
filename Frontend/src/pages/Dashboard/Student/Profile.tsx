@@ -30,6 +30,7 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
 
 export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -52,6 +53,7 @@ export const Profile = () => {
   const [newSkill, setNewSkill] = useState('');
   const [certFile, setCertFile] = useState<File | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleEdit = () => {
     setEditData(profileData);
@@ -61,6 +63,7 @@ export const Profile = () => {
   const handleSave = () => {
     setProfileData(editData);
     setIsEditing(false);
+    setShowSuccess(true);
   };
 
   const handleCancel = () => {
@@ -112,6 +115,7 @@ export const Profile = () => {
               variant="contained"
               startIcon={<SaveIcon />}
               onClick={handleSave}
+              sx={{ minWidth: 140, borderRadius: 2 }}
             >
               Guardar
             </Button>
@@ -119,6 +123,7 @@ export const Profile = () => {
               variant="outlined"
               startIcon={<CancelIcon />}
               onClick={handleCancel}
+              sx={{ minWidth: 120, borderRadius: 2 }}
             >
               Cancelar
             </Button>
@@ -129,7 +134,7 @@ export const Profile = () => {
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
         <Box sx={{ flex: 2, minWidth: 0 }}>
           <Stack spacing={3}>
-            {/* Información Personal */}
+            {/* Información Personal y Habilidades en dos columnas */}
             <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ width: 64, height: 64, mr: 2 }}>
@@ -141,17 +146,16 @@ export const Profile = () => {
                 </Box>
               </Box>
               <Divider sx={{ mb: 2 }} />
-              <Stack direction="row" spacing={2}>
-                <Stack direction="column" spacing={1}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                {/* Columna 1 */}
+                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <TextField
                     fullWidth
                     label="Nombre Completo"
                     value={isEditing ? editData.name : profileData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                    }}
+                    InputProps={{ startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
                   />
                   <TextField
                     fullWidth
@@ -159,9 +163,7 @@ export const Profile = () => {
                     value={isEditing ? editData.email : profileData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                    }}
+                    InputProps={{ startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
                   />
                   <TextField
                     fullWidth
@@ -169,19 +171,18 @@ export const Profile = () => {
                     value={isEditing ? editData.phone : profileData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                    }}
+                    InputProps={{ startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
                   />
+                </Box>
+                {/* Columna 2 */}
+                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <TextField
                     fullWidth
                     label="Carrera"
                     value={isEditing ? editData.career : profileData.career}
                     onChange={(e) => handleInputChange('career', e.target.value)}
                     disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <SchoolIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                    }}
+                    InputProps={{ startAdornment: <SchoolIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
                   />
                   <TextField
                     fullWidth
@@ -190,9 +191,7 @@ export const Profile = () => {
                     value={isEditing ? editData.semester : profileData.semester}
                     onChange={(e) => handleInputChange('semester', Number(e.target.value))}
                     disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <GradeIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                    }}
+                    InputProps={{ startAdornment: <GradeIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
                   />
                   <TextField
                     fullWidth
@@ -203,80 +202,137 @@ export const Profile = () => {
                     disabled={!isEditing}
                     inputProps={{ step: 0.1, min: 0, max: 5 }}
                   />
-                </Stack>
-              </Stack>
-            </Paper>
-
-            {/* Habilidades */}
-            <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 2 }}>
-              <Typography variant="h6" gutterBottom>Habilidades</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                {(isEditing ? editData.skills : profileData.skills).map((skill) => (
-                  <Chip
-                    key={skill}
-                    label={skill}
-                    color="primary"
-                    onDelete={isEditing ? () => handleDeleteSkill(skill) : undefined}
-                    sx={{ fontWeight: 500 }}
-                  />
-                ))}
-              </Box>
-              {isEditing && (
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <TextField
-                    size="small"
-                    label="Agregar habilidad"
-                    value={newSkill}
-                    onChange={e => setNewSkill(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSkill(); } }}
-                  />
-                  <Button variant="contained" onClick={handleAddSkill}>Agregar</Button>
                 </Box>
-              )}
+              </Box>
             </Paper>
 
-            {/* Certificados y CV */}
-            <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 2 }}>
-              <Typography variant="h6" gutterBottom>Documentos</Typography>
-              <Stack direction="row" spacing={2}>
-                <Stack direction="column" spacing={1}>
-                  <Typography variant="subtitle1">Certificado</Typography>
-                  {certFile ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                      <Chip label={certFile.name} color="info" />
-                      <IconButton onClick={handleRemoveCert}><DeleteIcon /></IconButton>
-                    </Box>
-                  ) : isEditing && (
-                    <Button
-                      variant="outlined"
-                      component="label"
-                      startIcon={<CloudUploadIcon />}
+            {/* Habilidades y Documentos en dos columnas */}
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
+              {/* Habilidades */}
+              <Paper sx={{ flex: 1, p: 3, borderRadius: 3, boxShadow: 2 }}>
+                <Typography variant="h6" gutterBottom>Habilidades</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                  {(isEditing ? editData.skills : profileData.skills).map((skill) => (
+                    <Chip
+                      key={skill}
+                      label={skill}
+                      color="primary"
+                      onDelete={isEditing ? () => handleDeleteSkill(skill) : undefined}
+                      sx={{ fontWeight: 500 }}
+                    />
+                  ))}
+                </Box>
+                {isEditing && (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TextField
+                      size="small"
+                      label="Agregar habilidad"
+                      value={newSkill}
+                      onChange={e => setNewSkill(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSkill(); } }}
+                    />
+                    <Button variant="contained" onClick={handleAddSkill}>Agregar</Button>
+                  </Box>
+                )}
+              </Paper>
+              {/* Documentos con drag & drop visual */}
+              <Paper sx={{ flex: 1, p: 3, borderRadius: 3, boxShadow: 2 }}>
+                <Typography variant="h6" gutterBottom>Documentos</Typography>
+                {isEditing ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {/* Drag & Drop visual para certificado */}
+                    <Box
+                      sx={{
+                        border: '2px dashed',
+                        borderColor: 'primary.light',
+                        borderRadius: 2,
+                        p: 2,
+                        textAlign: 'center',
+                        color: 'text.secondary',
+                        minHeight: 80,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                      }}
                     >
-                      Subir Certificado
-                      <input type="file" hidden accept="application/pdf,image/*" onChange={handleCertChange} />
-                    </Button>
-                  )}
-                </Stack>
-                <Stack direction="column" spacing={1}>
-                  <Typography variant="subtitle1">CV</Typography>
-                  {cvFile ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                      <Chip label={cvFile.name} color="info" />
-                      <IconButton onClick={handleRemoveCv}><DeleteIcon /></IconButton>
+                      <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
+                      <Typography variant="body2">
+                        Arrastra tu certificado aquí o haz click para buscar.<br />
+                        <span style={{ color: '#888' }}>PDF, imagen - hasta 10MB</span>
+                      </Typography>
+                      <Button variant="outlined" size="small" sx={{ mt: 1, borderRadius: 2 }} component="label">
+                        Buscar archivo
+                        <input type="file" hidden accept="application/pdf,image/*" onChange={handleCertChange} />
+                      </Button>
+                      {certFile && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                          <Chip label={certFile.name} color="info" />
+                          <IconButton onClick={handleRemoveCert}><DeleteIcon /></IconButton>
+                        </Box>
+                      )}
                     </Box>
-                  ) : isEditing && (
-                    <Button
-                      variant="outlined"
-                      component="label"
-                      startIcon={<CloudUploadIcon />}
+                    {/* Drag & Drop visual para CV */}
+                    <Box
+                      sx={{
+                        border: '2px dashed',
+                        borderColor: 'primary.light',
+                        borderRadius: 2,
+                        p: 2,
+                        textAlign: 'center',
+                        color: 'text.secondary',
+                        minHeight: 80,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                      }}
                     >
-                      Subir CV
-                      <input type="file" hidden accept="application/pdf" onChange={handleCvChange} />
-                    </Button>
-                  )}
-                </Stack>
-              </Stack>
-            </Paper>
+                      <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
+                      <Typography variant="body2">
+                        Arrastra tu CV aquí o haz click para buscar.<br />
+                        <span style={{ color: '#888' }}>PDF - hasta 10MB</span>
+                      </Typography>
+                      <Button variant="outlined" size="small" sx={{ mt: 1, borderRadius: 2 }} component="label">
+                        Buscar archivo
+                        <input type="file" hidden accept="application/pdf" onChange={handleCvChange} />
+                      </Button>
+                      {cvFile && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                          <Chip label={cvFile.name} color="info" />
+                          <IconButton onClick={handleRemoveCv}><DeleteIcon /></IconButton>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                ) : (
+                  <Stack direction="row" spacing={2}>
+                    <Stack direction="column" spacing={1}>
+                      <Typography variant="subtitle1">Certificado</Typography>
+                      {certFile ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                          <Chip label={certFile.name} color="info" />
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">No subido</Typography>
+                      )}
+                    </Stack>
+                    <Stack direction="column" spacing={1}>
+                      <Typography variant="subtitle1">CV</Typography>
+                      {cvFile ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                          <Chip label={cvFile.name} color="info" />
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">No subido</Typography>
+                      )}
+                    </Stack>
+                  </Stack>
+                )}
+              </Paper>
+            </Box>
 
             {/* Biografía */}
             <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 2 }}>
@@ -286,11 +342,12 @@ export const Profile = () => {
               <TextField
                 fullWidth
                 multiline
-                rows={4}
+                minRows={4}
                 value={isEditing ? editData.bio : profileData.bio}
                 onChange={(e) => handleInputChange('bio', e.target.value)}
                 disabled={!isEditing}
                 placeholder="Cuéntanos sobre ti..."
+                sx={{ borderRadius: 2 }}
               />
             </Paper>
           </Stack>
@@ -358,6 +415,18 @@ export const Profile = () => {
           </Typography>
         </Alert>
       )}
+
+      {/* Snackbar de éxito al guardar */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3500}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setShowSuccess(false)} severity="success" sx={{ width: '100%' }}>
+          ¡Guardaste correctamente los cambios!
+        </Alert>
+      </Snackbar>
 
       {/* Dialog para cambiar contraseña */}
       <Dialog open={showPasswordDialog} onClose={() => setShowPasswordDialog(false)} maxWidth="sm" fullWidth>

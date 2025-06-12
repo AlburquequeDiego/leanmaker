@@ -23,6 +23,7 @@ import {
   CardContent,
   Avatar,
   Rating,
+  Snackbar
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -93,6 +94,8 @@ export const GestionEmpresasAdmin = () => {
   const [actionDialog, setActionDialog] = useState(false);
   const [actionType, setActionType] = useState<'block' | 'suspend' | 'activate' | null>(null);
   const [actionReason, setActionReason] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Mock data
   const companies: Company[] = [
@@ -176,13 +179,71 @@ export const GestionEmpresasAdmin = () => {
     setSelectedCompany(company);
     setActionType(type);
     setActionDialog(true);
+    setActionReason('');
   };
 
   const handleActionConfirm = () => {
-    // Aquí se implementaría la lógica para aplicar la acción
-    console.log(`Aplicando acción ${actionType} a ${selectedCompany?.name}`, actionReason);
+    let message = '';
+    switch (actionType) {
+      case 'block':
+        message = `Empresa ${selectedCompany?.name} bloqueada exitosamente`;
+        break;
+      case 'suspend':
+        message = `Empresa ${selectedCompany?.name} suspendida`;
+        break;
+      case 'activate':
+        message = `Empresa ${selectedCompany?.name} activada`;
+        break;
+    }
+    setSuccessMessage(message);
+    setShowSuccess(true);
     setActionDialog(false);
     setActionReason('');
+  };
+
+  const getDialogTitle = () => {
+    switch (actionType) {
+      case 'block': return 'Bloquear Empresa';
+      case 'suspend': return 'Suspender Empresa';
+      case 'activate': return 'Activar Empresa';
+      default: return '';
+    }
+  };
+
+  const getDialogContent = () => {
+    if (!selectedCompany) return null;
+
+    return (
+      <Box>
+        <Typography variant="h6" gutterBottom>Empresa: {selectedCompany.name}</Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          {selectedCompany.email}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          Estado actual: <strong>{selectedCompany.status === 'active' ? 'Activa' : 
+                                  selectedCompany.status === 'suspended' ? 'Suspendida' : 'Bloqueada'}</strong>
+        </Typography>
+        
+        {(actionType === 'block' || actionType === 'suspend') && (
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label="Razón de la acción"
+            value={actionReason}
+            onChange={(e) => setActionReason(e.target.value)}
+            sx={{ mt: 2, borderRadius: 2 }}
+            required
+          />
+        )}
+        
+        {actionType === 'activate' && (
+          <Typography variant="body1" sx={{ mt: 2, p: 2, bgcolor: 'success.light', borderRadius: 2, color: 'success.contrastText' }}>
+            ¿Estás seguro de que deseas reactivar esta empresa? Esto permitirá que vuelva a publicar proyectos y gestionar estudiantes.
+          </Typography>
+        )}
+      </Box>
+    );
   };
 
   const getStatusColor = (status: string) => {
@@ -212,90 +273,116 @@ export const GestionEmpresasAdmin = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h4" gutterBottom>
-        Gestión de Empresas
-      </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BusinessIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+        <Typography variant="h4">Gestión de Empresas</Typography>
+      </Box>
 
-      <Paper sx={{ width: '100%', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="company management tabs">
+      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange}
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
           <Tab label="Empresas" />
-          <Tab label="Historial de Proyectos" />
+          <Tab label="Proyectos" />
           <Tab label="Evaluaciones" />
-          <Tab label="Documentos" />
-          <Tab label="Acciones Administrativas" />
         </Tabs>
 
-        {/* Tab: Empresas */}
         <TabPanel value={tabValue} index={0}>
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Empresa</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Proyectos</TableCell>
-                  <TableCell>Calificación</TableCell>
-                  <TableCell>Última Actividad</TableCell>
-                  <TableCell>Acciones</TableCell>
+                <TableRow sx={{ bgcolor: 'primary.main' }}>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Empresa</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Email</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Proyectos</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Rating</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fecha Registro</TableCell>
+                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {companies.map((company) => (
-                  <TableRow key={company.id}>
+                {companies.map(company => (
+                  <TableRow key={company.id} hover>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
                           <BusinessIcon />
                         </Avatar>
-                        <Typography variant="body1">{company.name}</Typography>
+                        <Box>
+                          <Typography variant="body2" fontWeight={600}>
+                            {company.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Última actividad: {new Date(company.lastActivity).toLocaleDateString()}
+                          </Typography>
+                        </Box>
                       </Box>
                     </TableCell>
                     <TableCell>{company.email}</TableCell>
                     <TableCell>
-                      <Chip
-                        label={getStatusText(company.status)}
-                        color={getStatusColor(company.status) as any}
-                        size="small"
+                      <Chip 
+                        label={company.status === 'active' ? 'Activa' : 
+                               company.status === 'suspended' ? 'Suspendida' : 'Bloqueada'} 
+                        color={company.status === 'active' ? 'success' : 
+                               company.status === 'suspended' ? 'warning' : 'error'}
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
                       />
                     </TableCell>
-                    <TableCell>{company.projectsCount}</TableCell>
                     <TableCell>
-                      <Rating value={company.rating} readOnly size="small" />
-                      <Typography variant="body2" color="text.secondary">
-                        ({company.rating})
-                      </Typography>
+                      <Chip 
+                        label={company.projectsCount} 
+                        color="primary" 
+                        variant="filled"
+                        sx={{ fontWeight: 600 }}
+                      />
                     </TableCell>
-                    <TableCell>{company.lastActivity}</TableCell>
                     <TableCell>
-                      <IconButton size="small" color="primary">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Rating value={company.rating} readOnly size="small" />
+                        <Typography variant="body2" fontWeight={600}>
+                          {company.rating}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{new Date(company.joinDate).toLocaleDateString()}</TableCell>
+                    <TableCell align="center">
+                      <IconButton 
+                        color="info" 
+                        title="Ver detalles"
+                        onClick={() => handleAction(company, 'activate')}
+                        sx={{ mr: 1 }}
+                      >
                         <VisibilityIcon />
                       </IconButton>
-                      <IconButton size="small" color="primary">
-                        <EditIcon />
-                      </IconButton>
-                      {company.status === 'active' ? (
+                      {company.status === 'active' && (
                         <>
-                          <IconButton
-                            size="small"
-                            color="warning"
+                          <IconButton 
+                            color="warning" 
+                            title="Suspender empresa"
                             onClick={() => handleAction(company, 'suspend')}
+                            sx={{ mr: 1 }}
                           >
                             <WarningIcon />
                           </IconButton>
-                          <IconButton
-                            size="small"
-                            color="error"
+                          <IconButton 
+                            color="error" 
+                            title="Bloquear empresa"
                             onClick={() => handleAction(company, 'block')}
+                            sx={{ mr: 1 }}
                           >
                             <BlockIcon />
                           </IconButton>
                         </>
-                      ) : (
-                        <IconButton
-                          size="small"
-                          color="success"
+                      )}
+                      {company.status !== 'active' && (
+                        <IconButton 
+                          color="success" 
+                          title="Activar empresa"
                           onClick={() => handleAction(company, 'activate')}
                         >
                           <CheckCircleIcon />
@@ -377,86 +464,64 @@ export const GestionEmpresasAdmin = () => {
             ))}
           </Box>
         </TabPanel>
-
-        {/* Tab: Documentos */}
-        <TabPanel value={tabValue} index={3}>
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Gestión de Documentos
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Aquí puedes gestionar los documentos de las empresas
-            </Typography>
-            <Box sx={{ mt: 3 }}>
-              <Button
-                variant="contained"
-                startIcon={<UploadIcon />}
-                sx={{ mr: 2 }}
-              >
-                Subir Documentos
-              </Button>
-              <Button
-                variant="outlined"
-                startIcon={<DownloadIcon />}
-              >
-                Descargar Reportes
-              </Button>
-            </Box>
-          </Box>
-        </TabPanel>
-
-        {/* Tab: Acciones Administrativas */}
-        <TabPanel value={tabValue} index={4}>
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Acciones Administrativas
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Gestiona las acciones administrativas para las empresas
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3, flexWrap: 'wrap' }}>
-              <Button variant="contained" color="warning" startIcon={<WarningIcon />}>
-                Suspender Empresa
-              </Button>
-              <Button variant="contained" color="error" startIcon={<BlockIcon />}>
-                Bloquear Empresa
-              </Button>
-              <Button variant="contained" color="success" startIcon={<CheckCircleIcon />}>
-                Activar Empresa
-              </Button>
-            </Box>
-          </Box>
-        </TabPanel>
       </Paper>
 
-      {/* Dialog para acciones administrativas */}
-      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {actionType === 'block' && 'Bloquear Empresa'}
-          {actionType === 'suspend' && 'Suspender Empresa'}
-          {actionType === 'activate' && 'Activar Empresa'}
+      {/* Diálogo de acción */}
+      <Dialog 
+        open={actionDialog} 
+        onClose={() => setActionDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {actionType === 'block' && <BlockIcon color="error" />}
+          {actionType === 'suspend' && <WarningIcon color="warning" />}
+          {actionType === 'activate' && <CheckCircleIcon color="success" />}
+          {getDialogTitle()}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body2" gutterBottom>
-            Empresa: {selectedCompany?.name}
-          </Typography>
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
-            label="Motivo"
-            value={actionReason}
-            onChange={(e) => setActionReason(e.target.value)}
-            sx={{ mt: 2 }}
-          />
+          {getDialogContent()}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setActionDialog(false)}>Cancelar</Button>
-          <Button onClick={handleActionConfirm} variant="contained" color="primary">
-            Confirmar
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setActionDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleActionConfirm}
+            variant="contained"
+            color={
+              actionType === 'block' ? 'error' : 
+              actionType === 'suspend' ? 'warning' : 'success'
+            }
+            sx={{ borderRadius: 2 }}
+            disabled={
+              (actionType === 'block' || actionType === 'suspend') && !actionReason.trim()
+            }
+          >
+            {actionType === 'block' ? 'Bloquear' : 
+             actionType === 'suspend' ? 'Suspender' : 'Activar'}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={4000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CheckCircleIcon color="success" />
+          <Typography color="success.main" fontWeight={600}>
+            {successMessage}
+          </Typography>
+        </Paper>
+      </Snackbar>
     </Box>
   );
 };

@@ -6,7 +6,6 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-  FormControl,
   Button,
   Dialog,
   DialogTitle,
@@ -128,10 +127,21 @@ const apiLevelDescriptions = {
   },
 };
 
+const getChipColor = (apiLevel: number) => {
+  switch (apiLevel) {
+    case 1: return 'info';
+    case 2: return 'primary';
+    case 3: return 'success';
+    case 4: return 'warning';
+    default: return 'default';
+  }
+};
+
 export const APIQuestionnaire = () => {
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [showResults, setShowResults] = useState(false);
   const [calculatedLevel, setCalculatedLevel] = useState<number>(0);
+  const [pendingApproval, setPendingApproval] = useState(false);
 
   const handleAnswerChange = (questionId: number, value: number) => {
     setAnswers(prev => ({
@@ -145,11 +155,8 @@ export const APIQuestionnaire = () => {
     if (answeredQuestions < questions.length) {
       return null;
     }
-
     const totalScore = Object.values(answers).reduce((sum, value) => sum + value, 0);
     const averageScore = totalScore / questions.length;
-    
-    // Determinar nivel API basado en el promedio
     if (averageScore <= 1.5) return 1;
     if (averageScore <= 2.5) return 2;
     if (averageScore <= 3.5) return 3;
@@ -161,11 +168,12 @@ export const APIQuestionnaire = () => {
     if (level) {
       setCalculatedLevel(level);
       setShowResults(true);
+      setPendingApproval(true);
     }
   };
 
   const progress = (Object.keys(answers).length / questions.length) * 100;
-  const canSubmit = Object.keys(answers).length === questions.length;
+  const canSubmit = Object.keys(answers).length === questions.length && !pendingApproval;
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -173,18 +181,11 @@ export const APIQuestionnaire = () => {
         <QuizIcon sx={{ mr: 2, color: 'primary.main' }} />
         Cuestionario de Nivelación API
       </Typography>
-
-      <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body1">
-          <strong>Objetivo:</strong> Este cuestionario permite identificar tus capacidades prácticas para asignarte un nivel API (Aptitud Profesional Institucional) entre 1 y 4.
-        </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-        Responde todas las preguntas con sinceridad para obtener una evaluación precisa de tu nivel actual. 
-        No existen respuestas buenas o malas: este cuestionario solo busca ayudarte a identificar los proyectos 
-        que mejor se adaptan a tus habilidades.
-        </Typography>
-      </Alert>
-
+      {pendingApproval && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Tu cuestionario fue enviado y está pendiente de aprobación por administración. No puedes volver a responder hasta que sea aprobado.
+        </Alert>
+      )}
       {/* Barra de progreso */}
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -198,71 +199,51 @@ export const APIQuestionnaire = () => {
         <LinearProgress 
           variant="determinate" 
           value={progress} 
-          sx={{ height: 8, borderRadius: 4 }}
         />
       </Box>
-
       {/* Preguntas */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {questions.map((question) => (
-          <Paper key={question.id} sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              {question.icon}
-              <Typography variant="h6" sx={{ ml: 1 }}>
-                Pregunta {question.id}
-              </Typography>
-            </Box>
-            
-            <Typography variant="body1" sx={{ mb: 3, fontWeight: 500 }}>
-              {question.question}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        {questions.map((q) => (
+          <Box key={q.id} sx={{ mb: 3 }}>
+            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              {q.icon} {q.question}
             </Typography>
-
-            <FormControl component="fieldset">
-              <RadioGroup
-                value={answers[question.id] || ''}
-                onChange={(e) => handleAnswerChange(question.id, Number(e.target.value))}
-              >
-                {question.options.map((option) => (
-                  <FormControlLabel
-                    key={option.value}
-                    value={option.value}
-                    control={<Radio />}
-                    label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2">
-                          {option.text}
-                        </Typography>
-                        <Chip 
-                          label={`API ${option.apiLevel}`} 
-                          size="small" 
-                          color="primary" 
-                          variant="outlined"
-                        />
-                      </Box>
-                    }
-                    sx={{ mb: 1 }}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-          </Paper>
+            <RadioGroup
+              value={answers[q.id] || ''}
+              onChange={(_, value) => !pendingApproval && handleAnswerChange(q.id, Number(value))}
+            >
+              {q.options.map((opt) => (
+                <FormControlLabel
+                  key={opt.value}
+                  value={opt.value}
+                  control={<Radio disabled={pendingApproval} />}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {opt.text}
+                      <Chip
+                        label={`API ${opt.apiLevel}`}
+                        size="small"
+                        color={getChipColor(opt.apiLevel) as any}
+                        variant="outlined"
+                      />
+                    </Box>
+                  }
+                  disabled={pendingApproval}
+                  sx={{ mb: 1 }}
+                />
+              ))}
+            </RadioGroup>
+          </Box>
         ))}
-      </Box>
-
-      {/* Botón de envío */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleSubmit}
-          disabled={!canSubmit}
-          startIcon={<CheckCircleIcon />}
-          sx={{ px: 4, py: 1.5 }}
-        >
-          Enviar Respuestas
-        </Button>
-      </Box>
-
+      </Paper>
+      <Button
+        variant="contained"
+        color="primary"
+        disabled={!canSubmit}
+        onClick={handleSubmit}
+      >
+        Enviar respuestas
+      </Button>
       {/* Dialog de resultados */}
       <Dialog open={showResults} onClose={() => setShowResults(false)} maxWidth="md" fullWidth>
         <DialogTitle>

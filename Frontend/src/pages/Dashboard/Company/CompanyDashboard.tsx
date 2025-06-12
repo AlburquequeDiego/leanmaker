@@ -4,7 +4,7 @@ export const CompanyDashboard = () => {
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Dashboard de Empresa
+        Dashboard de Empresa (Empresa)
       </Typography>
       
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>

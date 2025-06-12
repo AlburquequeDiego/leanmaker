@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 import {
   Event as EventIcon,
-  Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Business as BusinessIcon,
@@ -32,11 +31,14 @@ import {
   Warning as WarningIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
+import Snackbar from '@mui/material/Snackbar';
 
 export const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [actionType, setActionType] = useState<'view' | 'add' | 'edit' | 'delete' | null>(null);
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false);
+  const [requestText, setRequestText] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Mock data for calendar events
   const events = [
@@ -100,7 +102,6 @@ export const Calendar = () => {
 
   const handleAction = (event: any, type: 'view' | 'add' | 'edit' | 'delete') => {
     setSelectedEvent(event);
-    setActionType(type);
     setDialogOpen(true);
   };
 
@@ -169,13 +170,6 @@ export const Calendar = () => {
         <Typography variant="h4">
           Calendario
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleAction(null, 'add')}
-        >
-          Agregar Evento
-        </Button>
       </Box>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
@@ -232,20 +226,6 @@ export const Calendar = () => {
                         onClick={() => handleAction(event, 'view')}
                       >
                         <EventIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleAction(event, 'edit')}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleAction(event, 'delete')}
-                      >
-                        <DeleteIcon />
                       </IconButton>
                     </Box>
                   </ListItem>
@@ -313,78 +293,113 @@ export const Calendar = () => {
         </Box>
       </Box>
 
-      {/* Estadísticas */}
+      {/* Estadísticas mejoradas */}
       <Paper sx={{ p: 3, mt: 3 }}>
         <Typography variant="h6" gutterBottom>
           Resumen del Calendario
         </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="primary">
-                  {upcomingEvents.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Próximos Eventos
-                </Typography>
-              </CardContent>
-            </Card>
+        <Box sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 3,
+          justifyContent: { xs: 'center', md: 'flex-start' },
+        }}>
+          {/* Próximos Eventos */}
+          <Box sx={{
+            flex: '1 1 220px',
+            minWidth: 200,
+            bgcolor: 'rgba(33, 150, 243, 0.07)',
+            borderRadius: 3,
+            boxShadow: 2,
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mb: 2,
+          }}>
+            <EventIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+            <Typography variant="h3" color="primary.main" fontWeight={700}>
+              {upcomingEvents.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Próximos Eventos
+            </Typography>
           </Box>
-          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="success.main">
-                  {completedEvents.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Eventos Completados
-                </Typography>
-              </CardContent>
-            </Card>
+          {/* Eventos Completados */}
+          <Box sx={{
+            flex: '1 1 220px',
+            minWidth: 200,
+            bgcolor: 'rgba(76, 175, 80, 0.07)',
+            borderRadius: 3,
+            boxShadow: 2,
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mb: 2,
+          }}>
+            <CheckCircleIcon sx={{ fontSize: 40, color: 'success.main', mb: 1 }} />
+            <Typography variant="h3" color="success.main" fontWeight={700}>
+              {completedEvents.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Eventos Completados
+            </Typography>
           </Box>
-          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="warning.main">
-                  {events.filter(e => e.priority === 'high').length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Alta Prioridad
-                </Typography>
-              </CardContent>
-            </Card>
+          {/* Alta Prioridad */}
+          <Box sx={{
+            flex: '1 1 220px',
+            minWidth: 200,
+            bgcolor: 'rgba(255, 152, 0, 0.07)',
+            borderRadius: 3,
+            boxShadow: 2,
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mb: 2,
+          }}>
+            <WarningIcon sx={{ fontSize: 40, color: 'warning.main', mb: 1 }} />
+            <Typography variant="h3" color="warning.main" fontWeight={700}>
+              {events.filter(e => e.priority === 'high').length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Alta Prioridad
+            </Typography>
           </Box>
-          <Box sx={{ width: { xs: '100%', md: '33%' }, mb: 3 }}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" color="info.main">
-                  {events.filter(e => e.type === 'interview').length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Entrevistas
-                </Typography>
-              </CardContent>
-            </Card>
+          {/* Entrevistas */}
+          <Box sx={{
+            flex: '1 1 220px',
+            minWidth: 200,
+            bgcolor: 'rgba(33, 150, 243, 0.04)',
+            borderRadius: 3,
+            boxShadow: 2,
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mb: 2,
+          }}>
+            <BusinessIcon sx={{ fontSize: 40, color: 'info.main', mb: 1 }} />
+            <Typography variant="h3" color="info.main" fontWeight={700}>
+              {events.filter(e => e.type === 'interview').length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Entrevistas
+            </Typography>
           </Box>
         </Box>
       </Paper>
 
-      {/* Dialog para mostrar/editar eventos */}
+      {/* Dialog para mostrar detalles de eventos y solicitar cambio */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {actionType === 'view' && 'Detalles del Evento'}
-          {actionType === 'add' && 'Agregar Nuevo Evento'}
-          {actionType === 'edit' && 'Editar Evento'}
-          {actionType === 'delete' && 'Eliminar Evento'}
-        </DialogTitle>
+        <DialogTitle>Detalles del Evento</DialogTitle>
         <DialogContent>
           {selectedEvent && (
             <Box>
               <Typography variant="h6" gutterBottom>
                 {selectedEvent.title}
               </Typography>
-
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
                 <Box sx={{ width: { xs: '100%', md: '48%' }, mb: 3 }}>
                   <Card>
@@ -398,78 +413,23 @@ export const Calendar = () => {
                           <strong>Tipo:</strong> {getEventTypeText(selectedEvent.type)}
                         </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <ScheduleIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Fecha:</strong> {selectedEvent.date}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <AccessTimeIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Hora:</strong> {selectedEvent.time}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <ScheduleIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Duración:</strong> {selectedEvent.duration}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <LocationIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Ubicación:</strong> {selectedEvent.location}
-                        </Typography>
-                      </Box>
+                      <Typography variant="body2"><strong>Fecha:</strong> {selectedEvent.date}</Typography>
+                      <Typography variant="body2"><strong>Hora:</strong> {selectedEvent.time}</Typography>
+                      <Typography variant="body2"><strong>Duración:</strong> {selectedEvent.duration}</Typography>
+                      <Typography variant="body2"><strong>Ubicación:</strong> {selectedEvent.location}</Typography>
+                      <Typography variant="body2"><strong>Prioridad:</strong> {selectedEvent.priority === 'high' ? 'Alta' : selectedEvent.priority === 'medium' ? 'Media' : 'Baja'}</Typography>
                     </CardContent>
                   </Card>
                 </Box>
-
                 <Box sx={{ width: { xs: '100%', md: '48%' }, mb: 3 }}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
-                        Información del Proyecto
+                        Proyecto y Empresa
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Empresa:</strong> {selectedEvent.company}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <AssignmentIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2">
-                          <strong>Proyecto:</strong> {selectedEvent.project}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        {getStatusIcon(selectedEvent.status)}
-                        <Typography variant="body2" sx={{ ml: 1 }}>
-                          <strong>Estado:</strong> {selectedEvent.status === 'upcoming' ? 'Próximo' : 'Completado'}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Chip
-                          label={selectedEvent.priority === 'high' ? 'Alta' : selectedEvent.priority === 'medium' ? 'Media' : 'Baja'}
-                          size="small"
-                          color={getPriorityColor(selectedEvent.priority) as any}
-                        />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Box>
-
-                <Box sx={{ width: '100%' }}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Descripción
-                      </Typography>
-                      <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                        "{selectedEvent.description}"
-                      </Typography>
+                      <Typography variant="body2"><strong>Proyecto:</strong> {selectedEvent.project}</Typography>
+                      <Typography variant="body2"><strong>Empresa:</strong> {selectedEvent.company}</Typography>
+                      <Typography variant="body2" sx={{ mt: 2 }}><strong>Descripción:</strong> {selectedEvent.description}</Typography>
                     </CardContent>
                   </Card>
                 </Box>
@@ -478,19 +438,56 @@ export const Calendar = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
-          {actionType === 'edit' && (
-            <Button variant="contained" color="primary">
-              Guardar Cambios
-            </Button>
-          )}
-          {actionType === 'delete' && (
-            <Button variant="contained" color="error">
-              Eliminar
-            </Button>
-          )}
+          <Button onClick={() => setDialogOpen(false)} color="inherit">Cerrar</Button>
+          <Button variant="contained" color="primary" onClick={() => setRequestDialogOpen(true)}>
+            Solicitar cambio
+          </Button>
         </DialogActions>
       </Dialog>
+      {/* Dialog para solicitar cambio */}
+      <Dialog open={requestDialogOpen} onClose={() => setRequestDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Solicitar cambio de evento</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Escribe tu solicitud o motivo para cambiar este evento. La empresa recibirá tu mensaje.
+          </Typography>
+          <Box component="form">
+            <textarea
+              style={{ width: '100%', minHeight: 80, borderRadius: 8, border: '1px solid #ccc', padding: 8 }}
+              value={requestText}
+              onChange={e => setRequestText(e.target.value)}
+              placeholder="Ejemplo: Solicito cambiar la fecha por..."
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRequestDialogOpen(false)}>Cancelar</Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setRequestDialogOpen(false);
+              setShowSuccess(true);
+              setRequestText('');
+            }}
+            disabled={!requestText.trim()}
+          >
+            Enviar solicitud
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3500}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Paper elevation={3} sx={{ p: 1 }}>
+          <Typography color="success.main" fontWeight={600}>
+            ¡Solicitud enviada a la empresa!
+          </Typography>
+        </Paper>
+      </Snackbar>
     </Box>
   );
 };
