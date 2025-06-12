@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Button, Card, CardContent, CardMedia, Link } from '@mui/material';
+import { Box, Container, Typography, Button, Card, CardContent, CardMedia } from '@mui/material';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -304,17 +304,6 @@ export default function Home() {
               <Typography variant="body2" color="text.secondary">
                 © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados.
               </Typography>
-            </Box>
-            <Box sx={{ flex: 1, textAlign: { xs: 'left', md: 'right' } }}>
-              <Link href="#" color="primary" sx={{ mr: 2 }}>
-                Contacto
-              </Link>
-              <Link href="#" color="primary" sx={{ mr: 2 }}>
-                Términos
-              </Link>
-              <Link href="#" color="primary">
-                Privacidad
-              </Link>
             </Box>
           </Box>
         </Container>

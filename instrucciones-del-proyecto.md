@@ -6,17 +6,50 @@ Leanmaker es una plataforma integral para la gestión de proyectos, prácticas y
 ## 🛠️ Requisitos Previos
 
 ### Software Necesario
-- **Node.js** (versión 16.0.0 o superior)
-- **npm** (incluido con Node.js) o **yarn**
+- **Node.js** (versión 18.0.0 o superior) ⚠️ **IMPORTANTE**
+- **npm** (versión 9.0.0 o superior) ⚠️ **IMPORTANTE**
 - **Git** (para clonar el repositorio)
 - **Visual Studio Code** (recomendado) o cualquier editor de código
 
+### ⚠️ PASO CRÍTICO: Actualizar Node.js y npm
+
+**Si ya tienes Node.js instalado, verifica la versión:**
+```bash
+node --version
+npm --version
+```
+
+**Si tu versión es menor a 18.0.0, ACTUALIZA AHORA:**
+
+#### Windows:
+1. Ve a https://nodejs.org/
+2. Descarga la versión **LTS** (recomendada)
+3. Ejecuta el instalador y sigue los pasos
+4. Reinicia tu terminal/CMD
+
+#### macOS:
+```bash
+# Si tienes Homebrew:
+brew update
+brew upgrade node
+
+# O descarga desde https://nodejs.org/
+```
+
+#### Linux:
+```bash
+# Usando nvm (recomendado):
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm install --lts
+nvm use --lts
+```
+
 ### Verificar Instalaciones
 ```bash
-# Verificar Node.js
+# Verificar Node.js (debe ser 18.0.0 o superior)
 node --version
 
-# Verificar npm
+# Verificar npm (debe ser 9.0.0 o superior)
 npm --version
 
 # Verificar Git
@@ -41,22 +74,31 @@ cd leanmaker
 cd Frontend
 ```
 
-### Paso 3: Instalar Dependencias
+### Paso 3: LIMPIAR CACHE Y NODE_MODULES (IMPORTANTE)
+```bash
+# Eliminar node_modules y package-lock.json si existen
+rm -rf node_modules package-lock.json
+
+# Limpiar cache de npm
+npm cache clean --force
+```
+
+### Paso 4: Instalar Dependencias
 ```bash
 # Instalar todas las dependencias del proyecto
 npm install
 ```
 
-**Nota:** Este comando instalará automáticamente todas las dependencias listadas en `package.json`, incluyendo:
-- React y React DOM
-- TypeScript
-- Material-UI (MUI)
-- React Router DOM
-- Vite (bundler)
-- ESLint y Prettier
-- Y todas las demás dependencias necesarias
+**Si aparece algún error, ejecuta:**
+```bash
+# Forzar la instalación
+npm install --force
 
-### Paso 4: Verificar la Instalación
+# O usar legacy peer deps si hay conflictos
+npm install --legacy-peer-deps
+```
+
+### Paso 5: Verificar la Instalación
 ```bash
 # Verificar que todas las dependencias se instalaron correctamente
 npm list --depth=0
@@ -144,20 +186,22 @@ Crear archivo `.vscode/settings.json`:
 
 ## 🐛 Solución de Problemas Comunes
 
-### Error: "Module not found"
+### ❌ Error: "Module not found" o "Cannot find module"
 ```bash
-# Eliminar node_modules y reinstalar
+# SOLUCIÓN COMPLETA:
+cd Frontend
 rm -rf node_modules package-lock.json
-npm install
+npm cache clean --force
+npm install --legacy-peer-deps
 ```
 
-### Error: "Port already in use"
+### ❌ Error: "Port already in use"
 ```bash
 # Cambiar puerto manualmente
 npm run dev -- --port 3000
 ```
 
-### Error: "TypeScript compilation failed"
+### ❌ Error: "TypeScript compilation failed"
 ```bash
 # Verificar tipos
 npm run type-check
@@ -166,11 +210,44 @@ npm run type-check
 rm -rf node_modules/.cache
 ```
 
-### Error: "BOM characters detected"
+### ❌ Error: "BOM characters detected"
 Si encuentras errores de BOM (Byte Order Mark):
 1. Abrir el archivo en VS Code
 2. Ir a "File" → "Save with Encoding" → "UTF-8"
 3. Guardar el archivo
+
+### ❌ Error: "Peer dependency conflicts"
+```bash
+# Usar legacy peer deps
+npm install --legacy-peer-deps
+```
+
+### ❌ Error: "EACCES: permission denied"
+```bash
+# En Windows: Ejecutar CMD como administrador
+# En macOS/Linux:
+sudo npm install
+```
+
+### ❌ Error: "Network timeout" o "ECONNRESET"
+```bash
+# Cambiar registro de npm
+npm config set registry https://registry.npmjs.org/
+npm cache clean --force
+npm install
+```
+
+### ❌ Error: "React is not defined" o errores de React
+```bash
+# Reinstalar React específicamente
+npm install react react-dom @types/react @types/react-dom
+```
+
+### ❌ Error: "Material-UI components not found"
+```bash
+# Reinstalar Material-UI
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+```
 
 ## 📱 Navegadores Soportados
 - Chrome (recomendado)
@@ -187,10 +264,25 @@ VITE_APP_NAME=Leanmaker
 
 ## 📞 Soporte
 Si encuentras problemas:
-1. Verificar que todas las versiones coincidan con los requisitos
-2. Revisar la consola del navegador para errores
-3. Verificar la consola de terminal para errores de compilación
-4. Contactar al equipo de desarrollo
+
+### 1. Verificar Versiones (OBLIGATORIO)
+```bash
+node --version  # Debe ser 18.0.0+
+npm --version   # Debe ser 9.0.0+
+```
+
+### 2. Reinstalación Completa
+```bash
+cd Frontend
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install --legacy-peer-deps
+```
+
+### 3. Verificar Errores
+- Revisar la consola del navegador (F12)
+- Verificar la consola de terminal para errores de compilación
+- Contactar al equipo de desarrollo
 
 ## 🎯 Próximos Pasos
 Una vez que el proyecto esté ejecutándose:
@@ -200,5 +292,25 @@ Una vez que el proyecto esté ejecutándose:
 4. Revisar la configuración de rutas en `App.tsx`
 
 ---
+
+## ⚠️ RESUMEN RÁPIDO PARA COMPAÑEROS
+
+**Si tienes problemas, sigue ESTOS PASOS EN ORDEN:**
+
+1. **Actualiza Node.js a versión 18+** (https://nodejs.org/)
+2. **Limpia todo:**
+   ```bash
+   cd Frontend
+   rm -rf node_modules package-lock.json
+   npm cache clean --force
+   ```
+3. **Reinstala:**
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+4. **Ejecuta:**
+   ```bash
+   npm run dev
+   ```
 
 **¡Listo! Tu proyecto Leanmaker debería estar funcionando correctamente. 🎉** 
