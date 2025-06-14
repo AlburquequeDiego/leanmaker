@@ -82,7 +82,7 @@ export default function ForgotPassword() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'url("/imagenes/fondode.png") no-repeat center center/cover',
+        background: 'url("/imagenes/fondo_nuevo.png") no-repeat center center/cover',
       }}
     >
       <Container maxWidth="xs" sx={{ maxWidth: 340 }}>

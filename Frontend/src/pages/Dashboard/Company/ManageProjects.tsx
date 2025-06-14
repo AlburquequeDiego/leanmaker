@@ -31,7 +31,10 @@ import {
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Schedule as ScheduleIcon,
+  AddCircle as AddCircleIcon,
+  Info as InfoIcon,
 } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 interface Project {
   id: string;
@@ -46,6 +49,7 @@ interface Project {
   deadline: string;
   createdAt: string;
   skills: string[];
+  trlAnswers?: string[];
 }
 
 const mockProjects: Project[] = [
@@ -107,11 +111,105 @@ const mockProjects: Project[] = [
   },
 ];
 
+// TRL options
+const trlOptions = [
+  { value: 1, label: 'TRL 1', desc: 'Fase de idea, sin definición clara ni desarrollo previo.' },
+  { value: 2, label: 'TRL 2', desc: 'Definición clara y antecedentes de lo que se desea desarrollar.' },
+  { value: 3, label: 'TRL 3', desc: 'Pruebas y validaciones de concepto. Componentes evaluados por separado.' },
+  { value: 4, label: 'TRL 4', desc: 'Prototipo mínimo viable probado en condiciones controladas simples.' },
+  { value: 5, label: 'TRL 5', desc: 'Prototipo mínimo viable probado en condiciones similares al entorno real.' },
+  { value: 6, label: 'TRL 6', desc: 'Prototipo probado mediante un piloto en condiciones reales.' },
+  { value: 7, label: 'TRL 7', desc: 'Desarrollo probado en condiciones reales, por un periodo prolongado.' },
+  { value: 8, label: 'TRL 8', desc: 'Producto validado en lo técnico y lo comercial.' },
+  { value: 9, label: 'TRL 9', desc: 'Producto completamente desarrollado y disponible para la sociedad.' },
+];
+
+const studentAreas = [
+  'Ingeniería de Sistemas',
+  'Ingeniería Industrial',
+  'Diseño',
+  'Administración',
+  'Marketing',
+  'Otra',
+];
+
+const skillsList = [
+  'React', 'Node.js', 'Python', 'Django', 'SQL', 'Figma', 'Comunicación', 'Trabajo en equipo',
+];
+
+// Preguntas TRL por nivel
+const trlQuestions: { [key: string]: string[] } = {
+  '1': [
+    '¿Existe una idea clara del proyecto?',
+    '¿Se ha identificado una necesidad o problema a resolver?',
+  ],
+  '2': [
+    '¿Se ha definido claramente el objetivo del proyecto?',
+    '¿Existen antecedentes o referencias previas?',
+  ],
+  '3': [
+    '¿Se han realizado pruebas de concepto?',
+    '¿Se han evaluado componentes por separado?',
+  ],
+  '4': [
+    '¿Existe un prototipo mínimo viable?',
+    '¿Se ha probado el prototipo en condiciones controladas?',
+  ],
+  '5': [
+    '¿El prototipo ha sido probado en condiciones similares al entorno real?',
+    '¿Se han documentado los resultados de estas pruebas?',
+  ],
+  '6': [
+    '¿Se ha realizado un piloto en condiciones reales?',
+    '¿El prototipo ha sido validado por usuarios reales?',
+  ],
+  '7': [
+    '¿El desarrollo ha sido probado en condiciones reales por un periodo prolongado?',
+    '¿Se han identificado mejoras tras el uso prolongado?',
+  ],
+  '8': [
+    '¿El producto está validado técnica y comercialmente?',
+    '¿Existen clientes o usuarios que lo utilicen?',
+  ],
+  '9': [
+    '¿El producto está completamente desarrollado?',
+    '¿Está disponible para la sociedad?',
+  ],
+};
+
+// Definir el tipo para el nuevo proyecto
+interface NewProject {
+  title: string;
+  areas: string[];
+  description: string;
+  duration: string;
+  trl: string;
+  skills: string[];
+  modality: string;
+  trlAnswers?: string[];
+}
+
 export const ManageProjects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [selectedTab, setSelectedTab] = useState(0);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const theme = useTheme();
+  const [showNewProject, setShowNewProject] = useState(false);
+  const [newProject, setNewProject] = useState<NewProject>({
+    title: '',
+    areas: [],
+    description: '',
+    duration: '',
+    trl: '',
+    skills: [],
+    modality: '',
+  });
+  const [errors, setErrors] = useState<any>({});
+  const [showTrlHelp, setShowTrlHelp] = useState(false);
+  const [faq, setFaq] = useState<{ question: string; answer: string }[]>([]);
+  const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
+  const [trlAnswers, setTrlAnswers] = useState<string[]>([]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -185,6 +283,69 @@ export const ManageProjects: React.FC = () => {
     inProgress: projects.filter(p => p.status === 'in-progress').length,
     completed: projects.filter(p => p.status === 'completed').length,
     draft: projects.filter(p => p.status === 'draft').length,
+  };
+
+  const handleTrlChange = (trlValue: string) => {
+    setNewProject({ ...newProject, trl: trlValue });
+    setTrlAnswers(Array(trlQuestions[trlValue]?.length || 0).fill(''));
+  };
+
+  const validate = () => {
+    const errs: any = {};
+    if (!newProject.title) errs.title = 'Requerido';
+    if (!newProject.areas.length) errs.areas = 'Requerido';
+    if (!newProject.description) errs.description = 'Requerido';
+    if (!newProject.duration) errs.duration = 'Requerido';
+    if (!newProject.trl) errs.trl = 'Requerido';
+    if (!newProject.modality) errs.modality = 'Requerido';
+    if (newProject.trl && trlQuestions[newProject.trl]) {
+      trlQuestions[newProject.trl].forEach((_, idx) => {
+        if (!trlAnswers[idx] || !trlAnswers[idx].trim()) {
+          errs[`trlAnswer${idx}`] = 'Requerido';
+        }
+      });
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleAddFaq = () => {
+    if (newFaq.question.trim() && newFaq.answer.trim()) {
+      setFaq([...faq, newFaq]);
+      setNewFaq({ question: '', answer: '' });
+    }
+  };
+
+  const handleRemoveFaq = (index: number) => {
+    setFaq(faq.filter((_, i) => i !== index));
+  };
+
+  const handlePublish = () => {
+    if (!validate()) return;
+    // Aquí iría la lógica para guardar el proyecto, incluyendo FAQ y respuestas TRL
+    const newId = (projects.length + 1).toString();
+    const now = new Date();
+    const newProj: Project = {
+      id: newId,
+      title: newProject.title,
+      description: newProject.description,
+      status: 'draft',
+      difficulty: 'beginner', // Por defecto, puedes ajustar esto si lo deseas
+      apiLevel: Number(newProject.trl) || 1,
+      maxStudents: 1, // Por defecto, puedes ajustar esto si lo deseas
+      currentStudents: 0,
+      applications: 0,
+      deadline: '',
+      createdAt: now.toISOString().split('T')[0],
+      skills: newProject.skills,
+      trlAnswers: trlAnswers,
+    };
+    setProjects(prev => [...prev, newProj]);
+    setShowNewProject(false);
+    setNewProject({ title: '', areas: [], description: '', duration: '', trl: '', skills: [], modality: '' });
+    setTrlAnswers([]);
+    setErrors({});
+    setFaq([]);
   };
 
   return (
@@ -346,76 +507,213 @@ export const ManageProjects: React.FC = () => {
         ))}
       </Box>
 
-      {/* Dialog para editar proyecto */}
-      <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Editar Proyecto</DialogTitle>
-        <DialogContent>
-          {editingProject && (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-                <TextField
-                  fullWidth
-                  label="Título"
-                  value={editingProject.title}
-                  onChange={(e) => setEditingProject(prev => prev ? { ...prev, title: e.target.value } : null)}
-                  margin="normal"
-                />
+      {/* Botón para publicar nuevo proyecto */}
+      <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<AddCircleIcon />}
+          sx={{ borderRadius: 3, fontWeight: 600, fontSize: 18, px: 4, py: 2, boxShadow: 2 }}
+          onClick={() => setShowNewProject(true)}
+        >
+          Publicar Nuevo Proyecto
+        </Button>
+      </Box>
+
+      {/* Modal para nuevo proyecto */}
+      <Dialog open={showNewProject} onClose={() => setShowNewProject(false)} maxWidth="md" fullWidth>
+        <DialogTitle fontWeight={700}>Publicar Nuevo Proyecto</DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <TextField
+              label="Nombre del Proyecto"
+              value={newProject.title}
+              onChange={e => setNewProject({ ...newProject, title: e.target.value })}
+              error={!!errors.title}
+              helperText={errors.title}
+              fullWidth
+            />
+            <FormControl fullWidth error={!!errors.areas}>
+              <InputLabel>Área de estudiantes requerida</InputLabel>
+              <Select
+                multiple
+                value={newProject.areas}
+                onChange={e => setNewProject({ ...newProject, areas: e.target.value as string[] })}
+                label="Área de estudiantes requerida"
+              >
+                {studentAreas.map(area => (
+                  <MenuItem key={area} value={area}>{area}</MenuItem>
+                ))}
+              </Select>
+              {errors.areas && <Typography color="error" variant="caption">{errors.areas}</Typography>}
+            </FormControl>
+            <TextField
+              label="Descripción del Proyecto"
+              value={newProject.description}
+              onChange={e => setNewProject({ ...newProject, description: e.target.value })}
+              error={!!errors.description}
+              helperText={errors.description}
+              multiline
+              minRows={3}
+              fullWidth
+            />
+            <TextField
+              label="Duración (semanas)"
+              type="number"
+              value={newProject.duration}
+              onChange={e => setNewProject({ ...newProject, duration: e.target.value })}
+              error={!!errors.duration}
+              helperText={errors.duration}
+              fullWidth
+              inputProps={{ min: 1 }}
+            />
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Typography variant="subtitle1" fontWeight={600}>Nivel TRL del Proyecto</Typography>
+                <IconButton size="small" onClick={() => setShowTrlHelp(true)}><InfoIcon /></IconButton>
               </Box>
-              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-                <FormControl fullWidth margin="normal">
-                  <InputLabel>Estado</InputLabel>
-                  <Select
-                    value={editingProject.status}
-                    label="Estado"
-                    onChange={(e) => setEditingProject(prev => prev ? { ...prev, status: e.target.value as Project['status'] } : null)}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                {trlOptions.map(opt => (
+                  <Button
+                    key={opt.value}
+                    variant={newProject.trl === String(opt.value) ? 'contained' : 'outlined'}
+                    color="primary"
+                    onClick={() => handleTrlChange(String(opt.value))}
+                    sx={{ minWidth: 90 }}
                   >
-                    <MenuItem value="draft">Borrador</MenuItem>
-                    <MenuItem value="published">Publicado</MenuItem>
-                    <MenuItem value="in-progress">En Progreso</MenuItem>
-                    <MenuItem value="completed">Completado</MenuItem>
-                    <MenuItem value="cancelled">Cancelado</MenuItem>
-                  </Select>
-                </FormControl>
+                    {opt.label}
+                  </Button>
+                ))}
               </Box>
-              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="API Level"
-                  value={editingProject.apiLevel}
-                  onChange={(e) => setEditingProject(prev => prev ? { ...prev, apiLevel: parseInt(e.target.value) } : null)}
-                  margin="normal"
-                />
+              {errors.trl && <Typography color="error" variant="caption">{errors.trl}</Typography>}
+            </Box>
+            {newProject.trl && trlQuestions[newProject.trl] && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  Preguntas para evaluar el estado actual del proyecto (TRL {newProject.trl})
+                </Typography>
+                {trlQuestions[newProject.trl].map((q, idx) => (
+                  <TextField
+                    key={idx}
+                    label={q}
+                    value={trlAnswers[idx] || ''}
+                    onChange={e => {
+                      const updated = [...trlAnswers];
+                      updated[idx] = e.target.value;
+                      setTrlAnswers(updated);
+                    }}
+                    error={!!errors[`trlAnswer${idx}`]}
+                    helperText={errors[`trlAnswer${idx}`]}
+                    fullWidth
+                    multiline
+                    minRows={2}
+                    sx={{ mb: 2 }}
+                  />
+                ))}
               </Box>
-              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+            )}
+            <FormControl fullWidth>
+              <InputLabel>Modalidad</InputLabel>
+              <Select
+                value={newProject.modality}
+                onChange={e => setNewProject({ ...newProject, modality: e.target.value })}
+                label="Modalidad"
+                error={!!errors.modality}
+              >
+                <MenuItem value="">Selecciona una opción</MenuItem>
+                <MenuItem value="Remoto">Remoto</MenuItem>
+                <MenuItem value="Presencial">Presencial</MenuItem>
+                <MenuItem value="Híbrido">Híbrido</MenuItem>
+              </Select>
+              {errors.modality && <Typography color="error" variant="caption">{errors.modality}</Typography>}
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Habilidades requeridas</InputLabel>
+              <Select
+                multiple
+                value={newProject.skills}
+                onChange={e => setNewProject({ ...newProject, skills: e.target.value as string[] })}
+                label="Habilidades requeridas"
+              >
+                {skillsList.map(skill => (
+                  <MenuItem key={skill} value={skill}>{skill}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Box>
+              <Typography variant="h6" gutterBottom>Preguntas Frecuentes (FAQ) para el Proyecto</Typography>
+              {faq.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  {faq.map((item, idx) => (
+                    <Box key={idx} sx={{ mb: 1, p: 1, bgcolor: 'grey.100', borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2">Q: {item.question}</Typography>
+                        <Typography variant="body2" color="text.secondary">A: {item.answer}</Typography>
+                      </Box>
+                      <IconButton size="small" color="error" onClick={() => handleRemoveFaq(idx)}><DeleteIcon /></IconButton>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+              <Box sx={{ display: 'flex', gap: 2, mb: 1, flexWrap: 'wrap' }}>
                 <TextField
-                  fullWidth
-                  type="number"
-                  label="Máximo de Estudiantes"
-                  value={editingProject.maxStudents}
-                  onChange={(e) => setEditingProject(prev => prev ? { ...prev, maxStudents: parseInt(e.target.value) } : null)}
-                  margin="normal"
+                  label="Pregunta"
+                  value={newFaq.question}
+                  onChange={e => setNewFaq({ ...newFaq, question: e.target.value })}
+                  size="small"
+                  sx={{ flex: 1, minWidth: 180 }}
                 />
+                <TextField
+                  label="Respuesta"
+                  value={newFaq.answer}
+                  onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })}
+                  size="small"
+                  sx={{ flex: 2, minWidth: 220 }}
+                />
+                <Button variant="outlined" onClick={handleAddFaq} sx={{ height: 40, alignSelf: 'center' }}>Agregar</Button>
               </Box>
-              <Box sx={{ flex: '1 1 100%' }}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  label="Descripción"
-                  value={editingProject.description}
-                  onChange={(e) => setEditingProject(prev => prev ? { ...prev, description: e.target.value } : null)}
-                  margin="normal"
-                />
+              <Typography variant="caption" color="text.secondary">Puedes agregar preguntas y respuestas que los estudiantes verán al postularse.</Typography>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setShowNewProject(false)} variant="outlined">Cancelar</Button>
+          <Button onClick={handlePublish} variant="contained" color="primary">Publicar</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de ayuda TRL */}
+      <Dialog open={showTrlHelp} onClose={() => setShowTrlHelp(false)} maxWidth="sm">
+        <DialogTitle>¿Qué es el TRL?</DialogTitle>
+        <DialogContent>
+          <Box sx={{ p: 1 }}>
+            <Typography variant="subtitle2" fontWeight={700} align="center" gutterBottom>
+              Adaptación simple TRLs para diagnóstico al ingreso y egreso/cierre de proyectos.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" align="center" gutterBottom>
+              No aplica para actividades formativas o curriculares
+            </Typography>
+            <Box component="table" sx={{ width: '100%', border: '1px solid #ccc', borderRadius: 2, mt: 2 }}>
+              <Box component="thead" sx={{ bgcolor: 'grey.100' }}>
+                <Box component="tr">
+                  <Box component="th" sx={{ p: 1, fontWeight: 700, border: '1px solid #ccc' }}>TRL</Box>
+                  <Box component="th" sx={{ p: 1, fontWeight: 700, border: '1px solid #ccc' }}>Descripción</Box>
+                </Box>
+              </Box>
+              <Box component="tbody">
+                {trlOptions.map(opt => (
+                  <Box component="tr" key={opt.value}>
+                    <Box component="td" sx={{ p: 1, border: '1px solid #ccc', fontWeight: 600 }}>{opt.label}</Box>
+                    <Box component="td" sx={{ p: 1, border: '1px solid #ccc' }}>{opt.desc}</Box>
+                  </Box>
+                ))}
               </Box>
             </Box>
-          )}
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowEditDialog(false)}>Cancelar</Button>
-          <Button onClick={handleSaveEdit} variant="contained">
-            Guardar Cambios
-          </Button>
+          <Button onClick={() => setShowTrlHelp(false)} variant="contained">Cerrar</Button>
         </DialogActions>
       </Dialog>
     </Box>

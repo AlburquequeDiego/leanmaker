@@ -1,311 +1,535 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Button, Card, CardContent, CardMedia } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Avatar,
+  TextField,
+  Divider,
+  IconButton
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SchoolIcon from '@mui/icons-material/School';
+import BusinessIcon from '@mui/icons-material/Business';
+import GroupIcon from '@mui/icons-material/Group';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import HelpIcon from '@mui/icons-material/Help';
 
 export default function Home() {
   const navigate = useNavigate();
 
+  // Función para hacer scroll suave a una sección
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <Box
       sx={{
+        bgcolor: '#eaf1fb',
         minHeight: '100vh',
         width: '100vw',
         overflowX: 'hidden',
-        background: `url("/imagenes/fondo2.png") no-repeat center center/cover`,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        paddingTop: 0,
       }}
     >
-      {/* Hero Section */}
-      <Box
-        sx={{
-          maxWidth: 500,
-          mx: 'auto',
-          my: 8,
-          p: 4,
-          bgcolor: 'white',
-          border: '2px solid #2196f3',
-          borderRadius: 3,
-          boxShadow: 2,
-          textAlign: 'center'
-        }}
-      >
-        <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
-          Leanmaker
-        </Typography>
-        <Typography variant="h6" color="text.secondary" gutterBottom>
-          Impulsando el Talento, Conectando Empresas y Estudiantes
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Plataforma integral para la gestión de proyectos, prácticas y vinculación entre empresas y estudiantes universitarios.
-        </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          sx={{ mr: 2, mb: { xs: 2, md: 0 }, borderRadius: 50 }}
-          onClick={() => navigate('/login')}
-        >
-          Iniciar Sesión
-        </Button>
-        <Button
-          variant="outlined"
-          size="large"
-          sx={{ borderRadius: 50 }}
-          onClick={() => navigate('/register')}
-        >
-          Regístrate aquí
-        </Button>
+      {/* Header fijo ) */}
+      <Box sx={{ 
+        bgcolor: '#0a2342', 
+        color: 'white', 
+        py: { xs: 1, md: 2 }, 
+        px: { xs: 2, md: 4 }, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
+        width: '100%'
+      }}>
+        <Typography variant="h6" fontWeight={800} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>Leanmaker</Typography>
+        <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 } }}>
+          <IconButton color="inherit" onClick={() => scrollToSection('contacto')} sx={{ p: { xs: 1, md: 1.5 } }}><ContactSupportIcon /></IconButton>
+          <IconButton color="inherit" onClick={() => scrollToSection('por-que-leanmaker')} sx={{ p: { xs: 1, md: 1.5 } }}><HelpIcon /></IconButton>
+        </Box>
       </Box>
 
-      {/* Features Section */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Typography variant="h4" align="center" fontWeight={600} gutterBottom>
-          ¿Por qué Leanmaker?
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 4,
-            mt: 2,
-          }}
-        >
-          <Box sx={{ flex: 1, mb: { xs: 4, md: 0 } }}>
-            <Card elevation={2} sx={{ height: '100%', textAlign: 'center', p: 2 }}>
-              <CardMedia
-                component="img"
-                image="/imagenes/insercion.png"
-                alt="Inserción"
-                sx={{ height: 120, objectFit: 'contain', mb: 2 }}
-              />
-              <CardContent>
-                <Typography variant="h6" fontWeight={500} gutterBottom>
-                  Inserción Laboral
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Facilita la inserción de estudiantes en el mundo laboral a través de proyectos reales y prácticas profesionales.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-          <Box sx={{ flex: 1, mb: { xs: 4, md: 0 } }}>
-            <Card elevation={2} sx={{ height: '100%', textAlign: 'center', p: 2 }}>
-              <CardMedia
-                component="img"
-                image="/imagenes/vinculacion.png"
-                alt="Vinculación"
-                sx={{ height: 120, objectFit: 'contain', mb: 2 }}
-              />
-              <CardContent>
-                <Typography variant="h6" fontWeight={500} gutterBottom>
-                  Vinculación Empresa-Universidad
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Conecta empresas con talento joven, promoviendo la innovación y el desarrollo de 
-                  proyectos colaborativos.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <Card elevation={2} sx={{ height: '100%', textAlign: 'center', p: 2 }}>
-              <CardMedia
-                component="img"
-                image="/imagenes/filosofia.png"
-                alt="Proyectos"
-                sx={{ height: 120, objectFit: 'contain', mb: 2 }}
-              />
-              <CardContent>
-                <Typography variant="h6" fontWeight={500} gutterBottom>
-                  Proyectos Reales
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Participa en proyectos reales, guiados por expertos, que potencian el aprendizaje 
-                  y la experiencia profesional.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Blog/Noticias Section */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Typography variant="h4" align="center" fontWeight={600} gutterBottom>
-          Actualidad y Comunidad
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 4,
-            mt: 2,
-          }}
-        >
-          <Box sx={{ flex: 1, mb: { xs: 4, md: 0 } }}>
-            <Card elevation={1} sx={{ height: '100%' }}>
-              <CardMedia
-                component="img"
-                image="/imagenes/portada.png"
-                alt="Reunión con Expertos"
-                sx={{ height: 200, objectFit: 'cover' }}
-              />
-              <CardContent>
-                <Typography variant="h6" fontWeight={500} gutterBottom>
-                  Reunión con Expertos: Innovación en la Educación Superior
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Leanmaker organizó una mesa redonda con líderes de la industria y académicos para discutir el futuro de la formación profesional.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <Card elevation={1} sx={{ height: '100%' }}>
-              <CardMedia
-                component="img"
-                image="/imagenes/trabajando.png"
-                alt="Blog Leanmaker"
-                sx={{ height: 200, objectFit: 'cover' }}
-              />
-              <CardContent>
-                <Typography variant="h6" fontWeight={500} gutterBottom>
-                  Lanzamiento de Leanmaker: Nueva Era de Vinculación
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Descubre cómo Leanmaker está transformando la relación entre empresas y universidades con tecnología y comunidad.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Sección extra 1: Imagen derecha */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          alignItems: 'center',
-          gap: 4,
-        }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
-              Experiencia Práctica
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-            Participa en proyectos reales que te permitirán adquirir experiencia práctica 
-            directamente en tu área profesional, enfrentando desafíos auténticos y aplicando 
-            lo aprendido en situaciones del mundo laboral. Esta experiencia te brindará una 
-            visión más clara de las dinámicas de trabajo y te ayudará a fortalecer tus 
-            habilidades técnicas y de gestión.
-            </Typography>
-          </Box>
-          <Box sx={{ flex: 1, textAlign: 'center' }}>
-            <img src="/imagenes/practica.png" alt="Experiencia Práctica" style={{ maxWidth: 350, width: '100%' }} />
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Sección extra 2: Imagen izquierda */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row-reverse' },
-          alignItems: 'center',
-          gap: 4,
-        }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
-              Red de Contactos
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-            Conecta de manera activa con empresas, mentores y otros estudiantes, 
-            creando una red de contactos que te permitirá potenciar tu desarrollo profesional.
-             Estas conexiones no solo facilitarán el acceso a oportunidades laborales, 
-             sino que también te brindarán valiosas perspectivas y consejos de expertos en el 
-             campo, favoreciendo tu crecimiento personal y académico.
-            </Typography>
-          </Box>
-          <Box sx={{ flex: 1, textAlign: 'center' }}>
-            <img src="/imagenes/red.png" alt="Red de Contactos" style={{ maxWidth: 350, width: '100%' }} />
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Sección extra 3: Imagen derecha */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          alignItems: 'center',
-          gap: 4,
-        }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
-              Crecimiento Profesional
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-            Desarrolla las habilidades clave que te prepararán para los retos del mundo laboral, 
-            adquiriendo competencias técnicas, de comunicación y trabajo en equipo, esenciales 
-            para destacar en el mercado. A través de experiencias prácticas y de aprendizaje, 
-            estarás mejor preparado para afrontar los desafíos profesionales, con una sólida base 
-            que te permitirá adaptarte y sobresalir en cualquier entorno de trabajo.
-            </Typography>
-          </Box>
-          <Box sx={{ flex: 1, textAlign: 'center' }}>
-            <img src="/imagenes/Crecimiento Profesional.png" alt="Crecimiento Profesional" style={{ maxWidth: 350, width: '100%' }} />
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Sección de Contacto */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 2,
-          bgcolor: 'background.paper',
-          borderRadius: 2,
-          boxShadow: 2,
-          p: 4,
-        }}>
-          <Typography variant="h4" fontWeight={600} gutterBottom>
-            Contáctanos
+      {/* Hero principal */}
+      <Box sx={{ 
+        bgcolor: '#0a2342', 
+        color: 'white', 
+        py: { xs: 4, md: 8 }, 
+        textAlign: 'center',
+        width: '100%'
+      }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={800} gutterBottom sx={{ 
+            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+            lineHeight: 1.2
+          }}>
+            Conecta tu talento con el mundo real
           </Typography>
-          <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 2 }}>
-            ¿Tienes dudas o quieres saber más? Escríbenos y te responderemos a la brevedad.
+          <Typography variant="h6" sx={{ 
+            mb: 3,
+            fontSize: { xs: '1rem', md: '1.25rem' },
+            lineHeight: 1.4
+          }}>
+            Plataforma de vinculación, proyectos y prácticas para estudiantes y empresas,
+            integral para la gestión de proyectos, prácticas y vinculación entre empresas 
+            y estudiantes universitarios.
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            href="mailto:contacto@leanmaker.com"
-            sx={{ borderRadius: 50 }}
-          >
-            Enviar correo
-          </Button>
-        </Box>
-      </Container>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: { xs: 1, md: 2 },
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center'
+          }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large" 
+              sx={{ 
+                fontWeight: 700, 
+                px: { xs: 3, md: 5 },
+                py: { xs: 1.5, md: 2 },
+                fontSize: { xs: '0.9rem', md: '1rem' },
+                minWidth: { xs: '200px', sm: 'auto' }
+              }} 
+              onClick={() => navigate('/login')}
+            >
+              Iniciar sesión
+            </Button>
+            <Button 
+              variant="outlined" 
+              color="secondary" 
+              size="large" 
+              sx={{ 
+                fontWeight: 700, 
+                px: { xs: 3, md: 5 },
+                py: { xs: 1.5, md: 2 },
+                bgcolor: 'white', 
+                color: 'primary.main', 
+                borderColor: 'primary.main',
+                minWidth: { xs: '200px', sm: 'auto' }
+              }} 
+              onClick={() => navigate('/register')}
+            >
+              Regístrate
+            </Button>
+          </Box>
+        </Container>
+      </Box>
 
-      {/* Footer */}
-      <Box sx={{ bgcolor: 'background.paper', py: 4, mt: 'auto', borderTop: '1px solid #eee' }}>
-        <Container maxWidth="lg">
-          <Box
-            sx={{
+      {/* Bloque de 3 tarjetas grandes */}
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', lg: 'row' }, 
+          gap: { xs: 3, md: 4 }, 
+          justifyContent: 'center',
+          alignItems: 'stretch'
+        }}>
+          {[{
+            title: 'Crecimiento Personal',
+            desc: 'Participa en proyectos con empresas y adquiere experiencia práctica.Desarrolla tu confianza, autonomía y habilidades blandas mientras participas en proyectos reales.',
+            img: '/imagenes/practica.png',
+          }, {
+            title: 'Experiencias Transformadoras',
+            desc: 'Vive desafíos que potencian tu desarrollo profesional y personal en entornos colaborativos.',
+            img: '/imagenes/filosofia.png',
+          }, {
+            title: 'Formación Integral',
+            desc: 'Integra conocimientos técnicos, mentoría y experiencia real para convertirte en un profesional completo.',
+            img: '/imagenes/vinculacion.png',
+          }].map((item, i) => (
+            <Card key={i} sx={{ 
+              flex: 1, 
+              minWidth: { xs: '100%', sm: 280, lg: 260 }, 
+              textAlign: 'center', 
+              boxShadow: 2,
               display: 'flex',
-              flexDirection: { xs: 'column', md: 'row' },
-              alignItems: 'center',
-              gap: 2,
-            }}
-          >
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados.
-              </Typography>
+              flexDirection: 'column'
+            }}>
+              <CardMedia 
+                component="img" 
+                height="120" 
+                image={item.img} 
+                alt={item.title}
+                sx={{ objectFit: 'cover' }}
+              />
+              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>{item.title}</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1, lineHeight: 1.5 }}>{item.desc}</Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      </Container>
+
+      {/* Bloque: ¿Cómo funciona? (lista con íconos e imagen) */}
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 }, px: { xs: 2, md: 3 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', lg: 'row' }, 
+          alignItems: 'center', 
+          gap: { xs: 4, md: 6 }
+        }}>
+          <Box sx={{ flex: 1, width: '100%' }}>
+            <img 
+              src="/imagenes/filosofia.png" 
+              alt="Cómo funciona Leanmaker" 
+              style={{ 
+                width: '100%', 
+                maxWidth: '500px',
+                height: 'auto',
+                borderRadius: 12, 
+                boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                display: 'block',
+                margin: '0 auto'
+              }} 
+            />
+          </Box>
+          <Box sx={{ flex: 2, width: '100%' }}>
+            <Typography variant="h5" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
+              ¿Cómo funciona Leanmaker?
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+              {[{
+                icon: <CheckCircleIcon color="primary" />, text: 'Regístrate y crea tu perfil profesional.'
+              }, {
+                icon: <SchoolIcon color="primary" />, text: 'Explora proyectos y oportunidades de empresas.'
+              }, {
+                icon: <BusinessIcon color="primary" />, text: 'Conecta con empresas y mentores.'
+              }, {
+                icon: <GroupIcon color="primary" />, text: 'Participa en proyectos reales y crece profesionalmente.'
+              }].map((item, i) => (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                  <Box sx={{ mt: 0.5, flexShrink: 0 }}>{item.icon}</Box>
+                  <Typography variant="body1" sx={{ lineHeight: 1.5, fontSize: { xs: '0.9rem', md: '1rem' } }}>{item.text}</Typography>
+                </Box>
+              ))}
             </Box>
           </Box>
+        </Box>
+      </Container>
+
+      {/* Bloque de 2 recuadros independientes con imagen y texto (proyectos destacados) */}
+      <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', lg: 'row' }, 
+          gap: { xs: 3, md: 4 },
+          alignItems: 'stretch'
+        }}>
+          {/* Card 1 */}
+          <Card sx={{ 
+            flex: 1, 
+            minWidth: { xs: '100%', sm: 280, lg: 260 }, 
+            boxShadow: 2, 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <CardMedia
+              component="img"
+              height="180"
+              image="/imagenes/portada.png"
+              alt="Red de Contactos"
+              sx={{ objectFit: 'cover' }}
+            />
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+                Red de Contactos
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
+                Conecta de manera activa con empresas, mentores y otros estudiantes, 
+                creando una red de contactos que te permitirá potenciar tu desarrollo profesional.
+                Estas conexiones no solo facilitarán el acceso a oportunidades laborales, 
+                sino que también te brindarán valiosas perspectivas y consejos de expertos en el 
+                campo, favoreciendo tu crecimiento personal y académico.
+              </Typography>
+            </CardContent>
+          </Card>
+          {/* Card 2 */}
+          <Card sx={{ 
+            flex: 1, 
+            minWidth: { xs: '100%', sm: 280, lg: 260 }, 
+            boxShadow: 2, 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <CardMedia
+              component="img"
+              height="180"
+              image="/imagenes/portada.png"
+              alt="Crecimiento Profesional"
+              sx={{ objectFit: 'cover' }}
+            />
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+                Crecimiento Profesional
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
+                Desarrolla las habilidades clave que te prepararán para los retos del mundo laboral, 
+                adquiriendo competencias técnicas, de comunicación y trabajo en equipo, esenciales 
+                para destacar en el mercado. A través de experiencias prácticas y de aprendizaje, 
+                estarás mejor preparado para afrontar los desafíos profesionales, con una sólida base 
+                que te permitirá adaptarte y sobresalir en cualquier entorno de trabajo.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Container>
+
+      {/* Bloque: ¿Por qué Leanmaker? (tres cuadros independientes) */}
+      <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }} id="por-que-leanmaker">
+        <Typography variant="h5" fontWeight={700} align="center" sx={{ mb: 3, fontSize: { xs: '1.5rem', md: '2rem' } }}>
+          ¿Por qué Leanmaker?
+        </Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', md: 'row' }, 
+          gap: { xs: 3, md: 3 }, 
+          justifyContent: 'center',
+          alignItems: 'stretch'
+        }}>
+          {/* Card 1 */}
+          <Card sx={{ 
+            flex: 1, 
+            minWidth: { xs: '100%', sm: 220 }, 
+            boxShadow: 2, 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+                Inserción Laboral Temprana
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                Facilita la inserción de estudiantes en el mundo laboral a través de proyectos reales y prácticas profesionales.
+              </Typography>
+            </CardContent>
+          </Card>
+          {/* Card 2 */}
+          <Card sx={{ 
+            flex: 1, 
+            minWidth: { xs: '100%', sm: 220 }, 
+            boxShadow: 2, 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+                Vinculación Empresa-Universidad
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                Conecta empresas con talento joven, promoviendo la innovación y el desarrollo de proyectos colaborativos.
+              </Typography>
+            </CardContent>
+          </Card>
+          {/* Card 3 */}
+          <Card sx={{ 
+            flex: 1, 
+            minWidth: { xs: '100%', sm: 220 }, 
+            boxShadow: 2, 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+                Proyectos Reales
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                Participa en proyectos reales, guiados por expertos, que potencian el aprendizaje y la experiencia profesional.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Container>
+
+      {/* Bloque de 3 tarjetas grandes */}
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', lg: 'row' }, 
+          gap: { xs: 3, md: 4 }, 
+          justifyContent: 'center',
+          alignItems: 'stretch'
+        }}>
+          {[{
+            title: 'Impacto Social Positivo',
+            desc: 'El apoyo a empresas pequeñas fortalece la economía local y contribuye a la creación de empleos, lo que a su vez beneficia a la comunidad y la sociedad en general.',
+            img: '/imagenes/impacto.png',
+          }, {
+            title: 'Experiencia en Proyectos Reales',
+            desc: 'Los estudiantes pueden aplicar sus conocimientos en proyectos prácticos de empresas pequeñas, obteniendo horas de experiencia real que suman a su formación académica y profesional.',
+            img: '/imagenes/trabajando.png',
+          }, {
+            title: 'Fortalecimiento de Redes Locales',
+            desc: 'El trabajo con pequeñas empresas facilita la creación de una red de contactos y colaboraciones que favorece tanto a los estudiantes como a las empresas, contribuyendo al crecimiento de la comunidad empresarial local.',
+            img: '/imagenes/redes1.png',
+          }].map((item, i) => (
+            <Card key={i} sx={{ 
+              flex: 1, 
+              minWidth: { xs: '100%', sm: 280, lg: 260 }, 
+              textAlign: 'center', 
+              boxShadow: 2,
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <CardMedia 
+                component="img" 
+                height="120" 
+                image={item.img} 
+                alt={item.title}
+                sx={{ objectFit: 'cover' }}
+              />
+              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>{item.title}</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>{item.desc}</Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      </Container>
+
+      {/* Bloque: Te acompañamos en cada paso (solo texto) */}
+      <Box sx={{ bgcolor: '#dbeafe', py: { xs: 4, md: 8 }, width: '100%' }}>
+        <Container maxWidth="md" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h4" fontWeight={700} align="center" gutterBottom sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' } }}>
+            Te acompañamos en cada paso
+          </Typography>
+          <Typography variant="h6" align="center" color="text.secondary" sx={{ fontSize: { xs: '1rem', md: '1.25rem' }, lineHeight: 1.5 }}>
+            En Leanmaker, nuestro equipo y comunidad están siempre listos para apoyarte, resolver tus dudas y ayudarte a alcanzar tus metas profesionales.
+          </Typography>
+        </Container>
+      </Box>
+
+      {/* Bloque: ¿Listo para registrarte? (CTA grande) */}
+      <Box sx={{ bgcolor: 'primary.main', color: 'white', py: { xs: 4, md: 8 }, textAlign: 'center', width: '100%' }}>
+        <Container maxWidth="md" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h4" fontWeight={800} gutterBottom sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' } }}>
+            ¿Listo para registrarte y transformar tu futuro?
+          </Typography>
+          <Typography variant="h6" sx={{ 
+            mb: 4,
+            fontSize: { xs: '1rem', md: '1.25rem' },
+            lineHeight: 1.5
+          }}>
+            Únete a Leanmaker y accede a oportunidades únicas de crecimiento profesional personalizadas para ti.
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            size="large" 
+            sx={{ 
+              fontWeight: 700, 
+              px: { xs: 3, md: 5 },
+              py: { xs: 1.5, md: 2 },
+              fontSize: { xs: '0.9rem', md: '1rem' }
+            }} 
+            onClick={() => navigate('/register')}
+          >
+            Regístrate!
+          </Button>
+        </Container>
+      </Box>
+
+      {/* Bloque circular de contacto */}
+      <Box sx={{ 
+        bgcolor: '#eaf1fb', 
+        py: { xs: 4, md: 8 }, 
+        display: 'flex', 
+        justifyContent: 'center',
+        width: '100%'
+      }} id="contacto">
+        <Container maxWidth="sm" sx={{ px: { xs: 2, md: 3 } }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: { xs: 3, md: 4 }, 
+            flexDirection: { xs: 'column', md: 'row' }
+          }}>
+            <Avatar sx={{ 
+              width: { xs: 80, md: 120 }, 
+              height: { xs: 80, md: 120 }, 
+              bgcolor: 'primary.main', 
+              fontSize: { xs: 40, md: 60 }
+            }}>✉️</Avatar>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+                ¿Tienes dudas? Contáctanos y te responderemos a la brevedad
+              </Typography>
+              <Box component="form" sx={{ mt: 2 }}>
+                <TextField 
+                  label="Nombre" 
+                  fullWidth 
+                  size="medium" 
+                  sx={{ mb: 2 }}
+                  InputProps={{ style: { fontSize: '1rem' } }}
+                />
+                <TextField 
+                  label="Correo electrónico" 
+                  fullWidth 
+                  size="medium" 
+                  sx={{ mb: 2 }}
+                  InputProps={{ style: { fontSize: '1rem' } }}
+                />
+                <TextField 
+                  label="Mensaje" 
+                  fullWidth 
+                  size="medium" 
+                  multiline 
+                  rows={3} 
+                  sx={{ mb: 2 }}
+                  InputProps={{ style: { fontSize: '1rem' } }}
+                />
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  fullWidth 
+                  size="large"
+                  sx={{ py: 1.5, fontSize: '1rem' }}
+                >
+                  Enviar mensaje
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ 
+        bgcolor: '#0a2342', 
+        color: 'white', 
+        py: { xs: 3, md: 4 }, 
+        mt: 6, 
+        textAlign: 'center',
+        width: '100%'
+      }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+            Leanmaker
+          </Typography>
+          <Typography variant="body2" color="rgba(255,255,255,0.7)" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
+            Plataforma de vinculación y gestión de proyectos para estudiantes y empresas.
+          </Typography>
+          <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.1)' }} />
+          <Typography variant="body2" color="rgba(255,255,255,0.5)" sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>
+            © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados.
+          </Typography>
         </Container>
       </Box>
     </Box>

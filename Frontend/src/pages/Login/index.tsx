@@ -67,7 +67,7 @@ export const Login = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: `url("/imagenes/fondode.png") no-repeat center center/cover`,
+        background: `url("/imagenes/fondo_nuevo.png") no-repeat center center/cover`,
       }}
     >
       <Container component="main" maxWidth={false} disableGutters sx={{ width: '400px' }}>

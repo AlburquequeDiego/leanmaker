@@ -91,7 +91,7 @@ export const Register = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: `url("/imagenes/fondode.png") no-repeat center center/cover`,
+        background: `url("/imagenes/fondo_nuevo.png") no-repeat center center/cover`,
       }}
     >
       <Container component="main" maxWidth={false} disableGutters sx={{ width: '100%', maxWidth: 340, my: 8 }}>

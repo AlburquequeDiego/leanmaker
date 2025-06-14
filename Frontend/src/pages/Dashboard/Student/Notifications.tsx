@@ -30,7 +30,7 @@ export const Notifications = () => {
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Mock data for notifications
+  // donde se supone ue tiene que estar la notificacion
   const notifications = [
     {
       id: 1,

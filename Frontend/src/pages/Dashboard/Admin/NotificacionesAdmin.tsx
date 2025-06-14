@@ -169,7 +169,7 @@ export default function NotificacionesAdmin() {
             <Typography variant="h5">Envío de Notificaciones Masivas</Typography>
           </Box>
           
-          <Paper sx={{ p: 4, mb: 4, borderRadius: 4, boxShadow: 3 }}>
+          <Paper sx={{ p: { xs: 2, sm: 4 }, mb: 4, borderRadius: 4, boxShadow: 3 }}>
             <Stack spacing={3}>
               <FormControl fullWidth>
                 <InputLabel>Plantilla</InputLabel>
@@ -215,7 +215,7 @@ export default function NotificacionesAdmin() {
                 color="primary"
                 size="large"
                 startIcon={<SendIcon />}
-                sx={{ borderRadius: 2, fontSize: 18, py: 1.5, mt: 1 }}
+                sx={{ borderRadius: 2, fontSize: { xs: 16, sm: 18 }, py: 1.5, mt: 1 }}
                 onClick={handleSend}
               >
                 Enviar Notificación
@@ -224,35 +224,46 @@ export default function NotificacionesAdmin() {
           </Paper>
 
           <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>Historial de Notificaciones</Typography>
-          <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 1 }}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Mensaje</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Destinatarios</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fecha</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {mockHistorial.map(n => (
-                  <TableRow key={n.id} hover>
-                    <TableCell>{n.mensaje}</TableCell>
-                    <TableCell>{n.destinatarios}</TableCell>
-                    <TableCell>{n.fecha}</TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={n.estado} 
-                        color={n.estado === 'Enviada' ? 'success' : 'warning'} 
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
+          <Box sx={{ overflowX: 'auto' }}>
+            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 1, minWidth: 600 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: 'primary.main' }}>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 200 }}>Mensaje</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Destinatarios</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}>Fecha</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Estado</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {mockHistorial.map(n => (
+                    <TableRow key={n.id} hover>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {n.mensaje}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>{n.destinatarios}</TableCell>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {n.fecha}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={n.estado} 
+                          color={n.estado === 'Enviada' ? 'success' : 'warning'} 
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </TabPanel>
 
         {/* Tab: Solicitudes de API */}
@@ -262,97 +273,106 @@ export default function NotificacionesAdmin() {
             <Typography variant="h5">Solicitudes de Cambio de Nivel API</Typography>
           </Box>
 
-          <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estudiante</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Nivel Actual</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Nivel Solicitado</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Puntuación</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fecha</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
-                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {mockNotificacionesAPI.map(notification => (
-                  <TableRow key={notification.id} hover>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                          <PersonIcon />
-                        </Avatar>
-                        <Box>
-                          <Typography variant="body2" fontWeight={600}>
-                            {notification.estudiante}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {notification.email}
-                          </Typography>
+          <Box sx={{ overflowX: 'auto' }}>
+            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 800 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: 'primary.main' }}>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 180 }}>Estudiante</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Nivel Actual</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}>Nivel Solicitado</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80 }}>Puntuación</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}>Fecha</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Estado</TableCell>
+                    <TableCell align="center" sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Acciones</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {mockNotificacionesAPI.map(notification => (
+                    <TableRow key={notification.id} hover>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 160 }}>
+                          <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main' }}>
+                            <PersonIcon fontSize="small" />
+                          </Avatar>
+                          <Box sx={{ minWidth: 0, flex: 1 }}>
+                            <Typography variant="body2" fontWeight={600} noWrap>
+                              {notification.estudiante}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" noWrap>
+                              {notification.email}
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={`API ${notification.nivelActual}`} 
-                        color="primary" 
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {getNivelIcon(notification.nivelActual, notification.nivelSolicitado)}
+                      </TableCell>
+                      <TableCell>
                         <Chip 
-                          label={`API ${notification.nivelSolicitado}`} 
-                          color="secondary" 
+                          label={`API ${notification.nivelActual}`} 
+                          color="primary" 
                           variant="filled"
+                          size="small"
                           sx={{ fontWeight: 600 }}
                         />
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight={600}>
-                        {notification.puntuacion}%
-                      </Typography>
-                    </TableCell>
-                    <TableCell>{notification.fecha}</TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={notification.estado} 
-                        color={getEstadoColor(notification.estado) as any}
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell align="center">
-                      {notification.estado === 'Pendiente' && (
-                        <Button
-                          variant="outlined"
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {getNivelIcon(notification.nivelActual, notification.nivelSolicitado)}
+                          <Chip 
+                            label={`API ${notification.nivelSolicitado}`} 
+                            color="secondary" 
+                            variant="filled"
+                            size="small"
+                            sx={{ fontWeight: 600 }}
+                          />
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={600}>
+                          {notification.puntuacion}%
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {notification.fecha}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={notification.estado} 
+                          color={getEstadoColor(notification.estado) as any}
+                          variant="filled"
                           size="small"
-                          onClick={() => handleApiNotification(notification)}
-                          sx={{ borderRadius: 2 }}
-                        >
-                          Revisar
-                        </Button>
-                      )}
-                      {notification.estado !== 'Pendiente' && (
-                        <Button
-                          variant="text"
-                          size="small"
-                          onClick={() => handleApiNotification(notification)}
-                          sx={{ borderRadius: 2 }}
-                        >
-                          Ver Detalles
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        {notification.estado === 'Pendiente' && (
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => handleApiNotification(notification)}
+                            sx={{ borderRadius: 2 }}
+                          >
+                            Revisar
+                          </Button>
+                        )}
+                        {notification.estado !== 'Pendiente' && (
+                          <Button
+                            variant="text"
+                            size="small"
+                            onClick={() => handleApiNotification(notification)}
+                            sx={{ borderRadius: 2 }}
+                          >
+                            Ver Detalles
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </TabPanel>
       </Paper>
 

@@ -23,11 +23,14 @@ import {
   CardContent,
   Avatar,
   Rating,
-  Badge,
   Snackbar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
 } from '@mui/material';
 import {
-  Business as BusinessIcon,
   Person as PersonIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -36,6 +39,8 @@ import {
   CheckCircle as CheckCircleIcon,
   People as PeopleIcon,
   Work as WorkIcon,
+  Search as SearchIcon,
+  FilterList as FilterListIcon,
 } from '@mui/icons-material';
 
 interface Project {
@@ -110,6 +115,12 @@ export const GestionProyectosAdmin = () => {
   const [actionReason, setActionReason] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // Nuevos estados para filtros
+  const [search, setSearch] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedApiLevel, setSelectedApiLevel] = useState('');
 
   // Mock data
   const projects: Project[] = [
@@ -161,7 +172,36 @@ export const GestionProyectosAdmin = () => {
       salary: '$550,000 COP/mes',
       rating: 4.0,
     },
+    {
+      id: '4',
+      title: 'Sistema de CRM',
+      company: 'TechCorp Solutions',
+      description: 'Sistema de gestión de relaciones con clientes con integración de APIs y dashboard analítico.',
+      status: 'completed',
+      requiredApiLevel: 4,
+      studentsNeeded: 2,
+      studentsAssigned: 2,
+      applicationsCount: 6,
+      startDate: '2023-09-01',
+      endDate: '2023-12-31',
+      location: 'Remoto',
+      salary: '$700,000 COP/mes',
+      rating: 4.8,
+    },
   ];
+
+  // Filtrado de proyectos
+  const filteredProjects = projects.filter(project =>
+    (project.title.toLowerCase().includes(search.toLowerCase()) || 
+     project.company.toLowerCase().includes(search.toLowerCase()) ||
+     project.description.toLowerCase().includes(search.toLowerCase())) &&
+    (selectedCompany ? project.company === selectedCompany : true) &&
+    (selectedStatus ? project.status === selectedStatus : true) &&
+    (selectedApiLevel ? project.requiredApiLevel.toString() === selectedApiLevel : true)
+  );
+
+  // Obtener valores únicos para los filtros
+  const companies = Array.from(new Set(projects.map(p => p.company)));
 
   const applications: Application[] = [
     {
@@ -376,118 +416,228 @@ export const GestionProyectosAdmin = () => {
         </Tabs>
 
         <TabPanel value={tabValue} index={0}>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Proyecto</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Empresa</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estudiantes</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Postulaciones</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Nivel API</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Rating</TableCell>
-                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {projects.map(project => (
-                  <TableRow key={project.id} hover>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body2" fontWeight={600}>
-                          {project.title}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {project.location} • {project.salary}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>{project.company}</TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={project.status === 'active' ? 'Activo' : 
-                               project.status === 'suspended' ? 'Suspendido' : 
-                               project.status === 'completed' ? 'Completado' : 'Cancelado'} 
-                        color={project.status === 'active' ? 'success' : 
-                               project.status === 'suspended' ? 'warning' : 
-                               project.status === 'completed' ? 'info' : 'error'}
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={`${project.studentsAssigned}/${project.studentsNeeded}`} 
-                        color="primary" 
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={project.applicationsCount} 
-                        color="secondary" 
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={`API ${project.requiredApiLevel}`} 
-                        color="warning" 
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Rating value={project.rating} readOnly size="small" />
-                        <Typography variant="body2" fontWeight={600}>
-                          {project.rating}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton 
-                        color="info" 
-                        title="Ver candidatos"
-                        onClick={() => handleAction(project, 'view_candidates')}
-                        sx={{ mr: 1 }}
-                      >
-                        <PeopleIcon />
-                      </IconButton>
-                      <IconButton 
-                        color="primary" 
-                        title="Editar proyecto"
-                        onClick={() => handleAction(project, 'edit')}
-                        sx={{ mr: 1 }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      {project.status === 'active' && (
-                        <IconButton 
-                          color="warning" 
-                          title="Suspender proyecto"
-                          onClick={() => handleAction(project, 'suspend')}
-                          sx={{ mr: 1 }}
-                        >
-                          <BlockIcon />
-                        </IconButton>
-                      )}
-                      <IconButton 
-                        color="error" 
-                        title="Eliminar proyecto"
-                        onClick={() => handleAction(project, 'delete')}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
+          {/* Sección de filtros mejorada y responsiva */}
+          <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 3, boxShadow: 2, bgcolor: 'grey.50' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <FilterListIcon color="primary" />
+              <Typography variant="h6" color="primary">
+                Filtros de Búsqueda
+              </Typography>
+            </Box>
+            
+            <Stack 
+              direction={{ xs: 'column', lg: 'row' }} 
+              spacing={{ xs: 2, sm: 2 }} 
+              alignItems={{ xs: 'stretch', lg: 'center' }}
+              flexWrap="wrap"
+              sx={{ mb: 2 }}
+            >
+              <TextField
+                label="Buscar por título, empresa o descripción"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{ 
+                  minWidth: { xs: '100%', sm: 300 },
+                  borderRadius: 2 
+                }}
+                InputProps={{
+                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                }}
+              />
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 180 } }}>
+                <InputLabel>Empresa</InputLabel>
+                <Select
+                  value={selectedCompany}
+                  label="Empresa"
+                  onChange={(e) => setSelectedCompany(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todas las empresas</MenuItem>
+                  {companies.map((company) => (
+                    <MenuItem key={company} value={company}>{company}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Estado</InputLabel>
+                <Select
+                  value={selectedStatus}
+                  label="Estado"
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todos los estados</MenuItem>
+                  <MenuItem value="active">Activo</MenuItem>
+                  <MenuItem value="suspended">Suspendido</MenuItem>
+                  <MenuItem value="completed">Completado</MenuItem>
+                  <MenuItem value="cancelled">Cancelado</MenuItem>
+                </Select>
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Nivel API</InputLabel>
+                <Select
+                  value={selectedApiLevel}
+                  label="Nivel API"
+                  onChange={(e) => setSelectedApiLevel(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todos los niveles</MenuItem>
+                  <MenuItem value="1">Nivel 1 - Básico</MenuItem>
+                  <MenuItem value="2">Nivel 2 - Intermedio</MenuItem>
+                  <MenuItem value="3">Nivel 3 - Avanzado</MenuItem>
+                  <MenuItem value="4">Nivel 4 - Experto</MenuItem>
+                </Select>
+              </FormControl>
+              
+              <Button 
+                variant="outlined" 
+                onClick={() => {
+                  setSearch('');
+                  setSelectedCompany('');
+                  setSelectedStatus('');
+                  setSelectedApiLevel('');
+                }}
+                sx={{ 
+                  borderRadius: 2,
+                  minWidth: { xs: '100%', sm: 'auto' }
+                }}
+              >
+                Limpiar Filtros
+              </Button>
+            </Stack>
+            
+            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Mostrando {filteredProjects.length} de {projects.length} proyectos
+              </Typography>
+            </Box>
+          </Paper>
+
+          {/* Tabla responsiva */}
+          <Box sx={{ overflowX: 'auto' }}>
+            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 1000 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: 'primary.main' }}>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 200, whiteSpace: 'nowrap' }}>Proyecto</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Empresa</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Estado</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Estudiantes</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Postulaciones</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Nivel API</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80, whiteSpace: 'nowrap' }}>Rating</TableCell>
+                    <TableCell align="center" sx={{ color: 'white', fontWeight: 600, minWidth: 150, whiteSpace: 'nowrap' }}>Acciones</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {filteredProjects.map(project => (
+                    <TableRow key={project.id} hover>
+                      <TableCell>
+                        <Box>
+                          <Typography variant="body2" fontWeight={600} noWrap>
+                            {project.title}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" noWrap>
+                            {project.location} • {project.salary}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {project.company}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={getStatusText(project.status)} 
+                          color={getStatusColor(project.status) as any}
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={`${project.studentsAssigned}/${project.studentsNeeded}`} 
+                          color="primary" 
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={project.applicationsCount} 
+                          color="secondary" 
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={`API ${project.requiredApiLevel}`} 
+                          color="warning" 
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Rating value={project.rating} readOnly size="small" />
+                          <Typography variant="body2" fontWeight={600}>
+                            {project.rating}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
+                          <IconButton 
+                            color="info" 
+                            title="Ver candidatos"
+                            onClick={() => handleAction(project, 'view_candidates')}
+                            size="small"
+                          >
+                            <PeopleIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton 
+                            color="primary" 
+                            title="Editar proyecto"
+                            onClick={() => handleAction(project, 'edit')}
+                            size="small"
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          {project.status === 'active' && (
+                            <IconButton 
+                              color="warning" 
+                              title="Suspender proyecto"
+                              onClick={() => handleAction(project, 'suspend')}
+                              size="small"
+                            >
+                              <BlockIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                          <IconButton 
+                            color="error" 
+                            title="Eliminar proyecto"
+                            onClick={() => handleAction(project, 'delete')}
+                            size="small"
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </TabPanel>
 
         {/* Tab: Postulaciones */}

@@ -23,7 +23,12 @@ import {
   CardContent,
   Avatar,
   Rating,
-  Snackbar
+  Snackbar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -34,6 +39,8 @@ import {
   Edit as EditIcon,
   Download as DownloadIcon,
   Upload as UploadIcon,
+  Search as SearchIcon,
+  FilterList as FilterListIcon,
 } from '@mui/icons-material';
 
 interface Company {
@@ -96,6 +103,11 @@ export const GestionEmpresasAdmin = () => {
   const [actionReason, setActionReason] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // Nuevos estados para filtros
+  const [search, setSearch] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedRating, setSelectedRating] = useState('');
 
   // Mock data
   const companies: Company[] = [
@@ -129,7 +141,39 @@ export const GestionEmpresasAdmin = () => {
       joinDate: '2023-02-10',
       lastActivity: '2024-01-22',
     },
+    {
+      id: '4',
+      name: 'StartupXYZ',
+      email: 'contact@startupxyz.com',
+      status: 'blocked',
+      projectsCount: 1,
+      rating: 2.5,
+      joinDate: '2023-06-15',
+      lastActivity: '2023-12-01',
+    },
+    {
+      id: '5',
+      name: 'TechInnovate',
+      email: 'info@techinnovate.com',
+      status: 'active',
+      projectsCount: 5,
+      rating: 4.8,
+      joinDate: '2023-04-10',
+      lastActivity: '2024-01-25',
+    },
   ];
+
+  // Filtrado de empresas
+  const filteredCompanies = companies.filter(company =>
+    (company.name.toLowerCase().includes(search.toLowerCase()) || 
+     company.email.toLowerCase().includes(search.toLowerCase())) &&
+    (selectedStatus ? company.status === selectedStatus : true) &&
+    (selectedRating ? 
+      (selectedRating === 'high' && company.rating >= 4.5) ||
+      (selectedRating === 'medium' && company.rating >= 3.5 && company.rating < 4.5) ||
+      (selectedRating === 'low' && company.rating < 3.5)
+      : true)
+  );
 
   const projects: Project[] = [
     {
@@ -291,109 +335,205 @@ export const GestionEmpresasAdmin = () => {
         </Tabs>
 
         <TabPanel value={tabValue} index={0}>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Empresa</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Email</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Proyectos</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Rating</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fecha Registro</TableCell>
-                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {companies.map(company => (
-                  <TableRow key={company.id} hover>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                          <BusinessIcon />
-                        </Avatar>
-                        <Box>
+          {/* Sección de filtros mejorada y responsiva */}
+          <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 3, boxShadow: 2, bgcolor: 'grey.50' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <FilterListIcon color="primary" />
+              <Typography variant="h6" color="primary">
+                Filtros de Búsqueda
+              </Typography>
+            </Box>
+            
+            <Stack 
+              direction={{ xs: 'column', lg: 'row' }} 
+              spacing={{ xs: 2, sm: 2 }} 
+              alignItems={{ xs: 'stretch', lg: 'center' }}
+              flexWrap="wrap"
+              sx={{ mb: 2 }}
+            >
+              <TextField
+                label="Buscar por nombre o email"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{ 
+                  minWidth: { xs: '100%', sm: 250 },
+                  borderRadius: 2 
+                }}
+                InputProps={{
+                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                }}
+              />
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Estado</InputLabel>
+                <Select
+                  value={selectedStatus}
+                  label="Estado"
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todos los estados</MenuItem>
+                  <MenuItem value="active">Activas</MenuItem>
+                  <MenuItem value="suspended">Suspendidas</MenuItem>
+                  <MenuItem value="blocked">Bloqueadas</MenuItem>
+                </Select>
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Calificación</InputLabel>
+                <Select
+                  value={selectedRating}
+                  label="Calificación"
+                  onChange={(e) => setSelectedRating(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todas las calificaciones</MenuItem>
+                  <MenuItem value="high">Alta (4.5+)</MenuItem>
+                  <MenuItem value="medium">Media (3.5-4.4)</MenuItem>
+                  <MenuItem value="low">Baja (menos de 3.5)</MenuItem>
+                </Select>
+              </FormControl>
+              
+              <Button 
+                variant="outlined" 
+                onClick={() => {
+                  setSearch('');
+                  setSelectedStatus('');
+                  setSelectedRating('');
+                }}
+                sx={{ 
+                  borderRadius: 2,
+                  minWidth: { xs: '100%', sm: 'auto' }
+                }}
+              >
+                Limpiar Filtros
+              </Button>
+            </Stack>
+            
+            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Mostrando {filteredCompanies.length} de {companies.length} empresas
+              </Typography>
+            </Box>
+          </Paper>
+
+          {/* Tabla responsiva */}
+          <Box sx={{ overflowX: 'auto' }}>
+            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 900 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: 'primary.main' }}>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 180, whiteSpace: 'nowrap' }}>Empresa</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 150, whiteSpace: 'nowrap' }}>Email</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Estado</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Proyectos</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80, whiteSpace: 'nowrap' }}>Rating</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100, whiteSpace: 'nowrap' }}>Fecha Registro</TableCell>
+                    <TableCell align="center" sx={{ color: 'white', fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Acciones</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredCompanies.map(company => (
+                    <TableRow key={company.id} hover>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main' }}>
+                            <BusinessIcon fontSize="small" />
+                          </Avatar>
+                          <Box sx={{ minWidth: 0, flex: 1 }}>
+                            <Typography variant="body2" fontWeight={600} noWrap>
+                              {company.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" noWrap>
+                              Última actividad: {new Date(company.lastActivity).toLocaleDateString()}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {company.email}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={getStatusText(company.status)} 
+                          color={getStatusColor(company.status) as any}
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={company.projectsCount} 
+                          color="primary" 
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Rating value={company.rating} readOnly size="small" />
                           <Typography variant="body2" fontWeight={600}>
-                            {company.name}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Última actividad: {new Date(company.lastActivity).toLocaleDateString()}
+                            {company.rating}
                           </Typography>
                         </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>{company.email}</TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={company.status === 'active' ? 'Activa' : 
-                               company.status === 'suspended' ? 'Suspendida' : 'Bloqueada'} 
-                        color={company.status === 'active' ? 'success' : 
-                               company.status === 'suspended' ? 'warning' : 'error'}
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={company.projectsCount} 
-                        color="primary" 
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Rating value={company.rating} readOnly size="small" />
-                        <Typography variant="body2" fontWeight={600}>
-                          {company.rating}
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {new Date(company.joinDate).toLocaleDateString()}
                         </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>{new Date(company.joinDate).toLocaleDateString()}</TableCell>
-                    <TableCell align="center">
-                      <IconButton 
-                        color="info" 
-                        title="Ver detalles"
-                        onClick={() => handleAction(company, 'activate')}
-                        sx={{ mr: 1 }}
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                      {company.status === 'active' && (
-                        <>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
                           <IconButton 
-                            color="warning" 
-                            title="Suspender empresa"
-                            onClick={() => handleAction(company, 'suspend')}
-                            sx={{ mr: 1 }}
+                            color="info" 
+                            title="Ver detalles"
+                            onClick={() => handleAction(company, 'activate')}
+                            size="small"
                           >
-                            <WarningIcon />
+                            <VisibilityIcon fontSize="small" />
                           </IconButton>
-                          <IconButton 
-                            color="error" 
-                            title="Bloquear empresa"
-                            onClick={() => handleAction(company, 'block')}
-                            sx={{ mr: 1 }}
-                          >
-                            <BlockIcon />
-                          </IconButton>
-                        </>
-                      )}
-                      {company.status !== 'active' && (
-                        <IconButton 
-                          color="success" 
-                          title="Activar empresa"
-                          onClick={() => handleAction(company, 'activate')}
-                        >
-                          <CheckCircleIcon />
-                        </IconButton>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                          {company.status === 'active' && (
+                            <>
+                              <IconButton 
+                                color="warning" 
+                                title="Suspender empresa"
+                                onClick={() => handleAction(company, 'suspend')}
+                                size="small"
+                              >
+                                <WarningIcon fontSize="small" />
+                              </IconButton>
+                              <IconButton 
+                                color="error" 
+                                title="Bloquear empresa"
+                                onClick={() => handleAction(company, 'block')}
+                                size="small"
+                              >
+                                <BlockIcon fontSize="small" />
+                              </IconButton>
+                            </>
+                          )}
+                          {company.status !== 'active' && (
+                            <IconButton 
+                              color="success" 
+                              title="Activar empresa"
+                              onClick={() => handleAction(company, 'activate')}
+                              size="small"
+                            >
+                              <CheckCircleIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </TabPanel>
 
         {/* Tab: Historial de Proyectos */}

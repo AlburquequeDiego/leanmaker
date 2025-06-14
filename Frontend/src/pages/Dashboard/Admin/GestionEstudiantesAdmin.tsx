@@ -27,12 +27,12 @@ import {
   CardContent,
   Avatar,
   Rating,
-  Alert,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
   Snackbar,
+  Stack,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -45,6 +45,8 @@ import {
   History as HistoryIcon,
   School as SchoolIcon,
   Api as ApiIcon,
+  Search as SearchIcon,
+  FilterList as FilterListIcon,
 } from '@mui/icons-material';
 
 interface Student {
@@ -53,6 +55,7 @@ interface Student {
   email: string;
   career: string;
   semester: number;
+  graduationYear: number;
   status: 'pending' | 'approved' | 'rejected' | 'suspended';
   apiLevel: 1 | 2 | 3 | 4;
   strikes: number;
@@ -122,6 +125,14 @@ export const GestionEstudiantesAdmin = () => {
   const [selectedApiLevel, setSelectedApiLevel] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // Nuevos estados para filtros
+  const [search, setSearch] = useState('');
+  const [selectedCareer, setSelectedCareer] = useState('');
+  const [selectedSemester, setSelectedSemester] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedApiLevelFilter, setSelectedApiLevelFilter] = useState('');
 
   // Mock data
   const students: Student[] = [
@@ -131,6 +142,7 @@ export const GestionEstudiantesAdmin = () => {
       email: 'maria.gonzalez@estudiante.edu',
       career: 'Ingeniería de Sistemas',
       semester: 8,
+      graduationYear: 2024,
       status: 'approved',
       apiLevel: 2,
       strikes: 1,
@@ -146,6 +158,7 @@ export const GestionEstudiantesAdmin = () => {
       email: 'carlos.ruiz@estudiante.edu',
       career: 'Ingeniería Informática',
       semester: 6,
+      graduationYear: 2025,
       status: 'pending',
       apiLevel: 1,
       strikes: 0,
@@ -161,6 +174,7 @@ export const GestionEstudiantesAdmin = () => {
       email: 'ana.martinez@estudiante.edu',
       career: 'Ingeniería de Software',
       semester: 10,
+      graduationYear: 2024,
       status: 'approved',
       apiLevel: 4,
       strikes: 0,
@@ -170,7 +184,56 @@ export const GestionEstudiantesAdmin = () => {
       completedProjects: 5,
       totalHours: 320,
     },
+    {
+      id: '4',
+      name: 'Pedro López',
+      email: 'pedro.lopez@estudiante.edu',
+      career: 'Ingeniería de Sistemas',
+      semester: 4,
+      graduationYear: 2026,
+      status: 'approved',
+      apiLevel: 1,
+      strikes: 2,
+      joinDate: '2023-08-15',
+      lastActivity: '2024-01-19',
+      gpa: 3.5,
+      completedProjects: 2,
+      totalHours: 120,
+    },
+    {
+      id: '5',
+      name: 'Laura Silva',
+      email: 'laura.silva@estudiante.edu',
+      career: 'Ingeniería Informática',
+      semester: 8,
+      graduationYear: 2024,
+      status: 'suspended',
+      apiLevel: 3,
+      strikes: 3,
+      joinDate: '2022-03-10',
+      lastActivity: '2024-01-15',
+      gpa: 4.0,
+      completedProjects: 4,
+      totalHours: 240,
+    },
   ];
+
+  // Filtrado de estudiantes
+  const filteredStudents = students.filter(student =>
+    (student.name.toLowerCase().includes(search.toLowerCase()) || 
+     student.email.toLowerCase().includes(search.toLowerCase()) ||
+     student.career.toLowerCase().includes(search.toLowerCase())) &&
+    (selectedCareer ? student.career === selectedCareer : true) &&
+    (selectedSemester ? student.semester.toString() === selectedSemester : true) &&
+    (selectedYear ? student.graduationYear.toString() === selectedYear : true) &&
+    (selectedStatus ? student.status === selectedStatus : true) &&
+    (selectedApiLevelFilter ? student.apiLevel.toString() === selectedApiLevelFilter : true)
+  );
+
+  // Obtener valores únicos para los filtros
+  const careers = Array.from(new Set(students.map(s => s.career)));
+  const semesters = Array.from(new Set(students.map(s => s.semester))).sort((a, b) => a - b);
+  const years = Array.from(new Set(students.map(s => s.graduationYear))).sort((a, b) => a - b);
 
   const applications: Application[] = [
     {
@@ -395,119 +458,273 @@ export const GestionEstudiantesAdmin = () => {
         </Tabs>
 
         <TabPanel value={tabValue} index={0}>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estudiante</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Carrera</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Semestre</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Nivel API</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Strikes</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>GPA</TableCell>
-                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {students.map(student => (
-                  <TableRow key={student.id} hover>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar sx={{ width: 32, height: 32 }}>
-                          {student.name.charAt(0)}
-                        </Avatar>
-                        <Box>
-                          <Typography variant="body2" fontWeight={600}>
-                            {student.name}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {student.email}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>{student.career}</TableCell>
-                    <TableCell>{student.semester}°</TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={student.status === 'approved' ? 'Aprobado' : 'Pendiente'} 
-                        color={student.status === 'approved' ? 'success' : 'warning'}
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={`API ${student.apiLevel}`} 
-                        color="primary" 
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={student.strikes} 
-                        color={student.strikes === 0 ? 'success' : student.strikes >= 3 ? 'error' : 'warning'}
-                        variant="filled"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight={600}>
-                        {student.gpa}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton 
-                        color="info" 
-                        title="Ver detalles"
-                        onClick={() => handleAction(student, 'approve')}
-                        sx={{ mr: 1 }}
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                      {student.status === 'pending' && (
-                        <>
-                          <IconButton 
-                            color="success" 
-                            title="Aprobar estudiante"
-                            onClick={() => handleAction(student, 'approve')}
-                            sx={{ mr: 1 }}
-                          >
-                            <CheckCircleIcon />
-                          </IconButton>
-                          <IconButton 
-                            color="error" 
-                            title="Rechazar estudiante"
-                            onClick={() => handleAction(student, 'reject')}
-                            sx={{ mr: 1 }}
-                          >
-                            <CancelIcon />
-                          </IconButton>
-                        </>
-                      )}
-                      <IconButton 
-                        color="warning" 
-                        title="Asignar strike"
-                        onClick={() => handleAction(student, 'strike')}
-                        sx={{ mr: 1 }}
-                      >
-                        <WarningIcon />
-                      </IconButton>
-                      <IconButton 
-                        color="primary" 
-                        title="Cambiar nivel API"
-                        onClick={() => handleAction(student, 'api_level')}
-                      >
-                        <ApiIcon />
-                      </IconButton>
-                    </TableCell>
+          {/* Sección de filtros mejorada y responsiva */}
+          <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 3, boxShadow: 2, bgcolor: 'grey.50' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <FilterListIcon color="primary" />
+              <Typography variant="h6" color="primary">
+                Filtros de Búsqueda
+              </Typography>
+            </Box>
+            
+            <Stack 
+              direction={{ xs: 'column', md: 'row' }} 
+              spacing={{ xs: 2, sm: 2 }} 
+              alignItems={{ xs: 'stretch', md: 'center' }}
+              flexWrap="wrap"
+              sx={{ mb: 2 }}
+            >
+              <TextField
+                label="Buscar por nombre, email o carrera"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{ 
+                  minWidth: { xs: '100%', sm: 250 },
+                  borderRadius: 2 
+                }}
+                InputProps={{
+                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                }}
+              />
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 180 } }}>
+                <InputLabel>Carrera</InputLabel>
+                <Select
+                  value={selectedCareer}
+                  label="Carrera"
+                  onChange={(e) => setSelectedCareer(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todas las carreras</MenuItem>
+                  {careers.map((career) => (
+                    <MenuItem key={career} value={career}>{career}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Semestre</InputLabel>
+                <Select
+                  value={selectedSemester}
+                  label="Semestre"
+                  onChange={(e) => setSelectedSemester(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todos los semestres</MenuItem>
+                  {semesters.map((semester) => (
+                    <MenuItem key={semester} value={semester.toString()}>{semester}°</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Año de Graduación</InputLabel>
+                <Select
+                  value={selectedYear}
+                  label="Año de Graduación"
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todos los años</MenuItem>
+                  {years.map((year) => (
+                    <MenuItem key={year} value={year.toString()}>{year}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+
+            <Stack 
+              direction={{ xs: 'column', sm: 'row' }} 
+              spacing={{ xs: 2, sm: 2 }} 
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              flexWrap="wrap"
+            >
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Estado</InputLabel>
+                <Select
+                  value={selectedStatus}
+                  label="Estado"
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todos los estados</MenuItem>
+                  <MenuItem value="approved">Aprobados</MenuItem>
+                  <MenuItem value="pending">Pendientes</MenuItem>
+                  <MenuItem value="rejected">Rechazados</MenuItem>
+                  <MenuItem value="suspended">Suspendidos</MenuItem>
+                </Select>
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+                <InputLabel>Nivel API</InputLabel>
+                <Select
+                  value={selectedApiLevelFilter}
+                  label="Nivel API"
+                  onChange={(e) => setSelectedApiLevelFilter(e.target.value)}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">Todos los niveles</MenuItem>
+                  <MenuItem value="1">Nivel 1 - Básico</MenuItem>
+                  <MenuItem value="2">Nivel 2 - Intermedio</MenuItem>
+                  <MenuItem value="3">Nivel 3 - Avanzado</MenuItem>
+                  <MenuItem value="4">Nivel 4 - Experto</MenuItem>
+                </Select>
+              </FormControl>
+              
+              <Button 
+                variant="outlined" 
+                onClick={() => {
+                  setSearch('');
+                  setSelectedCareer('');
+                  setSelectedSemester('');
+                  setSelectedYear('');
+                  setSelectedStatus('');
+                  setSelectedApiLevelFilter('');
+                }}
+                sx={{ 
+                  borderRadius: 2,
+                  minWidth: { xs: '100%', sm: 'auto' }
+                }}
+              >
+                Limpiar Filtros
+              </Button>
+            </Stack>
+            
+            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Mostrando {filteredStudents.length} de {students.length} estudiantes
+              </Typography>
+            </Box>
+          </Paper>
+
+          {/* Tabla responsiva */}
+          <Box sx={{ overflowX: 'auto' }}>
+            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 900 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: 'primary.main' }}>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 180, whiteSpace: 'nowrap' }}>Estudiante</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Carrera</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80, whiteSpace: 'nowrap' }}>Semestre</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Año Graduación</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100, whiteSpace: 'nowrap' }}>Estado</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100, whiteSpace: 'nowrap' }}>Nivel API</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80, whiteSpace: 'nowrap' }}>Strikes</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80, whiteSpace: 'nowrap' }}>GPA</TableCell>
+                    <TableCell align="center" sx={{ color: 'white', fontWeight: 600, minWidth: 150, whiteSpace: 'nowrap' }}>Acciones</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {filteredStudents.map(student => (
+                    <TableRow key={student.id} hover>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar sx={{ width: 28, height: 28 }}>
+                            {student.name.charAt(0)}
+                          </Avatar>
+                          <Box sx={{ minWidth: 0, flex: 1 }}>
+                            <Typography variant="body2" fontWeight={600} noWrap>
+                              {student.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" noWrap>
+                              {student.email}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {student.career}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>{student.semester}°</TableCell>
+                      <TableCell>{student.graduationYear}</TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={getStatusText(student.status)} 
+                          color={getStatusColor(student.status) as any}
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={`API ${student.apiLevel}`} 
+                          color="primary" 
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={student.strikes} 
+                          color={student.strikes === 0 ? 'success' : student.strikes >= 3 ? 'error' : 'warning'}
+                          variant="filled"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={600}>
+                          {student.gpa}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
+                          <IconButton 
+                            color="info" 
+                            title="Ver detalles"
+                            onClick={() => handleAction(student, 'approve')}
+                            size="small"
+                          >
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                          {student.status === 'pending' && (
+                            <>
+                              <IconButton 
+                                color="success" 
+                                title="Aprobar estudiante"
+                                onClick={() => handleAction(student, 'approve')}
+                                size="small"
+                              >
+                                <CheckCircleIcon fontSize="small" />
+                              </IconButton>
+                              <IconButton 
+                                color="error" 
+                                title="Rechazar estudiante"
+                                onClick={() => handleAction(student, 'reject')}
+                                size="small"
+                              >
+                                <CancelIcon fontSize="small" />
+                              </IconButton>
+                            </>
+                          )}
+                          <IconButton 
+                            color="warning" 
+                            title="Asignar strike"
+                            onClick={() => handleAction(student, 'strike')}
+                            size="small"
+                          >
+                            <WarningIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton 
+                            color="primary" 
+                            title="Cambiar nivel API"
+                            onClick={() => handleAction(student, 'api_level')}
+                            size="small"
+                          >
+                            <ApiIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </TabPanel>
 
         {/* Tab: Perfil Detallado */}
