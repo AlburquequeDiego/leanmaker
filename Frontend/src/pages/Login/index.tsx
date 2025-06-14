@@ -8,7 +8,7 @@ import {
   Link,
   Paper,
   Alert,
-  Button,
+  Button
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -59,117 +59,174 @@ export const Login = () => {
   return (
     <Box
       sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
+        minHeight: '100vh',
         width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
         background: `url("/imagenes/fondo_nuevo.png") no-repeat center center/cover`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
-      <Container component="main" maxWidth={false} disableGutters sx={{ width: '400px' }}>
-        <Paper
-          elevation={3}
+      {/* Contenedor principal dividido en dos columnas */}
+      <Box
+        sx={{
+          width: { xs: '95vw', sm: 600, md: 900 },
+          minHeight: { xs: 500, md: 500 },
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          boxShadow: 3,
+          borderRadius: 4,
+          overflow: 'hidden',
+          bgcolor: 'white',
+        }}
+      >
+        {/* Barra izquierda con imagen centrada */}
+        <Box
           sx={{
-            padding: 4,
+            flex: 1,
+            bgcolor: 'white',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            width: '100%',
+            justifyContent: 'center',
+            p: { xs: 3, md: 4 },
+            borderRight: { md: '1px solid #e0e0e0' },
+            borderBottom: { xs: '1px solid #e0e0e0', md: 'none' },
           }}
         >
-          <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-            Iniciar Sesión
-          </Typography>
-          {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
-              {error}
-            </Alert>
-          )}
+          {/* Imagen centrada, cambia la ruta por la que desees */}
           <Box
-            component="form"
-            onSubmit={formik.handleSubmit}
-            sx={{ width: '100%' }}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Correo Electrónico"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-              disabled={isLoading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-              disabled={isLoading}
-            />
-            <LoadingButton
-              type="submit"
-              fullWidth
-              variant="contained"
-              loading={isLoading}
-              sx={{ mt: 3, mb: 2 }}
+            component="img"
+            src="/imagenes/login.png"
+            alt="Ilustración Login"
+            sx={{
+              width: { xs: '80%', md: '95%' },
+              maxWidth: 350,
+              height: 'auto',
+              display: 'block',
+              mx: 'auto',
+              my: 'auto',
+              borderRadius: 2,
+              boxShadow: 1,
+              bgcolor: '#f5f5f5',
+              p: 1
+            }}
+          />
+        </Box>
+        {/* Columna derecha: formulario de login igual que antes */}
+        <Box
+          sx={{
+            flex: 1.2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: { xs: 3, md: 5 },
+            bgcolor: 'white',
+          }}
+        >
+          <Container component="main" maxWidth={false} disableGutters sx={{ width: '100%' }}>
+            <Paper
+              elevation={0}
+              sx={{
+                boxShadow: 'none',
+                padding: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                bgcolor: 'white',
+              }}
             >
-              Iniciar Sesión
-            </LoadingButton>
-            <Box sx={{ mt: 1, mb: 2 }}>
-              <Link
-                component={RouterLink}
-                to="/forgot-password"
-                variant="body2"
-                sx={{ textDecoration: 'none' }}
+              <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+                Iniciar Sesión
+              </Typography>
+              {error && (
+                <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+                  {error}
+                </Alert>
+              )}
+              <Box
+                component="form"
+                onSubmit={formik.handleSubmit}
+                sx={{ width: '100%' }}
               >
-                ¿Olvidaste tu contraseña?
-              </Link>
-            </Box>
-            {/* Checkbox Recordar contraseña debajo de recuperar contraseña */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <input type="checkbox" id="remember" name="remember" style={{ marginRight: 8 }} />
-              <label htmlFor="remember" style={{ fontSize: 15, color: '#888' }}>Recordar contraseña</label>
-            </Box>
-            {/* Botón Volver al inicio */}
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{ mb: 2, color: 'primary.main', borderColor: 'primary.main', fontWeight: 600, bgcolor: 'white', '&:hover': { bgcolor: '#f5faff', borderColor: 'primary.dark' } }}
-              onClick={() => navigate('/')}
-            >
-              Volver al inicio
-            </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <Link
-                component={RouterLink}
-                to="/register"
-                variant="body2"
-                sx={{ textDecoration: 'none' }}
-              >
-                ¿No tienes una cuenta? Regístrate
-              </Link>
-            </Box>
-          </Box>
-        </Paper>
-      </Container>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Correo Electrónico"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
+                  disabled={isLoading}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Contraseña"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  error={formik.touched.password && Boolean(formik.errors.password)}
+                  helperText={formik.touched.password && formik.errors.password}
+                  disabled={isLoading}
+                />
+                <LoadingButton
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  loading={isLoading}
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Iniciar Sesión
+                </LoadingButton>
+                <Box sx={{ mt: 1, mb: 2 }}>
+                  <Link
+                    component={RouterLink}
+                    to="/forgot-password"
+                    variant="body2"
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </Link>
+                </Box>
+                {/* Checkbox Recordar contraseña debajo de recuperar contraseña */}
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <input type="checkbox" id="remember" name="remember" style={{ marginRight: 8 }} />
+                  <label htmlFor="remember" style={{ fontSize: 15, color: '#888' }}>Recordar contraseña</label>
+                </Box>
+                {/* Botón Volver al inicio */}
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  sx={{ mb: 2, color: 'primary.main', borderColor: 'primary.main', fontWeight: 600, bgcolor: 'white', '&:hover': { bgcolor: '#f5faff', borderColor: 'primary.dark' } }}
+                  onClick={() => navigate('/')}
+                >
+                  Volver al inicio
+                </Button>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Link
+                    component={RouterLink}
+                    to="/register"
+                    variant="body2"
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    ¿No tienes una cuenta? Regístrate
+                  </Link>
+                </Box>
+              </Box>
+            </Paper>
+          </Container>
+        </Box>
+      </Box>
     </Box>
   );
 };
