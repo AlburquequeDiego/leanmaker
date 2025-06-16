@@ -151,6 +151,7 @@ const calendarStyles = `
     background-color: #f5f5f5;
     font-weight: 600;
     padding: 8px;
+    color: #000 !important;
   }
 
   .rbc-agenda-event-cell {
@@ -162,6 +163,17 @@ const calendarStyles = `
     background-color: #fafafa;
     font-weight: 500;
     padding: 8px;
+    color: #000 !important;
+  }
+
+  .rbc-agenda-view .rbc-agenda-date-cell,
+  .rbc-agenda-view .rbc-agenda-time-cell {
+    color: #000 !important;
+  }
+
+  .rbc-agenda-view .rbc-agenda-date-cell *,
+  .rbc-agenda-view .rbc-agenda-time-cell * {
+    color: #000 !important;
   }
 `;
 
@@ -198,8 +210,8 @@ export const Calendar = () => {
       id: 1,
       title: 'Entrevista con TechCorp Solutions',
       type: 'interview',
-      start: new Date(2024, 1, 15, 10, 0), // Feb 15, 2024, 10:00 AM
-      end: new Date(2024, 1, 15, 11, 0),   // Feb 15, 2024, 11:00 AM
+      start: new Date(2025, 5, 18, 10, 0), // Jun 18, 2025, 10:00 AM
+      end: new Date(2025, 5, 18, 11, 0),   // Jun 18, 2025, 11:00 AM
       duration: '1 hora',
       location: 'Remoto (Zoom)',
       company: 'TechCorp Solutions',
@@ -212,8 +224,8 @@ export const Calendar = () => {
       id: 2,
       title: 'Entrega del Módulo de Autenticación',
       type: 'deadline',
-      start: new Date(2024, 1, 20, 23, 59), // Feb 20, 2024, 11:59 PM
-      end: new Date(2024, 1, 20, 23, 59),   // Feb 20, 2024, 11:59 PM
+      start: new Date(2025, 5, 20, 23, 59), // Jun 20, 2025, 11:59 PM
+      end: new Date(2025, 5, 20, 23, 59),   // Jun 20, 2025, 11:59 PM
       duration: 'N/A',
       location: 'N/A',
       company: 'TechCorp Solutions',
@@ -226,8 +238,8 @@ export const Calendar = () => {
       id: 3,
       title: 'Reunión de Progreso Semanal',
       type: 'meeting',
-      start: new Date(2024, 1, 12, 14, 0), // Feb 12, 2024, 2:00 PM
-      end: new Date(2024, 1, 12, 14, 30),  // Feb 12, 2024, 2:30 PM
+      start: new Date(2025, 5, 15, 14, 0), // Jun 15, 2025, 2:00 PM
+      end: new Date(2025, 5, 15, 14, 30),  // Jun 15, 2025, 2:30 PM
       duration: '30 minutos',
       location: 'Remoto (Teams)',
       company: 'Digital Dynamics',
@@ -240,8 +252,8 @@ export const Calendar = () => {
       id: 4,
       title: 'Presentación Final del Proyecto',
       type: 'presentation',
-      start: new Date(2024, 2, 1, 15, 0),  // Mar 1, 2024, 3:00 PM
-      end: new Date(2024, 2, 1, 16, 0),    // Mar 1, 2024, 4:00 PM
+      start: new Date(2025, 5, 22, 15, 0), // Jun 22, 2025, 3:00 PM
+      end: new Date(2025, 5, 22, 16, 0),   // Jun 22, 2025, 4:00 PM
       duration: '1 hora',
       location: 'Oficinas de Digital Dynamics',
       company: 'Digital Dynamics',
@@ -254,8 +266,8 @@ export const Calendar = () => {
       id: 5,
       title: 'Revisión de Código',
       type: 'review',
-      start: new Date(2024, 1, 18, 16, 0), // Feb 18, 2024, 4:00 PM
-      end: new Date(2024, 1, 18, 17, 0),   // Feb 18, 2024, 5:00 PM
+      start: new Date(2025, 5, 19, 16, 0), // Jun 19, 2025, 4:00 PM
+      end: new Date(2025, 5, 19, 17, 0),   // Jun 19, 2025, 5:00 PM
       duration: '1 hora',
       location: 'Remoto (Discord)',
       company: 'TechCorp Solutions',
@@ -263,6 +275,146 @@ export const Calendar = () => {
       description: 'Revisión del código del módulo de reportes',
       status: 'upcoming',
       priority: 'medium',
+    },
+    {
+      id: 6,
+      title: 'Entrevista con InnovateLab',
+      type: 'interview',
+      start: new Date(2025, 5, 23, 9, 0), // Jun 23, 2025, 9:00 AM
+      end: new Date(2025, 5, 23, 10, 0),  // Jun 23, 2025, 10:00 AM
+      duration: '1 hora',
+      location: 'Remoto (Google Meet)',
+      company: 'InnovateLab',
+      project: 'Plataforma de E-learning',
+      description: 'Entrevista para posición de desarrollador frontend',
+      status: 'upcoming',
+      priority: 'high',
+    },
+    {
+      id: 7,
+      title: 'Entrega de Documentación Técnica',
+      type: 'deadline',
+      start: new Date(2025, 5, 17, 23, 59), // Jun 17, 2025, 11:59 PM
+      end: new Date(2025, 5, 17, 23, 59),   // Jun 17, 2025, 11:59 PM
+      duration: 'N/A',
+      location: 'N/A',
+      company: 'Digital Dynamics',
+      project: 'Aplicación Móvil de Delivery',
+      description: 'Entrega de la documentación técnica del proyecto',
+      status: 'completed',
+      priority: 'medium',
+    },
+    {
+      id: 8,
+      title: 'Reunión de Kickoff',
+      type: 'meeting',
+      start: new Date(2025, 5, 16, 10, 0), // Jun 16, 2025, 10:00 AM
+      end: new Date(2025, 5, 16, 11, 0),   // Jun 16, 2025, 11:00 AM
+      duration: '1 hora',
+      location: 'Remoto (Zoom)',
+      company: 'InnovateLab',
+      project: 'Plataforma de E-learning',
+      description: 'Reunión inicial para definir objetivos y cronograma',
+      status: 'completed',
+      priority: 'low',
+    },
+    {
+      id: 9,
+      title: 'Presentación de Avances',
+      type: 'presentation',
+      start: new Date(2025, 5, 21, 14, 0), // Jun 21, 2025, 2:00 PM
+      end: new Date(2025, 5, 21, 15, 0),   // Jun 21, 2025, 3:00 PM
+      duration: '1 hora',
+      location: 'Remoto (Teams)',
+      company: 'TechCorp Solutions',
+      project: 'Sistema de Gestión de Inventarios',
+      description: 'Presentación de avances del proyecto al equipo',
+      status: 'upcoming',
+      priority: 'medium',
+    },
+    {
+      id: 10,
+      title: 'Revisión de Arquitectura',
+      type: 'review',
+      start: new Date(2025, 5, 24, 15, 0), // Jun 24, 2025, 3:00 PM
+      end: new Date(2025, 5, 24, 16, 30),  // Jun 24, 2025, 4:30 PM
+      duration: '1.5 horas',
+      location: 'Remoto (Discord)',
+      company: 'InnovateLab',
+      project: 'Plataforma de E-learning',
+      description: 'Revisión de la arquitectura del sistema',
+      status: 'upcoming',
+      priority: 'high',
+    },
+    {
+      id: 11,
+      title: 'Entrevista con DataFlow Systems',
+      type: 'interview',
+      start: new Date(2025, 6, 7, 11, 0), // Jul 7, 2025, 11:00 AM
+      end: new Date(2025, 6, 7, 12, 0),   // Jul 7, 2025, 12:00 PM
+      duration: '1 hora',
+      location: 'Remoto (Zoom)',
+      company: 'DataFlow Systems',
+      project: 'Sistema de Análisis de Datos',
+      description: 'Entrevista técnica para posición de desarrollador full-stack',
+      status: 'upcoming',
+      priority: 'high',
+    },
+    {
+      id: 12,
+      title: 'Entrega de MVP',
+      type: 'deadline',
+      start: new Date(2025, 6, 10, 23, 59), // Jul 10, 2025, 11:59 PM
+      end: new Date(2025, 6, 10, 23, 59),   // Jul 10, 2025, 11:59 PM
+      duration: 'N/A',
+      location: 'N/A',
+      company: 'DataFlow Systems',
+      project: 'Sistema de Análisis de Datos',
+      description: 'Entrega del MVP del sistema de análisis',
+      status: 'upcoming',
+      priority: 'high',
+    },
+    {
+      id: 13,
+      title: 'Reunión de Retrospectiva',
+      type: 'meeting',
+      start: new Date(2025, 5, 26, 16, 0), // Jun 26, 2025, 4:00 PM
+      end: new Date(2025, 5, 26, 17, 0),   // Jun 26, 2025, 5:00 PM
+      duration: '1 hora',
+      location: 'Remoto (Teams)',
+      company: 'Digital Dynamics',
+      project: 'Aplicación Móvil de Delivery',
+      description: 'Reunión de retrospectiva del sprint',
+      status: 'upcoming',
+      priority: 'low',
+    },
+    {
+      id: 14,
+      title: 'Presentación de Resultados',
+      type: 'presentation',
+      start: new Date(2025, 6, 8, 13, 0), // Jul 8, 2025, 1:00 PM
+      end: new Date(2025, 6, 8, 14, 0),   // Jul 8, 2025, 2:00 PM
+      duration: '1 hora',
+      location: 'Oficinas de InnovateLab',
+      company: 'InnovateLab',
+      project: 'Plataforma de E-learning',
+      description: 'Presentación de resultados del proyecto piloto',
+      status: 'upcoming',
+      priority: 'medium',
+    },
+    {
+      id: 15,
+      title: 'Revisión de Seguridad',
+      type: 'review',
+      start: new Date(2025, 6, 9, 10, 0), // Jul 9, 2025, 10:00 AM
+      end: new Date(2025, 6, 9, 11, 30),  // Jul 9, 2025, 11:30 AM
+      duration: '1.5 horas',
+      location: 'Remoto (Zoom)',
+      company: 'TechCorp Solutions',
+      project: 'Sistema de Gestión de Inventarios',
+      description: 'Revisión de seguridad del sistema',
+      status: 'upcoming',
+      priority: 'high',
     },
   ];
 
