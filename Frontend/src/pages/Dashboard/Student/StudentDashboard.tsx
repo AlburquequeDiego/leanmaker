@@ -1,7 +1,30 @@
-import { Box, Paper, Typography, LinearProgress } from '@mui/material';
+import { Box, Paper, Typography, LinearProgress, CircularProgress } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+
+// Datos de ejemplo: entregas y postulaciones por día
+const actividad = [
+  { dia: 'Lunes', entregas: 2, postulaciones: 1 },
+  { dia: 'Martes', entregas: 1, postulaciones: 2 },
+  { dia: 'Miércoles', entregas: 3, postulaciones: 1 },
+  { dia: 'Jueves', entregas: 2, postulaciones: 2 },
+  { dia: 'Viernes', entregas: 1, postulaciones: 3 },
+  { dia: 'Sábado', entregas: 0, postulaciones: 1 },
+  { dia: 'Domingo', entregas: 1, postulaciones: 0 },
+];
+
+const maxValor = Math.max(
+  ...actividad.map(a => Math.max(a.entregas, a.postulaciones))
+);
+
+// Datos de ejemplo
+const totalEntregas = 10;
+const totalPostulaciones = 7;
+const totalActividades = totalEntregas + totalPostulaciones;
+
+const porcentajeEntregas = (totalEntregas / totalActividades) * 100;
+const porcentajePostulaciones = (totalPostulaciones / totalActividades) * 100;
 
 export default function StudentDashboard() {
   // Mock de horas acumuladas - esto vendría de la API
@@ -74,19 +97,88 @@ export default function StudentDashboard() {
           <Typography variant="h6" fontWeight={600} mb={2}>
             Análisis de Actividad
           </Typography>
-          <Box sx={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'grey.400' }}>
-            [Gráfico de actividad aquí]
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 220 }}>
+            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              {/* Círculo de postulaciones (fondo) */}
+              <CircularProgress
+                variant="determinate"
+                value={100}
+                size={120}
+                thickness={5}
+                sx={{ color: '#e3eafc', position: 'absolute', left: 0 }}
+              />
+              {/* Círculo de entregas (progreso) */}
+              <CircularProgress
+                variant="determinate"
+                value={porcentajeEntregas}
+                size={120}
+                thickness={5}
+                sx={{ color: '#1976d2' }}
+              />
+              {/* Texto en el centro */}
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  width: '100%',
+                  height: '100%',
+                }}
+              >
+                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1976d2' }}>
+                  {Math.round(porcentajeEntregas)}%
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#22345a' }}>
+                  Entregas
+                </Typography>
+              </Box>
+            </Box>
+            <Typography variant="body2" sx={{ mt: 2, color: '#22345a' }}>
+              {totalEntregas} entregas / {totalActividades} actividades
+            </Typography>
           </Box>
         </Paper>
         <Paper sx={{ flex: '1 1 340px', minWidth: 280, p: 3, bgcolor: 'white', boxShadow: 1, borderRadius: 3 }}>
           <Typography variant="h6" fontWeight={600} mb={2}>
             Checklist de Proyectos
           </Typography>
-          <Box>
-            <Typography>Proyecto 1: <LinearProgress variant="determinate" value={80} sx={{ mb: 1 }} /></Typography>
-            <Typography>Proyecto 2: <LinearProgress variant="determinate" value={50} sx={{ mb: 1 }} /></Typography>
-            <Typography>Proyecto 3: <LinearProgress variant="determinate" value={100} sx={{ mb: 1 }} /></Typography>
-          </Box>
+          {[
+            { nombre: 'Proyecto Lean UX', avance: 80 },
+            { nombre: 'App de Voluntariado', avance: 65 },
+            { nombre: 'Rediseño Web ONG', avance: 50 },
+            { nombre: 'Sistema de Inventario', avance: 35 },
+            { nombre: 'Plataforma E-learning', avance: 20 },
+          ].map((proy, idx, arr) => (
+            <Box key={proy.nombre} sx={{ mb: idx < arr.length - 1 ? 3 : 0 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1976d2' }}>
+                  {proy.nombre}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1976d2' }}>
+                  {proy.avance}%
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={proy.avance}
+                sx={{
+                  height: 12,
+                  borderRadius: 6,
+                  background: '#e3eafc',
+                  '& .MuiLinearProgress-bar': {
+                    background: '#1976d2',
+                    borderRadius: 6,
+                  },
+                }}
+              />
+            </Box>
+          ))}
         </Paper>
       </Box>
     </Box>

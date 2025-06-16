@@ -14,6 +14,9 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  MenuItem,
+  Snackbar,
+  CircularProgress,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -28,74 +31,229 @@ import {
   Warning as WarningIcon,
   CloudUpload as CloudUploadIcon,
   Delete as DeleteIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import Stack from '@mui/material/Stack';
-import Snackbar from '@mui/material/Snackbar';
+
+interface ProfileData {
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string;
+  fechaNacimiento: string;
+  genero: string;
+  institucion: string;
+  carrera: string;
+  nivel: string;
+  habilidades: Array<{ nombre: string; nivel: string }>;
+  biografia: string;
+  cv: File | null;
+  certificado: File | null;
+}
+
+interface ValidationErrors {
+  [key: string]: string;
+}
 
 export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: 'María González',
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [skillToDelete, setSkillToDelete] = useState<string>('');
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+
+  const [profileData, setProfileData] = useState<ProfileData>({
+    nombre: 'María',
+    apellido: 'González',
     email: 'maria.gonzalez@estudiante.edu',
-    phone: '+57 300 123 4567',
-    career: 'Ingeniería de Sistemas',
-    semester: 8,
-    gpa: 4.2,
-    totalHours: 180,
-    completedProjects: 3,
-    strikes: 1,
-    skills: ['React', 'Node.js', 'MySQL', 'JavaScript', 'Python'],
-    bio: 'Estudiante apasionada por el desarrollo de software y la innovación tecnológica. Busco oportunidades para aplicar mis conocimientos en proyectos reales.',
+    telefono: '+57 300 123 4567',
+    fechaNacimiento: '2000-05-15',
+    genero: 'Mujer',
+    institucion: 'Universidad de Chile',
+    carrera: 'Ingeniería de Sistemas',
+    nivel: 'Pregrado',
+    habilidades: [
+      { nombre: 'React', nivel: 'Avanzado' },
+      { nombre: 'Node.js', nivel: 'Intermedio' },
+    ],
+    biografia: 'Estudiante apasionada por el desarrollo de software y la innovación tecnológica.',
+    cv: null,
+    certificado: null,
   });
 
-  const [editData, setEditData] = useState(profileData);
+  const [editData, setEditData] = useState<ProfileData>(profileData);
   const [newSkill, setNewSkill] = useState('');
-  const [certFile, setCertFile] = useState<File | null>(null);
-  const [cvFile, setCvFile] = useState<File | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [newSkillLevel, setNewSkillLevel] = useState('Básico');
+
+  // Validaciones
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+
+    if (!editData.nombre.trim()) {
+      errors.nombre = 'El nombre es requerido';
+    }
+
+    if (!editData.apellido.trim()) {
+      errors.apellido = 'El apellido es requerido';
+    }
+
+    if (!editData.email.trim()) {
+      errors.email = 'El email es requerido';
+    } else if (!validateEmail(editData.email)) {
+      errors.email = 'El email no es válido';
+    }
+
+    if (!editData.telefono.trim()) {
+      errors.telefono = 'El teléfono es requerido';
+    } else if (!validatePhone(editData.telefono)) {
+      errors.telefono = 'El teléfono no es válido';
+    }
+
+    if (!editData.institucion.trim()) {
+      errors.institucion = 'La institución es requerida';
+    }
+
+    if (!editData.carrera.trim()) {
+      errors.carrera = 'La carrera es requerida';
+    }
+
+    if (!editData.biografia.trim()) {
+      errors.biografia = 'La biografía es requerida';
+    } else if (editData.biografia.length < 50) {
+      errors.biografia = 'La biografía debe tener al menos 50 caracteres';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleEdit = () => {
     setEditData(profileData);
     setIsEditing(true);
+    setValidationErrors({});
   };
 
-  const handleSave = () => {
-    setProfileData(editData);
-    setIsEditing(false);
-    setShowSuccess(true);
+  const handleSave = async () => {
+    if (!validateForm()) {
+      setErrorMessage('Por favor, corrige los errores en el formulario');
+      setShowError(true);
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      // Simular llamada a API
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setProfileData(editData);
+      setIsEditing(false);
+      setShowSuccess(true);
+      setValidationErrors({});
+    } catch (error) {
+      setErrorMessage('Error al guardar los cambios. Intenta nuevamente.');
+      setShowError(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
     setEditData(profileData);
     setIsEditing(false);
+    setValidationErrors({});
   };
 
-  const handleInputChange = (field: string, value: string | number) => {
+  const handleInputChange = (field: string, value: any) => {
     setEditData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleAddSkill = () => {
-    if (newSkill.trim() && !editData.skills.includes(newSkill.trim())) {
-      setEditData(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
-      setNewSkill('');
+    
+    // Limpiar error de validación cuando el usuario empiece a escribir
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  const handleDeleteSkill = (skill: string) => {
-    setEditData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
+  // Habilidades
+  const handleAddSkill = () => {
+    if (!newSkill.trim()) {
+      setErrorMessage('Por favor, ingresa el nombre de la habilidad');
+      setShowError(true);
+      return;
+    }
+
+    if (editData.habilidades.some(h => h.nombre.toLowerCase() === newSkill.trim().toLowerCase())) {
+      setErrorMessage('Esta habilidad ya existe en tu perfil');
+      setShowError(true);
+      return;
+    }
+
+    setEditData(prev => ({
+      ...prev,
+      habilidades: [...prev.habilidades, { nombre: newSkill.trim(), nivel: newSkillLevel }],
+    }));
+    setNewSkill('');
+    setNewSkillLevel('Básico');
+  };
+
+  const handleDeleteSkill = (nombre: string) => {
+    setSkillToDelete(nombre);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteSkill = () => {
+    setEditData(prev => ({
+      ...prev,
+      habilidades: prev.habilidades.filter(h => h.nombre !== skillToDelete),
+    }));
+    setDeleteDialogOpen(false);
+    setSkillToDelete('');
+  };
+
+  // Documentos
+  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 5 * 1024 * 1024) { // 5MB
+        setErrorMessage('El archivo CV no puede ser mayor a 5MB');
+        setShowError(true);
+        return;
+      }
+      if (file.type !== 'application/pdf') {
+        setErrorMessage('El CV debe ser un archivo PDF');
+        setShowError(true);
+        return;
+      }
+      setEditData(prev => ({ ...prev, cv: file }));
+    }
   };
 
   const handleCertChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) setCertFile(e.target.files[0]);
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 10 * 1024 * 1024) { // 10MB
+        setErrorMessage('El archivo de certificado no puede ser mayor a 10MB');
+        setShowError(true);
+        return;
+      }
+      setEditData(prev => ({ ...prev, certificado: file }));
+    }
   };
 
-  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) setCvFile(e.target.files[0]);
-  };
-
-  const handleRemoveCert = () => setCertFile(null);
-  const handleRemoveCv = () => setCvFile(null);
+  const handleRemoveCv = () => setEditData(prev => ({ ...prev, cv: null }));
+  const handleRemoveCert = () => setEditData(prev => ({ ...prev, certificado: null }));
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -113,16 +271,18 @@ export const Profile = () => {
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
               variant="contained"
-              startIcon={<SaveIcon />}
+              startIcon={isLoading ? <CircularProgress size={20} /> : <SaveIcon />}
               onClick={handleSave}
+              disabled={isLoading}
               sx={{ minWidth: 140, borderRadius: 2 }}
             >
-              Guardar
+              {isLoading ? 'Guardando...' : 'Guardar cambios'}
             </Button>
             <Button
               variant="outlined"
               startIcon={<CancelIcon />}
               onClick={handleCancel}
+              disabled={isLoading}
               sx={{ minWidth: 120, borderRadius: 2 }}
             >
               Cancelar
@@ -131,330 +291,249 @@ export const Profile = () => {
         )}
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-        <Box sx={{ flex: 2, minWidth: 0 }}>
-          <Stack spacing={3}>
-            {/* Información Personal y Habilidades en dos columnas */}
-            <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ width: 64, height: 64, mr: 2 }}>
-                  <PersonIcon fontSize="large" />
-                </Avatar>
-                <Box>
-                  <Typography variant="h5" fontWeight={700}>{isEditing ? editData.name : profileData.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">{isEditing ? editData.email : profileData.email}</Typography>
-                </Box>
-              </Box>
-              <Divider sx={{ mb: 2 }} />
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
-                {/* Columna 1 */}
-                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <TextField
-                    fullWidth
-                    label="Nombre Completo"
-                    value={isEditing ? editData.name : profileData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    disabled={!isEditing}
-                    InputProps={{ startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Correo Electrónico"
-                    value={isEditing ? editData.email : profileData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    disabled={!isEditing}
-                    InputProps={{ startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Teléfono"
-                    value={isEditing ? editData.phone : profileData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    disabled={!isEditing}
-                    InputProps={{ startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
-                  />
-                </Box>
-                {/* Columna 2 */}
-                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <TextField
-                    fullWidth
-                    label="Carrera"
-                    value={isEditing ? editData.career : profileData.career}
-                    onChange={(e) => handleInputChange('career', e.target.value)}
-                    disabled={!isEditing}
-                    InputProps={{ startAdornment: <SchoolIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Semestre"
-                    type="number"
-                    value={isEditing ? editData.semester : profileData.semester}
-                    onChange={(e) => handleInputChange('semester', Number(e.target.value))}
-                    disabled={!isEditing}
-                    InputProps={{ startAdornment: <GradeIcon sx={{ mr: 1, color: 'text.secondary' }} /> }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="GPA"
-                    type="number"
-                    value={isEditing ? editData.gpa : profileData.gpa}
-                    onChange={(e) => handleInputChange('gpa', Number(e.target.value))}
-                    disabled={!isEditing}
-                    inputProps={{ step: 0.1, min: 0, max: 5 }}
-                  />
-                </Box>
-              </Box>
-            </Paper>
+      <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 3, maxWidth: 700, mx: 'auto' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Datos personales */}
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+            <TextField
+              label="Nombre"
+              value={isEditing ? editData.nombre : profileData.nombre}
+              onChange={e => handleInputChange('nombre', e.target.value)}
+              disabled={!isEditing}
+              fullWidth
+              error={!!validationErrors.nombre}
+              helperText={validationErrors.nombre}
+            />
+            <TextField
+              label="Apellido"
+              value={isEditing ? editData.apellido : profileData.apellido}
+              onChange={e => handleInputChange('apellido', e.target.value)}
+              disabled={!isEditing}
+              fullWidth
+              error={!!validationErrors.apellido}
+              helperText={validationErrors.apellido}
+            />
+          </Box>
+          <TextField
+            label="Correo Electrónico"
+            value={isEditing ? editData.email : profileData.email}
+            onChange={e => handleInputChange('email', e.target.value)}
+            disabled={!isEditing}
+            fullWidth
+            error={!!validationErrors.email}
+            helperText={validationErrors.email}
+          />
+          <TextField
+            label="Teléfono"
+            value={isEditing ? editData.telefono : profileData.telefono}
+            onChange={e => handleInputChange('telefono', e.target.value)}
+            disabled={!isEditing}
+            fullWidth
+            error={!!validationErrors.telefono}
+            helperText={validationErrors.telefono}
+          />
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+            <TextField
+              label="Fecha de Nacimiento"
+              type="date"
+              value={isEditing ? editData.fechaNacimiento : profileData.fechaNacimiento}
+              onChange={e => handleInputChange('fechaNacimiento', e.target.value)}
+              disabled={!isEditing}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="Género"
+              select
+              value={isEditing ? editData.genero : profileData.genero}
+              onChange={e => handleInputChange('genero', e.target.value)}
+              disabled={!isEditing}
+              fullWidth
+            >
+              <MenuItem value="">Selecciona el género</MenuItem>
+              <MenuItem value="Mujer">Mujer</MenuItem>
+              <MenuItem value="Hombre">Hombre</MenuItem>
+              <MenuItem value="Otro">Otro</MenuItem>
+            </TextField>
+          </Box>
+          <TextField
+            label="Institución Educativa"
+            value={isEditing ? editData.institucion : profileData.institucion}
+            onChange={e => handleInputChange('institucion', e.target.value)}
+            disabled={!isEditing}
+            fullWidth
+            error={!!validationErrors.institucion}
+            helperText={validationErrors.institucion}
+          />
+          <TextField
+            label="Carrera"
+            value={isEditing ? editData.carrera : profileData.carrera}
+            onChange={e => handleInputChange('carrera', e.target.value)}
+            disabled={!isEditing}
+            fullWidth
+            error={!!validationErrors.carrera}
+            helperText={validationErrors.carrera}
+          />
+          <TextField
+            label="Nivel Educativo"
+            value={isEditing ? editData.nivel : profileData.nivel}
+            onChange={e => handleInputChange('nivel', e.target.value)}
+            disabled={!isEditing}
+            fullWidth
+          />
 
-            {/* Habilidades y Documentos en dos columnas */}
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
-              {/* Habilidades */}
-              <Paper sx={{ flex: 1, p: 3, borderRadius: 3, boxShadow: 2 }}>
-                <Typography variant="h6" gutterBottom>Habilidades</Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                  {(isEditing ? editData.skills : profileData.skills).map((skill) => (
-                    <Chip
-                      key={skill}
-                      label={skill}
-                      color="primary"
-                      onDelete={isEditing ? () => handleDeleteSkill(skill) : undefined}
-                      sx={{ fontWeight: 500 }}
-                    />
-                  ))}
-                </Box>
-                {isEditing && (
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <TextField
-                      size="small"
-                      label="Agregar habilidad"
-                      value={newSkill}
-                      onChange={e => setNewSkill(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSkill(); } }}
-                    />
-                    <Button variant="contained" onClick={handleAddSkill}>Agregar</Button>
-                  </Box>
-                )}
-              </Paper>
-              {/* Documentos con drag & drop visual */}
-              <Paper sx={{ flex: 1, p: 3, borderRadius: 3, boxShadow: 2 }}>
-                <Typography variant="h6" gutterBottom>Documentos</Typography>
-                {isEditing ? (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {/* Drag & Drop visual para certificado */}
-                    <Box
-                      sx={{
-                        border: '2px dashed',
-                        borderColor: 'primary.light',
-                        borderRadius: 2,
-                        p: 2,
-                        textAlign: 'center',
-                        color: 'text.secondary',
-                        minHeight: 80,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 1,
-                      }}
-                    >
-                      <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
-                      <Typography variant="body2">
-                        Arrastra tu certificado aquí o haz click para buscar.<br />
-                        <span style={{ color: '#888' }}>PDF, imagen - hasta 10MB</span>
-                      </Typography>
-                      <Button variant="outlined" size="small" sx={{ mt: 1, borderRadius: 2 }} component="label">
-                        Buscar archivo
-                        <input type="file" hidden accept="application/pdf,image/*" onChange={handleCertChange} />
-                      </Button>
-                      {certFile && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                          <Chip label={certFile.name} color="info" />
-                          <IconButton onClick={handleRemoveCert}><DeleteIcon /></IconButton>
-                        </Box>
-                      )}
-                    </Box>
-                    {/* Drag & Drop visual para CV */}
-                    <Box
-                      sx={{
-                        border: '2px dashed',
-                        borderColor: 'primary.light',
-                        borderRadius: 2,
-                        p: 2,
-                        textAlign: 'center',
-                        color: 'text.secondary',
-                        minHeight: 80,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 1,
-                      }}
-                    >
-                      <CloudUploadIcon sx={{ fontSize: 32, mb: 1 }} />
-                      <Typography variant="body2">
-                        Arrastra tu CV aquí o haz click para buscar.<br />
-                        <span style={{ color: '#888' }}>PDF - hasta 10MB</span>
-                      </Typography>
-                      <Button variant="outlined" size="small" sx={{ mt: 1, borderRadius: 2 }} component="label">
-                        Buscar archivo
-                        <input type="file" hidden accept="application/pdf" onChange={handleCvChange} />
-                      </Button>
-                      {cvFile && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                          <Chip label={cvFile.name} color="info" />
-                          <IconButton onClick={handleRemoveCv}><DeleteIcon /></IconButton>
-                        </Box>
-                      )}
-                    </Box>
-                  </Box>
-                ) : (
-                  <Stack direction="row" spacing={2}>
-                    <Stack direction="column" spacing={1}>
-                      <Typography variant="subtitle1">Certificado</Typography>
-                      {certFile ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                          <Chip label={certFile.name} color="info" />
-                        </Box>
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">No subido</Typography>
-                      )}
-                    </Stack>
-                    <Stack direction="column" spacing={1}>
-                      <Typography variant="subtitle1">CV</Typography>
-                      {cvFile ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                          <Chip label={cvFile.name} color="info" />
-                        </Box>
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">No subido</Typography>
-                      )}
-                    </Stack>
-                  </Stack>
-                )}
-              </Paper>
-            </Box>
-
-            {/* Biografía */}
-            <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Biografía
-              </Typography>
-              <TextField
-                fullWidth
-                multiline
-                minRows={4}
-                value={isEditing ? editData.bio : profileData.bio}
-                onChange={(e) => handleInputChange('bio', e.target.value)}
-                disabled={!isEditing}
-                placeholder="Cuéntanos sobre ti..."
-                sx={{ borderRadius: 2 }}
-              />
-            </Paper>
-          </Stack>
-        </Box>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Stack spacing={3}>
-            <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
-              <Avatar
-                sx={{ width: 100, height: 100, mx: 'auto', mb: 2, bgcolor: 'primary.main' }}
-              >
-                <PersonIcon sx={{ fontSize: 50 }} />
-              </Avatar>
-              <Typography variant="h6" gutterBottom>
-                {profileData.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {profileData.career} - {profileData.semester}° Semestre
-              </Typography>
+          {/* Habilidades */}
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" fontWeight={600}>Habilidades</Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+            {editData.habilidades.map((h) => (
               <Chip
-                label={`GPA: ${profileData.gpa}`}
+                key={h.nombre}
+                label={`${h.nombre} (${h.nivel})`}
                 color="primary"
-                variant="outlined"
-                sx={{ mb: 1 }}
+                onDelete={isEditing ? () => handleDeleteSkill(h.nombre) : undefined}
+                sx={{ fontWeight: 500 }}
               />
-            </Paper>
+            ))}
+          </Box>
+          {isEditing && (
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+              <TextField
+                size="small"
+                label="Agregar habilidad"
+                value={newSkill}
+                onChange={e => setNewSkill(e.target.value)}
+                sx={{ minWidth: 150 }}
+              />
+              <TextField
+                size="small"
+                select
+                label="Nivel"
+                value={newSkillLevel}
+                onChange={e => setNewSkillLevel(e.target.value)}
+                sx={{ minWidth: 120 }}
+              >
+                <MenuItem value="Básico">Básico</MenuItem>
+                <MenuItem value="Intermedio">Intermedio</MenuItem>
+                <MenuItem value="Avanzado">Avanzado</MenuItem>
+              </TextField>
+              <Button variant="contained" onClick={handleAddSkill} size="small">
+                Agregar
+              </Button>
+            </Box>
+          )}
 
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Estadísticas
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <AccessTimeIcon sx={{ mr: 1, color: 'info.main' }} />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="body2">Horas Acumuladas</Typography>
-                  <Typography variant="h6">{profileData.totalHours}</Typography>
+          {/* Documentos */}
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" fontWeight={600}>Documentos</Typography>
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="subtitle1">CV</Typography>
+              {editData.cv ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                  <Chip
+                    label={typeof editData.cv === 'string' ? editData.cv : editData.cv.name}
+                    color="info"
+                    icon={<CheckCircleIcon />}
+                  />
+                  {isEditing && <IconButton onClick={handleRemoveCv}><DeleteIcon /></IconButton>}
                 </Box>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <SchoolIcon sx={{ mr: 1, color: 'success.main' }} />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="body2">Proyectos Completados</Typography>
-                  <Typography variant="h6">{profileData.completedProjects}</Typography>
+              ) : isEditing ? (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                  sx={{ mt: 1, borderRadius: 2 }}
+                >
+                  Subir CV (PDF, max 5MB)
+                  <input type="file" hidden accept="application/pdf" onChange={handleCvChange} />
+                </Button>
+              ) : (
+                <Typography variant="body2" color="text.secondary">No subido</Typography>
+              )}
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="subtitle1">Certificado</Typography>
+              {editData.certificado ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                  <Chip
+                    label={typeof editData.certificado === 'string' ? editData.certificado : editData.certificado.name}
+                    color="info"
+                    icon={<CheckCircleIcon />}
+                  />
+                  {isEditing && <IconButton onClick={handleRemoveCert}><DeleteIcon /></IconButton>}
                 </Box>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <WarningIcon sx={{ mr: 1, color: profileData.strikes > 0 ? 'warning.main' : 'success.main' }} />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="body2">Strikes</Typography>
-                  <Typography variant="h6" color={profileData.strikes > 0 ? 'warning.main' : 'success.main'}>
-                    {profileData.strikes}/3
-                  </Typography>
-                </Box>
-              </Box>
-            </Paper>
-          </Stack>
+              ) : isEditing ? (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  component="label"
+                  startIcon={<CloudUploadIcon />}
+                  sx={{ mt: 1, borderRadius: 2 }}
+                >
+                  Subir Certificado (max 10MB)
+                  <input type="file" hidden accept="application/pdf,image/*" onChange={handleCertChange} />
+                </Button>
+              ) : (
+                <Typography variant="body2" color="text.secondary">No subido</Typography>
+              )}
+            </Box>
+          </Box>
+
+          {/* Biografía */}
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" fontWeight={600}>Biografía</Typography>
+          <TextField
+            fullWidth
+            multiline
+            minRows={4}
+            value={isEditing ? editData.biografia : profileData.biografia}
+            onChange={e => handleInputChange('biografia', e.target.value)}
+            disabled={!isEditing}
+            placeholder="Cuéntanos sobre ti... (mínimo 50 caracteres)"
+            sx={{ borderRadius: 2 }}
+            error={!!validationErrors.biografia}
+            helperText={validationErrors.biografia || `${editData.biografia.length}/50 caracteres mínimos`}
+          />
         </Box>
-      </Box>
+      </Paper>
 
-      {/* Alert de strikes */}
-      {profileData.strikes > 0 && (
-        <Alert severity="warning" sx={{ mt: 3 }}>
-          <Typography variant="body2">
-            <strong>Advertencia:</strong> Tienes {profileData.strikes} strike(s) asignado(s). 
-            Recuerda cumplir con los plazos de entrega para evitar más strikes.
-          </Typography>
-        </Alert>
-      )}
-
-      {/* Snackbar de éxito al guardar */}
+      {/* Snackbars */}
       <Snackbar
         open={showSuccess}
-        autoHideDuration={3500}
+        autoHideDuration={4000}
         onClose={() => setShowSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setShowSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          ¡Guardaste correctamente los cambios!
+        <Alert severity="success" sx={{ width: '100%' }}>
+          ¡Perfil actualizado correctamente!
         </Alert>
       </Snackbar>
 
-      {/* Dialog para cambiar contraseña */}
-      <Dialog open={showPasswordDialog} onClose={() => setShowPasswordDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Cambiar Contraseña</DialogTitle>
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
+
+      {/* Dialog de confirmación para eliminar habilidad */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirmar eliminación</DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            type="password"
-            label="Contraseña Actual"
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            type="password"
-            label="Nueva Contraseña"
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            type="password"
-            label="Confirmar Nueva Contraseña"
-            margin="normal"
-          />
+          <Typography>
+            ¿Estás seguro de que quieres eliminar la habilidad "{skillToDelete}"?
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowPasswordDialog(false)}>Cancelar</Button>
-          <Button variant="contained" onClick={() => setShowPasswordDialog(false)}>
-            Cambiar Contraseña
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={confirmDeleteSkill} color="error" variant="contained">
+            Eliminar
           </Button>
         </DialogActions>
       </Dialog>

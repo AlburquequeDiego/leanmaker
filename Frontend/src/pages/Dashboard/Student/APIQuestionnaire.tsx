@@ -142,12 +142,24 @@ export const APIQuestionnaire = () => {
   const [showResults, setShowResults] = useState(false);
   const [calculatedLevel, setCalculatedLevel] = useState<number>(0);
   const [pendingApproval, setPendingApproval] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const handleAnswerChange = (questionId: number, value: number) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value,
     }));
+    // Avanzar automáticamente si no es la última pregunta
+    const idx = questions.findIndex(q => q.id === questionId);
+    if (idx < questions.length - 1) {
+      setTimeout(() => setCurrentQuestion(idx + 1), 250);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
   };
 
   const calculateAPILevel = () => {
@@ -181,6 +193,9 @@ export const APIQuestionnaire = () => {
         <QuizIcon sx={{ mr: 2, color: 'primary.main' }} />
         Cuestionario de Nivelación API
       </Typography>
+      <Alert severity="info" sx={{ mb: 3 }}>
+      "Recuerda que no hay respuestas correctas o incorrectas, lo importante es que respondas con sinceridad y reflexión."
+      </Alert>
       {pendingApproval && (
         <Alert severity="info" sx={{ mb: 3 }}>
           Tu cuestionario fue enviado y está pendiente de aprobación por administración. No puedes volver a responder hasta que sea aprobado.
@@ -198,121 +213,125 @@ export const APIQuestionnaire = () => {
         </Box>
         <LinearProgress 
           variant="determinate" 
-          value={progress} 
+          value={progress}
+          sx={{ height: 10, borderRadius: 5 }}
         />
       </Box>
-      {/* Preguntas */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        {questions.map((q) => (
-          <Box key={q.id} sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              {q.icon} {q.question}
-            </Typography>
-            <RadioGroup
-              value={answers[q.id] || ''}
-              onChange={(_, value) => !pendingApproval && handleAnswerChange(q.id, Number(value))}
-            >
-              {q.options.map((opt) => (
-                <FormControlLabel
-                  key={opt.value}
-                  value={opt.value}
-                  control={<Radio disabled={pendingApproval} />}
-                  label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {opt.text}
-                      <Chip
-                        label={`API ${opt.apiLevel}`}
-                        size="small"
-                        color={getChipColor(opt.apiLevel) as any}
-                        variant="outlined"
-                      />
-                    </Box>
-                  }
-                  disabled={pendingApproval}
-                  sx={{ mb: 1 }}
-                />
-              ))}
-            </RadioGroup>
-          </Box>
-        ))}
-      </Paper>
-      <Button
-        variant="contained"
-        color="primary"
-        disabled={!canSubmit}
-        onClick={handleSubmit}
-      >
-        Enviar respuestas
-      </Button>
-      {/* Dialog de resultados */}
-      <Dialog open={showResults} onClose={() => setShowResults(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <EmojiEventsIcon sx={{ mr: 2, color: 'primary.main' }} />
-            <Typography variant="h6">
-              Resultados del Cuestionario API
-            </Typography>
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          {calculatedLevel > 0 && (
-            <Box>
-              <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h4" gutterBottom>
-                    {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].title}
-                  </Typography>
-                  <Typography variant="h6">
-                    Nivel API {calculatedLevel}
-                  </Typography>
-                </CardContent>
-              </Card>
-
-              <Typography variant="body1" sx={{ mb: 3 }}>
-                {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].description}
-              </Typography>
-
-              <Typography variant="h6" gutterBottom>
-                Capacidades de tu nivel:
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].capabilities.map((capability, index) => (
-                  <Chip
-                    key={index}
-                    label={capability}
-                    color="success"
-                    variant="outlined"
-                    icon={<CheckCircleIcon />}
+      {/* Pregunta actual tipo carrusel */}
+      {!showResults && !pendingApproval && (
+        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
+          <Card sx={{ minWidth: 350, maxWidth: 500, mx: 2, boxShadow: 3 }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                {questions[currentQuestion].icon}
+                <Typography variant="h6" sx={{ ml: 1 }}>
+                  {questions[currentQuestion].question}
+                </Typography>
+              </Box>
+              <RadioGroup
+                value={answers[questions[currentQuestion].id] || ''}
+                onChange={e => {
+                  handleAnswerChange(questions[currentQuestion].id, Number(e.target.value));
+                }}
+              >
+                {questions[currentQuestion].options.map(option => (
+                  <FormControlLabel
+                    key={option.value}
+                    value={option.value}
+                    control={<Radio />}
+                    label={option.text}
+                    disabled={pendingApproval}
                   />
                 ))}
-              </Box>
-
-              <Alert severity="success">
-                <Typography variant="body2">
-                  <strong>¡Felicitaciones!</strong> Tu nivel API ha sido evaluado. Este nivel te permitirá acceder a proyectos 
-                  acordes a tus capacidades actuales. Recuerda que puedes mejorar tu nivel realizando más proyectos y 
-                  adquiriendo experiencia práctica.
-                </Typography>
-              </Alert>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowResults(false)}>
-            Cerrar
-          </Button>
-          <Button 
-            variant="contained" 
-            onClick={() => {
-              setShowResults(false);
-              // Aquí se podría guardar el resultado en la base de datos
-              console.log('Nivel API calculado:', calculatedLevel);
-            }}
+              </RadioGroup>
+            </CardContent>
+          </Card>
+        </Box>
+      )}
+      {/* Botón de enviar */}
+      {!showResults && !pendingApproval && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={!canSubmit}
+            onClick={handleSubmit}
           >
-            Confirmar Nivel
+            Enviar Cuestionario
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      )}
+      {/* Resultados */}
+      {showResults && (
+        <Dialog open={showResults} onClose={() => setShowResults(false)} maxWidth="md" fullWidth>
+          <DialogTitle>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <EmojiEventsIcon sx={{ mr: 2, color: 'primary.main' }} />
+              <Typography variant="h6">
+                Resultados del Cuestionario API
+              </Typography>
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            {calculatedLevel > 0 && (
+              <Box>
+                <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Typography variant="h4" gutterBottom>
+                      {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].title}
+                    </Typography>
+                    <Typography variant="h6">
+                      Nivel API {calculatedLevel}
+                    </Typography>
+                  </CardContent>
+                </Card>
+
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].description}
+                </Typography>
+
+                <Typography variant="h6" gutterBottom>
+                  Capacidades de tu nivel:
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+                  {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].capabilities.map((capability, index) => (
+                    <Chip
+                      key={index}
+                      label={capability}
+                      color="success"
+                      variant="outlined"
+                      icon={<CheckCircleIcon />}
+                    />
+                  ))}
+                </Box>
+
+                <Alert severity="success">
+                  <Typography variant="body2">
+                    <strong>¡Felicitaciones!</strong> Tu nivel API ha sido evaluado. Este nivel te permitirá acceder a proyectos 
+                    acordes a tus capacidades actuales. Recuerda que puedes mejorar tu nivel realizando más proyectos y 
+                    adquiriendo experiencia práctica.
+                  </Typography>
+                </Alert>
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowResults(false)}>
+              Cerrar
+            </Button>
+            <Button 
+              variant="contained" 
+              onClick={() => {
+                setShowResults(false);
+                // Aquí se podría guardar el resultado en la base de datos
+                console.log('Nivel API calculado:', calculatedLevel);
+              }}
+            >
+              Confirmar Nivel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Box>
   );
 };

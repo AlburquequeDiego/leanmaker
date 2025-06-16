@@ -18,6 +18,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  TextField,
+  MenuItem,
 } from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
@@ -177,6 +179,8 @@ const typeConfig = {
 export const Evaluations = () => {
   const [selectedEvaluation, setSelectedEvaluation] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [completedLimit, setCompletedLimit] = useState(5);
+  const [pendingLimit, setPendingLimit] = useState(5);
 
   const handleAction = (evaluation: any) => {
     setSelectedEvaluation(evaluation);
@@ -249,12 +253,28 @@ export const Evaluations = () => {
 
       {/* Evaluaciones Completadas */}
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h5" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-          <CheckCircleIcon sx={{ mr: 1, color: 'success.main' }} />
-          Evaluaciones Completadas ({completedEvaluations.length})
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 0, display: 'flex', alignItems: 'center' }}>
+            <CheckCircleIcon sx={{ mr: 1, color: 'success.main' }} />
+            Evaluaciones Completadas ({completedEvaluations.length})
+          </Typography>
+          <TextField
+            select
+            size="small"
+            label="Mostrar"
+            value={completedLimit}
+            onChange={e => setCompletedLimit(Number(e.target.value))}
+            sx={{ minWidth: 110 }}
+          >
+            <MenuItem value={5}>Últimos 5</MenuItem>
+            <MenuItem value={10}>Últimos 10</MenuItem>
+            <MenuItem value={15}>Últimos 15</MenuItem>
+            <MenuItem value={20}>Últimos 20</MenuItem>
+            <MenuItem value={completedEvaluations.length}>Todos</MenuItem>
+          </TextField>
+        </Box>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          {completedEvaluations.map((evaluation) => (
+          {completedEvaluations.slice(0, completedLimit).map((evaluation) => (
             <Box key={evaluation.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
               <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleAction(evaluation)}>
                 <CardContent>
@@ -317,12 +337,28 @@ export const Evaluations = () => {
       {/* Evaluaciones Pendientes */}
       {pendingEvaluations.length > 0 && (
         <Paper sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h5" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-            <AccessTimeIcon sx={{ mr: 1, color: 'warning.main' }} />
-            Evaluaciones Pendientes ({pendingEvaluations.length})
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
+            <Typography variant="h5" gutterBottom sx={{ mb: 0, display: 'flex', alignItems: 'center' }}>
+              <AccessTimeIcon sx={{ mr: 1, color: 'warning.main' }} />
+              Evaluaciones Pendientes ({pendingEvaluations.length})
+            </Typography>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={pendingLimit}
+              onChange={e => setPendingLimit(Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              <MenuItem value={5}>Últimos 5</MenuItem>
+              <MenuItem value={10}>Últimos 10</MenuItem>
+              <MenuItem value={15}>Últimos 15</MenuItem>
+              <MenuItem value={20}>Últimos 20</MenuItem>
+              <MenuItem value={pendingEvaluations.length}>Todos</MenuItem>
+            </TextField>
+          </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {pendingEvaluations.map((evaluation) => (
+            {pendingEvaluations.slice(0, pendingLimit).map((evaluation) => (
               <Box key={evaluation.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
                 <Card sx={{ height: '100%', opacity: 0.7 }}>
                   <CardContent>

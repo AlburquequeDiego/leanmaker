@@ -17,6 +17,9 @@ import {
   IconButton,
   Dialog,
   Alert,
+  TextField,
+  MenuItem,
+  Autocomplete,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -37,11 +40,20 @@ interface Application {
   responseDate?: string;
   requiredSkills: string[];
   projectDuration: string;
-  salary: string;
   location: string;
   description: string;
   compatibility: number;
   notes?: string;
+}
+
+interface FilterOptions {
+  busqueda?: string;
+  area?: string;
+  modalidad?: string;
+  ubicacion?: string;
+  nivel?: string;
+  duracion?: string;
+  tecnologias?: string[];
 }
 
 const mockApplications: Application[] = [
@@ -54,7 +66,6 @@ const mockApplications: Application[] = [
     responseDate: '2024-01-20',
     requiredSkills: ['React', 'Node.js', 'MySQL'],
     projectDuration: '3 meses',
-    salary: '$500,000 COP/mes',
     location: 'Remoto',
     description: 'Desarrollo de un sistema web para gestión de inventarios con base de datos MySQL y frontend en React.',
     compatibility: 95,
@@ -68,7 +79,6 @@ const mockApplications: Application[] = [
     appliedDate: '2024-01-18',
     requiredSkills: ['React Native', 'Firebase', 'JavaScript'],
     projectDuration: '4 meses',
-    salary: '$600,000 COP/mes',
     location: 'Bogotá',
     description: 'Desarrollo de aplicación móvil para delivery de alimentos con geolocalización y pagos en línea.',
     compatibility: 88,
@@ -82,7 +92,6 @@ const mockApplications: Application[] = [
     responseDate: '2024-01-12',
     requiredSkills: ['Vue.js', 'Laravel', 'PostgreSQL'],
     projectDuration: '6 meses',
-    salary: '$550,000 COP/mes',
     location: 'Medellín',
     description: 'Plataforma web para cursos online con sistema de videoconferencias y evaluaciones automáticas.',
     compatibility: 72,
@@ -97,7 +106,6 @@ const mockApplications: Application[] = [
     responseDate: '2023-09-05',
     requiredSkills: ['Python', 'Pandas', 'Power BI'],
     projectDuration: '2 meses',
-    salary: '$450,000 COP/mes',
     location: 'Remoto',
     description: 'Desarrollo de dashboard de analytics para visualización de datos empresariales.',
     compatibility: 92,
@@ -105,13 +113,186 @@ const mockApplications: Application[] = [
   },
 ];
 
-export const MyApplications = () => {
+// Opciones de filtros
+const areas = ['Tecnología', 'Marketing', 'Diseño', 'Administración'];
+const modalidades = ['Remoto', 'Presencial', 'Híbrido'];
+const ubicaciones = ['Santiago', 'Bogotá', 'CDMX', 'Buenos Aires'];
+const niveles = ['Básico', 'Intermedio', 'Avanzado'];
+const duraciones = ['1 mes', '3 meses', '6 meses', '12 meses'];
+const tecnologias = ['React', 'Node.js', 'Python', 'Java', 'Figma'];
+
+// Componente de filtros (ahora separado y tipado)
+interface FiltrosProyectosDisponiblesProps {
+  onFilter?: (filters: FilterOptions) => void;
+}
+
+const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter }) => {
+  const [busqueda, setBusqueda] = useState('');
+  const [area, setArea] = useState('');
+  const [modalidad, setModalidad] = useState('');
+  const [ubicacion, setUbicacion] = useState('');
+  const [nivel, setNivel] = useState('');
+  const [duracion, setDuracion] = useState('');
+  const [tecs, setTecs] = useState<string[]>([]);
+
+  const handleFiltrar = () => {
+    onFilter?.({ busqueda, area, modalidad, ubicacion, nivel, duracion, tecnologias: tecs });
+  };
+
+  const handleLimpiar = () => {
+    setBusqueda('');
+    setArea('');
+    setModalidad('');
+    setUbicacion('');
+    setNivel('');
+    setDuracion('');
+    setTecs([]);
+    onFilter?.({});
+  };
+
+  return (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3, alignItems: 'center' }}>
+      {/* Bloque 1: Búsqueda */}
+      <TextField
+        label="¿Qué estás buscando hoy?"
+        value={busqueda}
+        onChange={e => setBusqueda(e.target.value)}
+        sx={{ minWidth: 220, flex: 1 }}
+        size="small"
+      />
+
+      {/* Bloque 2: Área */}
+      <TextField
+        select
+        label="Área"
+        value={area}
+        onChange={e => setArea(e.target.value)}
+        sx={{ minWidth: 140 }}
+        size="small"
+      >
+        <MenuItem value="">Todas</MenuItem>
+        {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+      </TextField>
+
+      {/* Bloque 3: Modalidad */}
+      <TextField
+        select
+        label="Modalidad"
+        value={modalidad}
+        onChange={e => setModalidad(e.target.value)}
+        sx={{ minWidth: 140 }}
+        size="small"
+      >
+        <MenuItem value="">Todas</MenuItem>
+        {modalidades.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+      </TextField>
+
+      {/* Bloque 4: Ubicación */}
+      <TextField
+        select
+        label="Ubicación"
+        value={ubicacion}
+        onChange={e => setUbicacion(e.target.value)}
+        sx={{ minWidth: 140 }}
+        size="small"
+      >
+        <MenuItem value="">Todas</MenuItem>
+        {ubicaciones.map(u => <MenuItem key={u} value={u}>{u}</MenuItem>)}
+      </TextField>
+
+      {/* Bloque 5: Nivel */}
+      <TextField
+        select
+        label="Nivel"
+        value={nivel}
+        onChange={e => setNivel(e.target.value)}
+        sx={{ minWidth: 140 }}
+        size="small"
+      >
+        <MenuItem value="">Todos</MenuItem>
+        {niveles.map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
+      </TextField>
+
+      {/* Bloque 6: Duración */}
+      <TextField
+        select
+        label="Duración"
+        value={duracion}
+        onChange={e => setDuracion(e.target.value)}
+        sx={{ minWidth: 120 }}
+        size="small"
+      >
+        <MenuItem value="">Todas</MenuItem>
+        {duraciones.map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
+      </TextField>
+
+      {/* Bloque 7: Tecnologías */}
+      <Autocomplete
+        multiple
+        options={tecnologias}
+        value={tecs}
+        onChange={(_, value) => setTecs(value)}
+        renderInput={(params) => <TextField {...params} label="Tecnologías" size="small" />}
+        sx={{ minWidth: 180 }}
+      />
+
+      {/* Botones */}
+      <Button variant="contained" color="primary" onClick={handleFiltrar}>
+        Filtrar
+      </Button>
+      <Button variant="outlined" color="secondary" onClick={handleLimpiar}>
+        Limpiar
+      </Button>
+    </Box>
+  );
+};
+
+// Componente principal de aplicaciones
+export const MyApplications: React.FC = () => {
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [filteredApplications, setFilteredApplications] = useState<Application[]>(mockApplications);
+  const [historyLimit, setHistoryLimit] = useState(5);
 
   const handleViewDetails = (application: Application) => {
     setSelectedApplication(application);
     setDialogOpen(true);
+  };
+
+  const handleFilter = (filters: FilterOptions) => {
+    let filtered = [...mockApplications];
+    
+    if (filters.busqueda) {
+      filtered = filtered.filter(app => 
+        app.projectTitle.toLowerCase().includes(filters.busqueda!.toLowerCase()) ||
+        app.company.toLowerCase().includes(filters.busqueda!.toLowerCase()) ||
+        app.description.toLowerCase().includes(filters.busqueda!.toLowerCase())
+      );
+    }
+    
+    if (filters.area) {
+      filtered = filtered.filter(app => 
+        app.requiredSkills.some(skill => skill.toLowerCase().includes(filters.area!.toLowerCase()))
+      );
+    }
+    
+    if (filters.modalidad) {
+      filtered = filtered.filter(app => app.location === filters.modalidad);
+    }
+    
+    if (filters.ubicacion) {
+      filtered = filtered.filter(app => app.location === filters.ubicacion);
+    }
+    
+    if (filters.tecnologias && filters.tecnologias.length > 0) {
+      filtered = filtered.filter(app => 
+        app.requiredSkills.some(skill => 
+          filters.tecnologias!.some(tech => skill.toLowerCase().includes(tech.toLowerCase()))
+        )
+      );
+    }
+    
+    setFilteredApplications(filtered);
   };
 
   const getStatusColor = (status: string) => {
@@ -165,10 +346,10 @@ export const MyApplications = () => {
     return 'error';
   };
 
-  const pendingApplications = mockApplications.filter(app => app.status === 'pending');
-  const acceptedApplications = mockApplications.filter(app => app.status === 'accepted');
-  const completedApplications = mockApplications.filter(app => app.status === 'completed');
-  const rejectedApplications = mockApplications.filter(app => app.status === 'rejected');
+  const pendingApplications = filteredApplications.filter(app => app.status === 'pending');
+  const acceptedApplications = filteredApplications.filter(app => app.status === 'accepted');
+  const completedApplications = filteredApplications.filter(app => app.status === 'completed');
+  const rejectedApplications = filteredApplications.filter(app => app.status === 'rejected');
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -177,9 +358,17 @@ export const MyApplications = () => {
         Mis Aplicaciones
       </Typography>
 
+      {/* Filtros */}
+      <Paper sx={{ p: 3, mb: 3, bgcolor: '#f8f9fa' }}>
+        <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+          Filtrar Aplicaciones
+        </Typography>
+        <FiltrosProyectosDisponibles onFilter={handleFilter} />
+      </Paper>
+
       {/* Estadísticas */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#fff3e0' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="warning.main">
               {pendingApplications.length}
@@ -190,7 +379,7 @@ export const MyApplications = () => {
           </CardContent>
         </Card>
         
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e8f5e8' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="success.main">
               {acceptedApplications.length}
@@ -201,7 +390,7 @@ export const MyApplications = () => {
           </CardContent>
         </Card>
         
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e3f2fd' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="info.main">
               {completedApplications.length}
@@ -212,7 +401,7 @@ export const MyApplications = () => {
           </CardContent>
         </Card>
         
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#ffebee' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="error.main">
               {rejectedApplications.length}
@@ -226,79 +415,112 @@ export const MyApplications = () => {
 
       {/* Tabla de aplicaciones */}
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-          Historial de Aplicaciones ({mockApplications.length})
-        </Typography>
-        
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Proyecto</TableCell>
-                <TableCell>Empresa</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Compatibilidad</TableCell>
-                <TableCell>Fecha Aplicación</TableCell>
-                <TableCell>Duración</TableCell>
-                <TableCell>Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {mockApplications.map((application) => (
-                <TableRow key={application.id}>
-                  <TableCell>
-                    <Box>
-                      <Typography variant="body1" fontWeight="bold">
-                        {application.projectTitle}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {application.description.substring(0, 60)}...
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                        <BusinessIcon fontSize="small" />
-                      </Avatar>
-                      {application.company}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      icon={getStatusIcon(application.status)}
-                      label={getStatusText(application.status)}
-                      color={getStatusColor(application.status) as any}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={`${application.compatibility}%`}
-                      color={getCompatibilityColor(application.compatibility) as any}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {new Date(application.appliedDate).toLocaleDateString('es-ES')}
-                  </TableCell>
-                  <TableCell>
-                    {application.projectDuration}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => handleViewDetails(application)}
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-                  </TableCell>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
+            Historial de Aplicaciones ({filteredApplications.length})
+          </Typography>
+          <Box>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={historyLimit}
+              onChange={e => setHistoryLimit(Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              <MenuItem value={5}>Últimos 5</MenuItem>
+              <MenuItem value={10}>Últimos 10</MenuItem>
+              <MenuItem value={15}>Últimos 15</MenuItem>
+              <MenuItem value={20}>Últimos 20</MenuItem>
+              <MenuItem value={filteredApplications.length}>Todos</MenuItem>
+            </TextField>
+          </Box>
+        </Box>
+        {filteredApplications.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography variant="h6" color="text.secondary">
+              No se encontraron aplicaciones con los filtros seleccionados
+            </Typography>
+            <Button 
+              variant="outlined" 
+              onClick={() => setFilteredApplications(mockApplications)}
+              sx={{ mt: 2 }}
+            >
+              Mostrar todas las aplicaciones
+            </Button>
+          </Box>
+        ) : (
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Proyecto</TableCell>
+                  <TableCell>Empresa</TableCell>
+                  <TableCell>Estado</TableCell>
+                  <TableCell>Compatibilidad</TableCell>
+                  <TableCell>Fecha Aplicación</TableCell>
+                  <TableCell>Duración</TableCell>
+                  <TableCell>Acciones</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredApplications.slice(0, historyLimit).map((application) => (
+                  <TableRow key={application.id} hover>
+                    <TableCell>
+                      <Box>
+                        <Typography variant="body1" fontWeight="bold">
+                          {application.projectTitle}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {application.description.substring(0, 60)}...
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                          <BusinessIcon fontSize="small" />
+                        </Avatar>
+                        {application.company}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        icon={getStatusIcon(application.status)}
+                        label={getStatusText(application.status)}
+                        color={getStatusColor(application.status) as any}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={`${application.compatibility}%`}
+                        color={getCompatibilityColor(application.compatibility) as any}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {new Date(application.appliedDate).toLocaleDateString('es-ES')}
+                    </TableCell>
+                    <TableCell>
+                      {application.projectDuration}
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleViewDetails(application)}
+                        title="Ver detalles"
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Paper>
 
       {/* Dialog para detalles */}
@@ -348,10 +570,6 @@ export const MyApplications = () => {
               <Box sx={{ minWidth: 120 }}>
                 <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
                 <Typography variant="body1">{selectedApplication.projectDuration}</Typography>
-              </Box>
-              <Box sx={{ minWidth: 120 }}>
-                <Typography variant="subtitle2" color="text.secondary">Salario</Typography>
-                <Typography variant="body1">{selectedApplication.salary}</Typography>
               </Box>
               <Box sx={{ minWidth: 120 }}>
                 <Typography variant="subtitle2" color="text.secondary">Ubicación</Typography>
