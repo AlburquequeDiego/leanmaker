@@ -197,7 +197,7 @@ export const Register = () => {
             </Typography>
             <Typography variant="body2" color="text.secondary" align="center">
               Únete a la plataforma de vinculación entre empresas y estudiantes
-            </Typography>
+          </Typography>
           </Box>
 
           {/* Selector visual de tipo de usuario */}
@@ -216,20 +216,20 @@ export const Register = () => {
               <>
                 {/* Nombre y Apellido en una fila */}
                 <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                  <TextField
+            <TextField
                     label="Nombre"
                     name="nombre"
-                    fullWidth
+              fullWidth
                     value={formik.values.nombre}
-                    onChange={formik.handleChange}
+              onChange={formik.handleChange}
                     error={formik.touched.nombre && Boolean(formik.errors.nombre)}
                     helperText={formik.touched.nombre && formik.errors.nombre}
-                    size="small"
-                  />
-                  <TextField
+              size="small"
+            />
+            <TextField
                     label="Apellido"
                     name="apellido"
-                    fullWidth
+              fullWidth
                     value={formik.values.apellido}
                     onChange={formik.handleChange}
                     error={formik.touched.apellido && Boolean(formik.errors.apellido)}
@@ -238,14 +238,14 @@ export const Register = () => {
                   />
                 </Box>
                 <TextField
-                  label="Correo Electrónico"
-                  name="email"
+              label="Correo Electrónico"
+              name="email"
                   fullWidth
                   margin="normal"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
                   size="small"
                 />
                 <TextField
@@ -271,9 +271,9 @@ export const Register = () => {
                     onChange={formik.handleChange}
                     error={formik.touched.fechaNacimiento && Boolean(formik.errors.fechaNacimiento)}
                     helperText={formik.touched.fechaNacimiento && formik.errors.fechaNacimiento}
-                    size="small"
-                  />
-                  <TextField
+              size="small"
+            />
+            <TextField
                     label="Género"
                     name="genero"
                     fullWidth
@@ -459,7 +459,7 @@ export const Register = () => {
                 <TextField
                   label="Nivel Educativo"
                   name="nivel"
-                  fullWidth
+              fullWidth
                   margin="normal"
                   select
                   value={formik.values.nivel}
@@ -480,7 +480,7 @@ export const Register = () => {
                 <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
                   <TextField
                     label="Contraseña"
-                    name="password"
+              name="password"
                     type="password"
                     fullWidth
                     margin="normal"
@@ -674,28 +674,28 @@ export const Register = () => {
                 {/* Contraseña y Confirmar Contraseña en una fila */}
                 <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
                   <TextField
-                    label="Contraseña"
+              label="Contraseña"
                     name="password"
-                    type="password"
+              type="password"
                     fullWidth
                     margin="normal"
-                    value={formik.values.password}
-                    onChange={formik.handleChange}
-                    error={formik.touched.password && Boolean(formik.errors.password)}
-                    helperText={formik.touched.password && formik.errors.password}
-                    size="small"
-                  />
-                  <TextField
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+              size="small"
+            />
+            <TextField
                     label="Confirmar Contraseña"
-                    name="confirmPassword"
-                    type="password"
+              name="confirmPassword"
+              type="password"
                     fullWidth
                     margin="normal"
-                    value={formik.values.confirmPassword}
-                    onChange={formik.handleChange}
-                    error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-                    helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
-                    size="small"
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+              helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+              size="small"
                   />
                 </Box>
               </>
@@ -767,7 +767,7 @@ export const Register = () => {
                 ¿Ya tienes una cuenta?{' '}
                 <Link component={RouterLink} to="/login" sx={{ fontWeight: 600 }}>
                   Iniciar Sesión
-                </Link>
+              </Link>
               </Typography>
             </Box>
           </Box>

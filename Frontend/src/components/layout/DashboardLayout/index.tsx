@@ -17,6 +17,13 @@ import {
   Menu,
   MenuItem,
   Divider,
+  Badge,
+  Tooltip,
+  Modal,
+  Fade,
+  Backdrop,
+  Button,
+  TextField,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -33,10 +40,12 @@ import {
   Assessment as AssessmentIcon,
   AccessTime as AccessTimeIcon,
   Quiz as QuizIcon,
-  Add as AddIcon,
   Search as SearchIcon,
   VideoCall as VideoCallIcon,
   Warning as WarningIcon,
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon,
+  HelpOutline as HelpOutlineIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 
@@ -46,12 +55,21 @@ interface DashboardLayoutProps {
   userRole: 'admin' | 'company' | 'student';
 }
 
+// Este componente define la estructura principal del dashboard, incluyendo el menú lateral (Drawer),
+// la barra superior (AppBar) y el área de contenido dinámico (Outlet). El menú y las opciones
+// se adaptan según el rol del usuario (admin, empresa o estudiante).
 export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
+  const [openSupport, setOpenSupport] = useState(false);
+  const [supportForm, setSupportForm] = useState({ nombre: '', correo: '', mensaje: '' });
+
+  // Simulación de notificaciones nuevas
+  const notificationCount = 3;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -69,6 +87,13 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
     logout();
     navigate('/login');
   };
+
+  const handleThemeToggle = () => {
+    setThemeMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  const handleOpenSupport = () => setOpenSupport(true);
+  const handleCloseSupport = () => setOpenSupport(false);
 
   const getMenuItems = () => {
     const commonItems = {
@@ -125,35 +150,65 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const drawer = (
     <Box>
       <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
-        <Typography variant="h6" noWrap component="div">
+        <Typography variant="h6" noWrap component="div" sx={{ color: '#e3eafc', fontWeight: 700, letterSpacing: 1 }}>
           LeanMaker
         </Typography>
       </Toolbar>
-      <Divider />
+      <Divider sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
       <List>
-        {getMenuItems().map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path || (item.path !== '/dashboard/student' && location.pathname.startsWith(item.path))}
-              onClick={() => navigate(item.path)}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {getMenuItems().map((item) => {
+          const selected = location.pathname === item.path || (item.path !== '/dashboard/student' && location.pathname.startsWith(item.path));
+          return (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton
+                selected={selected}
+                onClick={() => navigate(item.path)}
+                sx={{
+                  borderRadius: 3,
+                  background: selected ? '#22345a' : 'transparent',
+                  color: '#e3eafc',
+                  my: 0.5,
+                  mx: 1,
+                  height: 56,
+                  transition: 'background 0.2s',
+                  '&:hover': {
+                    background: '#22345a',
+                    color: '#fff',
+                  },
+                  fontWeight: selected ? 700 : 500,
+                }}
+              >
+                <ListItemIcon sx={{ color: '#b6c6e3', minWidth: 40, fontSize: 28 }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: 600, fontSize: 18 }} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </Box>
   );
 
+  // Helper para obtener el nombre de la sección actual
+  const getSectionName = () => {
+    const path = location.pathname;
+    const sections = getMenuItems();
+    const found = sections.find((item) => path === item.path || (item.path !== '/dashboard/student' && path.startsWith(item.path)));
+    return found ? found.text : '';
+  };
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', minHeight: '100vh' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          width: { sm: `calc(100vw - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          bgcolor: themeMode === 'light' ? '#fff' : '#10213a',
+          color: themeMode === 'light' ? '#22345a' : '#e3eafc',
+          boxShadow: themeMode === 'light' ? '0 2px 8px rgba(0,0,0,0.06)' : undefined,
+          maxWidth: '100vw',
+          overflowX: 'hidden',
         }}
       >
         <Toolbar>
@@ -166,17 +221,47 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           >
             <MenuIcon />
           </IconButton>
-          <Box sx={{ flexGrow: 1 }} />
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ fontWeight: 600, flexGrow: 1, textAlign: { xs: 'center', sm: 'left' }, color: themeMode === 'light' ? '#22345a' : '#e3eafc' }}
+          >
+            {getSectionName()}
+          </Typography>
+          {/* Iconos adicionales a la derecha */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 1 }}>
+            {/* Notificaciones */}
+            <Tooltip title="Notificaciones">
+              <IconButton color={themeMode === 'light' ? 'default' : 'inherit'}>
+                <Badge badgeContent={notificationCount} color="error">
+                  <NotificationsIcon sx={{ color: themeMode === 'light' ? '#22345a' : '#e3eafc' }} />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            {/* Tema claro/oscuro */}
+            <Tooltip title={themeMode === 'light' ? 'Modo oscuro' : 'Modo claro'}>
+              <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleThemeToggle}>
+                {themeMode === 'light' ? <DarkModeIcon sx={{ color: '#22345a' }} /> : <LightModeIcon />}
+              </IconButton>
+            </Tooltip>
+            {/* Soporte */}
+            <Tooltip title="Soporte / Ayuda">
+              <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleOpenSupport}>
+                <HelpOutlineIcon sx={{ color: themeMode === 'light' ? '#22345a' : '#e3eafc' }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <IconButton
             size="large"
             edge="end"
             aria-label="account of current user"
             aria-haspopup="true"
             onClick={handleProfileMenuOpen}
-            color="inherit"
+            color={themeMode === 'light' ? 'default' : 'inherit'}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>
-              <AccountCircleIcon />
+            <Avatar sx={{ width: 32, height: 32, bgcolor: themeMode === 'light' ? '#e3eafc' : undefined }}>
+              <AccountCircleIcon sx={{ color: themeMode === 'light' ? '#22345a' : undefined }} />
             </Avatar>
           </IconButton>
           <Menu
@@ -199,6 +284,63 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           </Menu>
         </Toolbar>
       </AppBar>
+      {/* Modal de soporte */}
+      <Modal
+        open={openSupport}
+        onClose={handleCloseSupport}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{ backdrop: { timeout: 300 } }}
+      >
+        <Fade in={openSupport}>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: '#f4f8ff',
+            borderRadius: 3,
+            boxShadow: 24,
+            p: 4,
+            minWidth: 320,
+            maxWidth: '90vw',
+          }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+              ¿Tienes dudas? Contáctanos y te responderemos a la brevedad
+            </Typography>
+            <TextField
+              label="Nombre"
+              variant="outlined"
+              fullWidth
+              sx={{ mb: 2, background: '#eaf2fb', borderRadius: 1 }}
+              value={supportForm.nombre}
+              onChange={e => setSupportForm(f => ({ ...f, nombre: e.target.value }))}
+            />
+            <TextField
+              label="Correo electrónico"
+              variant="outlined"
+              fullWidth
+              sx={{ mb: 2, background: '#eaf2fb', borderRadius: 1 }}
+              value={supportForm.correo}
+              onChange={e => setSupportForm(f => ({ ...f, correo: e.target.value }))}
+            />
+            <TextField
+              label="Mensaje"
+              variant="outlined"
+              fullWidth
+              multiline
+              minRows={3}
+              sx={{ mb: 3, background: '#eaf2fb', borderRadius: 1 }}
+              value={supportForm.mensaje}
+              onChange={e => setSupportForm(f => ({ ...f, mensaje: e.target.value }))}
+            />
+            <Button variant="contained" color="primary" fullWidth sx={{ borderRadius: 2, fontWeight: 600 }} onClick={handleCloseSupport}>
+              Enviar mensaje
+            </Button>
+          </Box>
+        </Fade>
+      </Modal>
+      {/* Fin modal soporte */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -215,6 +357,17 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
+              maxWidth: drawerWidth,
+              bgcolor: themeMode === 'light' ? '#fff' : '#10213a',
+              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
+              borderRight: 0,
+            },
+            '& .MuiListItemText-primary': {
+              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
+              fontWeight: 600,
+            },
+            '& .MuiListItemIcon-root': {
+              color: themeMode === 'light' ? '#22345a' : '#b6c6e3',
             },
           }}
         >
@@ -227,6 +380,17 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
+              maxWidth: drawerWidth,
+              background: themeMode === 'light' ? '#fff' : '#10213a',
+              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
+              borderRight: 0,
+            },
+            '& .MuiListItemText-primary': {
+              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
+              fontWeight: 600,
+            },
+            '& .MuiListItemIcon-root': {
+              color: themeMode === 'light' ? '#22345a' : '#b6c6e3',
             },
           }}
           open
@@ -236,7 +400,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       </Box>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100vw - ${drawerWidth}px)` }, maxWidth: '100vw', overflowX: 'hidden' }}
       >
         <Toolbar />
         <Outlet />
