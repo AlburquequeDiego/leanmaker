@@ -48,7 +48,7 @@ const mockResults: APIResult[] = [
     score: 3.5,
     level: 3,
     questionsAnswered: 4,
-    timeSpent: '15 minutos',
+    timeSpent: '5 minutos',
   },
   {
     id: '2',
@@ -56,7 +56,7 @@ const mockResults: APIResult[] = [
     score: 2.8,
     level: 2,
     questionsAnswered: 4,
-    timeSpent: '18 minutos',
+    timeSpent: '3 minutos',
   },
   {
     id: '3',
@@ -64,7 +64,7 @@ const mockResults: APIResult[] = [
     score: 2.2,
     level: 2,
     questionsAnswered: 4,
-    timeSpent: '20 minutos',
+    timeSpent: '2 minutos',
   },
 ];
 
