@@ -56,7 +56,6 @@ interface Project {
   startDate: string;
   endDate: string;
   location: string;
-  salary: string;
   rating: number;
 }
 
@@ -122,6 +121,11 @@ export const GestionProyectosAdmin = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedApiLevel, setSelectedApiLevel] = useState('');
 
+  // Estados para límite de registros por sección
+  const [projectsLimit, setProjectsLimit] = useState<number | 'all'>(10);
+  const [applicationsLimit, setApplicationsLimit] = useState<number | 'all'>(10);
+  const [candidatesLimit, setCandidatesLimit] = useState<number | 'all'>(10);
+
   // Mock data
   const projects: Project[] = [
     {
@@ -137,7 +141,6 @@ export const GestionProyectosAdmin = () => {
       startDate: '2024-02-01',
       endDate: '2024-05-31',
       location: 'Remoto',
-      salary: '$500,000 COP/mes',
       rating: 4.5,
     },
     {
@@ -153,7 +156,6 @@ export const GestionProyectosAdmin = () => {
       startDate: '2024-03-01',
       endDate: '2024-07-31',
       location: 'Bogotá',
-      salary: '$600,000 COP/mes',
       rating: 4.2,
     },
     {
@@ -169,7 +171,6 @@ export const GestionProyectosAdmin = () => {
       startDate: '2024-01-15',
       endDate: '2024-06-15',
       location: 'Medellín',
-      salary: '$550,000 COP/mes',
       rating: 4.0,
     },
     {
@@ -185,7 +186,6 @@ export const GestionProyectosAdmin = () => {
       startDate: '2023-09-01',
       endDate: '2023-12-31',
       location: 'Remoto',
-      salary: '$700,000 COP/mes',
       rating: 4.8,
     },
   ];
@@ -313,15 +313,19 @@ export const GestionProyectosAdmin = () => {
           </Typography>
           
           <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>Candidatos Destacados:</Typography>
-            {applications.slice(0, 3).map(app => (
-              <Box key={app.id} sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 2, mb: 1 }}>
-                <Typography variant="body2" fontWeight={600}>{app.studentName}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  GPA: {app.gpa} | API: {app.apiLevel} | Compatibilidad: {app.compatibility}%
-                </Typography>
-              </Box>
-            ))}
+            <Typography variant="subtitle1" gutterBottom>Candidatos en Proceso:</Typography>
+            {applications.filter(app => app.status === 'pending').length === 0 ? (
+              <Typography variant="body2" color="text.secondary">No hay candidatos en proceso.</Typography>
+            ) : (
+              applications.filter(app => app.status === 'pending').map(app => (
+                <Box key={app.id} sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 2, mb: 1 }}>
+                  <Typography variant="body2" fontWeight={600}>{app.studentName}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    GPA: {app.gpa} | API: {app.apiLevel} | Compatibilidad: {app.compatibility}%
+                  </Typography>
+                </Box>
+              ))
+            )}
           </Box>
         </Box>
       );
@@ -516,6 +520,23 @@ export const GestionProyectosAdmin = () => {
             </Box>
           </Paper>
 
+          {/* Selector de cantidad de registros para proyectos */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={projectsLimit}
+              onChange={e => setProjectsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
+
           {/* Tabla responsiva */}
           <Box sx={{ overflowX: 'auto' }}>
             <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 1000 }}>
@@ -533,7 +554,7 @@ export const GestionProyectosAdmin = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredProjects.map(project => (
+                  {(projectsLimit === 'all' ? filteredProjects : filteredProjects.slice(0, projectsLimit)).map(project => (
                     <TableRow key={project.id} hover>
                       <TableCell>
                         <Box>
@@ -541,7 +562,7 @@ export const GestionProyectosAdmin = () => {
                             {project.title}
                           </Typography>
                           <Typography variant="caption" color="text.secondary" noWrap>
-                            {project.location} • {project.salary}
+                            {project.location}
                           </Typography>
                         </Box>
                       </TableCell>
@@ -642,6 +663,23 @@ export const GestionProyectosAdmin = () => {
 
         {/* Tab: Postulaciones */}
         <TabPanel value={tabValue} index={1}>
+          {/* Selector de cantidad de registros para postulaciones */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={applicationsLimit}
+              onChange={e => setApplicationsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
+          
           <TableContainer>
             <Table>
               <TableHead>
@@ -657,7 +695,7 @@ export const GestionProyectosAdmin = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {applications.map((application) => (
+                {(applicationsLimit === 'all' ? applications : applications.slice(0, applicationsLimit)).map((application) => (
                   <TableRow key={application.id}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -716,11 +754,28 @@ export const GestionProyectosAdmin = () => {
 
         {/* Tab: Candidatos Compatibles */}
         <TabPanel value={tabValue} index={2}>
+          {/* Selector de cantidad de registros para candidatos */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={candidatesLimit}
+              onChange={e => setCandidatesLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
+          
           <Typography variant="h6" gutterBottom>
             Candidatos Compatibles para: Aplicación Móvil de Delivery
           </Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: 3 }}>
-            {compatibleCandidates.map((candidate) => (
+            {(candidatesLimit === 'all' ? compatibleCandidates : compatibleCandidates.slice(0, candidatesLimit)).map((candidate) => (
               <Card key={candidate.id}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

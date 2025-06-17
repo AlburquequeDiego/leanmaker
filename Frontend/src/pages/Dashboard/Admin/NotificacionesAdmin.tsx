@@ -90,6 +90,8 @@ export default function NotificacionesAdmin() {
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [apiDialog, setApiDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [historialLimit, setHistorialLimit] = useState<number | 'all'>(10);
+  const [apiLimit, setApiLimit] = useState<number | 'all'>(10);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -168,65 +170,84 @@ export default function NotificacionesAdmin() {
             <SendIcon sx={{ fontSize: 32, color: 'primary.main' }} />
             <Typography variant="h5">Envío de Notificaciones Masivas</Typography>
           </Box>
-          
-          <Paper sx={{ p: { xs: 2, sm: 4 }, mb: 4, borderRadius: 4, boxShadow: 3 }}>
-            <Stack spacing={3}>
-              <FormControl fullWidth>
-                <InputLabel>Plantilla</InputLabel>
-                <Select
-                  value={plantilla}
-                  label="Plantilla"
-                  onChange={e => handlePlantilla(e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <MenuItem value="">Sin plantilla</MenuItem>
-                  {plantillas.map(p => (
-                    <MenuItem key={p.id} value={p.id}>{p.texto}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+          <Paper sx={{ p: { xs: 2, sm: 4 }, mb: 4, borderRadius: 4, boxShadow: 3, background: '#f8fafc' }}>
+            <Stack spacing={2}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                <FormControl fullWidth>
+                  <InputLabel>Plantilla</InputLabel>
+                  <Select
+                    value={plantilla}
+                    label="Plantilla"
+                    onChange={e => handlePlantilla(e.target.value)}
+                    sx={{ borderRadius: 2, bgcolor: 'white' }}
+                  >
+                    <MenuItem value="">Sin plantilla</MenuItem>
+                    {plantillas.map(p => (
+                      <MenuItem key={p.id} value={p.id}>{p.texto}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel>Destinatarios</InputLabel>
+                  <Select
+                    value={destinatarios}
+                    label="Destinatarios"
+                    onChange={e => setDestinatarios(e.target.value)}
+                    sx={{ borderRadius: 2, bgcolor: 'white' }}
+                    error={!!error && !destinatarios}
+                  >
+                    <MenuItem value="Todos">Todos</MenuItem>
+                    <MenuItem value="Estudiantes">Estudiantes</MenuItem>
+                    <MenuItem value="Empresas">Empresas</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
               <TextField
                 label="Mensaje"
                 multiline
-                minRows={3}
+                minRows={4}
                 value={mensaje}
                 onChange={e => setMensaje(e.target.value)}
                 fullWidth
-                sx={{ borderRadius: 2 }}
+                sx={{ borderRadius: 2, bgcolor: 'white', fontSize: 18 }}
                 error={!!error && !mensaje.trim()}
                 helperText={!!error && !mensaje.trim() ? error : ''}
+                inputProps={{ style: { fontSize: 18 } }}
               />
-              <FormControl fullWidth>
-                <InputLabel>Destinatarios</InputLabel>
-                <Select
-                  value={destinatarios}
-                  label="Destinatarios"
-                  onChange={e => setDestinatarios(e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                  error={!!error && !destinatarios}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  startIcon={<SendIcon />}
+                  sx={{ borderRadius: 2, fontSize: 18, px: 4, py: 1.5, boxShadow: 2, textTransform: 'none' }}
+                  onClick={handleSend}
                 >
-                  <MenuItem value="Todos">Todos</MenuItem>
-                  <MenuItem value="Estudiantes">Estudiantes</MenuItem>
-                  <MenuItem value="Empresas">Empresas</MenuItem>
-                </Select>
-              </FormControl>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<SendIcon />}
-                sx={{ borderRadius: 2, fontSize: { xs: 16, sm: 18 }, py: 1.5, mt: 1 }}
-                onClick={handleSend}
-              >
-                Enviar Notificación
-              </Button>
+                  Enviar Notificación
+                </Button>
+              </Box>
             </Stack>
           </Paper>
 
           <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>Historial de Notificaciones</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={historialLimit}
+              onChange={e => setHistorialLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
           <Box sx={{ overflowX: 'auto' }}>
-            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 1, minWidth: 600 }}>
-              <Table>
+            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 1, minWidth: 600, background: '#f8fafc' }}>
+              <Table size="small">
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'primary.main' }}>
                     <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 200 }}>Mensaje</TableCell>
@@ -236,16 +257,18 @@ export default function NotificacionesAdmin() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {mockHistorial.map(n => (
-                    <TableRow key={n.id} hover>
+                  {(historialLimit === 'all' ? mockHistorial : mockHistorial.slice(0, historialLimit)).map(n => (
+                    <TableRow key={n.id} hover sx={{ '&:hover': { background: '#e3eafc' } }}>
                       <TableCell>
-                        <Typography variant="body2" noWrap>
+                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'primary.main' }} noWrap>
                           {n.mensaje}
                         </Typography>
                       </TableCell>
-                      <TableCell>{n.destinatarios}</TableCell>
                       <TableCell>
-                        <Typography variant="body2" noWrap>
+                        <Chip label={n.destinatarios} color="info" size="small" sx={{ fontWeight: 600 }} />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary" noWrap>
                           {n.fecha}
                         </Typography>
                       </TableCell>
@@ -273,6 +296,22 @@ export default function NotificacionesAdmin() {
             <Typography variant="h5">Solicitudes de Cambio de Nivel API</Typography>
           </Box>
 
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={apiLimit}
+              onChange={e => setApiLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
+
           <Box sx={{ overflowX: 'auto' }}>
             <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 800 }}>
               <Table>
@@ -288,7 +327,7 @@ export default function NotificacionesAdmin() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {mockNotificacionesAPI.map(notification => (
+                  {(apiLimit === 'all' ? mockNotificacionesAPI : mockNotificacionesAPI.slice(0, apiLimit)).map(notification => (
                     <TableRow key={notification.id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 160 }}>

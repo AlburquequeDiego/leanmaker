@@ -514,24 +514,11 @@ export const Notifications = () => {
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
               <Button
                 onClick={() => setDialogOpen(false)}
-                variant="outlined"
+                variant="contained"
                 sx={{ minWidth: 120, borderRadius: 2 }}
               >
                 Cerrar
               </Button>
-              {selectedNotification.actionUrl && (
-                <Button
-                  onClick={() => {
-                    // Aquí se navegaría a la URL de acción
-                    console.log('Navegando a:', selectedNotification.actionUrl);
-                    setDialogOpen(false);
-                  }}
-                  variant="contained"
-                  sx={{ minWidth: 160, borderRadius: 2 }}
-                >
-                  Ver Detalles
-                </Button>
-              )}
             </Box>
           </Box>
         )}

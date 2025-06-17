@@ -62,6 +62,7 @@ interface Project {
   startDate: string;
   endDate: string;
   rating: number;
+  companyName: string;
 }
 
 interface Evaluation {
@@ -71,6 +72,7 @@ interface Evaluation {
   rating: number;
   comment: string;
   date: string;
+  companyName: string;
 }
 
 interface TabPanelProps {
@@ -108,6 +110,11 @@ export const GestionEmpresasAdmin = () => {
   const [search, setSearch] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
+
+  // Nuevos estados para limitar la cantidad de registros mostrados
+  const [empresasLimit, setEmpresasLimit] = useState<number | 'all'>(10);
+  const [proyectosLimit, setProyectosLimit] = useState<number | 'all'>(10);
+  const [evaluacionesLimit, setEvaluacionesLimit] = useState<number | 'all'>(10);
 
   // Mock data
   const companies: Company[] = [
@@ -184,6 +191,7 @@ export const GestionEmpresasAdmin = () => {
       startDate: '2023-09-01',
       endDate: '2023-12-15',
       rating: 4.5,
+      companyName: 'TechCorp Solutions',
     },
     {
       id: '2',
@@ -193,6 +201,7 @@ export const GestionEmpresasAdmin = () => {
       startDate: '2024-01-01',
       endDate: '2024-04-30',
       rating: 4.0,
+      companyName: 'Digital Dynamics',
     },
   ];
 
@@ -204,6 +213,7 @@ export const GestionEmpresasAdmin = () => {
       rating: 5,
       comment: 'Excelente experiencia, aprendí mucho sobre desarrollo backend.',
       date: '2023-12-20',
+      companyName: 'TechCorp Solutions',
     },
     {
       id: '2',
@@ -212,6 +222,7 @@ export const GestionEmpresasAdmin = () => {
       rating: 4,
       comment: 'Buena oportunidad de aprendizaje, equipo muy colaborativo.',
       date: '2024-01-15',
+      companyName: 'Digital Dynamics',
     },
   ];
 
@@ -410,6 +421,22 @@ export const GestionEmpresasAdmin = () => {
               </Button>
             </Stack>
             
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <TextField
+                select
+                size="small"
+                label="Mostrar"
+                value={empresasLimit}
+                onChange={e => setEmpresasLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                sx={{ minWidth: 110 }}
+              >
+                {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                  <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+                ))}
+                <MenuItem value="all">Todas</MenuItem>
+              </TextField>
+            </Box>
+            
             <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="body2" color="text.secondary">
                 Mostrando {filteredCompanies.length} de {companies.length} empresas
@@ -433,7 +460,7 @@ export const GestionEmpresasAdmin = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredCompanies.map(company => (
+                  {(empresasLimit === 'all' ? filteredCompanies : filteredCompanies.slice(0, empresasLimit)).map(company => (
                     <TableRow key={company.id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -538,11 +565,27 @@ export const GestionEmpresasAdmin = () => {
 
         {/* Tab: Historial de Proyectos */}
         <TabPanel value={tabValue} index={1}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={proyectosLimit}
+              onChange={e => setProyectosLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todos</MenuItem>
+            </TextField>
+          </Box>
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Proyecto</TableCell>
+                  <TableCell>Empresa</TableCell>
                   <TableCell>Estado</TableCell>
                   <TableCell>Estudiantes</TableCell>
                   <TableCell>Fecha Inicio</TableCell>
@@ -552,9 +595,10 @@ export const GestionEmpresasAdmin = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {projects.map((project) => (
+                {(proyectosLimit === 'all' ? projects : projects.slice(0, proyectosLimit)).map((project) => (
                   <TableRow key={project.id}>
                     <TableCell>{project.title}</TableCell>
+                    <TableCell>{project.companyName}</TableCell>
                     <TableCell>
                       <Chip
                         label={project.status === 'active' ? 'Activo' : 'Completado'}
@@ -582,8 +626,23 @@ export const GestionEmpresasAdmin = () => {
 
         {/* Tab: Evaluaciones */}
         <TabPanel value={tabValue} index={2}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={evaluacionesLimit}
+              onChange={e => setEvaluacionesLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
-            {evaluations.map((evaluation) => (
+            {(evaluacionesLimit === 'all' ? evaluations : evaluations.slice(0, evaluacionesLimit)).map((evaluation) => (
               <Card key={evaluation.id}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -591,6 +650,9 @@ export const GestionEmpresasAdmin = () => {
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     Estudiante: {evaluation.studentName}
+                  </Typography>
+                  <Typography variant="body2" color="primary.main" gutterBottom>
+                    Empresa: {evaluation.companyName}
                   </Typography>
                   <Rating value={evaluation.rating} readOnly size="small" />
                   <Typography variant="body2" sx={{ mt: 1 }}>

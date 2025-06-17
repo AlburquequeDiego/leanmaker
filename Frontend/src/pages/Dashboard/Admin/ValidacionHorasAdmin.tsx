@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Box, Paper, Typography, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Stack, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar
+  Box, Paper, Typography, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Stack, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Rating
 } from '@mui/material';
 import { 
   CheckCircle as CheckCircleIcon, 
@@ -20,7 +20,15 @@ const mockHorasPendientes = [
     horas: 120, 
     fechaReporte: '2024-01-15', 
     estado: 'Pendiente',
-    carrera: 'Ingeniería de Software'
+    carrera: 'Ingeniería de Software',
+    score_empresa: 4.5,
+    score_estudiante: 5,
+    comentarios_empresa: [
+      { autor: 'Juan Pérez', comentario: 'Muy buena experiencia con la empresa, aprendí mucho.' }
+    ],
+    comentarios_estudiante: [
+      { autor: 'Empresa ACME', comentario: 'Excelente desempeño, responsable y proactivo.' }
+    ]
   },
   { 
     id: 2, 
@@ -30,7 +38,15 @@ const mockHorasPendientes = [
     horas: 80, 
     fechaReporte: '2024-01-14', 
     estado: 'Pendiente',
-    carrera: 'Ingeniería de Sistemas'
+    carrera: 'Ingeniería de Sistemas',
+    score_empresa: 3.5,
+    score_estudiante: 4,
+    comentarios_empresa: [
+      { autor: 'María García', comentario: 'La empresa fue cumplida, pero faltó comunicación.' }
+    ],
+    comentarios_estudiante: [
+      { autor: 'Tech Solutions', comentario: 'Buen trabajo, pero puede mejorar en tiempos de entrega.' }
+    ]
   },
   { 
     id: 3, 
@@ -40,7 +56,15 @@ const mockHorasPendientes = [
     horas: 150, 
     fechaReporte: '2024-01-13', 
     estado: 'Pendiente',
-    carrera: 'Ingeniería de Software'
+    carrera: 'Ingeniería de Software',
+    score_empresa: 5,
+    score_estudiante: 2.5,
+    comentarios_empresa: [
+      { autor: 'Carlos López', comentario: 'Empresa excelente, volvería a trabajar con ellos.' }
+    ],
+    comentarios_estudiante: [
+      { autor: 'Digital Corp', comentario: 'Faltó compromiso en algunos entregables.' }
+    ]
   },
 ];
 
@@ -54,6 +78,9 @@ export default function ValidacionHorasAdmin() {
   const [comment, setComment] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [openScoreDialog, setOpenScoreDialog] = useState(false);
+  const [scoreDialogData, setScoreDialogData] = useState<{ tipo: 'empresa' | 'estudiante', registro: any } | null>(null);
+  const [horasLimit, setHorasLimit] = useState<number | 'all'>(10);
 
   const filteredHoras = mockHorasPendientes.filter(registro =>
     (registro.estudiante.toLowerCase().includes(search.toLowerCase()) || 
@@ -107,6 +134,19 @@ export default function ValidacionHorasAdmin() {
           <Typography><strong>Proyecto:</strong> {selectedRecord.proyecto}</Typography>
           <Typography><strong>Horas Reportadas:</strong> {selectedRecord.horas}</Typography>
           <Typography><strong>Fecha de Reporte:</strong> {new Date(selectedRecord.fechaReporte).toLocaleDateString()}</Typography>
+          <Box sx={{ mt: 2, mb: 1 }}>
+            <Typography variant="subtitle1" fontWeight={600} gutterBottom>Puntaje de la Relación</Typography>
+            <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Empresa (según estudiante):</Typography>
+                <Rating value={selectedRecord.score_empresa} precision={0.5} readOnly size="medium" />
+              </Box>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Estudiante (según empresa):</Typography>
+                <Rating value={selectedRecord.score_estudiante} precision={0.5} readOnly size="medium" />
+              </Box>
+            </Box>
+          </Box>
         </Box>
       );
     }
@@ -130,6 +170,11 @@ export default function ValidacionHorasAdmin() {
         />
       </Box>
     );
+  };
+
+  const handleOpenScoreDialog = (tipo: 'empresa' | 'estudiante', registro: any) => {
+    setScoreDialogData({ tipo, registro });
+    setOpenScoreDialog(true);
   };
 
   return (
@@ -186,6 +231,23 @@ export default function ValidacionHorasAdmin() {
         </Stack>
       </Paper>
 
+      {/* Justo antes de la tabla de registros */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <TextField
+          select
+          size="small"
+          label="Mostrar"
+          value={horasLimit}
+          onChange={e => setHorasLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+          sx={{ minWidth: 110 }}
+        >
+          {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+            <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+          ))}
+          <MenuItem value="all">Todas</MenuItem>
+        </TextField>
+      </Box>
+
       {/* Tabla de registros */}
       <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2 }}>
         <Table>
@@ -197,12 +259,14 @@ export default function ValidacionHorasAdmin() {
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Proyecto</TableCell>
               <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Horas</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fecha Reporte</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Puntaje Empresa</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 600 }}>Puntaje Estudiante</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
               <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredHoras.map(registro => (
+            {(horasLimit === 'all' ? filteredHoras : filteredHoras.slice(0, horasLimit)).map(registro => (
               <TableRow key={registro.id} hover>
                 <TableCell>{registro.estudiante}</TableCell>
                 <TableCell>{registro.carrera}</TableCell>
@@ -217,6 +281,16 @@ export default function ValidacionHorasAdmin() {
                   />
                 </TableCell>
                 <TableCell>{new Date(registro.fechaReporte).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  <Box sx={{ cursor: 'pointer', display: 'inline-block' }} onClick={() => handleOpenScoreDialog('empresa', registro)}>
+                    <Rating value={registro.score_empresa} precision={0.5} readOnly size="small" />
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ cursor: 'pointer', display: 'inline-block' }} onClick={() => handleOpenScoreDialog('estudiante', registro)}>
+                    <Rating value={registro.score_estudiante} precision={0.5} readOnly size="small" />
+                  </Box>
+                </TableCell>
                 <TableCell>
                   <Chip 
                     label={registro.estado} 
@@ -308,6 +382,52 @@ export default function ValidacionHorasAdmin() {
           </Typography>
         </Paper>
       </Snackbar>
+
+      {/* Diálogo para ver puntaje y comentarios */}
+      <Dialog
+        open={openScoreDialog}
+        onClose={() => setOpenScoreDialog(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>
+          {scoreDialogData?.tipo === 'empresa' ? 'Puntaje a la Empresa' : 'Puntaje al Estudiante'}
+        </DialogTitle>
+        <DialogContent>
+          {scoreDialogData && (
+            <Box>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Promedio: {scoreDialogData.tipo === 'empresa' ? scoreDialogData.registro.score_empresa : scoreDialogData.registro.score_estudiante} / 5
+              </Typography>
+              <Rating
+                value={scoreDialogData.tipo === 'empresa' ? scoreDialogData.registro.score_empresa : scoreDialogData.registro.score_estudiante}
+                precision={0.5}
+                readOnly
+                size="large"
+                sx={{ mb: 2 }}
+              />
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                Comentarios:
+              </Typography>
+              <Box sx={{ pl: 1 }}>
+                {(scoreDialogData.tipo === 'empresa'
+                  ? scoreDialogData.registro.comentarios_empresa
+                  : scoreDialogData.registro.comentarios_estudiante
+                ).map((c: any, idx: number) => (
+                  <Box key={idx} sx={{ mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>{c.autor}:</strong> {c.comentario}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenScoreDialog(false)} variant="outlined">Cerrar</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 } 

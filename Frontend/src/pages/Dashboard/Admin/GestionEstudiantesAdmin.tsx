@@ -47,6 +47,11 @@ import {
   Api as ApiIcon,
   Search as SearchIcon,
   FilterList as FilterListIcon,
+  Business as BusinessIcon,
+  Assignment as AssignmentIcon,
+  Schedule as ScheduleIcon,
+  TrendingUp as TrendingUpIcon,
+  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
 
 interface Student {
@@ -120,7 +125,7 @@ export const GestionEstudiantesAdmin = () => {
   const [tabValue, setTabValue] = useState(0);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [actionDialog, setActionDialog] = useState(false);
-  const [actionType, setActionType] = useState<'approve' | 'reject' | 'strike' | 'api_level' | null>(null);
+  const [actionType, setActionType] = useState<'approve' | 'reject' | 'strike' | 'api_level' | 'suspend' | null>(null);
   const [actionReason, setActionReason] = useState('');
   const [selectedApiLevel, setSelectedApiLevel] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -133,6 +138,11 @@ export const GestionEstudiantesAdmin = () => {
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedApiLevelFilter, setSelectedApiLevelFilter] = useState('');
+
+  // Estados para límite de registros por sección
+  const [studentsLimit, setStudentsLimit] = useState<number | 'all'>(10);
+  const [applicationsLimit, setApplicationsLimit] = useState<number | 'all'>(10);
+  const [evaluationsLimit, setEvaluationsLimit] = useState<number | 'all'>(10);
 
   // Mock data
   const students: Student[] = [
@@ -297,7 +307,7 @@ export const GestionEstudiantesAdmin = () => {
     setTabValue(newValue);
   };
 
-  const handleAction = (student: Student, type: 'approve' | 'reject' | 'strike' | 'api_level') => {
+  const handleAction = (student: Student, type: 'approve' | 'reject' | 'strike' | 'api_level' | 'suspend') => {
     setSelectedStudent(student);
     setActionType(type);
     setActionDialog(true);
@@ -322,6 +332,9 @@ export const GestionEstudiantesAdmin = () => {
       case 'api_level':
         message = `Nivel API actualizado a ${selectedApiLevel} para ${selectedStudent?.name}`;
         break;
+      case 'suspend':
+        message = `Estudiante ${selectedStudent?.name} suspendido`;
+        break;
     }
     setSuccessMessage(message);
     setShowSuccess(true);
@@ -335,6 +348,7 @@ export const GestionEstudiantesAdmin = () => {
       case 'reject': return 'Rechazar Estudiante';
       case 'strike': return 'Asignar Strike';
       case 'api_level': return 'Cambiar Nivel API';
+      case 'suspend': return 'Suspender Estudiante';
       default: return '';
     }
   };
@@ -373,7 +387,7 @@ export const GestionEstudiantesAdmin = () => {
             value={actionReason}
             onChange={(e) => setActionReason(e.target.value)}
             sx={{ mt: 2, borderRadius: 2 }}
-            required={actionType === 'reject' || actionType === 'strike'}
+            required={actionType === 'reject' || actionType === 'strike' || actionType === 'suspend'}
           />
         )}
       </Box>
@@ -597,6 +611,23 @@ export const GestionEstudiantesAdmin = () => {
             </Box>
           </Paper>
 
+          {/* Selector de cantidad de registros para estudiantes */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={studentsLimit}
+              onChange={e => setStudentsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
+
           {/* Tabla responsiva */}
           <Box sx={{ overflowX: 'auto' }}>
             <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 900 }}>
@@ -615,7 +646,7 @@ export const GestionEstudiantesAdmin = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredStudents.map(student => (
+                  {(studentsLimit === 'all' ? filteredStudents : filteredStudents.slice(0, studentsLimit)).map(student => (
                     <TableRow key={student.id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -717,6 +748,19 @@ export const GestionEstudiantesAdmin = () => {
                           >
                             <ApiIcon fontSize="small" />
                           </IconButton>
+                          {student.strikes >= 3 && (
+                            <>
+                              <Chip label="3 strikes" color="error" size="small" sx={{ mr: 1 }} />
+                              <Button
+                                variant="contained"
+                                color="error"
+                                size="small"
+                                onClick={() => handleAction(student, 'suspend')}
+                              >
+                                Suspender
+                              </Button>
+                            </>
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -727,153 +771,173 @@ export const GestionEstudiantesAdmin = () => {
           </Box>
         </TabPanel>
 
-        {/* Tab: Perfil Detallado */}
-        <TabPanel value={tabValue} index={1}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Información Personal
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ mr: 2, width: 64, height: 64 }}>
-                    <PersonIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h6">María González</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      maria.gonzalez@estudiante.edu
-                    </Typography>
-                  </Box>
-                </Box>
-                <Typography variant="body2">
-                  <strong>Carrera:</strong> Ingeniería de Sistemas
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Semestre:</strong> 8°
-                </Typography>
-                <Typography variant="body2">
-                  <strong>GPA:</strong> 4.2
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Fecha de registro:</strong> 15/02/2023
-                </Typography>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Estadísticas Académicas
-                </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body2">Proyectos completados:</Typography>
-                  <Typography variant="body2" fontWeight="bold">3</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body2">Horas acumuladas:</Typography>
-                  <Typography variant="body2" fontWeight="bold">180 horas</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body2">Nivel API actual:</Typography>
-                  <Typography variant="body2" fontWeight="bold">Nivel 2</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2">Strikes:</Typography>
-                  <Typography variant="body2" fontWeight="bold" color="error.main">
-                    1/3
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-        </TabPanel>
-
         {/* Tab: Postulaciones */}
-        <TabPanel value={tabValue} index={2}>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Proyecto</TableCell>
-                  <TableCell>Empresa</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Fecha</TableCell>
-                  <TableCell>Calificación</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {applications.map((application) => (
-                  <TableRow key={application.id}>
-                    <TableCell>{application.projectTitle}</TableCell>
-                    <TableCell>{application.company}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={application.status === 'completed' ? 'Completado' : 'Aceptado'}
-                        color={application.status === 'completed' ? 'success' : 'primary'}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>{application.date}</TableCell>
-                    <TableCell>
-                      {application.rating ? (
-                        <Rating value={application.rating} readOnly size="small" />
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          Pendiente
-                        </Typography>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton size="small" color="primary">
-                        <VisibilityIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
+        <TabPanel value={tabValue} index={1}>
+          <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 2 }}>
+            <Typography variant="h5" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+              <AssignmentIcon sx={{ mr: 2, color: 'primary.main' }} />
+              Postulaciones de Estudiantes
+            </Typography>
+            
+            {/* Selector de cantidad de registros para postulaciones */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <TextField
+                select
+                size="small"
+                label="Mostrar"
+                value={applicationsLimit}
+                onChange={e => setApplicationsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                sx={{ minWidth: 110 }}
+              >
+                {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                  <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                <MenuItem value="all">Todas</MenuItem>
+              </TextField>
+            </Box>
+            
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Estudiante</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Proyecto</TableCell>
+                    <TableCell>Empresa</TableCell>
+                    <TableCell>Fecha de Postulación</TableCell>
+                    <TableCell>Estado</TableCell>
+                    <TableCell>Acciones</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* Datos mock de postulaciones globales */}
+                  {(applicationsLimit === 'all' ? [
+                    { id: '1', student: 'María González', email: 'maria.gonzalez@estudiante.edu', project: 'Sistema de Gestión de Inventarios', company: 'TechCorp Solutions', date: '2024-01-15', status: 'accepted' },
+                    { id: '2', student: 'Carlos Ruiz', email: 'carlos.ruiz@estudiante.edu', project: 'Aplicación Móvil de Delivery', company: 'Digital Dynamics', date: '2024-01-18', status: 'pending' },
+                    { id: '3', student: 'Ana Martínez', email: 'ana.martinez@estudiante.edu', project: 'Plataforma de E-learning', company: 'EduTech Solutions', date: '2024-01-10', status: 'rejected' },
+                    { id: '4', student: 'Pedro López', email: 'pedro.lopez@estudiante.edu', project: 'Dashboard de Analytics', company: 'DataCorp', date: '2023-09-01', status: 'completed' },
+                    { id: '5', student: 'Laura Silva', email: 'laura.silva@estudiante.edu', project: 'Sistema de Inventarios', company: 'TechCorp Solutions', date: '2024-02-01', status: 'pending' },
+                  ] : [
+                    { id: '1', student: 'María González', email: 'maria.gonzalez@estudiante.edu', project: 'Sistema de Gestión de Inventarios', company: 'TechCorp Solutions', date: '2024-01-15', status: 'accepted' },
+                    { id: '2', student: 'Carlos Ruiz', email: 'carlos.ruiz@estudiante.edu', project: 'Aplicación Móvil de Delivery', company: 'Digital Dynamics', date: '2024-01-18', status: 'pending' },
+                    { id: '3', student: 'Ana Martínez', email: 'ana.martinez@estudiante.edu', project: 'Plataforma de E-learning', company: 'EduTech Solutions', date: '2024-01-10', status: 'rejected' },
+                    { id: '4', student: 'Pedro López', email: 'pedro.lopez@estudiante.edu', project: 'Dashboard of Analytics', company: 'DataCorp', date: '2023-09-01', status: 'completed' },
+                    { id: '5', student: 'Laura Silva', email: 'laura.silva@estudiante.edu', project: 'Sistema de Inventarios', company: 'TechCorp Solutions', date: '2024-02-01', status: 'pending' },
+                  ].slice(0, applicationsLimit)).map((post) => (
+                    <TableRow key={post.id} hover>
+                      <TableCell>{post.student}</TableCell>
+                      <TableCell>{post.email}</TableCell>
+                      <TableCell>{post.project}</TableCell>
+                      <TableCell>{post.company}</TableCell>
+                      <TableCell>{new Date(post.date).toLocaleDateString('es-ES')}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={
+                            post.status === 'pending' ? 'Pendiente' :
+                            post.status === 'accepted' ? 'Aceptada' :
+                            post.status === 'rejected' ? 'Rechazada' :
+                            post.status === 'completed' ? 'Completada' : post.status
+                          }
+                          color={
+                            post.status === 'accepted' ? 'success' :
+                            post.status === 'pending' ? 'warning' :
+                            post.status === 'completed' ? 'info' : 'error'
+                          }
+                          size="small"
+                          icon={
+                            post.status === 'pending' ? <ScheduleIcon fontSize="small" /> :
+                            post.status === 'accepted' ? <CheckCircleIcon fontSize="small" /> :
+                            post.status === 'rejected' ? <CancelIcon fontSize="small" /> :
+                            post.status === 'completed' ? <TrendingUpIcon fontSize="small" /> : undefined
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton size="small" color="primary" title="Ver detalles">
+                          <VisibilityIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
         </TabPanel>
 
         {/* Tab: Evaluaciones */}
-        <TabPanel value={tabValue} index={3}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
-            {evaluations.map((evaluation) => (
-              <Card key={evaluation.id}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {evaluation.projectTitle}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Empresa: {evaluation.company}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Rating value={evaluation.rating} readOnly size="small" />
-                    <Typography variant="body2" sx={{ ml: 1 }}>
-                      ({evaluation.rating})
-                    </Typography>
-                  </Box>
-                  <Chip
-                    label={evaluation.category === 'technical' ? 'Técnico' : 'Habilidades Blandas'}
-                    size="small"
-                    color={evaluation.category === 'technical' ? 'primary' : 'secondary'}
-                    sx={{ mb: 1 }}
-                  />
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    {evaluation.comment}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {evaluation.date}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
+        <TabPanel value={tabValue} index={2}>
+          <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 2 }}>
+            <Typography variant="h5" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+              <AssessmentIcon sx={{ mr: 2, color: 'primary.main' }} />
+              Evaluaciones Recibidas por Estudiantes
+            </Typography>
+            
+            {/* Selector de cantidad de registros para evaluaciones */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <TextField
+                select
+                size="small"
+                label="Mostrar"
+                value={evaluationsLimit}
+                onChange={e => setEvaluationsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                sx={{ minWidth: 110 }}
+              >
+                {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                  <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+                ))}
+                <MenuItem value="all">Todas</MenuItem>
+              </TextField>
+            </Box>
+            
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Estudiante</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Proyecto</TableCell>
+                    <TableCell>Empresa</TableCell>
+                    <TableCell>Calificación</TableCell>
+                    <TableCell>Comentario</TableCell>
+                    <TableCell>Categoría</TableCell>
+                    <TableCell>Fecha</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* Datos mock de evaluaciones globales */}
+                  {(evaluationsLimit === 'all' ? [
+                    { id: '1', student: 'María González', email: 'maria.gonzalez@estudiante.edu', project: 'Sistema de Gestión de Inventarios', company: 'TechCorp Solutions', rating: 4.5, comment: 'Excelente trabajo técnico, muy responsable y puntual.', category: 'Técnico', date: '2023-12-20' },
+                    { id: '2', student: 'Carlos Ruiz', email: 'carlos.ruiz@estudiante.edu', project: 'Aplicación Móvil de Delivery', company: 'Digital Dynamics', rating: 4.0, comment: 'Buena comunicación y trabajo en equipo.', category: 'Habilidades Blandas', date: '2024-01-25' },
+                    { id: '3', student: 'Ana Martínez', email: 'ana.martinez@estudiante.edu', project: 'Plataforma de E-learning', company: 'EduTech Solutions', rating: 3.5, comment: 'Cumplió con los entregables, pero puede mejorar en puntualidad.', category: 'Puntualidad', date: '2024-01-15' },
+                    { id: '4', student: 'Pedro López', email: 'pedro.lopez@estudiante.edu', project: 'Dashboard de Analytics', company: 'DataCorp', rating: 5.0, comment: 'Liderazgo sobresaliente en el equipo.', category: 'Trabajo en equipo', date: '2023-10-10' },
+                    { id: '5', student: 'Laura Silva', email: 'laura.silva@estudiante.edu', project: 'Sistema de Inventarios', company: 'TechCorp Solutions', rating: 4.2, comment: 'Muy buena adaptación a cambios.', category: 'Adaptabilidad', date: '2024-02-10' },
+                  ] : [
+                    { id: '1', student: 'María González', email: 'maria.gonzalez@estudiante.edu', project: 'Sistema de Gestión de Inventarios', company: 'TechCorp Solutions', rating: 4.5, comment: 'Excelente trabajo técnico, muy responsable y puntual.', category: 'Técnico', date: '2023-12-20' },
+                    { id: '2', student: 'Carlos Ruiz', email: 'carlos.ruiz@estudiante.edu', project: 'Aplicación Móvil de Delivery', company: 'Digital Dynamics', rating: 4.0, comment: 'Buena comunicación y trabajo en equipo.', category: 'Habilidades Blandas', date: '2024-01-25' },
+                    { id: '3', student: 'Ana Martínez', email: 'ana.martinez@estudiante.edu', project: 'Plataforma de E-learning', company: 'EduTech Solutions', rating: 3.5, comment: 'Cumplió con los entregables, pero puede mejorar en puntualidad.', category: 'Puntualidad', date: '2024-01-15' },
+                    { id: '4', student: 'Pedro López', email: 'pedro.lopez@estudiante.edu', project: 'Dashboard de Analytics', company: 'DataCorp', rating: 5.0, comment: 'Liderazgo sobresaliente en el equipo.', category: 'Trabajo en equipo', date: '2023-10-10' },
+                    { id: '5', student: 'Laura Silva', email: 'laura.silva@estudiante.edu', project: 'Sistema de Inventarios', company: 'TechCorp Solutions', rating: 4.2, comment: 'Muy buena adaptación a cambios.', category: 'Adaptabilidad', date: '2024-02-10' },
+                  ].slice(0, evaluationsLimit)).map((ev) => (
+                    <TableRow key={ev.id} hover>
+                      <TableCell>{ev.student}</TableCell>
+                      <TableCell>{ev.email}</TableCell>
+                      <TableCell>{ev.project}</TableCell>
+                      <TableCell>{ev.company}</TableCell>
+                      <TableCell><Rating value={ev.rating} precision={0.5} readOnly size="small" /></TableCell>
+                      <TableCell>{ev.comment}</TableCell>
+                      <TableCell>{ev.category}</TableCell>
+                      <TableCell>{new Date(ev.date).toLocaleDateString('es-ES')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
         </TabPanel>
 
         {/* Tab: Historial Disciplinario */}
-        <TabPanel value={tabValue} index={4}>
+        <TabPanel value={tabValue} index={3}>
           <Box sx={{ mb: 3 }}>
             <Button
               variant="contained"
@@ -921,6 +985,7 @@ export const GestionEstudiantesAdmin = () => {
           {actionType === 'reject' && <CancelIcon color="error" />}
           {actionType === 'strike' && <WarningIcon color="warning" />}
           {actionType === 'api_level' && <ApiIcon color="primary" />}
+          {actionType === 'suspend' && <WarningIcon color="warning" />}
           {getDialogTitle()}
         </DialogTitle>
         <DialogContent>
@@ -940,16 +1005,18 @@ export const GestionEstudiantesAdmin = () => {
             color={
               actionType === 'approve' ? 'success' : 
               actionType === 'reject' ? 'error' : 
-              actionType === 'strike' ? 'warning' : 'primary'
+              actionType === 'strike' ? 'warning' : 
+              actionType === 'suspend' ? 'warning' : 'primary'
             }
             sx={{ borderRadius: 2 }}
             disabled={
-              (actionType === 'reject' || actionType === 'strike') && !actionReason.trim()
+              (actionType === 'reject' || actionType === 'strike' || actionType === 'suspend') && !actionReason.trim()
             }
           >
             {actionType === 'approve' ? 'Aprobar' : 
              actionType === 'reject' ? 'Rechazar' : 
-             actionType === 'strike' ? 'Asignar Strike' : 'Actualizar'}
+             actionType === 'strike' ? 'Asignar Strike' : 
+             actionType === 'suspend' ? 'Suspender' : 'Actualizar'}
           </Button>
         </DialogActions>
       </Dialog>

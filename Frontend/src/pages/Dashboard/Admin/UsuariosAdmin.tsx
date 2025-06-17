@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Box, Paper, Typography, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Stack, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, Snackbar
+  Box, Paper, Typography, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Stack, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, Snackbar, Alert
 } from '@mui/material';
 import { 
   Edit as EditIcon, 
@@ -75,6 +75,17 @@ export default function UsuariosAdmin() {
   const [actionReason, setActionReason] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+    role: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [addError, setAddError] = useState('');
+  const [addSuccess, setAddSuccess] = useState('');
+  const [userLimit, setUserLimit] = useState<number | 'all'>(10);
 
   const filteredUsers = mockUsers.filter(user =>
     (user.name.toLowerCase().includes(search.toLowerCase()) || user.email.toLowerCase().includes(search.toLowerCase())) &&
@@ -198,12 +209,98 @@ export default function UsuariosAdmin() {
     }
   };
 
+  const handleAddUser = () => {
+    setAddError('');
+    setAddSuccess('');
+    if (!newUser.name || !newUser.email || !newUser.role || !newUser.password || !newUser.confirmPassword) {
+      setAddError('Completa todos los campos.');
+      return;
+    }
+    if (newUser.password.length < 6) {
+      setAddError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+    if (newUser.password !== newUser.confirmPassword) {
+      setAddError('Las contraseñas no coinciden.');
+      return;
+    }
+    // Aquí iría la llamada a la API para crear el usuario
+    setAddSuccess('Usuario creado exitosamente.');
+    setShowAddForm(false);
+    setNewUser({ name: '', email: '', role: '', password: '', confirmPassword: '' });
+  };
+
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-        <Typography variant="h4">Gestión de Usuarios</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+          <Typography variant="h4">Gestión de Usuarios</Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          sx={{ borderRadius: 2 }}
+          onClick={() => setShowAddForm(!showAddForm)}
+        >
+          Agregar Usuario
+        </Button>
       </Box>
+
+      {/* Formulario para agregar usuario */}
+      {showAddForm && (
+        <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 2, background: '#f8fafc' }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>Nuevo Usuario</Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+            <TextField
+              label="Nombre"
+              value={newUser.name}
+              onChange={e => setNewUser({ ...newUser, name: e.target.value })}
+              sx={{ minWidth: 180 }}
+            />
+            <TextField
+              label="Email"
+              value={newUser.email}
+              onChange={e => setNewUser({ ...newUser, email: e.target.value })}
+              sx={{ minWidth: 180 }}
+            />
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Rol</InputLabel>
+              <Select
+                value={newUser.role}
+                label="Rol"
+                onChange={e => setNewUser({ ...newUser, role: e.target.value })}
+              >
+                <MenuItem value="Estudiante">Estudiante</MenuItem>
+                <MenuItem value="Empresa">Empresa</MenuItem>
+                <MenuItem value="Administrador">Administrador</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Contraseña"
+              type="password"
+              value={newUser.password}
+              onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+              sx={{ minWidth: 180 }}
+            />
+            <TextField
+              label="Repetir Contraseña"
+              type="password"
+              value={newUser.confirmPassword}
+              onChange={e => setNewUser({ ...newUser, confirmPassword: e.target.value })}
+              sx={{ minWidth: 180 }}
+            />
+            <Button variant="contained" color="primary" onClick={handleAddUser} sx={{ height: 56 }}>
+              Guardar
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={() => { setShowAddForm(false); setAddError(''); setAddSuccess(''); }} sx={{ height: 56 }}>
+              Cancelar
+            </Button>
+          </Stack>
+          {addError && <Alert severity="error" sx={{ mt: 2 }}>{addError}</Alert>}
+          {addSuccess && <Alert severity="success" sx={{ mt: 2 }}>{addSuccess}</Alert>}
+        </Paper>
+      )}
       
       {/* Filtros y búsqueda */}
       <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 2 }}>
@@ -242,15 +339,25 @@ export default function UsuariosAdmin() {
               <MenuItem value="Suspendido">Suspendido</MenuItem>
             </Select>
           </FormControl>
-          <Button 
-            variant="contained" 
-            startIcon={<AddIcon />}
-            sx={{ borderRadius: 2 }}
-          >
-            Agregar Usuario
-          </Button>
         </Stack>
       </Paper>
+
+      {/* Justo antes de la tabla de usuarios */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <TextField
+          select
+          size="small"
+          label="Mostrar"
+          value={userLimit}
+          onChange={e => setUserLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+          sx={{ minWidth: 110 }}
+        >
+          {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+            <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+          ))}
+          <MenuItem value="all">Todos</MenuItem>
+        </TextField>
+      </Box>
 
       {/* Tabla de usuarios */}
       <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2 }}>
@@ -266,7 +373,7 @@ export default function UsuariosAdmin() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUsers.map(user => (
+            {(userLimit === 'all' ? filteredUsers : filteredUsers.slice(0, userLimit)).map(user => (
               <TableRow key={user.id} hover>
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

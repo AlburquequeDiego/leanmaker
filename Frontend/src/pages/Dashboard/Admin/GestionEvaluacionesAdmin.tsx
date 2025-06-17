@@ -98,6 +98,10 @@ export const GestionEvaluacionesAdmin = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Estados para límite de registros por sección
+  const [evaluationsLimit, setEvaluationsLimit] = useState<number | 'all'>(10);
+  const [usersLimit, setUsersLimit] = useState<number | 'all'>(10);
+
   // Mock data
   const evaluations: Evaluation[] = [
     {
@@ -412,6 +416,23 @@ export const GestionEvaluacionesAdmin = () => {
             </Stack>
           </Box>
 
+          {/* Selector de cantidad de registros para evaluaciones */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, px: 3 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={evaluationsLimit}
+              onChange={e => setEvaluationsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
+
           <TableContainer>
             <Table>
               <TableHead>
@@ -427,7 +448,7 @@ export const GestionEvaluacionesAdmin = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredEvaluations.map(evaluation => (
+                {(evaluationsLimit === 'all' ? filteredEvaluations : filteredEvaluations.slice(0, evaluationsLimit)).map(evaluation => (
                   <TableRow key={evaluation.id} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -523,8 +544,25 @@ export const GestionEvaluacionesAdmin = () => {
 
         {/* Tab: Resumen por Usuario */}
         <TabPanel value={tabValue} index={1}>
+          {/* Selector de cantidad de registros para resumen de usuarios */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <TextField
+              select
+              size="small"
+              label="Mostrar"
+              value={usersLimit}
+              onChange={e => setUsersLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              sx={{ minWidth: 110 }}
+            >
+              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
+                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
+              ))}
+              <MenuItem value="all">Todas</MenuItem>
+            </TextField>
+          </Box>
+          
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
-            {userSummaries.map((user) => (
+            {(usersLimit === 'all' ? userSummaries : userSummaries.slice(0, usersLimit)).map((user) => (
               <Card key={user.id}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
