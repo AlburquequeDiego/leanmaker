@@ -20,6 +20,12 @@ import {
   ListItemIcon,
   TextField,
   MenuItem,
+  Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
@@ -36,6 +42,8 @@ import {
   Code as CodeIcon,
   Group as GroupIcon,
   ScheduleSend as ScheduleSendIcon,
+  Add as AddIcon,
+  Star as StarIcon,
 } from '@mui/icons-material';
 
 // Mock de evaluaciones mejorado
@@ -165,6 +173,29 @@ const mockEvaluations = [
   },
 ];
 
+// MOCK de evaluaciones hechas por el estudiante a empresas
+const evaluacionesDadas = [
+  {
+    empresa: 'TechCorp Solutions',
+    estrellas: 5,
+    comentario: 'Excelente ambiente de trabajo y gran apoyo del equipo.'
+  },
+  {
+    empresa: 'Digital Dynamics',
+    estrellas: 4,
+    comentario: 'Buena experiencia, aunque el onboarding podría mejorar.'
+  },
+];
+
+// MOCK de empresas disponibles para calificar (proyectos completados)
+const empresasDisponibles = [
+  'DataCorp',
+  'EduTech Solutions', 
+  'Productivity Inc',
+  'Business Solutions',
+  'Logistics Solutions',
+];
+
 const typeConfig = {
   intermediate: {
     label: 'Intermedia',
@@ -181,6 +212,17 @@ export const Evaluations = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [completedLimit, setCompletedLimit] = useState(5);
   const [pendingLimit, setPendingLimit] = useState(5);
+  
+  // Estados para el modal de calificar empresa
+  const [calificarModalOpen, setCalificarModalOpen] = useState(false);
+  const [empresaSeleccionada, setEmpresaSeleccionada] = useState('');
+  const [calificacion, setCalificacion] = useState<number | null>(null);
+  const [comentario, setComentario] = useState('');
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
+    open: false, 
+    message: '', 
+    severity: 'success' 
+  });
 
   const handleAction = (evaluation: any) => {
     setSelectedEvaluation(evaluation);
@@ -192,6 +234,43 @@ export const Evaluations = () => {
   const averageRating = completedEvaluations.length > 0 
     ? (completedEvaluations.reduce((acc, e) => acc + (e.overallRating ?? 0), 0) / completedEvaluations.length).toFixed(1)
     : '0';
+
+  const handleCalificarEmpresa = () => {
+    if (!empresaSeleccionada || !calificacion || !comentario.trim()) {
+      setSnackbar({ 
+        open: true, 
+        message: 'Por favor completa todos los campos', 
+        severity: 'error' 
+      });
+      return;
+    }
+
+    // Agregar la nueva evaluación al mock
+    evaluacionesDadas.push({
+      empresa: empresaSeleccionada,
+      estrellas: calificacion,
+      comentario: comentario.trim()
+    });
+
+    // Limpiar el formulario
+    setEmpresaSeleccionada('');
+    setCalificacion(null);
+    setComentario('');
+    setCalificarModalOpen(false);
+
+    setSnackbar({ 
+      open: true, 
+      message: '¡Evaluación enviada con éxito!', 
+      severity: 'success' 
+    });
+  };
+
+  const handleCloseCalificarModal = () => {
+    setEmpresaSeleccionada('');
+    setCalificacion(null);
+    setComentario('');
+    setCalificarModalOpen(false);
+  };
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -624,6 +703,168 @@ export const Evaluations = () => {
           <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
+
+      <Divider sx={{ my: 4 }} />
+      
+      {/* Sección de Evaluaciones dadas a empresas */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h6" fontWeight={600}>
+          Evaluaciones que diste a la empresa
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => setCalificarModalOpen(true)}
+          sx={{ borderRadius: 2 }}
+        >
+          Calificar Nueva Empresa
+        </Button>
+      </Box>
+
+      {evaluacionesDadas.length === 0 ? (
+        <Paper sx={{ p: 4, textAlign: 'center', bgcolor: '#f8fafc' }}>
+          <StarIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Aún no has evaluado a ninguna empresa
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Comparte tu experiencia con las empresas donde has trabajado para ayudar a otros estudiantes.
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => setCalificarModalOpen(true)}
+            sx={{ borderRadius: 2 }}
+          >
+            Calificar Mi Primera Empresa
+          </Button>
+        </Paper>
+      ) : (
+        evaluacionesDadas.map((ev, idx) => (
+          <Paper key={idx} sx={{ p: 3, mb: 2, borderRadius: 2, bgcolor: '#f8fafc' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+              <Box>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+                  {ev.empresa}
+                </Typography>
+                <Rating 
+                  value={ev.estrellas} 
+                  readOnly 
+                  size="medium"
+                  sx={{ mb: 1 }}
+                />
+                <Typography variant="body2" color="text.secondary">
+                  {ev.estrellas} de 5 estrellas
+                </Typography>
+              </Box>
+              <Chip 
+                label="Evaluación enviada" 
+                color="success" 
+                size="small" 
+                icon={<CheckCircleIcon />}
+              />
+            </Box>
+            <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+              "{ev.comentario}"
+            </Typography>
+          </Paper>
+        ))
+      )}
+
+      {/* Modal para calificar empresa */}
+      <Dialog 
+        open={calificarModalOpen} 
+        onClose={handleCloseCalificarModal} 
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <StarIcon color="primary" />
+            <Typography variant="h6">
+              Calificar Empresa
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+            {/* Selección de empresa */}
+            <FormControl fullWidth>
+              <InputLabel>Empresa a calificar</InputLabel>
+              <Select
+                value={empresaSeleccionada}
+                label="Empresa a calificar"
+                onChange={(e) => setEmpresaSeleccionada(e.target.value)}
+              >
+                {empresasDisponibles.map((empresa) => (
+                  <MenuItem key={empresa} value={empresa}>
+                    {empresa}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Calificación con estrellas */}
+            <Box>
+              <Typography variant="subtitle1" gutterBottom>
+                ¿Cómo calificarías tu experiencia con esta empresa?
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
+                <Rating
+                  value={calificacion}
+                  onChange={(_, newValue) => setCalificacion(newValue)}
+                  size="large"
+                />
+                <Typography variant="body2" color="text.secondary">
+                  {calificacion ? `${calificacion} de 5 estrellas` : 'Selecciona una calificación'}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Comentario */}
+            <TextField
+              label="Comparte tu experiencia"
+              multiline
+              rows={4}
+              value={comentario}
+              onChange={(e) => setComentario(e.target.value)}
+              placeholder="Describe tu experiencia trabajando con esta empresa. ¿Qué te gustó? ¿Qué podría mejorar?"
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCalificarModal} color="inherit">
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleCalificarEmpresa} 
+            variant="contained" 
+            color="primary"
+            disabled={!empresaSeleccionada || !calificacion || !comentario.trim()}
+          >
+            Enviar Evaluación
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar para notificaciones */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

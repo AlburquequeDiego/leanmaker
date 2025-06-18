@@ -122,28 +122,39 @@ const mockStudents: Student[] = [
   },
 ];
 
+// Agrega las áreas posibles
+const AREAS = [
+  'Todas',
+  'Informática',
+  'Administración',
+  'Diseño',
+  'Ingeniería',
+  'Salud',
+  'Educación',
+];
+
 export const SearchStudents: React.FC = () => {
   const students = mockStudents;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
+  const [areaFilter, setAreaFilter] = useState<string>('Todas');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showContactDialog, setShowContactDialog] = useState(false);
 
   const allSkills = Array.from(new Set(students.flatMap(student => student.skills)));
 
+  // Lógica de filtrado incluyendo área
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.university.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.career.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const matchesSkills = selectedSkills.length === 0 || 
                          selectedSkills.some(skill => student.skills.includes(skill));
-    
     const matchesAvailability = !availabilityFilter || student.availability === availabilityFilter;
-
-    return matchesSearch && matchesSkills && matchesAvailability;
+    const matchesArea = areaFilter === 'Todas' || student.career.toLowerCase().includes(areaFilter.toLowerCase());
+    return matchesSearch && matchesSkills && matchesAvailability && matchesArea;
   });
 
   const handleSkillToggle = (skill: string) => {
@@ -157,6 +168,30 @@ export const SearchStudents: React.FC = () => {
   const handleContactStudent = (student: Student) => {
     setSelectedStudent(student);
     setShowContactDialog(true);
+  };
+
+  const handleSendEmail = (student: Student) => {
+    const subject = encodeURIComponent('Interés en colaboración - LeanMaker');
+    const body = encodeURIComponent(`Hola ${student.name},
+
+He revisado tu perfil en LeanMaker y me interesa mucho la posibilidad de trabajar contigo.
+
+Información de tu perfil:
+- Universidad: ${student.university}
+- Carrera: ${student.career}
+- Semestre: ${student.semester}°
+- Habilidades: ${student.skills.join(', ')}
+- Experiencia: ${student.experience}
+
+¿Te gustaría que conversemos sobre posibles oportunidades de colaboración?
+
+Saludos cordiales,
+[Tu nombre]
+[Tu empresa]`);
+    
+    const mailtoLink = `mailto:${student.email}?subject=${subject}&body=${body}`;
+    window.open(mailtoLink, '_blank');
+    setShowContactDialog(false);
   };
 
   return (
@@ -180,7 +215,7 @@ export const SearchStudents: React.FC = () => {
                 }}
               />
             </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(25% - 12px)' }, minWidth: 180 }}>
               <FormControl fullWidth>
                 <InputLabel>Disponibilidad</InputLabel>
                 <Select
@@ -192,6 +227,20 @@ export const SearchStudents: React.FC = () => {
                   <MenuItem value="full-time">Tiempo completo</MenuItem>
                   <MenuItem value="part-time">Tiempo parcial</MenuItem>
                   <MenuItem value="flexible">Flexible</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(25% - 12px)' }, minWidth: 180 }}>
+              <FormControl fullWidth>
+                <InputLabel>Área</InputLabel>
+                <Select
+                  value={areaFilter}
+                  label="Área"
+                  onChange={(e) => setAreaFilter(e.target.value)}
+                >
+                  {AREAS.map(area => (
+                    <MenuItem key={area} value={area}>{area}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>
@@ -485,10 +534,7 @@ export const SearchStudents: React.FC = () => {
         <DialogActions>
           <Button onClick={() => setShowContactDialog(false)}>Cancelar</Button>
           <Button
-            onClick={() => {
-              // Aquí se implementaría la lógica para contactar al estudiante
-              setShowContactDialog(false);
-            }}
+            onClick={() => handleSendEmail(selectedStudent!)}
             variant="contained"
             color="primary"
           >

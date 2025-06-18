@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Paper,
@@ -10,16 +10,16 @@ import {
   Avatar,
   Chip,
   IconButton,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -28,8 +28,6 @@ import {
   Event as EventIcon,
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
-  Send as SendIcon,
-  Delete as DeleteIcon,
   MarkEmailRead as MarkEmailReadIcon,
 } from '@mui/icons-material';
 
@@ -89,17 +87,102 @@ const mockNotifications: Notification[] = [
     createdAt: '2024-01-13T11:00:00Z',
     category: 'system',
   },
+  {
+    id: '6',
+    title: 'Actualización de Proyecto',
+    message: 'Se han actualizado los requisitos del proyecto "Desarrollo Móvil". Por favor revise los cambios.',
+    type: 'info',
+    read: false,
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'project',
+  },
+  {
+    id: '7',
+    title: 'Recordatorio de Evaluación',
+    message: 'Mañana vence el plazo para evaluar a los estudiantes del proyecto "E-commerce"',
+    type: 'warning',
+    read: false,
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'evaluation',
+  },
+  {
+    id: '8',
+    title: 'Postulación Aceptada',
+    message: 'La postulación de Ana Martínez al proyecto "Dashboard Analytics" ha sido aceptada',
+    type: 'success',
+    read: true,
+    createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'application',
+  },
+  {
+    id: '9',
+    title: 'Cambio de Horario',
+    message: 'La entrevista con Pedro Sánchez ha sido reprogramada para el 25/01/2024 a las 14:30',
+    type: 'warning',
+    read: false,
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'interview',
+  },
+  {
+    id: '10',
+    title: 'Nuevo Mensaje',
+    message: 'Ha recibido un mensaje del coordinador académico sobre el proyecto "Sistema de Gestión"',
+    type: 'info',
+    read: true,
+    createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'system',
+  },
+  {
+    id: '11',
+    title: 'Finalización de Práctica',
+    message: 'La práctica de Luis Torres en el proyecto "API Gateway" finaliza en 7 días',
+    type: 'warning',
+    read: false,
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'project',
+  },
+  {
+    id: '12',
+    title: 'Evaluación Completada',
+    message: 'Se ha completado la evaluación mensual del proyecto "Sistema de Reservas"',
+    type: 'success',
+    read: true,
+    createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'evaluation',
+  },
+  {
+    id: '13',
+    title: 'Nueva Documentación',
+    message: 'Se ha agregado nueva documentación al proyecto "CRM Empresarial"',
+    type: 'info',
+    read: false,
+    createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'project',
+  },
+  {
+    id: '14',
+    title: 'Solicitud de Reunión',
+    message: 'El estudiante Roberto Méndez solicita una reunión para discutir el avance del proyecto',
+    type: 'info',
+    read: false,
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'system',
+  },
+  {
+    id: '15',
+    title: 'Recordatorio de Entrevista',
+    message: 'Mañana tiene una entrevista programada con Carolina Díaz a las 11:00',
+    type: 'warning',
+    read: false,
+    createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+    category: 'interview',
+  }
 ];
 
 export const CompanyNotifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
-  const [showSendDialog, setShowSendDialog] = useState(false);
-  const [newNotification, setNewNotification] = useState({
-    title: '',
-    message: '',
-    type: 'info' as const,
-    category: 'system' as const,
-  });
+  const [displayCount, setDisplayCount] = useState<number>(10);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
   const getNotificationIcon = (category: string) => {
     switch (category) {
@@ -131,6 +214,49 @@ export const CompanyNotifications: React.FC = () => {
     }
   };
 
+  const getNotificationTypeLabel = (type: string) => {
+    switch (type) {
+      case 'info':
+        return 'Información';
+      case 'success':
+        return 'Éxito';
+      case 'warning':
+        return 'Advertencia';
+      case 'error':
+        return 'Error';
+      default:
+        return type;
+    }
+  };
+
+  const getNotificationCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'project':
+        return 'Proyecto';
+      case 'application':
+        return 'Postulación';
+      case 'interview':
+        return 'Entrevista';
+      case 'evaluation':
+        return 'Evaluación';
+      case 'system':
+        return 'Sistema';
+      default:
+        return category;
+    }
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    setSelectedNotification(notification);
+    if (!notification.read) {
+      markAsRead(notification.id);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedNotification(null);
+  };
+
   const markAsRead = (id: string) => {
     setNotifications(prev =>
       prev.map(notification =>
@@ -139,21 +265,9 @@ export const CompanyNotifications: React.FC = () => {
     );
   };
 
-  const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-  };
-
-  const sendNotification = () => {
-    const notification: Notification = {
-      id: Date.now().toString(),
-      ...newNotification,
-      read: false,
-      createdAt: new Date().toISOString(),
-    };
-    setNotifications(prev => [notification, ...prev]);
-    setShowSendDialog(false);
-    setNewNotification({ title: '', message: '', type: 'info', category: 'system' });
-  };
+  const displayedNotifications = useMemo(() => {
+    return displayCount === -1 ? notifications : notifications.slice(0, displayCount);
+  }, [notifications, displayCount]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -163,153 +277,172 @@ export const CompanyNotifications: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           Notificaciones
         </Typography>
-        <Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Mostrar</InputLabel>
+            <Select
+              value={displayCount}
+              label="Mostrar"
+              onChange={(e) => setDisplayCount(Number(e.target.value))}
+            >
+              <MenuItem value={5}>5 últimas</MenuItem>
+              <MenuItem value={10}>10 últimas</MenuItem>
+              <MenuItem value={15}>15 últimas</MenuItem>
+              <MenuItem value={20}>20 últimas</MenuItem>
+              <MenuItem value={30}>30 últimas</MenuItem>
+              <MenuItem value={-1}>Todas</MenuItem>
+            </Select>
+          </FormControl>
           <Chip
             label={`${unreadCount} sin leer`}
             color="primary"
-            sx={{ mr: 2 }}
           />
-          <Button
-            variant="contained"
-            startIcon={<SendIcon />}
-            onClick={() => setShowSendDialog(true)}
-          >
-            Enviar Notificación
-          </Button>
         </Box>
       </Box>
 
-      <Paper sx={{ p: 2 }}>
+      <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
         <List>
-          {notifications.map((notification) => (
-            <ListItem
-              key={notification.id}
-              sx={{
-                border: notification.read ? 'none' : '2px solid',
-                borderColor: 'primary.main',
-                borderRadius: 1,
-                mb: 1,
-                bgcolor: notification.read ? 'transparent' : 'primary.50',
-              }}
-              secondaryAction={
-                <Box>
-                  {!notification.read && (
+          {displayedNotifications.map((notification, index) => (
+            <React.Fragment key={notification.id}>
+              {index > 0 && <Divider variant="inset" component="li" />}
+              <ListItem
+                sx={{
+                  border: notification.read ? 'none' : '2px solid',
+                  borderColor: 'primary.main',
+                  borderRadius: 2,
+                  mb: 1,
+                  bgcolor: notification.read ? 'background.paper' : 'primary.50',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 2,
+                    cursor: 'pointer',
+                  },
+                }}
+                onClick={() => handleNotificationClick(notification)}
+                secondaryAction={
+                  !notification.read && (
                     <IconButton
                       edge="end"
-                      onClick={() => markAsRead(notification.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markAsRead(notification.id);
+                      }}
                       sx={{ mr: 1 }}
+                      title="Marcar como leída"
                     >
                       <MarkEmailReadIcon />
                     </IconButton>
-                  )}
-                  <IconButton
-                    edge="end"
-                    onClick={() => deleteNotification(notification.id)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              }
-            >
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: `${getNotificationColor(notification.type)}.main` }}>
-                  {getNotificationIcon(notification.category)}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      {notification.title}
-                    </Typography>
-                    <Chip
-                      label={notification.type}
-                      color={getNotificationColor(notification.type) as any}
-                      size="small"
-                    />
-                  </Box>
+                  )
                 }
-                secondary={
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {notification.message}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(notification.createdAt).toLocaleString()}
-                    </Typography>
-                  </Box>
-                }
-              />
-            </ListItem>
+              >
+                <ListItemAvatar>
+                  <Avatar sx={{ 
+                    bgcolor: `${getNotificationColor(notification.type)}.main`,
+                    width: 48,
+                    height: 48,
+                  }}>
+                    {getNotificationIcon(notification.category)}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {notification.title}
+                      </Typography>
+                      <Chip
+                        label={getNotificationTypeLabel(notification.type)}
+                        color={getNotificationColor(notification.type) as any}
+                        size="small"
+                        sx={{ height: 24 }}
+                      />
+                    </Box>
+                  }
+                  secondary={
+                    <Box>
+                      <Typography 
+                        variant="body2" 
+                        color="text.primary"
+                        sx={{ 
+                          mb: 0.5,
+                          fontWeight: notification.read ? 'normal' : 'medium'
+                        }}
+                      >
+                        {notification.message}
+                      </Typography>
+                      <Typography 
+                        variant="caption" 
+                        color="text.secondary"
+                        sx={{ 
+                          display: 'block',
+                          fontStyle: 'italic'
+                        }}
+                      >
+                        {new Date(notification.createdAt).toLocaleString()}
+                      </Typography>
+                    </Box>
+                  }
+                />
+              </ListItem>
+            </React.Fragment>
           ))}
         </List>
       </Paper>
 
-      {/* Dialog para enviar notificación */}
-      <Dialog open={showSendDialog} onClose={() => setShowSendDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Enviar Notificación</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Título"
-                value={newNotification.title}
-                onChange={(e) => setNewNotification(prev => ({ ...prev, title: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Tipo</InputLabel>
-                <Select
-                  value={newNotification.type}
-                  label="Tipo"
-                  onChange={(e) => setNewNotification(prev => ({ ...prev, type: e.target.value as any }))}
-                >
-                  <MenuItem value="info">Información</MenuItem>
-                  <MenuItem value="success">Éxito</MenuItem>
-                  <MenuItem value="warning">Advertencia</MenuItem>
-                  <MenuItem value="error">Error</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Categoría</InputLabel>
-                <Select
-                  value={newNotification.category}
-                  label="Categoría"
-                  onChange={(e) => setNewNotification(prev => ({ ...prev, category: e.target.value as any }))}
-                >
-                  <MenuItem value="project">Proyecto</MenuItem>
-                  <MenuItem value="application">Postulación</MenuItem>
-                  <MenuItem value="interview">Entrevista</MenuItem>
-                  <MenuItem value="evaluation">Evaluación</MenuItem>
-                  <MenuItem value="system">Sistema</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                label="Mensaje"
-                value={newNotification.message}
-                onChange={(e) => setNewNotification(prev => ({ ...prev, message: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowSendDialog(false)}>Cancelar</Button>
-          <Button onClick={sendNotification} variant="contained">
-            Enviar
-          </Button>
-        </DialogActions>
+      {/* Diálogo de detalles de la notificación */}
+      <Dialog 
+        open={!!selectedNotification} 
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        {selectedNotification && (
+          <>
+            <DialogTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Avatar sx={{ 
+                  bgcolor: `${getNotificationColor(selectedNotification.type)}.main`,
+                  width: 40,
+                  height: 40,
+                }}>
+                  {getNotificationIcon(selectedNotification.category)}
+                </Avatar>
+                <Typography variant="h6">
+                  {selectedNotification.title}
+                </Typography>
+              </Box>
+            </DialogTitle>
+            <DialogContent>
+              <Box sx={{ mt: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                  <Chip
+                    label={getNotificationTypeLabel(selectedNotification.type)}
+                    color={getNotificationColor(selectedNotification.type) as any}
+                    size="small"
+                  />
+                  <Chip
+                    label={getNotificationCategoryLabel(selectedNotification.category)}
+                    variant="outlined"
+                    size="small"
+                  />
+                </Box>
+                <Typography variant="body1" paragraph>
+                  {selectedNotification.message}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Estado: {selectedNotification.read ? 'Leída' : 'No leída'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Fecha: {new Date(selectedNotification.createdAt).toLocaleString()}
+                </Typography>
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cerrar</Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
     </Box>
   );

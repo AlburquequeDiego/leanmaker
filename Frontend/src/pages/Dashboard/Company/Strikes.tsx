@@ -17,12 +17,16 @@ import {
   Select,
   MenuItem,
   Alert,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Warning as WarningIcon,
   Person as PersonIcon,
   Add as AddIcon,
   CheckCircle as CheckCircleIcon,
+  TrendingUp as TrendingUpIcon,
+  Group as GroupIcon,
 } from '@mui/icons-material';
 
 interface Strike {
@@ -89,6 +93,17 @@ const mockStrikes: Strike[] = [
   },
 ];
 
+// Mock de datos para el resumen de 4 indicadores
+const resumen = [
+  { label: 'Total', value: 3, icon: <WarningIcon color="primary" />, color: '#42A5F5' },
+  { label: 'Activos', value: 2, icon: <WarningIcon color="error" />, color: '#EF5350' },
+  { label: 'Resueltos', value: 1, icon: <CheckCircleIcon color="success" />, color: '#66BB6A' },
+  { label: 'Apelados', value: 0, icon: <WarningIcon color="warning" />, color: '#FFA726' },
+];
+
+const cantidadOpciones = [5, 10, 20, 50, 'todas'];
+const tabLabels = ['Todos', 'Activos', 'Resueltos', 'Apelados'];
+
 export const CompanyStrikes: React.FC = () => {
   const [strikes, setStrikes] = useState<Strike[]>(mockStrikes);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -103,6 +118,9 @@ export const CompanyStrikes: React.FC = () => {
     evidence: '',
   });
   const [resolutionText, setResolutionText] = useState('');
+  const [selectedTab, setSelectedTab] = useState(0);
+  // Filtros de cantidad por tab
+  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -215,6 +233,22 @@ export const CompanyStrikes: React.FC = () => {
     appealed: strikes.filter(s => s.status === 'appealed').length,
   };
 
+  const handleCantidadChange = (tabIdx: number, value: number | string) => {
+    setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
+  };
+
+  const filteredStrikes = strikes.filter(strike => {
+    switch (selectedTab) {
+      case 0: return true; // Todos
+      case 1: return strike.status === 'active';
+      case 2: return strike.status === 'resolved';
+      case 3: return strike.status === 'appealed';
+      default: return true;
+    }
+  });
+  const cantidadActual = cantidadPorTab[selectedTab];
+  const strikesMostrados = cantidadActual === 'todas' ? filteredStrikes : filteredStrikes.slice(0, Number(cantidadActual));
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -231,65 +265,50 @@ export const CompanyStrikes: React.FC = () => {
         </Button>
       </Box>
 
-      {/* Estadísticas */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <WarningIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.total}</Typography>
-                  <Typography variant="body2">Total</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'error.light', color: 'error.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <WarningIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.active}</Typography>
-                  <Typography variant="body2">Activos</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <CheckCircleIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.resolved}</Typography>
-                  <Typography variant="body2">Resueltos</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <WarningIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.appealed}</Typography>
-                  <Typography variant="body2">Apelados</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
+      {/* Resumen superior: 4 cards en una sola fila */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+        {resumen.map((item, idx) => (
+          <Box key={idx} sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
+            <Card sx={{ bgcolor: item.color, color: '#fff', borderRadius: 3, boxShadow: 1, minHeight: 100 }}>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
+                <Typography variant="h4" sx={{ fontWeight: 700 }}>{item.value}</Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>{item.label}</Typography>
+                <Box>{item.icon}</Box>
+              </CardContent>
+            </Card>
+          </Box>
+        ))}
+      </Box>
+
+      {/* Tabs de subsecciones */}
+      <Box sx={{ mb: 2 }}>
+        <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
+          {tabLabels.map((label, idx) => (
+            <Tab key={label} label={label} />
+          ))}
+        </Tabs>
+      </Box>
+
+      {/* Filtro de cantidad por tab */}
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel id="cantidad-label">Mostrar</InputLabel>
+          <Select
+            labelId="cantidad-label"
+            value={cantidadActual}
+            label="Mostrar"
+            onChange={e => handleCantidadChange(selectedTab, e.target.value)}
+          >
+            {cantidadOpciones.map(opt => (
+              <MenuItem key={opt} value={opt}>{opt === 'todas' ? 'Todas' : opt}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
 
       {/* Lista de Strikes */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {strikes.map((strike) => (
+        {strikesMostrados.map((strike) => (
           <Box key={strike.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
             <Card>
               <CardContent>

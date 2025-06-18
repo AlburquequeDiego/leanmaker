@@ -13,6 +13,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  MenuItem,
+  Divider,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -25,17 +27,31 @@ import {
   TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
   Assignment as AssignmentIcon,
+  Person as PersonIcon,
+  Badge as BadgeIcon,
 } from '@mui/icons-material';
 
 interface CompanyProfileData {
+  // Datos de la empresa
   id: string;
-  name: string;
-  description: string;
-  industry: string;
-  location: string;
-  phone: string;
+  rut: string;
+  personalidad: 'Jurídica' | 'Natural';
+  razonSocial: string;
+  nombreEmpresa: string;
+  direccion: string;
+  telefonoEmpresa: string;
   email: string;
   website: string;
+  description: string;
+  industry: string;
+  // Datos del responsable
+  nombreResponsable: string;
+  apellidoResponsable: string;
+  correoResponsable: string;
+  telefonoResponsable: string;
+  fechaNacimientoResponsable: string;
+  generoResponsable: string;
+  // Estadísticas
   rating: number;
   totalProjects: number;
   activeStudents: number;
@@ -45,13 +61,22 @@ interface CompanyProfileData {
 
 const mockCompanyProfile: CompanyProfileData = {
   id: '1',
-  name: 'TechCorp Solutions',
-  description: 'Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras.',
-  industry: 'Tecnología',
-  location: 'Santiago, Chile',
-  phone: '+56 9 1234 5678',
+  rut: '76.123.456-7',
+  personalidad: 'Jurídica',
+  razonSocial: 'TechCorp Solutions SpA',
+  nombreEmpresa: 'TechCorp Solutions',
+  direccion: 'Av. Providencia 1234, Providencia',
+  telefonoEmpresa: '+56 2 2345 6789',
   email: 'contacto@techcorp.cl',
   website: 'www.techcorp.cl',
+  description: 'Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras.',
+  industry: 'Tecnología',
+  nombreResponsable: 'Juan',
+  apellidoResponsable: 'Pérez',
+  correoResponsable: 'juan.perez@techcorp.cl',
+  telefonoResponsable: '+56 9 8765 4321',
+  fechaNacimientoResponsable: '1985-06-15',
+  generoResponsable: 'Hombre',
   rating: 4.5,
   totalProjects: 25,
   activeStudents: 8,
@@ -63,6 +88,7 @@ export const CompanyProfile: React.FC = () => {
   const [profile, setProfile] = useState<CompanyProfileData>(mockCompanyProfile);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<CompanyProfileData>(profile);
+  const [activeTab, setActiveTab] = useState<'empresa' | 'responsable'>('empresa');
 
   const handleEdit = () => {
     setEditData(profile);
@@ -90,9 +116,10 @@ export const CompanyProfile: React.FC = () => {
           Perfil de Empresa
         </Typography>
         <Button
-          variant="outlined"
+          variant="contained"
           startIcon={<EditIcon />}
           onClick={handleEdit}
+          color="primary"
         >
           Editar Perfil
         </Button>
@@ -108,7 +135,7 @@ export const CompanyProfile: React.FC = () => {
               </Avatar>
               <Box>
                 <Typography variant="h5" gutterBottom>
-                  {profile.name}
+                  {profile.nombreEmpresa}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <StarIcon sx={{ color: 'warning.main', mr: 1 }} />
@@ -120,33 +147,103 @@ export const CompanyProfile: React.FC = () => {
               </Box>
             </Box>
 
-            <Typography variant="body1" paragraph>
-              {profile.description}
+            <Typography variant="h6" gutterBottom>
+              Información de la Empresa
             </Typography>
-
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
               <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <BadgeIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body2">
+                    <strong>RUT:</strong> {profile.rut}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body2">
+                    <strong>Personalidad:</strong> {profile.personalidad}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ flex: '1 1 100%' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body2">
+                    <strong>Razón Social:</strong> {profile.razonSocial}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ flex: '1 1 100%' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <LocationIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{profile.location}</Typography>
+                  <Typography variant="body2">
+                    <strong>Dirección:</strong> {profile.direccion}
+                  </Typography>
                 </Box>
               </Box>
               <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{profile.phone}</Typography>
+                  <Typography variant="body2">
+                    <strong>Teléfono:</strong> {profile.telefonoEmpresa}
+                  </Typography>
                 </Box>
               </Box>
               <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{profile.email}</Typography>
+                  <Typography variant="body2">
+                    <strong>Email:</strong> {profile.email}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ flex: '1 1 100%' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <WebIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body2">
+                    <strong>Sitio Web:</strong> {profile.website}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+              Descripción
+            </Typography>
+            <Typography variant="body2" paragraph>
+              {profile.description}
+            </Typography>
+
+            <Divider sx={{ my: 3 }} />
+
+            <Typography variant="h6" gutterBottom>
+              Usuario Responsable
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ flex: '1 1 100%' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body2">
+                    <strong>Nombre:</strong> {profile.nombreResponsable} {profile.apellidoResponsable}
+                  </Typography>
                 </Box>
               </Box>
               <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <WebIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{profile.website}</Typography>
+                  <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body2">
+                    <strong>Email:</strong> {profile.correoResponsable}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body2">
+                    <strong>Teléfono:</strong> {profile.telefonoResponsable}
+                  </Typography>
                 </Box>
               </Box>
             </Box>
@@ -196,7 +293,7 @@ export const CompanyProfile: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
+            <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <StarIcon sx={{ mr: 1 }} />
@@ -213,46 +310,74 @@ export const CompanyProfile: React.FC = () => {
 
       {/* Dialog para editar perfil */}
       <Dialog open={isEditing} onClose={handleCancel} maxWidth="md" fullWidth>
-        <DialogTitle>Editar Perfil de Empresa</DialogTitle>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6">Editar Perfil de Empresa</Typography>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant={activeTab === 'empresa' ? 'contained' : 'outlined'}
+                onClick={() => setActiveTab('empresa')}
+              >
+                Datos Empresa
+              </Button>
+              <Button
+                variant={activeTab === 'responsable' ? 'contained' : 'outlined'}
+                onClick={() => setActiveTab('responsable')}
+              >
+                Usuario Responsable
+              </Button>
+            </Box>
+          </Box>
+        </DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+          {activeTab === 'empresa' ? (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+              <TextField
+                fullWidth
+                label="RUT"
+                value={editData.rut}
+                onChange={(e) => handleInputChange('rut', e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                select
+                label="Personalidad"
+                value={editData.personalidad}
+                onChange={(e) => handleInputChange('personalidad', e.target.value)}
+                margin="normal"
+              >
+                <MenuItem value="Jurídica">Jurídica</MenuItem>
+                <MenuItem value="Natural">Natural</MenuItem>
+              </TextField>
+              <TextField
+                fullWidth
+                label="Razón Social"
+                value={editData.razonSocial}
+                onChange={(e) => handleInputChange('razonSocial', e.target.value)}
+                margin="normal"
+              />
               <TextField
                 fullWidth
                 label="Nombre de la Empresa"
-                value={editData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                value={editData.nombreEmpresa}
+                onChange={(e) => handleInputChange('nombreEmpresa', e.target.value)}
                 margin="normal"
               />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
-                label="Industria"
-                value={editData.industry}
-                onChange={(e) => handleInputChange('industry', e.target.value)}
+                label="Dirección"
+                value={editData.direccion}
+                onChange={(e) => handleInputChange('direccion', e.target.value)}
                 margin="normal"
               />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
-                label="Ubicación"
-                value={editData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
+                label="Teléfono de la Empresa"
+                value={editData.telefonoEmpresa}
+                onChange={(e) => handleInputChange('telefonoEmpresa', e.target.value)}
                 margin="normal"
               />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Teléfono"
-                value={editData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
                 label="Email"
@@ -260,8 +385,6 @@ export const CompanyProfile: React.FC = () => {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 margin="normal"
               />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
                 label="Sitio Web"
@@ -269,8 +392,13 @@ export const CompanyProfile: React.FC = () => {
                 onChange={(e) => handleInputChange('website', e.target.value)}
                 margin="normal"
               />
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
+              <TextField
+                fullWidth
+                label="Industria"
+                value={editData.industry}
+                onChange={(e) => handleInputChange('industry', e.target.value)}
+                margin="normal"
+              />
               <TextField
                 fullWidth
                 multiline
@@ -281,7 +409,59 @@ export const CompanyProfile: React.FC = () => {
                 margin="normal"
               />
             </Box>
-          </Box>
+          ) : (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+              <TextField
+                fullWidth
+                label="Nombre"
+                value={editData.nombreResponsable}
+                onChange={(e) => handleInputChange('nombreResponsable', e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Apellido"
+                value={editData.apellidoResponsable}
+                onChange={(e) => handleInputChange('apellidoResponsable', e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Email"
+                value={editData.correoResponsable}
+                onChange={(e) => handleInputChange('correoResponsable', e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Teléfono"
+                value={editData.telefonoResponsable}
+                onChange={(e) => handleInputChange('telefonoResponsable', e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Fecha de Nacimiento"
+                type="date"
+                value={editData.fechaNacimientoResponsable}
+                onChange={(e) => handleInputChange('fechaNacimientoResponsable', e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                select
+                label="Género"
+                value={editData.generoResponsable}
+                onChange={(e) => handleInputChange('generoResponsable', e.target.value)}
+                margin="normal"
+              >
+                <MenuItem value="Mujer">Mujer</MenuItem>
+                <MenuItem value="Hombre">Hombre</MenuItem>
+                <MenuItem value="Otro">Otro</MenuItem>
+              </TextField>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancel}>Cancelar</Button>

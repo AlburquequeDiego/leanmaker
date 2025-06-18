@@ -119,7 +119,13 @@ const mockInterviews: Interview[] = [
   },
 ];
 
-export const CompanyInterviews: React.FC = () => {
+interface CompanyInterviewsProps {
+  onAddEvent?: (event: any) => void;
+}
+
+const cantidadOpciones = [5, 10, 20, 50, 'todas'];
+
+export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent }) => {
   const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
@@ -140,6 +146,12 @@ export const CompanyInterviews: React.FC = () => {
     interviewers: [],
     notes: '',
   });
+  // Filtros de cantidad por tab
+  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
+
+  const handleCantidadChange = (tabIdx: number, value: number | string) => {
+    setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
+  };
 
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -255,6 +267,24 @@ export const CompanyInterviews: React.FC = () => {
       interviewers: [],
       notes: '',
     });
+    // Sincroniza con el calendario
+    if (onAddEvent) {
+      onAddEvent({
+        id: interview.id,
+        title: `Evento: ${interview.projectTitle}`,
+        type: 'interview',
+        start: new Date(interview.scheduledDate),
+        end: new Date(new Date(interview.scheduledDate).getTime() + (interview.duration || 60) * 60000),
+        duration: `${interview.duration || 60} minutos`,
+        location: interview.location,
+        company: 'Empresa',
+        project: interview.projectTitle,
+        description: interview.notes,
+        status: 'upcoming',
+        priority: 'high',
+        student: interview.studentName,
+      });
+    }
   };
 
   const filteredInterviews = interviews.filter(interview => {
@@ -272,6 +302,9 @@ export const CompanyInterviews: React.FC = () => {
     }
   });
 
+  const cantidadActual = cantidadPorTab[selectedTab];
+  const entrevistasMostradas = cantidadActual === 'todas' ? filteredInterviews : filteredInterviews.slice(0, Number(cantidadActual));
+
   const stats = {
     total: interviews.length,
     scheduled: interviews.filter(i => i.status === 'scheduled').length,
@@ -279,90 +312,74 @@ export const CompanyInterviews: React.FC = () => {
     cancelled: interviews.filter(i => i.status === 'cancelled').length,
   };
 
+  // Mock de datos para el resumen de entrevistas
+  const resumen = [
+    { label: 'Total', value: stats.total, icon: <ScheduleIcon />, color: '#42A5F5' },
+    { label: 'Programadas', value: stats.scheduled, icon: <ScheduleIcon />, color: '#29B6F6' },
+    { label: 'Completadas', value: stats.completed, icon: <CheckCircleIcon />, color: '#66BB6A' },
+    { label: 'Canceladas', value: stats.cancelled, icon: <EventIcon />, color: '#EF5350' },
+  ];
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-      <Typography variant="h4" gutterBottom>
-          Entrevistas
-      </Typography>
+        <Typography variant="h4" gutterBottom>
+          Eventos
+        </Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setShowAddDialog(true)}
         >
-          Nueva Entrevista
+          Nuevo Evento
         </Button>
       </Box>
 
       {/* Estadísticas */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ScheduleIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.total}</Typography>
-                  <Typography variant="body2">Total</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ScheduleIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.scheduled}</Typography>
-                  <Typography variant="body2">Programadas</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <CheckCircleIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.completed}</Typography>
-                  <Typography variant="body2">Completadas</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-          <Card sx={{ bgcolor: 'error.light', color: 'error.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <EventIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.cancelled}</Typography>
-                  <Typography variant="body2">Canceladas</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+        {resumen.map((item, idx) => (
+          <Box key={idx} sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
+            <Card sx={{ bgcolor: item.color, color: '#fff', borderRadius: 3, boxShadow: 1, minHeight: 90 }}>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
+                <Typography variant="h4" sx={{ fontWeight: 700 }}>{item.value}</Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>{item.label}</Typography>
+                <Box>{item.icon}</Box>
+              </CardContent>
+            </Card>
+          </Box>
+        ))}
       </Box>
 
       {/* Tabs */}
       <Paper sx={{ mb: 3 }}>
         <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
-          <Tab label="Todas" />
-          <Tab label="Programadas" />
-          <Tab label="Completadas" />
-          <Tab label="Canceladas" />
+          <Tab label="Todos" />
+          <Tab label="Programados" />
+          <Tab label="Completados" />
+          <Tab label="Cancelados" />
         </Tabs>
       </Paper>
 
-      {/* Lista de Entrevistas */}
+      {/* Filtro de cantidad por tab */}
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel id="cantidad-label">Mostrar</InputLabel>
+          <Select
+            labelId="cantidad-label"
+            value={cantidadActual}
+            label="Mostrar"
+            onChange={e => handleCantidadChange(selectedTab, e.target.value)}
+          >
+            {cantidadOpciones.map(opt => (
+              <MenuItem key={opt} value={opt}>{opt === 'todas' ? 'Todas' : opt}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      {/* Lista de Eventos */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {filteredInterviews.map((interview) => (
+        {entrevistasMostradas.map((interview) => (
           <Box key={interview.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
             <Card>
               <CardContent>
@@ -451,9 +468,9 @@ export const CompanyInterviews: React.FC = () => {
         ))}
       </Box>
 
-      {/* Dialog para editar entrevista */}
+      {/* Dialog para editar evento */}
       <Dialog open={showDialog} onClose={() => setShowDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Detalles de la Entrevista</DialogTitle>
+        <DialogTitle>Detalles del Evento</DialogTitle>
         <DialogContent>
           {selectedInterview && (
             <Box sx={{ mt: 2 }}>
@@ -479,10 +496,10 @@ export const CompanyInterviews: React.FC = () => {
                         label={getOutcomeLabel(selectedInterview.outcome)}
                         color={getOutcomeColor(selectedInterview.outcome) as any}
                         size="small"
-                />
+                      />
                     )}
                   </Box>
-              </Box>
+                </Box>
               </Box>
 
               <Typography variant="h6" gutterBottom>
@@ -514,7 +531,7 @@ export const CompanyInterviews: React.FC = () => {
                   <ListItemText
                     primary="Email"
                     secondary={selectedInterview.studentEmail}
-                />
+                  />
                 </ListItem>
                 <ListItem>
                   <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
@@ -573,13 +590,13 @@ export const CompanyInterviews: React.FC = () => {
             <Button
               onClick={() => {
                 // Aquí se implementaría la lógica para completar la entrevista
-              setShowDialog(false);
+                setShowDialog(false);
               }}
               variant="contained"
               color="success"
             >
-              Completar Entrevista
-          </Button>
+              Completar Evento
+            </Button>
           )}
         </DialogActions>
       </Dialog>
@@ -620,15 +637,15 @@ export const CompanyInterviews: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Dialog para agregar entrevista */}
+      {/* Dialog para agregar evento */}
       <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Nueva Entrevista</DialogTitle>
+        <DialogTitle>Nuevo Evento</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
             <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
-                label="Nombre del Estudiante"
+                label="Estudiante"
                 value={newInterview.studentName}
                 onChange={(e) => setNewInterview(prev => ({ ...prev, studentName: e.target.value }))}
                 margin="normal"
@@ -651,7 +668,7 @@ export const CompanyInterviews: React.FC = () => {
                   label="Tipo"
                   onChange={(e) => setNewInterview(prev => ({ ...prev, type: e.target.value as Interview['type'] }))}
                 >
-                  <MenuItem value="technical">Técnica</MenuItem>
+                  <MenuItem value="technical">Técnico</MenuItem>
                   <MenuItem value="behavioral">Conductual</MenuItem>
                   <MenuItem value="final">Final</MenuItem>
                   <MenuItem value="follow-up">Seguimiento</MenuItem>
@@ -706,7 +723,7 @@ export const CompanyInterviews: React.FC = () => {
         <DialogActions>
           <Button onClick={() => setShowAddDialog(false)}>Cancelar</Button>
           <Button onClick={handleAddInterview} variant="contained">
-            Crear Entrevista
+            Crear Evento
           </Button>
         </DialogActions>
       </Dialog>

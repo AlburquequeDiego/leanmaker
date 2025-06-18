@@ -192,7 +192,9 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const getSectionName = () => {
     const path = location.pathname;
     const sections = getMenuItems();
-    const found = sections.find((item) => path === item.path || (item.path !== '/dashboard/student' && path.startsWith(item.path)));
+    // Ordenar por longitud de path descendente para que las coincidencias más largas tengan prioridad
+    const sortedSections = sections.sort((a, b) => b.path.length - a.path.length);
+    const found = sortedSections.find((item) => path === item.path || path.startsWith(item.path));
     return found ? found.text : '';
   };
 

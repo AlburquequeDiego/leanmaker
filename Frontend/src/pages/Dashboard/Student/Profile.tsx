@@ -34,6 +34,7 @@ import {
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import Stack from '@mui/material/Stack';
+import Rating from '@mui/material/Rating';
 
 interface ProfileData {
   nombre: string;
@@ -49,11 +50,31 @@ interface ProfileData {
   biografia: string;
   cv: File | null;
   certificado: File | null;
+  area?: string;
+  modalidadesDisponibles?: string[];
+  experienciaPrevia?: string;
+  linkedin?: string;
+  github?: string;
+  portafolio?: string;
 }
 
 interface ValidationErrors {
   [key: string]: string;
 }
+
+// MOCK de evaluaciones hechas por el estudiante a empresas
+const evaluacionesDadas = [
+  {
+    empresa: 'TechCorp Solutions',
+    estrellas: 5,
+    comentario: 'Excelente ambiente de trabajo y gran apoyo del equipo.'
+  },
+  {
+    empresa: 'Digital Dynamics',
+    estrellas: 4,
+    comentario: 'Buena experiencia, aunque el onboarding podría mejorar.'
+  },
+];
 
 export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -82,6 +103,12 @@ export const Profile = () => {
     biografia: 'Estudiante apasionada por el desarrollo de software y la innovación tecnológica.',
     cv: null,
     certificado: null,
+    area: 'Desarrollo Web',
+    modalidadesDisponibles: ['Tiempo completo', 'Flexible'],
+    experienciaPrevia: 'Práctica profesional en desarrollo frontend en TechCorp Solutions (2023).',
+    linkedin: 'https://linkedin.com/in/mariagonzalez',
+    github: 'https://github.com/mariagonzalez',
+    portafolio: 'https://mariagonzalez.dev',
   });
 
   const [editData, setEditData] = useState<ProfileData>(profileData);
@@ -496,6 +523,94 @@ export const Profile = () => {
             error={!!validationErrors.biografia}
             helperText={validationErrors.biografia || `${editData.biografia.length}/50 caracteres mínimos`}
           />
+
+          {/* Datos adicionales */}
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" fontWeight={600}>Área de interés</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                value={editData.area || ''}
+                onChange={e => handleInputChange('area', e.target.value)}
+                placeholder="Ej: Desarrollo Web, Data Science, etc."
+                sx={{ mb: 2 }}
+              />
+            ) : (
+              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.area || '-'}</Typography>
+            )}
+            <Typography variant="subtitle1" fontWeight={600}>Modalidades disponibles</Typography>
+            {isEditing ? (
+              <TextField
+                select
+                fullWidth
+                SelectProps={{ multiple: true }}
+                value={editData.modalidadesDisponibles || []}
+                onChange={e => handleInputChange('modalidadesDisponibles', Array.isArray(e.target.value) ? e.target.value : [e.target.value])}
+                sx={{ mb: 2 }}
+              >
+                <MenuItem value="Tiempo completo">Tiempo completo</MenuItem>
+                <MenuItem value="Tiempo parcial">Tiempo parcial</MenuItem>
+                <MenuItem value="Flexible">Flexible</MenuItem>
+              </TextField>
+            ) : (
+              <Box sx={{ mb: 2 }}>
+                {(profileData.modalidadesDisponibles || []).map(m => (
+                  <Chip key={m} label={m} sx={{ mr: 1, mb: 1 }} />
+                ))}
+                {(!profileData.modalidadesDisponibles || profileData.modalidadesDisponibles.length === 0) && <Typography variant="body2">-</Typography>}
+              </Box>
+            )}
+            <Typography variant="subtitle1" fontWeight={600}>Experiencia previa</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                multiline
+                minRows={2}
+                value={editData.experienciaPrevia || ''}
+                onChange={e => handleInputChange('experienciaPrevia', e.target.value)}
+                placeholder="Describe tu experiencia previa en algún puesto, práctica, voluntariado, etc."
+                sx={{ mb: 2 }}
+              />
+            ) : (
+              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.experienciaPrevia || '-'}</Typography>
+            )}
+            <Typography variant="subtitle1" fontWeight={600}>LinkedIn</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                value={editData.linkedin || ''}
+                onChange={e => handleInputChange('linkedin', e.target.value)}
+                placeholder="https://linkedin.com/in/usuario"
+                sx={{ mb: 2 }}
+              />
+            ) : (
+              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.linkedin || '-'}</Typography>
+            )}
+            <Typography variant="subtitle1" fontWeight={600}>GitHub</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                value={editData.github || ''}
+                onChange={e => handleInputChange('github', e.target.value)}
+                placeholder="https://github.com/usuario"
+                sx={{ mb: 2 }}
+              />
+            ) : (
+              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.github || '-'}</Typography>
+            )}
+            <Typography variant="subtitle1" fontWeight={600}>Portafolio</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                value={editData.portafolio || ''}
+                onChange={e => handleInputChange('portafolio', e.target.value)}
+                placeholder="https://miportafolio.com (opcional)"
+                sx={{ mb: 2 }}
+              />
+            ) : (
+              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.portafolio || '-'}</Typography>
+            )}
+          </Box>
         </Box>
       </Paper>
 

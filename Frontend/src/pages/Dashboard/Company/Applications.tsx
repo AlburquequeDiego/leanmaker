@@ -16,6 +16,10 @@ import {
   TextField,
   Tabs,
   Tab,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -118,16 +122,41 @@ const mockApplications: Application[] = [
   },
 ];
 
+const cantidadOpciones = [5, 10, 20, 50, 'todas'];
+
 export const CompanyApplications: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>(mockApplications);
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showInterviewDialog, setShowInterviewDialog] = useState(false);
-  const [interviewData, setInterviewData] = useState({
-    date: '',
-    notes: '',
+  const [interviewData, setInterviewData] = useState({ date: '', notes: '' });
+
+  // Filtros de cantidad por tab
+  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5, 5]);
+
+  const handleCantidadChange = (tabIdx: number, value: number | string) => {
+    setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
+  };
+
+  const getStatusFilter = (tabIdx: number) => {
+    switch (tabIdx) {
+      case 0: return undefined; // Todas
+      case 1: return 'pending';
+      case 2: return 'interviewed';
+      case 3: return 'accepted';
+      case 4: return 'rejected';
+      default: return undefined;
+    }
+  };
+
+  const filteredApplications = applications.filter(app => {
+    const status = getStatusFilter(selectedTab);
+    return status ? app.status === status : true;
   });
+
+  const cantidadActual = cantidadPorTab[selectedTab];
+  const aplicacionesMostradas = cantidadActual === 'todas' ? filteredApplications : filteredApplications.slice(0, Number(cantidadActual));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -194,23 +223,6 @@ export const CompanyApplications: React.FC = () => {
       setSelectedApplication(null);
     }
   };
-
-  const filteredApplications = applications.filter(app => {
-    switch (selectedTab) {
-      case 0: // Todas
-        return true;
-      case 1: // Pendientes
-        return app.status === 'pending';
-      case 2: // Entrevistadas
-        return app.status === 'interviewed';
-      case 3: // Aceptadas
-        return app.status === 'accepted';
-      case 4: // Rechazadas
-        return app.status === 'rejected';
-      default:
-        return true;
-    }
-  });
 
   const stats = {
     total: applications.length,
@@ -285,9 +297,26 @@ export const CompanyApplications: React.FC = () => {
         </Tabs>
       </Paper>
 
+      {/* Filtro de cantidad por tab */}
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel id="cantidad-label">Mostrar</InputLabel>
+          <Select
+            labelId="cantidad-label"
+            value={cantidadActual}
+            label="Mostrar"
+            onChange={e => handleCantidadChange(selectedTab, e.target.value)}
+          >
+            {cantidadOpciones.map(opt => (
+              <MenuItem key={opt} value={opt}>{opt === 'todas' ? 'Todas' : opt}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
       {/* Lista de Postulaciones */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
-        {filteredApplications.map((application) => (
+        {aplicacionesMostradas.map((application) => (
           <Card key={application.id}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -376,7 +405,7 @@ export const CompanyApplications: React.FC = () => {
         ))}
       </Box>
 
-      {filteredApplications.length === 0 && (
+      {aplicacionesMostradas.length === 0 && (
         <Paper sx={{ p: 4, textAlign: 'center' }}>
           <PersonIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="text.secondary" gutterBottom>

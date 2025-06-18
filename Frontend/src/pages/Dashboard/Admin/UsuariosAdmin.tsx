@@ -234,8 +234,8 @@ export default function UsuariosAdmin() {
     <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-          <Typography variant="h4">Gestión de Usuarios</Typography>
+        <PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+        <Typography variant="h4">Gestión de Usuarios</Typography>
         </Box>
         <Button
           variant="contained"

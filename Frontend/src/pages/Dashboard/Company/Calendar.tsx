@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { es } from 'date-fns/locale';
 import {
   Box,
-  Paper,
   Typography,
-  Card,
-  CardContent,
   Button,
-  Chip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -16,378 +15,424 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
+  Tooltip,
+  IconButton,
+  Avatar,
+  Chip,
 } from '@mui/material';
 import {
-  CalendarMonth as CalendarIcon,
-  Event as EventIcon,
-  Assignment as AssignmentIcon,
-  VideoCall as VideoCallIcon,
-  Assessment as AssessmentIcon,
   Add as AddIcon,
+  ViewModule as ViewModuleIcon,
+  ViewWeek as ViewWeekIcon,
+  ViewDay as ViewDayIcon,
+  Today as TodayIcon,
+  Event as EventIcon,
+  Business as BusinessIcon,
+  Assignment as AssignmentIcon,
+  Schedule as ScheduleIcon,
+  Assessment as AssessmentIcon,
+  Info as InfoIcon,
+  VideoCall as VideoCallIcon,
+  LocationOn as LocationOnIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
 } from '@mui/icons-material';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  duration: number;
-  type: 'interview' | 'meeting' | 'deadline' | 'evaluation';
-  status: 'upcoming' | 'completed' | 'cancelled';
-  projectId?: string;
-  projectTitle?: string;
-  studentId?: string;
-  studentName?: string;
+const calendarStyles = `
+  .rbc-calendar { font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .rbc-header { background-color: #f5f5f5; border-bottom: 2px solid #e0e0e0; font-weight: 600; color: #333; padding: 12px 8px; }
+  .rbc-toolbar { background-color: #fafafa; border-bottom: 1px solid #e0e0e0; padding: 16px; margin-bottom: 0; }
+  .rbc-toolbar button { background-color: #fff; border: 1px solid #ddd; color: #666; border-radius: 4px; padding: 8px 16px; font-weight: 500; transition: all 0.2s ease; }
+  .rbc-toolbar button:hover { background-color: #f5f5f5; border-color: #1976d2; color: #1976d2; }
+  .rbc-toolbar button.rbc-active { background-color: #1976d2; border-color: #1976d2; color: white; }
+  .rbc-month-view { border: 1px solid #e0e0e0; }
+  .rbc-month-row { border-bottom: 1px solid #e0e0e0; }
+  .rbc-date-cell { padding: 8px; border-right: 1px solid #e0e0e0; }
+  .rbc-off-range-bg { background-color: #fafafa; }
+  .rbc-today { background-color: rgba(25, 118, 210, 0.08); }
+  .rbc-event { border-radius: 4px; font-weight: 600; font-size: 12px; padding: 2px 6px; margin: 1px; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .rbc-event:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.3); transform: translateY(-1px); transition: all 0.2s ease; }
+  .rbc-event-content { font-weight: 600; }
+`;
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = calendarStyles;
+  document.head.appendChild(styleElement);
 }
 
-const mockEvents: CalendarEvent[] = [
+const locales = { es };
+const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
+
+const mockEvents = [
   {
-    id: '1',
-    title: 'Entrevista con Juan Pérez',
-    description: 'Entrevista técnica para proyecto Frontend',
-    date: '2024-01-20',
-    time: '15:00',
-    duration: 60,
+    id: 1,
+    title: 'Entrevista con TechCorp Solutions',
     type: 'interview',
+    start: new Date(2025, 5, 18, 10, 0),
+    end: new Date(2025, 5, 18, 11, 0),
+    duration: '1 hora',
+    location: 'Remoto (Zoom)',
+    company: 'TechCorp Solutions',
+    project: 'Sistema de Gestión de Inventarios',
+    description: 'Entrevista técnica para evaluar habilidades en React y Node.js',
     status: 'upcoming',
-    projectId: '1',
-    projectTitle: 'Desarrollo Web Frontend',
-    studentId: '1',
-    studentName: 'Juan Pérez',
+    priority: 'high',
+    students: ['1'],
+    interviewers: ['María González', 'Carlos Rodríguez'],
+    notes: 'Entrevista técnica enfocada en React y TypeScript',
   },
   {
-    id: '2',
-    title: 'Reunión de Proyecto API',
-    description: 'Revisión de avances del proyecto API REST',
-    date: '2024-01-22',
-    time: '10:00',
-    duration: 30,
-    type: 'meeting',
-    status: 'upcoming',
-    projectId: '2',
-    projectTitle: 'API REST con Django',
-  },
-  {
-    id: '3',
-    title: 'Evaluación de María González',
-    description: 'Evaluación de desempeño del proyecto móvil',
-    date: '2024-01-25',
-    time: '14:00',
-    duration: 45,
-    type: 'evaluation',
-    status: 'upcoming',
-    projectId: '3',
-    projectTitle: 'App Móvil React Native',
-    studentId: '2',
-    studentName: 'María González',
-  },
-  {
-    id: '4',
-    title: 'Deadline Proyecto Frontend',
-    description: 'Fecha límite para entrega del proyecto',
-    date: '2024-01-30',
-    time: '23:59',
-    duration: 0,
+    id: 2,
+    title: 'Entrega del Módulo de Autenticación',
     type: 'deadline',
+    start: new Date(2025, 5, 20, 23, 59),
+    end: new Date(2025, 5, 20, 23, 59),
+    duration: 'N/A',
+    location: 'N/A',
+    company: 'TechCorp Solutions',
+    project: 'Sistema de Gestión de Inventarios',
+    description: 'Entrega final del módulo de autenticación con JWT',
     status: 'upcoming',
-    projectId: '1',
-    projectTitle: 'Desarrollo Web Frontend',
+    priority: 'high',
+    students: [],
+    interviewers: [],
+    notes: '',
   },
+  {
+    id: 3,
+    title: 'Reunión de Progreso Semanal',
+    type: 'meeting',
+    start: new Date(2025, 5, 15, 14, 0),
+    end: new Date(2025, 5, 15, 14, 30),
+    duration: '30 minutos',
+    location: 'Remoto (Teams)',
+    company: 'Digital Dynamics',
+    project: 'Aplicación Móvil de Delivery',
+    description: 'Reunión semanal para revisar el progreso del proyecto',
+    status: 'completed',
+    priority: 'medium',
+    students: [],
+    interviewers: [],
+    notes: '',
+  },
+  // ...otros eventos del mock del estudiante...
 ];
 
-export const CompanyCalendar: React.FC = () => {
-  const [events, setEvents] = useState<CalendarEvent[]>(mockEvents);
+const mockStudents = [
+  { id: '1', name: 'Juan Pérez', email: 'juan.perez@email.com', phone: '+56 9 1234 5678' },
+  { id: '2', name: 'María González', email: 'maria.gonzalez@email.com', phone: '+56 9 8765 4321' },
+  { id: '3', name: 'Carlos Rodríguez', email: 'carlos.rodriguez@email.com', phone: '+56 9 5555 1234' },
+  { id: '4', name: 'Ana Torres', email: 'ana.torres@email.com', phone: '+56 9 4321 5678' },
+];
+
+export const CompanyCalendar = forwardRef((props, ref) => {
+  const [events, setEvents] = useState<any[]>(mockEvents);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [newEvent, setNewEvent] = useState<Partial<CalendarEvent>>({
+  const [view, setView] = useState('month');
+  const [newEvent, setNewEvent] = useState<any>({
     title: '',
     description: '',
-    date: '',
-    time: '',
-    duration: 30,
     type: 'meeting',
+    start: '',
+    end: '',
+    duration: '',
+    location: '',
+    company: '',
+    project: '',
     status: 'upcoming',
+    priority: 'medium',
+    students: [],
   });
 
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'interview':
-        return <VideoCallIcon />;
-      case 'meeting':
-        return <EventIcon />;
-      case 'deadline':
-        return <AssignmentIcon />;
-      case 'evaluation':
-        return <AssessmentIcon />;
-      default:
-        return <EventIcon />;
+      case 'interview': return <BusinessIcon color="primary" />;
+      case 'deadline': return <AssignmentIcon color="error" />;
+      case 'meeting': return <ScheduleIcon color="info" />;
+      case 'presentation': return <EventIcon color="success" />;
+      case 'review': return <InfoIcon color="warning" />;
+      default: return <InfoIcon color="action" />;
     }
   };
 
-  const getEventColor = (type: string) => {
-    switch (type) {
-      case 'interview':
-        return 'primary';
-      case 'meeting':
-        return 'info';
-      case 'deadline':
-        return 'warning';
-      case 'evaluation':
-        return 'success';
-      default:
-        return 'default';
+  const eventStyleGetter = (event: any) => {
+    let backgroundColor = '#3174ad';
+    let borderColor = '#3174ad';
+    switch (event.type) {
+      case 'interview': backgroundColor = '#1976d2'; borderColor = '#1976d2'; break;
+      case 'deadline': backgroundColor = '#d32f2f'; borderColor = '#d32f2f'; break;
+      case 'meeting': backgroundColor = '#0288d1'; borderColor = '#0288d1'; break;
+      case 'presentation': backgroundColor = '#388e3c'; borderColor = '#388e3c'; break;
+      case 'review': backgroundColor = '#f57c00'; borderColor = '#f57c00'; break;
     }
+    return {
+      style: {
+        backgroundColor,
+        borderColor,
+        borderRadius: '4px',
+        color: 'white',
+        border: '1px solid ' + borderColor,
+        display: 'block',
+        fontSize: '12px',
+        fontWeight: 'bold',
+      },
+    };
+  };
+
+  const handleSelectEvent = (event: any) => {
+    setSelectedEvent(event);
+    setDialogOpen(true);
+  };
+
+  const handleSelectSlot = (slotInfo: any) => {
+    setShowAddDialog(true);
+    setNewEvent({
+      ...newEvent,
+      start: slotInfo.start,
+      end: slotInfo.end,
+    });
   };
 
   const handleAddEvent = () => {
-    const event: CalendarEvent = {
-      id: `event-${Date.now()}`,
-      title: newEvent.title || '',
-      description: newEvent.description || '',
-      date: newEvent.date || '',
-      time: newEvent.time || '',
-      duration: newEvent.duration || 30,
-      type: newEvent.type || 'meeting',
-      status: newEvent.status || 'upcoming',
-      projectId: newEvent.projectId,
-      projectTitle: newEvent.projectTitle,
-      studentId: newEvent.studentId,
-      studentName: newEvent.studentName,
-    };
-    setEvents(prev => [event, ...prev]);
+    setEvents(prev => [
+      ...prev,
+      {
+        ...newEvent,
+        id: Date.now(),
+        start: newEvent.start,
+        end: newEvent.end,
+        students: newEvent.students,
+      },
+    ]);
     setShowAddDialog(false);
     setNewEvent({
       title: '',
       description: '',
-      date: '',
-      time: '',
-      duration: 30,
       type: 'meeting',
+      start: '',
+      end: '',
+      duration: '',
+      location: '',
+      company: '',
+      project: '',
       status: 'upcoming',
+      priority: 'medium',
+      students: [],
     });
   };
 
-  const upcomingEvents = events.filter(event => event.status === 'upcoming');
-  const completedEvents = events.filter(event => event.status === 'completed');
+  const messages = {
+    allDay: 'Todo el día', previous: 'Anterior', next: 'Siguiente', today: 'Hoy', month: 'Mes', week: 'Semana', day: 'Día', agenda: 'Agenda', date: 'Fecha', time: 'Hora', event: 'Evento', noEventsInRange: 'No hay eventos en este rango', showMore: (total: number) => `+ Ver más (${total})`,
+  };
+
+  useImperativeHandle(ref, () => ({
+    addEvent: (event: any) => setEvents(prev => [...prev, event]),
+  }));
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Calendario de Proyectos
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setShowAddDialog(true)}
-        >
+        <Typography variant="h4">Calendario</Typography>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setShowAddDialog(true)}>
           Agregar Evento
         </Button>
       </Box>
-
-      {/* Próximos Eventos */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Próximos Eventos ({upcomingEvents.length})
-        </Typography>
-        
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
-          {upcomingEvents.map((event) => (
-            <Card key={event.id}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                  <Box sx={{ 
-                    p: 1, 
-                    borderRadius: 1, 
-                    bgcolor: `${getEventColor(event.type)}.light`,
-                    color: `${getEventColor(event.type)}.main`,
-                    mr: 2 
-                  }}>
-                    {getEventIcon(event.type)}
+      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+        <Tooltip title="Vista de mes"><IconButton color={view === 'month' ? 'primary' : 'default'} onClick={() => setView('month')}><ViewModuleIcon /></IconButton></Tooltip>
+        <Tooltip title="Vista de semana"><IconButton color={view === 'week' ? 'primary' : 'default'} onClick={() => setView('week')}><ViewWeekIcon /></IconButton></Tooltip>
+        <Tooltip title="Vista de día"><IconButton color={view === 'day' ? 'primary' : 'default'} onClick={() => setView('day')}><ViewDayIcon /></IconButton></Tooltip>
+        <Tooltip title="Vista de agenda"><IconButton color={view === 'agenda' ? 'primary' : 'default'} onClick={() => setView('agenda')}><TodayIcon /></IconButton></Tooltip>
                   </Box>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6">{event.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {new Date(event.date).toLocaleDateString()} - {event.time}
-                    </Typography>
-                    <Chip
-                      label={event.type}
-                      color={getEventColor(event.type) as any}
-                      size="small"
-                      sx={{ mt: 1 }}
+      <Box sx={{ height: 600 }}>
+        <BigCalendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: '100%' }}
+          view={view as any}
+          onView={(newView) => setView(newView)}
+          onSelectEvent={handleSelectEvent}
+          onSelectSlot={handleSelectSlot}
+          selectable
+          messages={messages}
+          eventPropGetter={eventStyleGetter}
+          culture="es"
+          defaultView="month"
+          min={new Date(0, 0, 0, 8, 0, 0)}
+          max={new Date(0, 0, 0, 20, 0, 0)}
+          step={30}
+          timeslots={2}
+          tooltipAccessor={(event) => `${event.title} - ${event.company}`}
                     />
                   </Box>
-                </Box>
-
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {event.description}
-                </Typography>
-
-                {event.projectTitle && (
-                  <Typography variant="body2" color="text.secondary">
-                    <strong>Proyecto:</strong> {event.projectTitle}
-                  </Typography>
-                )}
-
-                {event.studentName && (
-                  <Typography variant="body2" color="text.secondary">
-                    <strong>Estudiante:</strong> {event.studentName}
-                  </Typography>
-                )}
-
-                {event.duration > 0 && (
-                  <Typography variant="body2" color="text.secondary">
-                    <strong>Duración:</strong> {event.duration} minutos
-                  </Typography>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-
-        {upcomingEvents.length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <CalendarIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              No hay eventos próximos
-            </Typography>
-          </Box>
-        )}
-      </Paper>
-
-      {/* Eventos Completados */}
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Eventos Recientes ({completedEvents.length})
-        </Typography>
-        
-        <List>
-          {completedEvents.slice(0, 5).map((event) => (
-            <React.Fragment key={event.id}>
-              <ListItem>
-                <ListItemIcon>
-                  <Box sx={{ 
-                    p: 1, 
-                    borderRadius: 1, 
-                    bgcolor: `${getEventColor(event.type)}.light`,
-                    color: `${getEventColor(event.type)}.main`,
-                  }}>
-                    {getEventIcon(event.type)}
-                  </Box>
-                </ListItemIcon>
-                <ListItemText
-                  primary={event.title}
-                  secondary={
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        {new Date(event.date).toLocaleDateString()} - {event.time}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {event.description}
-                      </Typography>
-                    </Box>
-                  }
-                />
-                <Chip
-                  label="Completado"
-                  color="success"
-                  size="small"
-                />
-              </ListItem>
-              <Divider />
-            </React.Fragment>
-          ))}
-        </List>
-
-        {completedEvents.length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="body2" color="text.secondary">
-              No hay eventos completados recientemente
-            </Typography>
-          </Box>
-        )}
-      </Paper>
-
-      {/* Dialog para agregar evento */}
+      {/* Modal para agregar evento */}
       <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Agregar Nuevo Evento</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField
-              fullWidth
-              label="Título del Evento"
-              value={newEvent.title}
-              onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))}
-            />
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Descripción"
-              value={newEvent.description}
-              onChange={(e) => setNewEvent(prev => ({ ...prev, description: e.target.value }))}
-            />
+            <TextField fullWidth label="Título del Evento" value={newEvent.title} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, title: e.target.value }))} />
+            <TextField fullWidth multiline rows={3} label="Descripción" value={newEvent.description} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, description: e.target.value }))} />
+            <FormControl fullWidth>
+              <InputLabel>Estudiantes</InputLabel>
+              <Select
+                multiple
+                value={newEvent.students}
+                onChange={e => setNewEvent((prev: any) => ({ ...prev, students: e.target.value }))}
+                label="Estudiantes"
+                renderValue={(selected) => (selected as string[]).map(id => mockStudents.find(s => s.id === id)?.name).join(', ')}
+              >
+                {mockStudents.map(student => (
+                  <MenuItem key={student.id} value={student.id}>
+                    {student.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-              <TextField
-                fullWidth
-                type="date"
-                label="Fecha"
-                value={newEvent.date}
-                onChange={(e) => setNewEvent(prev => ({ ...prev, date: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                fullWidth
-                type="time"
-                label="Hora"
-                value={newEvent.time}
-                onChange={(e) => setNewEvent(prev => ({ ...prev, time: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-              />
+              <TextField fullWidth type="date" label="Fecha" value={newEvent.start ? format(newEvent.start, 'yyyy-MM-dd') : ''} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, start: new Date(e.target.value + 'T' + (prev.start ? format(prev.start, 'HH:mm') : '08:00')), end: new Date(e.target.value + 'T' + (prev.end ? format(prev.end, 'HH:mm') : '09:00')) }))} InputLabelProps={{ shrink: true }} />
+              <TextField fullWidth type="time" label="Hora de inicio" value={newEvent.start ? format(newEvent.start, 'HH:mm') : ''} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, start: prev.start ? new Date(format(prev.start, 'yyyy-MM-dd') + 'T' + e.target.value) : new Date('2025-06-18T' + e.target.value), end: prev.end ? new Date(format(prev.end, 'yyyy-MM-dd') + 'T' + e.target.value) : new Date('2025-06-18T' + e.target.value) }))} InputLabelProps={{ shrink: true }} />
             </Box>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Duración (minutos)"
-                value={newEvent.duration}
-                onChange={(e) => setNewEvent(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-                inputProps={{ min: 0 }}
-              />
+            <TextField fullWidth type="number" label="Duración (minutos)" value={newEvent.duration} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, duration: e.target.value }))} inputProps={{ min: 0 }} />
+            <TextField fullWidth label="Ubicación" value={newEvent.location} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, location: e.target.value }))} />
               <FormControl fullWidth>
                 <InputLabel>Tipo de Evento</InputLabel>
-                <Select
-                  value={newEvent.type}
-                  label="Tipo de Evento"
-                  onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value as CalendarEvent['type'] }))}
-                >
+              <Select value={newEvent.type} label="Tipo de Evento" onChange={(e) => setNewEvent((prev: any) => ({ ...prev, type: e.target.value }))}>
                   <MenuItem value="meeting">Reunión</MenuItem>
                   <MenuItem value="interview">Entrevista</MenuItem>
-                  <MenuItem value="evaluation">Evaluación</MenuItem>
-                  <MenuItem value="deadline">Deadline</MenuItem>
+                <MenuItem value="presentation">Presentación</MenuItem>
+                <MenuItem value="review">Revisión</MenuItem>
+                <MenuItem value="deadline">Entrega</MenuItem>
                 </Select>
               </FormControl>
-            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowAddDialog(false)}>Cancelar</Button>
-          <Button
-            onClick={handleAddEvent}
-            variant="contained"
-            disabled={!newEvent.title || !newEvent.date || !newEvent.time}
-          >
-            Agregar Evento
-          </Button>
+          <Button onClick={handleAddEvent} variant="contained">Agregar Evento</Button>
+        </DialogActions>
+      </Dialog>
+      {/* Modal de detalle de evento */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {selectedEvent && getEventIcon(selectedEvent.type)}
+            <Typography variant="h6">Detalles del Evento</Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {(() => {
+            try {
+              if (!selectedEvent) return <Typography color="error">Evento no válido.</Typography>;
+              if (selectedEvent.type === 'interview' && Array.isArray(selectedEvent.students) && selectedEvent.students.length > 0) {
+                return selectedEvent.students.map((id: string) => {
+                  const stu = mockStudents.find(s => s.id === id);
+                  if (!stu) return null;
+                  return (
+                    <Box key={id} sx={{ mb: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                        <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+                          <EventIcon />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="h6">{stu.name}</Typography>
+                          <Typography variant="body2" color="text.secondary">{stu.email}</Typography>
+                          {selectedEvent.status && (
+                            <Chip label={String(selectedEvent.status).charAt(0).toUpperCase() + String(selectedEvent.status).slice(1)} color="info" size="small" sx={{ mt: 1 }} />
+                          )}
+                        </Box>
+                      </Box>
+                      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                        Proyecto: {selectedEvent.project || '-'}
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                        <Chip label={selectedEvent.type === 'interview' ? 'Entrevista' : selectedEvent.type} color="primary" size="small" />
+                        <Chip label={selectedEvent.duration || '-'} color="secondary" size="small" />
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <ScheduleIcon fontSize="small" />
+                        <Typography variant="body2">{selectedEvent.start && selectedEvent.end ? `${format(selectedEvent.start, 'dd-MM-yyyy, HH:mm', { locale: es })} - ${format(selectedEvent.end, 'HH:mm')}` : '-'}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <LocationOnIcon fontSize="small" />
+                        <Typography variant="body2">{selectedEvent.location || '-'}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <EmailIcon fontSize="small" />
+                        <Typography variant="body2">{stu.email}</Typography>
+                      </Box>
+                      {stu.phone && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <PhoneIcon fontSize="small" />
+                          <Typography variant="body2">{stu.phone}</Typography>
+                        </Box>
+                      )}
+                      {Array.isArray(selectedEvent.interviewers) && selectedEvent.interviewers.length > 0 && (
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="subtitle2">Entrevistadores</Typography>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
+                            {selectedEvent.interviewers.map((interviewer: string, idx: number) => (
+                              <Chip key={idx} label={interviewer} color="primary" size="small" />
+                            ))}
+                          </Box>
+                        </Box>
+                      )}
+                      {selectedEvent.notes && (
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="subtitle2">Notas</Typography>
+                          <Typography variant="body2">{selectedEvent.notes}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  );
+                });
+              } else {
+                // Renderizado por defecto para otros eventos
+                return (
+                  <Box>
+                    <Typography variant="h5" gutterBottom color="primary">{selectedEvent.title}</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 1 }}>
+                      <Box sx={{ minWidth: 300 }}>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Tipo:</strong> {selectedEvent.type}</Typography>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Fecha:</strong> {selectedEvent.start ? format(selectedEvent.start, 'EEEE, d MMMM yyyy', { locale: es }) : '-'}</Typography>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Hora:</strong> {selectedEvent.start && selectedEvent.end ? `${format(selectedEvent.start, 'HH:mm')} - ${format(selectedEvent.end, 'HH:mm')}` : '-'}</Typography>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Duración:</strong> {selectedEvent.duration || '-'}</Typography>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Ubicación:</strong> {selectedEvent.location || '-'}</Typography>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Proyecto:</strong> {selectedEvent.project || '-'}</Typography>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Empresa:</strong> {selectedEvent.company || '-'}</Typography>
+                        {Array.isArray(selectedEvent.students) && selectedEvent.students.length > 0 && (
+                          <>
+                            <Typography variant="body2" sx={{ mb: 1 }}><strong>Estudiantes:</strong> {selectedEvent.students.map((id: string) => mockStudents.find(s => s.id === id)?.name).join(', ')}</Typography>
+                            {selectedEvent.students.map((id: string) => {
+                              const stu = mockStudents.find(s => s.id === id);
+                              return stu && stu.email ? (
+                                <Typography key={id} variant="body2" sx={{ mb: 1, ml: 2 }}><strong>Correo:</strong> {stu.email}</Typography>
+                              ) : null;
+                            })}
+                          </>
+                        )}
+                      </Box>
+                      <Box sx={{ minWidth: 300 }}>
+                        <Typography variant="body2" sx={{ mb: 1 }}><strong>Descripción:</strong> {selectedEvent.description}</Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                );
+              }
+            } catch (err) {
+              return <Typography color="error">Error al mostrar el evento. Por favor revisa los datos.</Typography>;
+            }
+          })()}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
-};
+});
 
 export default CompanyCalendar; 
