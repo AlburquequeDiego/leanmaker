@@ -326,13 +326,6 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
         <Typography variant="h4" gutterBottom>
           Eventos
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setShowAddDialog(true)}
-        >
-          Nuevo Evento
-        </Button>
       </Box>
 
       {/* Estadísticas */}
@@ -633,97 +626,6 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
           <Button onClick={() => setShowFeedbackDialog(false)}>Cancelar</Button>
           <Button onClick={handleSaveFeedback} variant="contained">
             Guardar Feedback
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog para agregar evento */}
-      <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Nuevo Evento</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Estudiante"
-                value={newInterview.studentName}
-                onChange={(e) => setNewInterview(prev => ({ ...prev, studentName: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Proyecto"
-                value={newInterview.projectTitle}
-                onChange={(e) => setNewInterview(prev => ({ ...prev, projectTitle: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Tipo</InputLabel>
-                <Select
-                  value={newInterview.type}
-                  label="Tipo"
-                  onChange={(e) => setNewInterview(prev => ({ ...prev, type: e.target.value as Interview['type'] }))}
-                >
-                  <MenuItem value="technical">Técnico</MenuItem>
-                  <MenuItem value="behavioral">Conductual</MenuItem>
-                  <MenuItem value="final">Final</MenuItem>
-                  <MenuItem value="follow-up">Seguimiento</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Duración (minutos)"
-                type="number"
-                value={newInterview.duration}
-                onChange={(e) => setNewInterview(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Fecha y Hora"
-                type="datetime-local"
-                value={newInterview.scheduledDate}
-                onChange={(e) => setNewInterview(prev => ({ ...prev, scheduledDate: e.target.value }))}
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Ubicación"
-                value={newInterview.location}
-                onChange={(e) => setNewInterview(prev => ({ ...prev, location: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Notas"
-                value={newInterview.notes}
-                onChange={(e) => setNewInterview(prev => ({ ...prev, notes: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowAddDialog(false)}>Cancelar</Button>
-          <Button onClick={handleAddInterview} variant="contained">
-            Crear Evento
           </Button>
         </DialogActions>
       </Dialog>
