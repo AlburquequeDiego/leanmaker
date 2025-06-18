@@ -22,15 +22,24 @@ git clone <URL_DEL_REPOSITORIO>
    ```bash
    cd Backend
    ```
-2. Instala las dependencias de Python:
-   ```bash
-   pip install -r requirements.txt
+2. Edita el archivo `requirements.txt` y cambia la línea:
    ```
-3. (Opcional) Aplica migraciones si es necesario:
+   pytest-django==4.7.0
+   ```
+   por:
+   ```
+   pytest-django==4.5.2
+   ```
+3. Guarda el archivo.
+4. Instala las dependencias de Python:
+   ```bash
+   pip install --user -r requirements.txt
+   ```
+5. (Opcional) Aplica migraciones si es necesario:
    ```bash
    python manage.py migrate
    ```
-4. Inicia el servidor de desarrollo:
+6. Inicia el servidor de desarrollo:
    ```bash
    python manage.py runserver
    ```
