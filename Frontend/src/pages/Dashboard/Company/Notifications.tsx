@@ -305,12 +305,12 @@ export const CompanyNotifications: React.FC = () => {
           {displayedNotifications.map((notification, index) => (
             <React.Fragment key={notification.id}>
               {index > 0 && <Divider variant="inset" component="li" />}
-              <ListItem
-                sx={{
-                  border: notification.read ? 'none' : '2px solid',
-                  borderColor: 'primary.main',
+            <ListItem
+              sx={{
+                border: notification.read ? 'none' : '2px solid',
+                borderColor: 'primary.main',
                   borderRadius: 2,
-                  mb: 1,
+                mb: 1,
                   bgcolor: notification.read ? 'background.paper' : 'primary.50',
                   transition: 'all 0.3s ease',
                   '&:hover': {
@@ -320,7 +320,7 @@ export const CompanyNotifications: React.FC = () => {
                   },
                 }}
                 onClick={() => handleNotificationClick(notification)}
-                secondaryAction={
+              secondaryAction={
                   !notification.read && (
                     <IconButton
                       edge="end"
@@ -334,33 +334,33 @@ export const CompanyNotifications: React.FC = () => {
                       <MarkEmailReadIcon />
                     </IconButton>
                   )
-                }
-              >
-                <ListItemAvatar>
+              }
+            >
+              <ListItemAvatar>
                   <Avatar sx={{ 
                     bgcolor: `${getNotificationColor(notification.type)}.main`,
                     width: 48,
                     height: 48,
                   }}>
-                    {getNotificationIcon(notification.category)}
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
+                  {getNotificationIcon(notification.category)}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {notification.title}
-                      </Typography>
-                      <Chip
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {notification.title}
+                    </Typography>
+                    <Chip
                         label={getNotificationTypeLabel(notification.type)}
-                        color={getNotificationColor(notification.type) as any}
-                        size="small"
+                      color={getNotificationColor(notification.type) as any}
+                      size="small"
                         sx={{ height: 24 }}
-                      />
-                    </Box>
-                  }
-                  secondary={
-                    <Box>
+                    />
+                  </Box>
+                }
+                secondary={
+                  <Box>
                       <Typography 
                         variant="body2" 
                         color="text.primary"
@@ -369,8 +369,8 @@ export const CompanyNotifications: React.FC = () => {
                           fontWeight: notification.read ? 'normal' : 'medium'
                         }}
                       >
-                        {notification.message}
-                      </Typography>
+                      {notification.message}
+                    </Typography>
                       <Typography 
                         variant="caption" 
                         color="text.secondary"
@@ -379,12 +379,12 @@ export const CompanyNotifications: React.FC = () => {
                           fontStyle: 'italic'
                         }}
                       >
-                        {new Date(notification.createdAt).toLocaleString()}
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </ListItem>
+                      {new Date(notification.createdAt).toLocaleString()}
+                    </Typography>
+                  </Box>
+                }
+              />
+            </ListItem>
             </React.Fragment>
           ))}
         </List>
@@ -395,7 +395,7 @@ export const CompanyNotifications: React.FC = () => {
         open={!!selectedNotification} 
         onClose={handleCloseDialog}
         maxWidth="sm"
-        fullWidth
+                fullWidth
       >
         {selectedNotification && (
           <>
@@ -411,7 +411,7 @@ export const CompanyNotifications: React.FC = () => {
                 <Typography variant="h6">
                   {selectedNotification.title}
                 </Typography>
-              </Box>
+            </Box>
             </DialogTitle>
             <DialogContent>
               <Box sx={{ mt: 2 }}>
@@ -425,8 +425,8 @@ export const CompanyNotifications: React.FC = () => {
                     label={getNotificationCategoryLabel(selectedNotification.category)}
                     variant="outlined"
                     size="small"
-                  />
-                </Box>
+              />
+            </Box>
                 <Typography variant="body1" paragraph>
                   {selectedNotification.message}
                 </Typography>
@@ -436,11 +436,11 @@ export const CompanyNotifications: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Fecha: {new Date(selectedNotification.createdAt).toLocaleString()}
                 </Typography>
-              </Box>
-            </DialogContent>
-            <DialogActions>
+          </Box>
+        </DialogContent>
+        <DialogActions>
               <Button onClick={handleCloseDialog}>Cerrar</Button>
-            </DialogActions>
+        </DialogActions>
           </>
         )}
       </Dialog>
