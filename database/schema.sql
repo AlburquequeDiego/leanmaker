@@ -4,6 +4,9 @@
 -- Optimizado para rendimiento y integridad de datos
 -- =====================================================
 
+--SQL Server (mssql)
+--nombre del servidor: 
+--nombre de la base de datos: leanmaker_db
 
 
 USE leanmaker_db;
