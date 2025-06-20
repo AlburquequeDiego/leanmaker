@@ -10,3 +10,12 @@ MSSQLSERVER
 
 administrador:
 ROOT\albur
+
+
+
+autenticacion : SQL Server Autentication
+login : admintesis
+password: admintesis
+
+
+
