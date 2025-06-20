@@ -1,0 +1,12 @@
+cadena de conexion : 
+Server=localhost;Database=master;Trusted_Connection=True;
+
+
+
+nombre de la instancia:
+MSSQLSERVER
+
+
+
+administrador:
+ROOT\albur
