@@ -237,6 +237,147 @@ EXEC sp_UpdateProjectStats 8;
 EXEC sp_UpdateProjectStats 9;
 EXEC sp_UpdateProjectStats 10;
 
+-- =====================================================
+-- INSERTAR EVENTOS DE CALENDARIO
+-- =====================================================
+INSERT INTO calendar_events (title, description, type, start_date, end_date, duration, location, priority, status, project_id, company_id, student_id, created_by, attendees, notes, reminder_sent, reminder_date)
+VALUES
+('Entrevista con TechCorp Solutions', 'Entrevista técnica para evaluar habilidades en React y Node.js', 'interview', '2024-01-15T10:00:00', '2024-01-15T11:00:00', '1 hora', 'Remoto (Zoom)', 'high', 'upcoming', 1, 1, 1, 1, '["Juan Pérez", "María González"]', 'Preparar preguntas técnicas sobre React.', 0, NULL),
+('Reunión de Progreso Semanal', 'Reunión semanal para revisar el progreso del proyecto', 'meeting', '2024-01-17T14:00:00', '2024-01-17T14:30:00', '30 minutos', 'Remoto (Teams)', 'medium', 'completed', 1, 1, 1, 1, '["Juan Pérez", "Carlos Rodríguez"]', 'Revisar avances y bloqueos.', 1, '2024-01-16T10:00:00'),
+('Entrega del Módulo de Autenticación', 'Entrega final del módulo de autenticación con JWT', 'deadline', '2024-01-20T23:59:00', '2024-01-20T23:59:00', NULL, NULL, 'high', 'upcoming', 1, 1, NULL, 1, NULL, 'Entrega obligatoria para todos los estudiantes.', 0, NULL),
+('Presentación Final del Proyecto', 'Presentación final del proyecto a los stakeholders', 'presentation', '2024-01-22T15:00:00', '2024-01-22T16:00:00', '1 hora', 'Oficinas de Digital Dynamics', 'high', 'upcoming', 4, 4, NULL, 4, '["Laura Martínez", "Luis Martínez"]', 'Preparar demo y slides.', 0, NULL),
+('Revisión de Código', 'Revisión del código del módulo de reportes', 'review', '2024-01-19T16:00:00', '2024-01-19T17:00:00', '1 hora', 'Remoto (Discord)', 'medium', 'upcoming', 1, 1, 1, 1, '["Juan Pérez", "María González"]', 'Revisar pull requests pendientes.', 0, NULL),
+('Recordatorio de Entrega', 'Recuerda que tienes una entrega pendiente para el proyecto actual.', 'reminder', '2024-01-18T09:00:00', '2024-01-18T09:15:00', '15 minutos', NULL, 'low', 'upcoming', 1, 1, 1, 1, '["Juan Pérez"]', 'Enviar recordatorio automático.', 1, '2024-01-17T08:00:00');
+
+-- =====================================================
+-- INSERTAR NOTIFICACIONES MASIVAS
+-- =====================================================
+INSERT INTO mass_notifications (created_by, title, message, type, priority, target_roles, target_filters, status, scheduled_at, sent_at, total_recipients, sent_count)
+VALUES
+(1, 'Bienvenida a LeanMaker', '¡Bienvenidos a la plataforma LeanMaker! Explora los proyectos y oportunidades disponibles.', 'info', 'medium', '["student","company"]', '{"status":"active"}', 'sent', '2024-01-01T09:00:00', '2024-01-01T09:05:00', 18, 18),
+(1, 'Mantenimiento Programado', 'La plataforma estará en mantenimiento el próximo sábado de 2:00 AM a 6:00 AM.', 'warning', 'high', '["student","company","admin"]', NULL, 'sent', '2024-01-10T22:00:00', '2024-01-10T22:05:00', 20, 20),
+(1, 'Nueva Funcionalidad', 'Ahora puedes calificar a las empresas y recibir feedback detallado en tu perfil.', 'success', 'medium', '["student"]', NULL, 'sent', '2024-01-15T10:00:00', '2024-01-15T10:05:00', 11, 11);
+
+-- =====================
+-- NIVELES TRL
+-- =====================
+INSERT INTO trl_levels (nivel, descripcion, requisitos) VALUES
+('1', 'Principios básicos observados', 'Documentación de principios científicos'),
+('2', 'Concepto de tecnología formulado', 'Definición de aplicación tecnológica'),
+('3', 'Prueba experimental de concepto', 'Validación en laboratorio'),
+('4', 'Validación de componentes en laboratorio', 'Prototipo funcional'),
+('5', 'Validación en entorno relevante', 'Pruebas en entorno simulado'),
+('6', 'Demostración de sistema/proceso en entorno relevante', 'Prototipo en entorno real'),
+('7', 'Demostración de sistema/proceso en entorno real', 'Piloto en condiciones reales'),
+('8', 'Sistema completo y calificado', 'Validación final del sistema'),
+('9', 'Sistema probado y operativo', 'Implementación comercial');
+
+-- =====================
+-- ÁREAS
+-- =====================
+INSERT INTO areas (nombre, descripcion) VALUES
+('Tecnología', 'Proyectos de software, hardware, IA, etc.'),
+('Educación', 'Proyectos educativos y de formación'),
+('Salud', 'Proyectos de salud y biotecnología'),
+('Energía', 'Proyectos de energías renovables y eficiencia energética');
+
+-- =====================
+-- ESTADOS DE PROYECTO
+-- =====================
+INSERT INTO project_status (nombre, descripcion) VALUES
+('open', 'Proyecto abierto a postulaciones'),
+('in-progress', 'Proyecto en desarrollo'),
+('completed', 'Proyecto finalizado'),
+('paused', 'Proyecto pausado'),
+('cancelled', 'Proyecto cancelado');
+
+-- =====================
+-- PROYECTOS
+-- =====================
+INSERT INTO projects (company_id, status_id, area_id, title, description, trl_id, api_level, required_hours, start_date, estimated_end_date) VALUES
+(1, 1, 1, 'Plataforma de Aprendizaje IA', 'Desarrollo de una plataforma educativa con IA para personalización de contenidos.', 3, 2, 120, '2024-03-01', '2024-06-01'),
+(2, 2, 2, 'App de Salud Preventiva', 'Aplicación móvil para monitoreo de salud y hábitos saludables.', 4, 3, 200, '2024-02-15', '2024-07-15');
+
+-- =====================
+-- HISTORIAL DE ESTADOS DE PROYECTO
+-- =====================
+INSERT INTO project_status_history (project_id, status_id, user_id, comentario) VALUES
+(1, 1, 1, 'Proyecto creado y abierto a postulaciones'),
+(1, 2, 1, 'Proyecto iniciado por la empresa'),
+(2, 1, 2, 'Proyecto creado y abierto a postulaciones');
+
+-- =====================
+-- POSTULACIONES Y ASIGNACIONES
+-- =====================
+INSERT INTO applications (project_id, student_id, status) VALUES
+(1, 1, 'accepted'),
+(1, 2, 'pending'),
+(2, 3, 'accepted');
+
+INSERT INTO assignments (application_id, fecha_inicio, tareas, estado) VALUES
+(1, '2024-03-05', 'Desarrollo de backend y API', 'en curso'),
+(3, '2024-02-20', 'Diseño de interfaz y pruebas', 'en curso');
+
+-- =====================
+-- HORAS Y VALIDACIONES
+-- =====================
+INSERT INTO work_hours (assignment_id, student_id, project_id, company_id, fecha, horas_trabajadas, descripcion, estado_validacion, validador_id) VALUES
+(1, 1, 1, 1, '2024-03-10', 6, 'Implementación de endpoints REST', 'aprobado', 1),
+(1, 1, 1, 1, '2024-03-11', 5, 'Pruebas unitarias y documentación', 'pendiente', 1),
+(2, 3, 2, 2, '2024-02-25', 8, 'Diseño de pantallas principales', 'aprobado', 2);
+
+-- =====================
+-- EVALUACIONES Y EXPERIENCIA
+-- =====================
+INSERT INTO evaluations (assignment_id, calificacion, comentarios) VALUES
+(1, 5, 'Excelente desempeño en desarrollo backend.'),
+(2, 4, 'Buen trabajo en diseño, mejorar tiempos de entrega.');
+
+INSERT INTO student_profiles (student_id, experiencia_laboral, habilidades, portafolio_url, biografia) VALUES
+(1, '2 años en desarrollo web', 'JavaScript, Python, SQL', 'https://portfolio1.com', 'Apasionado por la tecnología y la educación.'),
+(2, '1 año en diseño UI/UX', 'Figma, Adobe XD, CSS', 'https://portfolio2.com', 'Creativo y detallista en interfaces.'),
+(3, 'Prácticas en salud digital', 'Flutter, Firebase, UX', 'https://portfolio3.com', 'Interesado en soluciones de salud.');
+
+INSERT INTO project_experience (profile_id, project_id, company_id, rol_desempeñado, descripcion_tareas, habilidades_aplicadas, fecha_inicio, horas_trabajadas, calificacion_empresa, comentarios_empresa) VALUES
+(1, 1, 1, 'Backend Developer', 'Desarrollo de API REST y lógica de negocio', 'Python, Django, REST', '2024-03-05', 60, 5, 'Excelente colaboración y resultados.'),
+(2, 2, 2, 'UI Designer', 'Diseño de pantallas y experiencia de usuario', 'Figma, UX', '2024-02-20', 40, 4, 'Buen trabajo, mejorar comunicación.');
+
+-- =====================
+-- STRIKES Y CERTIFICADOS
+-- =====================
+INSERT INTO strikes (student_id, motivo, estado, admin_id) VALUES
+(2, 'Entrega tardía de entregable', 'activo', 1),
+(3, 'Falta injustificada a reunión', 'resuelto', 1);
+
+INSERT INTO certificates (student_id, nombre, archivo_url, tipo_certificado, valido_hasta) VALUES
+(1, 'Certificado Python', 'https://certs.com/python1.pdf', 'Curso', '2025-03-01'),
+(2, 'Certificado UX', 'https://certs.com/ux1.pdf', 'Diplomado', '2026-01-01');
+
+-- =====================
+-- NOTIFICACIONES Y CALENDARIO
+-- =====================
+INSERT INTO notifications (user_id, mensaje, tipo) VALUES
+(1, 'Tienes una nueva asignación en el proyecto Plataforma de Aprendizaje IA', 'proyecto'),
+(2, 'Tu certificado ha sido aprobado', 'sistema'),
+(3, 'Tienes una reunión programada para el proyecto App de Salud Preventiva', 'reunion');
+
+INSERT INTO calendar_events (user_id, titulo, descripcion, fecha, hora_inicio, hora_fin, tipo, link_reunion) VALUES
+(1, 'Reunión de Kickoff', 'Inicio del proyecto con el equipo', '2024-03-06', '10:00', '11:00', 'reunion', 'https://meet.com/kickoff'),
+(2, 'Entrega de prototipo', 'Presentación del prototipo funcional', '2024-04-01', '15:00', '16:00', 'presentacion', NULL);
+
+-- =====================
+-- TRL: PREGUNTAS Y RESPUESTAS
+-- =====================
+INSERT INTO trl_questions (texto_pregunta, tipo_respuesta, nivel_trl) VALUES
+('¿El principio científico está claramente definido?', 'boolean', 1),
+('¿Existe un prototipo funcional?', 'boolean', 4),
+('¿Se ha probado el sistema en entorno real?', 'boolean', 7);
+
+INSERT INTO trl_answers (question_id, project_id, respuesta) VALUES
+(1, 1, 'true'),
+(2, 1, 'true'),
+(3, 2, 'false');
+
 GO
 
 PRINT 'Datos de ejemplo PULIDOS insertados correctamente!';
@@ -244,7 +385,7 @@ PRINT 'Total de usuarios: ' + CAST((SELECT COUNT(*) FROM users) AS NVARCHAR(10))
 PRINT 'Total de empresas: ' + CAST((SELECT COUNT(*) FROM companies) AS NVARCHAR(10));
 PRINT 'Total de estudiantes: ' + CAST((SELECT COUNT(*) FROM students) AS NVARCHAR(10));
 PRINT 'Total de proyectos: ' + CAST((SELECT COUNT(*) FROM projects) AS NVARCHAR(10));
-PRINT 'Total de postulaciones: ' + CAST((SELECT COUNT(*) FROM applications) AS NVARCHAR(10));
+PRINT 'Total de postulaciones: ' + CAST((SELECT COUNT(*) FROM applications) AS NVARCHAR(10)); 
 PRINT 'Total de evaluaciones: ' + CAST((SELECT COUNT(*) FROM evaluations) AS NVARCHAR(10));
 PRINT 'Total de strikes: ' + CAST((SELECT COUNT(*) FROM strikes) AS NVARCHAR(10));
 PRINT 'Total de notificaciones: ' + CAST((SELECT COUNT(*) FROM notifications) AS NVARCHAR(10));

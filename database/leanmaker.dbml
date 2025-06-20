@@ -1,0 +1,433 @@
+// Esquema de Base de Datos LeanMaker
+// Compatible con dbdiagram.io
+// Generado desde esquema SQL Server
+
+// =====================================================
+// TABLAS DE CONFIGURACIÓN
+// =====================================================
+
+Table niveles_trl {
+  id int [pk, increment]
+  level int [unique, not null, note: 'TRL level 1-9']
+  name varchar(100) [not null]
+  description text
+  created_at datetime [default: `now()`]
+}
+
+Table areas {
+  id int [pk, increment]
+  name varchar(100) [unique, not null]
+  description text
+  created_at datetime [default: `now()`]
+}
+
+Table estados_proyecto {
+  id int [pk, increment]
+  name varchar(50) [unique, not null]
+  description text
+  color varchar(7) [default: '#007bff']
+  is_active boolean [default: true]
+  created_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE USUARIOS
+// =====================================================
+
+Table usuarios {
+  id int [pk, increment]
+  email varchar(254) [unique, not null]
+  password varchar(128) [not null]
+  role varchar(20) [not null, note: 'admin, student, company']
+  name varchar(200) [not null]
+  is_active boolean [default: true]
+  is_staff boolean [default: false]
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+Table administradores {
+  id int [pk, increment]
+  user_id int [unique, ref: > usuarios.id]
+  permissions text [note: 'JSON array de permisos']
+  created_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE EMPRESAS
+// =====================================================
+
+Table empresas {
+  id int [pk, increment]
+  user_id int [unique, ref: > usuarios.id]
+  company_name varchar(200) [not null]
+  description text
+  industry varchar(100)
+  size varchar(50) [note: 'Pequeña, Mediana, Grande, Startup']
+  website varchar(200)
+  address text
+  city varchar(100)
+  country varchar(100)
+  founded_year int [note: '1900-current year']
+  logo_url varchar(500)
+  verified boolean [default: false]
+  rating decimal(3,2) [default: 0, note: '0-5 rating']
+  total_projects int [default: 0]
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE ESTUDIANTES
+// =====================================================
+
+Table estudiantes {
+  id int [pk, increment]
+  user_id int [unique, ref: > usuarios.id]
+  career varchar(200)
+  semester int [note: '1-12']
+  graduation_year int [note: 'current year + 10']
+  status varchar(20) [default: 'pending', note: 'pending, approved, rejected, suspended']
+  api_level int [default: 1, note: '1-4']
+  strikes int [default: 0, note: '0-10']
+  gpa decimal(3,2) [default: 0, note: '0-7 scale']
+  completed_projects int [default: 0]
+  total_hours int [default: 0]
+  skills text [note: 'JSON array de habilidades']
+  experience_years int [default: 0, note: '0-20']
+  portfolio_url varchar(500)
+  github_url varchar(500)
+  linkedin_url varchar(500)
+  availability varchar(20) [default: 'flexible', note: 'full-time, part-time, flexible']
+  location varchar(200)
+  languages text [note: 'JSON array de idiomas']
+  rating decimal(3,2) [default: 0, note: '0-5 rating']
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE PROYECTOS
+// =====================================================
+
+Table proyectos {
+  id int [pk, increment]
+  company_id int [ref: > empresas.id]
+  status_id int [ref: > estados_proyecto.id]
+  area_id int [ref: > areas.id]
+  title varchar(200) [not null]
+  description text [not null]
+  trl_id int [ref: > niveles_trl.id]
+  api_level int [note: '1-4']
+  required_hours int [note: '> 0']
+  start_date date
+  estimated_end_date date
+  real_end_date date
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+Table historial_estados_proyecto {
+  id int [pk, increment]
+  project_id int [ref: > proyectos.id]
+  status_id int [ref: > estados_proyecto.id]
+  user_id int [ref: > usuarios.id]
+  fecha_cambio datetime [default: `now()`]
+  comentario text
+}
+
+// =====================================================
+// TABLA DE POSTULACIONES Y ASIGNACIONES
+// =====================================================
+
+Table postulaciones {
+  id int [pk, increment]
+  project_id int [ref: > proyectos.id]
+  student_id int [ref: > estudiantes.id]
+  status varchar(20) [default: 'pending', note: 'pending, accepted, rejected, completed, cancelled']
+  fecha_postulacion datetime [default: `now()`]
+  motivo_rechazo text
+}
+
+Table asignaciones {
+  id int [pk, increment]
+  application_id int [unique, ref: > postulaciones.id]
+  fecha_inicio date [not null]
+  fecha_fin date
+  tareas text
+  estado varchar(20) [default: 'en curso', note: 'en curso, completado, cancelado']
+}
+
+// =====================================================
+// TABLA DE HORAS Y VALIDACIONES
+// =====================================================
+
+Table horas_trabajo {
+  id int [pk, increment]
+  assignment_id int [ref: > asignaciones.id]
+  student_id int [ref: > estudiantes.id]
+  project_id int [ref: > proyectos.id]
+  company_id int [ref: > empresas.id]
+  fecha date [not null]
+  horas_trabajadas int [note: '> 0']
+  descripcion text
+  estado_validacion varchar(20) [default: 'pendiente', note: 'pendiente, aprobado, rechazado']
+  validador_id int [ref: > usuarios.id]
+  fecha_validacion datetime
+  comentario_validacion text
+}
+
+// =====================================================
+// TABLA DE EVALUACIONES
+// =====================================================
+
+Table evaluaciones {
+  id int [pk, increment]
+  project_id int [ref: > proyectos.id]
+  student_id int [ref: > estudiantes.id]
+  evaluator_id int [ref: > usuarios.id]
+  type varchar(20) [default: 'final', note: 'intermediate, final']
+  status varchar(20) [default: 'pending', note: 'pending, completed, overdue']
+  overall_rating decimal(3,2) [note: '1-5 rating']
+  comments text
+  strengths text [note: 'JSON array']
+  areas_for_improvement text [note: 'JSON array']
+  due_date date
+  completed_date date
+  project_duration varchar(100)
+  technologies text [note: 'JSON array']
+  deliverables text [note: 'JSON array']
+  evaluator_role varchar(100)
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+Table categorias_evaluacion {
+  id int [pk, increment]
+  evaluation_id int [ref: > evaluaciones.id]
+  category_name varchar(100) [not null]
+  rating int [note: '1-5']
+  created_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE CALIFICACIONES MUTUAS
+// =====================================================
+
+Table calificaciones {
+  id int [pk, increment]
+  rater_id int [ref: > usuarios.id]
+  rated_id int [ref: > usuarios.id]
+  project_id int [ref: > proyectos.id]
+  rating decimal(3,2) [note: '1-5']
+  comment text
+  category varchar(50) [default: 'overall', note: 'overall, technical, communication, punctuality, quality']
+  created_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE STRIKES
+// =====================================================
+
+Table strikes {
+  id int [pk, increment]
+  project_id int [ref: > proyectos.id]
+  student_id int [ref: > estudiantes.id]
+  reported_by int [ref: > usuarios.id]
+  type varchar(20) [not null, note: 'attendance, deadline, quality, behavior, communication']
+  severity varchar(20) [default: 'medium', note: 'low, medium, high, critical']
+  description text [not null]
+  evidence text
+  status varchar(20) [default: 'active', note: 'active, resolved, expired']
+  resolution text
+  resolved_date datetime
+  created_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE NOTIFICACIONES
+// =====================================================
+
+Table notificaciones {
+  id int [pk, increment]
+  user_id int [ref: > usuarios.id]
+  title varchar(200) [not null]
+  message text [not null]
+  type varchar(20) [default: 'info', note: 'info, success, warning, error']
+  is_read boolean [default: false]
+  related_url varchar(500)
+  created_at datetime [default: `now()`]
+}
+
+Table notificaciones_masivas {
+  id int [pk, increment]
+  title varchar(200) [not null]
+  message text [not null]
+  target_role varchar(20) [note: 'all, student, company, admin']
+  sent_by int [ref: > usuarios.id]
+  sent_at datetime [default: `now()`]
+  recipients_count int [default: 0]
+}
+
+// =====================================================
+// TABLA DE REGISTRO DISCIPLINARIO
+// =====================================================
+
+Table registros_disciplinarios {
+  id int [pk, increment]
+  student_id int [ref: > estudiantes.id]
+  type varchar(20) [not null, note: 'strike, warning, commendation, suspension']
+  reason varchar(200) [not null]
+  description text
+  assigned_by varchar(200)
+  created_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE ENTREVISTAS
+// =====================================================
+
+Table entrevistas {
+  id int [pk, increment]
+  project_id int [ref: > proyectos.id]
+  student_id int [ref: > estudiantes.id]
+  interviewer_id int [ref: > usuarios.id]
+  type varchar(20) [default: 'technical', note: 'technical, behavioral, cultural, final']
+  status varchar(20) [default: 'scheduled', note: 'scheduled, completed, cancelled, rescheduled']
+  scheduled_date datetime [not null]
+  duration_minutes int [default: 60, note: '15-480 minutes']
+  location varchar(200)
+  meeting_url varchar(500)
+  notes text
+  feedback text
+  rating decimal(3,2) [note: '1-5']
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE EVENTOS DE CALENDARIO
+// =====================================================
+
+Table eventos_calendario {
+  id int [pk, increment]
+  title varchar(200) [not null]
+  description text
+  type varchar(20) [default: 'meeting', note: 'meeting, deadline, interview, presentation, workshop, other']
+  start_date datetime [not null]
+  end_date datetime [not null]
+  location varchar(200)
+  meeting_url varchar(500)
+  project_id int [ref: > proyectos.id]
+  student_id int [ref: > estudiantes.id]
+  company_id int [ref: > empresas.id]
+  created_by int [ref: > usuarios.id]
+  status varchar(20) [default: 'active', note: 'active, cancelled, completed']
+  is_all_day boolean [default: false]
+  reminder_minutes int [default: 15]
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE DOCUMENTOS Y ARCHIVOS
+// =====================================================
+
+Table documentos {
+  id int [pk, increment]
+  user_id int [ref: > usuarios.id]
+  project_id int [ref: > proyectos.id]
+  type varchar(50) [not null, note: 'cv, portfolio, certificate, project_deliverable, evaluation_report, contract, other']
+  title varchar(200) [not null]
+  description text
+  file_path varchar(500) [not null]
+  file_size int [note: '> 0']
+  mime_type varchar(100)
+  is_public boolean [default: false]
+  is_verified boolean [default: false]
+  uploaded_at datetime [default: `now()`]
+  verified_at datetime
+  verified_by int [ref: > usuarios.id]
+}
+
+// =====================================================
+// TABLA DE CONFIGURACIÓN DE NOTIFICACIONES
+// =====================================================
+
+Table preferencias_notificacion {
+  id int [pk, increment]
+  user_id int [unique, ref: > usuarios.id]
+  email_notifications boolean [default: true]
+  push_notifications boolean [default: true]
+  project_updates boolean [default: true]
+  evaluation_reminders boolean [default: true]
+  deadline_alerts boolean [default: true]
+  new_projects boolean [default: true]
+  system_announcements boolean [default: true]
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE LOGS DE ACTIVIDAD
+// =====================================================
+
+Table logs_actividad {
+  id int [pk, increment]
+  user_id int [ref: > usuarios.id]
+  action varchar(100) [not null]
+  entity_type varchar(50)
+  entity_id int
+  details text
+  ip_address varchar(45)
+  user_agent varchar(500)
+  created_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE CONFIGURACIÓN DE PLATAFORMA
+// =====================================================
+
+Table configuracion_plataforma {
+  id int [pk, increment]
+  config_key varchar(100) [unique, not null]
+  config_value text
+  config_type varchar(20) [default: 'string', note: 'string, integer, boolean, json']
+  description varchar(500)
+  is_public boolean [default: false]
+  created_at datetime [default: `now()`]
+  updated_at datetime [default: `now()`]
+}
+
+// =====================================================
+// TABLA DE REPORTES Y ESTADÍSTICAS
+// =====================================================
+
+Table reportes {
+  id int [pk, increment]
+  user_id int [ref: > usuarios.id]
+  report_type varchar(50) [not null, note: 'student_performance, project_analytics, company_metrics, platform_stats, financial_report']
+  title varchar(200) [not null]
+  description text
+  data text [note: 'JSON con los datos del reporte']
+  file_path varchar(500)
+  generated_at datetime [default: `now()`]
+  expires_at datetime
+  is_public boolean [default: false]
+}
+
+// =====================================================
+// TABLA DE BACKUP Y VERSIONADO
+// =====================================================
+
+Table respaldos_datos {
+  id int [pk, increment]
+  backup_type varchar(50) [not null, note: 'full, incremental, schema_only']
+  file_path varchar(500) [not null]
+  file_size bigint [note: '> 0']
+  checksum varchar(64)
+  created_by int [ref: > usuarios.id]
+  created_at datetime [default: `now()`]
+  status varchar(20) [default: 'completed', note: 'pending, in_progress, completed, failed']
+  notes text
+} 
