@@ -1,0 +1,45 @@
+INFO 2025-06-20 10:17:19,787 autoreload 18552 12348 Watching for file changes with StatReloader
+WARNING 2025-06-20 10:19:13,507 log 18552 9868 Not Found: /favicon.ico
+INFO 2025-06-20 11:14:00,574 autoreload 20976 1064 Watching for file changes with StatReloader
+INFO 2025-06-20 11:35:42,010 autoreload 18036 16188 Watching for file changes with StatReloader
+INFO 2025-06-20 11:50:32,225 autoreload 20336 19892 Watching for file changes with StatReloader
+WARNING 2025-06-20 11:50:35,230 log 20336 10780 Not Found: /favicon.ico
+INFO 2025-06-20 11:54:08,485 autoreload 20336 19892 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-20 11:54:09,348 autoreload 5512 21172 Watching for file changes with StatReloader
+INFO 2025-06-20 12:04:09,456 autoreload 5512 21172 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-20 12:04:10,375 autoreload 10920 10660 Watching for file changes with StatReloader
+INFO 2025-06-20 12:04:13,939 autoreload 10920 10660 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-20 12:04:14,783 autoreload 12920 2132 Watching for file changes with StatReloader
+WARNING 2025-06-20 12:04:20,752 log 12920 15888 Not Found: /favicon.ico
+INFO 2025-06-20 12:17:13,870 autoreload 12920 2132 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-06-20 12:17:14,745 autoreload 18108 7308 Watching for file changes with StatReloader
+INFO 2025-06-20 12:17:17,214 autoreload 18108 7308 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-06-20 12:17:17,980 autoreload 2676 20336 Watching for file changes with StatReloader
+INFO 2025-06-20 12:17:25,606 autoreload 2676 20336 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-20 12:17:26,363 autoreload 11004 4128 Watching for file changes with StatReloader
+INFO 2025-06-20 12:17:30,927 autoreload 11004 4128 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-20 12:17:31,824 autoreload 5028 7888 Watching for file changes with StatReloader
+INFO 2025-06-20 12:18:05,444 autoreload 5028 7888 C:\Users\albur\Desktop\leanmaker\Backend\users\migrations\0001_initial.py changed, reloading.
+INFO 2025-06-20 12:18:06,166 autoreload 13044 19260 Watching for file changes with StatReloader
+INFO 2025-06-20 12:18:57,368 autoreload 13044 19260 C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\migrations\0001_initial.py changed, reloading.
+INFO 2025-06-20 12:18:58,091 autoreload 20284 8772 Watching for file changes with StatReloader
+INFO 2025-06-20 12:20:25,761 autoreload 20284 8772 C:\Users\albur\Desktop\leanmaker\Backend\users\admin.py changed, reloading.
+INFO 2025-06-20 12:20:26,582 autoreload 4100 13504 Watching for file changes with StatReloader
+INFO 2025-06-20 12:24:42,186 autoreload 7536 20732 Watching for file changes with StatReloader
+WARNING 2025-06-20 12:26:01,051 log 7536 14572 Not Found: /favicon.ico
+WARNING 2025-06-20 12:26:09,364 log 7536 12028 Not Found: /api/schema/
+WARNING 2025-06-20 12:26:09,581 log 7536 12028 Not Found: /favicon.ico
+WARNING 2025-06-20 12:26:18,541 log 7536 7968 Not Found: /favicon.ico
+INFO 2025-06-20 12:28:15,865 autoreload 4196 7284 Watching for file changes with StatReloader
+WARNING 2025-06-20 12:31:33,613 log 4196 17804 Not Found: /favicon.ico
+INFO 2025-06-20 12:36:20,110 autoreload 13724 21448 Watching for file changes with StatReloader
+WARNING 2025-06-20 12:36:24,209 log 13724 2348 Not Found: /favicon.ico
+WARNING 2025-06-20 12:36:29,928 log 13724 3296 Not Found: /favicon.ico
+INFO 2025-06-20 12:40:40,870 autoreload 13724 21448 C:\Users\albur\Desktop\leanmaker\Backend\users\admin.py changed, reloading.
+INFO 2025-06-20 12:40:41,683 autoreload 16744 16936 Watching for file changes with StatReloader
+INFO 2025-06-20 12:40:54,412 autoreload 1296 15172 Watching for file changes with StatReloader
+INFO 2025-06-20 12:43:18,589 autoreload 1296 15172 C:\Users\albur\Desktop\leanmaker\Backend\users\admin.py changed, reloading.
+INFO 2025-06-20 12:43:19,709 autoreload 15088 13540 Watching for file changes with StatReloader
+INFO 2025-06-20 12:45:22,098 autoreload 19984 8844 Watching for file changes with StatReloader
+WARNING 2025-06-20 12:45:25,223 log 19984 14008 Not Found: /favicon.ico
+WARNING 2025-06-20 12:45:34,875 log 19984 16960 Not Found: /favicon.ico

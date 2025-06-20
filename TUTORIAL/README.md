@@ -3,7 +3,7 @@
 Este tutorial te guiará paso a paso para instalar y ejecutar el proyecto Leanmaker (Frontend y Backend) en tu entorno local.
 
 ## Requisitos previos
-- Tener instalado **Python 3.10+**
+- Tener instalado **Python 3.12**
 - Tener instalado **Node.js 18+** y **npm**
 
 ---

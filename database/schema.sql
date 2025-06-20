@@ -6,7 +6,7 @@
 
 USE leanmaker_db;
 GO
-
+ 
 -- =====================================================
 -- ELIMINAR TABLAS EXISTENTES (EN ORDEN INVERSO DE DEPENDENCIAS)
 -- Esto permite que el script se pueda ejecutar múltiples veces.

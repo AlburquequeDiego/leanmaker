@@ -5,7 +5,7 @@
 
 USE leanmaker_db;
 GO
-
+ 
 -- Limpiar tablas en orden inverso de dependencias para poder re-ejecutar el script
 DELETE FROM calendar_events;
 DELETE FROM notifications;

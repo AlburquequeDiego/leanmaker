@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     
     # Local apps
-    'users',
+    'users.apps.UsersConfig',
     'companies',
     'students',
     'projects',
@@ -58,6 +58,11 @@ INSTALLED_APPS = [
     'work_hours',
     'interviews',
     'calendar_events',
+    
+    # Nuevas apps basadas en el análisis del frontend
+    'platform_settings',
+    'strikes',
+    'questionnaires',
 ]
 
 MIDDLEWARE = [
@@ -224,6 +229,9 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
     'SCHEMA_PATH_PREFIX': '/api/',
 }
+
+# Custom User Model
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Email Configuration (para producción)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
