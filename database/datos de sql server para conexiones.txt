@@ -16,6 +16,7 @@ autenticacion : SQL Server Autentication
 login : admintesis
 password: admintesis
 
+correo : diego.alburqueque@inacapmail.cl
 
 archivos de las bases de datos en pc:
 C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\

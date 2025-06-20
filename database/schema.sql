@@ -6,7 +6,23 @@
 
 USE leanmaker_db;
 GO
- 
+ -- 1. Asegurarse de que estamos operando en la base de datos correcta
+USE leanmaker_db;
+GO
+
+-- 2. Crear un usuario de base de datos vinculado al login 'admintesis'.
+--    Si el usuario ya existe en la base de datos, este comando dará un error
+--    que puedes ignorar sin problemas.
+CREATE USER admintesis FOR LOGIN admintesis;
+GO
+
+-- 3. Darle al usuario todos los permisos sobre la base de datos 'leanmaker_db'.
+--    Este es el paso más importante.
+ALTER ROLE db_owner ADD MEMBER admintesis;
+GO
+
+
+
 -- =====================================================
 -- ELIMINAR TABLAS EXISTENTES (EN ORDEN INVERSO DE DEPENDENCIAS)
 -- Esto permite que el script se pueda ejecutar múltiples veces.

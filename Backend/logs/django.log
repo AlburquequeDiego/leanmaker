@@ -43,3 +43,15 @@ INFO 2025-06-20 12:43:19,709 autoreload 15088 13540 Watching for file changes wi
 INFO 2025-06-20 12:45:22,098 autoreload 19984 8844 Watching for file changes with StatReloader
 WARNING 2025-06-20 12:45:25,223 log 19984 14008 Not Found: /favicon.ico
 WARNING 2025-06-20 12:45:34,875 log 19984 16960 Not Found: /favicon.ico
+INFO 2025-06-20 14:56:29,553 autoreload 15760 20828 Watching for file changes with StatReloader
+WARNING 2025-06-20 14:56:32,973 log 15760 10628 Not Found: /
+WARNING 2025-06-20 14:56:33,076 log 15760 10628 Not Found: /favicon.ico
+WARNING 2025-06-20 14:57:34,024 log 15760 2996 Not Found: /
+WARNING 2025-06-20 14:57:34,096 log 15760 2996 Not Found: /favicon.ico
+WARNING 2025-06-20 14:57:56,964 log 15760 17148 Unauthorized: /api/health/
+WARNING 2025-06-20 14:58:01,643 log 15760 21032 Unauthorized: /api/health/
+WARNING 2025-06-20 14:58:03,696 log 15760 21032 Unauthorized: /api/health/
+WARNING 2025-06-20 14:58:04,468 log 15760 21032 Unauthorized: /api/health/
+WARNING 2025-06-20 14:58:06,620 log 15760 21032 Unauthorized: /api/health/
+WARNING 2025-06-20 14:58:08,690 log 15760 21032 Unauthorized: /api/health/
+WARNING 2025-06-20 14:58:10,714 log 15760 21032 Unauthorized: /api/health/

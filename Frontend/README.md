@@ -3,7 +3,7 @@
 
 ## 📋 Descripción General
 LeanMaker es una plataforma web desarrollada en React con TypeScript que conecta estudiantes con oportunidades laborales reales. El frontend está diseñado como un mockup funcional con navegación completa, autenticación simulada y interfaces para tres roles principales: Estudiantes, Empresas y Administradores.
-
+ 
 ## 🛠️ Instalación rápida (recomendado)
 
 ```bash

@@ -1,0 +1,72 @@
+{
+  "base_url": "http://localhost:8000",
+  "api_prefix": "/api",
+  "endpoints": {
+    "auth": {
+      "login": "/api/token/",
+      "register": "/api/users/register/",
+      "refresh": "/api/token/refresh/"
+    },
+    "users": {
+      "profile": "/api/users/profile/",
+      "admin_stats": "/api/users/admin_dashboard_stats/",
+      "activity_chart": "/api/users/user_activity_chart/"
+    },
+    "companies": {
+      "profile": "/api/companies/profile/",
+      "dashboard_stats": "/api/companies/dashboard_stats/",
+      "project_performance": "/api/companies/project_performance/"
+    },
+    "students": {
+      "profile": "/api/students/profile/",
+      "dashboard_stats": "/api/students/dashboard_stats/",
+      "application_history": "/api/students/application_history/"
+    },
+    "projects": {
+      "list": "/api/projects/",
+      "detail": "/api/projects/{id}/",
+      "evaluations": "/api/projects/{id}/evaluations/"
+    },
+    "applications": {
+      "list": "/api/applications/",
+      "detail": "/api/applications/{id}/"
+    },
+    "notifications": {
+      "list": "/api/notifications/",
+      "mark_all_read": "/api/notifications/mark_all_as_read/"
+    },
+    "strikes": {
+      "list": "/api/strikes/",
+      "detail": "/api/strikes/{id}/"
+    },
+    "questionnaires": {
+      "list": "/api/questionnaires/questionnaires/",
+      "submit_responses": "/api/questionnaires/questionnaires/{id}/submit_responses/",
+      "answers": "/api/questionnaires/answers/"
+    },
+    "platform_settings": {
+      "list": "/api/platform/settings/"
+    },
+    "calendar": {
+      "events": "/api/calendar/events/",
+      "my_events": "/api/calendar/events/my_events/",
+      "upcoming_events": "/api/calendar/events/upcoming_events/"
+    },
+    "work_hours": {
+      "list": "/api/work-hours/work-hours/",
+      "summary": "/api/work-hours/work-hours/my_summary/",
+      "approve": "/api/work-hours/work-hours/{id}/approve/",
+      "reject": "/api/work-hours/work-hours/{id}/reject/"
+    }
+  },
+  "config": {
+    "pagination": {
+      "page_size": 20,
+      "max_page_size": 100
+    },
+    "file_upload": {
+      "max_size": "10MB",
+      "allowed_types": ["jpg", "jpeg", "png", "pdf", "doc", "docx"]
+    }
+  }
+} 

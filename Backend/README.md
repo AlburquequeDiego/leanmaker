@@ -4,7 +4,6 @@
 Backend de la plataforma LeanMaker desarrollado con Django 3.2 y Django REST Framework. Conecta estudiantes de INACAP con empresas a través de proyectos temporales.
 
 ---
-
 ## ⚠️ IMPORTANTE: Compatibilidad de Python
 
 **Django 3.2 NO es compatible con Python 3.13** debido a que Python 3.13 eliminó el módulo `cgi` que Django 3.2 requiere.
