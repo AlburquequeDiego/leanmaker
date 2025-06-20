@@ -8,6 +8,39 @@ USE leanmaker_db;
 GO
 
 -- =====================================================
+-- ELIMINAR TABLAS EXISTENTES (EN ORDEN INVERSO DE DEPENDENCIAS)
+-- Esto permite que el script se pueda ejecutar múltiples veces.
+-- =====================================================
+DROP TABLE IF EXISTS data_backups;
+DROP TABLE IF EXISTS reports;
+DROP TABLE IF EXISTS platform_config;
+DROP TABLE IF EXISTS activity_logs;
+DROP TABLE IF EXISTS notification_preferences;
+DROP TABLE IF EXISTS documents;
+DROP TABLE IF EXISTS calendar_events;
+DROP TABLE IF EXISTS interviews;
+DROP TABLE IF EXISTS disciplinary_records;
+DROP TABLE IF EXISTS mass_notifications;
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS strikes;
+DROP TABLE IF EXISTS ratings;
+DROP TABLE IF EXISTS evaluation_categories;
+DROP TABLE IF EXISTS evaluations;
+DROP TABLE IF EXISTS work_hours;
+DROP TABLE IF EXISTS assignments;
+DROP TABLE IF EXISTS applications;
+DROP TABLE IF EXISTS project_status_history;
+DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS students;
+DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS admins;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS project_status;
+DROP TABLE IF EXISTS areas;
+DROP TABLE IF EXISTS trl_levels;
+GO
+
+-- =====================================================
 -- TABLAS DE CONFIGURACIÓN (DEBEN IR PRIMERO)
 -- =====================================================
 
@@ -131,7 +164,7 @@ CREATE TABLE students (
 -- =====================================================
 CREATE TABLE projects (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
     status_id INT FOREIGN KEY REFERENCES project_status(id),
     area_id INT FOREIGN KEY REFERENCES areas(id),
     title NVARCHAR(200) NOT NULL,
@@ -161,7 +194,7 @@ CREATE TABLE project_status_history (
 CREATE TABLE applications (
     id INT IDENTITY(1,1) PRIMARY KEY,
     project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
     status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'completed', 'cancelled')),
     fecha_postulacion DATETIME2 DEFAULT GETDATE(),
     motivo_rechazo NVARCHAR(MAX)
@@ -182,9 +215,9 @@ CREATE TABLE assignments (
 CREATE TABLE work_hours (
     id INT IDENTITY(1,1) PRIMARY KEY,
     assignment_id INT FOREIGN KEY REFERENCES assignments(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
+    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE NO ACTION,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
     fecha DATE NOT NULL,
     horas_trabajadas INT CHECK (horas_trabajadas > 0),
     descripcion NVARCHAR(MAX),
@@ -200,7 +233,7 @@ CREATE TABLE work_hours (
 CREATE TABLE evaluations (
     id INT IDENTITY(1,1) PRIMARY KEY,
     project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
     evaluator_id INT FOREIGN KEY REFERENCES users(id),
     type NVARCHAR(20) DEFAULT 'final' CHECK (type IN ('intermediate', 'final')),
     status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue')),
@@ -242,8 +275,8 @@ CREATE TABLE evaluation_categories (
 -- =====================================================
 CREATE TABLE ratings (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    rater_id INT FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
-    rated_id INT FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
+    rater_id INT FOREIGN KEY REFERENCES users(id) ON DELETE NO ACTION,
+    rated_id INT FOREIGN KEY REFERENCES users(id) ON DELETE NO ACTION,
     project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
     rating DECIMAL(3,2) CHECK (rating >= 1 AND rating <= 5),
     comment NVARCHAR(MAX),
@@ -259,20 +292,12 @@ CREATE TABLE ratings (
 -- =====================================================
 CREATE TABLE strikes (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    reported_by INT FOREIGN KEY REFERENCES users(id),
-    type NVARCHAR(20) NOT NULL CHECK (type IN ('attendance', 'deadline', 'quality', 'behavior', 'communication')),
-    severity NVARCHAR(20) DEFAULT 'medium' CHECK (severity IN ('low', 'medium', 'high', 'critical')),
-    description NVARCHAR(MAX) NOT NULL,
-    evidence NVARCHAR(MAX),
-    status NVARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'resolved', 'expired')),
-    resolution NVARCHAR(MAX),
-    resolved_date DATETIME2,
-    created_at DATETIME2 DEFAULT GETDATE(),
-    
-    -- Constraints adicionales
-    CONSTRAINT CK_strikes_description_length CHECK (LEN(description) >= 10)
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
+    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE SET NULL,
+    assigned_by INT FOREIGN KEY REFERENCES users(id),
+    reason NVARCHAR(MAX) NOT NULL,
+    status NVARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'appealed', 'resolved')),
+    created_at DATETIME2 DEFAULT GETDATE()
 );
 
 -- =====================================================
@@ -328,8 +353,9 @@ CREATE TABLE disciplinary_records (
 -- =====================================================
 CREATE TABLE interviews (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
+    application_id INT UNIQUE FOREIGN KEY REFERENCES applications(id) ON DELETE CASCADE,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
     interviewer_id INT FOREIGN KEY REFERENCES users(id),
     type NVARCHAR(20) DEFAULT 'technical' CHECK (type IN ('technical', 'behavioral', 'cultural', 'final')),
     status NVARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled', 'rescheduled')),
@@ -353,27 +379,24 @@ CREATE TABLE interviews (
 -- =====================================================
 CREATE TABLE calendar_events (
     id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT FOREIGN KEY REFERENCES users(id) ON DELETE NO ACTION,
+    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE NO ACTION,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
+    interview_id INT FOREIGN KEY REFERENCES interviews(id) ON DELETE SET NULL,
     title NVARCHAR(200) NOT NULL,
     description NVARCHAR(MAX),
-    type NVARCHAR(20) DEFAULT 'meeting' CHECK (type IN ('meeting', 'deadline', 'interview', 'presentation', 'workshop', 'other')),
-    start_date DATETIME2 NOT NULL,
-    end_date DATETIME2 NOT NULL,
+    start_time DATETIME2 NOT NULL,
+    end_time DATETIME2 NOT NULL,
+    is_all_day BIT DEFAULT 0,
+    event_type NVARCHAR(50) DEFAULT 'general',
     location NVARCHAR(200),
     meeting_url NVARCHAR(500),
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
     created_by INT FOREIGN KEY REFERENCES users(id),
     status NVARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'cancelled', 'completed')),
-    is_all_day BIT DEFAULT 0,
-    reminder_minutes INT DEFAULT 15 CHECK (reminder_minutes >= 0),
-    created_at DATETIME2 DEFAULT GETDATE(),
-    updated_at DATETIME2 DEFAULT GETDATE(),
     
-    -- Constraints adicionales
-    CONSTRAINT CK_calendar_events_dates CHECK (end_date > start_date),
-    CONSTRAINT CK_calendar_events_title_length CHECK (LEN(title) >= 2),
-    CONSTRAINT CK_calendar_events_meeting_url CHECK (meeting_url IS NULL OR meeting_url LIKE 'http%')
+    -- Constraints
+    CONSTRAINT CK_calendar_events_end_time CHECK (end_time >= start_time)
 );
 
 -- =====================================================
@@ -546,3 +569,6 @@ PRINT 'Base de datos: leanmaker_db';
 PRINT 'Tablas creadas: 25';
 PRINT 'Constraints adicionales: 60+';
 PRINT 'Datos iniciales insertados'; 
+
+
+
