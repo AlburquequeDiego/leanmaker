@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Box,
   Card,
-  CardContent,
   Typography,
   Button,
   Chip,
@@ -28,6 +27,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Publish as PublishIcon,
   Drafts as DraftsIcon,
+  TaskAlt as TaskAltIcon,
 } from '@mui/icons-material';
 
 interface Project {
@@ -186,36 +186,12 @@ const Projects: React.FC = () => {
   const [hoursError, setHoursError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => setTab(newValue);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewProject({ ...newProject, [e.target.name]: e.target.value });
-  };
-
-  const handleCreateProject = () => {
-    if (!newProject.title || !newProject.description) return;
-    setProjects([
-      ...projects,
-      {
-        id: (projects.length + 1).toString(),
-        title: newProject.title,
-        description: newProject.description,
-        requirements: newProject.requirements.split(',').map(s => s.trim()).filter(Boolean),
-        duration: newProject.duration,
-        studentsNeeded: Number(newProject.studentsNeeded),
-        selectedStudents: 0,
-        status: 'draft',
-        applicationsCount: 0,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-    setNewProject({ title: '', description: '', requirements: '', duration: '', studentsNeeded: 1 });
-    setTab(0);
-  };
 
   const handleSectionCountChange = (status: Project['status']) => (e: SelectChangeEvent<number>) => {
     setSectionCounts({ ...sectionCounts, [status]: Number(e.target.value) });
@@ -296,20 +272,6 @@ const Projects: React.FC = () => {
       case 1:
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6">Información General</Typography>
-            <TextField label="Fecha de ingreso" name="fechaIngreso" type="date" value={form.fechaIngreso} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
-            <TextField label="Fecha de egreso" name="fechaEgreso" type="date" value={form.fechaEgreso} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
-            <TextField label="Encargado de proyecto" name="encargado" value={form.encargado} onChange={handleFormChange} fullWidth />
-            <TextField label="Equipo de proyecto" name="equipo" value={form.equipo} onChange={handleFormChange} fullWidth />
-            <TextField label="Número de participantes" name="participantes" type="number" value={form.participantes} onChange={handleFormChange} fullWidth />
-            <TextField label="Estado de cierre" name="cierre" value={form.cierre} onChange={handleFormChange} fullWidth placeholder="Egresado o Cerrado" />
-            <TextField label="Horas de práctica ofrecidas" name="horas" type="number" value={form.horas} onChange={handleFormChange} fullWidth error={!!hoursError} helperText={hoursError} required />
-            <TextField label="Duración en meses" name="meses" type="number" value={form.meses} onChange={handleFormChange} fullWidth required />
-          </Box>
-        );
-      case 2:
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Typography variant="h6">Diagnóstico TRL</Typography>
             {TRL_QUESTIONS.map((q, idx) => (
               <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -318,7 +280,15 @@ const Projects: React.FC = () => {
                   id={`trl${idx + 1}`}
                   name="trl"
                   checked={trlSelected === idx + 1}
-                  onChange={() => setTrlSelected(idx + 1)}
+                  onChange={() => {
+                    setTrlSelected(idx + 1);
+                    // Autocompletar horas según TRL
+                    let minHoras = 20;
+                    if (idx + 1 >= 3 && idx + 1 <= 4) minHoras = 40;
+                    if (idx + 1 >= 5 && idx + 1 <= 6) minHoras = 80;
+                    if (idx + 1 >= 7) minHoras = 160;
+                    setForm(f => ({ ...f, horas: minHoras.toString() }));
+                  }}
                   style={{ marginRight: 8 }}
                 />
                 <label htmlFor={`trl${idx + 1}`} style={{ cursor: 'pointer' }}>
@@ -326,6 +296,39 @@ const Projects: React.FC = () => {
                 </label>
               </Box>
             ))}
+            {/* Tabla de referencia */}
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" fontWeight={700}>Referencia de horas mínimas según TRL</Typography>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 8 }}>
+                <thead>
+                  <tr style={{ background: '#f5f5f5' }}>
+                    <th style={{ padding: 6, border: '1px solid #ddd' }}>Semestre</th>
+                    <th style={{ padding: 6, border: '1px solid #ddd' }}>Nivel de desarrollo</th>
+                    <th style={{ padding: 6, border: '1px solid #ddd' }}>Horas de práctica</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>1</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría</td><td style={{ padding: 6, border: '1px solid #ddd' }}>20</td></tr>
+                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>2</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría + Propuesta solución</td><td style={{ padding: 6, border: '1px solid #ddd' }}>40</td></tr>
+                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>3</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría + Propuesta solución + implementación</td><td style={{ padding: 6, border: '1px solid #ddd' }}>80</td></tr>
+                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>4</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría + Propuesta solución + implementación + upgrade/controll</td><td style={{ padding: 6, border: '1px solid #ddd' }}>160</td></tr>
+                </tbody>
+              </table>
+            </Box>
+          </Box>
+        );
+      case 2:
+        return (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="h6">Información General</Typography>
+            <TextField label="Fecha de ingreso" name="fechaIngreso" type="date" value={form.fechaIngreso} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
+            <TextField label="Fecha de egreso" name="fechaEgreso" type="date" value={form.fechaEgreso} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
+            <TextField label="Encargado de proyecto" name="encargado" value={form.encargado} onChange={handleFormChange} fullWidth />
+            <TextField label="Equipo de proyecto" name="equipo" value={form.equipo} onChange={handleFormChange} fullWidth />
+            <TextField label="Número de participantes" name="participantes" type="number" value={form.participantes} onChange={handleFormChange} fullWidth />
+            <TextField label="Estado de cierre" name="cierre" value={form.cierre} onChange={handleFormChange} fullWidth placeholder="Egresado o Cerrado" />
+            <TextField label="Horas de práctica ofrecidas" name="horas" type="number" value={form.horas} onChange={handleFormChange} fullWidth error={Boolean(hoursError) || Boolean(trlSelected && Number(form.horas) < (trlSelected <= 2 ? 20 : trlSelected <= 4 ? 40 : trlSelected <= 6 ? 80 : 160))} helperText={trlSelected && Number(form.horas) < (trlSelected <= 2 ? 20 : trlSelected <= 4 ? 40 : trlSelected <= 6 ? 80 : 160) ? `Debe ofrecer al menos ${trlSelected <= 2 ? 20 : trlSelected <= 4 ? 40 : trlSelected <= 6 ? 80 : 160} horas para el TRL seleccionado` : hoursError} required />
+            <TextField label="Duración en meses" name="meses" type="number" value={form.meses} onChange={handleFormChange} fullWidth required />
           </Box>
         );
       case 3:
@@ -435,8 +438,11 @@ const Projects: React.FC = () => {
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1, minWidth: 120, ml: 2 }}>
-                {project.status === 'published' && (
+                {(project.status === 'published' || project.status === 'active') && (
                   <IconButton color="info" size="small" onClick={() => handleEditClick(project)}><EditIcon /></IconButton>
+                )}
+                {(project.status === 'active' || project.status === 'published') && (
+                  <IconButton color="success" size="small" onClick={() => handleCompleteClick(project)}><TaskAltIcon /></IconButton>
                 )}
                 <IconButton color="primary" size="small" onClick={() => handleViewClick(project)}><VisibilityIcon /></IconButton>
                 <IconButton color="error" size="small" onClick={() => handleDeleteClick(project)}><DeleteIcon /></IconButton>
@@ -462,6 +468,27 @@ const Projects: React.FC = () => {
   };
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
+    setSelectedProject(null);
+  };
+
+  // Completar proyecto
+  const handleCompleteClick = (project: Project) => {
+    setSelectedProject(project);
+    setCompleteDialogOpen(true);
+  };
+  const handleCompleteConfirm = () => {
+    if (selectedProject) {
+      setProjects(projects.map(p =>
+        p.id === selectedProject.id
+          ? { ...p, status: 'completed' as const }
+          : p
+      ));
+    }
+    setCompleteDialogOpen(false);
+    setSelectedProject(null);
+  };
+  const handleCompleteCancel = () => {
+    setCompleteDialogOpen(false);
     setSelectedProject(null);
   };
 
@@ -512,7 +539,16 @@ const Projects: React.FC = () => {
             studentsNeeded: Number(form.participantes) || 1,
             horas: Number(form.horas) || undefined,
             duration: form.meses ? `${form.meses} meses` : '',
-          }
+            tipo: form.tipo,
+            comoLlegaronInstitucion: form.comoLlegaronInstitucion,
+            comentario: form.comentario,
+            fechaIngreso: form.fechaIngreso,
+            fechaEgreso: form.fechaEgreso,
+            encargado: form.encargado,
+            equipo: form.equipo,
+            cierre: form.cierre,
+            trlLevel: trlSelected || undefined,
+          } as Project
         : p
     ));
     setEditMode(false);
@@ -549,7 +585,11 @@ const Projects: React.FC = () => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
             <Button disabled={createStep === 0} onClick={prevStep} variant="outlined">Anterior</Button>
             {editMode ? (
-              <Button variant="contained" color="success" onClick={handleSaveEditProject}>Guardar Cambios</Button>
+              createStep < 3 ? (
+                <Button variant="contained" color="primary" onClick={nextStep}>Siguiente</Button>
+              ) : (
+                <Button variant="contained" color="success" onClick={handleSaveEditProject}>Guardar Cambios</Button>
+              )
             ) : (
               createStep < 3 ? (
                 <Button variant="contained" color="primary" onClick={nextStep}>Siguiente</Button>
@@ -583,14 +623,97 @@ const Projects: React.FC = () => {
           <Button onClick={handleDeleteConfirm} color="error">Eliminar</Button>
         </DialogActions>
       </Dialog>
+      {/* Diálogo de completar proyecto */}
+      <Dialog open={completeDialogOpen} onClose={handleCompleteCancel}>
+        <DialogTitle>¿Marcar proyecto como completado?</DialogTitle>
+        <DialogContent>
+          ¿Seguro que deseas marcar el proyecto "{selectedProject?.title}" como completado?
+          <br />
+          <br />
+          <strong>Esta acción no se puede deshacer.</strong>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCompleteCancel}>Cancelar</Button>
+          <Button onClick={handleCompleteConfirm} color="success" variant="contained">
+            Marcar como Completado
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/* Modal de ver proyecto */}
-      <Dialog open={viewDialogOpen} onClose={handleViewClose} maxWidth="sm" fullWidth>
+      <Dialog open={viewDialogOpen} onClose={handleViewClose} maxWidth="md" fullWidth>
         <DialogTitle>Detalles del Proyecto</DialogTitle>
         <DialogContent>
-          {/* Muestra aquí los detalles del proyecto seleccionado */}
-          <Typography variant="h6">{selectedProject?.title}</Typography>
-          <Typography variant="body2">{selectedProject?.description}</Typography>
-          {/* Agrega más campos según lo que quieras mostrar */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="h6" color="primary">{selectedProject?.title}</Typography>
+            
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Descripción</Typography>
+                <Typography variant="body2">{selectedProject?.description}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Tipo de Actividad</Typography>
+                <Typography variant="body2">{selectedProject?.tipo || 'No especificado'}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
+                <Typography variant="body2">{selectedProject?.duration}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Horas de Práctica</Typography>
+                <Typography variant="body2">{selectedProject?.horas ? `${selectedProject.horas} horas` : 'No especificado'}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Fecha de Ingreso</Typography>
+                <Typography variant="body2">{selectedProject?.fechaIngreso || 'No especificado'}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Fecha de Egreso</Typography>
+                <Typography variant="body2">{selectedProject?.fechaEgreso || 'No especificado'}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Encargado</Typography>
+                <Typography variant="body2">{selectedProject?.encargado || 'No especificado'}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Equipo</Typography>
+                <Typography variant="body2">{selectedProject?.equipo || 'No especificado'}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">Estado de Cierre</Typography>
+                <Typography variant="body2">{selectedProject?.cierre || 'No especificado'}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">TRL Level</Typography>
+                <Typography variant="body2">{selectedProject?.trlLevel ? `TRL ${selectedProject.trlLevel}` : 'No especificado'}</Typography>
+              </Box>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">¿Cómo llegaron a la institución?</Typography>
+              <Typography variant="body2">{selectedProject?.comoLlegaronInstitucion || 'No especificado'}</Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Comentario Adicional</Typography>
+              <Typography variant="body2">{selectedProject?.comentario || 'No especificado'}</Typography>
+            </Box>
+            
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Chip label={`${selectedProject?.applicationsCount} postulaciones`} size="small" color="info" />
+              <Chip label={`${selectedProject?.selectedStudents}/${selectedProject?.studentsNeeded} estudiantes`} size="small" color="success" />
+              <Chip label={STATUS_LABELS[selectedProject?.status || 'draft']} color={STATUS_COLORS[selectedProject?.status || 'draft']} size="small" />
+            </Box>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleViewClose}>Cerrar</Button>
