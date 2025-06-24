@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationCreateSerializer
-from users.models import CustomUser
+from users.models import User
 from students.views import IsStudentUser
 from companies.views import IsCompanyUser
 
@@ -40,9 +40,9 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         - Empresas ven solo las de sus proyectos.
         """
         user = self.request.user
-        if user.role == CustomUser.Role.STUDENT:
+        if user.role == STUDENT:
             return Application.objects.filter(student=user.student_profile)
-        if user.role == CustomUser.Role.COMPANY:
+        if user.role == COMPANY:
             return Application.objects.filter(project__company=user.company_profile)
         # Admins ven todo
         return Application.objects.all()

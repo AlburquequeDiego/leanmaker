@@ -12,8 +12,8 @@ class Application(models.Model):
         REJECTED = 'REJECTED', 'Rechazada'
         WITHDRAWN = 'WITHDRAWN', 'Retirada'
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='applications', verbose_name='Proyecto')
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='applications', verbose_name='Estudiante')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='student_applications', verbose_name='Proyecto')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_applications', verbose_name='Estudiante')
     
     application_date = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Postulación')
     status = models.CharField(max_length=25, choices=Status.choices, default=Status.PENDING, verbose_name='Estado')

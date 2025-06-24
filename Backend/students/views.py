@@ -7,7 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import Student
 from .serializers import StudentSerializer, StudentUpdateSerializer
-from users.models import CustomUser
+from users.models import User
 from applications.models import Application
 from evaluations.models import Evaluation
 from strikes.models import Strike
@@ -19,7 +19,7 @@ class IsStudentUser(permissions.BasePermission):
     Permiso para solo permitir a usuarios con el rol de Estudiante.
     """
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == CustomUser.Role.STUDENT
+        return request.user.is_authenticated and request.user.role == STUDENT
 
 class StudentProfileView(generics.RetrieveUpdateAPIView):
     """
@@ -47,7 +47,7 @@ class StudentListView(generics.ListAPIView):
     def get_permissions(self):
         # Solo usuarios de Empresa o Administradores pueden ver la lista
         if self.request.user.is_authenticated and (
-            self.request.user.role == CustomUser.Role.COMPANY or self.request.user.is_staff
+            self.request.user.role == COMPANY or self.request.user.is_staff
         ):
             return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser()] # Denegar a otros
@@ -63,7 +63,7 @@ class StudentDetailView(generics.RetrieveAPIView):
 
     def get_permissions(self):
         if self.request.user.is_authenticated and (
-            self.request.user.role == CustomUser.Role.COMPANY or self.request.user.is_staff
+            self.request.user.role == COMPANY or self.request.user.is_staff
         ):
             return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser()]

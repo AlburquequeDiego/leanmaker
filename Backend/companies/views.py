@@ -7,7 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import Company
 from .serializers import CompanySerializer, CompanyUpdateSerializer
-from users.models import CustomUser
+from users.models import User
 from projects.models import Project
 from applications.models import Application
 from evaluations.models import Evaluation
@@ -19,7 +19,7 @@ class IsCompanyUser(permissions.BasePermission):
     Permiso para solo permitir a usuarios con el rol de Empresa.
     """
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == CustomUser.Role.COMPANY
+        return request.user.is_authenticated and request.user.role == COMPANY
 
 class CompanyProfileView(generics.RetrieveUpdateAPIView):
     """

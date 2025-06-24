@@ -251,7 +251,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Custom User Model
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'users.User'
 
 # Email Configuration (para producción)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

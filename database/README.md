@@ -1,130 +1,148 @@
-# 🎯 Base de Datos LeanMaker - Versión PULIDA
+# 🎯 Base de Datos LeanMaker - Documentación Completa
 
-## 📋 Resumen de Mejoras
+## 📋 Resumen del Proyecto
 
-### ✅ **Optimizaciones Realizadas:**
+**LeanMaker** es una plataforma que conecta estudiantes con empresas para realizar proyectos de práctica profesional. El sistema maneja tres tipos de usuarios: **Administradores**, **Empresas** y **Estudiantes**.
 
-#### **1. Constraints y Validaciones**
-- **50+ constraints adicionales** para integridad de datos
-- **Validación de formatos** (email, URLs, fechas)
-- **Checks de lógica de negocio** (fechas, estados, límites)
-- **Constraints únicos** para evitar duplicados
+### 🎯 **Objetivo Principal**
+Facilitar la conexión entre estudiantes universitarios y empresas para realizar proyectos reales, permitiendo a los estudiantes ganar experiencia práctica mientras las empresas obtienen talento joven y fresco.
 
-#### **2. Tipos de Datos Optimizados**
-- **NVARCHAR(MAX)** para campos JSON y texto largo
-- **DECIMAL(3,2)** para ratings (1-5 con decimales)
-- **DATETIME2** para timestamps precisos
-- **BIT** para campos booleanos
-
-#### **3. Índices de Alto Rendimiento**
-- **35+ índices optimizados** para consultas frecuentes
-- **Índices compuestos** para queries complejas
-- **Índices filtrados** para datos activos
-- **Índices covering** para consultas específicas
-
-#### **4. Procedimientos Almacenados Robustos**
-- **5 procedimientos** con manejo de errores
-- **Transacciones** para consistencia de datos
-- **Validaciones** antes de operaciones críticas
-- **Notificaciones automáticas**
-
-#### **5. Vistas Optimizadas**
-- **4 vistas** para consultas complejas
-- **Dashboard administrativo** con KPIs
-- **Estadísticas en tiempo real**
-- **Información consolidada**
-
-## 🗂️ Estructura Completa
+## 🗂️ Estructura de la Base de Datos
 
 ### **Tablas Principales (13)**
-1. **users** - Usuarios del sistema
-2. **companies** - Información de empresas
-3. **students** - Información de estudiantes
-4. **projects** - Proyectos disponibles
-5. **applications** - Postulaciones
-6. **evaluations** - Evaluaciones de proyectos
-7. **evaluation_categories** - Categorías de evaluación
-8. **ratings** - Calificaciones mutuas
-9. **strikes** - Sistema de strikes
-10. **notifications** - Notificaciones
-11. **disciplinary_records** - Registro disciplinario
-12. **work_hours** - Horas trabajadas
-13. **interviews** - Entrevistas
+1. **users** - Usuarios del sistema (admins, empresas, estudiantes)
+2. **companies** - Información detallada de empresas
+3. **students** - Perfiles completos de estudiantes
+4. **projects** - Proyectos disponibles para postulación
+5. **applications** - Postulaciones de estudiantes a proyectos
+6. **assignments** - Asignaciones activas de estudiantes a proyectos
+7. **work_hours** - Registro de horas trabajadas por estudiantes
+8. **evaluations** - Evaluaciones de desempeño
+9. **evaluation_categories** - Categorías de evaluación (técnico, puntualidad, comunicación)
+10. **notifications** - Sistema de notificaciones
+11. **strikes** - Sistema de strikes para mal comportamiento
+12. **interviews** - Entrevistas entre empresas y estudiantes
+13. **disciplinary_records** - Registro disciplinario
 
 ### **Vistas Optimizadas (4)**
 - `v_project_stats` - Estadísticas completas de proyectos
 - `v_student_stats` - Estadísticas completas de estudiantes
 - `v_evaluations_complete` - Evaluaciones con información detallada
-- `v_admin_dashboard` - Dashboard administrativo
+- `v_admin_dashboard` - Dashboard administrativo con KPIs
 
 ### **Procedimientos Almacenados (5)**
 - `sp_UpdateProjectStats` - Actualizar estadísticas de proyecto
 - `sp_AssignStrike` - Asignar strike con validaciones
-- `sp_CreateNotification` - Crear notificación
+- `sp_CreateNotification` - Crear notificación automática
 - `sp_ApproveWorkHours` - Aprobar horas trabajadas
 - `sp_CompleteProject` - Completar proyecto
+
+## 👥 Usuarios del Sistema
+
+### **1. Administradores (2 usuarios)**
+- **admin@leanmaker.com** - Administrador Principal
+- **supervisor@leanmaker.com** - Supervisor General
+- **Contraseña**: `test123` (para ambos)
+
+### **2. Empresas (10 empresas)**
+| ID | Email | Empresa | Industria | Tamaño |
+|----|-------|---------|-----------|---------|
+| 3 | empresa@leanmaker.com | Tech Solutions Chile | Tecnología | Mediana |
+| 4 | rrhh@innovatech.com | InnovaTech | IA/ML | Grande |
+| 5 | manager@datasciencecorp.io | Data Science Corp | Consultoría | Mediana |
+| 6 | admin@cybersecure.cl | CyberSecure | Ciberseguridad | Pequeña |
+| 7 | info@mobilefirst.dev | Mobile First | Desarrollo Móvil | Mediana |
+| 8 | hola@webmasters.com | WebMasters | Desarrollo Web | Pequeña |
+| 9 | jobs@cloudservices.net | Cloud Services | Cloud Computing | Grande |
+| 10 | support@fintechglobal.com | FinTech Global | Fintech | Mediana |
+| 11 | contact@healthtech.co | HealthTech | Salud Digital | Pequeña |
+| 12 | hiring@gamestudios.com | Game Studios | Gaming | Mediana |
+
+### **3. Estudiantes (10 estudiantes)**
+| ID | Email | Nombre | Carrera | Semestre | Estado |
+|----|-------|--------|---------|----------|---------|
+| 13 | estudiante@leanmaker.com | Juan Pérez | Ing. Civil Informática | 8 | Aprobado |
+| 14 | maria.gomez@email.com | María Gómez | Ing. Civil Computación | 6 | Aprobado |
+| 15 | carlos.lopez@email.com | Carlos López | Ing. Informática | 9 | Suspendido |
+| 16 | ana.martinez@email.com | Ana Martínez | Diseño Gráfico | 7 | Aprobado |
+| 17 | diego.hernandez@email.com | Diego Hernández | Periodismo | 8 | Aprobado |
+| 18 | sofia.garcia@email.com | Sofía García | Ing. Comercial | 10 | Aprobado |
+| 19 | javier.diaz@email.com | Javier Díaz | Ing. Civil Industrial | 8 | Aprobado |
+| 20 | laura.fernandez@email.com | Laura Fernández | Psicología | 9 | Aprobado |
+| 21 | pablo.moreno@email.com | Pablo Moreno | Ing. Civil Informática | 7 | Aprobado |
+| 22 | valentina.romero@email.com | Valentina Romero | Ing. Computación | 8 | Aprobado |
+
+**Contraseña para todos**: `test123`
 
 ## 🔧 Características Técnicas
 
 ### **Constraints de Integridad**
 ```sql
--- Ejemplos de constraints implementados
+-- Validación de formato de email
 CONSTRAINT CK_users_email_format CHECK (email LIKE '%_@__%.__%')
+
+-- Límite de estudiantes por proyecto
 CONSTRAINT CK_projects_current_vs_max CHECK (current_students <= max_students)
+
+-- Una postulación por estudiante por proyecto
 CONSTRAINT CK_applications_unique_student_project UNIQUE (project_id, student_id)
+
+-- Strike resuelto debe tener resolución
 CONSTRAINT CK_strikes_resolution_when_resolved CHECK (status != 'resolved' OR resolution IS NOT NULL)
 ```
 
 ### **Índices Optimizados**
 ```sql
--- Índices para consultas frecuentes
+-- Búsquedas rápidas por estado y nivel API
 CREATE INDEX idx_projects_status_api ON projects(status, api_level);
+
+-- Postulaciones por estado y fecha
 CREATE INDEX idx_applications_status_date ON applications(status, applied_at);
+
+-- Notificaciones no leídas
 CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = 0;
+
+-- Horas pendientes de aprobación
 CREATE INDEX idx_work_hours_pending ON work_hours(status) WHERE status = 'pending';
 ```
 
 ### **Validaciones de Negocio**
-- **API Levels**: 1-4 para estudiantes y proyectos
-- **Strikes**: Máximo 10, 3 = suspensión automática
+- **API Levels**: 1-4 (1=básico, 4=avanzado)
+- **Strikes**: Máximo 10, 3 strikes = suspensión automática
 - **Ratings**: 1-5 con decimales
 - **Estados**: Validaciones específicas por entidad
 - **Fechas**: Lógica temporal coherente
 
-## 📊 Datos de Ejemplo
+## 📊 Datos de Ejemplo Incluidos
 
-### **Escala Realista**
-- **11 estudiantes** con perfiles variados
-- **7 empresas** de diferentes industrias
-- **10 proyectos** en diferentes estados
-- **14 postulaciones** con diferentes resultados
-- **5 evaluaciones** completadas
-- **5 strikes** con diferentes severidades
-- **13 notificaciones** del sistema
-- **15 horas trabajadas** con diferentes estados
-- **8 entrevistas** programadas y completadas
+### **Proyectos Activos (4)**
+1. **Plataforma E-commerce React** - Tech Solutions Chile
+2. **Motor de Recomendaciones IA** - InnovaTech
+3. **Dashboard de Analytics** - Data Science Corp
+4. **App de Telemedicina** - Mobile First
 
-### **Casos de Uso Cubiertos**
-- ✅ Estudiantes aprobados, pendientes, suspendidos
-- ✅ Proyectos en todos los estados (open, in-progress, completed, draft, paused)
-- ✅ Postulaciones con todos los estados
-- ✅ Evaluaciones completadas y pendientes
-- ✅ Strikes activos y resueltos
-- ✅ Horas aprobadas y pendientes
-- ✅ Entrevistas programadas y completadas
+### **Postulaciones y Asignaciones**
+- **5 postulaciones** con diferentes estados (aceptadas, pendientes, rechazadas)
+- **4 asignaciones activas** con progreso real
+- **15 horas trabajadas** registradas y aprobadas
 
-## 🚀 Instalación
+### **Evaluaciones y Calificaciones**
+- **5 evaluaciones completadas** con comentarios detallados
+- **Sistema de ratings** funcionando
+- **Categorías de evaluación** (técnico, puntualidad, comunicación)
 
-### **Paso 1: Crear Esquema**
+## 🚀 Instalación y Configuración
+
+### **Paso 1: Crear Esquema de Base de Datos**
 ```sql
--- Ejecutar el archivo completo
-EXECUTE('database/schema_pulido.sql');
+-- Ejecutar el archivo de esquema
+EXECUTE('database/schema.sql');
 ```
 
-### **Paso 2: Insertar Datos**
+### **Paso 2: Insertar Datos de Ejemplo**
 ```sql
--- Ejecutar datos de ejemplo
-EXECUTE('database/seed_data_pulido.sql');
+-- Ejecutar datos de prueba
+EXECUTE('database/seed_data.sql');
 ```
 
 ### **Paso 3: Verificar Instalación**
@@ -137,60 +155,146 @@ UNION ALL
 SELECT 'Procedimientos', COUNT(*) FROM information_schema.routines WHERE routine_type = 'PROCEDURE';
 ```
 
-## 📈 Rendimiento
+### **Paso 4: Probar Conexión**
+```sql
+-- Verificar usuarios creados
+SELECT role, COUNT(*) as cantidad FROM users GROUP BY role;
 
-### **Consultas Optimizadas**
-- **Dashboard admin**: < 100ms
-- **Lista de proyectos**: < 50ms
-- **Estadísticas de estudiante**: < 30ms
-- **Notificaciones no leídas**: < 20ms
+-- Verificar proyectos activos
+SELECT title, status FROM projects WHERE status = 'open';
+```
 
-### **Índices Estratégicos**
-- **Búsquedas por email**: Índice único
-- **Filtros por estado**: Índices compuestos
-- **Consultas de fecha**: Índices filtrados
-- **Joins frecuentes**: Índices covering
+## 📈 Flujo de Trabajo Típico
 
-## 🔒 Seguridad
+### **1. Registro y Aprobación**
+1. Empresa se registra → Admin aprueba
+2. Estudiante se registra → Admin aprueba
+3. Empresa publica proyecto → Admin revisa
+
+### **2. Postulación y Asignación**
+1. Estudiante postula a proyecto
+2. Empresa revisa postulación
+3. Empresa acepta/rechaza
+4. Se crea asignación automáticamente
+
+### **3. Desarrollo y Seguimiento**
+1. Estudiante registra horas trabajadas
+2. Empresa aprueba horas
+3. Empresa evalúa desempeño
+4. Sistema genera notificaciones
+
+### **4. Finalización**
+1. Proyecto se marca como completado
+2. Se generan evaluaciones finales
+3. Se actualizan estadísticas
+4. Se liberan recursos
+
+## 🔒 Seguridad y Validaciones
 
 ### **Validaciones Implementadas**
-- **Formato de email** válido
-- **URLs** con formato correcto
-- **Fechas** lógicas y coherentes
-- **Estados** válidos según contexto
-- **Límites** de valores numéricos
+- ✅ **Formato de email** válido
+- ✅ **URLs** con formato correcto
+- ✅ **Fechas** lógicas y coherentes
+- ✅ **Estados** válidos según contexto
+- ✅ **Límites** de valores numéricos
 
 ### **Integridad Referencial**
-- **Foreign keys** con CASCADE apropiado
-- **Constraints únicos** donde corresponde
-- **Validaciones de negocio** en triggers
-- **Transacciones** para operaciones críticas
+- ✅ **Foreign keys** con CASCADE apropiado
+- ✅ **Constraints únicos** donde corresponde
+- ✅ **Validaciones de negocio** en triggers
+- ✅ **Transacciones** para operaciones críticas
 
-## 🎯 Próximos Pasos
+## 🎯 Casos de Uso Principales
 
-### **Para el Backend**
+### **Para Administradores**
+- Gestionar usuarios (aprobar/rechazar)
+- Monitorear proyectos activos
+- Revisar reportes y estadísticas
+- Manejar disputas y strikes
+
+### **Para Empresas**
+- Publicar proyectos
+- Revisar postulaciones
+- Aprobar horas trabajadas
+- Evaluar estudiantes
+
+### **Para Estudiantes**
+- Buscar proyectos disponibles
+- Postular a proyectos
+- Registrar horas trabajadas
+- Ver evaluaciones recibidas
+
+## 📱 Integración con Frontend
+
+### **Endpoints Principales Necesarios**
+```typescript
+// Autenticación
+POST /api/auth/login
+POST /api/auth/register
+
+// Proyectos
+GET /api/projects
+POST /api/projects
+GET /api/projects/{id}
+
+// Postulaciones
+POST /api/applications
+GET /api/applications/student/{id}
+
+// Horas trabajadas
+POST /api/work-hours
+GET /api/work-hours/student/{id}
+
+// Evaluaciones
+POST /api/evaluations
+GET /api/evaluations/student/{id}
+```
+
+## 🚨 Troubleshooting Común
+
+### **Problema: Error de conexión a SQL Server**
+```sql
+-- Verificar que el servicio esté corriendo
+SELECT @@VERSION;
+
+-- Verificar permisos de Windows Authentication
+SELECT SYSTEM_USER, USER_NAME();
+```
+
+### **Problema: Datos no se insertan**
+```sql
+-- Verificar constraints
+SELECT * FROM sys.check_constraints;
+
+-- Verificar foreign keys
+SELECT * FROM sys.foreign_keys;
+```
+
+### **Problema: Consultas lentas**
+```sql
+-- Verificar índices
+SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID('projects');
+
+-- Analizar plan de ejecución
+SET STATISTICS IO ON;
+SELECT * FROM projects WHERE status = 'open';
+```
+
+## ✅ **Estado Actual: LISTO PARA DESARROLLO**
+
+La base de datos está **completamente funcional** y lista para:
+- ✅ **Integración con Django** (backend)
+- ✅ **Desarrollo de frontend** (React/TypeScript)
+- ✅ **Testing completo** con datos realistas
+- ✅ **Demo para profesores** con credenciales de prueba
+
+### **Próximos Pasos**
 1. **Configurar Django** con SQL Server
 2. **Crear modelos** basados en el esquema
-3. **Implementar serializers** para API
-4. **Configurar autenticación** JWT
-5. **Crear endpoints** para cada entidad
-
-### **Para el Frontend**
-1. **Conectar con API** del backend
-2. **Reemplazar mocks** con datos reales
-3. **Implementar manejo de errores**
-4. **Optimizar consultas** frecuentes
-5. **Agregar validaciones** del lado cliente
+3. **Implementar API** REST completa
+4. **Conectar frontend** con backend
+5. **Testing end-to-end**
 
 ---
 
-## ✅ **Estado: LISTO PARA PRODUCCIÓN**
-
-La base de datos está **completamente pulida** y optimizada para:
-- ✅ **Alto rendimiento** en consultas
-- ✅ **Integridad de datos** garantizada
-- ✅ **Escalabilidad** para crecimiento
-- ✅ **Mantenibilidad** del código
-- ✅ **Seguridad** de la información
-
-¡Lista para integrar con Django! 🚀 
+**¡La base de datos está lista para que el equipo comience a desarrollar! 🚀**
