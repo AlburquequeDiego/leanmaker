@@ -588,7 +588,7 @@ const Projects: React.FC = () => {
               createStep < 3 ? (
                 <Button variant="contained" color="primary" onClick={nextStep}>Siguiente</Button>
               ) : (
-                <Button variant="contained" color="success" onClick={handleSaveEditProject}>Guardar Cambios</Button>
+              <Button variant="contained" color="success" onClick={handleSaveEditProject}>Guardar Cambios</Button>
               )
             ) : (
               createStep < 3 ? (
@@ -649,7 +649,7 @@ const Projects: React.FC = () => {
             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
               <Box>
                 <Typography variant="subtitle2" color="text.secondary">Descripción</Typography>
-                <Typography variant="body2">{selectedProject?.description}</Typography>
+          <Typography variant="body2">{selectedProject?.description}</Typography>
               </Box>
               
               <Box>

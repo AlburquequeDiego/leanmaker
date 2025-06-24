@@ -1,31 +1,31 @@
 -- =====================================================
 -- ESQUEMA UNIFICADO DE BASE DE DATOS - LEANMAKER
 -- SQL Server - Optimizado para Django ORM
--- Versión consolidada y corregida
+-- Versión consolidada y corregida para Azure SQL Database
 -- =====================================================
 
-USE leanmaker_db;
+USE leanmaker_db; -- Azure SQL Database ya está en el contexto correcto
 GO
 
 -- =====================================================
--- CONFIGURACIÓN DE USUARIO (OPCIONAL)
+-- CONFIGURACIÓN DE USUARIO (OPCIONAL, NO SOPORTADO EN AZURE SQL DATABASE)
 -- =====================================================
 -- Crear usuario si no existe (ignorar error si ya existe)
-IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'admintesis')
-BEGIN
-    CREATE USER admintesis FOR LOGIN admintesis;
-    ALTER ROLE db_owner ADD MEMBER admintesis;
-END
-GO
+-- IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'admintesis')
+-- BEGIN
+--     CREATE USER admintesis FOR LOGIN admintesis;
+--     ALTER ROLE db_owner ADD MEMBER admintesis;
+-- END
+-- GO
 
 -- =====================================================
 -- ELIMINACIÓN COMPLETA DE OBJETOS EXISTENTES
 -- =====================================================
-PRINT 'Eliminando objetos existentes...';
+-- PRINT 'Eliminando objetos existentes...';
 
--- Deshabilitar restricciones de clave foránea temporalmente
-EXEC sp_MSforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT ALL";
-PRINT 'Restricciones de clave foránea deshabilitadas.';
+-- Deshabilitar restricciones de clave foránea temporalmente (NO DISPONIBLE EN AZURE SQL DATABASE)
+-- EXEC sp_MSforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT ALL";
+-- PRINT 'Restricciones de clave foránea deshabilitadas.';
 
 -- Eliminar vistas primero (dependen de tablas)
 IF OBJECT_ID('v_student_stats', 'V') IS NOT NULL DROP VIEW v_student_stats;
@@ -92,11 +92,10 @@ IF OBJECT_ID('seq_student_id', 'SO') IS NOT NULL DROP SEQUENCE seq_student_id;
 IF OBJECT_ID('seq_company_id', 'SO') IS NOT NULL DROP SEQUENCE seq_company_id;
 GO
 
--- Habilitar restricciones de clave foránea nuevamente
-EXEC sp_MSforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL";
-PRINT 'Restricciones de clave foránea habilitadas nuevamente.';
-
-PRINT 'Objetos existentes eliminados correctamente.';
+-- Habilitar restricciones de clave foránea nuevamente (NO DISPONIBLE EN AZURE SQL DATABASE)
+-- EXEC sp_MSforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL";
+-- PRINT 'Restricciones de clave foránea habilitadas nuevamente.';
+-- PRINT 'Objetos existentes eliminados correctamente.';
 GO
 
 -- =====================================================

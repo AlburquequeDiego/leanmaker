@@ -1,21 +1,23 @@
 cadena de conexion : 
 Server=localhost;Database=master;Trusted_Connection=True;
 
-nombre de la instancia:
-MSSQLSERVER
-
-administrador:
-ROOT\albur
-
-autenticacion : SQL Server Autentication
-login : admintesis
-password: admintesis
-
-superusuario:
-correo : diego.alburqueque@inacapmail.cl
-password: admintesis
-
 archivos de las bases de datos en pc:
 C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\
 
+
+
+autenticacion : SQL Server Autentication
+login : administradortesis
+password: Admin@tesis
+
+
+para ver tu IP y ponerla para que tambien puedas modifiar la base de datos
+
+https://www.whatismyip.com/ 
+
+
+
+
+Nombre del servidor:servidortesis.database.windows.net
+nombre de la base de datos : leanmaker_db
 

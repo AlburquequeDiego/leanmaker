@@ -9,7 +9,7 @@ GO
 -- =====================================================
 -- LIMPIEZA DE DATOS EXISTENTES
 -- =====================================================
-PRINT 'Limpiando datos existentes...';
+-- PRINT 'Limpiando datos existentes...';
 
 -- Eliminar datos en orden inverso de dependencias
 DELETE FROM data_backups;
@@ -63,19 +63,16 @@ DBCC CHECKIDENT ('admins', RESEED, 0);
 DBCC CHECKIDENT ('users', RESEED, 0);
 GO
 
-PRINT 'Datos limpiados correctamente.';
-GO
+-- PRINT 'Datos limpiados correctamente.';
+-- GO
 
 -- =====================================================
 -- INSERTAR USUARIOS DE PRUEBA
 -- =====================================================
 SET IDENTITY_INSERT users ON;
 INSERT INTO users (id, email, password, role, name, is_active, is_staff) VALUES
--- Administradores (2)
 (1, 'admin@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'admin', 'Administrador Principal', 1, 1),
 (2, 'supervisor@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'admin', 'Supervisor General', 1, 1),
-
--- Empresas (10)
 (3, 'empresa@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Ana Contreras', 1, 0),
 (4, 'rrhh@innovatech.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Luis Valdés', 1, 0),
 (5, 'manager@datasciencecorp.io', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Elena Ríos', 1, 0),
@@ -86,8 +83,6 @@ INSERT INTO users (id, email, password, role, name, is_active, is_staff) VALUES
 (10, 'support@fintechglobal.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Pablo Neruda', 1, 0),
 (11, 'contact@healthtech.co', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Isabel Allende', 1, 0),
 (12, 'hiring@gamestudios.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Marcelo Salas', 1, 0),
-
--- Estudiantes (10)
 (13, 'estudiante@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Juan Pérez', 1, 0),
 (14, 'maria.gomez@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'María Gómez', 1, 0),
 (15, 'carlos.lopez@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Carlos López', 1, 0),
@@ -100,8 +95,8 @@ INSERT INTO users (id, email, password, role, name, is_active, is_staff) VALUES
 (22, 'valentina.romero@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Valentina Romero', 1, 0);
 SET IDENTITY_INSERT users OFF;
 
-PRINT 'Usuarios insertados correctamente.';
-GO
+-- PRINT 'Usuarios insertados correctamente.';
+-- GO
 
 -- =====================================================
 -- INSERTAR PERFILES ESPECÍFICOS
