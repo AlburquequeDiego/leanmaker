@@ -45,6 +45,15 @@ git clone <URL_DEL_REPOSITORIO>
    ```
    El backend estará disponible en: http://127.0.0.1:8000
 
+cd Backend
+venv312\Scripts\Activate
+python manage.py runserver
+python manage.py createsuperuser - si quieres crear uno si no no xd
+
+ Acceder al backend
+- **URL:** http://127.0.0.1:8000
+- **Admin:** http://127.0.0.1:8000/admin
+- **API Docs:** http://127.0.0.1:8000/api/schema/
 ---
 
 ## 3. Instalación y ejecución del Frontend (Vite + React)
