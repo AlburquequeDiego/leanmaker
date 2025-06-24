@@ -247,6 +247,13 @@ python manage.py runserver
 ```
 
 
-correo:diego.alburqueque@inacapmail.cl
-usuario: admin
-contraseña: admintesis
+
+cd Backend
+venv312\Scripts\Activate
+python manage.py runserver
+python manage.py createsuperuser  
+
+ Acceder al backend
+- **URL:** http://127.0.0.1:8000
+- **Admin:** http://127.0.0.1:8000/admin
+- **API Docs:** http://127.0.0.1:8000/api/schema/

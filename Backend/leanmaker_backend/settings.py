@@ -102,18 +102,25 @@ WSGI_APPLICATION = 'leanmaker_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'leanmaker_db',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'trusted_connection': 'yes',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Configuración SQL Server (comentada temporalmente)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'leanmaker_db',
+#         'USER': 'admintesis',
+#         'PASSWORD': 'admintesis',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         },
+#     }
+# }
 
 # Para PostgreSQL (recomendado para producción)
 # DATABASES = {

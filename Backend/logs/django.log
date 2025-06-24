@@ -56,3 +56,24 @@ WARNING 2025-06-20 14:58:06,620 log 15760 21032 Unauthorized: /api/health/
 WARNING 2025-06-20 14:58:08,690 log 15760 21032 Unauthorized: /api/health/
 WARNING 2025-06-20 14:58:10,714 log 15760 21032 Unauthorized: /api/health/
 INFO 2025-06-22 07:13:18,366 autoreload 10408 2012 Watching for file changes with StatReloader
+INFO 2025-06-23 20:35:55,937 autoreload 9624 11448 Watching for file changes with StatReloader
+INFO 2025-06-24 00:11:32,170 autoreload 11112 13348 Watching for file changes with StatReloader
+INFO 2025-06-24 00:16:29,654 autoreload 2884 19224 Watching for file changes with StatReloader
+INFO 2025-06-24 00:17:37,350 autoreload 2884 19224 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-24 00:17:38,779 autoreload 6480 1212 Watching for file changes with StatReloader
+WARNING 2025-06-24 00:17:50,530 log 6480 14508 Not Found: /
+WARNING 2025-06-24 00:17:50,642 log 6480 14508 Not Found: /favicon.ico
+INFO 2025-06-24 00:18:12,171 autoreload 6480 1212 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-24 00:18:13,141 autoreload 12164 20368 Watching for file changes with StatReloader
+WARNING 2025-06-24 00:18:18,290 log 12164 2444 Not Found: /
+WARNING 2025-06-24 00:19:12,141 log 12164 8232 Not Found: /
+WARNING 2025-06-24 00:19:12,232 log 12164 8232 Not Found: /favicon.ico
+INFO 2025-06-24 00:21:22,113 autoreload 12164 20368 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-24 00:21:23,103 autoreload 18156 8612 Watching for file changes with StatReloader
+INFO 2025-06-24 14:27:34,946 autoreload 2784 15620 Watching for file changes with StatReloader
+WARNING 2025-06-24 14:27:37,676 log 2784 14756 Not Found: /
+WARNING 2025-06-24 14:27:37,748 log 2784 14756 Not Found: /favicon.ico
+WARNING 2025-06-24 14:27:59,787 log 2784 7808 Not Found: /
+INFO 2025-06-24 14:30:27,481 autoreload 14592 2384 Watching for file changes with StatReloader
+WARNING 2025-06-24 14:30:33,843 log 14592 3620 Not Found: /
+WARNING 2025-06-24 14:32:29,521 log 14592 16288 Not Found: /

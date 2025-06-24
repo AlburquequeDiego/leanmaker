@@ -52,6 +52,8 @@ class ProjectDetailSerializer(ProjectSerializer):
 
 class ProjectCreateSerializer(serializers.ModelSerializer):
     """Serializer para crear proyectos"""
+    trl_level = serializers.IntegerField(write_only=True, required=True)
+    horas = serializers.IntegerField(write_only=True, required=True)
     
     class Meta:
         model = Project
@@ -59,7 +61,7 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
             'title', 'description', 'area', 'modality', 'location', 'difficulty',
             'required_skills', 'preferred_skills', 'min_api_level', 'duration_months',
             'hours_per_week', 'start_date', 'end_date', 'is_paid', 'payment_amount',
-            'payment_currency', 'max_students', 'tags'
+            'payment_currency', 'max_students', 'tags', 'trl_level', 'horas'
         ]
     
     def validate(self, attrs):
@@ -75,6 +77,20 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
         if attrs['hours_per_week'] <= 0 or attrs['hours_per_week'] > 40:
             raise serializers.ValidationError("Las horas por semana deben estar entre 1 y 40.")
         
+        # Validar horas mínimas según TRL
+        trl = attrs.get('trl_level')
+        horas = attrs.get('horas')
+        if trl is None or horas is None:
+            raise serializers.ValidationError("Debes especificar el TRL y las horas de práctica.")
+        if trl <= 2 and horas < 20:
+            raise serializers.ValidationError("Para TRL 1-2 debes ofrecer al menos 20 horas de práctica.")
+        if 3 <= trl <= 4 and horas < 40:
+            raise serializers.ValidationError("Para TRL 3-4 debes ofrecer al menos 40 horas de práctica.")
+        if 5 <= trl <= 6 and horas < 80:
+            raise serializers.ValidationError("Para TRL 5-6 debes ofrecer al menos 80 horas de práctica.")
+        if 7 <= trl <= 9 and horas < 160:
+            raise serializers.ValidationError("Para TRL 7-9 debes ofrecer al menos 160 horas de práctica.")
+        
         return attrs
     
     def create(self, validated_data):
@@ -83,6 +99,8 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 
 class ProjectUpdateSerializer(serializers.ModelSerializer):
     """Serializer para actualizar proyectos"""
+    trl_level = serializers.IntegerField(write_only=True, required=False)
+    horas = serializers.IntegerField(write_only=True, required=False)
     
     class Meta:
         model = Project
@@ -90,7 +108,7 @@ class ProjectUpdateSerializer(serializers.ModelSerializer):
             'title', 'description', 'area', 'modality', 'location', 'difficulty',
             'required_skills', 'preferred_skills', 'min_api_level', 'duration_months',
             'hours_per_week', 'start_date', 'end_date', 'is_paid', 'payment_amount',
-            'payment_currency', 'max_students', 'status', 'tags', 'is_featured', 'is_urgent'
+            'payment_currency', 'max_students', 'status', 'tags', 'is_featured', 'is_urgent', 'trl_level', 'horas'
         ]
         read_only_fields = ['status']  # El status se maneja por separado
     
@@ -99,6 +117,19 @@ class ProjectUpdateSerializer(serializers.ModelSerializer):
         if 'start_date' in attrs and 'end_date' in attrs:
             if attrs['start_date'] >= attrs['end_date']:
                 raise serializers.ValidationError("La fecha de inicio debe ser anterior a la fecha de fin.")
+        
+        # Validar horas mínimas según TRL si se proveen
+        trl = attrs.get('trl_level')
+        horas = attrs.get('horas')
+        if trl is not None and horas is not None:
+            if trl <= 2 and horas < 20:
+                raise serializers.ValidationError("Para TRL 1-2 debes ofrecer al menos 20 horas de práctica.")
+            if 3 <= trl <= 4 and horas < 40:
+                raise serializers.ValidationError("Para TRL 3-4 debes ofrecer al menos 40 horas de práctica.")
+            if 5 <= trl <= 6 and horas < 80:
+                raise serializers.ValidationError("Para TRL 5-6 debes ofrecer al menos 80 horas de práctica.")
+            if 7 <= trl <= 9 and horas < 160:
+                raise serializers.ValidationError("Para TRL 7-9 debes ofrecer al menos 160 horas de práctica.")
         
         return attrs
 

@@ -136,6 +136,27 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response({"message": "Proyecto pausado correctamente"})
 
     @action(detail=True, methods=['post'])
+    def complete(self, request, pk=None):
+        """Marcar proyecto como completado (solo para empresas)"""
+        if request.user.role != 'company':
+            return Response(
+                {"error": "Solo las empresas pueden marcar proyectos como completados"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        project = self.get_object()
+        if project.company != request.user:
+            return Response(
+                {"error": "No puedes marcar como completado proyectos de otras empresas"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        project.status = 'completed'
+        project.save()
+        
+        return Response({"message": "Proyecto marcado como completado correctamente"})
+
+    @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
         """Cancelar proyecto (solo para empresas)"""
         if request.user.role != 'company':
