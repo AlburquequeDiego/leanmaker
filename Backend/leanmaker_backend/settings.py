@@ -100,17 +100,11 @@ WSGI_APPLICATION = 'leanmaker_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# Configuración SQLite para desarrollo local
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'leanmaker_db',
-        'USER': 'administradortesis',  
-        'PASSWORD': 'Admin@tesis',
-        'HOST': 'servidortesis.database.windows.net',
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -119,10 +113,10 @@ DATABASES = {
 #     'default': {
 #         'ENGINE': 'mssql',
 #         'NAME': 'leanmaker_db',
-#         'USER': 'admintesis',
-#         'PASSWORD': 'admintesis',
-#         'HOST': 'localhost',
-#         'PORT': '',
+#         'USER': 'administradortesis',  
+#         'PASSWORD': 'Admin@tesis',
+#         'HOST': 'servidortesis.database.windows.net',
+#         'PORT': '1433',
 #         'OPTIONS': {
 #             'driver': 'ODBC Driver 17 for SQL Server',
 #         },

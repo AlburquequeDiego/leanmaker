@@ -3,6 +3,8 @@
 ## Descripción
 Backend de la plataforma LeanMaker desarrollado con Django 3.2 y Django REST Framework. Conecta estudiantes de INACAP con empresas a través de proyectos temporales.
 
+**Estado actual:** ✅ **FUNCIONANDO** - Servidor corriendo con SQLite local
+
 ---
 ## ⚠️ IMPORTANTE: Compatibilidad de Python
 
@@ -22,90 +24,69 @@ Backend de la plataforma LeanMaker desarrollado con Django 3.2 y Django REST Fra
 
 ---
 
-## 🚀 Inicio Rápido
+## 🚀 Inicio Rápido (PASO A PASO)
 
-### 1. Crear entorno virtual
+### 1. Abrir PowerShell y navegar al proyecto
 ```powershell
-cd Backend
-py -3.12 -m venv venv312
+cd C:\Users\albur\Desktop\leanmaker\Backend
 ```
 
-### 2. Activar entorno virtual
+### 2. Activar entorno virtual (YA CREADO)
 ```powershell
 .\venv312\Scripts\Activate.ps1
 ```
 **Deberías ver:** `(venv312) PS C:\Users\albur\Desktop\leanmaker\Backend>`
 
-### 3. Instalar dependencias
+### 3. Verificar que todo esté bien
 ```powershell
-pip install -r requirements.txt
+python manage.py check
 ```
+**Deberías ver:** `System check identified no issues (0 silenced).`
 
-### 4. Ejecutar migraciones
-```powershell
-python manage.py migrate
-```
-
-### 5. Iniciar servidor
+### 4. Iniciar servidor
 ```powershell
 python manage.py runserver
 ```
 
-### 6. Acceder al backend
-- **URL:** http://127.0.0.1:8000
-- **Admin:** http://127.0.0.1:8000/admin
-- **API Docs:** http://127.0.0.1:8000/api/schema/
+### 5. ¡Listo! El backend está funcionando
+- **URL Principal:** http://127.0.0.1:8000
+- **Admin Django:** http://127.0.0.1:8000/admin
+- **Documentación API:** http://127.0.0.1:8000/api/schema/swagger-ui/
+- **Health Check:** http://127.0.0.1:8000/api/health/
 
 ---
 
-## 🐛 Solución de Problemas
+## 📊 Estado Actual del Proyecto
 
-### Error: "No module named 'cgi'"
-- **Causa:** Python 3.13 no es compatible con Django 3.2
-- **Solución:** Usar Python 3.10, 3.11 o 3.12
+### ✅ Lo que YA está funcionando:
+- **Servidor Django** corriendo en puerto 8000
+- **Base de datos SQLite** local (sin conexiones externas)
+- **Todas las aplicaciones** creadas y configuradas
+- **API REST** con autenticación JWT
+- **Documentación automática** con Swagger
+- **CORS configurado** para frontend React/Vite
+- **Sistema de logs** activo
 
-### Error: "No module named 'pkg_resources'"
-- **Causa:** Falta setuptools
-- **Solución:** `pip install setuptools`
-
-### Error: "No module named 'users'"
-- **Causa:** Las aplicaciones Django no están creadas
-- **Solución:** Comentar temporalmente las apps en `settings.py`
-
-### Error: "Microsoft Visual C++ 14.0 or greater is required"
-- **Causa:** psycopg2-binary requiere compilación
-- **Solución:** Usar SQLite temporalmente o instalar Build Tools
-
----
-
-## 📁 Estructura del Proyecto
-
-```
-Backend/
-├── leanmaker_backend/     # Configuración principal de Django
-│   ├── settings.py       # Configuración del proyecto
-│   ├── urls.py          # URLs principales
-│   └── wsgi.py          # Configuración WSGI
-├── users/               # Aplicación de usuarios (por crear)
-├── companies/           # Aplicación de empresas (por crear)
-├── students/            # Aplicación de estudiantes (por crear)
-├── projects/            # Aplicación de proyectos (por crear)
-├── applications/        # Aplicación de postulaciones (por crear)
-├── evaluations/         # Aplicación de evaluaciones (por crear)
-├── notifications/       # Aplicación de notificaciones (por crear)
-├── work_hours/          # Aplicación de horas trabajadas (por crear)
-├── interviews/          # Aplicación de entrevistas (por crear)
-├── calendar_events/     # Aplicación de eventos de calendario (por crear)
-├── manage.py           # Script de gestión de Django
-├── requirements.txt    # Dependencias de Python
-└── README.md          # Este archivo
-```
+### 📁 Aplicaciones Django creadas:
+- ✅ `users` - Gestión de usuarios
+- ✅ `companies` - Gestión de empresas  
+- ✅ `students` - Gestión de estudiantes
+- ✅ `projects` - Gestión de proyectos
+- ✅ `applications` - Postulaciones a proyectos
+- ✅ `evaluations` - Evaluaciones
+- ✅ `notifications` - Sistema de notificaciones
+- ✅ `work_hours` - Control de horas trabajadas
+- ✅ `interviews` - Gestión de entrevistas
+- ✅ `calendar_events` - Eventos de calendario
+- ✅ `platform_settings` - Configuración de plataforma
+- ✅ `strikes` - Sistema de strikes
+- ✅ `questionnaires` - Cuestionarios
 
 ---
 
-## 🔧 Configuración de Base de Datos
+## 🔧 Configuración Actual
 
-### SQLite (Desarrollo)
+### Base de Datos (SQLite Local)
 ```python
 DATABASES = {
     'default': {
@@ -115,97 +96,182 @@ DATABASES = {
 }
 ```
 
-### SQL Server (Producción)
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'leanmaker_db',
-        'USER': 'your_username',
-        'PASSWORD': 'your_password',
-        'HOST': 'localhost',
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    }
-}
-```
+### Características activas:
+- **DEBUG = True** (modo desarrollo)
+- **Idioma:** Español Chile (es-cl)
+- **Zona horaria:** America/Santiago
+- **Autenticación:** JWT (JSON Web Tokens)
+- **CORS:** Habilitado para localhost:3000 y 5173
+- **Documentación:** Swagger UI automática
 
 ---
 
-## 📋 Próximos Pasos
+## 🧪 Cómo Probar el Backend
 
-1. **Crear las aplicaciones Django:**
-   ```powershell
-   python manage.py startapp users
-   python manage.py startapp companies
-   python manage.py startapp students
-   # ... etc para todas las apps
-   ```
+### 1. Verificar que el servidor esté corriendo
+```powershell
+# En PowerShell, deberías ver:
+(venv312) PS C:\Users\albur\Desktop\leanmaker\Backend>
+```
 
-2. **Descomentar las apps en settings.py**
+### 2. Abrir navegador y probar URLs:
 
-3. **Crear modelos y migraciones**
+#### ✅ Página principal
+- **URL:** http://127.0.0.1:8000
+- **Resultado esperado:** Página de Django funcionando
 
-4. **Configurar URLs y vistas**
+#### ✅ Documentación de la API
+- **URL:** http://127.0.0.1:8000/api/schema/swagger-ui/
+- **Resultado esperado:** Interfaz Swagger con todos los endpoints
 
-5. **Conectar con SQL Server**
+#### ✅ Health Check
+- **URL:** http://127.0.0.1:8000/api/health/
+- **Resultado esperado:** JSON con estado del servidor
+
+#### ✅ Admin Django
+- **URL:** http://127.0.0.1:8000/admin
+- **Resultado esperado:** Página de login del admin
+
+### 3. Crear superusuario (opcional)
+```powershell
+python manage.py createsuperuser
+```
+Luego podrás acceder al admin con esas credenciales.
+
+---
+
+## 📋 Endpoints de la API Disponibles
+
+### Autenticación
+- `POST /api/token/` - Obtener token JWT
+- `POST /api/token/refresh/` - Renovar token JWT
+
+### Usuarios
+- `GET /api/users/` - Listar usuarios
+- `POST /api/users/` - Crear usuario
+
+### Empresas
+- `GET /api/companies/` - Listar empresas
+- `POST /api/companies/` - Crear empresa
+
+### Estudiantes
+- `GET /api/students/` - Listar estudiantes
+- `POST /api/students/` - Crear estudiante
+
+### Proyectos
+- `GET /api/projects/` - Listar proyectos
+- `POST /api/projects/` - Crear proyecto
+
+### Y muchos más...
+Ver todos los endpoints en: http://127.0.0.1:8000/api/schema/swagger-ui/
+
+---
+
+## 🐛 Solución de Problemas
+
+### Error: "No module named 'cgi'"
+- **Causa:** Python 3.13 no es compatible con Django 3.2
+- **Solución:** Usar Python 3.12
+
+### Error: "No se encontró Python"
+- **Causa:** Python no está en PATH
+- **Solución:** Instalar Python 3.12 y marcar "Add to PATH"
+
+### Error: "No module named 'users'"
+- **Causa:** Las aplicaciones Django no están creadas
+- **Solución:** Ya están creadas, verificar que el entorno virtual esté activado
+
+### Error de conexión a base de datos
+- **Causa:** Intentando conectar a SQL Server externo
+- **Solución:** Ya está configurado para usar SQLite local
+
+### El servidor no inicia
+- **Solución:** Verificar que estés en el directorio correcto y el entorno virtual esté activado
 
 ---
 
 ## 🛠️ Comandos Útiles
 
 ```powershell
+# Verificar estado del proyecto
+python manage.py check
+
 # Crear superusuario
 python manage.py createsuperuser
 
-# Crear migraciones
-python manage.py makemigrations
+# Ver migraciones pendientes
+python manage.py showmigrations
 
 # Ejecutar migraciones
 python manage.py migrate
 
-# Ejecutar tests
-python manage.py test
+# Crear nuevas migraciones
+python manage.py makemigrations
 
 # Shell de Django
 python manage.py shell
 
+# Ejecutar tests
+python manage.py test
+
 # Recolectar archivos estáticos
 python manage.py collectstatic
-
-# Verificar configuración
-python manage.py check
 ```
 
 ---
 
-## 📞 Soporte
+## 📞 Soporte para Compañeros
 
-Si encuentras problemas:
-1. Verifica que estés usando Python 3.12
-2. Asegúrate de que el entorno virtual esté activado
-3. Revisa que todas las dependencias estén instaladas
-4. Consulta la sección de solución de problemas arriba
+### Si algo no funciona:
+
+1. **Verificar Python 3.12:**
+   ```powershell
+   py --list
+   ```
+
+2. **Verificar entorno virtual:**
+   ```powershell
+   # Deberías ver (venv312) al inicio
+   (venv312) PS C:\Users\albur\Desktop\leanmaker\Backend>
+   ```
+
+3. **Verificar que estés en el directorio correcto:**
+   ```powershell
+   pwd
+   # Debería mostrar: C:\Users\albur\Desktop\leanmaker\Backend
+   ```
+
+4. **Reiniciar desde cero:**
+   ```powershell
+   # Detener servidor (Ctrl+C)
+   # Luego:
+   .\venv312\Scripts\Activate.ps1
+   python manage.py runserver
+   ```
 
 ---
 
-## 🎯 Flujo de Trabajo Simple
+## 🎯 Flujo de Trabajo para Pruebas
 
-### Inicio de Desarrollo:
+### Inicio de Sesión de Pruebas:
 ```powershell
-cd Backend
+cd C:\Users\albur\Desktop\leanmaker\Backend
 .\venv312\Scripts\Activate.ps1
 python manage.py runserver
 ```
 
-### Durante el Desarrollo:
-- El servidor se reinicia automáticamente cuando detecta cambios
+### Durante las Pruebas:
 - Mantén la terminal abierta
-- Desarrolla en otra terminal o IDE
+- El servidor se reinicia automáticamente con cambios
+- Usa otra terminal para comandos adicionales
 
-### Fin de Desarrollo:
+### URLs para Probar:
+1. http://127.0.0.1:8000 (página principal)
+2. http://127.0.0.1:8000/api/schema/swagger-ui/ (documentación API)
+3. http://127.0.0.1:8000/api/health/ (health check)
+4. http://127.0.0.1:8000/admin (admin Django)
+
+### Fin de Pruebas:
 - Presiona `Ctrl+C` para detener el servidor
 - O cierra la terminal
 
@@ -215,15 +281,15 @@ python manage.py runserver
 
 | URL | Descripción | Estado |
 |-----|-------------|--------|
-| http://127.0.0.1:8000 | Página principal | ✅ Disponible |
-| http://127.0.0.1:8000/admin | Admin Django | ✅ Disponible |
-| http://127.0.0.1:8000/api/schema/ | API Schema | ⚠️ Por implementar |
+| http://127.0.0.1:8000 | Página principal | ✅ Funcionando |
+| http://127.0.0.1:8000/admin | Admin Django | ✅ Funcionando |
+| http://127.0.0.1:8000/api/schema/swagger-ui/ | API Docs | ✅ Funcionando |
+| http://127.0.0.1:8000/api/health/ | Health Check | ✅ Funcionando |
+| http://127.0.0.1:8000/api/token/ | Login JWT | ✅ Funcionando |
 
 ---
 
-## 🔄 Reinicio Completo
-
-Si necesitas empezar desde cero:
+## 🔄 Reinicio Completo (Si algo se rompe)
 
 ```powershell
 # 1. Detener servidor (Ctrl+C)
@@ -246,14 +312,20 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+---
 
+## 🎉 ¡Listo para Probar!
 
+El backend está **100% funcional** y listo para que tus compañeros lo prueben. Solo necesitan seguir los pasos del "Inicio Rápido" y tendrán acceso a toda la API.
+
+**Comandos finales para recordar:**
+```powershell
 cd Backend
 venv312\Scripts\Activate
 python manage.py runserver
-python manage.py createsuperuser  
+```
 
- Acceder al backend
-- **URL:** http://127.0.0.1:8000
+**URLs principales:**
+- **API Docs:** http://127.0.0.1:8000/api/schema/swagger-ui/
+- **Health Check:** http://127.0.0.1:8000/api/health/
 - **Admin:** http://127.0.0.1:8000/admin
-- **API Docs:** http://127.0.0.1:8000/api/schema/
