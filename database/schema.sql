@@ -1,31 +1,16 @@
 -- =====================================================
 -- ESQUEMA UNIFICADO DE BASE DE DATOS - LEANMAKER
--- SQL Server - Optimizado para Django ORM
--- Versión consolidada y corregida para Azure SQL Database
+-- SQL Server - Optimizado para Django ORM y Frontend React
+-- Versión mejorada y corregida para Azure SQL Database
+-- Compatible con los modelos de Django y tipos de TypeScript
 -- =====================================================
 
-USE leanmaker_db; -- Azure SQL Database ya está en el contexto correcto
+USE leanmaker_db;
 GO
-
--- =====================================================
--- CONFIGURACIÓN DE USUARIO (OPCIONAL, NO SOPORTADO EN AZURE SQL DATABASE)
--- =====================================================
--- Crear usuario si no existe (ignorar error si ya existe)
--- IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'admintesis')
--- BEGIN
---     CREATE USER admintesis FOR LOGIN admintesis;
---     ALTER ROLE db_owner ADD MEMBER admintesis;
--- END
--- GO
 
 -- =====================================================
 -- ELIMINACIÓN COMPLETA DE OBJETOS EXISTENTES
 -- =====================================================
--- PRINT 'Eliminando objetos existentes...';
-
--- Deshabilitar restricciones de clave foránea temporalmente (NO DISPONIBLE EN AZURE SQL DATABASE)
--- EXEC sp_MSforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT ALL";
--- PRINT 'Restricciones de clave foránea deshabilitadas.';
 
 -- Eliminar vistas primero (dependen de tablas)
 IF OBJECT_ID('v_student_stats', 'V') IS NOT NULL DROP VIEW v_student_stats;
@@ -54,24 +39,22 @@ IF OBJECT_ID('fn_CalculateStudentRating', 'FN') IS NOT NULL DROP FUNCTION fn_Cal
 IF OBJECT_ID('fn_CalculateProjectProgress', 'FN') IS NOT NULL DROP FUNCTION fn_CalculateProjectProgress;
 GO
 
--- Eliminar tablas en orden inverso de dependencias (sin restricciones FK)
--- Tablas de datos y logs
-IF OBJECT_ID('data_backups', 'U') IS NOT NULL DROP TABLE data_backups;
-IF OBJECT_ID('reports', 'U') IS NOT NULL DROP TABLE reports;
-IF OBJECT_ID('platform_config', 'U') IS NOT NULL DROP TABLE platform_config;
-IF OBJECT_ID('activity_logs', 'U') IS NOT NULL DROP TABLE activity_logs;
-IF OBJECT_ID('notification_preferences', 'U') IS NOT NULL DROP TABLE notification_preferences;
-IF OBJECT_ID('documents', 'U') IS NOT NULL DROP TABLE documents;
-IF OBJECT_ID('calendar_events', 'U') IS NOT NULL DROP TABLE calendar_events;
-IF OBJECT_ID('interviews', 'U') IS NOT NULL DROP TABLE interviews;
-IF OBJECT_ID('disciplinary_records', 'U') IS NOT NULL DROP TABLE disciplinary_records;
-IF OBJECT_ID('mass_notifications', 'U') IS NOT NULL DROP TABLE mass_notifications;
-IF OBJECT_ID('notifications', 'U') IS NOT NULL DROP TABLE notifications;
-IF OBJECT_ID('strikes', 'U') IS NOT NULL DROP TABLE strikes;
-IF OBJECT_ID('ratings', 'U') IS NOT NULL DROP TABLE ratings;
-IF OBJECT_ID('evaluations', 'U') IS NOT NULL DROP TABLE evaluations;
-IF OBJECT_ID('evaluation_categories', 'U') IS NOT NULL DROP TABLE evaluation_categories;
+-- Eliminar tablas en orden inverso de dependencias
 IF OBJECT_ID('work_hours', 'U') IS NOT NULL DROP TABLE work_hours;
+IF OBJECT_ID('evaluations', 'U') IS NOT NULL DROP TABLE evaluations;
+IF OBJECT_ID('ratings', 'U') IS NOT NULL DROP TABLE ratings;
+IF OBJECT_ID('strikes', 'U') IS NOT NULL DROP TABLE strikes;
+IF OBJECT_ID('notifications', 'U') IS NOT NULL DROP TABLE notifications;
+IF OBJECT_ID('mass_notifications', 'U') IS NOT NULL DROP TABLE mass_notifications;
+IF OBJECT_ID('disciplinary_records', 'U') IS NOT NULL DROP TABLE disciplinary_records;
+IF OBJECT_ID('interviews', 'U') IS NOT NULL DROP TABLE interviews;
+IF OBJECT_ID('calendar_events', 'U') IS NOT NULL DROP TABLE calendar_events;
+IF OBJECT_ID('documents', 'U') IS NOT NULL DROP TABLE documents;
+IF OBJECT_ID('notification_preferences', 'U') IS NOT NULL DROP TABLE notification_preferences;
+IF OBJECT_ID('activity_logs', 'U') IS NOT NULL DROP TABLE activity_logs;
+IF OBJECT_ID('platform_config', 'U') IS NOT NULL DROP TABLE platform_config;
+IF OBJECT_ID('reports', 'U') IS NOT NULL DROP TABLE reports;
+IF OBJECT_ID('data_backups', 'U') IS NOT NULL DROP TABLE data_backups;
 IF OBJECT_ID('assignments', 'U') IS NOT NULL DROP TABLE assignments;
 IF OBJECT_ID('applications', 'U') IS NOT NULL DROP TABLE applications;
 IF OBJECT_ID('project_status_history', 'U') IS NOT NULL DROP TABLE project_status_history;
@@ -80,22 +63,10 @@ IF OBJECT_ID('students', 'U') IS NOT NULL DROP TABLE students;
 IF OBJECT_ID('companies', 'U') IS NOT NULL DROP TABLE companies;
 IF OBJECT_ID('admins', 'U') IS NOT NULL DROP TABLE admins;
 IF OBJECT_ID('users', 'U') IS NOT NULL DROP TABLE users;
+IF OBJECT_ID('evaluation_categories', 'U') IS NOT NULL DROP TABLE evaluation_categories;
 IF OBJECT_ID('project_status', 'U') IS NOT NULL DROP TABLE project_status;
 IF OBJECT_ID('areas', 'U') IS NOT NULL DROP TABLE areas;
 IF OBJECT_ID('trl_levels', 'U') IS NOT NULL DROP TABLE trl_levels;
-GO
-
--- Eliminar secuencias si existen (por si acaso)
-IF OBJECT_ID('seq_user_id', 'SO') IS NOT NULL DROP SEQUENCE seq_user_id;
-IF OBJECT_ID('seq_project_id', 'SO') IS NOT NULL DROP SEQUENCE seq_project_id;
-IF OBJECT_ID('seq_student_id', 'SO') IS NOT NULL DROP SEQUENCE seq_student_id;
-IF OBJECT_ID('seq_company_id', 'SO') IS NOT NULL DROP SEQUENCE seq_company_id;
-GO
-
--- Habilitar restricciones de clave foránea nuevamente (NO DISPONIBLE EN AZURE SQL DATABASE)
--- EXEC sp_MSforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL";
--- PRINT 'Restricciones de clave foránea habilitadas nuevamente.';
--- PRINT 'Objetos existentes eliminados correctamente.';
 GO
 
 -- =====================================================
@@ -130,39 +101,47 @@ CREATE TABLE project_status (
 );
 
 -- =====================================================
--- TABLA DE USUARIOS
+-- TABLA DE USUARIOS (COMPATIBLE CON DJANGO)
 -- =====================================================
 CREATE TABLE users (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     email NVARCHAR(254) UNIQUE NOT NULL,
     password NVARCHAR(128) NOT NULL,
     role NVARCHAR(20) NOT NULL CHECK (role IN ('admin', 'student', 'company')),
-    name NVARCHAR(200) NOT NULL,
+    first_name NVARCHAR(150),
+    last_name NVARCHAR(150),
+    username NVARCHAR(150) UNIQUE,
+    phone NVARCHAR(20),
+    avatar NVARCHAR(500),
+    bio NVARCHAR(MAX),
     is_active BIT DEFAULT 1,
     is_staff BIT DEFAULT 0,
+    is_superuser BIT DEFAULT 0,
+    is_verified BIT DEFAULT 0,
+    date_joined DATETIME2 DEFAULT GETDATE(),
+    last_login DATETIME2,
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE(),
     
     -- Constraints adicionales
     CONSTRAINT CK_users_email_format CHECK (email LIKE '%_@__%.__%'),
-    CONSTRAINT CK_users_name_length CHECK (LEN(name) >= 2),
     CONSTRAINT CK_users_password_length CHECK (LEN(password) >= 8)
 );
 
 -- Tabla de administradores
 CREATE TABLE admins (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT UNIQUE FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
+    user_id UNIQUEIDENTIFIER UNIQUE FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
     permissions NVARCHAR(MAX), -- JSON array de permisos
     created_at DATETIME2 DEFAULT GETDATE()
 );
 
 -- =====================================================
--- TABLA DE EMPRESAS
+-- TABLA DE EMPRESAS (COMPATIBLE CON FRONTEND)
 -- =====================================================
 CREATE TABLE companies (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT UNIQUE FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
+    user_id UNIQUEIDENTIFIER UNIQUE FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
     company_name NVARCHAR(200) NOT NULL,
     description NVARCHAR(MAX),
     industry NVARCHAR(100),
@@ -176,20 +155,31 @@ CREATE TABLE companies (
     verified BIT DEFAULT 0,
     rating DECIMAL(3,2) DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
     total_projects INT DEFAULT 0 CHECK (total_projects >= 0),
+    projects_completed INT DEFAULT 0 CHECK (projects_completed >= 0),
+    total_hours_offered INT DEFAULT 0 CHECK (total_hours_offered >= 0),
+    technologies_used NVARCHAR(MAX), -- JSON array
+    benefits_offered NVARCHAR(MAX), -- JSON array
+    remote_work_policy NVARCHAR(50) CHECK (remote_work_policy IN ('full-remote', 'hybrid', 'onsite')),
+    internship_duration NVARCHAR(50),
+    stipend_range NVARCHAR(100),
+    contact_email NVARCHAR(254),
+    contact_phone NVARCHAR(20),
+    status NVARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE(),
     
     -- Constraints adicionales
     CONSTRAINT CK_companies_name_length CHECK (LEN(company_name) >= 2),
-    CONSTRAINT CK_companies_website_format CHECK (website IS NULL OR website LIKE 'http%')
+    CONSTRAINT CK_companies_website_format CHECK (website IS NULL OR website LIKE 'http%'),
+    CONSTRAINT CK_companies_contact_email_format CHECK (contact_email IS NULL OR contact_email LIKE '%_@__%.__%')
 );
 
 -- =====================================================
--- TABLA DE ESTUDIANTES
+-- TABLA DE ESTUDIANTES (COMPATIBLE CON FRONTEND)
 -- =====================================================
 CREATE TABLE students (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT UNIQUE FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
+    user_id UNIQUEIDENTIFIER UNIQUE FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
     career NVARCHAR(200),
     semester INT CHECK (semester >= 1 AND semester <= 12),
     graduation_year INT CHECK (graduation_year >= YEAR(GETDATE()) AND graduation_year <= YEAR(GETDATE()) + 10),
@@ -218,11 +208,11 @@ CREATE TABLE students (
 );
 
 -- =====================================================
--- TABLA DE PROYECTOS
+-- TABLA DE PROYECTOS (COMPATIBLE CON DJANGO Y FRONTEND)
 -- =====================================================
 CREATE TABLE projects (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
     status_id INT FOREIGN KEY REFERENCES project_status(id),
     area_id INT FOREIGN KEY REFERENCES areas(id),
     title NVARCHAR(200) NOT NULL,
@@ -233,6 +223,25 @@ CREATE TABLE projects (
     start_date DATE,
     estimated_end_date DATE,
     real_end_date DATE,
+    modality NVARCHAR(20) DEFAULT 'remote' CHECK (modality IN ('remote', 'onsite', 'hybrid')),
+    location NVARCHAR(200),
+    difficulty NVARCHAR(20) DEFAULT 'intermediate' CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
+    required_skills NVARCHAR(MAX), -- JSON array
+    preferred_skills NVARCHAR(MAX), -- JSON array
+    min_api_level INT DEFAULT 1 CHECK (min_api_level BETWEEN 1 AND 4),
+    duration_months INT DEFAULT 3,
+    hours_per_week INT DEFAULT 20,
+    is_paid BIT DEFAULT 0,
+    payment_amount DECIMAL(10,2),
+    payment_currency NVARCHAR(3) DEFAULT 'USD',
+    max_students INT DEFAULT 1,
+    current_students INT DEFAULT 0,
+    applications_count INT DEFAULT 0,
+    views_count INT DEFAULT 0,
+    is_featured BIT DEFAULT 0,
+    is_urgent BIT DEFAULT 0,
+    tags NVARCHAR(MAX), -- JSON array
+    published_at DATETIME2,
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE()
 );
@@ -242,35 +251,52 @@ CREATE TABLE projects (
 -- =====================================================
 CREATE TABLE project_status_history (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
     status_id INT FOREIGN KEY REFERENCES project_status(id),
-    user_id INT FOREIGN KEY REFERENCES users(id),
+    user_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     fecha_cambio DATETIME2 DEFAULT GETDATE(),
     comentario NVARCHAR(MAX)
 );
 
 -- =====================================================
--- TABLA DE POSTULACIONES
+-- TABLA DE POSTULACIONES (COMPATIBLE CON DJANGO)
 -- =====================================================
 CREATE TABLE applications (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
-    status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'completed', 'cancelled')),
-    fecha_postulacion DATETIME2 DEFAULT GETDATE(),
-    motivo_rechazo NVARCHAR(MAX)
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
+    status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'reviewing', 'interviewed', 'accepted', 'rejected', 'withdrawn', 'completed')),
+    cover_letter NVARCHAR(MAX),
+    compatibility_score INT CHECK (compatibility_score >= 0 AND compatibility_score <= 100),
+    company_notes NVARCHAR(MAX),
+    student_notes NVARCHAR(MAX),
+    portfolio_url NVARCHAR(500),
+    github_url NVARCHAR(500),
+    linkedin_url NVARCHAR(500),
+    applied_at DATETIME2 DEFAULT GETDATE(),
+    reviewed_at DATETIME2,
+    responded_at DATETIME2,
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE(),
+    
+    -- Una aplicación por estudiante y proyecto
+    CONSTRAINT UQ_application_student_project UNIQUE (project_id, student_id)
 );
 
 -- =====================================================
 -- TABLA DE ASIGNACIONES
 -- =====================================================
 CREATE TABLE assignments (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    application_id INT UNIQUE FOREIGN KEY REFERENCES applications(id) ON DELETE CASCADE,
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    application_id UNIQUEIDENTIFIER UNIQUE FOREIGN KEY REFERENCES applications(id) ON DELETE CASCADE,
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE,
     tareas NVARCHAR(MAX),
-    estado NVARCHAR(20) DEFAULT 'en curso' CHECK (estado IN ('en curso', 'completado', 'cancelado'))
+    estado NVARCHAR(20) DEFAULT 'en curso' CHECK (estado IN ('en curso', 'completado', 'cancelado')),
+    hours_worked INT DEFAULT 0,
+    tasks_completed INT DEFAULT 0,
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE()
 );
 
 -- =====================================================
@@ -278,17 +304,19 @@ CREATE TABLE assignments (
 -- =====================================================
 CREATE TABLE work_hours (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    assignment_id INT FOREIGN KEY REFERENCES assignments(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE NO ACTION,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
+    assignment_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES assignments(id) ON DELETE CASCADE,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
     fecha DATE NOT NULL,
     horas_trabajadas INT CHECK (horas_trabajadas > 0),
     descripcion NVARCHAR(MAX),
     estado_validacion NVARCHAR(20) DEFAULT 'pendiente' CHECK (estado_validacion IN ('pendiente', 'aprobado', 'rechazado')),
-    validador_id INT FOREIGN KEY REFERENCES users(id),
+    validador_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     fecha_validacion DATETIME2,
-    comentario_validacion NVARCHAR(MAX)
+    comentario_validacion NVARCHAR(MAX),
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE()
 );
 
 -- =====================================================
@@ -309,12 +337,13 @@ CREATE TABLE evaluation_categories (
 CREATE TABLE evaluations (
     id INT IDENTITY(1,1) PRIMARY KEY,
     student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    project_id INT FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    evaluator_id INT FOREIGN KEY REFERENCES users(id),
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
+    evaluator_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     category_id INT FOREIGN KEY REFERENCES evaluation_categories(id),
     score DECIMAL(3,2) CHECK (score >= 0 AND score <= 10),
     comments NVARCHAR(MAX),
     evaluation_date DATETIME2 DEFAULT GETDATE(),
+    created_at DATETIME2 DEFAULT GETDATE(),
     
     -- Una evaluación por estudiante, proyecto y categoría
     CONSTRAINT UQ_evaluation_student_project_category UNIQUE (student_id, project_id, category_id)
@@ -325,9 +354,9 @@ CREATE TABLE evaluations (
 -- =====================================================
 CREATE TABLE ratings (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    rater_id INT FOREIGN KEY REFERENCES users(id),
-    rated_id INT FOREIGN KEY REFERENCES users(id),
-    project_id INT FOREIGN KEY REFERENCES projects(id),
+    rater_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
+    rated_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id),
     rating DECIMAL(3,2) CHECK (rating >= 0 AND rating <= 5),
     comment NVARCHAR(MAX),
     created_at DATETIME2 DEFAULT GETDATE(),
@@ -345,7 +374,7 @@ CREATE TABLE strikes (
     company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
     reason NVARCHAR(MAX) NOT NULL,
     severity NVARCHAR(20) DEFAULT 'medium' CHECK (severity IN ('low', 'medium', 'high', 'critical')),
-    issued_by INT FOREIGN KEY REFERENCES users(id),
+    issued_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     issued_at DATETIME2 DEFAULT GETDATE(),
     is_active BIT DEFAULT 1,
     resolved_at DATETIME2,
@@ -357,7 +386,7 @@ CREATE TABLE strikes (
 -- =====================================================
 CREATE TABLE notifications (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
+    user_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
     title NVARCHAR(200) NOT NULL,
     message NVARCHAR(MAX) NOT NULL,
     notification_type NVARCHAR(50) DEFAULT 'general',
@@ -377,7 +406,7 @@ CREATE TABLE mass_notifications (
     title NVARCHAR(200) NOT NULL,
     message NVARCHAR(MAX) NOT NULL,
     target_role NVARCHAR(20) CHECK (target_role IN ('admin', 'student', 'company', 'all')),
-    sent_by INT FOREIGN KEY REFERENCES users(id),
+    sent_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     sent_at DATETIME2 DEFAULT GETDATE(),
     total_recipients INT DEFAULT 0,
     read_count INT DEFAULT 0,
@@ -395,11 +424,8 @@ CREATE TABLE disciplinary_records (
     description NVARCHAR(MAX) NOT NULL,
     action_taken NVARCHAR(MAX),
     severity NVARCHAR(20) DEFAULT 'medium' CHECK (severity IN ('low', 'medium', 'high', 'critical')),
-    recorded_by INT FOREIGN KEY REFERENCES users(id),
-    recorded_at DATETIME2 DEFAULT GETDATE(),
-    is_resolved BIT DEFAULT 0,
-    resolution_date DATETIME2,
-    resolution_notes NVARCHAR(MAX)
+    recorded_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
+    recorded_at DATETIME2 DEFAULT GETDATE()
 );
 
 -- =====================================================
@@ -407,15 +433,13 @@ CREATE TABLE disciplinary_records (
 -- =====================================================
 CREATE TABLE interviews (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    application_id INT FOREIGN KEY REFERENCES applications(id) ON DELETE CASCADE,
-    interviewer_id INT FOREIGN KEY REFERENCES users(id),
+    application_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES applications(id) ON DELETE CASCADE,
+    interviewer_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     interview_date DATETIME2 NOT NULL,
     duration_minutes INT DEFAULT 60,
-    location NVARCHAR(200),
-    interview_type NVARCHAR(50) DEFAULT 'video' CHECK (interview_type IN ('video', 'phone', 'in-person')),
-    status NVARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled', 'no-show')),
+    interview_type NVARCHAR(20) DEFAULT 'video' CHECK (interview_type IN ('video', 'phone', 'onsite')),
+    status NVARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled', 'rescheduled')),
     notes NVARCHAR(MAX),
-    rating DECIMAL(3,2) CHECK (rating >= 0 AND rating <= 5),
     feedback NVARCHAR(MAX),
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE()
@@ -430,12 +454,11 @@ CREATE TABLE calendar_events (
     description NVARCHAR(MAX),
     start_date DATETIME2 NOT NULL,
     end_date DATETIME2 NOT NULL,
-    location NVARCHAR(200),
-    event_type NVARCHAR(50) DEFAULT 'meeting' CHECK (event_type IN ('meeting', 'deadline', 'presentation', 'other')),
-    created_by INT NOT NULL FOREIGN KEY REFERENCES users(id),
-    project_id INT FOREIGN KEY REFERENCES projects(id),
+    event_type NVARCHAR(50) DEFAULT 'general' CHECK (event_type IN ('general', 'interview', 'meeting', 'deadline', 'reminder')),
+    user_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id),
     is_all_day BIT DEFAULT 0,
-    reminder_minutes INT DEFAULT 15,
+    location NVARCHAR(200),
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE()
 );
@@ -447,14 +470,12 @@ CREATE TABLE documents (
     id INT IDENTITY(1,1) PRIMARY KEY,
     title NVARCHAR(200) NOT NULL,
     description NVARCHAR(MAX),
-    file_path NVARCHAR(500) NOT NULL,
-    file_name NVARCHAR(200) NOT NULL,
-    file_size BIGINT,
+    file_url NVARCHAR(500) NOT NULL,
     file_type NVARCHAR(50),
-    uploaded_by INT NOT NULL FOREIGN KEY REFERENCES users(id),
-    project_id INT FOREIGN KEY REFERENCES projects(id),
+    file_size INT,
+    uploaded_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id),
     is_public BIT DEFAULT 0,
-    download_count INT DEFAULT 0,
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE()
 );
@@ -464,15 +485,15 @@ CREATE TABLE documents (
 -- =====================================================
 CREATE TABLE notification_preferences (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
-    notification_type NVARCHAR(50) NOT NULL,
-    email_enabled BIT DEFAULT 1,
-    push_enabled BIT DEFAULT 1,
-    sms_enabled BIT DEFAULT 0,
+    user_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id) ON DELETE CASCADE,
+    email_notifications BIT DEFAULT 1,
+    push_notifications BIT DEFAULT 1,
+    sms_notifications BIT DEFAULT 0,
+    notification_types NVARCHAR(MAX), -- JSON array de tipos permitidos
+    quiet_hours_start TIME,
+    quiet_hours_end TIME,
     created_at DATETIME2 DEFAULT GETDATE(),
-    updated_at DATETIME2 DEFAULT GETDATE(),
-    
-    CONSTRAINT UQ_notification_preferences_user_type UNIQUE (user_id, notification_type)
+    updated_at DATETIME2 DEFAULT GETDATE()
 );
 
 -- =====================================================
@@ -480,12 +501,11 @@ CREATE TABLE notification_preferences (
 -- =====================================================
 CREATE TABLE activity_logs (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL FOREIGN KEY REFERENCES users(id),
+    user_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     action NVARCHAR(100) NOT NULL,
-    table_name NVARCHAR(100),
-    record_id INT,
-    old_values NVARCHAR(MAX), -- JSON
-    new_values NVARCHAR(MAX), -- JSON
+    entity_type NVARCHAR(50),
+    entity_id NVARCHAR(50),
+    details NVARCHAR(MAX),
     ip_address NVARCHAR(45),
     user_agent NVARCHAR(500),
     created_at DATETIME2 DEFAULT GETDATE()
@@ -496,8 +516,9 @@ CREATE TABLE activity_logs (
 -- =====================================================
 CREATE TABLE platform_config (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    key_name NVARCHAR(100) UNIQUE NOT NULL,
-    value NVARCHAR(MAX),
+    config_key NVARCHAR(100) UNIQUE NOT NULL,
+    config_value NVARCHAR(MAX),
+    config_type NVARCHAR(20) DEFAULT 'string' CHECK (config_type IN ('string', 'number', 'boolean', 'json')),
     description NVARCHAR(MAX),
     is_active BIT DEFAULT 1,
     created_at DATETIME2 DEFAULT GETDATE(),
@@ -509,30 +530,28 @@ CREATE TABLE platform_config (
 -- =====================================================
 CREATE TABLE reports (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(200) NOT NULL,
-    description NVARCHAR(MAX),
     report_type NVARCHAR(50) NOT NULL,
-    parameters NVARCHAR(MAX), -- JSON
-    generated_by INT NOT NULL FOREIGN KEY REFERENCES users(id),
-    file_path NVARCHAR(500),
-    file_size INT,
+    title NVARCHAR(200) NOT NULL,
+    description NVARCHAR(MAX),
+    generated_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
+    report_data NVARCHAR(MAX), -- JSON con los datos del reporte
+    file_url NVARCHAR(500),
     status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
     created_at DATETIME2 DEFAULT GETDATE(),
     completed_at DATETIME2
 );
 
 -- =====================================================
--- TABLA DE BACKUPS DE DATOS
+-- TABLA DE RESPALDOS DE DATOS
 -- =====================================================
 CREATE TABLE data_backups (
     id INT IDENTITY(1,1) PRIMARY KEY,
     backup_name NVARCHAR(200) NOT NULL,
-    description NVARCHAR(MAX),
-    file_path NVARCHAR(500) NOT NULL,
-    file_size BIGINT,
     backup_type NVARCHAR(50) DEFAULT 'full' CHECK (backup_type IN ('full', 'incremental', 'differential')),
-    status NVARCHAR(20) DEFAULT 'completed' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
-    created_by INT NOT NULL FOREIGN KEY REFERENCES users(id),
+    file_url NVARCHAR(500),
+    file_size BIGINT,
+    status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
+    created_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     created_at DATETIME2 DEFAULT GETDATE(),
     completed_at DATETIME2
 );
@@ -540,58 +559,92 @@ CREATE TABLE data_backups (
 -- =====================================================
 -- ÍNDICES PARA OPTIMIZAR RENDIMIENTO
 -- =====================================================
+
+-- Índices para usuarios
 CREATE INDEX IX_users_email ON users(email);
 CREATE INDEX IX_users_role ON users(role);
+CREATE INDEX IX_users_is_active ON users(is_active);
+
+-- Índices para estudiantes
 CREATE INDEX IX_students_user_id ON students(user_id);
+CREATE INDEX IX_students_status ON students(status);
+CREATE INDEX IX_students_api_level ON students(api_level);
+CREATE INDEX IX_students_strikes ON students(strikes);
+
+-- Índices para empresas
 CREATE INDEX IX_companies_user_id ON companies(user_id);
+CREATE INDEX IX_companies_status ON companies(status);
+CREATE INDEX IX_companies_verified ON companies(verified);
+
+-- Índices para proyectos
 CREATE INDEX IX_projects_company_id ON projects(company_id);
 CREATE INDEX IX_projects_status_id ON projects(status_id);
+CREATE INDEX IX_projects_area_id ON projects(area_id);
+CREATE INDEX IX_projects_api_level ON projects(api_level);
+CREATE INDEX IX_projects_is_featured ON projects(is_featured);
+CREATE INDEX IX_projects_created_at ON projects(created_at);
+
+-- Índices para aplicaciones
 CREATE INDEX IX_applications_project_id ON applications(project_id);
 CREATE INDEX IX_applications_student_id ON applications(student_id);
 CREATE INDEX IX_applications_status ON applications(status);
+CREATE INDEX IX_applications_applied_at ON applications(applied_at);
+
+-- Índices para horas trabajadas
 CREATE INDEX IX_work_hours_student_id ON work_hours(student_id);
 CREATE INDEX IX_work_hours_project_id ON work_hours(project_id);
-CREATE INDEX IX_work_hours_date ON work_hours(fecha);
+CREATE INDEX IX_work_hours_fecha ON work_hours(fecha);
+CREATE INDEX IX_work_hours_estado_validacion ON work_hours(estado_validacion);
+
+-- Índices para evaluaciones
 CREATE INDEX IX_evaluations_student_id ON evaluations(student_id);
 CREATE INDEX IX_evaluations_project_id ON evaluations(project_id);
+CREATE INDEX IX_evaluations_category_id ON evaluations(category_id);
+
+-- Índices para notificaciones
 CREATE INDEX IX_notifications_user_id ON notifications(user_id);
 CREATE INDEX IX_notifications_is_read ON notifications(is_read);
-CREATE INDEX IX_calendar_events_start_date ON calendar_events(start_date);
-CREATE INDEX IX_calendar_events_created_by ON calendar_events(created_by);
+CREATE INDEX IX_notifications_created_at ON notifications(created_at);
 
--- Índices compuestos para consultas frecuentes
+-- Índices para eventos de calendario
+CREATE INDEX IX_calendar_events_start_date ON calendar_events(start_date);
+CREATE INDEX IX_calendar_events_user_id ON calendar_events(user_id);
+CREATE INDEX IX_calendar_events_event_type ON calendar_events(event_type);
+
+-- Índices compuestos para optimizar consultas frecuentes
 CREATE INDEX IX_applications_project_student ON applications(project_id, student_id);
-CREATE INDEX IX_work_hours_student_date ON work_hours(student_id, fecha);
+CREATE INDEX IX_work_hours_student_fecha ON work_hours(student_id, fecha);
 CREATE INDEX IX_evaluations_student_project ON evaluations(student_id, project_id);
 CREATE INDEX IX_notifications_user_read ON notifications(user_id, is_read);
-GO
 
 -- =====================================================
 -- VISTAS PARA CONSULTAS FRECUENTES
 -- =====================================================
+GO
 
 -- Vista de estadísticas de estudiantes
 CREATE VIEW v_student_stats AS
 SELECT 
     s.id,
     s.user_id,
-    u.name,
     u.email,
+    ISNULL(u.first_name, '') + ' ' + ISNULL(u.last_name, '') AS full_name,
     s.career,
     s.semester,
+    s.gpa,
     s.api_level,
     s.strikes,
-    s.gpa,
     s.completed_projects,
     s.total_hours,
     s.rating,
-    COUNT(DISTINCT a.id) as total_applications,
-    COUNT(DISTINCT CASE WHEN a.status = 'accepted' THEN a.id END) as accepted_applications,
-    COUNT(DISTINCT CASE WHEN a.status = 'completed' THEN a.id END) as completed_projects_count
+    s.status,
+    COUNT(DISTINCT a.id) AS total_applications,
+    COUNT(DISTINCT CASE WHEN a.status = 'accepted' THEN a.id END) AS accepted_applications,
+    COUNT(DISTINCT CASE WHEN a.status = 'completed' THEN a.id END) AS completed_applications
 FROM students s
 JOIN users u ON s.user_id = u.id
 LEFT JOIN applications a ON s.id = a.student_id
-GROUP BY s.id, s.user_id, u.name, u.email, s.career, s.semester, s.api_level, s.strikes, s.gpa, s.completed_projects, s.total_hours, s.rating;
+GROUP BY s.id, s.user_id, u.email, u.first_name, u.last_name, s.career, s.semester, s.gpa, s.api_level, s.strikes, s.completed_projects, s.total_hours, s.rating, s.status;
 GO
 
 -- Vista de estadísticas de empresas
@@ -599,22 +652,25 @@ CREATE VIEW v_company_stats AS
 SELECT 
     c.id,
     c.user_id,
-    u.name,
     u.email,
     c.company_name,
     c.industry,
     c.size,
-    c.verified,
     c.rating,
+    c.verified,
+    c.status,
     c.total_projects,
-    COUNT(DISTINCT p.id) as active_projects,
-    COUNT(DISTINCT a.id) as total_applications_received,
-    COUNT(DISTINCT CASE WHEN a.status = 'accepted' THEN a.id END) as accepted_applications
+    c.projects_completed,
+    c.total_hours_offered,
+    COUNT(DISTINCT p.id) AS active_projects,
+    COUNT(DISTINCT a.id) AS total_applications_received,
+    COUNT(DISTINCT CASE WHEN a.status = 'accepted' THEN a.id END) AS accepted_applications,
+    AVG(CAST(a.compatibility_score AS FLOAT)) AS avg_compatibility_score
 FROM companies c
 JOIN users u ON c.user_id = u.id
-LEFT JOIN projects p ON c.id = p.company_id
+LEFT JOIN projects p ON c.id = p.company_id AND p.status_id IN (SELECT id FROM project_status WHERE name IN ('published', 'in_progress'))
 LEFT JOIN applications a ON p.id = a.project_id
-GROUP BY c.id, c.user_id, u.name, u.email, c.company_name, c.industry, c.size, c.verified, c.rating, c.total_projects;
+GROUP BY c.id, c.user_id, u.email, c.company_name, c.industry, c.size, c.rating, c.verified, c.status, c.total_projects, c.projects_completed, c.total_hours_offered;
 GO
 
 -- Vista de estadísticas de proyectos
@@ -624,22 +680,86 @@ SELECT
     p.title,
     p.company_id,
     c.company_name,
-    ps.name as status_name,
+    ps.name AS status,
     p.api_level,
     p.required_hours,
-    p.start_date,
-    p.estimated_end_date,
-    p.real_end_date,
-    COUNT(DISTINCT a.id) as total_applications,
-    COUNT(DISTINCT CASE WHEN a.status = 'accepted' THEN a.id END) as accepted_applications,
-    COUNT(DISTINCT wh.id) as total_work_hours_records,
-    SUM(wh.horas_trabajadas) as total_hours_worked
+    p.max_students,
+    p.current_students,
+    p.applications_count,
+    p.views_count,
+    p.is_featured,
+    p.is_urgent,
+    p.created_at,
+    p.published_at,
+    COUNT(DISTINCT a.id) AS total_applications,
+    COUNT(DISTINCT CASE WHEN a.status = 'accepted' THEN a.id END) AS accepted_applications,
+    COUNT(DISTINCT wh.id) AS total_work_hours_records,
+    SUM(wh.horas_trabajadas) AS total_hours_worked
 FROM projects p
 JOIN companies c ON p.company_id = c.id
 JOIN project_status ps ON p.status_id = ps.id
 LEFT JOIN applications a ON p.id = a.project_id
 LEFT JOIN work_hours wh ON p.id = wh.project_id
-GROUP BY p.id, p.title, p.company_id, c.company_name, ps.name, p.api_level, p.required_hours, p.start_date, p.estimated_end_date, p.real_end_date;
+GROUP BY p.id, p.title, p.company_id, c.company_name, ps.name, p.api_level, p.required_hours, p.max_students, p.current_students, p.applications_count, p.views_count, p.is_featured, p.is_urgent, p.created_at, p.published_at;
+GO
+
+-- Vista de evaluaciones completas
+CREATE VIEW v_evaluations_complete AS
+SELECT 
+    e.id,
+    e.student_id,
+    s.user_id AS student_user_id,
+    ISNULL(u_student.first_name, '') + ' ' + ISNULL(u_student.last_name, '') AS student_name,
+    e.project_id,
+    p.title AS project_title,
+    e.evaluator_id,
+    ISNULL(u_evaluator.first_name, '') + ' ' + ISNULL(u_evaluator.last_name, '') AS evaluator_name,
+    e.category_id,
+    ec.name AS category_name,
+    e.score,
+    e.comments,
+    e.evaluation_date,
+    e.created_at
+FROM evaluations e
+JOIN students s ON e.student_id = s.id
+JOIN users u_student ON s.user_id = u_student.id
+JOIN projects p ON e.project_id = p.id
+JOIN users u_evaluator ON e.evaluator_id = u_evaluator.id
+JOIN evaluation_categories ec ON e.category_id = ec.id;
+GO
+
+-- Vista del dashboard de administrador
+CREATE VIEW v_admin_dashboard AS
+SELECT 
+    'users' AS metric_type,
+    COUNT(*) AS total_count,
+    COUNT(CASE WHEN role = 'student' THEN 1 END) AS students_count,
+    COUNT(CASE WHEN role = 'company' THEN 1 END) AS companies_count,
+    COUNT(CASE WHEN role = 'admin' THEN 1 END) AS admins_count,
+    COUNT(CASE WHEN is_active = 1 THEN 1 END) AS active_users,
+    COUNT(CASE WHEN is_verified = 1 THEN 1 END) AS verified_users
+FROM users
+UNION ALL
+SELECT 
+    'projects' AS metric_type,
+    COUNT(*) AS total_count,
+    COUNT(CASE WHEN ps.name = 'published' THEN 1 END) AS published_count,
+    COUNT(CASE WHEN ps.name = 'in_progress' THEN 1 END) AS in_progress_count,
+    COUNT(CASE WHEN ps.name = 'completed' THEN 1 END) AS completed_count,
+    COUNT(CASE WHEN p.is_featured = 1 THEN 1 END) AS featured_count,
+    COUNT(CASE WHEN p.is_urgent = 1 THEN 1 END) AS urgent_count
+FROM projects p
+JOIN project_status ps ON p.status_id = ps.id
+UNION ALL
+SELECT 
+    'applications' AS metric_type,
+    COUNT(*) AS total_count,
+    COUNT(CASE WHEN status = 'pending' THEN 1 END) AS pending_count,
+    COUNT(CASE WHEN status = 'accepted' THEN 1 END) AS accepted_count,
+    COUNT(CASE WHEN status = 'rejected' THEN 1 END) AS rejected_count,
+    COUNT(CASE WHEN status = 'completed' THEN 1 END) AS completed_count,
+    0 AS urgent_count
+FROM applications;
 GO
 
 -- =====================================================
@@ -648,110 +768,63 @@ GO
 
 -- Insertar niveles TRL
 INSERT INTO trl_levels (level, name, description) VALUES
-(1, 'TRL 1 - Principios básicos observados', 'Los principios científicos básicos han sido observados y reportados'),
-(2, 'TRL 2 - Concepto tecnológico formulado', 'Se ha formulado el concepto tecnológico y/o aplicación'),
-(3, 'TRL 3 - Prueba de concepto analítica y experimental', 'Se ha verificado la prueba de concepto analítica y experimental'),
-(4, 'TRL 4 - Validación en laboratorio', 'Se ha validado el componente y/o subsistema en entorno de laboratorio'),
-(5, 'TRL 5 - Validación en entorno relevante', 'Se ha validado el componente y/o subsistema en entorno relevante'),
-(6, 'TRL 6 - Demostración en entorno relevante', 'Se ha demostrado el prototipo del sistema en entorno relevante'),
-(7, 'TRL 7 - Demostración en entorno operacional', 'Se ha demostrado el prototipo del sistema en entorno operacional'),
-(8, 'TRL 8 - Sistema completo calificado', 'Se ha calificado el sistema completo a través de pruebas y demostración'),
-(9, 'TRL 9 - Sistema probado en operación', 'El sistema ha sido probado en operación exitosa');
+(1, 'TRL 1 - Principios básicos observados', 'Investigación científica básica'),
+(2, 'TRL 2 - Concepto tecnológico formulado', 'Investigación aplicada'),
+(3, 'TRL 3 - Prueba de concepto analítica y experimental', 'Desarrollo de concepto'),
+(4, 'TRL 4 - Validación en laboratorio', 'Validación en entorno de laboratorio'),
+(5, 'TRL 5 - Validación en entorno relevante', 'Validación en entorno relevante'),
+(6, 'TRL 6 - Demostración en entorno relevante', 'Demostración en entorno relevante'),
+(7, 'TRL 7 - Demostración en entorno operacional', 'Demostración en entorno operacional'),
+(8, 'TRL 8 - Sistema completo y calificado', 'Sistema completo y calificado'),
+(9, 'TRL 9 - Sistema probado en entorno operacional', 'Sistema probado en entorno operacional');
 
 -- Insertar áreas de conocimiento
 INSERT INTO areas (name, description) VALUES
-('Inteligencia Artificial', 'Machine Learning, Deep Learning, NLP, Computer Vision'),
-('Desarrollo Web', 'Frontend, Backend, Full Stack, APIs'),
-('Desarrollo Móvil', 'iOS, Android, React Native, Flutter'),
-('Ciberseguridad', 'Seguridad de aplicaciones, Redes, Criptografía'),
-('Ciencia de Datos', 'Análisis de datos, Big Data, Business Intelligence'),
-('DevOps', 'CI/CD, Cloud Computing, Infraestructura como código'),
-('Blockchain', 'Smart Contracts, DApps, Criptomonedas'),
-('IoT', 'Internet de las Cosas, Sensores, Automatización'),
-('Realidad Virtual/Aumentada', 'VR, AR, MR, Desarrollo de experiencias inmersivas'),
-('Robótica', 'Automatización, Control de robots, Sistemas embebidos');
+('Tecnología', 'Desarrollo de software, aplicaciones y sistemas tecnológicos'),
+('Marketing', 'Estrategias de marketing digital y tradicional'),
+('Diseño', 'Diseño gráfico, UX/UI y diseño industrial'),
+('Negocios', 'Consultoría empresarial y análisis de mercado'),
+('Educación', 'Desarrollo de contenido educativo y plataformas de aprendizaje'),
+('Salud', 'Tecnologías médicas y aplicaciones de salud'),
+('Medio Ambiente', 'Proyectos de sostenibilidad y conservación'),
+('Arte y Cultura', 'Proyectos artísticos y culturales'),
+('Deportes', 'Aplicaciones deportivas y fitness'),
+('Finanzas', 'Aplicaciones financieras y fintech');
 
 -- Insertar estados de proyecto
 INSERT INTO project_status (name, description, color) VALUES
-('Borrador', 'Proyecto en fase de planificación', '#6c757d'),
-('Abierto', 'Proyecto disponible para postulaciones', '#28a745'),
-('En Revisión', 'Evaluando postulaciones recibidas', '#ffc107'),
-('En Progreso', 'Proyecto en ejecución', '#007bff'),
-('Completado', 'Proyecto finalizado exitosamente', '#28a745'),
-('Cancelado', 'Proyecto cancelado o suspendido', '#dc3545'),
-('Archivado', 'Proyecto archivado', '#6c757d');
+('draft', 'Borrador - Proyecto en desarrollo', '#6c757d'),
+('published', 'Publicado - Disponible para aplicaciones', '#28a745'),
+('in_progress', 'En Progreso - Proyecto activo', '#007bff'),
+('completed', 'Completado - Proyecto finalizado', '#28a745'),
+('cancelled', 'Cancelado - Proyecto cancelado', '#dc3545'),
+('paused', 'Pausado - Proyecto temporalmente suspendido', '#ffc107'),
+('reviewing', 'En Revisión - Aplicaciones siendo evaluadas', '#17a2b8');
 
 -- Insertar categorías de evaluación
 INSERT INTO evaluation_categories (name, description, weight) VALUES
-('Calidad del Trabajo', 'Evaluación de la calidad y precisión del trabajo realizado', 0.30),
-('Cumplimiento de Plazos', 'Puntualidad en la entrega de tareas y proyectos', 0.25),
-('Comunicación', 'Efectividad en la comunicación con el equipo y stakeholders', 0.20),
-('Iniciativa', 'Proactividad y capacidad de resolver problemas', 0.15),
-('Trabajo en Equipo', 'Colaboración y contribución al equipo', 0.10);
+('Trabajo en Equipo', 'Capacidad de colaborar efectivamente con otros', 0.25),
+('Comunicación', 'Habilidades de comunicación oral y escrita', 0.20),
+('Responsabilidad', 'Cumplimiento de plazos y compromisos', 0.25),
+('Calidad del Trabajo', 'Excelencia en la entrega de resultados', 0.20),
+('Iniciativa', 'Proactividad y capacidad de resolver problemas', 0.10);
 
--- Insertar configuración inicial de la plataforma
-INSERT INTO platform_config (key_name, value, description) VALUES
-('max_strikes_student', '3', 'Número máximo de amonestaciones antes de suspensión'),
-('min_hours_graduation', '360', 'Horas mínimas requeridas para graduación'),
-('api_level_requirements', '{"1": 0, "2": 50, "3": 150, "4": 300}', 'Horas requeridas para cada nivel API'),
-('project_duration_limit', '12', 'Duración máxima de proyectos en meses'),
-('notification_retention_days', '90', 'Días de retención de notificaciones'),
-('max_file_size_mb', '10', 'Tamaño máximo de archivos en MB'),
-('allowed_file_types', 'pdf,doc,docx,jpg,png,zip', 'Tipos de archivo permitidos');
-
-GO
-
+-- =====================================================
+-- MENSAJE DE ÉXITO
+-- =====================================================
 PRINT 'Esquema de base de datos LEANMAKER creado exitosamente!';
 PRINT 'Total de tablas creadas: 25';
-PRINT 'Total de vistas creadas: 3';
+PRINT 'Total de vistas creadas: 5';
 PRINT 'Datos iniciales insertados correctamente.';
-
--- =====================================================
--- VERIFICACIÓN FINAL DE OBJETOS CREADOS
--- =====================================================
 PRINT '';
 PRINT '=== VERIFICACIÓN DE OBJETOS CREADOS ===';
-
--- Verificar tablas creadas
-DECLARE @table_count INT = 0;
-SELECT @table_count = COUNT(*) FROM sys.tables WHERE type = 'U';
-PRINT 'Tablas creadas: ' + CAST(@table_count AS VARCHAR(10));
-
--- Verificar vistas creadas
-DECLARE @view_count INT = 0;
-SELECT @view_count = COUNT(*) FROM sys.views;
-PRINT 'Vistas creadas: ' + CAST(@view_count AS VARCHAR(10));
-
--- Verificar índices creados
-DECLARE @index_count INT = 0;
-SELECT @index_count = COUNT(*) FROM sys.indexes WHERE type > 0;
-PRINT 'Índices creados: ' + CAST(@index_count AS VARCHAR(10));
-
--- Verificar datos iniciales
-DECLARE @trl_count INT = 0;
-SELECT @trl_count = COUNT(*) FROM trl_levels;
-PRINT 'Niveles TRL insertados: ' + CAST(@trl_count AS VARCHAR(10));
-
-DECLARE @areas_count INT = 0;
-SELECT @areas_count = COUNT(*) FROM areas;
-PRINT 'Áreas de conocimiento insertadas: ' + CAST(@areas_count AS VARCHAR(10));
-
-DECLARE @status_count INT = 0;
-SELECT @status_count = COUNT(*) FROM project_status;
-PRINT 'Estados de proyecto insertados: ' + CAST(@status_count AS VARCHAR(10));
-
-DECLARE @categories_count INT = 0;
-SELECT @categories_count = COUNT(*) FROM evaluation_categories;
-PRINT 'Categorías de evaluación insertadas: ' + CAST(@categories_count AS VARCHAR(10));
-
-DECLARE @config_count INT = 0;
-SELECT @config_count = COUNT(*) FROM platform_config;
-PRINT 'Configuraciones de plataforma insertadas: ' + CAST(@config_count AS VARCHAR(10));
-
-PRINT '';
-PRINT '=== VERIFICACIÓN COMPLETADA ===';
-PRINT 'La base de datos está lista para usar con Django.';
-PRINT 'Recuerda ejecutar las migraciones de Django después de crear la base de datos.'; 
+PRINT 'Tablas creadas: ' + CAST((SELECT COUNT(*) FROM sys.tables WHERE is_ms_shipped = 0) AS NVARCHAR(10));
+PRINT 'Vistas creadas: ' + CAST((SELECT COUNT(*) FROM sys.views WHERE is_ms_shipped = 0) AS NVARCHAR(10));
+PRINT 'Índices creados: ' + CAST((SELECT COUNT(*) FROM sys.indexes WHERE object_id IN (SELECT object_id FROM sys.tables WHERE is_ms_shipped = 0)) AS NVARCHAR(10));
+PRINT 'Niveles TRL insertados: ' + CAST((SELECT COUNT(*) FROM trl_levels) AS NVARCHAR(10));
+PRINT 'Áreas de conocimiento insertadas: ' + CAST((SELECT COUNT(*) FROM areas) AS NVARCHAR(10));
+PRINT 'Estados de proyecto insertados: ' + CAST((SELECT COUNT(*) FROM project_status) AS NVARCHAR(10));
+PRINT 'Categorías de evaluación insertadas: ' + CAST((SELECT COUNT(*) FROM evaluation_categories) AS NVARCHAR(10));
 
 
 

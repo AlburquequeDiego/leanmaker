@@ -69,77 +69,107 @@ GO
 -- =====================================================
 -- INSERTAR USUARIOS DE PRUEBA
 -- =====================================================
-SET IDENTITY_INSERT users ON;
-INSERT INTO users (id, email, password, role, name, is_active, is_staff) VALUES
-(1, 'admin@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'admin', 'Administrador Principal', 1, 1),
-(2, 'supervisor@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'admin', 'Supervisor General', 1, 1),
-(3, 'empresa@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Ana Contreras', 1, 0),
-(4, 'rrhh@innovatech.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Luis Valdés', 1, 0),
-(5, 'manager@datasciencecorp.io', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Elena Ríos', 1, 0),
-(6, 'admin@cybersecure.cl', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Pedro Pascal', 1, 0),
-(7, 'info@mobilefirst.dev', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Sofia Vergara', 1, 0),
-(8, 'hola@webmasters.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Arturo Vidal', 1, 0),
-(9, 'jobs@cloudservices.net', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Gabriela Mistral', 1, 0),
-(10, 'support@fintechglobal.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Pablo Neruda', 1, 0),
-(11, 'contact@healthtech.co', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Isabel Allende', 1, 0),
-(12, 'hiring@gamestudios.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Marcelo Salas', 1, 0),
-(13, 'estudiante@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Juan Pérez', 1, 0),
-(14, 'maria.gomez@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'María Gómez', 1, 0),
-(15, 'carlos.lopez@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Carlos López', 1, 0),
-(16, 'ana.martinez@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Ana Martínez', 1, 0),
-(17, 'diego.hernandez@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Diego Hernández', 1, 0),
-(18, 'sofia.garcia@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Sofía García', 1, 0),
-(19, 'javier.diaz@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Javier Díaz', 1, 0),
-(20, 'laura.fernandez@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Laura Fernández', 1, 0),
-(21, 'pablo.moreno@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Pablo Moreno', 1, 0),
-(22, 'valentina.romero@email.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Valentina Romero', 1, 0);
-SET IDENTITY_INSERT users OFF;
 
--- PRINT 'Usuarios insertados correctamente.';
--- GO
+-- Administradores
+INSERT INTO users (id, email, password, role, first_name, last_name, username, phone, avatar, bio, is_active, is_staff, is_superuser, is_verified, date_joined, last_login) VALUES
+(NEWID(), 'admin@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'admin', 'Carlos', 'Rodríguez', 'admin_principal', '+56 9 1234 5678', 'https://avatars.githubusercontent.com/u/1', 'Administrador principal de la plataforma LeanMaker', 1, 1, 1, 1, '2024-01-15', '2024-08-15'),
+(NEWID(), 'supervisor@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'admin', 'María', 'González', 'supervisor_general', '+56 9 2345 6789', 'https://avatars.githubusercontent.com/u/2', 'Supervisor general de operaciones', 1, 1, 0, 1, '2024-02-01', '2024-08-14');
+
+-- Empresas
+INSERT INTO users (id, email, password, role, first_name, last_name, username, phone, avatar, bio, is_active, is_staff, is_superuser, is_verified, date_joined, last_login) VALUES
+(NEWID(), 'techsolutions@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Ana', 'Contreras', 'ana_contreras', '+56 9 3456 7890', 'https://avatars.githubusercontent.com/u/3', 'CEO de Tech Solutions Chile', 1, 0, 0, 1, '2024-01-20', '2024-08-15'),
+(NEWID(), 'innovatech@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Luis', 'Valdés', 'luis_valdes', '+56 9 4567 8901', 'https://avatars.githubusercontent.com/u/4', 'CTO de InnovaTech', 1, 0, 0, 1, '2024-02-10', '2024-08-14'),
+(NEWID(), 'datascience@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Elena', 'Ríos', 'elena_rios', '+56 9 5678 9012', 'https://avatars.githubusercontent.com/u/5', 'Directora de Data Science Corp', 1, 0, 0, 1, '2024-01-25', '2024-08-13'),
+(NEWID(), 'cybersecure@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Pedro', 'Pascal', 'pedro_pascal', '+56 9 6789 0123', 'https://avatars.githubusercontent.com/u/6', 'Fundador de CyberSecure', 1, 0, 0, 1, '2024-03-01', '2024-08-12'),
+(NEWID(), 'mobilefirst@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Sofia', 'Vergara', 'sofia_vergara', '+56 9 7890 1234', 'https://avatars.githubusercontent.com/u/7', 'CEO de Mobile First', 1, 0, 0, 1, '2024-02-15', '2024-08-11'),
+(NEWID(), 'webmasters@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Arturo', 'Vidal', 'arturo_vidal', '+56 9 8901 2345', 'https://avatars.githubusercontent.com/u/8', 'Director de WebMasters', 1, 0, 0, 1, '2024-01-30', '2024-08-10'),
+(NEWID(), 'cloudservices@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Gabriela', 'Mistral', 'gabriela_mistral', '+56 9 9012 3456', 'https://avatars.githubusercontent.com/u/9', 'CTO de Cloud Services', 1, 0, 0, 1, '2024-02-05', '2024-08-09'),
+(NEWID(), 'fintechglobal@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Pablo', 'Neruda', 'pablo_neruda', '+56 9 0123 4567', 'https://avatars.githubusercontent.com/u/10', 'CEO de FinTech Global', 1, 0, 0, 1, '2024-01-10', '2024-08-08'),
+(NEWID(), 'healthtech@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Isabel', 'Allende', 'isabel_allende', '+56 9 1234 5679', 'https://avatars.githubusercontent.com/u/11', 'Fundadora de HealthTech', 1, 0, 0, 1, '2024-03-15', '2024-08-07'),
+(NEWID(), 'gamestudios@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'company', 'Marcelo', 'Salas', 'marcelo_salas', '+56 9 2345 6780', 'https://avatars.githubusercontent.com/u/12', 'Director de Game Studios', 1, 0, 0, 1, '2024-02-20', '2024-08-06');
+
+-- Estudiantes
+INSERT INTO users (id, email, password, role, first_name, last_name, username, phone, avatar, bio, is_active, is_staff, is_superuser, is_verified, date_joined, last_login) VALUES
+(NEWID(), 'juan.perez@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Juan', 'Pérez', 'juan_perez', '+56 9 3456 7891', 'https://avatars.githubusercontent.com/u/13', 'Estudiante de Ingeniería Civil en Informática', 1, 0, 0, 1, '2024-01-05', '2024-08-15'),
+(NEWID(), 'maria.gomez@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'María', 'Gómez', 'maria_gomez', '+56 9 4567 8902', 'https://avatars.githubusercontent.com/u/14', 'Estudiante de Ingeniería Civil en Computación', 1, 0, 0, 1, '2024-01-12', '2024-08-14'),
+(NEWID(), 'carlos.lopez@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Carlos', 'López', 'carlos_lopez', '+56 9 5678 9013', 'https://avatars.githubusercontent.com/u/15', 'Estudiante de Ingeniería en Informática', 1, 0, 0, 1, '2024-01-08', '2024-08-13'),
+(NEWID(), 'ana.martinez@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Ana', 'Martínez', 'ana_martinez', '+56 9 6789 0124', 'https://avatars.githubusercontent.com/u/16', 'Estudiante de Diseño Gráfico', 1, 0, 0, 1, '2024-01-15', '2024-08-12'),
+(NEWID(), 'diego.hernandez@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Diego', 'Hernández', 'diego_hernandez', '+56 9 7890 1235', 'https://avatars.githubusercontent.com/u/17', 'Estudiante de Periodismo', 1, 0, 0, 1, '2024-01-20', '2024-08-11'),
+(NEWID(), 'sofia.garcia@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Sofía', 'García', 'sofia_garcia', '+56 9 8901 2346', 'https://avatars.githubusercontent.com/u/18', 'Estudiante de Ingeniería Comercial', 1, 0, 0, 1, '2024-01-25', '2024-08-10'),
+(NEWID(), 'javier.diaz@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Javier', 'Díaz', 'javier_diaz', '+56 9 9012 3457', 'https://avatars.githubusercontent.com/u/19', 'Estudiante de Ingeniería Civil Industrial', 1, 0, 0, 1, '2024-02-01', '2024-08-09'),
+(NEWID(), 'laura.fernandez@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Laura', 'Fernández', 'laura_fernandez', '+56 9 0123 4568', 'https://avatars.githubusercontent.com/u/20', 'Estudiante de Psicología', 1, 0, 0, 1, '2024-02-05', '2024-08-08'),
+(NEWID(), 'pablo.moreno@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Pablo', 'Moreno', 'pablo_moreno', '+56 9 1234 5679', 'https://avatars.githubusercontent.com/u/21', 'Estudiante de Ingeniería Civil en Informática', 1, 0, 0, 1, '2024-02-10', '2024-08-07'),
+(NEWID(), 'valentina.romero@leanmaker.com', 'pbkdf2_sha256$260000$test$n+ZN7gG0w2d3aI/O8YIsC5p32E4O5O5B2b5m8A6gC9E=', 'student', 'Valentina', 'Romero', 'valentina_romero', '+56 9 2345 6780', 'https://avatars.githubusercontent.com/u/22', 'Estudiante de Ingeniería en Computación', 1, 0, 0, 1, '2024-02-15', '2024-08-06');
+
+GO
 
 -- =====================================================
 -- INSERTAR PERFILES ESPECÍFICOS
 -- =====================================================
-SET IDENTITY_INSERT admins ON;
-INSERT INTO admins (id, user_id, permissions) VALUES 
-(1, 1, '["full_access", "user_management", "project_approval", "reports"]'),
-(2, 2, '["review_access", "project_monitoring", "basic_reports"]');
-SET IDENTITY_INSERT admins OFF;
+
+-- Obtener IDs de usuarios para admins
+DECLARE @admin1_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'admin@leanmaker.com');
+DECLARE @admin2_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'supervisor@leanmaker.com');
+
+INSERT INTO admins (user_id, permissions) VALUES 
+(@admin1_id, '["full_access", "user_management", "project_approval", "reports"]'),
+(@admin2_id, '["review_access", "project_monitoring", "basic_reports"]');
 
 -- =====================================================
 -- INSERTAR EMPRESAS
 -- =====================================================
-SET IDENTITY_INSERT companies ON;
-INSERT INTO companies (id, user_id, company_name, industry, size, description, website, location, founded_year, contact_email, contact_phone, status, rating, projects_completed, total_hours_offered, technologies_used, benefits_offered, remote_work_policy, internship_duration, stipend_range) VALUES
-(1, 3, 'Tech Solutions Chile', 'Tecnología', 'medium', 'Empresa líder en desarrollo de software empresarial con más de 10 años de experiencia', 'https://techsolutions.cl', 'Santiago, Chile', 2014, 'empresa@leanmaker.com', '+56 2 2345 6789', 'active', 4.8, 15, 1200, '["React", "Node.js", "Python", "AWS"]', '["Capacitación", "Horario flexible", "Trabajo remoto"]', 'híbrido', 6, '500000-800000'),
-(2, 4, 'InnovaTech', 'Tecnología', 'large', 'Startup innovadora enfocada en inteligencia artificial y machine learning', 'https://innovatech.com', 'Valparaíso, Chile', 2020, 'rrhh@innovatech.com', '+56 32 1234 5678', 'active', 4.6, 8, 800, '["Python", "TensorFlow", "Docker", "Kubernetes"]', '["Mentoría", "Stock options", "Gimnasio"]', 'remoto', 4, '600000-900000'),
-(3, 5, 'Data Science Corp', 'Consultoría', 'medium', 'Consultora especializada en análisis de datos y business intelligence', 'https://datasciencecorp.io', 'Santiago, Chile', 2018, 'manager@datasciencecorp.io', '+56 2 3456 7890', 'active', 4.7, 12, 1000, '["Python", "R", "SQL", "Power BI"]', '["Capacitación", "Horario flexible"]', 'presencial', 5, '400000-700000'),
-(4, 6, 'CyberSecure', 'Ciberseguridad', 'small', 'Empresa especializada en seguridad informática y auditorías de sistemas', 'https://cybersecure.cl', 'Concepción, Chile', 2021, 'admin@cybersecure.cl', '+56 41 2345 6789', 'active', 4.5, 6, 500, '["Python", "Linux", "Wireshark", "Metasploit"]', '["Certificaciones", "Horario flexible"]', 'híbrido', 3, '300000-500000'),
-(5, 7, 'Mobile First', 'Desarrollo Móvil', 'medium', 'Desarrolladora de aplicaciones móviles nativas y multiplataforma', 'https://mobilefirst.dev', 'Santiago, Chile', 2019, 'info@mobilefirst.dev', '+56 2 4567 8901', 'active', 4.4, 10, 900, '["React Native", "Flutter", "Swift", "Kotlin"]', '["Equipo nuevo", "Horario flexible"]', 'híbrido', 4, '450000-750000'),
-(6, 8, 'WebMasters', 'Desarrollo Web', 'small', 'Agencia digital especializada en diseño y desarrollo web moderno', 'https://webmasters.com', 'Valparaíso, Chile', 2022, 'hola@webmasters.com', '+56 32 2345 6789', 'active', 4.3, 4, 300, '["React", "Vue.js", "Laravel", "WordPress"]', '["Capacitación", "Horario flexible"]', 'remoto', 3, '350000-550000'),
-(7, 9, 'Cloud Services', 'Cloud Computing', 'large', 'Proveedor de servicios en la nube y consultoría de infraestructura', 'https://cloudservices.net', 'Santiago, Chile', 2017, 'jobs@cloudservices.net', '+56 2 5678 9012', 'active', 4.6, 18, 1500, '["AWS", "Azure", "GCP", "Terraform"]', '["Certificaciones", "Stock options", "Gimnasio"]', 'híbrido', 6, '600000-900000'),
-(8, 10, 'FinTech Global', 'Fintech', 'medium', 'Empresa de tecnología financiera enfocada en pagos digitales', 'https://fintechglobal.com', 'Santiago, Chile', 2020, 'support@fintechglobal.com', '+56 2 6789 0123', 'active', 4.5, 9, 750, '["Java", "Spring", "PostgreSQL", "Redis"]', '["Capacitación", "Horario flexible"]', 'presencial', 5, '500000-800000'),
-(9, 11, 'HealthTech', 'Salud Digital', 'small', 'Startup de tecnología médica y aplicaciones de salud', 'https://healthtech.co', 'Concepción, Chile', 2023, 'contact@healthtech.co', '+56 41 3456 7890', 'active', 4.2, 3, 200, '["Python", "Django", "React", "PostgreSQL"]', '["Capacitación", "Horario flexible"]', 'híbrido', 4, '400000-600000'),
-(10, 12, 'Game Studios', 'Gaming', 'medium', 'Desarrolladora de videojuegos independientes', 'https://gamestudios.com', 'Santiago, Chile', 2021, 'hiring@gamestudios.com', '+56 2 7890 1234', 'active', 4.4, 7, 600, '["Unity", "C#", "Blender", "Photoshop"]', '["Equipo nuevo", "Horario flexible", "Gimnasio"]', 'presencial', 4, '450000-700000');
-SET IDENTITY_INSERT companies OFF;
+
+-- Obtener IDs de usuarios para empresas
+DECLARE @techsolutions_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'techsolutions@leanmaker.com');
+DECLARE @innovatech_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'innovatech@leanmaker.com');
+DECLARE @datascience_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'datascience@leanmaker.com');
+DECLARE @cybersecure_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'cybersecure@leanmaker.com');
+DECLARE @mobilefirst_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'mobilefirst@leanmaker.com');
+DECLARE @webmasters_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'webmasters@leanmaker.com');
+DECLARE @cloudservices_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'cloudservices@leanmaker.com');
+DECLARE @fintechglobal_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'fintechglobal@leanmaker.com');
+DECLARE @healthtech_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'healthtech@leanmaker.com');
+DECLARE @gamestudios_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'gamestudios@leanmaker.com');
+
+INSERT INTO companies (user_id, company_name, industry, size, description, website, address, city, country, founded_year, logo_url, verified, rating, total_projects, projects_completed, total_hours_offered, technologies_used, benefits_offered, remote_work_policy, internship_duration, stipend_range, contact_email, contact_phone, status) VALUES
+(@techsolutions_id, 'Tech Solutions Chile', 'Tecnología', 'Mediana', 'Empresa líder en desarrollo de software empresarial con más de 10 años de experiencia', 'https://techsolutions.cl', 'Av. Providencia 1234', 'Santiago', 'Chile', 2014, 'https://techsolutions.cl/logo.png', 1, 4.8, 15, 12, 1200, '["React", "Node.js", "Python", "AWS"]', '["Capacitación", "Horario flexible", "Trabajo remoto"]', 'hybrid', '6 meses', '500000-800000', 'techsolutions@leanmaker.com', '+56 2 2345 6789', 'active'),
+(@innovatech_id, 'InnovaTech', 'Tecnología', 'Grande', 'Startup innovadora enfocada en inteligencia artificial y machine learning', 'https://innovatech.com', 'Av. Brasil 567', 'Valparaíso', 'Chile', 2020, 'https://innovatech.com/logo.png', 1, 4.6, 8, 6, 800, '["Python", "TensorFlow", "Docker", "Kubernetes"]', '["Mentoría", "Stock options", "Gimnasio"]', 'full-remote', '4 meses', '600000-900000', 'innovatech@leanmaker.com', '+56 32 1234 5678', 'active'),
+(@datascience_id, 'Data Science Corp', 'Consultoría', 'Mediana', 'Consultora especializada en análisis de datos y business intelligence', 'https://datasciencecorp.io', 'Av. Las Condes 890', 'Santiago', 'Chile', 2018, 'https://datasciencecorp.io/logo.png', 1, 4.7, 12, 10, 1000, '["Python", "R", "SQL", "Power BI"]', '["Capacitación", "Horario flexible"]', 'onsite', '5 meses', '400000-700000', 'datascience@leanmaker.com', '+56 2 3456 7890', 'active'),
+(@cybersecure_id, 'CyberSecure', 'Ciberseguridad', 'Pequeña', 'Empresa especializada en seguridad informática y auditorías de sistemas', 'https://cybersecure.cl', 'Av. OHiggins 456', 'Concepción', 'Chile', 2021, 'https://cybersecure.cl/logo.png', 0, 4.5, 6, 4, 500, '["Python", "Linux", "Wireshark", "Metasploit"]', '["Certificaciones", "Horario flexible"]', 'hybrid', '3 meses', '300000-500000', 'cybersecure@leanmaker.com', '+56 41 2345 6789', 'active'),
+(@mobilefirst_id, 'Mobile First', 'Desarrollo Móvil', 'Mediana', 'Desarrolladora de aplicaciones móviles nativas y multiplataforma', 'https://mobilefirst.dev', 'Av. Vitacura 234', 'Santiago', 'Chile', 2019, 'https://mobilefirst.dev/logo.png', 1, 4.4, 10, 8, 900, '["React Native", "Flutter", "Swift", "Kotlin"]', '["Equipo nuevo", "Horario flexible"]', 'hybrid', '4 meses', '450000-750000', 'mobilefirst@leanmaker.com', '+56 2 4567 8901', 'active'),
+(@webmasters_id, 'WebMasters', 'Desarrollo Web', 'Pequeña', 'Agencia digital especializada en diseño y desarrollo web moderno', 'https://webmasters.com', 'Av. Argentina 789', 'Valparaíso', 'Chile', 2022, 'https://webmasters.com/logo.png', 0, 4.3, 4, 3, 300, '["React", "Vue.js", "Laravel", "WordPress"]', '["Capacitación", "Horario flexible"]', 'full-remote', '3 meses', '350000-550000', 'webmasters@leanmaker.com', '+56 32 2345 6789', 'active'),
+(@cloudservices_id, 'Cloud Services', 'Cloud Computing', 'Grande', 'Proveedor de servicios en la nube y consultoría de infraestructura', 'https://cloudservices.net', 'Av. Apoquindo 123', 'Santiago', 'Chile', 2017, 'https://cloudservices.net/logo.png', 1, 4.6, 18, 15, 1500, '["AWS", "Azure", "GCP", "Terraform"]', '["Certificaciones", "Stock options", "Gimnasio"]', 'hybrid', '6 meses', '600000-900000', 'cloudservices@leanmaker.com', '+56 2 5678 9012', 'active'),
+(@fintechglobal_id, 'FinTech Global', 'Fintech', 'Mediana', 'Empresa de tecnología financiera enfocada en pagos digitales', 'https://fintechglobal.com', 'Av. El Bosque 567', 'Santiago', 'Chile', 2020, 'https://fintechglobal.com/logo.png', 1, 4.5, 9, 7, 750, '["Java", "Spring", "PostgreSQL", "Redis"]', '["Capacitación", "Horario flexible"]', 'onsite', '5 meses', '500000-800000', 'fintechglobal@leanmaker.com', '+56 2 6789 0123', 'active'),
+(@healthtech_id, 'HealthTech', 'Salud Digital', 'Pequeña', 'Startup de tecnología médica y aplicaciones de salud', 'https://healthtech.co', 'Av. Paicaví 890', 'Concepción', 'Chile', 2023, 'https://healthtech.co/logo.png', 0, 4.2, 3, 2, 200, '["Python", "Django", "React", "PostgreSQL"]', '["Capacitación", "Horario flexible"]', 'hybrid', '4 meses', '400000-600000', 'healthtech@leanmaker.com', '+56 41 3456 7890', 'active'),
+(@gamestudios_id, 'Game Studios', 'Gaming', 'Mediana', 'Desarrolladora de videojuegos independientes', 'https://gamestudios.com', 'Av. Manquehue 345', 'Santiago', 'Chile', 2021, 'https://gamestudios.com/logo.png', 1, 4.4, 7, 5, 600, '["Unity", "C#", "Blender", "Photoshop"]', '["Equipo nuevo", "Horario flexible", "Gimnasio"]', 'onsite', '4 meses', '450000-700000', 'gamestudios@leanmaker.com', '+56 2 7890 1234', 'active');
 
 -- =====================================================
 -- INSERTAR ESTUDIANTES
 -- =====================================================
-SET IDENTITY_INSERT students ON;
-INSERT INTO students (id, user_id, career, semester, graduation_year, status, api_level, strikes, gpa, completed_projects, total_hours, skills, experience_years, portfolio_url, github_url, linkedin_url, availability, location, languages, rating) VALUES
-(1, 13, 'Ingeniería Civil en Informática', 8, 2025, 'approved', 3, 0, 6.2, 2, 240, '["React", "TypeScript", "Node.js", "MongoDB"]', 1, 'https://portfolio.com/jp', 'https://github.com/jp', 'https://linkedin.com/in/jp', 'full-time', 'Santiago, Chile', '["Español", "Inglés"]', 4.5),
-(2, 14, 'Ingeniería Civil en Computación', 6, 2026, 'approved', 2, 1, 5.8, 1, 120, '["Python", "Django", "PostgreSQL", "Docker"]', 1, 'https://portfolio.com/mg', 'https://github.com/mg', NULL, 'part-time', 'Valparaíso, Chile', '["Español"]', 4.2),
-(3, 15, 'Ingeniería en Informática', 9, 2024, 'suspended', 4, 3, 6.5, 4, 400, '["Java", "Spring", "AWS", "Kubernetes"]', 3, 'https://portfolio.com/cl', 'https://github.com/cl', 'https://linkedin.com/in/cl', 'flexible', 'Concepción, Chile', '["Español", "Inglés"]', 4.8),
-(4, 16, 'Diseño Gráfico', 7, 2025, 'approved', 2, 0, 6.0, 1, 80, '["Figma", "Illustrator", "Photoshop", "After Effects"]', 1, 'https://portfolio.com/am', NULL, NULL, 'part-time', 'Santiago, Chile', '["Español"]', 4.1),
-(5, 17, 'Periodismo', 8, 2025, 'approved', 1, 0, 5.9, 0, 40, '["Redacción", "SEO", "Wordpress", "Analytics"]', 2, NULL, NULL, NULL, 'flexible', 'Valparaíso, Chile', '["Español"]', 4.0),
-(6, 18, 'Ingeniería Comercial', 10, 2024, 'approved', 3, 0, 6.4, 3, 300, '["Excel", "Power BI", "SQL", "Tableau"]', 2, NULL, NULL, 'https://linkedin.com/in/dh', 'full-time', 'Santiago, Chile', '["Español", "Inglés"]', 4.7),
-(7, 19, 'Ingeniería Civil Industrial', 8, 2025, 'approved', 2, 0, 6.1, 1, 150, '["Python", "Project", "Excel", "R"]', 1, NULL, NULL, NULL, 'part-time', 'Santiago, Chile', '["Español"]', 4.3),
-(8, 20, 'Psicología', 9, 2024, 'approved', 1, 1, 6.3, 0, 60, '["Investigación", "SPSS", "Excel", "Qualtrics"]', 1, NULL, NULL, NULL, 'flexible', 'Concepción, Chile', '["Español"]', 4.4),
-(9, 21, 'Ingeniería Civil en Informática', 7, 2026, 'approved', 2, 0, 6.0, 1, 100, '["Vue.js", "Laravel", "MySQL", "Docker"]', 1, 'https://portfolio.com/pm', 'https://github.com/pm', NULL, 'part-time', 'Santiago, Chile', '["Español", "Inglés"]', 4.2),
-(10, 22, 'Ingeniería en Computación', 8, 2025, 'approved', 3, 0, 6.3, 2, 180, '["Angular", "Java", "Spring Boot", "PostgreSQL"]', 2, 'https://portfolio.com/vr', 'https://github.com/vr', 'https://linkedin.com/in/vr', 'full-time', 'Valparaíso, Chile', '["Español", "Inglés"]', 4.6);
-SET IDENTITY_INSERT students OFF;
+
+-- Obtener IDs de usuarios para estudiantes
+DECLARE @juan_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'juan.perez@leanmaker.com');
+DECLARE @maria_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'maria.gomez@leanmaker.com');
+DECLARE @carlos_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'carlos.lopez@leanmaker.com');
+DECLARE @ana_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'ana.martinez@leanmaker.com');
+DECLARE @diego_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'diego.hernandez@leanmaker.com');
+DECLARE @sofia_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'sofia.garcia@leanmaker.com');
+DECLARE @javier_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'javier.diaz@leanmaker.com');
+DECLARE @laura_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'laura.fernandez@leanmaker.com');
+DECLARE @pablo_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'pablo.moreno@leanmaker.com');
+DECLARE @valentina_id UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email = 'valentina.romero@leanmaker.com');
+
+INSERT INTO students (user_id, career, semester, graduation_year, status, api_level, strikes, gpa, completed_projects, total_hours, skills, experience_years, portfolio_url, github_url, linkedin_url, availability, location, languages, rating) VALUES
+(@juan_id, 'Ingeniería Civil en Informática', 8, 2025, 'approved', 3, 0, 6.2, 2, 240, '["React", "TypeScript", "Node.js", "MongoDB"]', 1, 'https://juanperez.dev', 'https://github.com/juanperez', 'https://linkedin.com/in/juanperez', 'full-time', 'Santiago, Chile', '["Español", "Inglés"]', 4.5),
+(@maria_id, 'Ingeniería Civil en Computación', 6, 2026, 'approved', 2, 1, 5.8, 1, 120, '["Python", "Django", "PostgreSQL", "Docker"]', 1, 'https://mariagomez.dev', 'https://github.com/mariagomez', NULL, 'part-time', 'Valparaíso, Chile', '["Español"]', 4.2),
+(@carlos_id, 'Ingeniería en Informática', 9, 2024, 'suspended', 4, 3, 6.5, 4, 400, '["Java", "Spring", "AWS", "Kubernetes"]', 3, 'https://carloslopez.dev', 'https://github.com/carloslopez', 'https://linkedin.com/in/carloslopez', 'flexible', 'Concepción, Chile', '["Español", "Inglés"]', 4.8),
+(@ana_id, 'Diseño Gráfico', 7, 2025, 'approved', 2, 0, 6.0, 1, 80, '["Figma", "Illustrator", "Photoshop", "After Effects"]', 1, 'https://anamartinez.design', NULL, NULL, 'part-time', 'Santiago, Chile', '["Español"]', 4.1),
+(@diego_id, 'Periodismo', 8, 2025, 'approved', 1, 0, 5.9, 0, 40, '["Redacción", "SEO", "Wordpress", "Analytics"]', 2, NULL, NULL, NULL, 'flexible', 'Valparaíso, Chile', '["Español"]', 4.0),
+(@sofia_id, 'Ingeniería Comercial', 10, 2024, 'approved', 3, 0, 6.4, 3, 300, '["Excel", "Power BI", "SQL", "Tableau"]', 2, NULL, NULL, 'https://linkedin.com/in/sofiagarcia', 'full-time', 'Santiago, Chile', '["Español", "Inglés"]', 4.7),
+(@javier_id, 'Ingeniería Civil Industrial', 8, 2025, 'approved', 2, 0, 6.1, 1, 150, '["Python", "Project", "Excel", "R"]', 1, NULL, NULL, NULL, 'part-time', 'Santiago, Chile', '["Español"]', 4.3),
+(@laura_id, 'Psicología', 9, 2024, 'approved', 1, 1, 6.3, 0, 60, '["Investigación", "SPSS", "Excel", "Qualtrics"]', 1, NULL, NULL, NULL, 'flexible', 'Concepción, Chile', '["Español"]', 4.4),
+(@pablo_id, 'Ingeniería Civil en Informática', 7, 2026, 'approved', 2, 0, 6.0, 1, 100, '["Vue.js", "Laravel", "MySQL", "Docker"]', 1, 'https://pablomoreno.dev', 'https://github.com/pablomoreno', NULL, 'part-time', 'Santiago, Chile', '["Español", "Inglés"]', 4.2),
+(@valentina_id, 'Ingeniería en Computación', 8, 2025, 'approved', 3, 0, 6.3, 2, 180, '["Angular", "Java", "Spring Boot", "PostgreSQL"]', 2, 'https://valentinaromero.dev', 'https://github.com/valentinaromero', 'https://linkedin.com/in/valentinaromero', 'full-time', 'Valparaíso, Chile', '["Español", "Inglés"]', 4.6);
 
 PRINT 'Perfiles específicos insertados correctamente.';
 GO
@@ -272,7 +302,7 @@ PRINT '';
 PRINT 'Nota: Los datos de configuración (TRL, áreas, estados) ya están en schema.sql';
 PRINT '';
 PRINT '=== RESUMEN DE DATOS INSERTADOS ===';
-PRINT '- 15 usuarios (2 admins, 5 empresas, 8 estudiantes)';
+PRINT '- 22 usuarios (2 admins, 10 empresas, 10 estudiantes)';
 PRINT '- 4 proyectos activos';
 PRINT '- 5 postulaciones (2 aceptadas, 2 pendientes, 1 rechazada)';
 PRINT '- 4 asignaciones en curso';
@@ -281,4 +311,4 @@ PRINT '- 5 evaluaciones completadas';
 PRINT '- 4 notificaciones';
 PRINT '';
 PRINT 'Script completado exitosamente!';
-GO 
+GO
