@@ -92,3 +92,22 @@ INFO 2025-06-24 21:18:13,298 autoreload 20820 14232 Watching for file changes wi
 INFO 2025-06-24 21:18:47,006 autoreload 20820 14232 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
 INFO 2025-06-24 21:18:48,141 autoreload 18632 18012 Watching for file changes with StatReloader
 INFO 2025-06-24 21:19:20,823 autoreload 22024 21724 Watching for file changes with StatReloader
+INFO 2025-06-24 21:32:26,186 autoreload 17372 11304 Watching for file changes with StatReloader
+INFO 2025-06-25 16:07:09,484 autoreload 1616 22356 Watching for file changes with StatReloader
+WARNING 2025-06-25 16:07:13,123 log 1616 4100 Not Found: /favicon.ico
+INFO 2025-06-25 16:08:41,989 autoreload 20472 16664 Watching for file changes with StatReloader
+INFO 2025-06-25 16:10:25,416 autoreload 21680 19516 Watching for file changes with StatReloader
+INFO 2025-06-25 16:11:36,744 autoreload 21680 19516 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
+INFO 2025-06-25 16:11:37,699 autoreload 20808 14348 Watching for file changes with StatReloader
+INFO 2025-06-25 16:11:53,132 autoreload 20808 14348 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
+INFO 2025-06-25 16:11:54,056 autoreload 22384 22088 Watching for file changes with StatReloader
+INFO 2025-06-25 16:12:40,262 autoreload 22384 22088 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-25 16:12:41,311 autoreload 22160 17976 Watching for file changes with StatReloader
+INFO 2025-06-25 16:12:58,861 autoreload 22160 17976 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-25 16:12:59,773 autoreload 14104 20472 Watching for file changes with StatReloader
+INFO 2025-06-25 16:20:21,381 autoreload 15736 9012 Watching for file changes with StatReloader
+INFO 2025-06-25 16:25:24,530 autoreload 21664 21224 Watching for file changes with StatReloader
+INFO 2025-06-25 16:27:09,511 autoreload 21664 21224 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-25 16:27:10,421 autoreload 19684 21464 Watching for file changes with StatReloader
+INFO 2025-06-25 16:27:27,658 autoreload 19684 21464 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-06-25 16:27:28,682 autoreload 6376 9408 Watching for file changes with StatReloader

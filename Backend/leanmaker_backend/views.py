@@ -37,16 +37,74 @@ def api_config(request):
 def home(request):
     return HttpResponse("""
         <html>
-        <head><title>LeanMaker Backend</title></head>
-        <body style='font-family:sans-serif;text-align:center;margin-top:10vh;'>
-            <h1>🚀 Bienvenido a LeanMaker Backend</h1>
-            <p>El backend está funcionando correctamente.</p>
-            <p>
-                <a href='/admin/'>Ir al Admin de Django</a> | 
-                <a href='/api/schema/swagger-ui/'>Ver Documentación API</a>
-            </p>
-            <hr>
-            <small>Desarrollado con Django 3.2</small>
+        <head>
+            <title>LeanMaker Backend</title>
+            <meta name='viewport' content='width=device-width, initial-scale=1'>
+            <style>
+                body {
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
+                    min-height: 100vh;
+                    margin: 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .container {
+                    background: #fff;
+                    border-radius: 18px;
+                    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+                    padding: 48px 32px 32px 32px;
+                    max-width: 400px;
+                    width: 90%;
+                    text-align: center;
+                }
+                h1 {
+                    color: #2563eb;
+                    margin-bottom: 12px;
+                    font-size: 2.2rem;
+                }
+                .actions a {
+                    display: inline-block;
+                    margin: 8px 12px;
+                    padding: 10px 22px;
+                    border-radius: 8px;
+                    background: #2563eb;
+                    color: #fff;
+                    text-decoration: none;
+                    font-weight: 500;
+                    transition: background 0.2s;
+                }
+                .actions a:hover {
+                    background: #1e40af;
+                }
+                .logo {
+                    font-size: 3rem;
+                    margin-bottom: 10px;
+                }
+                hr {
+                    margin: 28px 0 16px 0;
+                    border: none;
+                    border-top: 1px solid #e5e7eb;
+                }
+                small {
+                    color: #64748b;
+                }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='logo'>🚀</div>
+                <h1>Bienvenido a LeanMaker Backend</h1>
+                <p>El backend está funcionando correctamente.</p>
+                <div class='actions'>
+                    <a href='/admin/'>Ir al Admin de Django</a>
+                    <a href='/api/schema/swagger-ui/'>Ver Documentación API</a>
+                </div>
+                <hr>
+                <small>Desarrollado con Django 3.2</small>
+            </div>
         </body>
         </html>
     """)
