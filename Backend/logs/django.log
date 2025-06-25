@@ -79,3 +79,16 @@ WARNING 2025-06-24 14:30:33,843 log 14592 3620 Not Found: /
 WARNING 2025-06-24 14:32:29,521 log 14592 16288 Not Found: /
 INFO 2025-06-24 20:44:13,538 autoreload 19680 12020 Watching for file changes with StatReloader
 INFO 2025-06-24 20:46:45,683 autoreload 12700 11184 Watching for file changes with StatReloader
+INFO 2025-06-24 21:11:02,031 autoreload 9620 8476 Watching for file changes with StatReloader
+WARNING 2025-06-24 21:11:07,646 log 9620 3940 Not Found: /
+WARNING 2025-06-24 21:11:07,718 log 9620 3940 Not Found: /favicon.ico
+WARNING 2025-06-24 21:11:10,291 log 9620 3940 Not Found: /
+INFO 2025-06-24 21:14:51,153 autoreload 15996 1536 Watching for file changes with StatReloader
+WARNING 2025-06-24 21:14:53,460 log 15996 22036 Not Found: /
+INFO 2025-06-24 21:18:05,615 autoreload 15996 1536 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
+INFO 2025-06-24 21:18:06,773 autoreload 13836 15496 Watching for file changes with StatReloader
+INFO 2025-06-24 21:18:12,156 autoreload 13836 15496 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\urls.py changed, reloading.
+INFO 2025-06-24 21:18:13,298 autoreload 20820 14232 Watching for file changes with StatReloader
+INFO 2025-06-24 21:18:47,006 autoreload 20820 14232 C:\Users\joaqu\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
+INFO 2025-06-24 21:18:48,141 autoreload 18632 18012 Watching for file changes with StatReloader
+INFO 2025-06-24 21:19:20,823 autoreload 22024 21724 Watching for file changes with StatReloader

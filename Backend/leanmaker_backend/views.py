@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.utils import timezone
+from django.http import HttpResponse
 import json
 import os
 
@@ -31,4 +32,21 @@ def api_config(request):
     except FileNotFoundError:
         return Response({'error': 'Configuración no encontrada'}, status=404)
     except json.JSONDecodeError:
-        return Response({'error': 'Error en la configuración'}, status=500) 
+        return Response({'error': 'Error en la configuración'}, status=500)
+
+def home(request):
+    return HttpResponse("""
+        <html>
+        <head><title>LeanMaker Backend</title></head>
+        <body style='font-family:sans-serif;text-align:center;margin-top:10vh;'>
+            <h1>🚀 Bienvenido a LeanMaker Backend</h1>
+            <p>El backend está funcionando correctamente.</p>
+            <p>
+                <a href='/admin/'>Ir al Admin de Django</a> | 
+                <a href='/api/schema/swagger-ui/'>Ver Documentación API</a>
+            </p>
+            <hr>
+            <small>Desarrollado con Django 3.2</small>
+        </body>
+        </html>
+    """)

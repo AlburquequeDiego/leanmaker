@@ -19,9 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import api_config, health_check
+from .views import api_config, health_check, home
 
 urlpatterns = [
+    path('', home, name='home'),
+
     path('admin/', admin.site.urls),
 
     # API documentation
