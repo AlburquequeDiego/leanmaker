@@ -1,10 +1,12 @@
 from django.db import models
 from django.conf import settings
-from projects.models import Project
+from projects.models import Proyecto
+from users.models import Usuario
+import uuid
 
 class WorkHours(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='work_hours', verbose_name='Estudiante')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='work_hours', verbose_name='Proyecto')
+    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='work_hours', verbose_name='Proyecto')
     
     # Fecha y horas
     date = models.DateField(verbose_name='Fecha')
@@ -30,6 +32,7 @@ class WorkHours(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'work_hours'
         verbose_name = 'Horas de Trabajo'
         verbose_name_plural = 'Horas de Trabajo'
         ordering = ['-date', '-start_time']

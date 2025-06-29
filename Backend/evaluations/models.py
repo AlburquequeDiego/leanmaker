@@ -1,10 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from projects.models import Project, ProjectApplication
+from projects.models import Proyecto, AplicacionProyecto
+from companies.models import Empresa
 from students.models import Student
-from companies.models import Company
-from users.models import User
+from users.models import Usuario
 import uuid
 
 class Evaluation(models.Model):
@@ -23,10 +23,10 @@ class Evaluation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     # Relaciones
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='evaluations')
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_evaluations')
-    evaluator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_evaluations')
-    application = models.ForeignKey(ProjectApplication, on_delete=models.CASCADE, related_name='evaluations', blank=True, null=True)
+    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='evaluations')
+    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='received_evaluations')
+    evaluator = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='given_evaluations')
+    application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, related_name='evaluations', blank=True, null=True)
     
     # Evaluación
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
@@ -91,7 +91,7 @@ class StudentSkill(models.Model):
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='skills')
+    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='skills')
     
     # Información de la habilidad
     skill_name = models.CharField(max_length=100)
@@ -100,7 +100,7 @@ class StudentSkill(models.Model):
     
     # Validación
     is_verified = models.BooleanField(default=False)
-    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='verified_skills', blank=True, null=True)
+    verified_by = models.ForeignKey(Usuario, on_delete=models.SET_NULL, related_name='verified_skills', blank=True, null=True)
     verified_at = models.DateTimeField(blank=True, null=True)
     
     # Fechas
@@ -121,7 +121,7 @@ class StudentPortfolio(models.Model):
     """Portafolio de trabajos del estudiante"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='portfolio_items')
+    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='portfolio_items')
     
     # Información del proyecto
     title = models.CharField(max_length=200)
@@ -167,7 +167,7 @@ class StudentAchievement(models.Model):
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='achievements')
+    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='achievements')
     
     # Información del logro
     title = models.CharField(max_length=200)

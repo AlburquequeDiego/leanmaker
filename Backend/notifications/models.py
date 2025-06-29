@@ -1,8 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import User
-from projects.models import Project, ProjectApplication
+from users.models import Usuario
+from projects.models import Proyecto, AplicacionProyecto
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 import uuid
 
 class Notification(models.Model):
@@ -70,7 +72,7 @@ class Notification(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     # Destinatario
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    recipient = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notifications')
     
     # Contenido
     title = models.CharField(max_length=200)
@@ -91,9 +93,9 @@ class Notification(models.Model):
     data = models.JSONField(default=dict)  # Datos específicos del tipo de notificación
     
     # Relaciones opcionales
-    related_project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True, related_name='notifications')
-    related_application = models.ForeignKey(ProjectApplication, on_delete=models.CASCADE, blank=True, null=True, related_name='notifications')
-    related_user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='sent_notifications')
+    related_project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='notifications')
+    related_application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='notifications')
+    related_user = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=True, null=True, related_name='sent_notifications')
     
     class Meta:
         db_table = 'notifications'
@@ -193,10 +195,10 @@ class NotificationPreference(models.Model):
     """Preferencias de notificación por usuario"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notification_preferences')
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notification_preferences')
     
     # Tipos de notificación habilitados
-    enabled_types = models.JSONField(default=list)
+    enabled_types = models.JSONField(default=list)  # Lista de tipos habilitados
     
     # Configuración de canales
     email_enabled = models.BooleanField(default=True)
@@ -239,8 +241,4 @@ class NotificationPreference(models.Model):
         
         from django.utils import timezone
         now = timezone.now().time()
-        
-        if self.quiet_hours_start <= self.quiet_hours_end:
-            return self.quiet_hours_start <= now <= self.quiet_hours_end
-        else:  # Horario que cruza la medianoche
-            return now >= self.quiet_hours_start or now <= self.quiet_hours_end
+        return self.quiet_hours_start <= now <= self.quiet_hours_end

@@ -1,8 +1,8 @@
 from django.db import models
 from django.conf import settings
-from projects.models import Project, ProjectApplication
+from projects.models import Proyecto, AplicacionProyecto
 from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import User
+from users.models import Usuario
 import uuid
 
 class CalendarEvent(models.Model):
@@ -84,12 +84,12 @@ class CalendarEvent(models.Model):
     meeting_url = models.URLField(blank=True, null=True)
     
     # Participantes
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='calendar_events')
-    attendees = models.ManyToManyField(User, related_name='attended_events', blank=True)
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calendar_events')
+    attendees = models.ManyToManyField(Usuario, related_name='attended_events', blank=True)
     
     # Relaciones opcionales
-    related_project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True, related_name='calendar_events')
-    related_application = models.ForeignKey(ProjectApplication, on_delete=models.CASCADE, blank=True, null=True, related_name='calendar_events')
+    related_project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='calendar_events')
+    related_application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='calendar_events')
     
     # Configuración
     is_public = models.BooleanField(default=False)
@@ -107,7 +107,7 @@ class CalendarEvent(models.Model):
     # Fechas de sistema
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_events')
+    created_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='created_events')
     
     class Meta:
         db_table = 'calendar_events'
@@ -181,7 +181,7 @@ class EventReminder(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event = models.ForeignKey(CalendarEvent, on_delete=models.CASCADE, related_name='reminders')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_reminders')
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='event_reminders')
     
     # Configuración del recordatorio
     reminder_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
@@ -207,8 +207,8 @@ class EventReminder(models.Model):
     
     def mark_sent(self):
         """Marca el recordatorio como enviado"""
-        from django.utils import timezone
         self.is_sent = True
+        from django.utils import timezone
         self.sent_at = timezone.now()
         self.save(update_fields=['is_sent', 'sent_at'])
 
@@ -216,7 +216,7 @@ class CalendarSettings(models.Model):
     """Configuraciones de calendario por usuario"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='calendar_settings')
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calendar_settings')
     
     # Configuración de vista
     default_view = models.CharField(max_length=20, choices=(
@@ -256,7 +256,7 @@ class CalendarSettings(models.Model):
         return f"Configuración de calendario de {self.user.get_full_name()}"
     
     def is_work_day(self, date):
-        """Verifica si una fecha es un día laboral"""
+        """Verifica si una fecha es día laboral"""
         return date.weekday() in self.work_days
     
     def is_work_time(self, time):

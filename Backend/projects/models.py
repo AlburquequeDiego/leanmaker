@@ -1,224 +1,234 @@
 from django.db import models
 from django.conf import settings
-from companies.models import Company
+from companies.models import Empresa
 from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import User
+from users.models import Usuario
 import uuid
 
-class Project(models.Model):
-    STATUS_CHOICES = (
-        ('draft', 'Borrador'),
-        ('published', 'Publicado'),
-        ('in_progress', 'En Progreso'),
-        ('completed', 'Completado'),
-        ('cancelled', 'Cancelado'),
-        ('paused', 'Pausado'),
+class Proyecto(models.Model):
+    ESTADOS = (
+        ('borrador', 'Borrador'),
+        ('publicado', 'Publicado'),
+        ('en_progreso', 'En Progreso'),
+        ('completado', 'Completado'),
+        ('cancelado', 'Cancelado'),
+        ('pausado', 'Pausado'),
     )
     
-    MODALITY_CHOICES = (
-        ('remote', 'Remoto'),
-        ('onsite', 'Presencial'),
-        ('hybrid', 'Híbrido'),
+    MODALIDADES = (
+        ('remoto', 'Remoto'),
+        ('presencial', 'Presencial'),
+        ('hibrido', 'Híbrido'),
     )
     
-    DIFFICULTY_CHOICES = (
-        ('beginner', 'Básico'),
-        ('intermediate', 'Intermedio'),
-        ('advanced', 'Avanzado'),
+    NIVELES_DIFICULTAD = (
+        ('basico', 'Básico'),
+        ('intermedio', 'Intermedio'),
+        ('avanzado', 'Avanzado'),
     )
     
     # Campos básicos
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    company = models.ForeignKey(User, on_delete=models.CASCADE, related_name='company_projects')
+    titulo = models.CharField(max_length=200)
+    descripcion = models.TextField()
+    empresa = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='proyectos_empresa')
     
     # Detalles del proyecto
     area = models.CharField(max_length=100)  # Tecnología, Marketing, Diseño, etc.
-    modality = models.CharField(max_length=20, choices=MODALITY_CHOICES, default='remote')
-    location = models.CharField(max_length=200, blank=True, null=True)
-    difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default='intermediate')
+    modalidad = models.CharField(max_length=20, choices=MODALIDADES, default='remoto')
+    ubicacion = models.CharField(max_length=200, blank=True, null=True)
+    dificultad = models.CharField(max_length=20, choices=NIVELES_DIFICULTAD, default='intermedio')
     
     # Requisitos y habilidades
-    required_skills = models.JSONField(default=list)  # Lista de habilidades requeridas
-    preferred_skills = models.JSONField(default=list)  # Habilidades preferidas
-    min_api_level = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
+    habilidades_requeridas = models.JSONField(default=list)  # Lista de habilidades requeridas
+    habilidades_preferidas = models.JSONField(default=list)  # Habilidades preferidas
+    nivel_api_minimo = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
     
     # Duración y horarios
-    duration_months = models.PositiveIntegerField(default=3)
-    hours_per_week = models.PositiveIntegerField(default=20)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    duracion_meses = models.PositiveIntegerField(default=3)
+    horas_por_semana = models.PositiveIntegerField(default=20)
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
     
     # Compensación
-    is_paid = models.BooleanField(default=False)
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    payment_currency = models.CharField(max_length=3, default='USD')
+    es_pagado = models.BooleanField(default=False)
+    monto_pago = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    moneda_pago = models.CharField(max_length=3, default='USD')
     
     # Estado y métricas
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    max_students = models.PositiveIntegerField(default=1)
-    current_students = models.PositiveIntegerField(default=0)
-    applications_count = models.PositiveIntegerField(default=0)
-    views_count = models.PositiveIntegerField(default=0)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='borrador')
+    max_estudiantes = models.PositiveIntegerField(default=1)
+    estudiantes_actuales = models.PositiveIntegerField(default=0)
+    aplicaciones_count = models.PositiveIntegerField(default=0)
+    vistas_count = models.PositiveIntegerField(default=0)
     
     # Fechas
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    published_at = models.DateTimeField(blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    fecha_publicacion = models.DateTimeField(blank=True, null=True)
     
     # Configuración adicional
-    is_featured = models.BooleanField(default=False)
-    is_urgent = models.BooleanField(default=False)
-    tags = models.JSONField(default=list)  # Etiquetas para búsqueda
+    es_destacado = models.BooleanField(default=False)
+    es_urgente = models.BooleanField(default=False)
+    etiquetas = models.JSONField(default=list)  # Etiquetas para búsqueda
     
     class Meta:
         db_table = 'projects'
         verbose_name = 'Proyecto'
         verbose_name_plural = 'Proyectos'
-        ordering = ['-created_at']
+        ordering = ['-fecha_creacion']
     
     def __str__(self):
-        return f"{self.title} - {self.company.company_name or self.company.email}"
+        return f"{self.titulo} - {self.empresa.nombre_empresa or self.empresa.email}"
     
     @property
-    def is_available(self):
+    def esta_disponible(self):
         """Verifica si el proyecto está disponible para aplicaciones"""
         return (
-            self.status == 'published' and 
-            self.current_students < self.max_students and
-            self.company.is_active
+            self.estado == 'publicado' and 
+            self.estudiantes_actuales < self.max_estudiantes and
+            self.empresa.esta_activo
         )
     
     @property
-    def completion_percentage(self):
+    def porcentaje_completado(self):
         """Calcula el porcentaje de completado basado en fechas"""
         from django.utils import timezone
         today = timezone.now().date()
         
-        if today <= self.start_date:
+        if today <= self.fecha_inicio:
             return 0
-        elif today >= self.end_date:
+        elif today >= self.fecha_fin:
             return 100
         
-        total_days = (self.end_date - self.start_date).days
-        elapsed_days = (today - self.start_date).days
-        return min(100, (elapsed_days / total_days) * 100)
+        total_dias = (self.fecha_fin - self.fecha_inicio).days
+        dias_transcurridos = (today - self.fecha_inicio).days
+        return min(100, (dias_transcurridos / total_dias) * 100)
     
-    def increment_views(self):
+    def incrementar_vistas(self):
         """Incrementa el contador de vistas"""
-        self.views_count += 1
-        self.save(update_fields=['views_count'])
+        self.vistas_count += 1
+        self.save(update_fields=['vistas_count'])
     
-    def increment_applications(self):
+    def incrementar_aplicaciones(self):
         """Incrementa el contador de aplicaciones"""
-        self.applications_count += 1
-        self.save(update_fields=['applications_count'])
+        self.aplicaciones_count += 1
+        self.save(update_fields=['aplicaciones_count'])
 
-class ProjectApplication(models.Model):
-    STATUS_CHOICES = (
-        ('pending', 'Pendiente'),
-        ('reviewing', 'En Revisión'),
-        ('interviewed', 'Entrevistado'),
-        ('accepted', 'Aceptado'),
-        ('rejected', 'Rechazado'),
-        ('withdrawn', 'Retirado'),
-        ('completed', 'Completado'),
+class AplicacionProyecto(models.Model):
+    ESTADOS = (
+        ('pendiente', 'Pendiente'),
+        ('revisando', 'En Revisión'),
+        ('entrevistado', 'Entrevistado'),
+        ('aceptado', 'Aceptado'),
+        ('rechazado', 'Rechazado'),
+        ('retirado', 'Retirado'),
+        ('completado', 'Completado'),
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='applications')
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='student_applications')
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='aplicaciones')
+    estudiante = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='aplicaciones_estudiante')
     
     # Información de la aplicación
-    cover_letter = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    compatibility_score = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    carta_presentacion = models.TextField()
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
+    puntaje_compatibilidad = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(100)])
     
     # Fechas
-    applied_at = models.DateTimeField(auto_now_add=True)
-    reviewed_at = models.DateTimeField(blank=True, null=True)
-    responded_at = models.DateTimeField(blank=True, null=True)
+    fecha_aplicacion = models.DateTimeField(auto_now_add=True)
+    fecha_revision = models.DateTimeField(blank=True, null=True)
+    fecha_respuesta = models.DateTimeField(blank=True, null=True)
     
     # Notas y comentarios
-    company_notes = models.TextField(blank=True, null=True)
-    student_notes = models.TextField(blank=True, null=True)
+    notas_empresa = models.TextField(blank=True, null=True)
+    notas_estudiante = models.TextField(blank=True, null=True)
     
     # Información adicional
-    portfolio_url = models.URLField(blank=True, null=True)
-    github_url = models.URLField(blank=True, null=True)
-    linkedin_url = models.URLField(blank=True, null=True)
+    url_portfolio = models.URLField(blank=True, null=True)
+    url_github = models.URLField(blank=True, null=True)
+    url_linkedin = models.URLField(blank=True, null=True)
     
     class Meta:
         db_table = 'project_applications'
         verbose_name = 'Aplicación a Proyecto'
         verbose_name_plural = 'Aplicaciones a Proyectos'
-        ordering = ['-applied_at']
-        unique_together = ['project', 'student']
+        ordering = ['-fecha_aplicacion']
+        unique_together = ['proyecto', 'estudiante']
     
     def __str__(self):
-        return f"{self.student.get_full_name()} -> {self.project.title}"
+        return f"{self.estudiante.get_full_name()} -> {self.proyecto.titulo}"
     
-    def accept(self):
+    def aceptar(self):
         """Acepta la aplicación"""
-        self.status = 'accepted'
-        self.responded_at = timezone.now()
+        self.estado = 'aceptado'
+        self.fecha_respuesta = timezone.now()
         self.save()
         
         # Incrementar estudiantes actuales en el proyecto
-        self.project.current_students += 1
-        self.project.save(update_fields=['current_students'])
+        self.proyecto.estudiantes_actuales += 1
+        self.proyecto.save(update_fields=['estudiantes_actuales'])
     
-    def reject(self, notes=None):
+    def rechazar(self, notas=None):
         """Rechaza la aplicación"""
-        self.status = 'rejected'
-        self.responded_at = timezone.now()
-        if notes:
-            self.company_notes = notes
+        self.estado = 'rechazado'
+        self.fecha_respuesta = timezone.now()
+        if notas:
+            self.notas_empresa = notas
         self.save()
     
-    def schedule_interview(self, interview_date):
+    def programar_entrevista(self, fecha_entrevista):
         """Programa una entrevista"""
-        self.status = 'interviewed'
+        self.estado = 'entrevistado'
         self.save()
         
         # Crear evento de entrevista
-        from calendar_events.models import CalendarEvent
-        CalendarEvent.objects.create(
-            title=f"Entrevista: {self.project.title}",
-            description=f"Entrevista para el proyecto {self.project.title}",
-            start_date=interview_date,
-            end_date=interview_date,
-            user=self.student,
-            event_type='interview',
-            related_application=self
+        from calendar_events.models import EventoCalendario
+        EventoCalendario.objects.create(
+            titulo=f"Entrevista: {self.proyecto.titulo}",
+            descripcion=f"Entrevista para el proyecto {self.proyecto.titulo}",
+            fecha_inicio=fecha_entrevista,
+            fecha_fin=fecha_entrevista,
+            usuario=self.estudiante,
+            tipo_evento='entrevista',
+            aplicacion_relacionada=self
         )
 
-class ProjectMember(models.Model):
-    ROLE_CHOICES = (
-        ('student', 'Estudiante'),
+class MiembroProyecto(models.Model):
+    ROLES = (
+        ('estudiante', 'Estudiante'),
         ('mentor', 'Mentor'),
         ('supervisor', 'Supervisor'),
+        ('coordinador', 'Coordinador'),
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='members')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_memberships')
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='miembros')
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='membresias_proyecto')
+    rol = models.CharField(max_length=20, choices=ROLES, default='estudiante')
     
     # Fechas
-    joined_at = models.DateTimeField(auto_now_add=True)
-    left_at = models.DateTimeField(blank=True, null=True)
+    fecha_ingreso = models.DateTimeField(auto_now_add=True)
+    fecha_salida = models.DateTimeField(blank=True, null=True)
     
     # Métricas
-    hours_worked = models.PositiveIntegerField(default=0)
-    tasks_completed = models.PositiveIntegerField(default=0)
+    horas_trabajadas = models.PositiveIntegerField(default=0)
+    tareas_completadas = models.PositiveIntegerField(default=0)
+    evaluacion_promedio = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
+    
+    # Estado
+    esta_activo = models.BooleanField(default=True)
+    es_verificado = models.BooleanField(default=False)
+    
+    # Información adicional
+    responsabilidades = models.TextField(blank=True, null=True)
+    notas = models.TextField(blank=True, null=True)
     
     class Meta:
         db_table = 'project_members'
         verbose_name = 'Miembro del Proyecto'
         verbose_name_plural = 'Miembros del Proyecto'
-        unique_together = ['project', 'user']
+        unique_together = ['proyecto', 'usuario']
     
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.project.title} ({self.get_role_display()})"
+        return f"{self.usuario.get_full_name()} - {self.proyecto.titulo} ({self.get_rol_display()})"

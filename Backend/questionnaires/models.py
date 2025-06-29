@@ -12,6 +12,7 @@ class Questionnaire(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'questionnaires'
         verbose_name = 'Cuestionario'
         verbose_name_plural = 'Cuestionarios'
 
@@ -32,6 +33,7 @@ class Question(models.Model):
     # Para preguntas de opción múltiple/única, las opciones se guardarán en otro modelo.
     
     class Meta:
+        db_table = 'questionnaires_question'
         verbose_name = 'Pregunta'
         verbose_name_plural = 'Preguntas'
         ordering = ['id']
@@ -44,6 +46,7 @@ class Choice(models.Model):
     text = models.CharField(max_length=255, verbose_name='Texto de la Opción')
 
     class Meta:
+        db_table = 'questionnaires_choice'
         verbose_name = 'Opción'
         verbose_name_plural = 'Opciones'
 
@@ -62,6 +65,7 @@ class Answer(models.Model):
     selected_choices = models.ManyToManyField(Choice, blank=True, verbose_name='Opciones Seleccionadas')
 
     class Meta:
+        db_table = 'questionnaires_answer'
         verbose_name = 'Respuesta'
         verbose_name_plural = 'Respuestas'
         unique_together = ('user', 'question') # Un usuario solo puede responder una vez a cada pregunta

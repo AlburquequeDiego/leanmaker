@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Application
+from .models import Aplicacion
 from projects.serializers import ProjectSerializer
 from students.serializers import StudentSerializer
 
@@ -8,12 +8,12 @@ class ApplicationSerializer(serializers.ModelSerializer):
     student = StudentSerializer(read_only=True)
 
     class Meta:
-        model = Application
+        model = Aplicacion
         fields = ['id', 'project', 'student', 'application_date', 'status', 'cover_letter']
 
 class ApplicationCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Application
+        model = Aplicacion
         fields = ['project', 'cover_letter']
         
     def validate_project(self, value):

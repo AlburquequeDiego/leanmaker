@@ -25,49 +25,49 @@ class UserManager(BaseUserManager):
         
         return self.create_user(email, password, **extra_fields)
 
-class User(AbstractUser):
+class Usuario(AbstractUser):
     ROLES = (
-        ('student', 'Estudiante'),
-        ('company', 'Empresa'),
+        ('estudiante', 'Estudiante'),
+        ('empresa', 'Empresa'),
         ('admin', 'Administrador'),
     )
     
     # Campos básicos
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=10, choices=ROLES, default='student')
+    role = models.CharField(max_length=10, choices=ROLES, default='estudiante')
     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
     
     # Campos de perfil
-    phone = models.CharField(max_length=20, blank=True, null=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-    bio = models.TextField(blank=True, null=True)
+    biografia = models.TextField(blank=True, null=True)
     
     # Campos de estado
-    is_active = models.BooleanField(default=True)
-    is_verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    last_login = models.DateTimeField(null=True, blank=True)
+    esta_activo = models.BooleanField(default=True)
+    esta_verificado = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    ultimo_acceso = models.DateTimeField(null=True, blank=True)
     
     # Campos específicos para estudiantes
-    career = models.CharField(max_length=100, blank=True, null=True)
-    semester = models.PositiveIntegerField(blank=True, null=True)
-    graduation_year = models.PositiveIntegerField(blank=True, null=True)
-    gpa = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    api_level = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
+    carrera = models.CharField(max_length=100, blank=True, null=True)
+    semestre = models.PositiveIntegerField(blank=True, null=True)
+    año_graduacion = models.PositiveIntegerField(blank=True, null=True)
+    promedio_academico = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    nivel_api = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
     strikes = models.PositiveIntegerField(default=0)
-    total_hours = models.PositiveIntegerField(default=0)
-    completed_projects = models.PositiveIntegerField(default=0)
+    horas_totales = models.PositiveIntegerField(default=0)
+    proyectos_completados = models.PositiveIntegerField(default=0)
     
     # Campos específicos para empresas
-    company_name = models.CharField(max_length=200, blank=True, null=True)
-    company_description = models.TextField(blank=True, null=True)
-    company_website = models.URLField(blank=True, null=True)
-    company_size = models.CharField(max_length=50, blank=True, null=True)
-    company_industry = models.CharField(max_length=100, blank=True, null=True)
-    company_location = models.CharField(max_length=200, blank=True, null=True)
-    company_rating = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    nombre_empresa = models.CharField(max_length=200, blank=True, null=True)
+    descripcion_empresa = models.TextField(blank=True, null=True)
+    sitio_web_empresa = models.URLField(blank=True, null=True)
+    tamaño_empresa = models.CharField(max_length=50, blank=True, null=True)
+    industria_empresa = models.CharField(max_length=100, blank=True, null=True)
+    ubicacion_empresa = models.CharField(max_length=200, blank=True, null=True)
+    calificacion_empresa = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
     
     # Configuración
     USERNAME_FIELD = 'email'
@@ -81,37 +81,37 @@ class User(AbstractUser):
         verbose_name_plural = 'Usuarios'
     
     def __str__(self):
-        if self.role == 'company' and self.company_name:
-            return f"{self.company_name} ({self.email})"
+        if self.role == 'empresa' and self.nombre_empresa:
+            return f"{self.nombre_empresa} ({self.email})"
         return f"{self.get_full_name() or self.email} ({self.get_role_display()})"
     
     def get_role_display(self):
         return dict(self.ROLES)[self.role]
     
     @property
-    def is_student(self):
-        return self.role == 'student'
+    def es_estudiante(self):
+        return self.role == 'estudiante'
     
     @property
-    def is_company(self):
-        return self.role == 'company'
+    def es_empresa(self):
+        return self.role == 'empresa'
     
     @property
-    def is_admin(self):
+    def es_admin(self):
         return self.role == 'admin'
     
-    def can_apply_to_projects(self):
+    def puede_aplicar_proyectos(self):
         """Verifica si el estudiante puede aplicar a proyectos"""
-        if not self.is_student:
+        if not self.es_estudiante:
             return False
-        return self.strikes < 3 and self.is_active and self.is_verified
+        return self.strikes < 3 and self.esta_activo and self.esta_verificado
     
-    def get_strike_status(self):
+    def obtener_estado_strikes(self):
         """Obtiene el estado de strikes del estudiante"""
         if self.strikes >= 3:
-            return 'suspended'
+            return 'suspendido'
         elif self.strikes == 2:
-            return 'warning'
+            return 'advertencia'
         elif self.strikes == 1:
-            return 'caution'
-        return 'clean'
+            return 'precaucion'
+        return 'limpio'

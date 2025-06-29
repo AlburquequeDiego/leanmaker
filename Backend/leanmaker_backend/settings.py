@@ -100,26 +100,28 @@ WSGI_APPLICATION = 'leanmaker_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# Configuración SQLite para desarrollo local
+# Configuración SQL Server Azure (ACTIVA)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'NAME': 'leanmaker_db',
+        'USER': 'administradortesis',  
+        'PASSWORD': 'Admin@tesis',
+        'HOST': 'servidortesis.database.windows.net',
+        'PORT': '1433',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'TrustServerCertificate': 'yes',
+            'Encrypt': 'yes',
+        },
     }
 }
 
-# Configuración SQL Server (comentada temporalmente)
+# Configuración SQLite para desarrollo local (COMENTADA)
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'mssql',
-#         'NAME': 'leanmaker_db',
-#         'USER': 'administradortesis',  
-#         'PASSWORD': 'Admin@tesis',
-#         'HOST': 'servidortesis.database.windows.net',
-#         'PORT': '1433',
-#         'OPTIONS': {
-#             'driver': 'ODBC Driver 17 for SQL Server',
-#         },
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
 
@@ -263,7 +265,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Custom User Model
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.Usuario'
 
 # Email Configuration (para producción)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

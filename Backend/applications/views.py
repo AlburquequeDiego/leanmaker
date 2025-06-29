@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
-from .models import Application
+from .models import Aplicacion
 from .serializers import ApplicationSerializer, ApplicationCreateSerializer
-from users.models import User
+from users.models import Usuario
 from students.views import IsStudentUser
 from companies.views import IsCompanyUser
 
@@ -15,7 +15,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
     - Estudiantes: Pueden crear postulaciones y ver las suyas.
     - Empresas: Pueden ver las postulaciones a sus proyectos.
     """
-    queryset = Application.objects.all()
+    queryset = Aplicacion.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -41,11 +41,11 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         if user.role == STUDENT:
-            return Application.objects.filter(student=user.student_profile)
+            return Aplicacion.objects.filter(student=user.student_profile)
         if user.role == COMPANY:
-            return Application.objects.filter(project__company=user.company_profile)
+            return Aplicacion.objects.filter(project__company=user.company_profile)
         # Admins ven todo
-        return Application.objects.all()
+        return Aplicacion.objects.all()
 
     def perform_create(self, serializer):
         """

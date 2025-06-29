@@ -20,6 +20,7 @@ class PlatformSetting(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'platform_settings'
         verbose_name = 'Configuración de Plataforma'
         verbose_name_plural = 'Configuraciones de Plataforma'
         ordering = ['key']

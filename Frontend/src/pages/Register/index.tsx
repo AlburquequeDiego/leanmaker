@@ -54,12 +54,34 @@ const initialValues = {
 };
 
 // Esquema de validación dinámico según tipo de usuario
+const allowedStudentDomains = [
+  'inacap.cl',
+  'duoc.cl',
+  'uchile.cl',
+  'usach.cl',
+  'udec.cl',
+  'usm.cl',
+  'uv.cl',
+  'uach.cl',
+  'uc.cl',
+  'puc.cl',
+  'unab.cl',
+];
+
+const studentEmailRegex = new RegExp(
+  `^[^\s@]+@(?:${allowedStudentDomains.map(d => d.replace('.', '\.')).join('|')})$`
+);
+
 const getValidationSchema = (tipo: 'estudiante' | 'empresa') => {
   if (tipo === 'estudiante') {
     return yup.object({
       nombre: yup.string().required('El nombre es requerido'),
       apellido: yup.string().required('El apellido es requerido'),
-      email: yup.string().email('Ingrese un email válido').required('El email es requerido'),
+      email: yup
+        .string()
+        .email('Ingrese un email válido')
+        .matches(studentEmailRegex, 'Solo se permiten correos universitarios válidos (.cl) de INACAP, Duoc UC, U. de Chile, USACH, UDEC, USM, UV, UACH, UC, PUC o UNAB')
+        .required('El email es requerido'),
       telefono: yup.string().required('El teléfono es requerido'),
       fechaNacimiento: yup.string().required('La fecha de nacimiento es requerida'),
       genero: yup.string().required('El género es requerido'),
@@ -303,112 +325,15 @@ export const Register = () => {
                   size="small"
                 >
                   <MenuItem value="">Selecciona tu institución</MenuItem>
-                  {/* Universidades Estatales */}
+                  <MenuItem value="Instituto Profesional INACAP">Instituto Profesional INACAP</MenuItem>
+                  <MenuItem value="Instituto Profesional Duoc UC">Instituto Profesional Duoc UC</MenuItem>
                   <MenuItem value="Universidad de Chile">Universidad de Chile</MenuItem>
                   <MenuItem value="Universidad de Santiago de Chile">Universidad de Santiago de Chile</MenuItem>
                   <MenuItem value="Universidad de Concepción">Universidad de Concepción</MenuItem>
+                  <MenuItem value="Universidad Técnica Federico Santa María">Universidad Técnica Federico Santa María</MenuItem>
                   <MenuItem value="Universidad de Valparaíso">Universidad de Valparaíso</MenuItem>
-                  <MenuItem value="Universidad de La Frontera">Universidad de La Frontera</MenuItem>
-                  <MenuItem value="Universidad de Antofagasta">Universidad de Antofagasta</MenuItem>
-                  <MenuItem value="Universidad de Atacama">Universidad de Atacama</MenuItem>
-                  <MenuItem value="Universidad de Tarapacá">Universidad de Tarapacá</MenuItem>
-                  <MenuItem value="Universidad de La Serena">Universidad de La Serena</MenuItem>
-                  <MenuItem value="Universidad de Playa Ancha">Universidad de Playa Ancha</MenuItem>
-                  <MenuItem value="Universidad de Magallanes">Universidad de Magallanes</MenuItem>
-                  <MenuItem value="Universidad de Los Lagos">Universidad de Los Lagos</MenuItem>
-                  <MenuItem value="Universidad de Aysén">Universidad de Aysén</MenuItem>
-                  <MenuItem value="Universidad de O'Higgins">Universidad de O'Higgins</MenuItem>
-                  <MenuItem value="Universidad Metropolitana de Ciencias de la Educación">Universidad Metropolitana de Ciencias de la Educación</MenuItem>
-                  <MenuItem value="Universidad Tecnológica Metropolitana">Universidad Tecnológica Metropolitana</MenuItem>
-                  <MenuItem value="Universidad Arturo Prat">Universidad Arturo Prat</MenuItem>
-                  <MenuItem value="Universidad de Talca">Universidad de Talca</MenuItem>
-                  <MenuItem value="Universidad del Bío-Bío">Universidad del Bío-Bío</MenuItem>
-                  <MenuItem value="Universidad de La Araucanía">Universidad de La Araucanía</MenuItem>
-                  <MenuItem value="Universidad de Los Andes">Universidad de Los Andes</MenuItem>
-                  
-                  {/* Universidades Privadas */}
+                  <MenuItem value="Universidad Austral de Chile">Universidad Austral de Chile</MenuItem>
                   <MenuItem value="Pontificia Universidad Católica de Chile">Pontificia Universidad Católica de Chile</MenuItem>
-                  <MenuItem value="Pontificia Universidad Católica de Valparaíso">Pontificia Universidad Católica de Valparaíso</MenuItem>
-                  <MenuItem value="Universidad Católica del Norte">Universidad Católica del Norte</MenuItem>
-                  <MenuItem value="Universidad Católica de la Santísima Concepción">Universidad Católica de la Santísima Concepción</MenuItem>
-                  <MenuItem value="Universidad Católica de Temuco">Universidad Católica de Temuco</MenuItem>
-                  <MenuItem value="Universidad Adolfo Ibáñez">Universidad Adolfo Ibáñez</MenuItem>
-                  <MenuItem value="Universidad de los Andes">Universidad de los Andes</MenuItem>
-                  <MenuItem value="Universidad del Desarrollo">Universidad del Desarrollo</MenuItem>
-                  <MenuItem value="Universidad Diego Portales">Universidad Diego Portales</MenuItem>
-                  <MenuItem value="Universidad Finis Terrae">Universidad Finis Terrae</MenuItem>
-                  <MenuItem value="Universidad Mayor">Universidad Mayor</MenuItem>
-                  <MenuItem value="Universidad San Sebastián">Universidad San Sebastián</MenuItem>
-                  <MenuItem value="Universidad Andrés Bello">Universidad Andrés Bello</MenuItem>
-                  <MenuItem value="Universidad de Las Américas">Universidad de Las Américas</MenuItem>
-                  <MenuItem value="Universidad Autónoma de Chile">Universidad Autónoma de Chile</MenuItem>
-                  <MenuItem value="Universidad Central de Chile">Universidad Central de Chile</MenuItem>
-                  <MenuItem value="Universidad de Viña del Mar">Universidad de Viña del Mar</MenuItem>
-                  <MenuItem value="Universidad Santo Tomás">Universidad Santo Tomás</MenuItem>
-                  <MenuItem value="Universidad Gabriela Mistral">Universidad Gabriela Mistral</MenuItem>
-                  <MenuItem value="Universidad Iberoamericana">Universidad Iberoamericana</MenuItem>
-                  <MenuItem value="Universidad de Las Condes">Universidad de Las Condes</MenuItem>
-                  <MenuItem value="Universidad del Pacífico">Universidad del Pacífico</MenuItem>
-                  <MenuItem value="Universidad de Aconcagua">Universidad de Aconcagua</MenuItem>
-                  <MenuItem value="Universidad Bolivariana">Universidad Bolivariana</MenuItem>
-                  <MenuItem value="Universidad de Artes, Ciencias y Comunicación">Universidad de Artes, Ciencias y Comunicación</MenuItem>
-                  <MenuItem value="Universidad de Ciencias de la Informática">Universidad de Ciencias de la Informática</MenuItem>
-                  <MenuItem value="Universidad de Ciencias y Artes de América Latina">Universidad de Ciencias y Artes de América Latina</MenuItem>
-                  <MenuItem value="Universidad de La República">Universidad de La República</MenuItem>
-                  <MenuItem value="Universidad de Los Leones">Universidad de Los Leones</MenuItem>
-                  <MenuItem value="Universidad de Pedro de Valdivia">Universidad de Pedro de Valdivia</MenuItem>
-                  <MenuItem value="Universidad de Valparaíso">Universidad de Valparaíso</MenuItem>
-                  <MenuItem value="Universidad del Mar">Universidad del Mar</MenuItem>
-                  <MenuItem value="Universidad Internacional SEK">Universidad Internacional SEK</MenuItem>
-                  <MenuItem value="Universidad La República">Universidad La República</MenuItem>
-                  <MenuItem value="Universidad Miguel de Cervantes">Universidad Miguel de Cervantes</MenuItem>
-                  <MenuItem value="Universidad Tecnológica de Chile">Universidad Tecnológica de Chile</MenuItem>
-                  <MenuItem value="Universidad UCINF">Universidad UCINF</MenuItem>
-                  <MenuItem value="Universidad UNIACC">Universidad UNIACC</MenuItem>
-                  <MenuItem value="Universidad Ucinf">Universidad Ucinf</MenuItem>
-                  
-                  {/* Institutos Profesionales */}
-                  <MenuItem value="Instituto Profesional AIEP">Instituto Profesional AIEP</MenuItem>
-                  <MenuItem value="Instituto Profesional Duoc UC">Instituto Profesional Duoc UC</MenuItem>
-                  <MenuItem value="Instituto Profesional INACAP">Instituto Profesional INACAP</MenuItem>
-                  <MenuItem value="Instituto Profesional de Chile">Instituto Profesional de Chile</MenuItem>
-                  <MenuItem value="Instituto Profesional Providencia">Instituto Profesional Providencia</MenuItem>
-                  <MenuItem value="Instituto Profesional Santo Tomás">Instituto Profesional Santo Tomás</MenuItem>
-                  <MenuItem value="Instituto Profesional Valle Central">Instituto Profesional Valle Central</MenuItem>
-                  <MenuItem value="Instituto Profesional Virginio Gómez">Instituto Profesional Virginio Gómez</MenuItem>
-                  <MenuItem value="Instituto Profesional Los Lagos">Instituto Profesional Los Lagos</MenuItem>
-                  <MenuItem value="Instituto Profesional de la Araucanía">Instituto Profesional de la Araucanía</MenuItem>
-                  <MenuItem value="Instituto Profesional de Tarapacá">Instituto Profesional de Tarapacá</MenuItem>
-                  <MenuItem value="Instituto Profesional de Antofagasta">Instituto Profesional de Antofagasta</MenuItem>
-                  <MenuItem value="Instituto Profesional de Atacama">Instituto Profesional de Atacama</MenuItem>
-                  <MenuItem value="Instituto Profesional de Coquimbo">Instituto Profesional de Coquimbo</MenuItem>
-                  <MenuItem value="Instituto Profesional de Valparaíso">Instituto Profesional de Valparaíso</MenuItem>
-                  <MenuItem value="Instituto Profesional de Santiago">Instituto Profesional de Santiago</MenuItem>
-                  <MenuItem value="Instituto Profesional de O'Higgins">Instituto Profesional de O'Higgins</MenuItem>
-                  <MenuItem value="Instituto Profesional del Maule">Instituto Profesional del Maule</MenuItem>
-                  <MenuItem value="Instituto Profesional de Concepción">Instituto Profesional de Concepción</MenuItem>
-                  <MenuItem value="Instituto Profesional de Los Ríos">Instituto Profesional de Los Ríos</MenuItem>
-                  <MenuItem value="Instituto Profesional de Aysén">Instituto Profesional de Aysén</MenuItem>
-                  <MenuItem value="Instituto Profesional de Magallanes">Instituto Profesional de Magallanes</MenuItem>
-                  
-                  {/* Centros de Formación Técnica */}
-                  <MenuItem value="Centro de Formación Técnica INACAP">Centro de Formación Técnica INACAP</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica Duoc UC">Centro de Formación Técnica Duoc UC</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica Santo Tomás">Centro de Formación Técnica Santo Tomás</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de la Araucanía">Centro de Formación Técnica de la Araucanía</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Tarapacá">Centro de Formación Técnica de Tarapacá</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Antofagasta">Centro de Formación Técnica de Antofagasta</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Atacama">Centro de Formación Técnica de Atacama</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Coquimbo">Centro de Formación Técnica de Coquimbo</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Valparaíso">Centro de Formación Técnica de Valparaíso</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de O'Higgins">Centro de Formación Técnica de O'Higgins</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica del Maule">Centro de Formación Técnica del Maule</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Concepción">Centro de Formación Técnica de Concepción</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Los Ríos">Centro de Formación Técnica de Los Ríos</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Aysén">Centro de Formación Técnica de Aysén</MenuItem>
-                  <MenuItem value="Centro de Formación Técnica de Magallanes">Centro de Formación Técnica de Magallanes</MenuItem>
-                  
-                  {/* Opción para otras instituciones */}
                   <MenuItem value="Otra">Otra institución</MenuItem>
                 </TextField>
                 <TextField

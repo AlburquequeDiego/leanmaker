@@ -1,9 +1,9 @@
 ﻿from django.contrib import admin
-from .models import Project
+from .models import Proyecto, AplicacionProyecto, MiembroProyecto
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'company', 'status', 'created_at')
-    list_filter = ('status', 'created_at', 'company')
-    search_fields = ('title', 'description', 'company__company_name')
+    list_display = ('titulo', 'empresa', 'estado', 'fecha_creacion')
+    list_filter = ('estado', 'fecha_creacion', 'empresa')
+    search_fields = ('titulo', 'descripcion', 'empresa__nombre_empresa')
 
-admin.site.register(Project, ProjectAdmin)
+admin.site.register(Proyecto, ProjectAdmin)

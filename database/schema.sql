@@ -69,6 +69,7 @@ IF OBJECT_ID('areas', 'U') IS NOT NULL DROP TABLE areas;
 IF OBJECT_ID('trl_levels', 'U') IS NOT NULL DROP TABLE trl_levels;
 GO
 
+
 -- =====================================================
 -- TABLAS DE CONFIGURACIÓN (DEBEN IR PRIMERO)
 -- =====================================================
@@ -100,9 +101,11 @@ CREATE TABLE project_status (
     created_at DATETIME2 DEFAULT GETDATE()
 );
 
+
 -- =====================================================
 -- TABLA DE USUARIOS (COMPATIBLE CON DJANGO)
 -- =====================================================
+
 CREATE TABLE users (
     id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     email NVARCHAR(254) UNIQUE NOT NULL,
@@ -264,7 +267,7 @@ CREATE TABLE project_status_history (
 CREATE TABLE applications (
     id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
     status NVARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'reviewing', 'interviewed', 'accepted', 'rejected', 'withdrawn', 'completed')),
     cover_letter NVARCHAR(MAX),
     compatibility_score INT CHECK (compatibility_score >= 0 AND compatibility_score <= 100),
@@ -302,12 +305,15 @@ CREATE TABLE assignments (
 -- =====================================================
 -- TABLA DE HORAS TRABAJADAS
 -- =====================================================
+
+
+
 CREATE TABLE work_hours (
     id INT IDENTITY(1,1) PRIMARY KEY,
     assignment_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES assignments(id) ON DELETE CASCADE,
-    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
+    student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE NO ACTION,
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE NO ACTION,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
     fecha DATE NOT NULL,
     horas_trabajadas INT CHECK (horas_trabajadas > 0),
     descripcion NVARCHAR(MAX),
@@ -334,10 +340,13 @@ CREATE TABLE evaluation_categories (
 -- =====================================================
 -- TABLA DE EVALUACIONES
 -- =====================================================
+
+
+
 CREATE TABLE evaluations (
     id INT IDENTITY(1,1) PRIMARY KEY,
     student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE CASCADE,
+    project_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES projects(id) ON DELETE NO ACTION,
     evaluator_id UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     category_id INT FOREIGN KEY REFERENCES evaluation_categories(id),
     score DECIMAL(3,2) CHECK (score >= 0 AND score <= 10),
@@ -348,6 +357,7 @@ CREATE TABLE evaluations (
     -- Una evaluación por estudiante, proyecto y categoría
     CONSTRAINT UQ_evaluation_student_project_category UNIQUE (student_id, project_id, category_id)
 );
+
 
 -- =====================================================
 -- TABLA DE CALIFICACIONES
@@ -365,13 +375,15 @@ CREATE TABLE ratings (
     CONSTRAINT UQ_rating_rater_rated_project UNIQUE (rater_id, rated_id, project_id)
 );
 
+
+
 -- =====================================================
 -- TABLA DE AMONESTACIONES (STRIKES)
 -- =====================================================
 CREATE TABLE strikes (
     id INT IDENTITY(1,1) PRIMARY KEY,
     student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
     reason NVARCHAR(MAX) NOT NULL,
     severity NVARCHAR(20) DEFAULT 'medium' CHECK (severity IN ('low', 'medium', 'high', 'critical')),
     issued_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
@@ -380,6 +392,7 @@ CREATE TABLE strikes (
     resolved_at DATETIME2,
     resolution_notes NVARCHAR(MAX)
 );
+
 
 -- =====================================================
 -- TABLA DE NOTIFICACIONES
@@ -413,13 +426,15 @@ CREATE TABLE mass_notifications (
     is_active BIT DEFAULT 1
 );
 
+
 -- =====================================================
 -- TABLA DE REGISTROS DISCIPLINARIOS
 -- =====================================================
+
 CREATE TABLE disciplinary_records (
     id INT IDENTITY(1,1) PRIMARY KEY,
     student_id INT FOREIGN KEY REFERENCES students(id) ON DELETE CASCADE,
-    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE CASCADE,
+    company_id INT FOREIGN KEY REFERENCES companies(id) ON DELETE NO ACTION,
     incident_date DATE NOT NULL,
     description NVARCHAR(MAX) NOT NULL,
     action_taken NVARCHAR(MAX),
@@ -427,6 +442,8 @@ CREATE TABLE disciplinary_records (
     recorded_by UNIQUEIDENTIFIER FOREIGN KEY REFERENCES users(id),
     recorded_at DATETIME2 DEFAULT GETDATE()
 );
+
+
 
 -- =====================================================
 -- TABLA DE ENTREVISTAS
@@ -444,6 +461,8 @@ CREATE TABLE interviews (
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE()
 );
+
+
 
 -- =====================================================
 -- TABLA DE EVENTOS DE CALENDARIO
@@ -463,6 +482,8 @@ CREATE TABLE calendar_events (
     updated_at DATETIME2 DEFAULT GETDATE()
 );
 
+
+
 -- =====================================================
 -- TABLA DE DOCUMENTOS
 -- =====================================================
@@ -480,6 +501,8 @@ CREATE TABLE documents (
     updated_at DATETIME2 DEFAULT GETDATE()
 );
 
+
+
 -- =====================================================
 -- TABLA DE PREFERENCIAS DE NOTIFICACIÓN
 -- =====================================================
@@ -496,6 +519,8 @@ CREATE TABLE notification_preferences (
     updated_at DATETIME2 DEFAULT GETDATE()
 );
 
+
+
 -- =====================================================
 -- TABLA DE LOGS DE ACTIVIDAD
 -- =====================================================
@@ -511,19 +536,7 @@ CREATE TABLE activity_logs (
     created_at DATETIME2 DEFAULT GETDATE()
 );
 
--- =====================================================
--- TABLA DE CONFIGURACIÓN DE PLATAFORMA
--- =====================================================
-CREATE TABLE platform_config (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    config_key NVARCHAR(100) UNIQUE NOT NULL,
-    config_value NVARCHAR(MAX),
-    config_type NVARCHAR(20) DEFAULT 'string' CHECK (config_type IN ('string', 'number', 'boolean', 'json')),
-    description NVARCHAR(MAX),
-    is_active BIT DEFAULT 1,
-    created_at DATETIME2 DEFAULT GETDATE(),
-    updated_at DATETIME2 DEFAULT GETDATE()
-);
+
 
 -- =====================================================
 -- TABLA DE REPORTES
@@ -540,6 +553,8 @@ CREATE TABLE reports (
     created_at DATETIME2 DEFAULT GETDATE(),
     completed_at DATETIME2
 );
+
+
 
 -- =====================================================
 -- TABLA DE RESPALDOS DE DATOS
@@ -623,6 +638,8 @@ CREATE INDEX IX_notifications_user_read ON notifications(user_id, is_read);
 GO
 
 -- Vista de estadísticas de estudiantes
+DROP VIEW IF EXISTS v_student_stats;
+GO
 CREATE VIEW v_student_stats AS
 SELECT 
     s.id,
@@ -648,6 +665,8 @@ GROUP BY s.id, s.user_id, u.email, u.first_name, u.last_name, s.career, s.semest
 GO
 
 -- Vista de estadísticas de empresas
+DROP VIEW IF EXISTS v_company_stats;
+GO
 CREATE VIEW v_company_stats AS
 SELECT 
     c.id,
@@ -674,6 +693,8 @@ GROUP BY c.id, c.user_id, u.email, c.company_name, c.industry, c.size, c.rating,
 GO
 
 -- Vista de estadísticas de proyectos
+DROP VIEW IF EXISTS v_project_stats;
+GO
 CREATE VIEW v_project_stats AS
 SELECT 
     p.id,
@@ -704,6 +725,8 @@ GROUP BY p.id, p.title, p.company_id, c.company_name, ps.name, p.api_level, p.re
 GO
 
 -- Vista de evaluaciones completas
+DROP VIEW IF EXISTS v_evaluations_complete;
+GO
 CREATE VIEW v_evaluations_complete AS
 SELECT 
     e.id,
@@ -729,6 +752,8 @@ JOIN evaluation_categories ec ON e.category_id = ec.id;
 GO
 
 -- Vista del dashboard de administrador
+DROP VIEW IF EXISTS v_admin_dashboard;
+GO
 CREATE VIEW v_admin_dashboard AS
 SELECT 
     'users' AS metric_type,
@@ -767,6 +792,8 @@ GO
 -- =====================================================
 
 -- Insertar niveles TRL
+
+
 INSERT INTO trl_levels (level, name, description) VALUES
 (1, 'TRL 1 - Principios básicos observados', 'Investigación científica básica'),
 (2, 'TRL 2 - Concepto tecnológico formulado', 'Investigación aplicada'),
@@ -825,6 +852,4 @@ PRINT 'Niveles TRL insertados: ' + CAST((SELECT COUNT(*) FROM trl_levels) AS NVA
 PRINT 'Áreas de conocimiento insertadas: ' + CAST((SELECT COUNT(*) FROM areas) AS NVARCHAR(10));
 PRINT 'Estados de proyecto insertados: ' + CAST((SELECT COUNT(*) FROM project_status) AS NVARCHAR(10));
 PRINT 'Categorías de evaluación insertadas: ' + CAST((SELECT COUNT(*) FROM evaluation_categories) AS NVARCHAR(10));
-
-
 

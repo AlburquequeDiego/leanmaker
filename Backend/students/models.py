@@ -24,6 +24,7 @@ class Student(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'students'
         verbose_name = 'Estudiante'
         verbose_name_plural = 'Estudiantes'
         ordering = ['user__first_name', 'user__last_name']

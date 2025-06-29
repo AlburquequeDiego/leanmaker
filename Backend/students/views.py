@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from rest_framework import generics, permissions, viewsets, status
+from rest_framework import generics, permissions, viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Avg, Q
 from django.utils import timezone
 from datetime import timedelta
 from .models import Student
 from .serializers import StudentSerializer, StudentUpdateSerializer
-from users.models import User
-from applications.models import Application
+from users.models import Usuario
+from applications.models import Aplicacion
 from evaluations.models import Evaluation
 from strikes.models import Strike
 
@@ -95,7 +96,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         last_30_days = now - timedelta(days=30)
 
         # Postulaciones del estudiante
-        student_applications = Application.objects.filter(student=student)
+        student_applications = Aplicacion.objects.filter(student=student)
         
         stats = {
             'total_applications': student_applications.count(),
@@ -104,14 +105,14 @@ class StudentViewSet(viewsets.ModelViewSet):
             'rejected_applications': student_applications.filter(status='REJECTED').count(),
             
             # Proyectos activos (donde fue aceptado)
-            'active_projects': Application.objects.filter(
+            'active_projects': Aplicacion.objects.filter(
                 student=student,
                 status='ACCEPTED',
                 project__status='ACTIVE'
             ).count(),
             
             # Proyectos completados
-            'completed_projects': Application.objects.filter(
+            'completed_projects': Aplicacion.objects.filter(
                 student=student,
                 status='ACCEPTED',
                 project__status='COMPLETED'
@@ -151,7 +152,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         student = request.user.student_profile
         
         # Postulaciones del estudiante
-        student_applications = Application.objects.filter(student=student)
+        student_applications = Aplicacion.objects.filter(student=student)
         
         # Postulaciones por estado
         application_stats = student_applications.aggregate(

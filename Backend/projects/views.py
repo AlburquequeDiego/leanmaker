@@ -5,21 +5,21 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q, Count, Avg
 from django.utils import timezone
-from .models import Project, ProjectApplication, ProjectMember
+from .models import Proyecto, AplicacionProyecto, MiembroProyecto
 from .serializers import (
     ProjectSerializer, ProjectDetailSerializer, ProjectCreateSerializer,
     ProjectUpdateSerializer, ProjectApplicationSerializer, ProjectApplicationDetailSerializer,
     ProjectApplicationUpdateSerializer, ProjectMemberSerializer, ProjectStatsSerializer,
     ProjectSearchSerializer
 )
-from users.models import User
+from users.models import Usuario
 from companies.views import IsCompanyUser
 
 # Create your views here.
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """ViewSet para gestión de proyectos"""
-    queryset = Project.objects.all()
+    queryset = Proyecto.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -33,13 +33,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         if user.role == 'admin':
-            return Project.objects.all()
+            return Proyecto.objects.all()
         elif user.role == 'company':
             # Las empresas ven sus propios proyectos
-            return Project.objects.filter(company=user)
+            return Proyecto.objects.filter(company=user)
         else:
             # Los estudiantes ven proyectos publicados
-            return Project.objects.filter(status='published')
+            return Proyecto.objects.filter(status='published')
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
@@ -64,7 +64,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        queryset = Project.objects.filter(
+        queryset = Proyecto.objects.filter(
             status='published',
             current_students__lt=models.F('max_students')
         ).exclude(
@@ -79,10 +79,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """Proyectos del usuario actual"""
         if request.user.role == 'student':
             # Proyectos donde el estudiante es miembro
-            queryset = Project.objects.filter(members__user=request.user)
+            queryset = Proyecto.objects.filter(members__user=request.user)
         elif request.user.role == 'company':
             # Proyectos de la empresa
-            queryset = Project.objects.filter(company=request.user)
+            queryset = Proyecto.objects.filter(company=request.user)
         else:
             return Response(
                 {"error": "Esta vista no está disponible para administradores"},
@@ -183,17 +183,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if request.user.role == 'admin':
             # Estadísticas generales
             stats = {
-                'total_projects': Project.objects.count(),
-                'published_projects': Project.objects.filter(status='published').count(),
-                'in_progress_projects': Project.objects.filter(status='in_progress').count(),
-                'completed_projects': Project.objects.filter(status='completed').count(),
-                'average_rating': Project.objects.aggregate(Avg('evaluations__rating'))['evaluations__rating__avg'] or 0,
-                'projects_by_area': Project.objects.values('area').annotate(count=Count('id')),
-                'projects_by_status': Project.objects.values('status').annotate(count=Count('id')),
+                'total_projects': Proyecto.objects.count(),
+                'published_projects': Proyecto.objects.filter(status='published').count(),
+                'in_progress_projects': Proyecto.objects.filter(status='in_progress').count(),
+                'completed_projects': Proyecto.objects.filter(status='completed').count(),
+                'average_rating': Proyecto.objects.aggregate(Avg('evaluations__rating'))['evaluations__rating__avg'] or 0,
+                'projects_by_area': Proyecto.objects.values('area').annotate(count=Count('id')),
+                'projects_by_status': Proyecto.objects.values('status').annotate(count=Count('id')),
             }
         elif request.user.role == 'company':
             # Estadísticas de la empresa
-            company_projects = Project.objects.filter(company=request.user)
+            company_projects = Proyecto.objects.filter(company=request.user)
             stats = {
                 'total_projects': company_projects.count(),
                 'published_projects': company_projects.filter(status='published').count(),
@@ -204,7 +204,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             }
         else:
             # Estadísticas del estudiante
-            student_projects = Project.objects.filter(members__user=request.user)
+            student_projects = Proyecto.objects.filter(members__user=request.user)
             stats = {
                 'total_projects': student_projects.count(),
                 'completed_projects': student_projects.filter(status='completed').count(),
@@ -216,7 +216,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 class ProjectApplicationViewSet(viewsets.ModelViewSet):
     """ViewSet para gestión de aplicaciones a proyectos"""
-    queryset = ProjectApplication.objects.all()
+    queryset = AplicacionProyecto.objects.all()
     serializer_class = ProjectApplicationSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -229,13 +229,13 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         if user.role == 'admin':
-            return ProjectApplication.objects.all()
+            return AplicacionProyecto.objects.all()
         elif user.role == 'company':
             # Las empresas ven aplicaciones a sus proyectos
-            return ProjectApplication.objects.filter(project__company=user)
+            return AplicacionProyecto.objects.filter(project__company=user)
         else:
             # Los estudiantes ven sus propias aplicaciones
-            return ProjectApplication.objects.filter(student=user)
+            return AplicacionProyecto.objects.filter(student=user)
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
@@ -260,7 +260,7 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        queryset = ProjectApplication.objects.filter(student=request.user)
+        queryset = AplicacionProyecto.objects.filter(student=request.user)
         serializer = ProjectApplicationSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -273,7 +273,7 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        queryset = ProjectApplication.objects.filter(project__company=request.user)
+        queryset = AplicacionProyecto.objects.filter(project__company=request.user)
         serializer = ProjectApplicationSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -298,7 +298,7 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
         application.save()
         
         # Agregar estudiante como miembro del proyecto
-        ProjectMember.objects.create(
+        MiembroProyecto.objects.create(
             project=application.project,
             user=application.student,
             role='student'
@@ -351,7 +351,7 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
 
 class ProjectMemberViewSet(viewsets.ModelViewSet):
     """ViewSet para gestión de miembros de proyectos"""
-    queryset = ProjectMember.objects.all()
+    queryset = MiembroProyecto.objects.all()
     serializer_class = ProjectMemberSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -364,13 +364,13 @@ class ProjectMemberViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         if user.role == 'admin':
-            return ProjectMember.objects.all()
+            return MiembroProyecto.objects.all()
         elif user.role == 'company':
             # Las empresas ven miembros de sus proyectos
-            return ProjectMember.objects.filter(project__company=user)
+            return MiembroProyecto.objects.filter(project__company=user)
         else:
             # Los estudiantes ven sus propias membresías
-            return ProjectMember.objects.filter(user=user)
+            return MiembroProyecto.objects.filter(user=user)
 
     @action(detail=True, methods=['post'])
     def leave(self, request, pk=None):

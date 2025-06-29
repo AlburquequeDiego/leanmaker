@@ -1,16 +1,17 @@
 from django.shortcuts import render
-from rest_framework import generics, permissions, viewsets, status
+from rest_framework import generics, permissions, viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Count, Avg, Q
 from django.utils import timezone
 from datetime import timedelta
-from .models import Company
+from .models import Empresa
 from .serializers import CompanySerializer, CompanyUpdateSerializer
-from users.models import User
-from projects.models import Project
-from applications.models import Application
+from users.models import Usuario
+from projects.models import Proyecto
+from applications.models import Aplicacion
 from evaluations.models import Evaluation
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
 
@@ -25,7 +26,7 @@ class CompanyProfileView(generics.RetrieveUpdateAPIView):
     """
     Vista para que una empresa vea y actualice su propio perfil.
     """
-    queryset = Company.objects.all()
+    queryset = Empresa.objects.all()
     permission_classes = [IsCompanyUser]
 
     def get_object(self):
@@ -41,7 +42,7 @@ class CompanyListView(generics.ListAPIView):
     """
     Vista para listar todas las empresas (perfil público).
     """
-    queryset = Company.objects.all()
+    queryset = Empresa.objects.all()
     serializer_class = CompanySerializer
     permission_classes = [permissions.IsAuthenticated] # Solo usuarios autenticados pueden ver la lista
 
@@ -49,21 +50,21 @@ class CompanyDetailView(generics.RetrieveAPIView):
     """
     Vista para ver el perfil público de una empresa específica.
     """
-    queryset = Company.objects.all()
+    queryset = Empresa.objects.all()
     serializer_class = CompanySerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'user_id' # Buscar por el ID del usuario
 
 class CompanyViewSet(viewsets.ModelViewSet):
-    queryset = Company.objects.all()
+    queryset = Empresa.objects.all()
     serializer_class = CompanySerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         if user.role == 'COMPANY':
-            return Company.objects.filter(user=user)
-        return Company.objects.all()
+            return Empresa.objects.filter(user=user)
+        return Empresa.objects.all()
 
     @action(detail=False, methods=['get'])
     def dashboard_stats(self, request):
@@ -81,7 +82,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         last_30_days = now - timedelta(days=30)
 
         # Proyectos de la empresa
-        company_projects = Project.objects.filter(company=company)
+        company_projects = Proyecto.objects.filter(company=company)
         
         stats = {
             'total_projects': company_projects.count(),
@@ -90,18 +91,18 @@ class CompanyViewSet(viewsets.ModelViewSet):
             'pending_projects': company_projects.filter(status='PENDING').count(),
             
             # Postulaciones
-            'total_applications': Application.objects.filter(project__company=company).count(),
-            'pending_applications': Application.objects.filter(
+            'total_applications': Aplicacion.objects.filter(project__company=company).count(),
+            'pending_applications': Aplicacion.objects.filter(
                 project__company=company, 
                 status='PENDING'
             ).count(),
-            'accepted_applications': Application.objects.filter(
+            'accepted_applications': Aplicacion.objects.filter(
                 project__company=company, 
                 status='ACCEPTED'
             ).count(),
             
             # Actividad reciente
-            'new_applications_30_days': Application.objects.filter(
+            'new_applications_30_days': Aplicacion.objects.filter(
                 project__company=company,
                 created_at__gte=last_30_days
             ).count(),
@@ -137,14 +138,14 @@ class CompanyViewSet(viewsets.ModelViewSet):
         company = request.user.company_profile
         
         # Proyectos por estado
-        project_stats = Project.objects.filter(company=company).aggregate(
+        project_stats = Proyecto.objects.filter(company=company).aggregate(
             active=Count('id', filter=Q(status='ACTIVE')),
             completed=Count('id', filter=Q(status='COMPLETED')),
-            pending=Count('id', filter=Q(status='PENDING')),
+            draft=Count('id', filter=Q(status='DRAFT'))
         )
         
         # Promedio de postulaciones por proyecto
-        avg_applications = Application.objects.filter(
+        avg_applications = Aplicacion.objects.filter(
             project__company=company
         ).values('project').annotate(
             app_count=Count('id')

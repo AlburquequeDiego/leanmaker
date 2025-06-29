@@ -2,16 +2,16 @@ from django.shortcuts import render
 from rest_framework import generics, permissions, viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from .serializers import UserRegistrationSerializer, UserSerializer, StudentProfileSerializer, CompanyProfileSerializer, AdminUserSerializer, UserLoginSerializer, PasswordChangeSerializer, PasswordResetSerializer, UserStatsSerializer
 from django.db.models import Count, Q, Avg
 from django.utils import timezone
 from datetime import timedelta
-from .models import User
-from companies.models import Company
+from .models import Usuario
+from companies.models import Empresa
 from students.models import Student
-from projects.models import Project
-from applications.models import Application
+from projects.models import Proyecto
+from applications.models import Aplicacion
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
@@ -64,39 +64,39 @@ class UserViewSet(viewsets.ModelViewSet):
         # Estadísticas generales
         stats = {
             'total_users': User.objects.count(),
-            'total_companies': Company.objects.count(),
+            'total_companies': Empresa.objects.count(),
             'total_students': Student.objects.count(),
-            'total_projects': Project.objects.count(),
-            'total_applications': Application.objects.count(),
+            'total_projects': Proyecto.objects.count(),
+            'total_applications': Aplicacion.objects.count(),
             
             # Nuevos registros en los últimos 30 días
             'new_users_30_days': User.objects.filter(
                 created_at__gte=last_30_days
             ).count(),
-            'new_companies_30_days': Company.objects.filter(
+            'new_companies_30_days': Empresa.objects.filter(
                 created_at__gte=last_30_days
             ).count(),
             'new_students_30_days': Student.objects.filter(
                 created_at__gte=last_30_days
             ).count(),
-            'new_projects_30_days': Project.objects.filter(
+            'new_projects_30_days': Proyecto.objects.filter(
                 created_at__gte=last_30_days
             ).count(),
             
             # Actividad reciente (últimos 7 días)
-            'new_applications_7_days': Application.objects.filter(
+            'new_applications_7_days': Aplicacion.objects.filter(
                 created_at__gte=last_7_days
             ).count(),
             
             # Estados de proyectos
-            'active_projects': Project.objects.filter(status='ACTIVE').count(),
-            'completed_projects': Project.objects.filter(status='COMPLETED').count(),
-            'pending_projects': Project.objects.filter(status='PENDING').count(),
+            'active_projects': Proyecto.objects.filter(status='ACTIVE').count(),
+            'completed_projects': Proyecto.objects.filter(status='COMPLETED').count(),
+            'pending_projects': Proyecto.objects.filter(status='PENDING').count(),
             
             # Estados de postulaciones
-            'pending_applications': Application.objects.filter(status='PENDING').count(),
-            'accepted_applications': Application.objects.filter(status='ACCEPTED').count(),
-            'rejected_applications': Application.objects.filter(status='REJECTED').count(),
+            'pending_applications': Aplicacion.objects.filter(status='PENDING').count(),
+            'accepted_applications': Aplicacion.objects.filter(status='ACCEPTED').count(),
+            'rejected_applications': Aplicacion.objects.filter(status='REJECTED').count(),
         }
 
         return Response(stats)

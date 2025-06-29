@@ -1,13 +1,13 @@
 from django.contrib import admin
-from .models import Company
+from .models import Empresa, CalificacionEmpresa
 
-@admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'industry', 'location', 'user_email')
-    search_fields = ('name', 'industry', 'user__email')
-    list_filter = ('industry', 'location')
-    ordering = ('name',)
+@admin.register(Empresa)
+class EmpresaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'industria', 'ubicacion', 'usuario_email')
+    search_fields = ('nombre', 'industria', 'usuario__email')
+    list_filter = ('industria', 'ubicacion')
+    ordering = ('nombre',)
 
-    def user_email(self, obj):
-        return obj.user.email
-    user_email.short_description = 'Email del Usuario'
+    def usuario_email(self, obj):
+        return obj.usuario.email
+    usuario_email.short_description = 'Email del Usuario'

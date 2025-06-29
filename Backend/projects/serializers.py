@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Avg, Count
-from .models import Project, ProjectApplication, ProjectMember
+from .models import Proyecto, AplicacionProyecto, MiembroProyecto
 from users.serializers import UserSerializer
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     average_rating = serializers.SerializerMethodField()
     
     class Meta:
-        model = Project
+        model = Proyecto
         fields = [
             'id', 'title', 'description', 'company', 'company_name', 'company_avatar',
             'area', 'modality', 'location', 'difficulty', 'required_skills', 'preferred_skills',
@@ -56,7 +56,7 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
     horas = serializers.IntegerField(write_only=True, required=True)
     
     class Meta:
-        model = Project
+        model = Proyecto
         fields = [
             'title', 'description', 'area', 'modality', 'location', 'difficulty',
             'required_skills', 'preferred_skills', 'min_api_level', 'duration_months',
@@ -103,7 +103,7 @@ class ProjectUpdateSerializer(serializers.ModelSerializer):
     horas = serializers.IntegerField(write_only=True, required=False)
     
     class Meta:
-        model = Project
+        model = Proyecto
         fields = [
             'title', 'description', 'area', 'modality', 'location', 'difficulty',
             'required_skills', 'preferred_skills', 'min_api_level', 'duration_months',
@@ -143,7 +143,7 @@ class ProjectApplicationSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='project.company.company_name', read_only=True)
     
     class Meta:
-        model = ProjectApplication
+        model = AplicacionProyecto
         fields = [
             'id', 'project', 'project_title', 'student', 'student_name', 'student_email',
             'student_avatar', 'student_api_level', 'company_name', 'cover_letter', 'status',
@@ -154,7 +154,7 @@ class ProjectApplicationSerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         # Verificar que el estudiante no haya aplicado ya a este proyecto
-        if ProjectApplication.objects.filter(
+        if AplicacionProyecto.objects.filter(
             project=attrs['project'], 
             student=attrs['student']
         ).exists():
@@ -190,7 +190,7 @@ class ProjectApplicationUpdateSerializer(serializers.ModelSerializer):
     """Serializer para actualizar aplicaciones (para empresas)"""
     
     class Meta:
-        model = ProjectApplication
+        model = AplicacionProyecto
         fields = ['status', 'company_notes']
     
     def validate_status(self, value):
@@ -240,7 +240,7 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
     user_avatar = serializers.CharField(source='user.avatar', read_only=True)
     
     class Meta:
-        model = ProjectMember
+        model = MiembroProyecto
         fields = [
             'id', 'project', 'user', 'user_name', 'user_email', 'user_avatar',
             'role', 'joined_at', 'left_at', 'hours_worked', 'tasks_completed'
@@ -256,7 +256,7 @@ class ProjectStatsSerializer(serializers.ModelSerializer):
     completion_percentage = serializers.FloatField(read_only=True)
     
     class Meta:
-        model = Project
+        model = Proyecto
         fields = [
             'id', 'title', 'company_name', 'status', 'applications_count',
             'accepted_applications_count', 'average_rating', 'completion_percentage',
@@ -279,7 +279,7 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
     applications_count = serializers.IntegerField(read_only=True)
     
     class Meta:
-        model = Project
+        model = Proyecto
         fields = [
             'id', 'title', 'description', 'company_name', 'area', 'modality',
             'location', 'difficulty', 'required_skills', 'min_api_level',

@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Company
+from .models import Empresa, CalificacionEmpresa
 from users.serializers import UserSerializer
 
 class CompanySerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
     class Meta:
-        model = Company
+        model = Empresa
         fields = [
             'user', 'name', 'industry', 'description', 
             'website', 'location', 'created_at', 'updated_at'
@@ -17,7 +17,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class CompanyUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Company
+        model = Empresa
         fields = [
             'name', 'industry', 'description', 'website', 'location'
         ] 

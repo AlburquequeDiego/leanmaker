@@ -1,4 +1,10 @@
 from rest_framework import serializers
+from django.db.models import Q, Count, Avg
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.db.models.functions import Greatest
+from users.models import Usuario
+from companies.models import Empresa
+from projects.models import Proyecto
 from users.serializers import UserSerializer
 from projects.serializers import ProjectSerializer
 from evaluations.serializers import StudentSkillSerializer

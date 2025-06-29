@@ -2,7 +2,7 @@ from rest_framework import viewsets, status, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Avg
 from django.utils import timezone
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models.functions import Greatest
@@ -12,9 +12,10 @@ from .serializers import (
     SearchHistorySerializer, SearchSuggestionSerializer, SearchResultSerializer,
     SearchStatsSerializer
 )
-from users.models import User
-from projects.models import Project
+from users.models import Usuario
+from projects.models import Proyecto
 from evaluations.models import Evaluation
+from companies.models import Empresa
 
 class SearchViewSet(viewsets.ViewSet):
     """ViewSet para funcionalidades de búsqueda"""
@@ -41,7 +42,7 @@ class SearchViewSet(viewsets.ViewSet):
         
         # Búsqueda en usuarios
         if search_type in ['all', 'users']:
-            user_results = User.objects.filter(
+            user_results = Usuario.objects.filter(
                 Q(first_name__icontains=query) |
                 Q(last_name__icontains=query) |
                 Q(email__icontains=query) |
@@ -62,7 +63,7 @@ class SearchViewSet(viewsets.ViewSet):
         
         # Búsqueda en proyectos
         if search_type in ['all', 'projects']:
-            project_results = Project.objects.filter(
+            project_results = Proyecto.objects.filter(
                 Q(title__icontains=query) |
                 Q(description__icontains=query) |
                 Q(required_skills__icontains=query) |
@@ -128,7 +129,7 @@ class SearchViewSet(viewsets.ViewSet):
         
         # Búsqueda avanzada en usuarios
         if search_type in ['all', 'users']:
-            user_query = User.objects.filter(is_active=True)
+            user_query = Usuario.objects.filter(is_active=True)
             
             # Filtros específicos para usuarios
             if filters.get('role'):
@@ -162,7 +163,7 @@ class SearchViewSet(viewsets.ViewSet):
         
         # Búsqueda avanzada en proyectos
         if search_type in ['all', 'projects']:
-            project_query = Project.objects.filter(status='published')
+            project_query = Proyecto.objects.filter(status='published')
             
             # Filtros específicos para proyectos
             if filters.get('area'):
