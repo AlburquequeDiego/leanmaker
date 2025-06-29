@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,8 +48,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_spectacular',
+    'health_check',
+    'health_check.db',
+    'health_check.cache',
+    'health_check.storage',
     
-    # Local apps
+    # Local apps - Core
     'users.apps.UsersConfig',
     'companies',
     'students',
@@ -63,6 +69,20 @@ INSTALLED_APPS = [
     'platform_settings',
     'strikes',
     'questionnaires',
+    
+    # Nuevas apps para sistema completo (25+ tablas)
+    'trl_levels',
+    'areas',
+    'project_status',
+    'assignments',
+    'evaluation_categories',
+    'ratings',
+    'mass_notifications',
+    'disciplinary_records',
+    'documents',
+    'activity_logs',
+    'reports',
+    'data_backups',
 ]
 
 MIDDLEWARE = [
@@ -117,26 +137,13 @@ DATABASES = {
     }
 }
 
-# Configuración SQLite para desarrollo local (COMENTADA)
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# Para PostgreSQL (recomendado para producción)
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'leanmaker_db',
-#         'USER': 'postgres',
-#         'PASSWORD': 'your_password',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-
+# Configuración de caché
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -301,3 +308,7 @@ LOGGING = {
 
 # Crear directorio de logs si no existe
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+# Admin interface configuration
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ['security.W019']

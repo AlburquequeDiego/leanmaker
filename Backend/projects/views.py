@@ -3,17 +3,17 @@ from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Q, Count, Avg
+from django.db.models import Q, Count, Avg, F
 from django.utils import timezone
-from .models import Proyecto, AplicacionProyecto, MiembroProyecto
+from .models import Proyecto
+from applications.models import Aplicacion
 from .serializers import (
     ProjectSerializer, ProjectDetailSerializer, ProjectCreateSerializer,
     ProjectUpdateSerializer, ProjectApplicationSerializer, ProjectApplicationDetailSerializer,
-    ProjectApplicationUpdateSerializer, ProjectMemberSerializer, ProjectStatsSerializer,
-    ProjectSearchSerializer
+    ProjectApplicationUpdateSerializer, ProjectStatsSerializer, ProjectSearchSerializer
 )
 from users.models import Usuario
-from companies.views import IsCompanyUser
+from companies.models import Empresa
 
 # Create your views here.
 
@@ -25,7 +25,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'area', 'modality', 'difficulty', 'is_paid', 'is_featured', 'is_urgent']
     search_fields = ['title', 'description', 'required_skills', 'preferred_skills']
-    ordering_fields = ['created_at', 'start_date', 'end_date', 'payment_amount']
+    ordering_fields = ['created_at', 'start_date', 'estimated_end_date', 'payment_amount']
     ordering = ['-created_at']
 
     def get_queryset(self):
@@ -36,10 +36,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Proyecto.objects.all()
         elif user.role == 'company':
             # Las empresas ven sus propios proyectos
-            return Proyecto.objects.filter(company=user)
+            return Proyecto.objects.filter(company=user.empresa)
         else:
             # Los estudiantes ven proyectos publicados
-            return Proyecto.objects.filter(status='published')
+            return Proyecto.objects.filter(status__name__in=['published', 'active', 'open', 'en curso'])
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
@@ -53,7 +53,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Asignar la empresa al crear el proyecto"""
-        serializer.save(company=self.request.user)
+        serializer.save(company=self.request.user.empresa)
 
     @action(detail=False, methods=['get'])
     def available(self, request):
@@ -65,10 +65,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         queryset = Proyecto.objects.filter(
-            status='published',
-            current_students__lt=models.F('max_students')
+            status__name__in=['published', 'active', 'open', 'en curso'],
+            current_students__lt=F('max_students')
         ).exclude(
-            applications__student=request.user
+            aplicaciones__estudiante=request.user.estudiante
         )
         
         serializer = ProjectSearchSerializer(queryset, many=True)
@@ -78,11 +78,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def my_projects(self, request):
         """Proyectos del usuario actual"""
         if request.user.role == 'student':
-            # Proyectos donde el estudiante es miembro
-            queryset = Proyecto.objects.filter(members__user=request.user)
+            # Proyectos donde el estudiante aplicó y fue aceptado
+            queryset = Proyecto.objects.filter(
+                aplicaciones__estudiante=request.user.estudiante,
+                aplicaciones__estado='aceptado'
+            )
         elif request.user.role == 'company':
             # Proyectos de la empresa
-            queryset = Proyecto.objects.filter(company=request.user)
+            queryset = Proyecto.objects.filter(company=request.user.empresa)
         else:
             return Response(
                 {"error": "Esta vista no está disponible para administradores"},
@@ -102,13 +105,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         project = self.get_object()
-        if project.company != request.user:
+        if project.company != request.user.empresa:
             return Response(
                 {"error": "No puedes publicar proyectos de otras empresas"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        project.status = 'published'
+        from project_status.models import ProjectStatus
+        published_status, created = ProjectStatus.objects.get_or_create(name='published')
+        project.status = published_status
         project.published_at = timezone.now()
         project.save()
         
@@ -124,13 +129,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         project = self.get_object()
-        if project.company != request.user:
+        if project.company != request.user.empresa:
             return Response(
                 {"error": "No puedes pausar proyectos de otras empresas"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        project.status = 'paused'
+        from project_status.models import ProjectStatus
+        paused_status, created = ProjectStatus.objects.get_or_create(name='paused')
+        project.status = paused_status
         project.save()
         
         return Response({"message": "Proyecto pausado correctamente"})
@@ -145,13 +152,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         project = self.get_object()
-        if project.company != request.user:
+        if project.company != request.user.empresa:
             return Response(
                 {"error": "No puedes marcar como completado proyectos de otras empresas"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        project.status = 'completed'
+        from project_status.models import ProjectStatus
+        completed_status, created = ProjectStatus.objects.get_or_create(name='completed')
+        project.status = completed_status
         project.save()
         
         return Response({"message": "Proyecto marcado como completado correctamente"})
@@ -166,13 +175,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         project = self.get_object()
-        if project.company != request.user:
+        if project.company != request.user.empresa:
             return Response(
                 {"error": "No puedes cancelar proyectos de otras empresas"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        project.status = 'cancelled'
+        from project_status.models import ProjectStatus
+        cancelled_status, created = ProjectStatus.objects.get_or_create(name='cancelled')
+        project.status = cancelled_status
         project.save()
         
         return Response({"message": "Proyecto cancelado correctamente"})
@@ -184,72 +195,71 @@ class ProjectViewSet(viewsets.ModelViewSet):
             # Estadísticas generales
             stats = {
                 'total_projects': Proyecto.objects.count(),
-                'published_projects': Proyecto.objects.filter(status='published').count(),
-                'in_progress_projects': Proyecto.objects.filter(status='in_progress').count(),
-                'completed_projects': Proyecto.objects.filter(status='completed').count(),
-                'average_rating': Proyecto.objects.aggregate(Avg('evaluations__rating'))['evaluations__rating__avg'] or 0,
-                'projects_by_area': Proyecto.objects.values('area').annotate(count=Count('id')),
-                'projects_by_status': Proyecto.objects.values('status').annotate(count=Count('id')),
+                'published_projects': Proyecto.objects.filter(status__name='published').count(),
+                'in_progress_projects': Proyecto.objects.filter(status__name__in=['active', 'in_progress', 'en curso']).count(),
+                'completed_projects': Proyecto.objects.filter(status__name='completed').count(),
+                'average_rating': Proyecto.objects.aggregate(Avg('evaluations__score'))['evaluations__score__avg'] or 0,
+                'projects_by_area': Proyecto.objects.values('area__name').annotate(count=Count('id')),
+                'projects_by_status': Proyecto.objects.values('status__name').annotate(count=Count('id')),
             }
         elif request.user.role == 'company':
             # Estadísticas de la empresa
-            company_projects = Proyecto.objects.filter(company=request.user)
+            company_projects = Proyecto.objects.filter(company=request.user.empresa)
             stats = {
                 'total_projects': company_projects.count(),
-                'published_projects': company_projects.filter(status='published').count(),
-                'in_progress_projects': company_projects.filter(status='in_progress').count(),
-                'completed_projects': company_projects.filter(status='completed').count(),
-                'total_applications': sum(p.applications.count() for p in company_projects.all()),
-                'average_rating': company_projects.aggregate(Avg('evaluations__rating'))['evaluations__rating__avg'] or 0,
+                'published_projects': company_projects.filter(status__name='published').count(),
+                'in_progress_projects': company_projects.filter(status__name__in=['active', 'in_progress', 'en curso']).count(),
+                'completed_projects': company_projects.filter(status__name='completed').count(),
+                'total_applications': Aplicacion.objects.filter(proyecto__company=request.user.empresa).count(),
+                'pending_applications': Aplicacion.objects.filter(
+                    proyecto__company=request.user.empresa, 
+                    estado='pendiente'
+                ).count(),
             }
         else:
-            # Estadísticas del estudiante
-            student_projects = Proyecto.objects.filter(members__user=request.user)
-            stats = {
-                'total_projects': student_projects.count(),
-                'completed_projects': student_projects.filter(status='completed').count(),
-                'in_progress_projects': student_projects.filter(status='in_progress').count(),
-                'total_hours': sum(p.members.get(user=request.user).hours_worked for p in student_projects.all()),
-            }
+            return Response(
+                {"error": "No tienes permisos para ver estas estadísticas"},
+                status=status.HTTP_403_FORBIDDEN
+            )
         
         return Response(stats)
 
 class ProjectApplicationViewSet(viewsets.ModelViewSet):
     """ViewSet para gestión de aplicaciones a proyectos"""
-    queryset = AplicacionProyecto.objects.all()
+    queryset = Aplicacion.objects.all()
     serializer_class = ProjectApplicationSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'project', 'student']
-    ordering_fields = ['applied_at', 'reviewed_at', 'responded_at']
-    ordering = ['-applied_at']
+    filterset_fields = ['estado', 'proyecto', 'estudiante']
+    ordering_fields = ['fecha_aplicacion', 'fecha_revision', 'fecha_respuesta']
+    ordering = ['-fecha_aplicacion']
 
     def get_queryset(self):
         """Filtrar queryset según el rol del usuario"""
         user = self.request.user
         
         if user.role == 'admin':
-            return AplicacionProyecto.objects.all()
+            return Aplicacion.objects.all()
         elif user.role == 'company':
             # Las empresas ven aplicaciones a sus proyectos
-            return AplicacionProyecto.objects.filter(project__company=user)
-        else:
+            return Aplicacion.objects.filter(proyecto__company=user.empresa)
+        elif user.role == 'student':
             # Los estudiantes ven sus propias aplicaciones
-            return AplicacionProyecto.objects.filter(student=user)
+            return Aplicacion.objects.filter(estudiante=user.estudiante)
+        else:
+            return Aplicacion.objects.none()
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
-        if self.action == 'create':
-            return ProjectApplicationSerializer
+        if self.action == 'retrieve':
+            return ProjectApplicationDetailSerializer
         elif self.action == 'update' or self.action == 'partial_update':
             return ProjectApplicationUpdateSerializer
-        elif self.action == 'retrieve':
-            return ProjectApplicationDetailSerializer
         return ProjectApplicationSerializer
 
     def perform_create(self, serializer):
         """Asignar el estudiante al crear la aplicación"""
-        serializer.save(student=self.request.user)
+        serializer.save(estudiante=self.request.user.estudiante)
 
     @action(detail=False, methods=['get'])
     def my_applications(self, request):
@@ -260,20 +270,20 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        queryset = AplicacionProyecto.objects.filter(student=request.user)
+        queryset = Aplicacion.objects.filter(estudiante=request.user.estudiante)
         serializer = ProjectApplicationSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def received_applications(self, request):
-        """Aplicaciones recibidas por la empresa"""
+        """Aplicaciones recibidas por la empresa actual"""
         if request.user.role != 'company':
             return Response(
                 {"error": "Esta vista es solo para empresas"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        queryset = AplicacionProyecto.objects.filter(project__company=request.user)
+        queryset = Aplicacion.objects.filter(proyecto__company=request.user.empresa)
         serializer = ProjectApplicationSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -287,22 +297,20 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
             )
         
         application = self.get_object()
-        if application.project.company != request.user:
+        if application.proyecto.company != request.user.empresa:
             return Response(
                 {"error": "No puedes aceptar aplicaciones de otros proyectos"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        application.status = 'accepted'
-        application.responded_at = timezone.now()
+        application.estado = 'aceptado'
+        application.fecha_respuesta = timezone.now()
         application.save()
         
-        # Agregar estudiante como miembro del proyecto
-        MiembroProyecto.objects.create(
-            project=application.project,
-            user=application.student,
-            role='student'
-        )
+        # Incrementar contador de estudiantes del proyecto
+        project = application.proyecto
+        project.current_students += 1
+        project.save()
         
         return Response({"message": "Aplicación aceptada correctamente"})
 
@@ -316,14 +324,14 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
             )
         
         application = self.get_object()
-        if application.project.company != request.user:
+        if application.proyecto.company != request.user.empresa:
             return Response(
                 {"error": "No puedes rechazar aplicaciones de otros proyectos"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        application.status = 'rejected'
-        application.responded_at = timezone.now()
+        application.estado = 'rechazado'
+        application.fecha_respuesta = timezone.now()
         application.save()
         
         return Response({"message": "Aplicación rechazada correctamente"})
@@ -338,78 +346,14 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
             )
         
         application = self.get_object()
-        if application.student != request.user:
+        if application.estudiante != request.user.estudiante:
             return Response(
                 {"error": "No puedes retirar aplicaciones de otros estudiantes"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        application.status = 'withdrawn'
+        application.estado = 'retirado'
+        application.fecha_respuesta = timezone.now()
         application.save()
         
         return Response({"message": "Aplicación retirada correctamente"})
-
-class ProjectMemberViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestión de miembros de proyectos"""
-    queryset = MiembroProyecto.objects.all()
-    serializer_class = ProjectMemberSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['project', 'user', 'role']
-    ordering_fields = ['joined_at', 'hours_worked', 'tasks_completed']
-    ordering = ['-joined_at']
-
-    def get_queryset(self):
-        """Filtrar queryset según el rol del usuario"""
-        user = self.request.user
-        
-        if user.role == 'admin':
-            return MiembroProyecto.objects.all()
-        elif user.role == 'company':
-            # Las empresas ven miembros de sus proyectos
-            return MiembroProyecto.objects.filter(project__company=user)
-        else:
-            # Los estudiantes ven sus propias membresías
-            return MiembroProyecto.objects.filter(user=user)
-
-    @action(detail=True, methods=['post'])
-    def leave(self, request, pk=None):
-        """Dejar proyecto (solo para estudiantes)"""
-        if request.user.role != 'student':
-            return Response(
-                {"error": "Solo los estudiantes pueden dejar proyectos"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        member = self.get_object()
-        if member.user != request.user:
-            return Response(
-                {"error": "No puedes dejar proyectos de otros estudiantes"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        member.left_at = timezone.now()
-        member.save()
-        
-        return Response({"message": "Has dejado el proyecto correctamente"})
-
-    @action(detail=True, methods=['post'])
-    def remove(self, request, pk=None):
-        """Remover miembro (solo para empresas)"""
-        if request.user.role != 'company':
-            return Response(
-                {"error": "Solo las empresas pueden remover miembros"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        member = self.get_object()
-        if member.project.company != request.user:
-            return Response(
-                {"error": "No puedes remover miembros de otros proyectos"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        member.left_at = timezone.now()
-        member.save()
-        
-        return Response({"message": "Miembro removido correctamente"})

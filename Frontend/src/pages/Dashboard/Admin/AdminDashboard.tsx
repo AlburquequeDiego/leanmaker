@@ -1,5 +1,5 @@
-import { Box, Paper, Typography, Grid, Button, List, ListItem, ListItemText, ListItemAvatar, Avatar, Chip, LinearProgress } from '@mui/material';
-import { Add as AddIcon, ErrorOutline as ErrorOutlineIcon, People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Assignment as AssignmentIcon, HowToReg as HowToRegIcon, Work as WorkIcon, TrendingUp as TrendingUpIcon, Schedule as ScheduleIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
+import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemAvatar, Avatar, Chip, LinearProgress } from '@mui/material';
+import { ErrorOutline as ErrorOutlineIcon, People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Assignment as AssignmentIcon, HowToReg as HowToRegIcon, Work as WorkIcon, TrendingUp as TrendingUpIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
 
 export default function AdminDashboard() {
   // Datos mock
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
                 </Typography>
               </Box>
               <List sx={{ p: 0 }}>
-                {ultimosUsuarios.map((usuario, index) => (
+                {ultimosUsuarios.map((usuario) => (
                   <ListItem key={usuario.id} sx={{ px: 0, py: 0.5 }}>
                     <ListItemAvatar>
                       <Avatar sx={{ bgcolor: getRolColor(usuario.rol) + '.main', width: 32, height: 32 }}>

@@ -1,157 +1,63 @@
-from django.shortcuts import render
-from rest_framework import generics, permissions, viewsets, status, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Count, Avg, Q
-from django.utils import timezone
-from datetime import timedelta
-from .models import Empresa
-from .serializers import CompanySerializer, CompanyUpdateSerializer
-from users.models import Usuario
-from projects.models import Proyecto
-from applications.models import Aplicacion
-from evaluations.models import Evaluation
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
+from .models import Empresa, CalificacionEmpresa
+from .serializers import (
+    EmpresaSerializer, EmpresaCreateSerializer, EmpresaUpdateSerializer,
+    CalificacionEmpresaSerializer, CalificacionEmpresaCreateSerializer
+)
 
-# Create your views here.
-
-class IsCompanyUser(permissions.BasePermission):
-    """
-    Permiso para solo permitir a usuarios con el rol de Empresa.
-    """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == COMPANY
-
-class CompanyProfileView(generics.RetrieveUpdateAPIView):
-    """
-    Vista para que una empresa vea y actualice su propio perfil.
-    """
-    queryset = Empresa.objects.all()
-    permission_classes = [IsCompanyUser]
-
-    def get_object(self):
-        # Devuelve el perfil de la empresa asociada al usuario actual
-        return self.request.user.company_profile
+class EmpresaViewSet(viewsets.ModelViewSet):
+    queryset = Empresa.objects.filter(status='active')
+    serializer_class = EmpresaSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'verified', 'size', 'industry']
+    search_fields = ['company_name', 'description', 'industry']
+    ordering_fields = ['company_name', 'rating', 'total_projects', 'created_at']
+    ordering = ['company_name']
 
     def get_serializer_class(self):
-        if self.request.method == 'PUT' or self.request.method == 'PATCH':
-            return CompanyUpdateSerializer
-        return CompanySerializer
+        if self.action == 'create':
+            return EmpresaCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return EmpresaUpdateSerializer
+        return EmpresaSerializer
 
-class CompanyListView(generics.ListAPIView):
-    """
-    Vista para listar todas las empresas (perfil público).
-    """
-    queryset = Empresa.objects.all()
-    serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated] # Solo usuarios autenticados pueden ver la lista
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-class CompanyDetailView(generics.RetrieveAPIView):
-    """
-    Vista para ver el perfil público de una empresa específica.
-    """
-    queryset = Empresa.objects.all()
-    serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'user_id' # Buscar por el ID del usuario
+    def get_queryset(self):
+        return Empresa.objects.filter(status='active')
 
-class CompanyViewSet(viewsets.ModelViewSet):
-    queryset = Empresa.objects.all()
-    serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    @action(detail=True, methods=['post'])
+    def verify(self, request, pk=None):
+        empresa = self.get_object()
+        empresa.verified = True
+        empresa.save()
+        return Response({'message': 'Empresa verificada'}, status=status.HTTP_200_OK)
+
+class CalificacionEmpresaViewSet(viewsets.ModelViewSet):
+    queryset = CalificacionEmpresa.objects.all()
+    serializer_class = CalificacionEmpresaSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['empresa', 'estudiante']
+    ordering_fields = ['fecha_calificacion', 'puntuacion']
+    ordering = ['-fecha_calificacion']
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CalificacionEmpresaCreateSerializer
+        return CalificacionEmpresaSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(estudiante=self.request.user)
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'COMPANY':
-            return Empresa.objects.filter(user=user)
-        return Empresa.objects.all()
-
-    @action(detail=False, methods=['get'])
-    def dashboard_stats(self, request):
-        """
-        Estadísticas para el dashboard de la empresa actual.
-        """
-        if request.user.role != 'COMPANY':
-            return Response(
-                {'error': 'Acceso denegado'}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        company = request.user.company_profile
-        now = timezone.now()
-        last_30_days = now - timedelta(days=30)
-
-        # Proyectos de la empresa
-        company_projects = Proyecto.objects.filter(company=company)
-        
-        stats = {
-            'total_projects': company_projects.count(),
-            'active_projects': company_projects.filter(status='ACTIVE').count(),
-            'completed_projects': company_projects.filter(status='COMPLETED').count(),
-            'pending_projects': company_projects.filter(status='PENDING').count(),
-            
-            # Postulaciones
-            'total_applications': Aplicacion.objects.filter(project__company=company).count(),
-            'pending_applications': Aplicacion.objects.filter(
-                project__company=company, 
-                status='PENDING'
-            ).count(),
-            'accepted_applications': Aplicacion.objects.filter(
-                project__company=company, 
-                status='ACCEPTED'
-            ).count(),
-            
-            # Actividad reciente
-            'new_applications_30_days': Aplicacion.objects.filter(
-                project__company=company,
-                created_at__gte=last_30_days
-            ).count(),
-            'new_projects_30_days': company_projects.filter(
-                created_at__gte=last_30_days
-            ).count(),
-            
-            # Evaluaciones
-            'total_evaluations_received': Evaluation.objects.filter(
-                project__company=company,
-                evaluated_company=company
-            ).count(),
-            'total_evaluations_given': Evaluation.objects.filter(
-                project__company=company,
-                evaluator_type='COMPANY',
-                evaluator_id=request.user.id
-            ).count(),
-        }
-
-        return Response(stats)
-
-    @action(detail=False, methods=['get'])
-    def project_performance(self, request):
-        """
-        Métricas de rendimiento de proyectos para gráficos.
-        """
-        if request.user.role != 'COMPANY':
-            return Response(
-                {'error': 'Acceso denegado'}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        company = request.user.company_profile
-        
-        # Proyectos por estado
-        project_stats = Proyecto.objects.filter(company=company).aggregate(
-            active=Count('id', filter=Q(status='ACTIVE')),
-            completed=Count('id', filter=Q(status='COMPLETED')),
-            draft=Count('id', filter=Q(status='DRAFT'))
-        )
-        
-        # Promedio de postulaciones por proyecto
-        avg_applications = Aplicacion.objects.filter(
-            project__company=company
-        ).values('project').annotate(
-            app_count=Count('id')
-        ).aggregate(avg=Avg('app_count'))['avg'] or 0
-
-        return Response({
-            'project_status': project_stats,
-            'avg_applications_per_project': round(avg_applications, 2)
-        })
+        if user.role == 'company':
+            return CalificacionEmpresa.objects.filter(empresa=user.empresa)
+        return CalificacionEmpresa.objects.filter(estudiante=user) 

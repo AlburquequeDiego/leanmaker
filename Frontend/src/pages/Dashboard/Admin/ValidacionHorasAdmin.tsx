@@ -6,9 +6,7 @@ import {
   CheckCircle as CheckCircleIcon, 
   Cancel as CancelIcon, 
   Visibility as VisibilityIcon, 
-  Download as DownloadIcon,
   AccessTime as AccessTimeIcon,
-  Warning as WarningIcon
 } from '@mui/icons-material';
 
 const mockHorasPendientes = [
@@ -223,7 +221,6 @@ export default function ValidacionHorasAdmin() {
           </FormControl>
           <Button 
             variant="outlined" 
-            startIcon={<DownloadIcon />}
             sx={{ borderRadius: 2 }}
           >
             Descargar Reporte

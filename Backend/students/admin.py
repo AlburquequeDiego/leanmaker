@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Student
+from .models import Estudiante
 
-@admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'university', 'major', 'user_email')
-    search_fields = ('user__first_name', 'user__last_name', 'user__email', 'university', 'major')
-    list_filter = ('university', 'major', 'semester')
+@admin.register(Estudiante)
+class EstudianteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'career', 'semester', 'status')
+    search_fields = ('user__first_name', 'user__last_name', 'user__email', 'career')
+    list_filter = ('career', 'semester', 'status')
     ordering = ('user__last_name', 'user__first_name')
 
     def user_email(self, obj):

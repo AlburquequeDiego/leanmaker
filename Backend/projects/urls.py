@@ -1,17 +1,12 @@
 from django.urls import path, include
-from rest_framework_nested import routers
-from .views import ProjectViewSet
-from evaluations.views import EvaluationViewSet
+from rest_framework.routers import DefaultRouter
+from .views import ProjectViewSet, ProjectApplicationViewSet, ProjectMemberViewSet
 
-# El router principal para los proyectos
-router = routers.DefaultRouter()
+router = DefaultRouter()
 router.register(r'projects', ProjectViewSet, basename='project')
-
-# Router anidado para las evaluaciones dentro de cada proyecto
-projects_router = routers.NestedDefaultRouter(router, r'projects', lookup='project')
-projects_router.register(r'evaluations', EvaluationViewSet, basename='project-evaluations')
+router.register(r'applications', ProjectApplicationViewSet, basename='project-application')
+router.register(r'members', ProjectMemberViewSet, basename='project-member')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('', include(projects_router.urls)),
 ] 

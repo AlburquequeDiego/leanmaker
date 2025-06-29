@@ -8,7 +8,8 @@ django-filter==22.1
 djangorestframework-simplejwt==5.3.0
 
 # Base de datos SQL Server
-# (Eliminado pyodbc y django-mssql-backend para evitar problemas de compilación)
+pyodbc==4.0.39
+django-mssql-backend==2.8.1
 
 # Utilidades
 # Se recomienda instalar Pillow primero con: pip install --only-binary=:all: Pillow
@@ -29,8 +30,46 @@ marshmallow==3.19.0
 # Si tienes problemas con Pillow en Windows, prueba:
 # pip install Pillow==9.5.0
 
-# PostgreSQL
+# PostgreSQL (backup)
 psycopg2-binary==2.9.7
 
 # Decouple
 python-decouple==3.8
+
+# Health check
+django-health-check==3.17.0
+
+# Nested routers
+drf-nested-routers==0.93.4
+
+# Django admin interface
+django-admin-interface==0.26.0
+django-colorfield==0.11.0
+
+# File handling
+python-magic==0.4.27
+
+# Date handling
+python-dateutil==2.8.2
+
+# JSON handling
+simplejson==3.18.4
+
+# Email handling
+django-anymail==10.2
+
+# Caching
+django-redis==5.3.0
+
+# Background tasks
+celery==5.3.4
+redis==4.6.0
+
+# Monitoring
+django-prometheus==2.3.1
+
+# Security
+django-ratelimit==4.1.0
+
+# Logging
+structlog==23.2.0

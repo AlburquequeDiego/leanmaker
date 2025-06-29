@@ -26,48 +26,40 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class Usuario(AbstractUser):
+    """
+    Modelo de usuario principal que coincide exactamente con el schema original
+    """
     ROLES = (
-        ('estudiante', 'Estudiante'),
-        ('empresa', 'Empresa'),
         ('admin', 'Administrador'),
+        ('student', 'Estudiante'),
+        ('company', 'Empresa'),
     )
     
-    # Campos básicos
+    # Campos básicos (coinciden con schema original)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=10, choices=ROLES, default='estudiante')
+    password = models.CharField(max_length=128)
+    role = models.CharField(max_length=20, choices=ROLES)
+    
+    # Campos opcionales (NULL permitido)
+    first_name = models.CharField(max_length=150, null=True, blank=True)
+    last_name = models.CharField(max_length=150, null=True, blank=True)
     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    avatar = models.CharField(max_length=500, null=True, blank=True)  # URL del avatar
+    bio = models.TextField(null=True, blank=True)
     
-    # Campos de perfil
-    telefono = models.CharField(max_length=20, blank=True, null=True)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-    biografia = models.TextField(blank=True, null=True)
+    # Campos de estado con valores por defecto
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     
-    # Campos de estado
-    esta_activo = models.BooleanField(default=True)
-    esta_verificado = models.BooleanField(default=False)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
-    ultimo_acceso = models.DateTimeField(null=True, blank=True)
-    
-    # Campos específicos para estudiantes
-    carrera = models.CharField(max_length=100, blank=True, null=True)
-    semestre = models.PositiveIntegerField(blank=True, null=True)
-    año_graduacion = models.PositiveIntegerField(blank=True, null=True)
-    promedio_academico = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    nivel_api = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
-    strikes = models.PositiveIntegerField(default=0)
-    horas_totales = models.PositiveIntegerField(default=0)
-    proyectos_completados = models.PositiveIntegerField(default=0)
-    
-    # Campos específicos para empresas
-    nombre_empresa = models.CharField(max_length=200, blank=True, null=True)
-    descripcion_empresa = models.TextField(blank=True, null=True)
-    sitio_web_empresa = models.URLField(blank=True, null=True)
-    tamaño_empresa = models.CharField(max_length=50, blank=True, null=True)
-    industria_empresa = models.CharField(max_length=100, blank=True, null=True)
-    ubicacion_empresa = models.CharField(max_length=200, blank=True, null=True)
-    calificacion_empresa = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    # Campos de fechas
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     # Configuración
     USERNAME_FIELD = 'email'
@@ -81,20 +73,24 @@ class Usuario(AbstractUser):
         verbose_name_plural = 'Usuarios'
     
     def __str__(self):
-        if self.role == 'empresa' and self.nombre_empresa:
-            return f"{self.nombre_empresa} ({self.email})"
-        return f"{self.get_full_name() or self.email} ({self.get_role_display()})"
+        return f"{self.email} ({self.get_role_display()})"
+    
+    @property
+    def full_name(self):
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        return self.email
     
     def get_role_display(self):
         return dict(self.ROLES)[self.role]
     
     @property
     def es_estudiante(self):
-        return self.role == 'estudiante'
+        return self.role == 'student'
     
     @property
     def es_empresa(self):
-        return self.role == 'empresa'
+        return self.role == 'company'
     
     @property
     def es_admin(self):
@@ -104,14 +100,23 @@ class Usuario(AbstractUser):
         """Verifica si el estudiante puede aplicar a proyectos"""
         if not self.es_estudiante:
             return False
-        return self.strikes < 3 and self.esta_activo and self.esta_verificado
+        # Verificar strikes a través del perfil de estudiante
+        try:
+            estudiante = self.estudiante_profile
+            return estudiante.strikes < 3 and self.is_active and self.is_verified
+        except:
+            return False
     
     def obtener_estado_strikes(self):
         """Obtiene el estado de strikes del estudiante"""
-        if self.strikes >= 3:
-            return 'suspendido'
-        elif self.strikes == 2:
-            return 'advertencia'
-        elif self.strikes == 1:
-            return 'precaucion'
-        return 'limpio'
+        try:
+            estudiante = self.estudiante_profile
+            if estudiante.strikes >= 3:
+                return 'suspendido'
+            elif estudiante.strikes == 2:
+                return 'advertencia'
+            elif estudiante.strikes == 1:
+                return 'precaucion'
+            return 'limpio'
+        except:
+            return 'limpio'

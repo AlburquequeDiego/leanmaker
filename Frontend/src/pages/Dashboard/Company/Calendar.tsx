@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import { useState, useImperativeHandle, forwardRef } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -30,9 +30,7 @@ import {
   Business as BusinessIcon,
   Assignment as AssignmentIcon,
   Schedule as ScheduleIcon,
-  Assessment as AssessmentIcon,
   Info as InfoIcon,
-  VideoCall as VideoCallIcon,
   LocationOn as LocationOnIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
@@ -126,7 +124,7 @@ const mockStudents = [
   { id: '4', name: 'Ana Torres', email: 'ana.torres@email.com', phone: '+56 9 4321 5678' },
 ];
 
-export const CompanyCalendar = forwardRef((props, ref) => {
+export const CompanyCalendar = forwardRef((_, ref) => {
   const [events, setEvents] = useState<any[]>(mockEvents);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -245,7 +243,7 @@ export const CompanyCalendar = forwardRef((props, ref) => {
         <Tooltip title="Vista de semana"><IconButton color={view === 'week' ? 'primary' : 'default'} onClick={() => setView('week')}><ViewWeekIcon /></IconButton></Tooltip>
         <Tooltip title="Vista de día"><IconButton color={view === 'day' ? 'primary' : 'default'} onClick={() => setView('day')}><ViewDayIcon /></IconButton></Tooltip>
         <Tooltip title="Vista de agenda"><IconButton color={view === 'agenda' ? 'primary' : 'default'} onClick={() => setView('agenda')}><TodayIcon /></IconButton></Tooltip>
-                  </Box>
+      </Box>
       <Box sx={{ height: 600 }}>
         <BigCalendar
           localizer={localizer}

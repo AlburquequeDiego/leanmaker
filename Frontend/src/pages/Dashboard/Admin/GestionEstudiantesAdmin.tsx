@@ -23,8 +23,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Card,
-  CardContent,
   Avatar,
   Rating,
   List,
@@ -35,11 +33,9 @@ import {
   Stack,
 } from '@mui/material';
 import {
-  Person as PersonIcon,
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
-  Edit as EditIcon,
   Visibility as VisibilityIcon,
   Add as AddIcon,
   History as HistoryIcon,
@@ -47,7 +43,6 @@ import {
   Api as ApiIcon,
   Search as SearchIcon,
   FilterList as FilterListIcon,
-  Business as BusinessIcon,
   Assignment as AssignmentIcon,
   Schedule as ScheduleIcon,
   TrendingUp as TrendingUpIcon,
@@ -245,45 +240,6 @@ export const GestionEstudiantesAdmin = () => {
   const semesters = Array.from(new Set(students.map(s => s.semester))).sort((a, b) => a - b);
   const years = Array.from(new Set(students.map(s => s.graduationYear))).sort((a, b) => a - b);
 
-  const applications: Application[] = [
-    {
-      id: '1',
-      projectTitle: 'Sistema de Gestión de Inventarios',
-      company: 'TechCorp Solutions',
-      status: 'completed',
-      date: '2023-09-01',
-      rating: 4.5,
-    },
-    {
-      id: '2',
-      projectTitle: 'Aplicación Móvil de Delivery',
-      company: 'Digital Dynamics',
-      status: 'accepted',
-      date: '2024-01-15',
-    },
-  ];
-
-  const evaluations: Evaluation[] = [
-    {
-      id: '1',
-      projectTitle: 'Sistema de Gestión de Inventarios',
-      company: 'TechCorp Solutions',
-      rating: 4.5,
-      comment: 'Excelente trabajo técnico, muy responsable y puntual.',
-      date: '2023-12-20',
-      category: 'technical',
-    },
-    {
-      id: '2',
-      projectTitle: 'Sistema de Gestión de Inventarios',
-      company: 'TechCorp Solutions',
-      rating: 4.0,
-      comment: 'Buena comunicación y trabajo en equipo.',
-      date: '2023-12-20',
-      category: 'soft_skills',
-    },
-  ];
-
   const disciplinaryRecords: DisciplinaryRecord[] = [
     {
       id: '1',
@@ -421,21 +377,6 @@ export const GestionEstudiantesAdmin = () => {
         return 'Suspendido';
       default:
         return status;
-    }
-  };
-
-  const getApiLevelText = (level: number) => {
-    switch (level) {
-      case 1:
-        return 'Nivel 1: Habilidades básicas';
-      case 2:
-        return 'Nivel 2: Capacitado para tareas prácticas supervisadas';
-      case 3:
-        return 'Nivel 3: Ejecución autónoma de proyectos';
-      case 4:
-        return 'Nivel 4: Experto en el área';
-      default:
-        return `Nivel ${level}`;
     }
   };
 

@@ -3,59 +3,85 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from projects.models import Proyecto, AplicacionProyecto
 from companies.models import Empresa
-from students.models import Student
+from students.models import Estudiante
 from users.models import Usuario
+from evaluation_categories.models import EvaluationCategory
 import uuid
+import json
+
+class EvaluationCategory(models.Model):
+    """Categoría o criterio de evaluación (ej: Técnica, Habilidades Blandas, etc)"""
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Categoría de Evaluación'
+        verbose_name_plural = 'Categorías de Evaluación'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 class Evaluation(models.Model):
-    CATEGORY_CHOICES = (
-        ('technical', 'Habilidades Técnicas'),
-        ('soft_skills', 'Habilidades Blandas'),
-        ('punctuality', 'Puntualidad'),
-        ('teamwork', 'Trabajo en Equipo'),
-        ('communication', 'Comunicación'),
-        ('problem_solving', 'Resolución de Problemas'),
-        ('leadership', 'Liderazgo'),
-        ('creativity', 'Creatividad'),
-        ('overall', 'Evaluación General'),
-    )
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
-    # Relaciones
+    """Evaluación de un estudiante en un proyecto"""
+    STATUS_CHOICES = [
+        ('pending', 'Pendiente'),
+        ('completed', 'Completada'),
+        ('flagged', 'Marcada'),
+        ('deleted', 'Eliminada'),
+    ]
+    TYPE_CHOICES = [
+        ('intermediate', 'Intermedia'),
+        ('final', 'Final'),
+    ]
+
+    id = models.AutoField(primary_key=True)
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='evaluations')
-    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='received_evaluations')
-    evaluator = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='given_evaluations')
-    application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, related_name='evaluations', blank=True, null=True)
-    
-    # Evaluación
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
-    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    comment = models.TextField()
-    
-    # Fechas
+    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='evaluations')
+    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='evaluations')
+    evaluator = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, related_name='evaluations_done')
+    evaluator_role = models.CharField(max_length=100, blank=True, null=True)
+    date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='final')
+    overall_rating = models.FloatField(null=True, blank=True)
+    comments = models.TextField(blank=True, null=True)
+    strengths = models.TextField(blank=True, null=True, help_text='Fortalezas (separadas por coma)')
+    areas_for_improvement = models.TextField(blank=True, null=True, help_text='Áreas de mejora (separadas por coma)')
+    project_duration = models.CharField(max_length=50, blank=True, null=True)
+    technologies = models.CharField(max_length=200, blank=True, null=True)
+    deliverables = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    evaluation_date = models.DateField()
-    
-    # Configuración
-    is_anonymous = models.BooleanField(default=False)
-    is_public = models.BooleanField(default=True)
-    
+
     class Meta:
-        db_table = 'evaluations'
         verbose_name = 'Evaluación'
         verbose_name_plural = 'Evaluaciones'
-        ordering = ['-created_at']
-        unique_together = ['project', 'student', 'evaluator', 'category']
-    
+        ordering = ['-date', '-created_at']
+
     def __str__(self):
-        return f"{self.evaluator.get_full_name()} -> {self.student.get_full_name()} ({self.get_category_display()})"
-    
-    @property
-    def rating_stars(self):
-        """Retorna el rating en formato de estrellas"""
-        return '★' * self.rating + '☆' * (5 - self.rating)
+        return f"{self.student} - {self.project} ({self.get_type_display()})"
+
+    def get_strengths_list(self):
+        return [s.strip() for s in (self.strengths or '').split(',') if s.strip()]
+
+    def get_areas_for_improvement_list(self):
+        return [a.strip() for a in (self.areas_for_improvement or '').split(',') if a.strip()]
+
+class EvaluationCategoryScore(models.Model):
+    """Puntaje por categoría/criterio en una evaluación"""
+    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE, related_name='categories')
+    category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE)
+    rating = models.FloatField()
+
+    class Meta:
+        verbose_name = 'Puntaje de Categoría'
+        verbose_name_plural = 'Puntajes de Categoría'
+        unique_together = ('evaluation', 'category')
+
+    def __str__(self):
+        return f"{self.evaluation} - {self.category}: {self.rating}"
 
 class EvaluationTemplate(models.Model):
     """Plantillas de evaluación para diferentes tipos de proyectos"""
@@ -64,8 +90,8 @@ class EvaluationTemplate(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     
-    # Categorías incluidas en la plantilla
-    categories = models.JSONField(default=list)  # Lista de categorías
+    # Categorías incluidas en la plantilla (JSON como TextField)
+    categories = models.TextField(default='[]')  # Lista de categorías
     
     # Configuración
     is_active = models.BooleanField(default=True)
@@ -79,6 +105,22 @@ class EvaluationTemplate(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def get_categories_list(self):
+        """Obtiene la lista de categorías como lista de Python"""
+        if self.categories:
+            try:
+                return json.loads(self.categories)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_categories_list(self, categories_list):
+        """Establece la lista de categorías desde una lista de Python"""
+        if isinstance(categories_list, list):
+            self.categories = json.dumps(categories_list, ensure_ascii=False)
+        else:
+            self.categories = '[]'
 
 class StudentSkill(models.Model):
     """Habilidades de los estudiantes con niveles de experiencia"""
@@ -91,7 +133,7 @@ class StudentSkill(models.Model):
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='skills')
+    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='skills')
     
     # Información de la habilidad
     skill_name = models.CharField(max_length=100)
@@ -121,7 +163,7 @@ class StudentPortfolio(models.Model):
     """Portafolio de trabajos del estudiante"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='portfolio_items')
+    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='portfolio_items')
     
     # Información del proyecto
     title = models.CharField(max_length=200)
@@ -129,11 +171,11 @@ class StudentPortfolio(models.Model):
     project_url = models.URLField(blank=True, null=True)
     github_url = models.URLField(blank=True, null=True)
     
-    # Tecnologías utilizadas
-    technologies = models.JSONField(default=list)
+    # Tecnologías utilizadas (JSON como TextField)
+    technologies = models.TextField(default='[]')
     
-    # Imágenes del proyecto
-    images = models.JSONField(default=list)  # URLs de imágenes
+    # Imágenes del proyecto (JSON como TextField)
+    images = models.TextField(default='[]')  # URLs de imágenes
     
     # Fechas
     start_date = models.DateField()
@@ -153,6 +195,38 @@ class StudentPortfolio(models.Model):
     
     def __str__(self):
         return f"{self.student.get_full_name()} - {self.title}"
+    
+    def get_technologies_list(self):
+        """Obtiene la lista de tecnologías como lista de Python"""
+        if self.technologies:
+            try:
+                return json.loads(self.technologies)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_technologies_list(self, technologies_list):
+        """Establece la lista de tecnologías desde una lista de Python"""
+        if isinstance(technologies_list, list):
+            self.technologies = json.dumps(technologies_list, ensure_ascii=False)
+        else:
+            self.technologies = '[]'
+    
+    def get_images_list(self):
+        """Obtiene la lista de imágenes como lista de Python"""
+        if self.images:
+            try:
+                return json.loads(self.images)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_images_list(self, images_list):
+        """Establece la lista de imágenes desde una lista de Python"""
+        if isinstance(images_list, list):
+            self.images = json.dumps(images_list, ensure_ascii=False)
+        else:
+            self.images = '[]'
 
 class StudentAchievement(models.Model):
     """Logros y certificaciones del estudiante"""
@@ -167,12 +241,12 @@ class StudentAchievement(models.Model):
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='achievements')
+    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='achievements')
     
     # Información del logro
     title = models.CharField(max_length=200)
     description = models.TextField()
-    achievement_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    achievement_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='other')
     
     # Detalles
     issuer = models.CharField(max_length=200)  # Quien emitió el logro
@@ -199,7 +273,7 @@ class StudentAchievement(models.Model):
     @property
     def is_expired(self):
         """Verifica si el logro ha expirado"""
-        if not self.expiry_date:
-            return False
-        from django.utils import timezone
-        return timezone.now().date() > self.expiry_date
+        if self.expiry_date:
+            from django.utils import timezone
+            return self.expiry_date < timezone.now().date()
+        return False

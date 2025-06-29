@@ -4,6 +4,7 @@ from projects.models import Proyecto, AplicacionProyecto
 from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import Usuario
 import uuid
+import json
 
 class CalendarEvent(models.Model):
     TYPE_CHOICES = (
@@ -64,22 +65,22 @@ class CalendarEvent(models.Model):
         ('postponed', 'Pospuesto'),
     )
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.AutoField(primary_key=True)
     
     # Información básica
     title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
-    event_type = models.CharField(max_length=30, choices=TYPE_CHOICES)
+    description = models.TextField(null=True, blank=True)
+    event_type = models.CharField(max_length=50, default='general')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
     
     # Fechas y horarios
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    all_day = models.BooleanField(default=False)
+    is_all_day = models.BooleanField(default=False)
     
     # Ubicación
-    location = models.CharField(max_length=200, blank=True, null=True)
+    location = models.CharField(max_length=200, null=True, blank=True)
     is_online = models.BooleanField(default=False)
     meeting_url = models.URLField(blank=True, null=True)
     
@@ -88,13 +89,13 @@ class CalendarEvent(models.Model):
     attendees = models.ManyToManyField(Usuario, related_name='attended_events', blank=True)
     
     # Relaciones opcionales
-    related_project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='calendar_events')
+    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True, blank=True, related_name='calendar_events')
     related_application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='calendar_events')
     
     # Configuración
     is_public = models.BooleanField(default=False)
     is_recurring = models.BooleanField(default=False)
-    recurrence_rule = models.JSONField(default=dict)  # Reglas de recurrencia
+    recurrence_rule = models.TextField(default='{}')  # JSON dict de reglas de recurrencia
     
     # Recordatorios
     reminder_minutes = models.PositiveIntegerField(default=15)  # Minutos antes del evento
@@ -113,7 +114,7 @@ class CalendarEvent(models.Model):
         db_table = 'calendar_events'
         verbose_name = 'Evento de Calendario'
         verbose_name_plural = 'Eventos de Calendario'
-        ordering = ['start_date']
+        ordering = ['-start_date']
         indexes = [
             models.Index(fields=['user', 'start_date']),
             models.Index(fields=['event_type']),
@@ -121,7 +122,23 @@ class CalendarEvent(models.Model):
         ]
     
     def __str__(self):
-        return f"{self.title} - {self.user.get_full_name()}"
+        return f"{self.title} - {self.start_date}"
+    
+    def get_recurrence_rule_dict(self):
+        """Obtiene las reglas de recurrencia como diccionario de Python"""
+        if self.recurrence_rule:
+            try:
+                return json.loads(self.recurrence_rule)
+            except json.JSONDecodeError:
+                return {}
+        return {}
+    
+    def set_recurrence_rule_dict(self, rule_dict):
+        """Establece las reglas de recurrencia desde un diccionario de Python"""
+        if isinstance(rule_dict, dict):
+            self.recurrence_rule = json.dumps(rule_dict, ensure_ascii=False)
+        else:
+            self.recurrence_rule = '{}'
     
     @property
     def duration_minutes(self):
@@ -229,7 +246,7 @@ class CalendarSettings(models.Model):
     # Configuración de horarios
     work_start_time = models.TimeField(default='09:00')
     work_end_time = models.TimeField(default='18:00')
-    work_days = models.JSONField(default=list)  # [1,2,3,4,5] para lunes a viernes
+    work_days = models.TextField(default='[1,2,3,4,5]')  # JSON array [1,2,3,4,5] para lunes a viernes
     
     # Configuración de recordatorios
     default_reminder_minutes = models.PositiveIntegerField(default=15)
@@ -240,7 +257,7 @@ class CalendarSettings(models.Model):
     allow_event_invites = models.BooleanField(default=True)
     
     # Configuración de colores
-    event_colors = models.JSONField(default=dict)  # Colores por tipo de evento
+    event_colors = models.TextField(default='{}')  # JSON dict de colores por tipo de evento
     
     # Fechas
     created_at = models.DateTimeField(auto_now_add=True)
@@ -255,9 +272,41 @@ class CalendarSettings(models.Model):
     def __str__(self):
         return f"Configuración de calendario de {self.user.get_full_name()}"
     
+    def get_work_days_list(self):
+        """Obtiene la lista de días laborables como lista de Python"""
+        if self.work_days:
+            try:
+                return json.loads(self.work_days)
+            except json.JSONDecodeError:
+                return [1, 2, 3, 4, 5]  # Lunes a viernes por defecto
+        return [1, 2, 3, 4, 5]
+    
+    def set_work_days_list(self, days_list):
+        """Establece la lista de días laborables desde una lista de Python"""
+        if isinstance(days_list, list):
+            self.work_days = json.dumps(days_list, ensure_ascii=False)
+        else:
+            self.work_days = '[1,2,3,4,5]'
+    
+    def get_event_colors_dict(self):
+        """Obtiene el diccionario de colores de eventos como diccionario de Python"""
+        if self.event_colors:
+            try:
+                return json.loads(self.event_colors)
+            except json.JSONDecodeError:
+                return {}
+        return {}
+    
+    def set_event_colors_dict(self, colors_dict):
+        """Establece el diccionario de colores de eventos desde un diccionario de Python"""
+        if isinstance(colors_dict, dict):
+            self.event_colors = json.dumps(colors_dict, ensure_ascii=False)
+        else:
+            self.event_colors = '{}'
+    
     def is_work_day(self, date):
-        """Verifica si una fecha es día laboral"""
-        return date.weekday() in self.work_days
+        """Verifica si una fecha es un día laborable"""
+        return date.weekday() + 1 in self.get_work_days_list()
     
     def is_work_time(self, time):
         """Verifica si una hora está dentro del horario laboral"""

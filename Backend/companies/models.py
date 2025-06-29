@@ -1,66 +1,69 @@
 from django.db import models
 from users.models import Usuario
 import uuid
+import json
 
 class Empresa(models.Model):
+    """
+    Modelo de empresa que coincide exactamente con el schema original
+    """
     TAMANOS = (
-        ('startup', 'Startup'),
-        ('pequena', 'Pequeña (1-50)'),
-        ('mediana', 'Mediana (51-200)'),
-        ('grande', 'Grande (201-1000)'),
-        ('corporacion', 'Corporación (1000+)'),
+        ('Pequeña', 'Pequeña'),
+        ('Mediana', 'Mediana'),
+        ('Grande', 'Grande'),
+        ('Startup', 'Startup'),
     )
     
-    INDUSTRIAS = (
-        ('tecnologia', 'Tecnología'),
-        ('finanzas', 'Finanzas'),
-        ('salud', 'Salud'),
-        ('educacion', 'Educación'),
-        ('retail', 'Retail'),
-        ('manufactura', 'Manufactura'),
-        ('consultoria', 'Consultoría'),
-        ('marketing', 'Marketing'),
-        ('diseno', 'Diseño'),
-        ('otros', 'Otros'),
+    REMOTE_POLICY_CHOICES = (
+        ('full-remote', 'Full Remote'),
+        ('hybrid', 'Híbrido'),
+        ('onsite', 'Presencial'),
     )
     
-    # Campos básicos
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='perfil_empresa')
+    STATUS_CHOICES = (
+        ('active', 'Activa'),
+        ('inactive', 'Inactiva'),
+        ('suspended', 'Suspendida'),
+    )
     
-    # Información de la empresa
-    nombre = models.CharField(max_length=200)
-    descripcion = models.TextField()
-    sitio_web = models.URLField(blank=True, null=True)
-    logo = models.ImageField(upload_to='logos_empresas/', blank=True, null=True)
+    # Campos básicos (coinciden con schema original)
+    id = models.AutoField(primary_key=True)
+    user = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='empresa_profile')
+    company_name = models.CharField(max_length=200)
     
-    # Detalles de la empresa
-    tamaño = models.CharField(max_length=20, choices=TAMANOS, default='mediana')
-    industria = models.CharField(max_length=20, choices=INDUSTRIAS, default='tecnologia')
-    ubicacion = models.CharField(max_length=200)
-    año_fundacion = models.PositiveIntegerField(blank=True, null=True)
+    # Campos opcionales (NULL permitido)
+    description = models.TextField(null=True, blank=True)
+    industry = models.CharField(max_length=100, null=True, blank=True)
+    size = models.CharField(max_length=50, choices=TAMANOS, null=True, blank=True)
+    website = models.CharField(max_length=200, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    founded_year = models.IntegerField(null=True, blank=True)
+    logo_url = models.CharField(max_length=500, null=True, blank=True)
     
-    # Información de contacto
-    telefono_contacto = models.CharField(max_length=20, blank=True, null=True)
-    email_contacto = models.EmailField(blank=True, null=True)
-    persona_contacto = models.CharField(max_length=100, blank=True, null=True)
+    # Campos de estado con valores por defecto
+    verified = models.BooleanField(default=False)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    total_projects = models.IntegerField(default=0)
+    projects_completed = models.IntegerField(default=0)
+    total_hours_offered = models.IntegerField(default=0)
     
-    # Métricas y calificaciones
-    calificacion_promedio = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
-    total_calificaciones = models.PositiveIntegerField(default=0)
-    proyectos_publicados = models.PositiveIntegerField(default=0)
-    proyectos_completados = models.PositiveIntegerField(default=0)
+    # Campos JSON (se almacenan como texto en SQL Server)
+    technologies_used = models.TextField(null=True, blank=True)  # JSON array
+    benefits_offered = models.TextField(null=True, blank=True)   # JSON array
     
-    # Estado y verificación
-    esta_verificada = models.BooleanField(default=False)
-    fecha_verificacion = models.DateTimeField(blank=True, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    # Campos adicionales
+    remote_work_policy = models.CharField(max_length=50, choices=REMOTE_POLICY_CHOICES, null=True, blank=True)
+    internship_duration = models.CharField(max_length=50, null=True, blank=True)
+    stipend_range = models.CharField(max_length=100, null=True, blank=True)
+    contact_email = models.EmailField(null=True, blank=True)
+    contact_phone = models.CharField(max_length=20, null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     
-    # Información adicional
-    redes_sociales = models.JSONField(default=dict)  # LinkedIn, Twitter, etc.
-    beneficios = models.JSONField(default=list)  # Lista de beneficios ofrecidos
-    tecnologias = models.JSONField(default=list)  # Tecnologías que utilizan
+    # Campos de fechas
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'companies'
@@ -68,31 +71,66 @@ class Empresa(models.Model):
         verbose_name_plural = 'Empresas'
     
     def __str__(self):
-        return self.nombre
+        return self.company_name
+    
+    def get_technologies_used_list(self):
+        """Obtiene la lista de tecnologías utilizadas como lista de Python"""
+        if self.technologies_used:
+            try:
+                return json.loads(self.technologies_used)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_technologies_used_list(self, technologies_list):
+        """Establece la lista de tecnologías utilizadas desde una lista de Python"""
+        if isinstance(technologies_list, list):
+            self.technologies_used = json.dumps(technologies_list, ensure_ascii=False)
+        else:
+            self.technologies_used = None
+    
+    def get_benefits_offered_list(self):
+        """Obtiene la lista de beneficios ofrecidos como lista de Python"""
+        if self.benefits_offered:
+            try:
+                return json.loads(self.benefits_offered)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_benefits_offered_list(self, benefits_list):
+        """Establece la lista de beneficios ofrecidos desde una lista de Python"""
+        if isinstance(benefits_list, list):
+            self.benefits_offered = json.dumps(benefits_list, ensure_ascii=False)
+        else:
+            self.benefits_offered = None
     
     @property
     def puede_publicar_proyectos(self):
         """Verifica si la empresa puede publicar proyectos"""
-        return self.esta_verificada and self.usuario.esta_activo
+        return self.verified and self.user.is_active and self.status == 'active'
     
     def actualizar_calificacion(self, nueva_calificacion):
         """Actualiza la calificación promedio de la empresa"""
-        total_actual = self.calificacion_promedio * self.total_calificaciones
-        self.total_calificaciones += 1
-        self.calificacion_promedio = (total_actual + nueva_calificacion) / self.total_calificaciones
-        self.save(update_fields=['calificacion_promedio', 'total_calificaciones'])
+        total_actual = self.rating * self.total_projects
+        self.total_projects += 1
+        self.rating = (total_actual + nueva_calificacion) / self.total_projects
+        self.save(update_fields=['rating', 'total_projects'])
     
     def incrementar_proyectos_publicados(self):
         """Incrementa el contador de proyectos publicados"""
-        self.proyectos_publicados += 1
-        self.save(update_fields=['proyectos_publicados'])
+        self.total_projects += 1
+        self.save(update_fields=['total_projects'])
     
     def incrementar_proyectos_completados(self):
         """Incrementa el contador de proyectos completados"""
-        self.proyectos_completados += 1
-        self.save(update_fields=['proyectos_completados'])
+        self.projects_completed += 1
+        self.save(update_fields=['projects_completed'])
 
 class CalificacionEmpresa(models.Model):
+    """
+    Modelo para calificaciones de empresas por estudiantes
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='calificaciones')
     estudiante = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calificaciones_dadas')
@@ -117,7 +155,7 @@ class CalificacionEmpresa(models.Model):
         unique_together = ['empresa', 'estudiante']
     
     def __str__(self):
-        return f"{self.estudiante.get_full_name()} -> {self.empresa.nombre} ({self.puntuacion}/5)"
+        return f"{self.estudiante.full_name} -> {self.empresa.company_name} ({self.puntuacion}/5)"
     
     def save(self, *args, **kwargs):
         # Actualizar calificación promedio de la empresa

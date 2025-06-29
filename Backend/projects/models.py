@@ -1,119 +1,227 @@
 from django.db import models
 from django.conf import settings
 from companies.models import Empresa
+from areas.models import Area
+from trl_levels.models import TRLLevel
 from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import Usuario
 import uuid
+from django.utils import timezone
+import json
 
 class Proyecto(models.Model):
-    ESTADOS = (
-        ('borrador', 'Borrador'),
-        ('publicado', 'Publicado'),
-        ('en_progreso', 'En Progreso'),
-        ('completado', 'Completado'),
-        ('cancelado', 'Cancelado'),
-        ('pausado', 'Pausado'),
+    """
+    Modelo de proyecto que coincide exactamente con el schema original
+    """
+    MODALITY_CHOICES = (
+        ('remote', 'Remoto'),
+        ('onsite', 'Presencial'),
+        ('hybrid', 'Híbrido'),
     )
     
-    MODALIDADES = (
-        ('remoto', 'Remoto'),
-        ('presencial', 'Presencial'),
-        ('hibrido', 'Híbrido'),
+    DIFFICULTY_CHOICES = (
+        ('beginner', 'Principiante'),
+        ('intermediate', 'Intermedio'),
+        ('advanced', 'Avanzado'),
     )
     
-    NIVELES_DIFICULTAD = (
-        ('basico', 'Básico'),
-        ('intermedio', 'Intermedio'),
-        ('avanzado', 'Avanzado'),
-    )
-    
-    # Campos básicos
+    # Campos básicos (coinciden con schema original)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    titulo = models.CharField(max_length=200)
-    descripcion = models.TextField()
-    empresa = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='proyectos_empresa')
+    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='proyectos')
+    status = models.ForeignKey('project_status.ProjectStatus', on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
+    area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
     
-    # Detalles del proyecto
-    area = models.CharField(max_length=100)  # Tecnología, Marketing, Diseño, etc.
-    modalidad = models.CharField(max_length=20, choices=MODALIDADES, default='remoto')
-    ubicacion = models.CharField(max_length=200, blank=True, null=True)
-    dificultad = models.CharField(max_length=20, choices=NIVELES_DIFICULTAD, default='intermedio')
+    # Campos obligatorios
+    title = models.CharField(max_length=200)
+    description = models.TextField()
     
-    # Requisitos y habilidades
-    habilidades_requeridas = models.JSONField(default=list)  # Lista de habilidades requeridas
-    habilidades_preferidas = models.JSONField(default=list)  # Habilidades preferidas
-    nivel_api_minimo = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
+    # Campos opcionales (NULL permitido)
+    trl = models.ForeignKey(TRLLevel, on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
+    api_level = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(4)])
+    required_hours = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     
-    # Duración y horarios
-    duracion_meses = models.PositiveIntegerField(default=3)
-    horas_por_semana = models.PositiveIntegerField(default=20)
-    fecha_inicio = models.DateField()
-    fecha_fin = models.DateField()
+    # Campos de fechas (opcionales)
+    start_date = models.DateField(null=True, blank=True)
+    estimated_end_date = models.DateField(null=True, blank=True)
+    real_end_date = models.DateField(null=True, blank=True)
     
-    # Compensación
-    es_pagado = models.BooleanField(default=False)
-    monto_pago = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    moneda_pago = models.CharField(max_length=3, default='USD')
+    # Campos adicionales
+    modality = models.CharField(max_length=20, choices=MODALITY_CHOICES, default='remote')
+    location = models.CharField(max_length=200, null=True, blank=True)
+    difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default='intermediate')
     
-    # Estado y métricas
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='borrador')
-    max_estudiantes = models.PositiveIntegerField(default=1)
-    estudiantes_actuales = models.PositiveIntegerField(default=0)
-    aplicaciones_count = models.PositiveIntegerField(default=0)
-    vistas_count = models.PositiveIntegerField(default=0)
+    # Campos JSON (se almacenan como texto en SQL Server)
+    required_skills = models.TextField(null=True, blank=True)  # JSON array
+    preferred_skills = models.TextField(null=True, blank=True)  # JSON array
+    tags = models.TextField(null=True, blank=True)  # JSON array
     
-    # Fechas
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
-    fecha_publicacion = models.DateTimeField(blank=True, null=True)
+    # Campos de configuración
+    min_api_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
+    duration_months = models.IntegerField(default=3)
+    hours_per_week = models.IntegerField(default=20)
     
-    # Configuración adicional
-    es_destacado = models.BooleanField(default=False)
-    es_urgente = models.BooleanField(default=False)
-    etiquetas = models.JSONField(default=list)  # Etiquetas para búsqueda
+    # Campos de pago
+    is_paid = models.BooleanField(default=False)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    payment_currency = models.CharField(max_length=3, default='USD')
+    
+    # Campos de estudiantes
+    max_students = models.IntegerField(default=1)
+    current_students = models.IntegerField(default=0)
+    
+    # Campos de métricas
+    applications_count = models.IntegerField(default=0)
+    views_count = models.IntegerField(default=0)
+    
+    # Campos de estado
+    is_featured = models.BooleanField(default=False)
+    is_urgent = models.BooleanField(default=False)
+    
+    # Campos de fechas
+    published_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'projects'
         verbose_name = 'Proyecto'
         verbose_name_plural = 'Proyectos'
-        ordering = ['-fecha_creacion']
+        ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.titulo} - {self.empresa.nombre_empresa or self.empresa.email}"
+        return f"{self.title} - {self.company.company_name}"
+    
+    def get_required_skills_list(self):
+        """Obtiene la lista de habilidades requeridas como lista de Python"""
+        if self.required_skills:
+            try:
+                return json.loads(self.required_skills)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_required_skills_list(self, skills_list):
+        """Establece la lista de habilidades requeridas desde una lista de Python"""
+        if isinstance(skills_list, list):
+            self.required_skills = json.dumps(skills_list, ensure_ascii=False)
+        else:
+            self.required_skills = None
+    
+    def get_preferred_skills_list(self):
+        """Obtiene la lista de habilidades preferidas como lista de Python"""
+        if self.preferred_skills:
+            try:
+                return json.loads(self.preferred_skills)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_preferred_skills_list(self, skills_list):
+        """Establece la lista de habilidades preferidas desde una lista de Python"""
+        if isinstance(skills_list, list):
+            self.preferred_skills = json.dumps(skills_list, ensure_ascii=False)
+        else:
+            self.preferred_skills = None
+    
+    def get_tags_list(self):
+        """Obtiene la lista de tags como lista de Python"""
+        if self.tags:
+            try:
+                return json.loads(self.tags)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_tags_list(self, tags_list):
+        """Establece la lista de tags desde una lista de Python"""
+        if isinstance(tags_list, list):
+            self.tags = json.dumps(tags_list, ensure_ascii=False)
+        else:
+            self.tags = None
     
     @property
-    def esta_disponible(self):
-        """Verifica si el proyecto está disponible para aplicaciones"""
+    def esta_activo(self):
+        """Verifica si el proyecto está activo"""
+        return self.status and self.status.name.lower() in ['active', 'open', 'en curso']
+    
+    @property
+    def puede_aplicar(self):
+        """Verifica si se pueden recibir aplicaciones"""
         return (
-            self.estado == 'publicado' and 
-            self.estudiantes_actuales < self.max_estudiantes and
-            self.empresa.esta_activo
+            self.esta_activo and 
+            self.current_students < self.max_students and
+            self.applications_count < 50  # Límite de aplicaciones
         )
     
     @property
-    def porcentaje_completado(self):
-        """Calcula el porcentaje de completado basado en fechas"""
-        from django.utils import timezone
-        today = timezone.now().date()
-        
-        if today <= self.fecha_inicio:
+    def porcentaje_ocupacion(self):
+        """Calcula el porcentaje de ocupación del proyecto"""
+        if self.max_students == 0:
             return 0
-        elif today >= self.fecha_fin:
-            return 100
-        
-        total_dias = (self.fecha_fin - self.fecha_inicio).days
-        dias_transcurridos = (today - self.fecha_inicio).days
-        return min(100, (dias_transcurridos / total_dias) * 100)
+        return (self.current_students / self.max_students) * 100
     
     def incrementar_vistas(self):
         """Incrementa el contador de vistas"""
-        self.vistas_count += 1
-        self.save(update_fields=['vistas_count'])
+        self.views_count += 1
+        self.save(update_fields=['views_count'])
     
     def incrementar_aplicaciones(self):
         """Incrementa el contador de aplicaciones"""
-        self.aplicaciones_count += 1
-        self.save(update_fields=['aplicaciones_count'])
+        self.applications_count += 1
+        self.save(update_fields=['applications_count'])
+    
+    def agregar_estudiante(self):
+        """Agrega un estudiante al proyecto"""
+        if self.current_students < self.max_students:
+            self.current_students += 1
+            self.save(update_fields=['current_students'])
+            return True
+        return False
+    
+    def remover_estudiante(self):
+        """Remueve un estudiante del proyecto"""
+        if self.current_students > 0:
+            self.current_students -= 1
+            self.save(update_fields=['current_students'])
+            return True
+        return False
+    
+    def marcar_como_featured(self):
+        """Marca el proyecto como destacado"""
+        self.is_featured = True
+        self.save(update_fields=['is_featured'])
+    
+    def marcar_como_urgente(self):
+        """Marca el proyecto como urgente"""
+        self.is_urgent = True
+        self.save(update_fields=['is_urgent'])
+    
+    def publicar(self):
+        """Publica el proyecto"""
+        self.published_at = timezone.now()
+        self.save(update_fields=['published_at'])
+
+class HistorialEstadosProyecto(models.Model):
+    """
+    Modelo para el historial de cambios de estado de proyectos
+    """
+    id = models.AutoField(primary_key=True)
+    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='historial_estados')
+    status = models.ForeignKey('project_status.ProjectStatus', on_delete=models.CASCADE, related_name='historial_cambios')
+    user = models.ForeignKey('users.Usuario', on_delete=models.CASCADE, related_name='cambios_estado_proyecto')
+    
+    # Campos adicionales
+    fecha_cambio = models.DateTimeField(auto_now_add=True)
+    comentario = models.TextField(null=True, blank=True)
+    
+    class Meta:
+        db_table = 'project_status_history'
+        verbose_name = 'Historial de Estado de Proyecto'
+        verbose_name_plural = 'Historial de Estados de Proyectos'
+        ordering = ['-fecha_cambio']
+    
+    def __str__(self):
+        return f"{self.project.title} - {self.status.name} ({self.fecha_cambio.strftime('%Y-%m-%d %H:%M')})"
 
 class AplicacionProyecto(models.Model):
     ESTADOS = (
@@ -157,17 +265,16 @@ class AplicacionProyecto(models.Model):
         unique_together = ['proyecto', 'estudiante']
     
     def __str__(self):
-        return f"{self.estudiante.get_full_name()} -> {self.proyecto.titulo}"
+        return f"{self.estudiante.full_name} -> {self.proyecto.title} ({self.get_estado_display()})"
     
     def aceptar(self):
         """Acepta la aplicación"""
         self.estado = 'aceptado'
         self.fecha_respuesta = timezone.now()
-        self.save()
+        self.save(update_fields=['estado', 'fecha_respuesta'])
         
-        # Incrementar estudiantes actuales en el proyecto
-        self.proyecto.estudiantes_actuales += 1
-        self.proyecto.save(update_fields=['estudiantes_actuales'])
+        # Agregar estudiante al proyecto
+        self.proyecto.agregar_estudiante()
     
     def rechazar(self, notas=None):
         """Rechaza la aplicación"""
@@ -175,23 +282,25 @@ class AplicacionProyecto(models.Model):
         self.fecha_respuesta = timezone.now()
         if notas:
             self.notas_empresa = notas
-        self.save()
+        self.save(update_fields=['estado', 'fecha_respuesta', 'notas_empresa'])
     
     def programar_entrevista(self, fecha_entrevista):
         """Programa una entrevista"""
         self.estado = 'entrevistado'
-        self.save()
+        self.fecha_revision = timezone.now()
+        self.save(update_fields=['estado', 'fecha_revision'])
         
-        # Crear evento de entrevista
-        from calendar_events.models import EventoCalendario
-        EventoCalendario.objects.create(
-            titulo=f"Entrevista: {self.proyecto.titulo}",
-            descripcion=f"Entrevista para el proyecto {self.proyecto.titulo}",
-            fecha_inicio=fecha_entrevista,
-            fecha_fin=fecha_entrevista,
-            usuario=self.estudiante,
-            tipo_evento='entrevista',
-            aplicacion_relacionada=self
+        # Crear evento de calendario para la entrevista
+        from calendar_events.models import CalendarEvent
+        CalendarEvent.objects.create(
+            title=f"Entrevista: {self.proyecto.title}",
+            description=f"Entrevista para el proyecto {self.proyecto.title}",
+            start_date=fecha_entrevista,
+            end_date=fecha_entrevista,
+            user=self.estudiante,
+            event_type='interview',
+            project=self.proyecto,
+            related_application=self
         )
 
 class MiembroProyecto(models.Model):
@@ -231,4 +340,4 @@ class MiembroProyecto(models.Model):
         unique_together = ['proyecto', 'usuario']
     
     def __str__(self):
-        return f"{self.usuario.get_full_name()} - {self.proyecto.titulo} ({self.get_rol_display()})"
+        return f"{self.usuario.full_name} - {self.proyecto.title} ({self.get_rol_display()})"

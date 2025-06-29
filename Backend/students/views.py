@@ -1,175 +1,83 @@
-from django.shortcuts import render
-from rest_framework import generics, permissions, viewsets, status, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count, Avg, Q
-from django.utils import timezone
-from datetime import timedelta
-from .models import Student
-from .serializers import StudentSerializer, StudentUpdateSerializer
-from users.models import Usuario
-from applications.models import Aplicacion
-from evaluations.models import Evaluation
-from strikes.models import Strike
+from .models import Estudiante, PerfilEstudiante
+from .serializers import (
+    EstudianteSerializer, EstudianteCreateSerializer, EstudianteUpdateSerializer,
+    PerfilEstudianteSerializer, PerfilEstudianteCreateSerializer, PerfilEstudianteUpdateSerializer
+)
 
-# Create your views here.
-
-class IsStudentUser(permissions.BasePermission):
-    """
-    Permiso para solo permitir a usuarios con el rol de Estudiante.
-    """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == STUDENT
-
-class StudentProfileView(generics.RetrieveUpdateAPIView):
-    """
-    Vista para que un estudiante vea y actualice su propio perfil.
-    """
-    queryset = Student.objects.all()
-    permission_classes = [IsStudentUser]
-
-    def get_object(self):
-        return self.request.user.student_profile
+class EstudianteViewSet(viewsets.ModelViewSet):
+    queryset = Estudiante.objects.filter(status='approved')
+    serializer_class = EstudianteSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'api_level', 'availability', 'career']
+    search_fields = ['user__first_name', 'user__last_name', 'user__email', 'career']
+    ordering_fields = ['rating', 'completed_projects', 'total_hours', 'created_at']
+    ordering = ['-rating']
 
     def get_serializer_class(self):
-        if self.request.method in ['PUT', 'PATCH']:
-            return StudentUpdateSerializer
-        return StudentSerializer
+        if self.action == 'create':
+            return EstudianteCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return EstudianteUpdateSerializer
+        return EstudianteSerializer
 
-class StudentListView(generics.ListAPIView):
-    """
-    Vista para listar todos los estudiantes (perfil público).
-    Visible para empresas y administradores.
-    """
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    
-    def get_permissions(self):
-        # Solo usuarios de Empresa o Administradores pueden ver la lista
-        if self.request.user.is_authenticated and (
-            self.request.user.role == COMPANY or self.request.user.is_staff
-        ):
-            return [permissions.IsAuthenticated()]
-        return [permissions.IsAdminUser()] # Denegar a otros
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-class StudentDetailView(generics.RetrieveAPIView):
-    """
-    Vista para ver el perfil público de un estudiante específico.
-    Visible para empresas y administradores.
-    """
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    lookup_field = 'user_id'
+    def get_queryset(self):
+        return Estudiante.objects.filter(status='approved')
 
-    def get_permissions(self):
-        if self.request.user.is_authenticated and (
-            self.request.user.role == COMPANY or self.request.user.is_staff
-        ):
-            return [permissions.IsAuthenticated()]
-        return [permissions.IsAdminUser()]
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        estudiante = self.get_object()
+        estudiante.status = 'approved'
+        estudiante.save()
+        return Response({'message': 'Estudiante aprobado'}, status=status.HTTP_200_OK)
 
-class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        estudiante = self.get_object()
+        estudiante.status = 'rejected'
+        estudiante.save()
+        return Response({'message': 'Estudiante rechazado'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def add_strike(self, request, pk=None):
+        estudiante = self.get_object()
+        estudiante.incrementar_strikes()
+        return Response({'message': 'Strike agregado'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def reset_strikes(self, request, pk=None):
+        estudiante = self.get_object()
+        estudiante.resetear_strikes()
+        return Response({'message': 'Strikes reseteados'}, status=status.HTTP_200_OK)
+
+class PerfilEstudianteViewSet(viewsets.ModelViewSet):
+    queryset = PerfilEstudiante.objects.all()
+    serializer_class = PerfilEstudianteSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['estudiante']
+    search_fields = ['estudiante__user__first_name', 'estudiante__user__last_name', 'universidad']
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PerfilEstudianteCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return PerfilEstudianteUpdateSerializer
+        return PerfilEstudianteSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(estudiante=self.request.user.estudiante)
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'STUDENT':
-            return Student.objects.filter(user=user)
-        return Student.objects.all()
-
-    @action(detail=False, methods=['get'])
-    def dashboard_stats(self, request):
-        """
-        Estadísticas para el dashboard del estudiante actual.
-        """
-        if request.user.role != 'STUDENT':
-            return Response(
-                {'error': 'Acceso denegado'}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        student = request.user.student_profile
-        now = timezone.now()
-        last_30_days = now - timedelta(days=30)
-
-        # Postulaciones del estudiante
-        student_applications = Aplicacion.objects.filter(student=student)
-        
-        stats = {
-            'total_applications': student_applications.count(),
-            'pending_applications': student_applications.filter(status='PENDING').count(),
-            'accepted_applications': student_applications.filter(status='ACCEPTED').count(),
-            'rejected_applications': student_applications.filter(status='REJECTED').count(),
-            
-            # Proyectos activos (donde fue aceptado)
-            'active_projects': Aplicacion.objects.filter(
-                student=student,
-                status='ACCEPTED',
-                project__status='ACTIVE'
-            ).count(),
-            
-            # Proyectos completados
-            'completed_projects': Aplicacion.objects.filter(
-                student=student,
-                status='ACCEPTED',
-                project__status='COMPLETED'
-            ).count(),
-            
-            # Actividad reciente
-            'new_applications_30_days': student_applications.filter(
-                created_at__gte=last_30_days
-            ).count(),
-            
-            # Evaluaciones
-            'total_evaluations_received': Evaluation.objects.filter(
-                evaluated_student=student
-            ).count(),
-            'total_evaluations_given': Evaluation.objects.filter(
-                evaluator_type='STUDENT',
-                evaluator_id=request.user.id
-            ).count(),
-            
-            # Amonestaciones
-            'total_strikes': Strike.objects.filter(student=student).count(),
-        }
-
-        return Response(stats)
-
-    @action(detail=False, methods=['get'])
-    def application_history(self, request):
-        """
-        Historial de postulaciones para gráficos.
-        """
-        if request.user.role != 'STUDENT':
-            return Response(
-                {'error': 'Acceso denegado'}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        student = request.user.student_profile
-        
-        # Postulaciones del estudiante
-        student_applications = Aplicacion.objects.filter(student=student)
-        
-        # Postulaciones por estado
-        application_stats = student_applications.aggregate(
-            pending=Count('id', filter=Q(status='PENDING')),
-            accepted=Count('id', filter=Q(status='ACCEPTED')),
-            rejected=Count('id', filter=Q(status='REJECTED')),
-        )
-        
-        # Tasa de aceptación
-        total_apps = student_applications.count()
-        acceptance_rate = 0
-        if total_apps > 0:
-            accepted_apps = student_applications.filter(status='ACCEPTED').count()
-            acceptance_rate = (accepted_apps / total_apps) * 100
-
-        return Response({
-            'application_status': application_stats,
-            'acceptance_rate': round(acceptance_rate, 2),
-            'total_applications': total_apps
-        })
+        if user.role == 'student':
+            return PerfilEstudiante.objects.filter(estudiante=user.estudiante)
+        return PerfilEstudiante.objects.all() 

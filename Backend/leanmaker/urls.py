@@ -45,6 +45,16 @@ from api_management.views import (
     APIKeyViewSet, APIUsageViewSet, APIRateLimitViewSet
 )
 
+# Importar ViewSets de los nuevos módulos
+from mass_notifications.views import (
+    MassNotificationViewSet, NotificationTemplateViewSet as MassNotificationTemplateViewSet
+)
+from disciplinary_records.views import DisciplinaryRecordViewSet
+from documents.views import DocumentViewSet
+from activity_logs.views import ActivityLogViewSet
+from reports.views import ReportViewSet
+from data_backups.views import DataBackupViewSet
+
 # Crear router principal
 router = DefaultRouter()
 
@@ -105,6 +115,15 @@ router.register(r'search-suggestions', SearchSuggestionViewSet, basename='search
 router.register(r'api-keys', APIKeyViewSet, basename='api-key')
 router.register(r'api-usage', APIUsageViewSet, basename='api-usage')
 router.register(r'api-rate-limits', APIRateLimitViewSet, basename='api-rate-limit')
+
+# Registrar ViewSets de los nuevos módulos
+router.register(r'mass-notifications', MassNotificationViewSet, basename='mass-notification')
+router.register(r'mass-notification-templates', MassNotificationTemplateViewSet, basename='mass-notification-template')
+router.register(r'disciplinary-records', DisciplinaryRecordViewSet, basename='disciplinary-record')
+router.register(r'documents', DocumentViewSet, basename='document')
+router.register(r'activity-logs', ActivityLogViewSet, basename='activity-log')
+router.register(r'reports', ReportViewSet, basename='report')
+router.register(r'data-backups', DataBackupViewSet, basename='data-backup')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

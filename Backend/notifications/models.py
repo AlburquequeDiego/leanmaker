@@ -6,155 +6,53 @@ from projects.models import Proyecto, AplicacionProyecto
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import uuid
+import json
 
 class Notification(models.Model):
-    TYPE_CHOICES = (
-        # Notificaciones de proyectos
-        ('project_published', 'Proyecto Publicado'),
-        ('project_updated', 'Proyecto Actualizado'),
-        ('project_cancelled', 'Proyecto Cancelado'),
-        ('project_completed', 'Proyecto Completado'),
-        
-        # Notificaciones de aplicaciones
-        ('application_submitted', 'Aplicación Enviada'),
-        ('application_reviewed', 'Aplicación Revisada'),
-        ('application_accepted', 'Aplicación Aceptada'),
-        ('application_rejected', 'Aplicación Rechazada'),
-        ('application_withdrawn', 'Aplicación Retirada'),
-        
-        # Notificaciones de entrevistas
-        ('interview_scheduled', 'Entrevista Programada'),
-        ('interview_reminder', 'Recordatorio de Entrevista'),
-        ('interview_cancelled', 'Entrevista Cancelada'),
-        
-        # Notificaciones de evaluaciones
-        ('evaluation_received', 'Evaluación Recibida'),
-        ('evaluation_requested', 'Evaluación Solicitada'),
-        ('evaluation_completed', 'Evaluación Completada'),
-        
-        # Notificaciones de sistema
-        ('system_announcement', 'Anuncio del Sistema'),
-        ('maintenance_notice', 'Aviso de Mantenimiento'),
-        ('feature_update', 'Actualización de Funcionalidad'),
-        
-        # Notificaciones de strikes
-        ('strike_received', 'Strike Recibido'),
-        ('strike_warning', 'Advertencia de Strike'),
-        ('strike_suspension', 'Suspensión por Strikes'),
-        
-        # Notificaciones de horas
-        ('hours_submitted', 'Horas Enviadas'),
-        ('hours_approved', 'Horas Aprobadas'),
-        ('hours_rejected', 'Horas Rechazadas'),
-        
-        # Notificaciones de perfil
-        ('profile_updated', 'Perfil Actualizado'),
-        ('verification_completed', 'Verificación Completada'),
-        ('api_level_upgraded', 'Nivel de API Mejorado'),
-        
-        # Notificaciones de mensajes
-        ('new_message', 'Nuevo Mensaje'),
-        ('message_reply', 'Respuesta a Mensaje'),
-        
-        # Notificaciones de calendario
-        ('event_reminder', 'Recordatorio de Evento'),
-        ('event_cancelled', 'Evento Cancelado'),
-        ('event_updated', 'Evento Actualizado'),
-    )
-    
-    PRIORITY_CHOICES = (
+    TYPE_CHOICES = [
+        ('general', 'General'),
+        ('reminder', 'Recordatorio'),
+        ('alert', 'Alerta'),
+        ('info', 'Información'),
+        ('warning', 'Advertencia'),
+        ('success', 'Éxito'),
+        ('error', 'Error'),
+    ]
+    PRIORITY_CHOICES = [
         ('low', 'Baja'),
+        ('normal', 'Normal'),
         ('medium', 'Media'),
         ('high', 'Alta'),
         ('urgent', 'Urgente'),
-    )
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
-    # Destinatario
-    recipient = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notifications')
-    
-    # Contenido
+    ]
+
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=200)
     message = models.TextField()
-    notification_type = models.CharField(max_length=30, choices=TYPE_CHOICES)
-    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
-    
-    # Estado
+    notification_type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='general')
     is_read = models.BooleanField(default=False)
-    is_archived = models.BooleanField(default=False)
-    
-    # Fechas
+    read_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    read_at = models.DateTimeField(blank=True, null=True)
-    scheduled_for = models.DateTimeField(blank=True, null=True)  # Para notificaciones programadas
-    
-    # Datos adicionales (JSON)
-    data = models.JSONField(default=dict)  # Datos específicos del tipo de notificación
-    
-    # Relaciones opcionales
-    related_project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='notifications')
-    related_application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='notifications')
-    related_user = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=True, null=True, related_name='sent_notifications')
-    
+    expires_at = models.DateTimeField(null=True, blank=True)
+    action_url = models.CharField(max_length=500, null=True, blank=True)
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='normal')
+
     class Meta:
         db_table = 'notifications'
         verbose_name = 'Notificación'
         verbose_name_plural = 'Notificaciones'
         ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['recipient', 'is_read']),
-            models.Index(fields=['notification_type']),
-            models.Index(fields=['created_at']),
-        ]
-    
+
     def __str__(self):
-        return f"{self.recipient.get_full_name()} - {self.title}"
-    
-    def mark_as_read(self):
-        """Marca la notificación como leída"""
-        if not self.is_read:
-            self.is_read = True
-            from django.utils import timezone
-            self.read_at = timezone.now()
-            self.save(update_fields=['is_read', 'read_at'])
-    
-    def archive(self):
-        """Archiva la notificación"""
-        self.is_archived = True
-        self.save(update_fields=['is_archived'])
-    
-    @property
-    def is_urgent(self):
-        """Verifica si la notificación es urgente"""
-        return self.priority == 'urgent'
-    
-    @property
-    def time_ago(self):
-        """Retorna el tiempo transcurrido desde la creación"""
-        from django.utils import timezone
-        from datetime import timedelta
-        
-        now = timezone.now()
-        diff = now - self.created_at
-        
-        if diff.days > 0:
-            return f"{diff.days} día{'s' if diff.days != 1 else ''}"
-        elif diff.seconds >= 3600:
-            hours = diff.seconds // 3600
-            return f"{hours} hora{'s' if hours != 1 else ''}"
-        elif diff.seconds >= 60:
-            minutes = diff.seconds // 60
-            return f"{minutes} minuto{'s' if minutes != 1 else ''}"
-        else:
-            return "Ahora mismo"
+        return f"{self.user.email} - {self.title}"
 
 class NotificationTemplate(models.Model):
     """Plantillas para notificaciones automáticas"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
-    notification_type = models.CharField(max_length=30, choices=Notification.TYPE_CHOICES)
+    notification_type = models.CharField(max_length=30, choices=Notification.TYPE_CHOICES, default='general')
     
     # Contenido de la plantilla
     title_template = models.CharField(max_length=200)
@@ -165,7 +63,7 @@ class NotificationTemplate(models.Model):
     priority = models.CharField(max_length=10, choices=Notification.PRIORITY_CHOICES, default='medium')
     
     # Variables disponibles en la plantilla
-    available_variables = models.JSONField(default=list)
+    available_variables = models.TextField(default='[]')  # JSON array
     
     # Fechas
     created_at = models.DateTimeField(auto_now_add=True)
@@ -179,6 +77,22 @@ class NotificationTemplate(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.get_notification_type_display()})"
+    
+    def get_available_variables_list(self):
+        """Obtiene la lista de variables disponibles como lista de Python"""
+        if self.available_variables:
+            try:
+                return json.loads(self.available_variables)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_available_variables_list(self, variables_list):
+        """Establece la lista de variables disponibles desde una lista de Python"""
+        if isinstance(variables_list, list):
+            self.available_variables = json.dumps(variables_list, ensure_ascii=False)
+        else:
+            self.available_variables = '[]'
     
     def render(self, context):
         """Renderiza la plantilla con el contexto proporcionado"""
@@ -198,7 +112,7 @@ class NotificationPreference(models.Model):
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notification_preferences')
     
     # Tipos de notificación habilitados
-    enabled_types = models.JSONField(default=list)  # Lista de tipos habilitados
+    enabled_types = models.TextField(default='[]')  # JSON array de tipos habilitados
     
     # Configuración de canales
     email_enabled = models.BooleanField(default=True)
@@ -228,11 +142,27 @@ class NotificationPreference(models.Model):
         unique_together = ['user']
     
     def __str__(self):
-        return f"Preferencias de {self.user.get_full_name()}"
+        return f"Preferencias de {self.user.full_name}"
+    
+    def get_enabled_types_list(self):
+        """Obtiene la lista de tipos habilitados como lista de Python"""
+        if self.enabled_types:
+            try:
+                return json.loads(self.enabled_types)
+            except json.JSONDecodeError:
+                return []
+        return []
+    
+    def set_enabled_types_list(self, types_list):
+        """Establece la lista de tipos habilitados desde una lista de Python"""
+        if isinstance(types_list, list):
+            self.enabled_types = json.dumps(types_list, ensure_ascii=False)
+        else:
+            self.enabled_types = '[]'
     
     def is_type_enabled(self, notification_type):
         """Verifica si un tipo de notificación está habilitado"""
-        return notification_type in self.enabled_types
+        return notification_type in self.get_enabled_types_list()
     
     def is_quiet_hours(self):
         """Verifica si estamos en horas silenciosas"""

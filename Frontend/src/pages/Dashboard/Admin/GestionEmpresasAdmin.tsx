@@ -36,9 +36,6 @@ import {
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
   Visibility as VisibilityIcon,
-  Edit as EditIcon,
-  Download as DownloadIcon,
-  Upload as UploadIcon,
   Search as SearchIcon,
   FilterList as FilterListIcon,
 } from '@mui/icons-material';
