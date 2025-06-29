@@ -253,3 +253,8 @@ END;
 -- SELECT role, COUNT(*) FROM users GROUP BY role;
 -- SELECT COUNT(*) FROM students;
 -- SELECT COUNT(*) FROM companies; 
+
+SELECT role, COUNT(*) FROM users GROUP BY role;
+SELECT COUNT(*) FROM students;
+SELECT COUNT(*) FROM companies;
+SELECT * FROM admins;
