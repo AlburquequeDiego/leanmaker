@@ -3,9 +3,9 @@ import DashboardLayout from '../../components/layout/DashboardLayout';
 import { useAuth } from '../../hooks/useAuth';
 
 export const Dashboard = () => {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return <div>Cargando...</div>;
   }
 
@@ -14,7 +14,7 @@ export const Dashboard = () => {
   }
 
   // Determine user role based on user data
-  const userRole = user?.role || (user?.is_staff ? 'admin' : 'student');
+  const userRole = user?.role || 'student';
 
   return (
     <DashboardLayout userRole={userRole} />

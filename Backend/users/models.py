@@ -12,6 +12,16 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+    
+    def authenticate_user(self, email, password):
+        """Método personalizado para autenticar usuarios por email"""
+        try:
+            user = self.get(email=email)
+            if user.check_password(password) and user.is_active:
+                return user
+        except self.model.DoesNotExist:
+            pass
+        return None
 
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)

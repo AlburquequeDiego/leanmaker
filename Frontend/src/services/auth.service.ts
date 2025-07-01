@@ -1,34 +1,10 @@
 import { apiService } from './api.service';
 import { API_ENDPOINTS } from '../config/api.config';
+import type { User, LoginResponse, RegisterData } from '../types';
 
 export interface LoginCredentials {
-  username: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  access: string;
-  refresh: string;
-}
-
-export interface RegisterData {
-  username: string;
   email: string;
   password: string;
-  first_name: string;
-  last_name: string;
-}
-
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  is_staff?: boolean;
-  is_active?: boolean;
-  date_joined?: string;
-  role?: 'admin' | 'student' | 'company';
 }
 
 class AuthService {
@@ -39,27 +15,43 @@ class AuthService {
     localStorage.setItem('accessToken', response.access);
     localStorage.setItem('refreshToken', response.refresh);
     
-    // Get user profile and store it
-    try {
-      const user = await this.getCurrentUser();
-      localStorage.setItem('user', JSON.stringify(user));
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
+    // Store user data from the response
+    if (response.user) {
+      localStorage.setItem('user', JSON.stringify(response.user));
     }
     
     return response;
   }
 
-  async register(userData: RegisterData): Promise<any> {
-    return await apiService.post(API_ENDPOINTS.REGISTER, userData);
+  async register(userData: RegisterData): Promise<{ message: string; user: User }> {
+    const response = await apiService.post<{ message: string; user: User }>(API_ENDPOINTS.REGISTER, userData);
+    return response;
   }
 
   async logout(): Promise<void> {
-    localStorage.clear();
+    try {
+      // Call logout endpoint if available
+      await apiService.post(API_ENDPOINTS.LOGOUT);
+    } catch (error) {
+      console.warn('Logout endpoint not available, clearing local storage only');
+    } finally {
+      // Clear all stored data
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+    }
   }
 
   async getCurrentUser(): Promise<User> {
-    return await apiService.get<User>(API_ENDPOINTS.USER_PROFILE);
+    try {
+      const user = await apiService.get<User>(API_ENDPOINTS.USER_PROFILE);
+      // Update stored user data
+      localStorage.setItem('user', JSON.stringify(user));
+      return user;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
   }
 
   async verifyToken(token: string): Promise<boolean> {
@@ -69,6 +61,25 @@ class AuthService {
     } catch (error) {
       return false;
     }
+  }
+
+  async refreshToken(): Promise<{ access: string }> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    const response = await apiService.post<{ access: string }>(API_ENDPOINTS.REFRESH_TOKEN, {
+      refresh: refreshToken
+    });
+
+    // Update stored access token
+    localStorage.setItem('accessToken', response.access);
+    return response;
+  }
+
+  async changePassword(data: { old_password: string; new_password: string; new_password_confirm: string }): Promise<{ message: string }> {
+    return await apiService.post<{ message: string }>(API_ENDPOINTS.CHANGE_PASSWORD, data);
   }
 
   isAuthenticated(): boolean {
@@ -86,6 +97,27 @@ class AuthService {
 
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');
+  }
+
+  // Helper method to check if user has specific role
+  hasRole(role: string): boolean {
+    const user = this.getUser();
+    return user?.role === role;
+  }
+
+  // Helper method to check if user is admin
+  isAdmin(): boolean {
+    return this.hasRole('admin');
+  }
+
+  // Helper method to check if user is student
+  isStudent(): boolean {
+    return this.hasRole('student');
+  }
+
+  // Helper method to check if user is company
+  isCompany(): boolean {
+    return this.hasRole('company');
   }
 }
 

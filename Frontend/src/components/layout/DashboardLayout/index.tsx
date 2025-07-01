@@ -63,7 +63,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
   const [openSupport, setOpenSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ nombre: '', correo: '', mensaje: '' });

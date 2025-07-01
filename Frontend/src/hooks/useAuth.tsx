@@ -1,38 +1,43 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/auth.service';
-import type { User } from '../services/auth.service';
+import type { User, RegisterData } from '../types';
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  loading: boolean;
+  error: string | null;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  register: (userData: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  clearError: () => void;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isStudent: boolean;
+  isCompany: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Initialize auth state on app load
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Check if user is already authenticated
         if (authService.isAuthenticated()) {
           const currentUser = await authService.getCurrentUser();
           setUser(currentUser);
@@ -42,55 +47,79 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Clear invalid tokens
         authService.logout();
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     initializeAuth();
   }, []);
 
-  const login = async (username: string, password: string) => {
+  const login = async (credentials: LoginCredentials) => {
     try {
-      setIsLoading(true);
-      await authService.login({ username, password });
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-    } catch (error) {
+      setLoading(true);
+      setError(null);
+      
+      const response = await authService.login(credentials);
+      setUser(response.user);
+    } catch (error: any) {
       console.error('Login error:', error);
+      setError(error.response?.data?.detail || error.message || 'Error al iniciar sesión');
       throw error;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const register = async (userData: RegisterData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await authService.register(userData);
+      setUser(response.user);
+      
+      // After successful registration, automatically log in
+      await login({
+        email: userData.email,
+        password: userData.password
+      });
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      setError(error.response?.data?.detail || error.message || 'Error al registrarse');
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
     try {
+      setLoading(true);
       await authService.logout();
       setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const register = async (userData: any) => {
-    try {
-      setIsLoading(true);
-      await authService.register(userData);
-    } catch (error) {
-      console.error('Register error:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+  const clearError = () => {
+    setError(null);
   };
 
   const value: AuthContextType = {
     user,
-    isAuthenticated: !!user,
-    isLoading,
+    loading,
+    error,
     login,
-    logout,
     register,
+    logout,
+    clearError,
+    isAuthenticated: !!user,
+    isAdmin: user?.role === 'admin',
+    isStudent: user?.role === 'student',
+    isCompany: user?.role === 'company'
   };
 
   return (
@@ -98,4 +127,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }; 

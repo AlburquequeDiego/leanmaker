@@ -16,8 +16,146 @@ Nombre del servidor:servidortesis.database.windows.net
 nombre de la base de datos : leanmaker_db
 
 
-
+--se puede crear mas 
 superusuario
-Email: alburqueque511@gmail.com
+Email: admin@gmail.com
 Password: admin
 
+-- =====================================================
+-- VERIFICACIÓN DE USUARIOS DE PRUEBA EN LA BASE DE DATOS
+-- =====================================================
+
+-- 1. VERIFICAR TODOS LOS USUARIOS EN LA TABLA PRINCIPAL
+SELECT 
+    id,
+    email,
+    first_name,
+    last_name,
+    role,
+    is_verified,
+    is_active,
+    date_joined
+FROM users_usuario 
+WHERE email LIKE '%@uchile.cl' 
+   OR email LIKE '%@uc.cl'
+   OR email LIKE '%@udec.cl'
+   OR email LIKE '%@usm.cl'
+   OR email LIKE '%@usach.cl'
+   OR email LIKE '%@uach.cl'
+   OR email LIKE '%@uv.cl'
+   OR email LIKE '%@ufro.cl'
+   OR email LIKE '%@utalca.cl'
+   OR email LIKE '%@uantof.cl'
+   OR email = 'admin@leanmaker.cl'
+ORDER BY email;
+
+-- 2. CONTAR TOTAL DE USUARIOS DE PRUEBA
+SELECT 
+    COUNT(*) as total_usuarios_prueba
+FROM users_usuario 
+WHERE email LIKE '%@uchile.cl' 
+   OR email LIKE '%@uc.cl'
+   OR email LIKE '%@udec.cl'
+   OR email LIKE '%@usm.cl'
+   OR email LIKE '%@usach.cl'
+   OR email LIKE '%@uach.cl'
+   OR email LIKE '%@uv.cl'
+   OR email LIKE '%@ufro.cl'
+   OR email LIKE '%@utalca.cl'
+   OR email LIKE '%@uantof.cl'
+   OR email = 'admin@leanmaker.cl';
+
+-- 3. VERIFICAR ESTUDIANTES ESPECÍFICOS
+SELECT 
+    u.id,
+    u.email,
+    u.first_name,
+    u.last_name,
+    u.role,
+    e.career,
+    e.semester,
+    e.strikes
+FROM users_usuario u
+LEFT JOIN students_estudiante e ON u.id = e.user_id
+WHERE u.role = 'student'
+  AND (u.email LIKE '%@uchile.cl' 
+   OR u.email LIKE '%@uc.cl'
+   OR u.email LIKE '%@udec.cl'
+   OR u.email LIKE '%@usm.cl'
+   OR u.email LIKE '%@usach.cl'
+   OR u.email LIKE '%@uach.cl'
+   OR u.email LIKE '%@uv.cl'
+   OR u.email LIKE '%@ufro.cl'
+   OR u.email LIKE '%@utalca.cl'
+   OR u.email LIKE '%@uantof.cl')
+ORDER BY u.email;
+
+-- 4. VERIFICAR EMPRESAS ESPECÍFICAS
+SELECT 
+    u.id,
+    u.email,
+    u.first_name,
+    u.last_name,
+    u.role,
+    e.company_name,
+    e.industry,
+    e.size,
+    e.website
+FROM users_usuario u
+LEFT JOIN companies_empresa e ON u.id = e.user_id
+WHERE u.role = 'company'
+  AND (u.email LIKE '%@uchile.cl' 
+   OR u.email LIKE '%@uc.cl'
+   OR u.email LIKE '%@udec.cl'
+   OR u.email LIKE '%@usm.cl'
+   OR u.email LIKE '%@usach.cl'
+   OR u.email LIKE '%@uach.cl'
+   OR u.email LIKE '%@uv.cl'
+   OR u.email LIKE '%@ufro.cl'
+   OR u.email LIKE '%@utalca.cl'
+   OR u.email LIKE '%@uantof.cl')
+ORDER BY u.email;
+
+-- 5. VERIFICAR ADMINISTRADOR
+SELECT 
+    id,
+    email,
+    first_name,
+    last_name,
+    role,
+    is_superuser,
+    is_staff,
+    is_verified,
+    is_active
+FROM users_usuario 
+WHERE email = 'admin@leanmaker.cl';
+
+-- 6. LISTA ESPERADA DE USUARIOS (para comparar)
+-- Estudiantes esperados:
+-- estudiante1@uchile.cl
+-- estudiante2@uc.cl
+-- estudiante3@udec.cl
+-- estudiante4@usm.cl
+-- estudiante5@usach.cl
+-- estudiante6@uach.cl
+-- estudiante7@uv.cl
+-- estudiante8@ufro.cl
+-- estudiante9@utalca.cl
+-- estudiante10@uantof.cl
+
+-- Empresas esperadas:
+-- empresa1@uchile.cl
+-- empresa2@uc.cl
+-- empresa3@udec.cl
+-- empresa4@usm.cl
+-- empresa5@usach.cl
+-- empresa6@uach.cl
+-- empresa7@uv.cl
+-- empresa8@ufro.cl
+-- empresa9@utalca.cl
+-- empresa10@uantof.cl
+
+-- Administrador esperado:
+-- admin@leanmaker.cl
+
+-- TOTAL ESPERADO: 21 usuarios (10 estudiantes + 10 empresas + 1 admin) 

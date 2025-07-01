@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import Usuario
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UsuarioSerializer(serializers.ModelSerializer):
     full_name = serializers.ReadOnlyField()
@@ -118,4 +119,109 @@ class ChangePasswordSerializer(serializers.Serializer):
         user = self.context['request'].user
         if not user.check_password(value):
             raise serializers.ValidationError('Contraseña actual incorrecta')
-        return value 
+        return value
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Serializer personalizado para JWT que usa email en vez de username"""
+    username_field = 'email'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Asegurar que el campo se llame 'email' en el formulario
+        self.fields['email'] = self.fields.pop('username', None)
+    
+    def validate(self, attrs):
+        # Asegurar que siempre usamos 'email' como campo de autenticación
+        if 'username' in attrs:
+            attrs['email'] = attrs.pop('username')
+        
+        # Validar que el email existe
+        email = attrs.get('email')
+        password = attrs.get('password')
+        
+        if email and password:
+            # Intentar autenticar con email
+            user = authenticate(email=email, password=password)
+            if not user:
+                raise serializers.ValidationError('Credenciales inválidas')
+            if not user.is_active:
+                raise serializers.ValidationError('Usuario inactivo')
+            
+            # Asignar el usuario autenticado
+            self.user = user
+        else:
+            raise serializers.ValidationError('Email y contraseña son requeridos')
+        
+        # Generar tokens
+        refresh = self.get_token(self.user)
+        access = refresh.access_token
+        
+        data = {
+            'refresh': str(refresh),
+            'access': str(access),
+        }
+        
+        # Agregar información adicional del usuario al token
+        data['user'] = {
+            'id': str(self.user.id),
+            'email': self.user.email,
+            'first_name': self.user.first_name,
+            'last_name': self.user.last_name,
+            'role': self.user.role,
+            'is_active': self.user.is_active,
+            'is_verified': self.user.is_verified
+        }
+        
+        return data 
+
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = 'email'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Asegurar que el campo se llame 'email' en el formulario
+        self.fields['email'] = self.fields.pop('username', None)
+    
+    def validate(self, attrs):
+        # Asegurar que siempre usamos 'email' como campo de autenticación
+        if 'username' in attrs:
+            attrs['email'] = attrs.pop('username')
+        
+        # Validar que el email existe
+        email = attrs.get('email')
+        password = attrs.get('password')
+        
+        if email and password:
+            # Intentar autenticar con email
+            user = authenticate(email=email, password=password)
+            if not user:
+                raise serializers.ValidationError('Credenciales inválidas')
+            if not user.is_active:
+                raise serializers.ValidationError('Usuario inactivo')
+            
+            # Asignar el usuario autenticado
+            self.user = user
+        else:
+            raise serializers.ValidationError('Email y contraseña son requeridos')
+        
+        # Generar tokens
+        refresh = self.get_token(self.user)
+        access = refresh.access_token
+        
+        data = {
+            'refresh': str(refresh),
+            'access': str(access),
+        }
+        
+        # Agregar información adicional del usuario al token
+        data['user'] = {
+            'id': str(self.user.id),
+            'email': self.user.email,
+            'first_name': self.user.first_name,
+            'last_name': self.user.last_name,
+            'role': self.user.role,
+            'is_active': self.user.is_active,
+            'is_verified': self.user.is_verified
+        }
+        
+        return data 

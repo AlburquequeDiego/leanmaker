@@ -1,50 +1,108 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { apiService } from '../services/api.service';
+import type { ApiResponse } from '../types';
 
-interface UseApiState<T> {
-  data: T | null;
-  loading: boolean;
-  error: string | null;
+interface UseApiOptions<T> {
+  onSuccess?: (data: T) => void;
+  onError?: (error: string) => void;
+  onFinally?: () => void;
 }
 
-export function useApi<T>(url: string, dependencies: any[] = []) {
-  const [state, setState] = useState<UseApiState<T>>({
-    data: null,
-    loading: true,
-    error: null,
-  });
+export function useApi<T = any>() {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const execute = useCallback(
+    async (
+      requestFn: () => Promise<T>,
+      options: UseApiOptions<T> = {}
+    ) => {
+      setLoading(true);
+      setError(null);
+
       try {
-        setState(prev => ({ ...prev, loading: true, error: null }));
-        const data = await apiService.get<T>(url);
-        setState({ data, loading: false, error: null });
-      } catch (error: any) {
-        setState({
-          data: null,
-          loading: false,
-          error: error.response?.data?.message || error.message || 'Error desconocido',
-        });
+        const result = await requestFn();
+        setData(result);
+        options.onSuccess?.(result);
+        return result;
+      } catch (err: any) {
+        const errorMessage = err.message || 'An error occurred';
+        setError(errorMessage);
+        options.onError?.(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+        options.onFinally?.();
       }
-    };
+    },
+    []
+  );
 
-    fetchData();
-  }, dependencies);
+  const get = useCallback(
+    (endpoint: string, options?: UseApiOptions<T>) => {
+      return execute(() => apiService.get<T>(endpoint), options);
+    },
+    [execute]
+  );
 
-  const refetch = async () => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      const data = await apiService.get<T>(url);
-      setState({ data, loading: false, error: null });
-    } catch (error: any) {
-      setState({
-        data: null,
-        loading: false,
-        error: error.response?.data?.message || error.message || 'Error desconocido',
-      });
-    }
+  const post = useCallback(
+    (endpoint: string, data?: any, options?: UseApiOptions<T>) => {
+      return execute(() => apiService.post<T>(endpoint, data), options);
+    },
+    [execute]
+  );
+
+  const put = useCallback(
+    (endpoint: string, data?: any, options?: UseApiOptions<T>) => {
+      return execute(() => apiService.put<T>(endpoint, data), options);
+    },
+    [execute]
+  );
+
+  const patch = useCallback(
+    (endpoint: string, data?: any, options?: UseApiOptions<T>) => {
+      return execute(() => apiService.patch<T>(endpoint, data), options);
+    },
+    [execute]
+  );
+
+  const del = useCallback(
+    (endpoint: string, options?: UseApiOptions<T>) => {
+      return execute(() => apiService.delete<T>(endpoint), options);
+    },
+    [execute]
+  );
+
+  const uploadFile = useCallback(
+    (endpoint: string, file: File, fieldName?: string, options?: UseApiOptions<T>) => {
+      return execute(() => apiService.uploadFile<T>(endpoint, file, fieldName), options);
+    },
+    [execute]
+  );
+
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  const reset = useCallback(() => {
+    setData(null);
+    setLoading(false);
+    setError(null);
+  }, []);
+
+  return {
+    data,
+    loading,
+    error,
+    execute,
+    get,
+    post,
+    put,
+    patch,
+    delete: del,
+    uploadFile,
+    clearError,
+    reset,
   };
-
-  return { ...state, refetch };
 }

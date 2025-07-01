@@ -3506,3 +3506,204 @@ INFO 2025-06-30 21:05:16,015 autoreload 9248 10300 Watching for file changes wit
 INFO 2025-06-30 21:05:18,741 autoreload 9248 10300 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\urls.py changed, reloading.
 INFO 2025-06-30 21:05:19,896 autoreload 13452 11508 Watching for file changes with StatReloader
 INFO 2025-06-30 21:06:24,207 autoreload 3192 16432 Watching for file changes with StatReloader
+WARNING 2025-06-30 21:06:58,997 log 3192 18240 Not Found: /favicon.ico
+WARNING 2025-06-30 21:22:26,433 log 3192 1516 Not Found: /favicon.ico
+ERROR 2025-06-30 21:37:04,447 log 3192 912 Internal Server Error: /admin/activity_logs/activitylog/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\options.py", line 688, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\utils\decorators.py", line 134, in _wrapper_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\decorators\cache.py", line 62, in _wrapper_view_func
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\sites.py", line 242, in inner
+    return view(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\utils\decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\utils\decorators.py", line 134, in _wrapper_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\options.py", line 1926, in changelist_view
+    cl = self.get_changelist_instance(request)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\options.py", line 836, in get_changelist_instance
+    return ChangeList(
+           ^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\views\main.py", line 122, in __init__
+    self.queryset = self.get_queryset(request)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\views\main.py", line 503, in get_queryset
+    ) = self.get_filters(request)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\views\main.py", line 182, in get_filters
+    spec = field_list_filter_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\filters.py", line 175, in create
+    return list_filter_class(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\filters.py", line 188, in __init__
+    self.lookup_choices = self.field_choices(field, request, model_admin)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\filters.py", line 225, in field_choices
+    return field.get_choices(include_blank=False, ordering=ordering)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\db\models\fields\__init__.py", line 1010, in get_choices
+    (choice_func(x), str(x)) for x in qs
+                     ^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\users\models.py", line 76, in __str__
+    return f"{self.email} ({self.get_role_display()})"
+                            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\users\models.py", line 85, in get_role_display
+    return dict(self.ROLES)[self.role]
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: ''
+INFO 2025-06-30 22:00:42,600 autoreload 9228 18208 Watching for file changes with StatReloader
+WARNING 2025-06-30 22:00:46,886 log 9228 2852 Not Found: /favicon.ico
+WARNING 2025-06-30 22:02:38,793 log 9228 16320 Bad Request: /api/token/
+WARNING 2025-06-30 22:07:05,040 log 9228 7824 Bad Request: /api/token/
+INFO 2025-06-30 22:27:51,830 autoreload 13280 11904 Watching for file changes with StatReloader
+WARNING 2025-06-30 22:29:46,603 log 13280 19324 Not Found: /favicon.ico
+WARNING 2025-06-30 22:32:44,545 log 13280 3596 Unauthorized: /api/token/
+WARNING 2025-06-30 22:32:44,560 log 13280 3596 Not Found: /api/auth/refresh/
+WARNING 2025-06-30 22:32:47,814 log 13280 3596 Unauthorized: /api/token/
+WARNING 2025-06-30 22:32:47,826 log 13280 3596 Not Found: /api/auth/refresh/
+WARNING 2025-06-30 22:33:45,094 log 13280 14464 Not Found: /api/users/me/
+WARNING 2025-06-30 22:33:45,118 log 13280 14464 Not Found: /api/users/me/
+WARNING 2025-06-30 22:37:29,139 log 13280 16228 Not Found: /api/users/me/
+WARNING 2025-06-30 22:37:29,156 log 13280 16228 Not Found: /api/users/me/
+WARNING 2025-06-30 22:40:28,563 log 13280 12164 Not Found: /api/users/me/
+WARNING 2025-06-30 22:40:28,578 log 13280 12164 Not Found: /api/users/me/
+WARNING 2025-06-30 22:52:39,976 log 13280 18872 Not Found: /api/users/me/
+WARNING 2025-06-30 22:52:40,055 log 13280 18872 Not Found: /api/users/me/
+WARNING 2025-06-30 22:52:57,244 log 13280 17384 Not Found: /api/users/me/
+WARNING 2025-06-30 22:52:57,254 log 13280 17384 Not Found: /api/users/me/
+INFO 2025-06-30 22:54:14,991 autoreload 14624 3264 Watching for file changes with StatReloader
+WARNING 2025-06-30 22:54:19,790 log 14624 2200 Not Found: /favicon.ico
+WARNING 2025-06-30 22:54:38,696 log 14624 13516 Not Found: /api/users/me/
+WARNING 2025-06-30 22:54:38,706 log 14624 15088 Not Found: /api/users/me/
+WARNING 2025-06-30 22:55:03,447 log 14624 17012 Not Found: /api/users/me/
+WARNING 2025-06-30 22:55:03,456 log 14624 17012 Not Found: /api/users/me/
+INFO 2025-06-30 23:41:28,881 autoreload 17340 11664 Watching for file changes with StatReloader
+WARNING 2025-06-30 23:41:32,723 log 17340 11744 Not Found: /favicon.ico
+WARNING 2025-06-30 23:42:43,693 log 17340 14904 Unauthorized: /api/token/
+WARNING 2025-06-30 23:42:43,710 log 17340 14904 Not Found: /api/auth/refresh/
+WARNING 2025-06-30 23:43:06,304 log 17340 14904 Not Found: /api/users/me/
+WARNING 2025-06-30 23:43:06,325 log 17340 14904 Not Found: /api/users/me/
+WARNING 2025-06-30 23:43:18,297 log 17340 14904 Unauthorized: /api/token/
+WARNING 2025-06-30 23:43:18,299 log 17340 14904 Not Found: /api/auth/refresh/
+WARNING 2025-06-30 23:54:47,390 log 17340 12280 Not Found: /api/users/profile/
+WARNING 2025-06-30 23:54:47,407 log 17340 12280 Not Found: /api/users/profile/
+INFO 2025-06-30 23:59:07,320 autoreload 17340 11664 C:\Users\albur\Desktop\leanmaker\Backend\users\serializers.py changed, reloading.
+INFO 2025-06-30 23:59:08,404 autoreload 14112 10400 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:15,425 autoreload 14112 10400 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-06-30 23:59:16,387 autoreload 10020 15396 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:21,399 autoreload 10020 15396 C:\Users\albur\Desktop\leanmaker\Backend\users\serializers.py changed, reloading.
+INFO 2025-06-30 23:59:22,603 autoreload 1032 3600 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:26,540 autoreload 1032 3600 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-06-30 23:59:27,608 autoreload 18108 12432 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:33,607 autoreload 18108 12432 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-06-30 23:59:34,704 autoreload 18308 7716 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:36,483 autoreload 18308 7716 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-06-30 23:59:37,511 autoreload 6684 9524 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:40,327 autoreload 6684 9524 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-06-30 23:59:41,447 autoreload 10992 15636 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:43,339 autoreload 10992 15636 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-06-30 23:59:44,265 autoreload 15688 16892 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:47,301 autoreload 15688 16892 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-06-30 23:59:48,415 autoreload 17488 17832 Watching for file changes with StatReloader
+INFO 2025-06-30 23:59:54,363 autoreload 17488 17832 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-06-30 23:59:55,216 autoreload 19104 4776 Watching for file changes with StatReloader
+WARNING 2025-07-01 00:00:32,254 log 19104 12664 Not Found: /api/users/profile/
+WARNING 2025-07-01 00:00:32,263 log 19104 12664 Not Found: /api/users/profile/
+WARNING 2025-07-01 00:00:47,614 log 19104 12664 Bad Request: /api/token/
+WARNING 2025-07-01 00:01:45,941 log 19104 3932 Bad Request: /api/token/
+INFO 2025-07-01 00:23:55,328 autoreload 10400 19436 Watching for file changes with StatReloader
+INFO 2025-07-01 00:25:09,664 autoreload 9472 16636 Watching for file changes with StatReloader
+INFO 2025-07-01 00:25:47,036 autoreload 9472 16636 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-07-01 00:25:48,151 autoreload 11664 9496 Watching for file changes with StatReloader
+INFO 2025-07-01 00:26:21,528 autoreload 11664 9496 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\settings.py changed, reloading.
+INFO 2025-07-01 00:26:22,538 autoreload 10964 14800 Watching for file changes with StatReloader
+INFO 2025-07-01 01:34:13,631 autoreload 3184 1208 Watching for file changes with StatReloader
+WARNING 2025-07-01 01:34:18,225 log 3184 8408 Not Found: /favicon.ico
+WARNING 2025-07-01 01:35:14,978 log 3184 5956 Not Found: /favicon.ico
+WARNING 2025-07-01 01:39:21,586 log 3184 4092 Bad Request: /api/token/
+WARNING 2025-07-01 01:41:34,495 log 3184 4872 Not Found: /favicon.ico
+WARNING 2025-07-01 01:43:44,018 log 3184 15368 Not Found: /favicon.ico
+WARNING 2025-07-01 01:56:47,609 log 3184 7572 Bad Request: /api/token/
+WARNING 2025-07-01 01:58:52,331 log 3184 7572 Bad Request: /api/token/
+WARNING 2025-07-01 02:02:59,179 log 3184 8584 Bad Request: /api/token/
+WARNING 2025-07-01 02:06:53,769 log 3184 14376 Not Found: /favicon.ico
+WARNING 2025-07-01 02:09:53,034 log 3184 14376 Forbidden (CSRF token from POST incorrect.): /admin/login/
+WARNING 2025-07-01 02:13:57,237 log 3184 8288 Not Found: /favicon.ico
+WARNING 2025-07-01 02:17:25,840 log 3184 16004 Bad Request: /api/token/
+WARNING 2025-07-01 02:17:44,775 log 3184 16004 Bad Request: /api/token/
+ERROR 2025-07-01 02:19:05,003 log 3184 16004 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\response.py", line 70, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\renderers.py", line 723, in render
+    context = self.get_context(data, accepted_media_type, renderer_context)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\renderers.py", line 654, in get_context
+    raw_data_post_form = self.get_raw_data_form(data, view, 'POST', request)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\renderers.py", line 553, in get_raw_data_form
+    serializer = view.get_serializer()
+                 ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\generics.py", line 110, in get_serializer
+    return serializer_class(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\users\serializers.py", line 131, in __init__
+    self.fields['email'] = self.fields.pop('username', None)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\utils\serializer_helpers.py", line 169, in __setitem__
+    field.bind(field_name=key, parent=self.serializer)
+    ^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'bind'
+INFO 2025-07-01 02:22:48,243 autoreload 3184 1208 C:\Users\albur\Desktop\leanmaker\Backend\users\serializers.py changed, reloading.
+INFO 2025-07-01 02:22:50,069 autoreload 13692 9260 Watching for file changes with StatReloader
+INFO 2025-07-01 02:22:52,241 autoreload 13692 9260 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-01 02:22:53,302 autoreload 19044 3332 Watching for file changes with StatReloader
+INFO 2025-07-01 02:22:56,229 autoreload 19044 3332 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-01 02:22:57,199 autoreload 16920 8584 Watching for file changes with StatReloader
+INFO 2025-07-01 02:29:44,250 autoreload 16900 1692 Watching for file changes with StatReloader
+WARNING 2025-07-01 02:29:49,277 log 16900 11200 Not Found: /favicon.ico
+WARNING 2025-07-01 02:40:19,046 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:32,011 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:32,908 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:33,065 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:33,209 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:33,355 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:33,609 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:33,783 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:33,934 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:34,070 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:34,225 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:34,381 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:34,549 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:34,695 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:34,845 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:35,165 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:35,615 log 16900 7712 Bad Request: /api/token/
+WARNING 2025-07-01 02:40:35,772 log 16900 7712 Bad Request: /api/token/

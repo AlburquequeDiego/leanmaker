@@ -16,9 +16,10 @@ import LoadingButton from '../../components/common/LoadingButton';
 import { useAuth } from '../../hooks/useAuth';
 
 const validationSchema = yup.object({
-  username: yup
+  email: yup
     .string()
-    .required('El nombre de usuario es requerido'),
+    .email('Debe ser un correo válido')
+    .required('El correo es requerido'),
   password: yup
     .string()
     .required('La contraseña es requerida'),
@@ -26,26 +27,22 @@ const validationSchema = yup.object({
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, loading, error, clearError } = useAuth();
 
   const formik = useFormik({
     initialValues: {
-      username: '',
+      email: '',
       password: '',
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      setIsLoading(true);
-      setError(null);
       try {
-        await login(values.username, values.password);
+        clearError();
+        await login(values);
         navigate('/dashboard');
       } catch (err) {
-        setError('Error al iniciar sesión. Por favor, verifique sus credenciales.');
-      } finally {
-        setIsLoading(false);
+        // Error is handled by the auth hook
+        console.error('Login failed:', err);
       }
     },
   });
@@ -147,16 +144,16 @@ export const Login = () => {
                   margin="normal"
                   required
                   fullWidth
-                  id="username"
-                  label="Nombre de Usuario"
-                  name="username"
-                  autoComplete="username"
+                  id="email"
+                  label="Correo electrónico"
+                  name="email"
+                  autoComplete="email"
                   autoFocus
-                  value={formik.values.username}
+                  value={formik.values.email}
                   onChange={formik.handleChange}
-                  error={formik.touched.username && Boolean(formik.errors.username)}
-                  helperText={formik.touched.username && formik.errors.username}
-                  disabled={isLoading}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
+                  disabled={loading}
                 />
                 <TextField
                   margin="normal"
@@ -171,13 +168,13 @@ export const Login = () => {
                   onChange={formik.handleChange}
                   error={formik.touched.password && Boolean(formik.errors.password)}
                   helperText={formik.touched.password && formik.errors.password}
-                  disabled={isLoading}
+                  disabled={loading}
                 />
                 <LoadingButton
                   type="submit"
                   fullWidth
                   variant="contained"
-                  loading={isLoading}
+                  loading={loading}
                   sx={{ mt: 3, mb: 2 }}
                 >
                   Iniciar Sesión

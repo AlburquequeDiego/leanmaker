@@ -23,15 +23,10 @@ export const TestConnection = () => {
       setStatus('error');
       
       // Manejar diferentes tipos de errores
-      if (error.response) {
-        // El servidor respondió con un código de estado de error
-        setMessage(`Error del servidor: ${error.response.status} - ${error.response.data?.detail || error.response.statusText}`);
-      } else if (error.request) {
-        // La petición fue hecha pero no se recibió respuesta
-        setMessage('No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8000');
+      if (error.message) {
+        setMessage(`Error de conexión: ${error.message}`);
       } else {
-        // Algo más causó el error
-        setMessage(`Error de conexión: ${error.message || 'Error desconocido'}`);
+        setMessage('No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8000');
       }
     }
   };

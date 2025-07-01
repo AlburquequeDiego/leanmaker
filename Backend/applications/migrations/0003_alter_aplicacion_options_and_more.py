@@ -20,10 +20,10 @@ class Migration(migrations.Migration):
             name='aplicacion',
             options={'ordering': ['-applied_at'], 'verbose_name': 'Aplicación', 'verbose_name_plural': 'Aplicaciones'},
         ),
-        migrations.AlterUniqueTogether(
-            name='aplicacion',
-            unique_together={('proyecto', 'estudiante')},
-        ),
+        # migrations.AlterUniqueTogether(
+        #     name='aplicacion',
+        #     unique_together={('proyecto', 'estudiante')},
+        # ),
         migrations.AddField(
             model_name='aplicacion',
             name='applied_at',

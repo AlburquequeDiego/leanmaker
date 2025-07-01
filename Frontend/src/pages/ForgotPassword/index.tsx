@@ -17,7 +17,6 @@ const emailSchema = yup.object({
   email: yup
     .string()
     .email('Ingrese un email válido')
-    .matches(/@leanmaker\.com$/, 'Debe ser un correo institucional')
     .required('El email es requerido'),
 });
 

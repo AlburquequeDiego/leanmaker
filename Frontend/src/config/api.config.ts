@@ -8,7 +8,7 @@ export const API_ENDPOINTS = {
   REGISTER: '/api/auth/register/',
   
   // User endpoints
-  USER_PROFILE: '/api/users/me/',
+  USER_PROFILE: '/api/users/profile/',
   USERS: '/api/users/',
   
   // Dashboard

@@ -6,11 +6,31 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Usuario
 from .serializers import (
     UsuarioSerializer, UsuarioCreateSerializer, UsuarioUpdateSerializer,
-    LoginSerializer, ChangePasswordSerializer, UserRegistrationSerializer
+    LoginSerializer, ChangePasswordSerializer, UserRegistrationSerializer,
+    CustomTokenObtainPairSerializer, EmailTokenObtainPairSerializer
 )
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """Vista personalizada para JWT que usa email en vez de username"""
+    serializer_class = CustomTokenObtainPairSerializer
+    
+    def post(self, request, *args, **kwargs):
+        """Override del método POST para mejor manejo de errores"""
+        try:
+            response = super().post(request, *args, **kwargs)
+            return response
+        except Exception as e:
+            return Response({
+                'error': 'Error de autenticación',
+                'detail': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailTokenObtainPairSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.filter(is_active=True)
@@ -257,4 +277,42 @@ class UserRegistrationView(APIView):
                 'message': 'Usuario registrado exitosamente',
                 'user': UsuarioSerializer(user).data
             }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TestAuthView(APIView):
+    """Vista de prueba para verificar autenticación"""
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        """Probar autenticación con email y password"""
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if not email or not password:
+            return Response({
+                'error': 'Email y password son requeridos'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = Usuario.objects.get(email=email)
+            if user.check_password(password):
+                return Response({
+                    'success': True,
+                    'user': {
+                        'id': str(user.id),
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'role': user.role,
+                        'is_active': user.is_active,
+                        'is_verified': user.is_verified
+                    }
+                })
+            else:
+                return Response({
+                    'error': 'Contraseña incorrecta'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except Usuario.DoesNotExist:
+            return Response({
+                'error': 'Usuario no encontrado'
+            }, status=status.HTTP_404_NOT_FOUND) 
