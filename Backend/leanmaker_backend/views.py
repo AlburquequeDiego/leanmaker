@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.utils import timezone
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import json
 import os
 
@@ -12,6 +12,17 @@ def health_check(request):
     Endpoint de health check para verificar que el backend esté funcionando.
     """
     return Response({
+        'status': 'healthy',
+        'timestamp': timezone.now().isoformat(),
+        'version': '1.0.0',
+        'message': 'Leanmaker Backend está funcionando correctamente'
+    })
+
+def simple_health_check(request):
+    """
+    Endpoint simple de health check sin DRF para evitar problemas de autenticación.
+    """
+    return JsonResponse({
         'status': 'healthy',
         'timestamp': timezone.now().isoformat(),
         'version': '1.0.0',

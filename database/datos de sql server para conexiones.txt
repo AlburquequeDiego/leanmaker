@@ -18,6 +18,6 @@ nombre de la base de datos : leanmaker_db
 
 
 superusuario
-Email: admin@gmail.com
+Email: alburqueque511@gmail.com
 Password: admin
 

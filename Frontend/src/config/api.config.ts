@@ -2,72 +2,72 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:80
 
 export const API_ENDPOINTS = {
   // Auth endpoints
-  LOGIN: '/api/v1/token/',
-  REFRESH_TOKEN: '/api/v1/token/refresh/',
-  VERIFY_TOKEN: '/api/v1/token/verify/',
-  REGISTER: '/api/v1/auth/register/',
+  LOGIN: '/api/token/',
+  REFRESH_TOKEN: '/api/token/refresh/',
+  VERIFY_TOKEN: '/api/token/verify/',
+  REGISTER: '/api/auth/register/',
   
   // User endpoints
-  USER_PROFILE: '/api/v1/users/me/',
-  USERS: '/api/v1/users/',
+  USER_PROFILE: '/api/users/me/',
+  USERS: '/api/users/',
   
   // Dashboard
-  DASHBOARD: '/api/v1/dashboard/',
+  DASHBOARD: '/api/dashboard/',
   
   // Projects
-  PROJECTS: '/api/v1/projects/',
-  PROJECT_APPLICATIONS: '/api/v1/project-applications/',
-  PROJECT_MEMBERS: '/api/v1/project-members/',
+  PROJECTS: '/api/projects/',
+  PROJECT_APPLICATIONS: '/api/applications/',
+  PROJECT_MEMBERS: '/api/project-members/',
   
   // Students
-  STUDENTS: '/api/v1/students/',
-  STUDENT_PROFILES: '/api/v1/student-profiles/',
+  STUDENTS: '/api/students/',
+  STUDENT_PROFILES: '/api/student-profiles/',
   
   // Companies
-  COMPANIES: '/api/v1/companies/',
-  COMPANY_RATINGS: '/api/v1/company-ratings/',
+  COMPANIES: '/api/companies/',
+  COMPANY_RATINGS: '/api/company-ratings/',
   
   // Evaluations
-  EVALUATIONS: '/api/v1/evaluations/',
-  EVALUATION_CATEGORIES: '/api/v1/evaluation-categories/',
-  EVALUATION_TEMPLATES: '/api/v1/evaluation-templates/',
+  EVALUATIONS: '/api/evaluations/',
+  EVALUATION_CATEGORIES: '/api/evaluation-categories/',
+  EVALUATION_TEMPLATES: '/api/evaluation-templates/',
   
   // Notifications
-  NOTIFICATIONS: '/api/v1/notifications/',
-  NOTIFICATION_TEMPLATES: '/api/v1/notification-templates/',
-  MASS_NOTIFICATIONS: '/api/v1/mass-notifications/',
+  NOTIFICATIONS: '/api/notifications/',
+  NOTIFICATION_TEMPLATES: '/api/notification-templates/',
+  MASS_NOTIFICATIONS: '/api/mass-notifications/',
   
   // Calendar
-  CALENDAR_EVENTS: '/api/v1/calendar-events/',
-  EVENT_REMINDERS: '/api/v1/event-reminders/',
-  CALENDAR_SETTINGS: '/api/v1/calendar-settings/',
+  CALENDAR_EVENTS: '/api/calendar/',
+  EVENT_REMINDERS: '/api/event-reminders/',
+  CALENDAR_SETTINGS: '/api/calendar-settings/',
   
   // Work Hours
-  WORK_HOURS: '/api/v1/work-hours/',
+  WORK_HOURS: '/api/work-hours/',
   
   // Strikes
-  STRIKES: '/api/v1/strikes/',
+  STRIKES: '/api/strikes/',
   
   // Questionnaires
-  QUESTIONNAIRES: '/api/v1/questionnaires/',
-  QUESTIONS: '/api/v1/questions/',
-  CHOICES: '/api/v1/choices/',
-  ANSWERS: '/api/v1/answers/',
+  QUESTIONNAIRES: '/api/questionnaires/',
+  QUESTIONS: '/api/questions/',
+  CHOICES: '/api/choices/',
+  ANSWERS: '/api/answers/',
   
   // Interviews
-  INTERVIEWS: '/api/v1/interviews/',
+  INTERVIEWS: '/api/interviews/',
   
   // Documents
-  DOCUMENTS: '/api/v1/documents/',
+  DOCUMENTS: '/api/documents/',
   
   // Reports
-  REPORTS: '/api/v1/reports/',
+  REPORTS: '/api/reports/',
   
   // Search
-  SEARCH: '/api/v1/search/',
+  SEARCH: '/api/search/',
   
   // Health check
-  HEALTH: '/api/v1/health/',
+  HEALTH: '/api/health-simple/',
 };
 
 export const getApiUrl = (endpoint: string): string => `${API_BASE_URL}${endpoint}`;

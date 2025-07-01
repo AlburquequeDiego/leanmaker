@@ -16,16 +16,23 @@ export const TestConnection = () => {
       const healthResponse = await apiService.get(API_ENDPOINTS.HEALTH);
       console.log('Health check response:', healthResponse);
       
-      // Test API schema
-      const schemaResponse = await apiService.get('/api/v1/schema/');
-      console.log('API Schema response:', schemaResponse);
-      
       setStatus('success');
       setMessage('¡Conexión exitosa! El backend Django está funcionando correctamente.');
     } catch (error: any) {
       console.error('Connection test error:', error);
       setStatus('error');
-      setMessage(`Error de conexión: ${error.response?.data?.detail || error.message || 'Error desconocido'}`);
+      
+      // Manejar diferentes tipos de errores
+      if (error.response) {
+        // El servidor respondió con un código de estado de error
+        setMessage(`Error del servidor: ${error.response.status} - ${error.response.data?.detail || error.response.statusText}`);
+      } else if (error.request) {
+        // La petición fue hecha pero no se recibió respuesta
+        setMessage('No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8000');
+      } else {
+        // Algo más causó el error
+        setMessage(`Error de conexión: ${error.message || 'Error desconocido'}`);
+      }
     }
   };
 

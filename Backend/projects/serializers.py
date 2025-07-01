@@ -244,7 +244,7 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
         return obj.status.name in ['active', 'open', 'en curso'] and obj.current_students < obj.max_students
     
     def get_applications_count(self, obj):
-        return obj.application_project.count()
+        return obj.application_project.count() 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
     """Serializer para miembros de proyecto"""

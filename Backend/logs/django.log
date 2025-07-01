@@ -3453,3 +3453,56 @@ INFO 2025-06-30 13:09:56,298 autoreload 18008 19208 Watching for file changes wi
 WARNING 2025-06-30 13:10:00,942 log 18008 15376 Not Found: /favicon.ico
 INFO 2025-06-30 20:17:50,577 autoreload 7124 2524 Watching for file changes with StatReloader
 WARNING 2025-06-30 20:19:18,137 log 7124 7080 Not Found: /favicon.ico
+WARNING 2025-06-30 20:23:55,092 log 7124 8212 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:25:18,654 log 7124 18580 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:31:45,297 log 7124 8108 Not Found: /favicon.ico
+WARNING 2025-06-30 20:31:57,331 log 7124 8108 Not Found: /api/v1/schema/
+WARNING 2025-06-30 20:32:13,147 log 7124 6872 Not Found: /api/v1/docs/
+WARNING 2025-06-30 20:32:27,311 log 7124 17980 Not Found: /api/v1/health/
+WARNING 2025-06-30 20:33:26,086 log 7124 12832 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:35:04,577 log 7124 18968 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:35:12,719 log 7124 18968 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:35:15,019 log 7124 18968 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:35:17,941 log 7124 18968 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:41:51,996 log 7124 15328 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:41:58,769 log 7124 8072 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:42:01,660 log 7124 8072 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:42:04,958 log 7124 8072 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:42:25,663 log 7124 19116 Not Found: /api/v1/token/
+WARNING 2025-06-30 20:42:34,828 log 7124 6492 Not Found: /api/v1/token/
+INFO 2025-06-30 21:01:42,659 autoreload 13564 15820 Watching for file changes with StatReloader
+WARNING 2025-06-30 21:01:46,983 log 13564 2484 Not Found: /favicon.ico
+WARNING 2025-06-30 21:01:52,739 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:54,148 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:54,691 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:55,013 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:55,159 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:55,308 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:55,436 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:55,684 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:55,950 log 13564 19260 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:01:56,081 log 13564 19260 Not Found: /api/v1/health/
+INFO 2025-06-30 21:02:26,819 autoreload 13564 15820 C:\Users\albur\Desktop\leanmaker\Backend\projects\serializers.py changed, reloading.
+INFO 2025-06-30 21:02:28,175 autoreload 9500 7524 Watching for file changes with StatReloader
+WARNING 2025-06-30 21:03:32,056 log 9500 10004 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:03:36,811 log 9500 15324 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:03:37,149 log 9500 10004 Unauthorized: /api/health/
+WARNING 2025-06-30 21:04:12,284 log 9500 18972 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:04:12,931 log 9500 18972 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:04:13,515 log 9500 18972 Not Found: /api/v1/health/
+WARNING 2025-06-30 21:04:14,831 log 9500 18972 Unauthorized: /api/health/
+WARNING 2025-06-30 21:04:14,847 log 9500 18972 Not Found: /api/auth/refresh/
+WARNING 2025-06-30 21:04:22,496 log 9500 10004 Unauthorized: /api/health/
+INFO 2025-06-30 21:04:44,640 autoreload 9500 7524 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
+INFO 2025-06-30 21:04:45,709 autoreload 12852 2284 Watching for file changes with StatReloader
+INFO 2025-06-30 21:04:57,000 autoreload 12852 2284 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
+INFO 2025-06-30 21:04:58,029 autoreload 15032 10400 Watching for file changes with StatReloader
+INFO 2025-06-30 21:04:59,897 autoreload 15032 10400 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\views.py changed, reloading.
+INFO 2025-06-30 21:05:00,900 autoreload 12416 14952 Watching for file changes with StatReloader
+INFO 2025-06-30 21:05:06,801 autoreload 12416 14952 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\urls.py changed, reloading.
+INFO 2025-06-30 21:05:07,755 autoreload 15452 14852 Watching for file changes with StatReloader
+INFO 2025-06-30 21:05:14,864 autoreload 15452 14852 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\urls.py changed, reloading.
+INFO 2025-06-30 21:05:16,015 autoreload 9248 10300 Watching for file changes with StatReloader
+INFO 2025-06-30 21:05:18,741 autoreload 9248 10300 C:\Users\albur\Desktop\leanmaker\Backend\leanmaker_backend\urls.py changed, reloading.
+INFO 2025-06-30 21:05:19,896 autoreload 13452 11508 Watching for file changes with StatReloader
+INFO 2025-06-30 21:06:24,207 autoreload 3192 16432 Watching for file changes with StatReloader

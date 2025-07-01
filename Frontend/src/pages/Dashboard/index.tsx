@@ -14,7 +14,7 @@ export const Dashboard = () => {
   }
 
   // Determine user role based on user data
-  const userRole = user?.is_staff ? 'admin' : 'student'; // You can expand this logic
+  const userRole = user?.role || (user?.is_staff ? 'admin' : 'student');
 
   return (
     <DashboardLayout userRole={userRole} />

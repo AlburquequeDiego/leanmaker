@@ -28,6 +28,7 @@ export interface User {
   is_staff?: boolean;
   is_active?: boolean;
   date_joined?: string;
+  role?: 'admin' | 'student' | 'company';
 }
 
 class AuthService {

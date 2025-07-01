@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense } from 'react';
 import { CircularProgress, Box } from '@mui/material';
 import { Home, Login, Register, ForgotPassword } from '../pages';
+import { TestConnection } from '../components/TestConnection';
 import StudentDashboard from '../pages/Dashboard/Student/StudentDashboard';
 import Profile from '../pages/Dashboard/Student/Profile';
 import Notifications from '../pages/Dashboard/Student/Notifications';
@@ -77,6 +78,7 @@ export const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/test-connection" element={<TestConnection />} />
 
         {/* Rutas protegidas */}
         <Route
