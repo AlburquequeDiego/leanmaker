@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='strike',
             name='student',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='strikes', to='students.student', verbose_name='Estudiante'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='strikes', to='students.estudiante', verbose_name='Estudiante'),
         ),
     ]

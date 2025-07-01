@@ -2,16 +2,19 @@ import { Navigate } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { useAuth } from '../../hooks/useAuth';
 
-interface DashboardProps {
-  userRole: 'admin' | 'company' | 'student';
-}
+export const Dashboard = () => {
+  const { user, isAuthenticated, isLoading } = useAuth();
 
-export const Dashboard = ({ userRole }: DashboardProps) => {
-  const { user } = useAuth();
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+
+  // Determine user role based on user data
+  const userRole = user?.is_staff ? 'admin' : 'student'; // You can expand this logic
 
   return (
     <DashboardLayout userRole={userRole} />

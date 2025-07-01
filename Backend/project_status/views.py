@@ -3,8 +3,8 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import ProjectStatus
-from .serializers import ProjectStatusSerializer, ProjectStatusListSerializer
+from .models import ProjectStatus, ProjectStatusHistory
+from .serializers import ProjectStatusSerializer, ProjectStatusHistorySerializer
 
 class ProjectStatusViewSet(viewsets.ModelViewSet):
     """ViewSet para gestión de estados de proyecto"""
@@ -18,13 +18,16 @@ class ProjectStatusViewSet(viewsets.ModelViewSet):
     ordering = ['name']
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return ProjectStatusListSerializer
         return ProjectStatusSerializer
 
     @action(detail=False, methods=['get'])
     def active(self, request):
         """Obtener solo estados activos"""
         queryset = ProjectStatus.objects.filter(is_active=True)
-        serializer = ProjectStatusListSerializer(queryset, many=True)
+        serializer = ProjectStatusSerializer(queryset, many=True)
         return Response(serializer.data)
+
+class ProjectStatusHistoryViewSet(viewsets.ModelViewSet):
+    queryset = ProjectStatusHistory.objects.all()
+    serializer_class = ProjectStatusHistorySerializer
+    permission_classes = [permissions.IsAuthenticated]

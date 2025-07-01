@@ -268,3 +268,7 @@ class PerfilEstudiante(models.Model):
             self.tipo_proyectos_preferidos = json.dumps(tipos_list, ensure_ascii=False)
         else:
             self.tipo_proyectos_preferidos = None
+
+def student_cv_path(instance, filename):
+    # Ruta por defecto para guardar CVs
+    return f'cv/{instance.user.id}/{filename}'

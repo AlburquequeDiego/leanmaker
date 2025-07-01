@@ -23,7 +23,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['document_type', 'project', 'uploaded_by', 'is_public']
+    filterset_fields = ['document_type', 'uploaded_by', 'is_public']
     search_fields = ['title', 'description']
     ordering_fields = ['created_at', 'updated_at', 'download_count', 'file_size']
     ordering = ['-created_at']

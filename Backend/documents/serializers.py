@@ -93,7 +93,7 @@ class DocumentUploadSerializer(serializers.ModelSerializer):
     """Serializer para subida de documentos"""
     class Meta:
         model = Document
-        fields = ['title', 'description', 'document_type', 'file', 'project', 'is_public']
+        fields = ['title', 'description', 'document_type', 'file', 'is_public']
 
     def validate(self, data):
         """Validación personalizada"""

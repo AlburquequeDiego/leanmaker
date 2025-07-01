@@ -27,7 +27,7 @@ class Proyecto(models.Model):
     
     # Campos básicos (coinciden con schema original)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='proyectos')
+    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='proyectos', null=True, blank=True)
     status = models.ForeignKey('project_status.ProjectStatus', on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
     
@@ -215,7 +215,7 @@ class HistorialEstadosProyecto(models.Model):
     comentario = models.TextField(null=True, blank=True)
     
     class Meta:
-        db_table = 'project_status_history'
+        db_table = 'project_status_changes'
         verbose_name = 'Historial de Estado de Proyecto'
         verbose_name_plural = 'Historial de Estados de Proyectos'
         ordering = ['-fecha_cambio']
@@ -235,7 +235,7 @@ class AplicacionProyecto(models.Model):
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='aplicaciones')
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='project_applications')
     estudiante = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='aplicaciones_estudiante')
     
     # Información de la aplicación

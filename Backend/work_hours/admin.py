@@ -1,9 +1,9 @@
 ﻿from django.contrib import admin
-from .models import WorkHours
+from .models import WorkHour
 
-class WorkHoursAdmin(admin.ModelAdmin):
-    list_display = ('student', 'project', 'hours_worked', 'date', 'approved_by')
-    list_filter = ('date', 'approved_by', 'project')
-    search_fields = ('student__email', 'project__title', 'description')
+class WorkHourAdmin(admin.ModelAdmin):
+    list_display = ('student', 'project', 'horas_trabajadas', 'fecha', 'validador')
+    list_filter = ('fecha', 'validador', 'project', 'estado_validacion')
+    search_fields = ('student__user__email', 'project__title', 'descripcion')
 
-admin.site.register(WorkHours, WorkHoursAdmin)
+admin.site.register(WorkHour, WorkHourAdmin)

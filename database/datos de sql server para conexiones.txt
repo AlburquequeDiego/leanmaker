@@ -15,3 +15,9 @@ https://www.whatismyip.com/
 Nombre del servidor:servidortesis.database.windows.net
 nombre de la base de datos : leanmaker_db
 
+
+
+superusuario
+Email: admin@gmail.com
+Password: admin
+

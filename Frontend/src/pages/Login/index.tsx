@@ -16,17 +16,11 @@ import LoadingButton from '../../components/common/LoadingButton';
 import { useAuth } from '../../hooks/useAuth';
 
 const validationSchema = yup.object({
-  email: yup
+  username: yup
     .string()
-    .email('Ingrese un email válido')
-    .required('El email es requerido'),
+    .required('El nombre de usuario es requerido'),
   password: yup
     .string()
-    .min(8, 'La contraseña debe tener al menos 8 caracteres')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial'
-    )
     .required('La contraseña es requerida'),
 });
 
@@ -38,7 +32,7 @@ export const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: '',
+      username: '',
       password: '',
     },
     validationSchema: validationSchema,
@@ -46,7 +40,7 @@ export const Login = () => {
       setIsLoading(true);
       setError(null);
       try {
-        await login(values.email, values.password);
+        await login(values.username, values.password);
         navigate('/dashboard');
       } catch (err) {
         setError('Error al iniciar sesión. Por favor, verifique sus credenciales.');
@@ -153,15 +147,15 @@ export const Login = () => {
                   margin="normal"
                   required
                   fullWidth
-                  id="email"
-                  label="Correo Electrónico"
-                  name="email"
-                  autoComplete="email"
+                  id="username"
+                  label="Nombre de Usuario"
+                  name="username"
+                  autoComplete="username"
                   autoFocus
-                  value={formik.values.email}
+                  value={formik.values.username}
                   onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
+                  error={formik.touched.username && Boolean(formik.errors.username)}
+                  helperText={formik.touched.username && formik.errors.username}
                   disabled={isLoading}
                 />
                 <TextField

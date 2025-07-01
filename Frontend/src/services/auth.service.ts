@@ -9,13 +9,6 @@ export interface LoginCredentials {
 export interface LoginResponse {
   access: string;
   refresh: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-  };
 }
 
 export interface RegisterData {
@@ -26,6 +19,17 @@ export interface RegisterData {
   last_name: string;
 }
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_staff?: boolean;
+  is_active?: boolean;
+  date_joined?: string;
+}
+
 class AuthService {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await apiService.post<LoginResponse>(API_ENDPOINTS.LOGIN, credentials);
@@ -33,7 +37,14 @@ class AuthService {
     // Store tokens in localStorage
     localStorage.setItem('accessToken', response.access);
     localStorage.setItem('refreshToken', response.refresh);
-    localStorage.setItem('user', JSON.stringify(response.user));
+    
+    // Get user profile and store it
+    try {
+      const user = await this.getCurrentUser();
+      localStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
     
     return response;
   }
@@ -46,17 +57,34 @@ class AuthService {
     localStorage.clear();
   }
 
-  async getCurrentUser(): Promise<any> {
-    return await apiService.get(API_ENDPOINTS.USER_PROFILE);
+  async getCurrentUser(): Promise<User> {
+    return await apiService.get<User>(API_ENDPOINTS.USER_PROFILE);
+  }
+
+  async verifyToken(token: string): Promise<boolean> {
+    try {
+      await apiService.post(API_ENDPOINTS.VERIFY_TOKEN, { token });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('accessToken');
   }
 
-  getUser(): any {
+  getUser(): User | null {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
   }
 }
 

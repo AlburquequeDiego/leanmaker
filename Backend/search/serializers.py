@@ -7,7 +7,9 @@ from companies.models import Empresa
 from projects.models import Proyecto
 from users.serializers import UserSerializer
 from projects.serializers import ProjectSerializer
-from evaluations.serializers import StudentSkillSerializer
+from companies.serializers import CompanySerializer
+from students.serializers import StudentSerializer
+from evaluations.models import StudentSkill
 
 class SearchQuerySerializer(serializers.Serializer):
     """Serializer para consultas de búsqueda"""
@@ -56,12 +58,17 @@ class SearchQuerySerializer(serializers.Serializer):
         
         return attrs
 
+class StudentSkillInlineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentSkill
+        fields = ['skill_name', 'level', 'years_experience', 'is_verified']
+
 class StudentSearchResultSerializer(serializers.Serializer):
     """Serializer para resultados de búsqueda de estudiantes"""
     student = UserSerializer()
     relevance_score = serializers.FloatField()
     matched_fields = serializers.ListField(child=serializers.CharField())
-    skills = StudentSkillSerializer(many=True)
+    skills = StudentSkillInlineSerializer(many=True)
     projects_count = serializers.IntegerField()
     average_rating = serializers.FloatField()
     
@@ -74,8 +81,8 @@ class StudentSearchResultSerializer(serializers.Serializer):
         data['average_rating'] = 0.0  # Calcular promedio de evaluaciones
         
         # Obtener habilidades del estudiante
-        skills = student.skills.all()[:5]  # Solo las primeras 5 habilidades
-        data['skills'] = StudentSkillSerializer(skills, many=True).data
+        skills = student.skill_records.all()[:5]  # Solo las primeras 5 habilidades
+        data['skills'] = StudentSkillInlineSerializer(skills, many=True).data
         
         return data
 
@@ -131,10 +138,10 @@ class SkillSearchResultSerializer(serializers.Serializer):
         # Calcular estadísticas de la habilidad
         skill_name = instance['skill_name']
         from evaluations.models import StudentSkill
-        from projects.models import Project
+        from projects.models import Proyecto
         
         students_with_skill = StudentSkill.objects.filter(skill_name__icontains=skill_name)
-        projects_with_skill = Project.objects.filter(required_skills__icontains=skill_name)
+        projects_with_skill = Proyecto.objects.filter(required_skills__icontains=skill_name)
         
         data['students_count'] = students_with_skill.count()
         data['projects_count'] = projects_with_skill.count()

@@ -1,141 +1,101 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { User, UserRole } from '../types';
+import { authService } from '../services/auth.service';
+import type { User } from '../services/auth.service';
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
-  error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (email: string, role: UserRole, name: string) => Promise<void>;
   isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (userData: any) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar si hay un usuario guardado en localStorage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const initializeAuth = async () => {
+      try {
+        if (authService.isAuthenticated()) {
+          const currentUser = await authService.getCurrentUser();
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        // Clear invalid tokens
+        authService.logout();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      // TODO: Implementar llamada real a la API
-      // Por ahora, simulamos una respuesta exitosa con credenciales mock
-      let mockUser: User;
-
-      // Credenciales de administrador
-      if (email === 'admin@leanmaker.com' && password === 'Admin123!') {
-        mockUser = {
-          id: '1',
-          email,
-          role: 'admin',
-          name: 'Administrador',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-      } 
-      // Credenciales de empresa
-      else if (email === 'empresa@leanmaker.com' && password === 'Empresa123!') {
-        mockUser = {
-          id: '2',
-          email,
-          role: 'company',
-          name: 'Empresa Demo',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-      }
-      // Credenciales de estudiante
-      else if (email === 'estudiante@leanmaker.com' && password === 'Estudiante123!') {
-        mockUser = {
-          id: '3',
-          email,
-          role: 'student',
-          name: 'Estudiante Demo',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-      }
-      else {
-        throw new Error('Credenciales inválidas');
-      }
-
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
-      throw err;
+      setIsLoading(true);
+      await authService.login({ username, password });
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-  };
-
-  const register = async (email: string, role: UserRole, name: string) => {
+  const logout = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      // TODO: Implementar llamada real a la API
-      // Por ahora, simulamos una respuesta exitosa
-      const mockUser: User = {
-        id: '1',
-        email,
-        role,
-        name,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al registrar usuario');
-      throw err;
-    } finally {
-      setLoading(false);
+      await authService.logout();
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 
-  const value = {
+  const register = async (userData: any) => {
+    try {
+      setIsLoading(true);
+      await authService.register(userData);
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const value: AuthContextType = {
     user,
-    loading,
-    error,
+    isAuthenticated: !!user,
+    isLoading,
     login,
     logout,
     register,
-    isAuthenticated: !!user,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
-  return context;
-} 
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}; 

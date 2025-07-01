@@ -62,6 +62,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='evaluation',
-            unique_together={('project', 'student', 'evaluator', 'category')},
+            unique_together={('project', 'student', 'evaluator')},
         ),
     ]

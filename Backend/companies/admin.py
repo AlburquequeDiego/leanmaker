@@ -3,11 +3,11 @@ from .models import Empresa, CalificacionEmpresa
 
 @admin.register(Empresa)
 class EmpresaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'industria', 'ubicacion', 'usuario_email')
-    search_fields = ('nombre', 'industria', 'usuario__email')
-    list_filter = ('industria', 'ubicacion')
-    ordering = ('nombre',)
+    list_display = ('company_name', 'industry', 'city', 'user_email')
+    search_fields = ('company_name', 'industry', 'user__email')
+    list_filter = ('industry', 'city')
+    ordering = ('company_name',)
 
-    def usuario_email(self, obj):
-        return obj.usuario.email
-    usuario_email.short_description = 'Email del Usuario'
+    def user_email(self, obj):
+        return obj.user.email
+    user_email.short_description = 'Email del Usuario'

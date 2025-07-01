@@ -15,31 +15,31 @@ from projects.views import (
     ProjectViewSet, ProjectApplicationViewSet, ProjectMemberViewSet
 )
 from evaluations.views import (
-    EvaluationViewSet, EvaluationCriteriaViewSet, EvaluationResponseViewSet
+    EvaluationViewSet, EvaluationCategoryViewSet, EvaluationTemplateViewSet
 )
 from notifications.views import (
     NotificationViewSet, NotificationTemplateViewSet
 )
 from calendar_events.views import (
-    CalendarEventViewSet, EventTypeViewSet
+    CalendarEventViewSet, EventReminderViewSet, CalendarSettingsViewSet
 )
 from strikes.views import (
-    StrikeViewSet, StrikeTypeViewSet
+    StrikeViewSet  # , StrikeTypeViewSet
 )
 from work_hours.views import (
-    WorkHourViewSet, WorkHourTypeViewSet
+    WorkHourViewSet  # , WorkHourTypeViewSet
 )
 from questionnaires.views import (
-    QuestionnaireViewSet, QuestionViewSet, QuestionnaireResponseViewSet, QuestionResponseViewSet
+    QuestionnaireViewSet, QuestionViewSet, ChoiceViewSet, AnswerViewSet
 )
 from interviews.views import (
-    InterviewViewSet, InterviewQuestionViewSet, InterviewResponseViewSet
+    InterviewViewSet  # , InterviewQuestionViewSet, InterviewResponseViewSet
 )
 from platform_settings.views import (
-    PlatformSettingViewSet, SystemConfigurationViewSet, FeatureFlagViewSet
+    PlatformSettingViewSet  # , SystemConfigurationViewSet, FeatureFlagViewSet
 )
 from search.views import (
-    SearchViewSet, SearchHistoryViewSet, SearchSuggestionViewSet
+    SearchViewSet  # , SearchHistoryViewSet, SearchSuggestionViewSet
 )
 from api_management.views import (
     APIKeyViewSet, APIUsageViewSet, APIRateLimitViewSet
@@ -71,8 +71,8 @@ router.register(r'project-members', ProjectMemberViewSet, basename='project-memb
 
 # Registrar ViewSets de evaluaciones
 router.register(r'evaluations', EvaluationViewSet, basename='evaluation')
-router.register(r'evaluation-criteria', EvaluationCriteriaViewSet, basename='evaluation-criteria')
-router.register(r'evaluation-responses', EvaluationResponseViewSet, basename='evaluation-response')
+router.register(r'evaluation-categories', EvaluationCategoryViewSet, basename='evaluation-category')
+router.register(r'evaluation-templates', EvaluationTemplateViewSet, basename='evaluation-template')
 
 # Registrar ViewSets de notificaciones
 router.register(r'notifications', NotificationViewSet, basename='notification')
@@ -80,26 +80,23 @@ router.register(r'notification-templates', NotificationTemplateViewSet, basename
 
 # Registrar ViewSets de eventos de calendario
 router.register(r'calendar-events', CalendarEventViewSet, basename='calendar-event')
-router.register(r'event-types', EventTypeViewSet, basename='event-type')
+router.register(r'event-reminders', EventReminderViewSet, basename='event-reminder')
+router.register(r'calendar-settings', CalendarSettingsViewSet, basename='calendar-setting')
 
 # Registrar ViewSets de strikes
 router.register(r'strikes', StrikeViewSet, basename='strike')
-router.register(r'strike-types', StrikeTypeViewSet, basename='strike-type')
 
 # Registrar ViewSets de horas de trabajo
 router.register(r'work-hours', WorkHourViewSet, basename='work-hour')
-router.register(r'work-hour-types', WorkHourTypeViewSet, basename='work-hour-type')
 
 # Registrar ViewSets de cuestionarios
 router.register(r'questionnaires', QuestionnaireViewSet, basename='questionnaire')
 router.register(r'questions', QuestionViewSet, basename='question')
-router.register(r'questionnaire-responses', QuestionnaireResponseViewSet, basename='questionnaire-response')
-router.register(r'question-responses', QuestionResponseViewSet, basename='question-response')
+router.register(r'choices', ChoiceViewSet, basename='choice')
+router.register(r'answers', AnswerViewSet, basename='answer')
 
 # Registrar ViewSets de entrevistas
 router.register(r'interviews', InterviewViewSet, basename='interview')
-router.register(r'interview-questions', InterviewQuestionViewSet, basename='interview-question')
-router.register(r'interview-responses', InterviewResponseViewSet, basename='interview-response')
 
 # Registrar ViewSets de configuraciones de plataforma
 router.register(r'platform-settings', PlatformSettingViewSet, basename='platform-setting')
@@ -108,8 +105,6 @@ router.register(r'feature-flags', FeatureFlagViewSet, basename='feature-flag')
 
 # Registrar ViewSets de búsqueda
 router.register(r'search', SearchViewSet, basename='search')
-router.register(r'search-history', SearchHistoryViewSet, basename='search-history')
-router.register(r'search-suggestions', SearchSuggestionViewSet, basename='search-suggestion')
 
 # Registrar ViewSets de gestión de APIs
 router.register(r'api-keys', APIKeyViewSet, basename='api-key')

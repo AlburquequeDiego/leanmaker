@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from .models import Evaluation, EvaluationCategoryScore
-from projects.serializers import ProyectoSerializer
-from companies.serializers import EmpresaSerializer
-from students.serializers import EstudianteSerializer
-from users.serializers import UsuarioSerializer
+from .models import Evaluation, EvaluationCategoryScore, EvaluationCategory, EvaluationTemplate
+from projects.serializers import ProjectSerializer
+from companies.serializers import CompanySerializer
+from students.serializers import StudentSerializer
+from users.serializers import UserSerializer
 
 class EvaluationCategoryScoreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,10 +11,10 @@ class EvaluationCategoryScoreSerializer(serializers.ModelSerializer):
         fields = ['id', 'category', 'rating']
 
 class EvaluationSerializer(serializers.ModelSerializer):
-    project = ProyectoSerializer(read_only=True)
-    company = EmpresaSerializer(read_only=True)
-    student = EstudianteSerializer(read_only=True)
-    evaluator = UsuarioSerializer(read_only=True)
+    project = ProjectSerializer(read_only=True)
+    company = CompanySerializer(read_only=True)
+    student = StudentSerializer(read_only=True)
+    evaluator = UserSerializer(read_only=True)
     categories = EvaluationCategoryScoreSerializer(many=True, read_only=True)
     
     class Meta:
@@ -82,4 +82,14 @@ class EvaluationUpdateSerializer(serializers.ModelSerializer):
                     **category_data
                 )
         
-        return instance 
+        return instance
+
+class EvaluationCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EvaluationCategory
+        fields = ['id', 'name', 'description', 'is_active']
+
+class EvaluationTemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EvaluationTemplate
+        fields = ['id', 'name', 'description', 'categories', 'is_active', 'created_at', 'updated_at'] 

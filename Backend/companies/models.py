@@ -27,8 +27,8 @@ class Empresa(models.Model):
     )
     
     # Campos básicos (coinciden con schema original)
-    id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='empresa_profile')
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='empresa_profile', null=True, blank=True)
     company_name = models.CharField(max_length=200)
     
     # Campos opcionales (NULL permitido)

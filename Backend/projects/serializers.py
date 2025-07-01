@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Avg, Count
-from .models import Proyecto
+from .models import Proyecto, MiembroProyecto
 from applications.models import Aplicacion
 from users.serializers import UserSerializer
 from companies.serializers import CompanySerializer
@@ -44,6 +44,9 @@ class ProjectSerializer(serializers.ModelSerializer):
             return evaluations.aggregate(Avg('score'))['score__avg']
         return 0
 
+# Alias para compatibilidad
+ProyectoSerializer = ProjectSerializer
+
 class ProjectDetailSerializer(ProjectSerializer):
     """Serializer detallado para proyectos"""
     company_details = CompanySerializer(source='company', read_only=True)
@@ -56,7 +59,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         read_only_fields = ProjectSerializer.Meta.read_only_fields + ['published_at', 'updated_at']
     
     def get_recent_applications(self, obj):
-        applications = obj.aplicaciones.all().order_by('-fecha_aplicacion')[:5]
+        applications = obj.application_project.all().order_by('-applied_at')[:5]
         return ProjectApplicationSerializer(applications, many=True).data
 
 class ProjectCreateSerializer(serializers.ModelSerializer):
@@ -115,47 +118,47 @@ class ProjectUpdateSerializer(serializers.ModelSerializer):
 class ProjectApplicationSerializer(serializers.ModelSerializer):
     """Serializer para aplicaciones a proyectos"""
     student_name = serializers.SerializerMethodField()
-    student_email = serializers.CharField(source='estudiante.user.email', read_only=True)
-    student_avatar = serializers.CharField(source='estudiante.user.avatar', read_only=True)
-    student_api_level = serializers.IntegerField(source='estudiante.api_level', read_only=True)
-    project_title = serializers.CharField(source='proyecto.title', read_only=True)
-    company_name = serializers.CharField(source='proyecto.company.company_name', read_only=True)
+    student_email = serializers.CharField(source='student.user.email', read_only=True)
+    student_avatar = serializers.CharField(source='student.user.avatar', read_only=True)
+    student_api_level = serializers.IntegerField(source='student.api_level', read_only=True)
+    project_title = serializers.CharField(source='project.title', read_only=True)
+    company_name = serializers.CharField(source='project.company.company_name', read_only=True)
     
     class Meta:
         model = Aplicacion
         fields = [
-            'id', 'proyecto', 'project_title', 'estudiante', 'student_name', 'student_email',
-            'student_avatar', 'student_api_level', 'company_name', 'carta_presentacion', 'estado',
-            'puntaje_compatibilidad', 'fecha_aplicacion', 'fecha_revision', 'fecha_respuesta',
-            'notas_empresa', 'notas_estudiante', 'url_portfolio', 'url_github', 'url_linkedin'
+            'id', 'project', 'project_title', 'student', 'student_name', 'student_email',
+            'student_avatar', 'student_api_level', 'company_name', 'cover_letter', 'status',
+            'compatibility_score', 'applied_at', 'reviewed_at', 'responded_at',
+            'company_notes', 'student_notes', 'portfolio_url', 'github_url', 'linkedin_url'
         ]
-        read_only_fields = ['id', 'fecha_aplicacion', 'fecha_revision', 'fecha_respuesta']
+        read_only_fields = ['id', 'applied_at', 'reviewed_at', 'responded_at']
     
     def get_student_name(self, obj):
-        return obj.estudiante.user.get_full_name() if obj.estudiante and obj.estudiante.user else ""
+        return obj.student.user.full_name if obj.student and obj.student.user else ""
     
     def validate(self, attrs):
         # Verificar que el estudiante no haya aplicado ya a este proyecto
         if Aplicacion.objects.filter(
-            proyecto=attrs['proyecto'], 
-            estudiante=attrs['estudiante']
+            project=attrs['project'], 
+            student=attrs['student']
         ).exists():
             raise serializers.ValidationError("Ya has aplicado a este proyecto.")
         
         # Verificar que el proyecto esté disponible
-        if attrs['proyecto'].status.name not in ['active', 'open', 'en curso']:
+        if attrs['project'].status and attrs['project'].status.name not in ['active', 'open', 'en curso']:
             raise serializers.ValidationError("Este proyecto no está disponible para aplicaciones.")
         
         # Verificar que el proyecto no esté lleno
-        if attrs['proyecto'].current_students >= attrs['proyecto'].max_students:
+        if attrs['project'].current_students >= attrs['project'].max_students:
             raise serializers.ValidationError("Este proyecto ya no acepta más estudiantes.")
         
         return attrs
 
 class ProjectApplicationDetailSerializer(ProjectApplicationSerializer):
     """Serializer detallado para aplicaciones"""
-    student_details = UserSerializer(source='estudiante.user', read_only=True)
-    project_details = ProjectSerializer(source='proyecto', read_only=True)
+    student_details = UserSerializer(source='student.user', read_only=True)
+    project_details = ProjectSerializer(source='project', read_only=True)
     
     class Meta(ProjectApplicationSerializer.Meta):
         fields = ProjectApplicationSerializer.Meta.fields + ['student_details', 'project_details']
@@ -165,10 +168,10 @@ class ProjectApplicationUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Aplicacion
-        fields = ['estado', 'notas_empresa']
+        fields = ['status', 'company_notes']
     
-    def validate_estado(self, value):
-        valid_states = ['pendiente', 'aceptado', 'rechazado', 'retirado']
+    def validate_status(self, value):
+        valid_states = ['pending', 'accepted', 'rejected', 'withdrawn']
         if value not in valid_states:
             raise serializers.ValidationError(f"Estado inválido. Estados válidos: {', '.join(valid_states)}")
         return value
@@ -177,11 +180,11 @@ class ProjectApplicationUpdateSerializer(serializers.ModelSerializer):
         # Actualizar fechas según el cambio de estado
         from django.utils import timezone
         
-        if 'estado' in validated_data:
-            if validated_data['estado'] == 'aceptado':
-                instance.fecha_respuesta = timezone.now()
-            elif validated_data['estado'] in ['rechazado', 'retirado']:
-                instance.fecha_respuesta = timezone.now()
+        if 'status' in validated_data:
+            if validated_data['status'] == 'accepted':
+                instance.responded_at = timezone.now()
+            elif validated_data['status'] in ['rejected', 'withdrawn']:
+                instance.responded_at = timezone.now()
         
         return super().update(instance, validated_data)
 
@@ -203,10 +206,10 @@ class ProjectStatsSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'published_at']
     
     def get_applications_count(self, obj):
-        return obj.aplicaciones.count()
+        return obj.application_project.count()
     
     def get_accepted_applications_count(self, obj):
-        return obj.aplicaciones.filter(estado='aceptado').count()
+        return obj.application_project.filter(status='accepted').count()
     
     def get_average_rating(self, obj):
         from evaluations.models import Evaluation
@@ -241,4 +244,19 @@ class ProjectSearchSerializer(serializers.ModelSerializer):
         return obj.status.name in ['active', 'open', 'en curso'] and obj.current_students < obj.max_students
     
     def get_applications_count(self, obj):
-        return obj.aplicaciones.count() 
+        return obj.application_project.count()
+
+class ProjectMemberSerializer(serializers.ModelSerializer):
+    """Serializer para miembros de proyecto"""
+    user_name = serializers.CharField(source='usuario.full_name', read_only=True)
+    user_email = serializers.CharField(source='usuario.email', read_only=True)
+    project_title = serializers.CharField(source='proyecto.title', read_only=True)
+    
+    class Meta:
+        model = MiembroProyecto
+        fields = [
+            'id', 'proyecto', 'project_title', 'usuario', 'user_name', 'user_email',
+            'rol', 'fecha_ingreso', 'fecha_salida', 'horas_trabajadas', 'tareas_completadas',
+            'evaluacion_promedio', 'esta_activo', 'es_verificado', 'responsabilidades', 'notas'
+        ]
+        read_only_fields = ['id', 'fecha_ingreso'] 

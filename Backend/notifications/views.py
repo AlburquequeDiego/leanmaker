@@ -5,10 +5,11 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q, Count
 from django.utils import timezone
-from .models import Notification, NotificationTemplate
+from .models import Notification, NotificationTemplate, NotificationPreference
 from .serializers import (
     NotificationSerializer, NotificationDetailSerializer, NotificationCreateSerializer,
-    NotificationUpdateSerializer, NotificationTemplateSerializer, NotificationStatsSerializer
+    NotificationUpdateSerializer, NotificationTemplateSerializer, NotificationStatsSerializer,
+    NotificationPreferenceSerializer
 )
 
 # Create your views here.
@@ -19,9 +20,9 @@ class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['recipient', 'notification_type', 'is_read', 'priority']
+    filterset_fields = ['user', 'notification_type', 'is_read', 'priority']
     search_fields = ['title', 'message']
-    ordering_fields = ['created_at', 'sent_at', 'read_at', 'priority']
+    ordering_fields = ['created_at', 'read_at', 'priority']
     ordering = ['-created_at']
 
     def get_queryset(self):
@@ -32,7 +33,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             return Notification.objects.all()
         else:
             # Los usuarios ven solo sus notificaciones
-            return Notification.objects.filter(recipient=user)
+            return Notification.objects.filter(user=user)
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
@@ -52,7 +53,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def unread(self, request):
         """Notificaciones no leídas del usuario actual"""
         queryset = Notification.objects.filter(
-            recipient=request.user,
+            user=request.user,
             is_read=False
         )
         serializer = NotificationSerializer(queryset, many=True)
@@ -62,7 +63,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def recent(self, request):
         """Notificaciones recientes del usuario actual"""
         queryset = Notification.objects.filter(
-            recipient=request.user
+            user=request.user
         ).order_by('-created_at')[:10]
         serializer = NotificationSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -72,7 +73,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         """Marcar notificación como leída"""
         notification = self.get_object()
         
-        if notification.recipient != request.user:
+        if notification.user != request.user:
             return Response(
                 {"error": "No puedes marcar notificaciones de otros usuarios"},
                 status=status.HTTP_403_FORBIDDEN
@@ -89,7 +90,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         """Marcar notificación como no leída"""
         notification = self.get_object()
         
-        if notification.recipient != request.user:
+        if notification.user != request.user:
             return Response(
                 {"error": "No puedes marcar notificaciones de otros usuarios"},
                 status=status.HTTP_403_FORBIDDEN
@@ -105,7 +106,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def mark_all_as_read(self, request):
         """Marcar todas las notificaciones como leídas"""
         Notification.objects.filter(
-            recipient=request.user,
+            user=request.user,
             is_read=False
         ).update(
             is_read=True,
@@ -125,7 +126,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             )
         
         queryset = Notification.objects.filter(
-            recipient=request.user,
+            user=request.user,
             notification_type=notification_type
         )
         serializer = NotificationSerializer(queryset, many=True)
@@ -147,7 +148,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             }
         else:
             # Estadísticas del usuario
-            user_notifications = Notification.objects.filter(recipient=request.user)
+            user_notifications = Notification.objects.filter(user=request.user)
             stats = {
                 'total_notifications': user_notifications.count(),
                 'unread_notifications': user_notifications.filter(is_read=False).count(),
@@ -164,8 +165,8 @@ class NotificationTemplateViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationTemplateSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['template_type', 'is_active', 'language']
-    search_fields = ['name', 'subject', 'content']
+    filterset_fields = ['notification_type', 'is_active']
+    search_fields = ['name', 'title_template', 'message_template']
     ordering_fields = ['created_at', 'updated_at']
     ordering = ['name']
 
@@ -182,27 +183,15 @@ class NotificationTemplateViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def by_type(self, request):
         """Plantillas por tipo"""
-        template_type = request.query_params.get('template_type')
-        if not template_type:
+        notification_type = request.query_params.get('notification_type')
+        if not notification_type:
             return Response(
-                {"error": "Se requiere template_type"},
+                {"error": "Se requiere notification_type"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         queryset = NotificationTemplate.objects.filter(
-            template_type=template_type,
-            is_active=True
-        )
-        serializer = NotificationTemplateSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def by_language(self, request):
-        """Plantillas por idioma"""
-        language = request.query_params.get('language', 'es')
-        
-        queryset = NotificationTemplate.objects.filter(
-            language=language,
+            notification_type=notification_type,
             is_active=True
         )
         serializer = NotificationTemplateSerializer(queryset, many=True)
@@ -237,3 +226,9 @@ class NotificationTemplateViewSet(viewsets.ModelViewSet):
         template.save()
         
         return Response({"message": "Plantilla desactivada correctamente"})
+
+class NotificationPreferenceViewSet(viewsets.ModelViewSet):
+    """ViewSet para gestión de preferencias de notificaciones"""
+    queryset = NotificationPreference.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = NotificationPreferenceSerializer

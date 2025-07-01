@@ -17,6 +17,9 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+# Alias para compatibilidad
+UserSerializer = UsuarioSerializer
+
 class UsuarioCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password_confirm = serializers.CharField(write_only=True)

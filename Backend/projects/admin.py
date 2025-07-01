@@ -1,9 +1,12 @@
 ﻿from django.contrib import admin
 from .models import Proyecto, AplicacionProyecto, MiembroProyecto
 
+@admin.register(Proyecto)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'empresa', 'estado', 'fecha_creacion')
-    list_filter = ('estado', 'fecha_creacion', 'empresa')
-    search_fields = ('titulo', 'descripcion', 'empresa__nombre_empresa')
+    list_display = ('title', 'company', 'status', 'created_at')
+    search_fields = ('title', 'company__company_name')
+    list_filter = ('status', 'company')
+    ordering = ('-created_at',)
 
-admin.site.register(Proyecto, ProjectAdmin)
+admin.site.register(AplicacionProyecto)
+admin.site.register(MiembroProyecto)

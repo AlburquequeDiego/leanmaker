@@ -1,34 +1,32 @@
 from rest_framework import serializers
+from django.utils import timezone
 from .models import Notification, NotificationTemplate, NotificationPreference
 from users.serializers import UserSerializer
 from projects.serializers import ProjectSerializer, ProjectApplicationSerializer
 
 class NotificationSerializer(serializers.ModelSerializer):
     """Serializer básico para notificaciones"""
-    recipient_name = serializers.CharField(source='recipient.get_full_name', read_only=True)
-    recipient_avatar = serializers.CharField(source='recipient.avatar', read_only=True)
+    recipient_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    recipient_avatar = serializers.CharField(source='user.avatar', read_only=True)
     time_ago = serializers.CharField(read_only=True)
     is_urgent = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = Notification
         fields = [
-            'id', 'recipient', 'recipient_name', 'recipient_avatar', 'title', 'message',
-            'notification_type', 'priority', 'is_read', 'is_archived', 'created_at',
-            'read_at', 'scheduled_for', 'data', 'time_ago', 'is_urgent'
+            'id', 'user', 'recipient_name', 'recipient_avatar', 'title', 'message',
+            'notification_type', 'priority', 'is_read', 'created_at',
+            'read_at', 'expires_at', 'action_url', 'time_ago', 'is_urgent'
         ]
         read_only_fields = ['id', 'created_at', 'read_at', 'time_ago', 'is_urgent']
 
 class NotificationDetailSerializer(NotificationSerializer):
     """Serializer detallado para notificaciones"""
-    recipient_details = UserSerializer(source='recipient', read_only=True)
-    related_project = ProjectSerializer(read_only=True)
-    related_application = ProjectApplicationSerializer(read_only=True)
-    related_user = UserSerializer(read_only=True)
+    recipient_details = UserSerializer(source='user', read_only=True)
     
     class Meta(NotificationSerializer.Meta):
         fields = NotificationSerializer.Meta.fields + [
-            'recipient_details', 'related_project', 'related_application', 'related_user'
+            'recipient_details'
         ]
 
 class NotificationCreateSerializer(serializers.ModelSerializer):
@@ -37,8 +35,8 @@ class NotificationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = [
-            'recipient', 'title', 'message', 'notification_type', 'priority',
-            'data', 'scheduled_for', 'related_project', 'related_application', 'related_user'
+            'user', 'title', 'message', 'notification_type', 'priority',
+            'expires_at', 'action_url'
         ]
     
     def validate(self, attrs):
@@ -59,12 +57,11 @@ class NotificationUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Notification
-        fields = ['is_read', 'is_archived']
+        fields = ['is_read']
     
     def update(self, instance, validated_data):
         # Si se marca como leída, actualizar la fecha de lectura
         if validated_data.get('is_read') and not instance.is_read:
-            from django.utils import timezone
             validated_data['read_at'] = timezone.now()
         
         return super().update(instance, validated_data)
@@ -136,7 +133,6 @@ class NotificationStatsSerializer(serializers.Serializer):
     total_notifications = serializers.IntegerField()
     unread_count = serializers.IntegerField()
     read_count = serializers.IntegerField()
-    archived_count = serializers.IntegerField()
     notifications_by_type = serializers.DictField()
     notifications_by_priority = serializers.DictField()
     recent_notifications = NotificationSerializer(many=True)
@@ -172,7 +168,7 @@ class NotificationBulkUpdateSerializer(serializers.Serializer):
         help_text="Lista de IDs de notificaciones a actualizar"
     )
     action = serializers.ChoiceField(
-        choices=['mark_read', 'mark_unread', 'archive', 'unarchive'],
+        choices=['mark_read', 'mark_unread'],
         help_text="Acción a realizar en las notificaciones"
     )
     
@@ -185,7 +181,7 @@ class NotificationBulkUpdateSerializer(serializers.Serializer):
         user = self.context['request'].user
         existing_notifications = Notification.objects.filter(
             id__in=notification_ids,
-            recipient=user
+            user=user
         )
         
         if existing_notifications.count() != len(notification_ids):
@@ -200,14 +196,9 @@ class NotificationBulkUpdateSerializer(serializers.Serializer):
         notifications = Notification.objects.filter(id__in=notification_ids)
         
         if action == 'mark_read':
-            from django.utils import timezone
             notifications.update(is_read=True, read_at=timezone.now())
         elif action == 'mark_unread':
             notifications.update(is_read=False, read_at=None)
-        elif action == 'archive':
-            notifications.update(is_archived=True)
-        elif action == 'unarchive':
-            notifications.update(is_archived=False)
         
         return {'updated_count': notifications.count()}
 
@@ -223,9 +214,7 @@ class NotificationSummarySerializer(serializers.Serializer):
         data = super().to_representation(instance)
         
         # Obtener notificaciones recientes
-        recent_notifications = instance.notifications.filter(
-            is_archived=False
-        ).order_by('-created_at')[:10]
+        recent_notifications = instance.notifications.order_by('-created_at')[:10]
         
         data['recent_notifications'] = NotificationSerializer(recent_notifications, many=True).data
         return data 

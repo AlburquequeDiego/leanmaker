@@ -3,6 +3,27 @@ from users.models import Usuario
 from students.models import Estudiante
 from companies.models import Empresa
 
+class NotificationTemplate(models.Model):
+    """Modelo para plantillas de notificaciones masivas"""
+    name = models.CharField(max_length=200)
+    notification_type = models.CharField(max_length=30, default='announcement')
+    title_template = models.CharField(max_length=200)
+    message_template = models.TextField()
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, related_name='notification_templates_created')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'notification_templates_mass'
+        verbose_name = 'Plantilla de Notificación Masiva'
+        verbose_name_plural = 'Plantillas de Notificaciones Masivas'
+        unique_together = ['name', 'notification_type']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} ({self.notification_type})"
+
 class MassNotification(models.Model):
     """
     Modelo para notificaciones masivas

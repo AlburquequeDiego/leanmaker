@@ -7,11 +7,11 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from datetime import datetime, timedelta
 
-from .models import Interview, InterviewQuestion, InterviewResponse
+from .models import Interview
+# from .models import InterviewQuestion, InterviewResponse  # No existen en models.py
 from .serializers import (
     InterviewSerializer, InterviewDetailSerializer, InterviewCreateSerializer,
-    InterviewUpdateSerializer, InterviewQuestionSerializer, InterviewResponseSerializer,
-    InterviewStatsSerializer
+    InterviewUpdateSerializer, InterviewStatsSerializer
 )
 
 class InterviewViewSet(viewsets.ModelViewSet):
@@ -20,23 +20,21 @@ class InterviewViewSet(viewsets.ModelViewSet):
     serializer_class = InterviewSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['interviewer', 'interviewee', 'project', 'status', 'interview_type']
-    search_fields = ['title', 'description', 'notes']
-    ordering_fields = ['scheduled_at', 'created_at', 'duration']
-    ordering = ['-scheduled_at']
+    filterset_fields = ['interviewer', 'application', 'status', 'interview_type']
+    search_fields = ['notes', 'feedback']
+    ordering_fields = ['interview_date', 'created_at', 'duration_minutes']
+    ordering = ['-interview_date']
 
     def get_queryset(self):
         """Filtrar queryset según el rol del usuario"""
         user = self.request.user
-        
         if user.role == 'admin':
             return Interview.objects.all()
         elif user.role == 'company':
-            # Las empresas ven entrevistas donde son entrevistadores
             return Interview.objects.filter(interviewer=user)
         else:
-            # Los estudiantes ven entrevistas donde son entrevistados
-            return Interview.objects.filter(interviewee=user)
+            # Los estudiantes ven entrevistas donde son parte de la aplicación
+            return Interview.objects.filter(application__student__user=user)
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
@@ -58,8 +56,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
         if request.user.role == 'company':
             queryset = Interview.objects.filter(interviewer=request.user)
         else:
-            queryset = Interview.objects.filter(interviewee=request.user)
-        
+            queryset = Interview.objects.filter(application__student__user=request.user)
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -70,16 +67,15 @@ class InterviewViewSet(viewsets.ModelViewSet):
         if request.user.role == 'company':
             queryset = Interview.objects.filter(
                 interviewer=request.user,
-                scheduled_at__gte=now,
+                interview_date__gte=now,
                 status='scheduled'
             )
         else:
             queryset = Interview.objects.filter(
-                interviewee=request.user,
-                scheduled_at__gte=now,
+                application__student__user=request.user,
+                interview_date__gte=now,
                 status='scheduled'
             )
-        
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -90,14 +86,13 @@ class InterviewViewSet(viewsets.ModelViewSet):
         if request.user.role == 'company':
             queryset = Interview.objects.filter(
                 interviewer=request.user,
-                scheduled_at__date=today
+                interview_date__date=today
             )
         else:
             queryset = Interview.objects.filter(
-                interviewee=request.user,
-                scheduled_at__date=today
+                application__student__user=request.user,
+                interview_date__date=today
             )
-        
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -107,20 +102,18 @@ class InterviewViewSet(viewsets.ModelViewSet):
         today = timezone.now().date()
         week_start = today - timedelta(days=today.weekday())
         week_end = week_start + timedelta(days=7)
-        
         if request.user.role == 'company':
             queryset = Interview.objects.filter(
                 interviewer=request.user,
-                scheduled_at__date__gte=week_start,
-                scheduled_at__date__lt=week_end
+                interview_date__date__gte=week_start,
+                interview_date__date__lt=week_end
             )
         else:
             queryset = Interview.objects.filter(
-                interviewee=request.user,
-                scheduled_at__date__gte=week_start,
-                scheduled_at__date__lt=week_end
+                application__student__user=request.user,
+                interview_date__date__gte=week_start,
+                interview_date__date__lt=week_end
             )
-        
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -273,7 +266,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
                 'cancelled_interviews': Interview.objects.filter(status='cancelled').count(),
                 'interviews_by_type': Interview.objects.values('interview_type').annotate(count=Count('id')),
                 'interviews_today': Interview.objects.filter(
-                    scheduled_at__date=timezone.now().date()
+                    interview_date__date=timezone.now().date()
                 ).count(),
             }
         elif request.user.role == 'company':
@@ -285,116 +278,49 @@ class InterviewViewSet(viewsets.ModelViewSet):
                 'completed_interviews': company_interviews.filter(status='completed').count(),
                 'cancelled_interviews': company_interviews.filter(status='cancelled').count(),
                 'interviews_today': company_interviews.filter(
-                    scheduled_at__date=timezone.now().date()
+                    interview_date__date=timezone.now().date()
                 ).count(),
                 'upcoming_interviews': company_interviews.filter(
-                    scheduled_at__gte=timezone.now(),
+                    interview_date__gte=timezone.now(),
                     status='scheduled'
                 ).count(),
             }
         else:
             # Estadísticas del estudiante
-            student_interviews = Interview.objects.filter(interviewee=request.user)
+            student_interviews = Interview.objects.filter(application__student__user=request.user)
             stats = {
                 'total_interviews': student_interviews.count(),
                 'scheduled_interviews': student_interviews.filter(status='scheduled').count(),
                 'completed_interviews': student_interviews.filter(status='completed').count(),
                 'cancelled_interviews': student_interviews.filter(status='cancelled').count(),
                 'interviews_today': student_interviews.filter(
-                    scheduled_at__date=timezone.now().date()
+                    interview_date__date=timezone.now().date()
                 ).count(),
                 'upcoming_interviews': student_interviews.filter(
-                    scheduled_at__gte=timezone.now(),
+                    interview_date__gte=timezone.now(),
                     status='scheduled'
                 ).count(),
             }
         
         return Response(stats)
 
-class InterviewQuestionViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestión de preguntas de entrevista"""
-    queryset = InterviewQuestion.objects.all()
-    serializer_class = InterviewQuestionSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['interview', 'question_type', 'is_required']
-    search_fields = ['text', 'description']
-    ordering_fields = ['order', 'created_at']
-    ordering = ['order']
+# class InterviewQuestionViewSet(viewsets.ModelViewSet):
+#     """ViewSet para gestión de preguntas de entrevista"""
+#     queryset = InterviewQuestion.objects.all()
+#     serializer_class = InterviewQuestionSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+#     filterset_fields = ['interview', 'question_type', 'is_required']
+#     search_fields = ['text', 'description']
+#     ordering_fields = ['order', 'created_at']
+#     ordering = ['order']
 
-    def get_queryset(self):
-        """Filtrar queryset según el rol del usuario"""
-        user = self.request.user
-        
-        if user.role == 'admin':
-            return InterviewQuestion.objects.all()
-        else:
-            # Los usuarios ven preguntas de entrevistas donde participan
-            return InterviewQuestion.objects.filter(
-                Q(interview__interviewer=user) | Q(interview__interviewee=user)
-            )
-
-    @action(detail=False, methods=['get'])
-    def by_interview(self, request):
-        """Preguntas de una entrevista específica"""
-        interview_id = request.query_params.get('interview_id')
-        if not interview_id:
-            return Response(
-                {"error": "Se requiere interview_id"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        queryset = InterviewQuestion.objects.filter(
-            interview_id=interview_id
-        ).order_by('order')
-        serializer = InterviewQuestionSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-class InterviewResponseViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestión de respuestas de entrevista"""
-    queryset = InterviewResponse.objects.all()
-    serializer_class = InterviewResponseSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['interview', 'question', 'respondent']
-    ordering_fields = ['created_at']
-    ordering = ['-created_at']
-
-    def get_queryset(self):
-        """Filtrar queryset según el rol del usuario"""
-        user = self.request.user
-        
-        if user.role == 'admin':
-            return InterviewResponse.objects.all()
-        else:
-            # Los usuarios ven respuestas de entrevistas donde participan
-            return InterviewResponse.objects.filter(
-                Q(interview__interviewer=user) | Q(interview__interviewee=user)
-            )
-
-    def perform_create(self, serializer):
-        """Asignar el respondiente al crear la respuesta"""
-        serializer.save(respondent=self.request.user)
-
-    @action(detail=False, methods=['get'])
-    def by_interview(self, request):
-        """Respuestas de una entrevista específica"""
-        interview_id = request.query_params.get('interview_id')
-        if not interview_id:
-            return Response(
-                {"error": "Se requiere interview_id"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        queryset = InterviewResponse.objects.filter(
-            interview_id=interview_id
-        )
-        serializer = InterviewResponseSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def my_responses(self, request):
-        """Respuestas del usuario actual"""
-        queryset = InterviewResponse.objects.filter(respondent=request.user)
-        serializer = InterviewResponseSerializer(queryset, many=True)
-        return Response(serializer.data)
+# class InterviewResponseViewSet(viewsets.ModelViewSet):
+#     """ViewSet para gestión de respuestas de entrevista"""
+#     queryset = InterviewResponse.objects.all()
+#     serializer_class = InterviewResponseSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+#     filterset_fields = ['interview', 'question', 'respondent']
+#     ordering_fields = ['created_at']
+#     ordering = ['-created_at']

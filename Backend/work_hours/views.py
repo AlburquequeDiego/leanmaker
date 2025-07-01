@@ -1,9 +1,9 @@
 ﻿from rest_framework import viewsets, permissions
-from .models import WorkHours
-from .serializers import WorkHoursSerializer
+from .models import WorkHour
+from .serializers import WorkHourSerializer
 
-class WorkHoursViewSet(viewsets.ModelViewSet):
-    queryset = WorkHours.objects.all()
-    serializer_class = WorkHoursSerializer
+class WorkHourViewSet(viewsets.ModelViewSet):
+    queryset = WorkHour.objects.all()
+    serializer_class = WorkHourSerializer
     permission_classes = [permissions.IsAuthenticated]
 

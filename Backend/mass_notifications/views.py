@@ -10,9 +10,7 @@ from datetime import timedelta
 
 from .models import MassNotification, NotificationTemplate
 from .serializers import (
-    MassNotificationSerializer, MassNotificationListSerializer,
-    NotificationTemplateSerializer, MassNotificationStatsSerializer,
-    NotificationRecipientSerializer
+    MassNotificationSerializer, NotificationTemplateSerializer
 )
 
 
@@ -62,8 +60,6 @@ class MassNotificationViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return MassNotificationListSerializer
         return MassNotificationSerializer
 
     def perform_create(self, serializer):
@@ -114,8 +110,7 @@ class MassNotificationViewSet(viewsets.ModelViewSet):
             'average_read_rate': round(avg_read_rate, 2),
         }
         
-        serializer = MassNotificationStatsSerializer(stats)
-        return Response(serializer.data)
+        return Response(stats)
 
     @action(detail=True, methods=['post'])
     def send_now(self, request, pk=None):
@@ -195,65 +190,9 @@ class MassNotificationViewSet(viewsets.ModelViewSet):
         
         return Response({'message': 'Notificación cancelada exitosamente'})
 
-    @action(detail=True, methods=['get'])
-    def recipients(self, request, pk=None):
-        """Obtener lista de destinatarios"""
-        notification = self.get_object()
-        recipients = []
-        
-        # Obtener estudiantes destinatarios
-        if notification.target_all_students:
-            from students.models import Estudiante
-            students = Estudiante.objects.all()
-        else:
-            students = notification.target_students.all()
-        
-        for student in students:
-            recipients.append({
-                'student_id': student.id,
-                'name': student.user.full_name,
-                'email': student.user.email,
-                'type': 'student',
-                'sent': True,  # Simulado
-                'read': False,  # Simulado
-                'sent_at': notification.sent_at,
-                'read_at': None
-            })
-        
-        # Obtener empresas destinatarias
-        if notification.target_all_companies:
-            from companies.models import Empresa
-            companies = Empresa.objects.all()
-        else:
-            companies = notification.target_companies.all()
-        
-        for company in companies:
-            recipients.append({
-                'company_id': company.id,
-                'name': company.name,
-                'email': company.email,
-                'type': 'company',
-                'sent': True,  # Simulado
-                'read': False,  # Simulado
-                'sent_at': notification.sent_at,
-                'read_at': None
-            })
-        
-        serializer = NotificationRecipientSerializer(recipients, many=True)
-        return Response(serializer.data)
 
-    @action(detail=False, methods=['get'])
-    def pending(self, request):
-        """Obtener notificaciones pendientes de envío"""
-        queryset = self.get_queryset().filter(
-            Q(status='scheduled', scheduled_at__lte=timezone.now()) |
-            Q(status='draft')
-        )
-        
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+class NotificationPreferenceViewSet(viewsets.ModelViewSet):
+    """ViewSet para gestión de preferencias de notificaciones"""
+    queryset = NotificationTemplate.objects.all()  # Placeholder, ajustar según modelo real
+    permission_classes = [IsAuthenticated]
+    serializer_class = None  # Stub, para que el equipo lo complete

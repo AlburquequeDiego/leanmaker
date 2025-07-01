@@ -5,9 +5,9 @@ from projects.serializers import ProjectSerializer, ProjectApplicationSerializer
 
 class CalendarEventSerializer(serializers.ModelSerializer):
     """Serializer básico para eventos de calendario"""
-    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    user_name = serializers.CharField(source='user.full_name', read_only=True)
     user_avatar = serializers.CharField(source='user.avatar', read_only=True)
-    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    created_by_name = serializers.CharField(source='created_by.full_name', read_only=True)
     duration_minutes = serializers.IntegerField(read_only=True)
     is_overdue = serializers.BooleanField(read_only=True)
     is_today = serializers.BooleanField(read_only=True)
@@ -18,9 +18,9 @@ class CalendarEventSerializer(serializers.ModelSerializer):
         model = CalendarEvent
         fields = [
             'id', 'title', 'description', 'event_type', 'priority', 'status',
-            'start_date', 'end_date', 'all_day', 'location', 'is_online', 'meeting_url',
+            'start_date', 'end_date', 'is_all_day', 'location', 'is_online', 'meeting_url',
             'user', 'user_name', 'user_avatar', 'created_by', 'created_by_name',
-            'related_project', 'related_application', 'is_public', 'is_recurring',
+            'project', 'related_application', 'is_public', 'is_recurring',
             'recurrence_rule', 'reminder_minutes', 'reminder_sent', 'color', 'icon',
             'created_at', 'updated_at', 'duration_minutes', 'is_overdue', 'is_today',
             'is_upcoming', 'attendees_count'
@@ -33,7 +33,7 @@ class CalendarEventSerializer(serializers.ModelSerializer):
 class CalendarEventDetailSerializer(CalendarEventSerializer):
     """Serializer detallado para eventos de calendario"""
     attendees = UserSerializer(many=True, read_only=True)
-    related_project = ProjectSerializer(read_only=True)
+    project = ProjectSerializer(read_only=True)
     related_application = ProjectApplicationSerializer(read_only=True)
     reminders = serializers.SerializerMethodField()
     
@@ -51,7 +51,7 @@ class CalendarEventCreateSerializer(serializers.ModelSerializer):
         model = CalendarEvent
         fields = [
             'title', 'description', 'event_type', 'priority', 'start_date', 'end_date',
-            'all_day', 'location', 'is_online', 'meeting_url', 'related_project',
+            'is_all_day', 'location', 'is_online', 'meeting_url', 'project',
             'related_application', 'is_public', 'is_recurring', 'recurrence_rule',
             'reminder_minutes', 'color', 'icon', 'attendees'
         ]
@@ -96,7 +96,7 @@ class CalendarEventUpdateSerializer(serializers.ModelSerializer):
         model = CalendarEvent
         fields = [
             'title', 'description', 'event_type', 'priority', 'status', 'start_date',
-            'end_date', 'all_day', 'location', 'is_online', 'meeting_url',
+            'end_date', 'is_all_day', 'location', 'is_online', 'meeting_url',
             'is_public', 'is_recurring', 'recurrence_rule', 'reminder_minutes',
             'color', 'icon', 'attendees'
         ]
@@ -125,7 +125,7 @@ class CalendarEventUpdateSerializer(serializers.ModelSerializer):
 class EventReminderSerializer(serializers.ModelSerializer):
     """Serializer para recordatorios de eventos"""
     event_title = serializers.CharField(source='event.title', read_only=True)
-    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    user_name = serializers.CharField(source='user.full_name', read_only=True)
     
     class Meta:
         model = EventReminder
@@ -216,14 +216,14 @@ class CalendarSettingsUpdateSerializer(serializers.ModelSerializer):
 
 class CalendarEventSearchSerializer(serializers.ModelSerializer):
     """Serializer para búsqueda de eventos"""
-    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    user_name = serializers.CharField(source='user.full_name', read_only=True)
     duration_minutes = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = CalendarEvent
         fields = [
             'id', 'title', 'description', 'event_type', 'priority', 'status',
-            'start_date', 'end_date', 'all_day', 'location', 'is_online',
+            'start_date', 'end_date', 'is_all_day', 'location', 'is_online',
             'user_name', 'duration_minutes', 'color', 'created_at'
         ]
         read_only_fields = ['id', 'created_at', 'duration_minutes']

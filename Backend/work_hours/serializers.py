@@ -1,7 +1,7 @@
 ﻿from rest_framework import serializers
-from .models import WorkHours
+from .models import WorkHour
 
-class WorkHoursSerializer(serializers.ModelSerializer):
+class WorkHourSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WorkHours
+        model = WorkHour
         fields = '__all__'

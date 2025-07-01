@@ -85,12 +85,12 @@ class CalendarEvent(models.Model):
     meeting_url = models.URLField(blank=True, null=True)
     
     # Participantes
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calendar_events')
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
     attendees = models.ManyToManyField(Usuario, related_name='attended_events', blank=True)
     
     # Relaciones opcionales
-    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True, blank=True, related_name='calendar_events')
-    related_application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, blank=True, null=True, related_name='calendar_events')
+    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
+    related_application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
     
     # Configuración
     is_public = models.BooleanField(default=False)

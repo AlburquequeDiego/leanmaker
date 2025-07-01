@@ -22,8 +22,8 @@ class Aplicacion(models.Model):
     
     # Campos básicos (coinciden con schema original)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='aplicaciones')
-    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='aplicaciones')
+    project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='application_project', null=True, blank=True)
+    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='aplicaciones', null=True, blank=True)
     
     # Campos de estado con valores por defecto
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -181,7 +181,7 @@ class Asignacion(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'assignments'
+        db_table = 'application_assignments'
         verbose_name = 'Asignación'
         verbose_name_plural = 'Asignaciones'
 

@@ -38,7 +38,7 @@ class Evaluation(models.Model):
 
     id = models.AutoField(primary_key=True)
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='evaluations')
-    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='evaluations')
+    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='evaluations', null=True, blank=True)
     student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='evaluations')
     evaluator = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, related_name='evaluations_done')
     evaluator_role = models.CharField(max_length=100, blank=True, null=True)
@@ -133,7 +133,7 @@ class StudentSkill(models.Model):
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='skills')
+    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='skill_records')
     
     # Información de la habilidad
     skill_name = models.CharField(max_length=100)

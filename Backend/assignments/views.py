@@ -9,7 +9,7 @@ class AssignmentViewSet(viewsets.ModelViewSet):
     serializer_class = AssignmentSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'priority', 'project', 'assigned_to']
+    filterset_fields = ['status', 'priority', 'assigned_to']
     search_fields = ['title', 'description']
     ordering_fields = ['due_date', 'created_at', 'priority']
     ordering = ['-created_at']

@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Empresa, CalificacionEmpresa
-from users.serializers import UsuarioSerializer
+from users.serializers import UserSerializer
 
 class EmpresaSerializer(serializers.ModelSerializer):
-    user = UsuarioSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
     
     class Meta:
         model = Empresa
@@ -16,6 +16,9 @@ class EmpresaSerializer(serializers.ModelSerializer):
             'contact_email', 'contact_phone', 'status', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'rating', 'total_projects', 'projects_completed', 'created_at', 'updated_at']
+
+# Alias para compatibilidad
+CompanySerializer = EmpresaSerializer
 
 class EmpresaCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,7 +42,7 @@ class EmpresaUpdateSerializer(serializers.ModelSerializer):
 
 class CalificacionEmpresaSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(read_only=True)
-    estudiante = UsuarioSerializer(read_only=True)
+    estudiante = UserSerializer(read_only=True)
     
     class Meta:
         model = CalificacionEmpresa
