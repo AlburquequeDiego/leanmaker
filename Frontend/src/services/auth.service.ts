@@ -44,9 +44,11 @@ class AuthService {
 
   async getCurrentUser(): Promise<User> {
     try {
-      const user = await apiService.get<User>(API_ENDPOINTS.USER_PROFILE);
-      // Update stored user data
-      localStorage.setItem('user', JSON.stringify(user));
+      // Get user from localStorage since we don't have a profile endpoint
+      const user = this.getUser();
+      if (!user) {
+        throw new Error('No user found in localStorage');
+      }
       return user;
     } catch (error) {
       console.error('Error fetching user profile:', error);

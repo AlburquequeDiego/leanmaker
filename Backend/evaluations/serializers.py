@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Evaluation, EvaluationCategoryScore, EvaluationCategory, EvaluationTemplate
 from projects.serializers import ProjectSerializer
-from companies.serializers import CompanySerializer
-from students.serializers import StudentSerializer
-from users.serializers import UserSerializer
+from companies.serializers import EmpresaSerializer
+from students.serializers import EstudianteSerializer
+from users.serializers import UsuarioSerializer
 
 class EvaluationCategoryScoreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,9 +12,9 @@ class EvaluationCategoryScoreSerializer(serializers.ModelSerializer):
 
 class EvaluationSerializer(serializers.ModelSerializer):
     project = ProjectSerializer(read_only=True)
-    company = CompanySerializer(read_only=True)
-    student = StudentSerializer(read_only=True)
-    evaluator = UserSerializer(read_only=True)
+    company = EmpresaSerializer(read_only=True)
+    student = EstudianteSerializer(read_only=True)
+    evaluator = UsuarioSerializer(read_only=True)
     categories = EvaluationCategoryScoreSerializer(many=True, read_only=True)
     
     class Meta:
@@ -26,6 +26,20 @@ class EvaluationSerializer(serializers.ModelSerializer):
             'deliverables', 'categories', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'date', 'created_at', 'updated_at']
+    
+    def to_representation(self, instance):
+        """Convierte la instancia a diccionario para la API"""
+        data = super().to_representation(instance)
+        # Asegurar que los campos de relación sean strings (UUIDs)
+        if instance.project:
+            data['project'] = str(instance.project.id)
+        if instance.company:
+            data['company'] = str(instance.company.id)
+        if instance.student:
+            data['student'] = str(instance.student.id)
+        if instance.evaluator:
+            data['evaluator'] = str(instance.evaluator.id)
+        return data
 
 class EvaluationCreateSerializer(serializers.ModelSerializer):
     categories_data = serializers.ListField(write_only=True, required=False)

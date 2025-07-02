@@ -5,49 +5,18 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import Usuario
 import uuid
 import json
+from django.utils import timezone
 
 class CalendarEvent(models.Model):
-    TYPE_CHOICES = (
-        # Eventos de proyectos
-        ('project_start', 'Inicio de Proyecto'),
-        ('project_end', 'Fin de Proyecto'),
-        ('project_milestone', 'Hito de Proyecto'),
-        ('project_meeting', 'Reunión de Proyecto'),
-        ('project_deadline', 'Fecha Límite de Proyecto'),
-        
-        # Eventos de entrevistas
-        ('interview', 'Entrevista'),
-        ('interview_prep', 'Preparación de Entrevista'),
-        ('interview_followup', 'Seguimiento de Entrevista'),
-        
-        # Eventos de evaluaciones
-        ('evaluation_due', 'Evaluación Pendiente'),
-        ('evaluation_review', 'Revisión de Evaluación'),
-        ('evaluation_feedback', 'Feedback de Evaluación'),
-        
-        # Eventos de horas
-        ('hours_submission', 'Envío de Horas'),
-        ('hours_approval', 'Aprobación de Horas'),
-        ('hours_review', 'Revisión de Horas'),
-        
-        # Eventos de sistema
-        ('system_maintenance', 'Mantenimiento del Sistema'),
-        ('system_update', 'Actualización del Sistema'),
-        ('system_announcement', 'Anuncio del Sistema'),
-        
-        # Eventos personales
-        ('personal', 'Evento Personal'),
-        ('reminder', 'Recordatorio'),
-        ('deadline', 'Fecha Límite'),
+    """
+    Modelo de evento de calendario que coincide exactamente con el interface CalendarEvent del frontend
+    """
+    EVENT_TYPE_CHOICES = (
         ('meeting', 'Reunión'),
-        ('presentation', 'Presentación'),
-        ('workshop', 'Taller'),
-        ('training', 'Capacitación'),
-        
-        # Eventos de API
-        ('api_test', 'Prueba de API'),
-        ('api_review', 'Revisión de API'),
-        ('api_deadline', 'Fecha Límite de API'),
+        ('deadline', 'Fecha Límite'),
+        ('reminder', 'Recordatorio'),
+        ('interview', 'Entrevista'),
+        ('other', 'Otro'),
     )
     
     PRIORITY_CHOICES = (
@@ -65,28 +34,31 @@ class CalendarEvent(models.Model):
         ('postponed', 'Pospuesto'),
     )
     
-    id = models.AutoField(primary_key=True)
-    
-    # Información básica
+    # Campos básicos - coinciden con frontend
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    event_type = models.CharField(max_length=50, default='general')
-    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
+    event_type = models.CharField(max_length=50, choices=EVENT_TYPE_CHOICES, default='other')
     
-    # Fechas y horarios
+    # Fechas y horarios - coinciden con frontend
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    is_all_day = models.BooleanField(default=False)
+    all_day = models.BooleanField(default=False)  # Campo renombrado para coincidir con frontend
     
-    # Ubicación
+    # Ubicación - coincide con frontend
     location = models.CharField(max_length=200, null=True, blank=True)
+    
+    # Participantes - coinciden con frontend
+    attendees = models.ManyToManyField(Usuario, related_name='attended_events', blank=True)  # Campo para coincidir con frontend
+    created_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='created_events')  # Campo para coincidir con frontend
+    
+    # Campos adicionales para compatibilidad
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
+    is_all_day = models.BooleanField(default=False)  # Campo original para compatibilidad
     is_online = models.BooleanField(default=False)
     meeting_url = models.URLField(blank=True, null=True)
-    
-    # Participantes
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
-    attendees = models.ManyToManyField(Usuario, related_name='attended_events', blank=True)
     
     # Relaciones opcionales
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
@@ -105,10 +77,9 @@ class CalendarEvent(models.Model):
     color = models.CharField(max_length=7, default='#1976d2')  # Color hexadecimal
     icon = models.CharField(max_length=50, blank=True, null=True)
     
-    # Fechas de sistema
+    # Fechas de sistema - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='created_events')
     
     class Meta:
         db_table = 'calendar_events'
@@ -123,6 +94,15 @@ class CalendarEvent(models.Model):
     
     def __str__(self):
         return f"{self.title} - {self.start_date}"
+    
+    def save(self, *args, **kwargs):
+        # Sincronizar campos para compatibilidad
+        if not self.is_all_day:
+            self.is_all_day = self.all_day
+        if not self.user:
+            self.user = self.created_by
+        
+        super().save(*args, **kwargs)
     
     def get_recurrence_rule_dict(self):
         """Obtiene las reglas de recurrencia como diccionario de Python"""
@@ -149,20 +129,17 @@ class CalendarEvent(models.Model):
     @property
     def is_overdue(self):
         """Verifica si el evento está vencido"""
-        from django.utils import timezone
         return self.end_date < timezone.now() and self.status == 'scheduled'
     
     @property
     def is_today(self):
         """Verifica si el evento es hoy"""
-        from django.utils import timezone
         today = timezone.now().date()
         return self.start_date.date() == today
     
     @property
     def is_upcoming(self):
         """Verifica si el evento está próximo"""
-        from django.utils import timezone
         now = timezone.now()
         return self.start_date > now and self.status == 'scheduled'
     
@@ -220,12 +197,11 @@ class EventReminder(models.Model):
         unique_together = ['event', 'user', 'reminder_type']
     
     def __str__(self):
-        return f"Recordatorio para {self.event.title} - {self.user.get_full_name()}"
+        return f"Recordatorio para {self.event.title} - {self.user.email}"
     
     def mark_sent(self):
         """Marca el recordatorio como enviado"""
         self.is_sent = True
-        from django.utils import timezone
         self.sent_at = timezone.now()
         self.save(update_fields=['is_sent', 'sent_at'])
 
@@ -270,7 +246,7 @@ class CalendarSettings(models.Model):
         unique_together = ['user']
     
     def __str__(self):
-        return f"Configuración de calendario de {self.user.get_full_name()}"
+        return f"Configuración de calendario para {self.user.full_name}"
     
     def get_work_days_list(self):
         """Obtiene la lista de días laborables como lista de Python"""
@@ -278,7 +254,7 @@ class CalendarSettings(models.Model):
             try:
                 return json.loads(self.work_days)
             except json.JSONDecodeError:
-                return [1, 2, 3, 4, 5]  # Lunes a viernes por defecto
+                return [1, 2, 3, 4, 5]
         return [1, 2, 3, 4, 5]
     
     def set_work_days_list(self, days_list):
@@ -305,9 +281,9 @@ class CalendarSettings(models.Model):
             self.event_colors = '{}'
     
     def is_work_day(self, date):
-        """Verifica si una fecha es un día laborable"""
+        """Verifica si una fecha es día laborable"""
         return date.weekday() + 1 in self.get_work_days_list()
     
     def is_work_time(self, time):
-        """Verifica si una hora está dentro del horario laboral"""
+        """Verifica si una hora es hora laborable"""
         return self.work_start_time <= time <= self.work_end_time

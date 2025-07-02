@@ -37,7 +37,7 @@ class UserManager(BaseUserManager):
 
 class Usuario(AbstractUser):
     """
-    Modelo de usuario principal que coincide exactamente con el schema original
+    Modelo de usuario principal que coincide exactamente con el interface User del frontend
     """
     ROLES = (
         ('admin', 'Administrador'),
@@ -45,13 +45,13 @@ class Usuario(AbstractUser):
         ('company', 'Empresa'),
     )
     
-    # Campos básicos (coinciden con schema original)
+    # Campos básicos (coinciden exactamente con interface User del frontend)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
     role = models.CharField(max_length=20, choices=ROLES)
     
-    # Campos opcionales (NULL permitido)
+    # Campos opcionales (NULL permitido) - coinciden con frontend
     first_name = models.CharField(max_length=150, null=True, blank=True)
     last_name = models.CharField(max_length=150, null=True, blank=True)
     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
@@ -59,13 +59,13 @@ class Usuario(AbstractUser):
     avatar = models.CharField(max_length=500, null=True, blank=True)  # URL del avatar
     bio = models.TextField(null=True, blank=True)
     
-    # Campos de estado con valores por defecto
+    # Campos de estado con valores por defecto - coinciden con frontend
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     
-    # Campos de fechas
+    # Campos de fechas - coinciden con frontend
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -87,6 +87,7 @@ class Usuario(AbstractUser):
     
     @property
     def full_name(self):
+        """Coincide con el campo full_name del frontend"""
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return self.email

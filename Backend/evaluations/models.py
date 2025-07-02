@@ -24,7 +24,9 @@ class EvaluationCategory(models.Model):
         return self.name
 
 class Evaluation(models.Model):
-    """Evaluación de un estudiante en un proyecto"""
+    """
+    Modelo de evaluación que coincide exactamente con el interface Evaluation del frontend
+    """
     STATUS_CHOICES = [
         ('pending', 'Pendiente'),
         ('completed', 'Completada'),
@@ -36,22 +38,32 @@ class Evaluation(models.Model):
         ('final', 'Final'),
     ]
 
-    id = models.AutoField(primary_key=True)
+    # Campos básicos - coinciden con frontend
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='evaluations')
+    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='evaluations_received')  # Campo renombrado para coincidir con frontend
+    evaluator = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='evaluations_done')
+    category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE, related_name='evaluations')  # Campo agregado para coincidir con frontend
+    
+    # Campos de evaluación - coinciden con frontend
+    score = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(100)])  # Campo renombrado para coincidir con frontend
+    comments = models.TextField(blank=True, null=True)
+    evaluation_date = models.DateField(auto_now_add=True)  # Campo agregado para coincidir con frontend
+    
+    # Campos adicionales para compatibilidad
     company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='evaluations', null=True, blank=True)
-    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='evaluations')
-    evaluator = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, related_name='evaluations_done')
     evaluator_role = models.CharField(max_length=100, blank=True, null=True)
     date = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='final')
     overall_rating = models.FloatField(null=True, blank=True)
-    comments = models.TextField(blank=True, null=True)
     strengths = models.TextField(blank=True, null=True, help_text='Fortalezas (separadas por coma)')
     areas_for_improvement = models.TextField(blank=True, null=True, help_text='Áreas de mejora (separadas por coma)')
     project_duration = models.CharField(max_length=50, blank=True, null=True)
     technologies = models.CharField(max_length=200, blank=True, null=True)
     deliverables = models.CharField(max_length=200, blank=True, null=True)
+    
+    # Campos de fechas - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -61,7 +73,16 @@ class Evaluation(models.Model):
         ordering = ['-date', '-created_at']
 
     def __str__(self):
-        return f"{self.student} - {self.project} ({self.get_type_display()})"
+        return f"{self.student.full_name} - {self.project.title} ({self.get_type_display()})"
+    
+    def save(self, *args, **kwargs):
+        # Sincronizar campos para compatibilidad
+        if not self.date:
+            self.date = self.evaluation_date
+        if not self.overall_rating:
+            self.overall_rating = self.score
+        
+        super().save(*args, **kwargs)
 
     def get_strengths_list(self):
         return [s.strip() for s in (self.strengths or '').split(',') if s.strip()]
@@ -157,7 +178,7 @@ class StudentSkill(models.Model):
         ordering = ['skill_name']
     
     def __str__(self):
-        return f"{self.student.get_full_name()} - {self.skill_name} ({self.get_level_display()})"
+        return f"{self.student.user.full_name} - {self.skill_name} ({self.get_level_display()})"
 
 class StudentPortfolio(models.Model):
     """Portafolio de trabajos del estudiante"""
@@ -194,7 +215,7 @@ class StudentPortfolio(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.student.get_full_name()} - {self.title}"
+        return f"{self.student.user.full_name} - {self.title}"
     
     def get_technologies_list(self):
         """Obtiene la lista de tecnologías como lista de Python"""
@@ -268,12 +289,12 @@ class StudentAchievement(models.Model):
         ordering = ['-issue_date']
     
     def __str__(self):
-        return f"{self.student.get_full_name()} - {self.title}"
+        return f"{self.student.user.full_name} - {self.title}"
     
     @property
     def is_expired(self):
         """Verifica si el logro ha expirado"""
         if self.expiry_date:
             from django.utils import timezone
-            return self.expiry_date < timezone.now().date()
+            return timezone.now().date() > self.expiry_date
         return False

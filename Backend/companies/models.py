@@ -5,7 +5,7 @@ import json
 
 class Empresa(models.Model):
     """
-    Modelo de empresa que coincide exactamente con el schema original
+    Modelo de empresa que coincide exactamente con el interface Company del frontend
     """
     TAMANOS = (
         ('Pequeña', 'Pequeña'),
@@ -26,12 +26,12 @@ class Empresa(models.Model):
         ('suspended', 'Suspendida'),
     )
     
-    # Campos básicos (coinciden con schema original)
+    # Campos básicos (coinciden exactamente con interface Company del frontend)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='empresa_profile', null=True, blank=True)
     company_name = models.CharField(max_length=200)
     
-    # Campos opcionales (NULL permitido)
+    # Campos opcionales (NULL permitido) - coinciden con frontend
     description = models.TextField(null=True, blank=True)
     industry = models.CharField(max_length=100, null=True, blank=True)
     size = models.CharField(max_length=50, choices=TAMANOS, null=True, blank=True)
@@ -42,18 +42,18 @@ class Empresa(models.Model):
     founded_year = models.IntegerField(null=True, blank=True)
     logo_url = models.CharField(max_length=500, null=True, blank=True)
     
-    # Campos de estado con valores por defecto
+    # Campos de estado con valores por defecto - coinciden con frontend
     verified = models.BooleanField(default=False)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0)
     total_projects = models.IntegerField(default=0)
     projects_completed = models.IntegerField(default=0)
     total_hours_offered = models.IntegerField(default=0)
     
-    # Campos JSON (se almacenan como texto en SQL Server)
+    # Campos JSON (se almacenan como texto en SQL Server) - coinciden con frontend
     technologies_used = models.TextField(null=True, blank=True)  # JSON array
     benefits_offered = models.TextField(null=True, blank=True)   # JSON array
     
-    # Campos adicionales
+    # Campos adicionales - coinciden con frontend
     remote_work_policy = models.CharField(max_length=50, choices=REMOTE_POLICY_CHOICES, null=True, blank=True)
     internship_duration = models.CharField(max_length=50, null=True, blank=True)
     stipend_range = models.CharField(max_length=100, null=True, blank=True)
@@ -61,7 +61,7 @@ class Empresa(models.Model):
     contact_phone = models.CharField(max_length=20, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     
-    # Campos de fechas
+    # Campos de fechas - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -74,7 +74,7 @@ class Empresa(models.Model):
         return self.company_name
     
     def get_technologies_used_list(self):
-        """Obtiene la lista de tecnologías utilizadas como lista de Python"""
+        """Obtiene la lista de tecnologías utilizadas como lista de Python - coincide con frontend"""
         if self.technologies_used:
             try:
                 return json.loads(self.technologies_used)
@@ -83,14 +83,14 @@ class Empresa(models.Model):
         return []
     
     def set_technologies_used_list(self, technologies_list):
-        """Establece la lista de tecnologías utilizadas desde una lista de Python"""
+        """Establece la lista de tecnologías utilizadas desde una lista de Python - coincide con frontend"""
         if isinstance(technologies_list, list):
             self.technologies_used = json.dumps(technologies_list, ensure_ascii=False)
         else:
             self.technologies_used = None
     
     def get_benefits_offered_list(self):
-        """Obtiene la lista de beneficios ofrecidos como lista de Python"""
+        """Obtiene la lista de beneficios ofrecidos como lista de Python - coincide con frontend"""
         if self.benefits_offered:
             try:
                 return json.loads(self.benefits_offered)
@@ -99,7 +99,7 @@ class Empresa(models.Model):
         return []
     
     def set_benefits_offered_list(self, benefits_list):
-        """Establece la lista de beneficios ofrecidos desde una lista de Python"""
+        """Establece la lista de beneficios ofrecidos desde una lista de Python - coincide con frontend"""
         if isinstance(benefits_list, list):
             self.benefits_offered = json.dumps(benefits_list, ensure_ascii=False)
         else:

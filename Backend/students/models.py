@@ -6,7 +6,7 @@ import json
 
 class Estudiante(models.Model):
     """
-    Modelo de estudiante que coincide exactamente con el schema original
+    Modelo de estudiante que coincide exactamente con el interface Student del frontend
     """
     STATUS_CHOICES = (
         ('pending', 'Pendiente'),
@@ -21,16 +21,16 @@ class Estudiante(models.Model):
         ('flexible', 'Flexible'),
     )
     
-    # Campos básicos (coinciden con schema original)
+    # Campos básicos (coinciden exactamente con interface Student del frontend)
     id = models.AutoField(primary_key=True)
     user = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='estudiante_profile')
     
-    # Campos opcionales (NULL permitido)
+    # Campos opcionales (NULL permitido) - coinciden con frontend
     career = models.CharField(max_length=200, null=True, blank=True)
     semester = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)])
     graduation_year = models.IntegerField(null=True, blank=True)
     
-    # Campos de estado con valores por defecto
+    # Campos de estado con valores por defecto - coinciden con frontend
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     api_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
     strikes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
@@ -39,21 +39,21 @@ class Estudiante(models.Model):
     total_hours = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     experience_years = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(20)])
     
-    # Campos de URLs (opcionales)
+    # Campos de URLs (opcionales) - coinciden con frontend
     portfolio_url = models.CharField(max_length=500, null=True, blank=True)
     github_url = models.CharField(max_length=500, null=True, blank=True)
     linkedin_url = models.CharField(max_length=500, null=True, blank=True)
     
-    # Campos adicionales
+    # Campos adicionales - coinciden con frontend
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='flexible')
     location = models.CharField(max_length=200, null=True, blank=True)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     
-    # Campos JSON (se almacenan como texto en SQL Server)
+    # Campos JSON (se almacenan como texto en SQL Server) - coinciden con frontend
     skills = models.TextField(null=True, blank=True)  # JSON array de habilidades
     languages = models.TextField(null=True, blank=True)  # JSON array de idiomas
     
-    # Campos de fechas
+    # Campos de fechas - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -66,7 +66,7 @@ class Estudiante(models.Model):
         return f"{self.user.full_name} ({self.career or 'Sin carrera'})"
     
     def get_skills_list(self):
-        """Obtiene la lista de habilidades como lista de Python"""
+        """Obtiene la lista de habilidades como lista de Python - coincide con frontend"""
         if self.skills:
             try:
                 return json.loads(self.skills)
@@ -75,14 +75,14 @@ class Estudiante(models.Model):
         return []
     
     def set_skills_list(self, skills_list):
-        """Establece la lista de habilidades desde una lista de Python"""
+        """Establece la lista de habilidades desde una lista de Python - coincide con frontend"""
         if isinstance(skills_list, list):
             self.skills = json.dumps(skills_list, ensure_ascii=False)
         else:
             self.skills = None
     
     def get_languages_list(self):
-        """Obtiene la lista de idiomas como lista de Python"""
+        """Obtiene la lista de idiomas como lista de Python - coincide con frontend"""
         if self.languages:
             try:
                 return json.loads(self.languages)
@@ -91,7 +91,7 @@ class Estudiante(models.Model):
         return []
     
     def set_languages_list(self, languages_list):
-        """Establece la lista de idiomas desde una lista de Python"""
+        """Establece la lista de idiomas desde una lista de Python - coincide con frontend"""
         if isinstance(languages_list, list):
             self.languages = json.dumps(languages_list, ensure_ascii=False)
         else:
@@ -271,4 +271,4 @@ class PerfilEstudiante(models.Model):
 
 def student_cv_path(instance, filename):
     # Ruta por defecto para guardar CVs
-    return f'cv/{instance.user.id}/{filename}'
+    return f'students/cvs/{instance.estudiante.user.id}/{filename}'

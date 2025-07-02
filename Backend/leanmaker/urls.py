@@ -55,6 +55,10 @@ from activity_logs.views import ActivityLogViewSet
 from reports.views import ReportViewSet
 from data_backups.views import DataBackupViewSet
 
+# Importar ViewSets adicionales que faltan
+from students.views import EstudianteViewSet, PerfilEstudianteViewSet
+from companies.views import EmpresaViewSet, CalificacionEmpresaViewSet
+
 # Crear router principal
 router = DefaultRouter()
 
@@ -63,6 +67,14 @@ router.register(r'users', UserViewSet, basename='user')
 router.register(r'auth', AuthViewSet, basename='auth')
 router.register(r'passwords', PasswordViewSet, basename='password')
 router.register(r'dashboard', DashboardViewSet, basename='dashboard')
+
+# Registrar ViewSets de estudiantes
+router.register(r'students', EstudianteViewSet, basename='student')
+router.register(r'student-profiles', PerfilEstudianteViewSet, basename='student-profile')
+
+# Registrar ViewSets de empresas
+router.register(r'companies', EmpresaViewSet, basename='company')
+router.register(r'company-ratings', CalificacionEmpresaViewSet, basename='company-rating')
 
 # Registrar ViewSets de proyectos
 router.register(r'projects', ProjectViewSet, basename='project')
@@ -123,17 +135,17 @@ router.register(r'data-backups', DataBackupViewSet, basename='data-backup')
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # API URLs
-    path('api/v1/', include(router.urls)),
+    # API URLs - Cambiado de /api/v1/ a /api/ para coincidir con frontend
+    path('api/', include(router.urls)),
     
-    # JWT Authentication URLs
-    path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    # JWT Authentication URLs - Cambiado de /api/v1/ a /api/ para coincidir con frontend
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     
     # API Documentation
-    path('api/v1/docs/', include('rest_framework.urls')),
+    path('api/docs/', include('rest_framework.urls')),
     
-    # Health check
-    path('api/v1/health/', include('health_check.urls')),
+    # Health check - Cambiado de /api/v1/ a /api/ para coincidir con frontend
+    path('api/health-simple/', include('health_check.urls')),
 ] 

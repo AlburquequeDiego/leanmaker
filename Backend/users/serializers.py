@@ -10,7 +10,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         model = Usuario
         fields = [
             'id', 'email', 'first_name', 'last_name', 'username', 'phone',
-            'avatar', 'bio', 'role', 'is_active', 'is_verified', 'full_name',
+            'avatar', 'bio', 'role', 'is_active', 'is_verified', 'is_staff', 'is_superuser', 'full_name',
             'date_joined', 'last_login', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'date_joined', 'last_login', 'created_at', 'updated_at']
@@ -193,13 +193,18 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'last_name': self.user.last_name or '',
             'username': self.user.username or '',
             'phone': self.user.phone or '',
-            'avatar': self.user.avatar.url if self.user.avatar else None,
+            'avatar': self.user.avatar or '',
             'bio': self.user.bio or '',
             'role': self.user.role,
             'is_active': self.user.is_active,
             'is_verified': self.user.is_verified,
+            'is_staff': self.user.is_staff,
+            'is_superuser': self.user.is_superuser,
             'date_joined': self.user.date_joined.isoformat() if self.user.date_joined else None,
             'last_login': self.user.last_login.isoformat() if self.user.last_login else None,
+            'created_at': self.user.created_at.isoformat() if self.user.created_at else None,
+            'updated_at': self.user.updated_at.isoformat() if self.user.updated_at else None,
+            'full_name': self.user.full_name,
         }
         
         return data
@@ -247,11 +252,22 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['user'] = {
             'id': str(self.user.id),
             'email': self.user.email,
-            'first_name': self.user.first_name,
-            'last_name': self.user.last_name,
+            'first_name': self.user.first_name or '',
+            'last_name': self.user.last_name or '',
+            'username': self.user.username or '',
+            'phone': self.user.phone or '',
+            'avatar': self.user.avatar or '',
+            'bio': self.user.bio or '',
             'role': self.user.role,
             'is_active': self.user.is_active,
-            'is_verified': self.user.is_verified
+            'is_verified': self.user.is_verified,
+            'is_staff': self.user.is_staff,
+            'is_superuser': self.user.is_superuser,
+            'date_joined': self.user.date_joined.isoformat() if self.user.date_joined else None,
+            'last_login': self.user.last_login.isoformat() if self.user.last_login else None,
+            'created_at': self.user.created_at.isoformat() if self.user.created_at else None,
+            'updated_at': self.user.updated_at.isoformat() if self.user.updated_at else None,
+            'full_name': self.user.full_name,
         }
         
         return data 

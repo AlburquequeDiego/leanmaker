@@ -7,15 +7,16 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import uuid
 import json
+from django.utils import timezone
 
 class Notification(models.Model):
+    """
+    Modelo de notificación que coincide exactamente con el interface Notification del frontend
+    """
     TYPE_CHOICES = [
-        ('general', 'General'),
-        ('reminder', 'Recordatorio'),
-        ('alert', 'Alerta'),
         ('info', 'Información'),
-        ('warning', 'Advertencia'),
         ('success', 'Éxito'),
+        ('warning', 'Advertencia'),
         ('error', 'Error'),
     ]
     PRIORITY_CHOICES = [
@@ -26,17 +27,30 @@ class Notification(models.Model):
         ('urgent', 'Urgente'),
     ]
 
-    id = models.AutoField(primary_key=True)
+    # Campos básicos - coinciden con frontend
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=200)
     message = models.TextField()
-    notification_type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='general')
+    
+    # Campos de tipo y estado - coinciden con frontend
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='info')  # Campo renombrado para coincidir con frontend
+    read = models.BooleanField(default=False)  # Campo renombrado para coincidir con frontend
+    
+    # Campos adicionales - coinciden con frontend
+    related_url = models.CharField(max_length=500, null=True, blank=True)  # Campo agregado para coincidir con frontend
+    
+    # Campos adicionales para compatibilidad
+    notification_type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='info')
     is_read = models.BooleanField(default=False)
     read_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(null=True, blank=True)
     action_url = models.CharField(max_length=500, null=True, blank=True)
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='normal')
+    
+    # Campos de fechas adicionales
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'notifications'
@@ -46,13 +60,38 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.title}"
+    
+    def save(self, *args, **kwargs):
+        # Sincronizar campos para compatibilidad
+        if not self.notification_type:
+            self.notification_type = self.type
+        if not self.is_read:
+            self.is_read = self.read
+        if not self.action_url:
+            self.action_url = self.related_url
+        
+        super().save(*args, **kwargs)
+    
+    def marcar_como_leida(self):
+        """Marca la notificación como leída"""
+        self.read = True
+        self.is_read = True
+        self.read_at = timezone.now()
+        self.save(update_fields=['read', 'is_read', 'read_at'])
+    
+    def marcar_como_no_leida(self):
+        """Marca la notificación como no leída"""
+        self.read = False
+        self.is_read = False
+        self.read_at = None
+        self.save(update_fields=['read', 'is_read', 'read_at'])
 
 class NotificationTemplate(models.Model):
     """Plantillas para notificaciones automáticas"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
-    notification_type = models.CharField(max_length=30, choices=Notification.TYPE_CHOICES, default='general')
+    notification_type = models.CharField(max_length=30, choices=Notification.TYPE_CHOICES, default='info')
     
     # Contenido de la plantilla
     title_template = models.CharField(max_length=200)
@@ -169,6 +208,5 @@ class NotificationPreference(models.Model):
         if not self.quiet_hours_start or not self.quiet_hours_end:
             return False
         
-        from django.utils import timezone
         now = timezone.now().time()
         return self.quiet_hours_start <= now <= self.quiet_hours_end

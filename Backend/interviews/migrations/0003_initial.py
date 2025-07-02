@@ -10,14 +10,14 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('data_backups', '0001_initial'),
+        ('interviews', '0002_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='databackup',
-            name='created_by',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='backups_created', to=settings.AUTH_USER_MODEL),
+            model_name='interview',
+            name='interviewer',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='interviews_conducted', to=settings.AUTH_USER_MODEL),
         ),
     ]
