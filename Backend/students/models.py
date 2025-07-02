@@ -30,6 +30,10 @@ class Estudiante(models.Model):
     semester = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)])
     graduation_year = models.IntegerField(null=True, blank=True)
     
+    # Campos adicionales del registro
+    university = models.CharField(max_length=200, null=True, blank=True)
+    education_level = models.CharField(max_length=50, null=True, blank=True)
+    
     # Campos de estado con valores por defecto - coinciden con frontend
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     api_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])

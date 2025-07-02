@@ -233,26 +233,20 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           </Typography>
           {/* Iconos adicionales a la derecha */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 1 }}>
-            {/* Notificaciones */}
-            <Tooltip title="Notificaciones">
-              <IconButton color={themeMode === 'light' ? 'default' : 'inherit'}>
-                <Badge badgeContent={notificationCount} color="error">
-                  <NotificationsIcon sx={{ color: themeMode === 'light' ? '#22345a' : '#e3eafc' }} />
-                </Badge>
-              </IconButton>
-            </Tooltip>
             {/* Tema claro/oscuro */}
             <Tooltip title={themeMode === 'light' ? 'Modo oscuro' : 'Modo claro'}>
               <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleThemeToggle}>
                 {themeMode === 'light' ? <DarkModeIcon sx={{ color: '#22345a' }} /> : <LightModeIcon />}
               </IconButton>
             </Tooltip>
-            {/* Soporte */}
-            <Tooltip title="Soporte / Ayuda">
-              <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleOpenSupport}>
-                <HelpOutlineIcon sx={{ color: themeMode === 'light' ? '#22345a' : '#e3eafc' }} />
-              </IconButton>
-            </Tooltip>
+            {/* Soporte - Solo para empresas y estudiantes */}
+            {userRole !== 'admin' && (
+              <Tooltip title="Soporte / Ayuda">
+                <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleOpenSupport}>
+                  <HelpOutlineIcon sx={{ color: themeMode === 'light' ? '#22345a' : '#e3eafc' }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
           <IconButton
             size="large"
@@ -307,11 +301,14 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             minWidth: 320,
             maxWidth: '90vw',
           }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-              ¿Tienes dudas? Contáctanos y te responderemos a la brevedad
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#22345a' }}>
+              ¿Necesitas ayuda? Envíanos tu consulta
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 3, color: '#666' }}>
+              Tu mensaje será enviado a nuestro equipo de soporte y te responderemos a la brevedad posible.
             </Typography>
             <TextField
-              label="Nombre"
+              label="Nombre completo"
               variant="outlined"
               fullWidth
               sx={{ mb: 2, background: '#eaf2fb', borderRadius: 1 }}
@@ -327,18 +324,41 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
               onChange={e => setSupportForm(f => ({ ...f, correo: e.target.value }))}
             />
             <TextField
-              label="Mensaje"
+              label="Describe tu consulta o problema"
               variant="outlined"
               fullWidth
               multiline
-              minRows={3}
+              minRows={4}
+              placeholder="Por favor, describe detalladamente tu consulta para poder ayudarte mejor..."
               sx={{ mb: 3, background: '#eaf2fb', borderRadius: 1 }}
               value={supportForm.mensaje}
               onChange={e => setSupportForm(f => ({ ...f, mensaje: e.target.value }))}
             />
-            <Button variant="contained" color="primary" fullWidth sx={{ borderRadius: 2, fontWeight: 600 }} onClick={handleCloseSupport}>
-              Enviar mensaje
-            </Button>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button 
+                variant="outlined" 
+                fullWidth 
+                sx={{ borderRadius: 2, fontWeight: 600 }} 
+                onClick={handleCloseSupport}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                fullWidth 
+                sx={{ borderRadius: 2, fontWeight: 600 }}
+                onClick={() => {
+                  // Aquí se enviaría el mensaje al correo del sistema
+                  // Por ahora solo cerramos el modal
+                  alert('Mensaje enviado. Te responderemos pronto.');
+                  setSupportForm({ nombre: '', correo: '', mensaje: '' });
+                  handleCloseSupport();
+                }}
+              >
+                Enviar consulta
+              </Button>
+            </Box>
           </Box>
         </Fade>
       </Modal>

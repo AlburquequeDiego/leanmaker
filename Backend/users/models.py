@@ -59,6 +59,10 @@ class Usuario(AbstractUser):
     avatar = models.CharField(max_length=500, null=True, blank=True)  # URL del avatar
     bio = models.TextField(null=True, blank=True)
     
+    # Campos adicionales del registro
+    birthdate = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=20, null=True, blank=True)
+    
     # Campos de estado con valores por defecto - coinciden con frontend
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

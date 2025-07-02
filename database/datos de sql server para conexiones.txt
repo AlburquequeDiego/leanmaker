@@ -27,3 +27,11 @@ Swagger UI: http://localhost:8000/api/schema/swagger-ui/
 ReDoc: http://localhost:8000/api/schema/redoc/
 Login: http://localhost:8000/api/token/
 
+
+use leanmaker_db;
+go
+
+SELECT TABLE_SCHEMA, TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_TYPE = 'BASE TABLE'
+ORDER BY TABLE_SCHEMA, TABLE_NAME;

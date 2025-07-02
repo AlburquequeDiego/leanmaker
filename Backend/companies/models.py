@@ -39,6 +39,14 @@ class Empresa(models.Model):
     address = models.TextField(null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
+    
+    # Campos adicionales del registro
+    rut = models.CharField(max_length=20, null=True, blank=True)
+    personality = models.CharField(max_length=50, null=True, blank=True)  # jurídica, natural, otra
+    business_name = models.CharField(max_length=200, null=True, blank=True)  # razón social
+    company_address = models.CharField(max_length=500, null=True, blank=True)
+    company_phone = models.CharField(max_length=20, null=True, blank=True)
+    company_email = models.EmailField(null=True, blank=True)
     founded_year = models.IntegerField(null=True, blank=True)
     logo_url = models.CharField(max_length=500, null=True, blank=True)
     
@@ -126,6 +134,34 @@ class Empresa(models.Model):
         """Incrementa el contador de proyectos completados"""
         self.projects_completed += 1
         self.save(update_fields=['projects_completed'])
+
+class UsuarioResponsable(models.Model):
+    """
+    Modelo para el usuario responsable de la empresa
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    empresa = models.OneToOneField(Empresa, on_delete=models.CASCADE, related_name='usuario_responsable')
+    
+    # Campos del usuario responsable
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    birthdate = models.DateField()
+    gender = models.CharField(max_length=20)
+    password = models.CharField(max_length=128)
+    
+    # Fechas
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'company_responsible_users'
+        verbose_name = 'Usuario Responsable'
+        verbose_name_plural = 'Usuarios Responsables'
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.empresa.company_name}"
 
 class CalificacionEmpresa(models.Model):
     """

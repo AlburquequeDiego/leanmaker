@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Box, Paper, Typography, LinearProgress, CircularProgress } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import { UserTutorial } from '../../../components/common/UserTutorial';
 
 // Datos de ejemplo: entregas y postulaciones por día
 const actividad = [
@@ -27,6 +29,9 @@ const porcentajeEntregas = (totalEntregas / totalActividades) * 100;
 const porcentajePostulaciones = (totalPostulaciones / totalActividades) * 100;
 
 export default function StudentDashboard() {
+  // Estado para mostrar el tutorial (se puede controlar con localStorage para mostrar solo la primera vez)
+  const [showTutorial, setShowTutorial] = useState(true);
+
   // Mock de horas acumuladas - esto vendría de la API
   const totalHours = 156;
   // Mock de strikes
@@ -39,6 +44,14 @@ export default function StudentDashboard() {
 
   return (
     <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+      {/* Tutorial para usuarios nuevos */}
+      {showTutorial && (
+        <UserTutorial 
+          userRole="student" 
+          onClose={() => setShowTutorial(false)} 
+        />
+      )}
+
       <Typography variant="h4" fontWeight={700} mb={3}>
         Bienvenido a tu Dashboard (Estudiante)
       </Typography>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Box, Paper, Typography, useTheme } from '@mui/material';
 import WorkIcon from '@mui/icons-material/Work';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
@@ -8,11 +9,23 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EventIcon from '@mui/icons-material/Event';
 import HistoryIcon from '@mui/icons-material/History';
 import FolderIcon from '@mui/icons-material/Folder';
+import { UserTutorial } from '../../../components/common/UserTutorial';
 
 export const CompanyDashboard = () => {
   const theme = useTheme();
+  // Estado para mostrar el tutorial (se puede controlar con localStorage para mostrar solo la primera vez)
+  const [showTutorial, setShowTutorial] = useState(true);
+
   return (
     <Box sx={{ flexGrow: 1, p: { xs: 1, sm: 3 }, bgcolor: 'grey.100', minHeight: '100vh' }}>
+      {/* Tutorial para usuarios nuevos */}
+      {showTutorial && (
+        <UserTutorial 
+          userRole="company" 
+          onClose={() => setShowTutorial(false)} 
+        />
+      )}
+
       <Typography variant="h4" gutterBottom fontWeight={700}>
         Dashboard de Empresa
       </Typography>

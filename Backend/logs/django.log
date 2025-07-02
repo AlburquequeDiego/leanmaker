@@ -4594,3 +4594,11 @@ INFO 2025-07-01 20:38:43,234 autoreload 17656 3836 C:\Users\albur\Desktop\leanma
 INFO 2025-07-01 20:38:44,872 autoreload 10236 17736 Watching for file changes with StatReloader
 INFO 2025-07-02 00:17:08,709 autoreload 18588 5440 Watching for file changes with StatReloader
 WARNING 2025-07-02 00:20:07,716 log 18588 19408 Method Not Allowed: /api/token/
+WARNING 2025-07-02 00:39:02,693 log 18588 17284 Not Found: /api/auth/logout/
+WARNING 2025-07-02 01:20:55,511 log 18588 21132 Bad Request: /api/token/
+INFO 2025-07-02 09:04:51,836 autoreload 12732 10828 Watching for file changes with StatReloader
+WARNING 2025-07-02 09:04:57,915 log 12732 13432 Not Found: /favicon.ico
+INFO 2025-07-02 09:06:17,674 autoreload 13280 9856 Watching for file changes with StatReloader
+WARNING 2025-07-02 09:06:25,471 log 13280 19092 Not Found: /favicon.ico
+WARNING 2025-07-02 09:07:42,516 log 13280 21972 Method Not Allowed: /api/token/
+WARNING 2025-07-02 09:10:05,532 log 13280 12712 Not Found: /api/auth/logout/
