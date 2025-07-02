@@ -62,10 +62,23 @@ const getValidationSchema = (userType: UserType) => {
     email: yup
       .string()
       .email('Debe ser un correo válido')
-      .required('El correo es requerido'),
+      .required('El correo es requerido')
+      .test('institutional-email', 'Debe ser un correo institucional válido', function(value) {
+        if (userType === 'student' && value) {
+          const allowedDomains = [
+            'uchile.cl', 'uc.cl', 'udec.cl', 'usm.cl', 'usach.cl',
+            'uach.cl', 'uv.cl', 'ufro.cl', 'utalca.cl', 'uantof.cl'
+          ];
+          const domain = value.split('@')[1];
+          return allowedDomains.includes(domain);
+        }
+        return true;
+      }),
     password: yup
       .string()
       .min(8, 'La contraseña debe tener al menos 8 caracteres')
+      .matches(/[A-Z]/, 'La contraseña debe contener al menos una mayúscula')
+      .matches(/[!@#$%^&*(),.?":{}|<>]/, 'La contraseña debe contener al menos un caracter especial (!@#$%^&*)')
       .required('La contraseña es requerida'),
     password_confirm: yup
       .string()
@@ -185,6 +198,17 @@ export const Register = () => {
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
               {error}
+            </Alert>
+          )}
+
+          {/* Información sobre reglas de validación */}
+          {userType === 'student' && (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              <Typography variant="body2" component="div">
+                <strong>Reglas de registro para estudiantes:</strong>
+                <br />• Solo se permiten correos institucionales de las 10 universidades autorizadas
+                <br />• La contraseña debe tener al menos 8 caracteres, una mayúscula y un caracter especial
+              </Typography>
             </Alert>
           )}
 

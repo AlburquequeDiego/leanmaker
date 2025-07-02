@@ -1,9 +1,0 @@
-# Django y DRF - Versión simplificada para instalación fácil
-Django==3.2.23
-djangorestframework==3.14.0
-django-cors-headers==3.14.0
-django-filter==22.1
-djangorestframework-simplejwt==5.3.0
-drf-spectacular==0.26.5
-python-decouple==3.8
-Pillow==9.5.0 

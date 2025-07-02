@@ -20,7 +20,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
     serializer_class = InterviewSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['interviewer', 'application', 'status', 'interview_type']
+    filterset_fields = ['interviewer', 'application_id', 'status', 'interview_type']
     search_fields = ['notes', 'feedback']
     ordering_fields = ['interview_date', 'created_at', 'duration_minutes']
     ordering = ['-interview_date']
@@ -34,7 +34,8 @@ class InterviewViewSet(viewsets.ModelViewSet):
             return Interview.objects.filter(interviewer=user)
         else:
             # Los estudiantes ven entrevistas donde son parte de la aplicación
-            return Interview.objects.filter(application__student__user=user)
+            # Nota: Por ahora no hay relación directa, se puede implementar después
+            return Interview.objects.none()
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
@@ -56,7 +57,8 @@ class InterviewViewSet(viewsets.ModelViewSet):
         if request.user.role == 'company':
             queryset = Interview.objects.filter(interviewer=request.user)
         else:
-            queryset = Interview.objects.filter(application__student__user=request.user)
+            # Nota: Por ahora no hay relación directa, se puede implementar después
+            queryset = Interview.objects.none()
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -71,11 +73,8 @@ class InterviewViewSet(viewsets.ModelViewSet):
                 status='scheduled'
             )
         else:
-            queryset = Interview.objects.filter(
-                application__student__user=request.user,
-                interview_date__gte=now,
-                status='scheduled'
-            )
+            # Nota: Por ahora no hay relación directa, se puede implementar después
+            queryset = Interview.objects.none()
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -89,10 +88,8 @@ class InterviewViewSet(viewsets.ModelViewSet):
                 interview_date__date=today
             )
         else:
-            queryset = Interview.objects.filter(
-                application__student__user=request.user,
-                interview_date__date=today
-            )
+            # Nota: Por ahora no hay relación directa, se puede implementar después
+            queryset = Interview.objects.none()
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -109,11 +106,8 @@ class InterviewViewSet(viewsets.ModelViewSet):
                 interview_date__date__lt=week_end
             )
         else:
-            queryset = Interview.objects.filter(
-                application__student__user=request.user,
-                interview_date__date__gte=week_start,
-                interview_date__date__lt=week_end
-            )
+            # Nota: Por ahora no hay relación directa, se puede implementar después
+            queryset = Interview.objects.none()
         serializer = InterviewSerializer(queryset, many=True)
         return Response(serializer.data)
 

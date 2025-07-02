@@ -80,9 +80,38 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
+        
+        # Crear el usuario
         user = Usuario.objects.create(**validated_data)
         user.set_password(password)
         user.save()
+        
+        # Crear perfil específico según el rol
+        if user.role == 'student':
+            from students.models import Estudiante
+            Estudiante.objects.create(
+                user=user,
+                status='pending',
+                api_level=1,
+                strikes=0,
+                gpa=0.0,
+                completed_projects=0,
+                total_hours=0,
+                experience_years=0,
+                rating=0.0
+            )
+        elif user.role == 'company':
+            from companies.models import Empresa
+            Empresa.objects.create(
+                user=user,
+                verified=False,
+                rating=0.0,
+                total_projects=0,
+                projects_completed=0,
+                total_hours_offered=0,
+                status='active'
+            )
+        
         return user
 
 class LoginSerializer(serializers.Serializer):
@@ -127,8 +156,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Asegurar que el campo se llame 'email' en el formulario
-        self.fields['email'] = self.fields.pop('username', None)
+        # Renombrar el campo username a email
+        if 'username' in self.fields:
+            self.fields['email'] = self.fields.pop('username')
     
     def validate(self, attrs):
         # Asegurar que siempre usamos 'email' como campo de autenticación
@@ -152,27 +182,27 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         else:
             raise serializers.ValidationError('Email y contraseña son requeridos')
         
-        # Generar tokens
-        refresh = self.get_token(self.user)
-        access = refresh.access_token
+        # Generar tokens usando el método del padre
+        data = super().validate(attrs)
         
-        data = {
-            'refresh': str(refresh),
-            'access': str(access),
-        }
-        
-        # Agregar información adicional del usuario al token
+        # Agregar información completa del usuario
         data['user'] = {
             'id': str(self.user.id),
             'email': self.user.email,
-            'first_name': self.user.first_name,
-            'last_name': self.user.last_name,
+            'first_name': self.user.first_name or '',
+            'last_name': self.user.last_name or '',
+            'username': self.user.username or '',
+            'phone': self.user.phone or '',
+            'avatar': self.user.avatar.url if self.user.avatar else None,
+            'bio': self.user.bio or '',
             'role': self.user.role,
             'is_active': self.user.is_active,
-            'is_verified': self.user.is_verified
+            'is_verified': self.user.is_verified,
+            'date_joined': self.user.date_joined.isoformat() if self.user.date_joined else None,
+            'last_login': self.user.last_login.isoformat() if self.user.last_login else None,
         }
         
-        return data 
+        return data
 
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = 'email'
