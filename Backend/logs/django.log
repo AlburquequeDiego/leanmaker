@@ -4592,3 +4592,5 @@ WARNING 2025-07-01 20:06:26,179 log 17656 14568 Bad Request: /api/token/
 WARNING 2025-07-01 20:06:30,855 log 17656 14568 Bad Request: /api/token/
 INFO 2025-07-01 20:38:43,234 autoreload 17656 3836 C:\Users\albur\Desktop\leanmaker\Backend\areas\migrations\0001_initial.py changed, reloading.
 INFO 2025-07-01 20:38:44,872 autoreload 10236 17736 Watching for file changes with StatReloader
+INFO 2025-07-02 00:17:08,709 autoreload 18588 5440 Watching for file changes with StatReloader
+WARNING 2025-07-02 00:20:07,716 log 18588 19408 Method Not Allowed: /api/token/

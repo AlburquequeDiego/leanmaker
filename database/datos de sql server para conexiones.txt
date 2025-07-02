@@ -17,7 +17,7 @@ nombre de la base de datos : leanmaker_db
 
 
 Credenciales funcionales:
-diego@gmail.com / admin
+admin@gmail.com / admin
 
 
 
@@ -26,3 +26,4 @@ Admin: http://localhost:8000/admin/
 Swagger UI: http://localhost:8000/api/schema/swagger-ui/
 ReDoc: http://localhost:8000/api/schema/redoc/
 Login: http://localhost:8000/api/token/
+
