@@ -5,7 +5,6 @@ import {
   Paper,
   TextField,
   Button,
-  Avatar,
   Divider,
   Chip,
   Alert,
@@ -26,8 +25,7 @@ import {
   Delete as DeleteIcon,
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
-import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
+
 
 interface ProfileData {
   nombre: string;
@@ -55,19 +53,7 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-// MOCK de evaluaciones hechas por el estudiante a empresas
-const evaluacionesDadas = [
-  {
-    empresa: 'TechCorp Solutions',
-    estrellas: 5,
-    comentario: 'Excelente ambiente de trabajo y gran apoyo del equipo.'
-  },
-  {
-    empresa: 'Digital Dynamics',
-    estrellas: 4,
-    comentario: 'Buena experiencia, aunque el onboarding podría mejorar.'
-  },
-];
+
 
 export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);

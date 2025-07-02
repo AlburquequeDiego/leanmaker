@@ -1,221 +1,411 @@
-# LeanMaker - Plataforma de Gestión de Proyectos
+# 🚀 LeanMaker - Plataforma de Conexión Estudiantil-Empresarial
 
-Una plataforma completa para la gestión de proyectos entre estudiantes y empresas, construida con Django (Backend) y React (Frontend).
+## 📋 Descripción
 
-## 🚀 Características Principales
+LeanMaker es una plataforma integral que conecta estudiantes con oportunidades profesionales en empresas, facilitando la gestión de proyectos, evaluaciones y el desarrollo de habilidades prácticas.
 
-- **Gestión de Usuarios**: Sistema de autenticación JWT para estudiantes, empresas y administradores
-- **Gestión de Proyectos**: Creación, aplicación y seguimiento de proyectos
-- **Sistema de Evaluaciones**: Evaluación de estudiantes y proyectos
-- **Notificaciones**: Sistema de notificaciones en tiempo real
-- **Calendario**: Gestión de eventos y recordatorios
-- **Reportes**: Generación de reportes y estadísticas
-- **API REST**: API completa con documentación automática
+## 🎯 Características Principales
 
-## 🛠️ Tecnologías Utilizadas
+### 👥 **Gestión de Usuarios**
+- **Estudiantes**: Perfiles completos, habilidades, GPA, historial de proyectos
+- **Empresas**: Gestión de proyectos, evaluaciones, entrevistas
+- **Administradores**: Control total del sistema y validaciones
 
-### Backend (Django)
-- Django 4.2+
-- Django REST Framework
-- Django CORS Headers
-- Simple JWT
-- SQLite (desarrollo) / PostgreSQL (producción)
+### 📊 **Sistema de Proyectos**
+- Publicación de proyectos por empresas
+- Postulaciones de estudiantes
+- Seguimiento de progreso
+- Gestión de entregables
 
-### Frontend (React)
-- React 18
-- TypeScript
-- Material-UI (MUI)
-- React Router
-- Axios
-- Formik + Yup
+### ⭐ **Sistema de Evaluaciones**
+- Evaluaciones bidireccionales (empresa ↔ estudiante)
+- Múltiples categorías de evaluación
+- Historial de calificaciones
+- Métricas de rendimiento
 
-## 📋 Prerrequisitos
+### 📅 **Gestión de Eventos**
+- Entrevistas programadas
+- Reuniones de proyecto
+- Calendario integrado
+- Notificaciones automáticas
 
-- Python 3.8+
-- Node.js 16+
-- npm o yarn
+### ⚡ **Sistema de Strikes**
+- Control de cumplimiento
+- Penalizaciones automáticas
+- Gestión de incidencias
+- Seguimiento de comportamiento
 
-## 🚀 Instalación y Configuración
+## 🏗️ Arquitectura del Sistema
 
-### 1. Clonar el Repositorio
+### Backend (Django REST Framework)
+```
+Backend/
+├── Django 4.2+           # Framework principal
+├── SQL Server           # Base de datos
+├── JWT Authentication   # Autenticación segura
+├── REST API             # APIs RESTful
+└── 15+ Apps Django      # Módulos especializados
+```
 
+### Frontend (React + TypeScript)
+```
+Frontend/
+├── React 18            # Biblioteca de UI
+├── TypeScript          # Tipado estático
+├── Material-UI         # Componentes modernos
+├── Vite                # Build tool rápido
+└── Responsive Design   # Diseño adaptativo
+```
+
+## 🚀 Instalación Rápida
+
+### Prerrequisitos
+- Python 3.11+
+- Node.js 18+
+- SQL Server
+- Git
+
+### 1. Clonar el repositorio
 ```bash
 git clone <repository-url>
 cd leanmaker
 ```
 
-### 2. Configurar el Backend (Django)
-
+### 2. Configurar Backend
 ```bash
-# Navegar al directorio del backend
 cd Backend
-
-# Activar el entorno virtual (Windows)
-activate_venv.bat
-
-# O crear un nuevo entorno virtual
-python -m venv venv
-# En Windows:
-venv\Scripts\activate
-# En macOS/Linux:
-source venv/bin/activate
-
-# Instalar dependencias
+python -m venv venv312
+venv312\Scripts\activate  # Windows
+# source venv312/bin/activate  # Linux/Mac
 pip install -r requirements.txt
+```
 
-# Aplicar migraciones
+### 3. Configurar Base de Datos
+Editar `Backend/leanmaker_backend/settings.py`:
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'leanmaker_db',
+        'USER': 'tu_usuario',
+        'PASSWORD': 'tu_password',
+        'HOST': 'localhost',
+        'PORT': '1433',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+        },
+    }
+}
+```
+
+### 4. Ejecutar Migraciones
+```bash
 python manage.py migrate
-
-# Crear superusuario
 python manage.py createsuperuser
-
-# Ejecutar el servidor de desarrollo
 python manage.py runserver
 ```
 
-El backend estará disponible en: http://localhost:8000
-
-### 3. Configurar el Frontend (React)
-
+### 5. Configurar Frontend
 ```bash
-# Navegar al directorio del frontend
-cd Frontend
-
-# Instalar dependencias
+cd ../Frontend
 npm install
+```
 
-# Crear archivo de variables de entorno
-echo "VITE_API_URL=http://localhost:8000" > .env
+### 6. Configurar Variables de Entorno
+Crear `.env` en `Frontend/`:
+```env
+VITE_API_BASE_URL=http://localhost:8000/api
+```
 
-# Ejecutar el servidor de desarrollo
+### 7. Ejecutar Frontend
+```bash
 npm run dev
 ```
 
-El frontend estará disponible en: http://localhost:5173
+## 🌐 Acceso al Sistema
 
-## 🔧 Configuración de Variables de Entorno
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000/api
+- **Admin Django**: http://localhost:8000/admin
+- **Documentación API**: http://localhost:8000/api/schema/swagger-ui/
 
-### Backend (.env)
-```env
-DEBUG=True
-SECRET_KEY=your-secret-key
-DATABASE_URL=sqlite:///db.sqlite3
-ALLOWED_HOSTS=localhost,127.0.0.1
-CORS_ALLOWED_ORIGINS=http://localhost:5173
+## 👤 Roles y Funcionalidades
+
+### 🎓 **Estudiante**
+- **Dashboard Personal**: Estadísticas, proyectos activos, horas acumuladas
+- **Explorar Proyectos**: Buscar y postular a proyectos disponibles
+- **Mis Aplicaciones**: Seguimiento de postulaciones
+- **Mis Proyectos**: Gestión de proyectos asignados
+- **Evaluaciones**: Ver evaluaciones recibidas
+- **Calendario**: Eventos y entrevistas programadas
+- **Perfil**: Gestión de información personal y habilidades
+
+### 🏢 **Empresa**
+- **Dashboard Empresarial**: Estadísticas, proyectos activos, postulaciones
+- **Gestión de Proyectos**: Crear, editar y gestionar proyectos
+- **Postulaciones**: Revisar y gestionar candidatos
+- **Evaluaciones**: Evaluar estudiantes y ver evaluaciones recibidas
+- **Entrevistas**: Programar y gestionar entrevistas
+- **Calendario**: Eventos y reuniones
+- **Strikes**: Gestión de incidencias con estudiantes
+
+### 👨‍💼 **Administrador**
+- **Dashboard Administrativo**: Estadísticas globales del sistema
+- **Gestión de Usuarios**: Administrar estudiantes, empresas y admins
+- **Validación de Horas**: Aprobar horas trabajadas por estudiantes
+- **Gestión de Empresas**: Validar y gestionar empresas
+- **Gestión de Estudiantes**: Control de estudiantes y strikes
+- **Gestión de Proyectos**: Supervisión de proyectos
+- **Configuración**: Ajustes del sistema
+
+## 📊 Modelos de Datos Principales
+
+### Usuario
+```json
+{
+  "id": 1,
+  "email": "usuario@ejemplo.com",
+  "first_name": "Juan",
+  "last_name": "Pérez",
+  "role": "student",
+  "is_active": true,
+  "date_joined": "2024-01-01T00:00:00Z"
+}
 ```
-
-### Frontend (.env)
-```env
-VITE_API_URL=http://localhost:8000
-```
-
-## 📚 Endpoints de la API
-
-### Autenticación
-- `POST /api/v1/token/` - Login
-- `POST /api/v1/token/refresh/` - Refresh token
-- `POST /api/v1/token/verify/` - Verify token
-
-### Usuarios
-- `GET /api/v1/users/` - Listar usuarios
-- `GET /api/v1/users/me/` - Perfil del usuario actual
-- `POST /api/v1/auth/register/` - Registrar usuario
-
-### Proyectos
-- `GET /api/v1/projects/` - Listar proyectos
-- `POST /api/v1/projects/` - Crear proyecto
-- `GET /api/v1/project-applications/` - Aplicaciones a proyectos
-- `GET /api/v1/project-members/` - Miembros de proyectos
-
-### Estudiantes
-- `GET /api/v1/students/` - Listar estudiantes
-- `GET /api/v1/student-profiles/` - Perfiles de estudiantes
-
-### Documentación de la API
-- `GET /api/v1/schema/` - Esquema de la API
-- `GET /api/v1/docs/` - Documentación interactiva
-
-## 👥 Roles de Usuario
-
-### Administrador
-- Gestión completa de usuarios y proyectos
-- Acceso a reportes y estadísticas
-- Configuración del sistema
 
 ### Estudiante
-- Ver y aplicar a proyectos
-- Gestionar perfil y habilidades
-- Ver evaluaciones y calificaciones
+```json
+{
+  "id": 1,
+  "user": 1,
+  "career": "Ingeniería de Sistemas",
+  "semester": 8,
+  "graduation_year": 2024,
+  "gpa": 4.2,
+  "api_level": 2,
+  "strikes": 0,
+  "total_hours": 180,
+  "skills": ["React", "Python", "SQL"],
+  "languages": ["Español", "Inglés"]
+}
+```
 
 ### Empresa
-- Crear y gestionar proyectos
-- Evaluar estudiantes
-- Ver reportes de proyectos
-
-## 🧪 Pruebas
-
-### Backend
-```bash
-cd Backend
-python manage.py test
+```json
+{
+  "id": 1,
+  "user": 2,
+  "name": "TechCorp Solutions",
+  "industry": "Tecnología",
+  "size": "medium",
+  "description": "Empresa de desarrollo de software",
+  "website": "https://techcorp.com",
+  "technologies_used": ["React", "Node.js", "Python"],
+  "benefits_offered": ["Horario flexible", "Capacitación"]
+}
 ```
 
-### Frontend
-```bash
-cd Frontend
-npm test
+### Proyecto
+```json
+{
+  "id": 1,
+  "company": 1,
+  "title": "Desarrollo Web Frontend",
+  "description": "Proyecto de desarrollo web con React",
+  "requirements": ["React", "TypeScript", "Git"],
+  "preferred_skills": ["Material-UI", "Redux"],
+  "duration": "3 meses",
+  "status": "active",
+  "max_students": 2,
+  "benefits": ["Certificación", "Referencia laboral"],
+  "technologies": ["React", "TypeScript", "Material-UI"]
+}
 ```
 
-## 📦 Despliegue
+## 🔌 APIs Principales
 
-### Backend (Producción)
+### Autenticación
 ```bash
-# Configurar variables de entorno de producción
-export DEBUG=False
-export SECRET_KEY=your-production-secret-key
-export DATABASE_URL=postgresql://...
+POST /api/auth/login/          # Iniciar sesión
+POST /api/auth/refresh/        # Renovar token
+POST /api/auth/logout/         # Cerrar sesión
+POST /api/auth/register/       # Registro
+```
 
-# Recolectar archivos estáticos
+### Usuarios
+```bash
+GET    /api/users/             # Listar usuarios
+GET    /api/users/{id}/        # Obtener usuario
+PUT    /api/users/{id}/        # Actualizar usuario
+DELETE /api/users/{id}/        # Eliminar usuario
+```
+
+### Estudiantes
+```bash
+GET    /api/students/          # Listar estudiantes
+POST   /api/students/          # Crear estudiante
+GET    /api/students/{id}/     # Obtener estudiante
+PUT    /api/students/{id}/     # Actualizar estudiante
+```
+
+### Empresas
+```bash
+GET    /api/companies/         # Listar empresas
+POST   /api/companies/         # Crear empresa
+GET    /api/companies/{id}/    # Obtener empresa
+PUT    /api/companies/{id}/    # Actualizar empresa
+```
+
+### Proyectos
+```bash
+GET    /api/projects/          # Listar proyectos
+POST   /api/projects/          # Crear proyecto
+GET    /api/projects/{id}/     # Obtener proyecto
+PUT    /api/projects/{id}/     # Actualizar proyecto
+```
+
+### Aplicaciones
+```bash
+GET    /api/applications/      # Listar aplicaciones
+POST   /api/applications/      # Crear aplicación
+GET    /api/applications/{id}/ # Obtener aplicación
+PUT    /api/applications/{id}/ # Actualizar aplicación
+```
+
+## 🎨 Interfaz de Usuario
+
+### Características del Frontend
+- **Diseño Responsivo**: Adaptable a móviles, tablets y desktop
+- **Tema Moderno**: Material-UI con diseño profesional
+- **Navegación Intuitiva**: Menús organizados por rol
+- **Componentes Reutilizables**: Código modular y mantenible
+- **Estados de Carga**: Feedback visual para todas las acciones
+- **Validación en Tiempo Real**: Formularios con validación inmediata
+
+### Componentes Principales
+- **DashboardLayout**: Layout principal con sidebar y header
+- **ProjectCard**: Tarjetas de proyecto con información completa
+- **StudentCard**: Tarjetas de estudiante con estadísticas
+- **EvaluationForm**: Formularios de evaluación avanzados
+- **Calendar**: Calendario integrado para eventos
+- **NotificationSystem**: Sistema de notificaciones en tiempo real
+
+## 🔒 Seguridad
+
+### Autenticación JWT
+- Tokens de acceso y refresh
+- Renovación automática de tokens
+- Logout seguro
+- Protección de rutas
+
+### Autorización por Roles
+- Control de acceso basado en roles
+- Permisos granulares
+- Validación de permisos en frontend y backend
+
+### Protección de Datos
+- Validación de entrada
+- Sanitización de datos
+- Protección CSRF
+- Headers de seguridad
+
+## 📈 Métricas y Analytics
+
+### Dashboard de Administrador
+- Total de usuarios registrados
+- Proyectos activos
+- Aplicaciones pendientes
+- Evaluaciones completadas
+- Horas acumuladas por estudiantes
+
+### Dashboard de Empresa
+- Proyectos publicados
+- Postulaciones recibidas
+- Estudiantes evaluados
+- Entrevistas programadas
+
+### Dashboard de Estudiante
+- Proyectos aplicados
+- Horas acumuladas
+- Evaluaciones recibidas
+- Strikes actuales
+
+## 🚀 Deployment
+
+### Backend (Django)
+```bash
+# Configuración para producción
+DEBUG = False
+ALLOWED_HOSTS = ['tu-dominio.com']
+SECRET_KEY = 'clave-super-secreta'
+DATABASE_URL = 'mssql://usuario:password@servidor:1433/leanmaker_prod'
+
+# Comandos de deployment
 python manage.py collectstatic
-
-# Usar Gunicorn para producción
-pip install gunicorn
+python manage.py migrate
 gunicorn leanmaker_backend.wsgi:application
 ```
 
-### Frontend (Producción)
+### Frontend (React)
 ```bash
 # Construir para producción
 npm run build
 
-# Servir con nginx o similar
+# Variables de entorno de producción
+VITE_API_BASE_URL=https://api.tu-dominio.com/api
+VITE_APP_NAME=LeanMaker
+VITE_APP_VERSION=1.0.0
 ```
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd Backend
+python manage.py test
+coverage run --source='.' manage.py test
+coverage report
+```
+
+### Frontend Tests
+```bash
+cd Frontend
+npm run test
+npm run test:coverage
+```
+
+## 📚 Documentación
+
+- **[Backend README](Backend/README.md)**: Documentación completa del backend
+- **[Frontend README](Frontend/README.md)**: Documentación completa del frontend
+- **[API Documentation](http://localhost:8000/api/schema/swagger-ui/)**: Documentación interactiva de APIs
 
 ## 🤝 Contribución
 
 1. Fork el proyecto
-2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+2. Crear rama para feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
+5. Abrir Pull Request
 
-## 📝 Licencia
+## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## 🆘 Soporte
+## 👥 Autores
 
-Si tienes problemas o preguntas:
+- **Tu Nombre** - *Desarrollo completo* - [TuGitHub](https://github.com/tuusuario)
 
-1. Revisa la documentación de la API en `/api/v1/docs/`
-2. Verifica los logs del servidor Django
-3. Abre un issue en el repositorio
+## 🙏 Agradecimientos
 
-## 🔄 Próximos Pasos
+- Django Team
+- React Team
+- Material-UI Team
+- Comunidad de desarrolladores
+- Todos los que contribuyeron al proyecto
 
-1. **Configurar CORS**: Asegúrate de que el backend permita requests desde el frontend
-2. **Probar Autenticación**: Usa el componente TestConnection para verificar la conectividad
-3. **Crear Usuarios**: Usa el admin de Django para crear usuarios de prueba
-4. **Desarrollar Funcionalidades**: Comienza con las funcionalidades principales según tu rol
+---
 
-¡Tu aplicación LeanMaker está lista para usar! 🎉
+**LeanMaker** - Conectando talento con oportunidades profesionales 🚀
+
+*Desarrollado con ❤️ para facilitar la conexión entre estudiantes y empresas*

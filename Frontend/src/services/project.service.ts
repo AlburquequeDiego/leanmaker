@@ -40,7 +40,8 @@ export interface ProjectMember {
 class ProjectService {
   // Projects
   async getProjects(params?: any): Promise<Project[]> {
-    return await apiService.get<Project[]>(API_ENDPOINTS.PROJECTS, { params });
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return await apiService.get<Project[]>(`${API_ENDPOINTS.PROJECTS}${queryString}`);
   }
 
   async getProject(id: number): Promise<Project> {
@@ -61,7 +62,8 @@ class ProjectService {
 
   // Project Applications
   async getProjectApplications(params?: any): Promise<ProjectApplication[]> {
-    return await apiService.get<ProjectApplication[]>(API_ENDPOINTS.PROJECT_APPLICATIONS, { params });
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return await apiService.get<ProjectApplication[]>(`${API_ENDPOINTS.PROJECT_APPLICATIONS}${queryString}`);
   }
 
   async getProjectApplication(id: number): Promise<ProjectApplication> {
@@ -80,25 +82,26 @@ class ProjectService {
     return await apiService.delete(`${API_ENDPOINTS.PROJECT_APPLICATIONS}${id}/`);
   }
 
-  // Project Members
+  // Project Members - Using projects endpoint since members are part of project model
   async getProjectMembers(params?: any): Promise<ProjectMember[]> {
-    return await apiService.get<ProjectMember[]>(API_ENDPOINTS.PROJECT_MEMBERS, { params });
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return await apiService.get<ProjectMember[]>(`${API_ENDPOINTS.PROJECTS}${queryString}`);
   }
 
   async getProjectMember(id: number): Promise<ProjectMember> {
-    return await apiService.get<ProjectMember>(`${API_ENDPOINTS.PROJECT_MEMBERS}${id}/`);
+    return await apiService.get<ProjectMember>(`${API_ENDPOINTS.PROJECTS}${id}/`);
   }
 
   async createProjectMember(memberData: Partial<ProjectMember>): Promise<ProjectMember> {
-    return await apiService.post<ProjectMember>(API_ENDPOINTS.PROJECT_MEMBERS, memberData);
+    return await apiService.post<ProjectMember>(API_ENDPOINTS.PROJECTS, memberData);
   }
 
   async updateProjectMember(id: number, memberData: Partial<ProjectMember>): Promise<ProjectMember> {
-    return await apiService.put<ProjectMember>(`${API_ENDPOINTS.PROJECT_MEMBERS}${id}/`, memberData);
+    return await apiService.put<ProjectMember>(`${API_ENDPOINTS.PROJECTS}${id}/`, memberData);
   }
 
   async deleteProjectMember(id: number): Promise<void> {
-    return await apiService.delete(`${API_ENDPOINTS.PROJECT_MEMBERS}${id}/`);
+    return await apiService.delete(`${API_ENDPOINTS.PROJECTS}${id}/`);
   }
 }
 

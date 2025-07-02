@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { apiService } from '../services/api.service';
-import type { ApiResponse } from '../types';
 
 interface UseApiOptions<T> {
   onSuccess?: (data: T) => void;

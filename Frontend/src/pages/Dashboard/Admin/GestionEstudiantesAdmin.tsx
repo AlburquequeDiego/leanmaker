@@ -66,24 +66,7 @@ interface Student {
   totalHours: number;
 }
 
-interface Application {
-  id: string;
-  projectTitle: string;
-  company: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'completed';
-  date: string;
-  rating?: number;
-}
 
-interface Evaluation {
-  id: string;
-  projectTitle: string;
-  company: string;
-  rating: number;
-  comment: string;
-  date: string;
-  category: 'technical' | 'soft_skills' | 'punctuality' | 'teamwork';
-}
 
 interface DisciplinaryRecord {
   id: string;

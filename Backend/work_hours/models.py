@@ -3,7 +3,7 @@ from applications.models import Asignacion
 from students.models import Estudiante
 from projects.models import Proyecto
 from companies.models import Empresa
-from users.models import Usuario
+from django.conf import settings
 import uuid
 from django.utils import timezone
 
@@ -24,7 +24,7 @@ class WorkHour(models.Model):
     
     # Campos de validación - coinciden con frontend
     approved = models.BooleanField(default=False)  # Campo renombrado para coincidir con frontend
-    approved_by = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='horas_aprobadas')  # Campo renombrado para coincidir con frontend
+    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='horas_aprobadas')  # Campo renombrado para coincidir con frontend
     approved_at = models.DateTimeField(null=True, blank=True)  # Campo renombrado para coincidir con frontend
     
     # Campos adicionales para compatibilidad
@@ -32,7 +32,7 @@ class WorkHour(models.Model):
     horas_trabajadas = models.IntegerField()  # Campo original para compatibilidad
     descripcion = models.TextField(null=True, blank=True)  # Campo original para compatibilidad
     estado_validacion = models.CharField(max_length=20, default='pendiente')
-    validador = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True, related_name='horas_validadas')
+    validador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='horas_validadas')
     fecha_validacion = models.DateTimeField(null=True, blank=True)
     comentario_validacion = models.TextField(null=True, blank=True)
     

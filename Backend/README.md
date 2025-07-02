@@ -1,331 +1,362 @@
-# LeanMaker Backend 🚀
+# LeanMaker Backend API
 
-## Descripción
-Backend de la plataforma LeanMaker desarrollado con Django 3.2 y Django REST Framework. Conecta estudiantes de INACAP con empresas a través de proyectos temporales.
+## 📋 Descripción
 
-**Estado actual:** ✅ **FUNCIONANDO** - Servidor corriendo con SQLite local
+Backend API para la plataforma LeanMaker, un sistema integral de gestión de proyectos y conexión entre estudiantes y empresas. Desarrollado con Django REST Framework y autenticación JWT.
 
----
-## ⚠️ IMPORTANTE: Compatibilidad de Python
+## 🏗️ Arquitectura del Sistema
 
-**Django 3.2 NO es compatible con Python 3.13** debido a que Python 3.13 eliminó el módulo `cgi` que Django 3.2 requiere.
+### Tecnologías Principales
+- **Django 4.2+**: Framework web principal
+- **Django REST Framework**: API REST
+- **SQL Server**: Base de datos principal
+- **JWT Authentication**: Autenticación segura
+- **CORS**: Soporte para frontend React
+- **drf-spectacular**: Documentación automática de API
 
-### Solución: Usar Python 3.12
-
-1. **Instalar Python 3.12:**
-   - Descarga desde: https://www.python.org/downloads/release/python-3120/
-   - Marca la casilla **"Add Python 3.12 to PATH"** durante la instalación
-
-2. **Verificar instalación:**
-   ```powershell
-   py --list
-   ```
-   Debe mostrar Python 3.12 en la lista.
-
----
-
-## 🚀 Inicio Rápido (PASO A PASO)
-
-### 1. Abrir PowerShell y navegar al proyecto
-```powershell
-cd C:\Users\albur\Desktop\leanmaker\Backend
+### Estructura de Apps
+```
+Backend/
+├── users/                 # Gestión de usuarios y autenticación
+├── students/             # Gestión de estudiantes
+├── companies/            # Gestión de empresas
+├── projects/             # Gestión de proyectos
+├── applications/         # Postulaciones a proyectos
+├── evaluations/          # Sistema de evaluaciones
+├── interviews/           # Gestión de entrevistas
+├── notifications/        # Sistema de notificaciones
+├── calendar_events/      # Eventos de calendario
+├── work_hours/           # Control de horas trabajadas
+├── strikes/              # Sistema de strikes
+├── documents/            # Gestión de documentos
+├── reports/              # Generación de reportes
+└── platform_settings/    # Configuración de plataforma
 ```
 
-### 2. Activar entorno virtual (YA CREADO)
-```powershell
-.\venv312\Scripts\Activate.ps1
-```
-**Deberías ver:** `(venv312) PS C:\Users\albur\Desktop\leanmaker\Backend>`
+## 🚀 Instalación y Configuración
 
-### 3. Verificar que todo esté bien
-```powershell
-python manage.py check
-```
-**Deberías ver:** `System check identified no issues (0 silenced).`
+### Prerrequisitos
+- Python 3.11+
+- SQL Server
+- pip
 
-### 4. Iniciar servidor
-```powershell
-python manage.py runserver
+### 1. Clonar el repositorio
+```bash
+git clone <repository-url>
+cd leanmaker/Backend
 ```
 
-### 5. ¡Listo! El backend está funcionando
-- **URL Principal:** http://127.0.0.1:8000
-- **Admin Django:** http://127.0.0.1:8000/admin
-- **Documentación API:** http://127.0.0.1:8000/api/schema/swagger-ui/
-- **Health Check:** http://127.0.0.1:8000/api/health/
+### 2. Crear entorno virtual
+```bash
+python -m venv venv312
+# Windows
+venv312\Scripts\activate
+# Linux/Mac
+source venv312/bin/activate
+```
 
----
+### 3. Instalar dependencias
+```bash
+pip install -r requirements.txt
+```
 
-## 📊 Estado Actual del Proyecto
-
-### ✅ Lo que YA está funcionando:
-- **Servidor Django** corriendo en puerto 8000
-- **Base de datos SQLite** local (sin conexiones externas)
-- **Todas las aplicaciones** creadas y configuradas
-- **API REST** con autenticación JWT
-- **Documentación automática** con Swagger
-- **CORS configurado** para frontend React/Vite
-- **Sistema de logs** activo
-
-### 📁 Aplicaciones Django creadas:
-- ✅ `users` - Gestión de usuarios
-- ✅ `companies` - Gestión de empresas  
-- ✅ `students` - Gestión de estudiantes
-- ✅ `projects` - Gestión de proyectos
-- ✅ `applications` - Postulaciones a proyectos
-- ✅ `evaluations` - Evaluaciones
-- ✅ `notifications` - Sistema de notificaciones
-- ✅ `work_hours` - Control de horas trabajadas
-- ✅ `interviews` - Gestión de entrevistas
-- ✅ `calendar_events` - Eventos de calendario
-- ✅ `platform_settings` - Configuración de plataforma
-- ✅ `strikes` - Sistema de strikes
-- ✅ `questionnaires` - Cuestionarios
-
----
-
-## 🔧 Configuración Actual
-
-### Base de Datos (SQLite Local)
+### 4. Configurar base de datos
+Editar `leanmaker_backend/settings.py`:
 ```python
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'leanmaker_db',
+        'USER': 'tu_usuario',
+        'PASSWORD': 'tu_password',
+        'HOST': 'localhost',
+        'PORT': '1433',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+        },
     }
 }
 ```
 
-### Características activas:
-- **DEBUG = True** (modo desarrollo)
-- **Idioma:** Español Chile (es-cl)
-- **Zona horaria:** America/Santiago
-- **Autenticación:** JWT (JSON Web Tokens)
-- **CORS:** Habilitado para localhost:3000 y 5173
-- **Documentación:** Swagger UI automática
-
----
-
-## 🧪 Cómo Probar el Backend
-
-### 1. Verificar que el servidor esté corriendo
-```powershell
-# En PowerShell, deberías ver:
-(venv312) PS C:\Users\albur\Desktop\leanmaker\Backend>
+### 5. Configurar variables de entorno
+Crear archivo `.env` en la raíz del backend:
+```env
+SECRET_KEY=tu_clave_secreta_muy_larga
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=mssql://usuario:password@localhost:1433/leanmaker_db
 ```
 
-### 2. Abrir navegador y probar URLs:
+### 6. Ejecutar migraciones
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
 
-#### ✅ Página principal
-- **URL:** http://127.0.0.1:8000
-- **Resultado esperado:** Página de Django funcionando
-
-#### ✅ Documentación de la API
-- **URL:** http://127.0.0.1:8000/api/schema/swagger-ui/
-- **Resultado esperado:** Interfaz Swagger con todos los endpoints
-
-#### ✅ Health Check
-- **URL:** http://127.0.0.1:8000/api/health/
-- **Resultado esperado:** JSON con estado del servidor
-
-#### ✅ Admin Django
-- **URL:** http://127.0.0.1:8000/admin
-- **Resultado esperado:** Página de login del admin
-
-### 3. Crear superusuario (opcional)
-```powershell
+### 7. Crear superusuario
+```bash
 python manage.py createsuperuser
 ```
-Luego podrás acceder al admin con esas credenciales.
 
----
+### 8. Ejecutar el servidor
+```bash
+python manage.py runserver
+```
 
-## 📋 Endpoints de la API Disponibles
+El servidor estará disponible en: `http://localhost:8000`
+
+## 🔐 Autenticación y Autorización
+
+### JWT Authentication
+El sistema utiliza JWT (JSON Web Tokens) para autenticación:
+
+```bash
+# Login
+POST /api/auth/login/
+{
+    "email": "usuario@ejemplo.com",
+    "password": "password123"
+}
+
+# Response
+{
+    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+}
+```
+
+### Roles de Usuario
+- **Admin**: Acceso completo al sistema
+- **Company**: Gestión de proyectos y evaluaciones
+- **Student**: Postulación y participación en proyectos
+
+## 📊 Modelos Principales
+
+### Usuario (User)
+```python
+{
+    "id": 1,
+    "email": "usuario@ejemplo.com",
+    "first_name": "Juan",
+    "last_name": "Pérez",
+    "role": "student",
+    "is_active": true,
+    "date_joined": "2024-01-01T00:00:00Z"
+}
+```
+
+### Estudiante (Student)
+```python
+{
+    "id": 1,
+    "user": 1,
+    "career": "Ingeniería de Sistemas",
+    "semester": 8,
+    "graduation_year": 2024,
+    "gpa": 4.2,
+    "api_level": 2,
+    "strikes": 0,
+    "total_hours": 180
+}
+```
+
+### Empresa (Company)
+```python
+{
+    "id": 1,
+    "user": 2,
+    "name": "TechCorp Solutions",
+    "industry": "Tecnología",
+    "size": "medium",
+    "description": "Empresa de desarrollo de software",
+    "website": "https://techcorp.com"
+}
+```
+
+### Proyecto (Project)
+```python
+{
+    "id": 1,
+    "company": 1,
+    "title": "Desarrollo Web Frontend",
+    "description": "Proyecto de desarrollo web",
+    "requirements": ["React", "TypeScript"],
+    "duration": "3 meses",
+    "status": "active",
+    "max_students": 2
+}
+```
+
+## 🔌 Endpoints Principales
 
 ### Autenticación
-- `POST /api/token/` - Obtener token JWT
-- `POST /api/token/refresh/` - Renovar token JWT
+- `POST /api/auth/login/` - Iniciar sesión
+- `POST /api/auth/refresh/` - Renovar token
+- `POST /api/auth/logout/` - Cerrar sesión
+- `POST /api/auth/register/` - Registro de usuarios
 
 ### Usuarios
 - `GET /api/users/` - Listar usuarios
-- `POST /api/users/` - Crear usuario
-
-### Empresas
-- `GET /api/companies/` - Listar empresas
-- `POST /api/companies/` - Crear empresa
+- `GET /api/users/{id}/` - Obtener usuario
+- `PUT /api/users/{id}/` - Actualizar usuario
+- `DELETE /api/users/{id}/` - Eliminar usuario
 
 ### Estudiantes
 - `GET /api/students/` - Listar estudiantes
 - `POST /api/students/` - Crear estudiante
+- `GET /api/students/{id}/` - Obtener estudiante
+- `PUT /api/students/{id}/` - Actualizar estudiante
+
+### Empresas
+- `GET /api/companies/` - Listar empresas
+- `POST /api/companies/` - Crear empresa
+- `GET /api/companies/{id}/` - Obtener empresa
+- `PUT /api/companies/{id}/` - Actualizar empresa
 
 ### Proyectos
 - `GET /api/projects/` - Listar proyectos
 - `POST /api/projects/` - Crear proyecto
+- `GET /api/projects/{id}/` - Obtener proyecto
+- `PUT /api/projects/{id}/` - Actualizar proyecto
 
-### Y muchos más...
-Ver todos los endpoints en: http://127.0.0.1:8000/api/schema/swagger-ui/
+### Aplicaciones
+- `GET /api/applications/` - Listar aplicaciones
+- `POST /api/applications/` - Crear aplicación
+- `GET /api/applications/{id}/` - Obtener aplicación
+- `PUT /api/applications/{id}/` - Actualizar aplicación
 
----
+## 📚 Documentación de API
 
-## 🐛 Solución de Problemas
+### Swagger UI
+Accede a la documentación interactiva en:
+```
+http://localhost:8000/api/schema/swagger-ui/
+```
 
-### Error: "No module named 'cgi'"
-- **Causa:** Python 3.13 no es compatible con Django 3.2
-- **Solución:** Usar Python 3.12
+### ReDoc
+Documentación alternativa en:
+```
+http://localhost:8000/api/schema/redoc/
+```
 
-### Error: "No se encontró Python"
-- **Causa:** Python no está en PATH
-- **Solución:** Instalar Python 3.12 y marcar "Add to PATH"
+## 🧪 Testing
 
-### Error: "No module named 'users'"
-- **Causa:** Las aplicaciones Django no están creadas
-- **Solución:** Ya están creadas, verificar que el entorno virtual esté activado
+### Ejecutar tests
+```bash
+python manage.py test
+```
 
-### Error de conexión a base de datos
-- **Causa:** Intentando conectar a SQL Server externo
-- **Solución:** Ya está configurado para usar SQLite local
+### Cobertura de tests
+```bash
+coverage run --source='.' manage.py test
+coverage report
+coverage html
+```
 
-### El servidor no inicia
-- **Solución:** Verificar que estés en el directorio correcto y el entorno virtual esté activado
+## 🔧 Comandos Útiles
 
----
-
-## 🛠️ Comandos Útiles
-
-```powershell
-# Verificar estado del proyecto
+### Desarrollo
+```bash
+# Verificar configuración
 python manage.py check
 
-# Crear superusuario
-python manage.py createsuperuser
-
-# Ver migraciones pendientes
-python manage.py showmigrations
-
-# Ejecutar migraciones
-python manage.py migrate
-
-# Crear nuevas migraciones
+# Crear migraciones
 python manage.py makemigrations
+
+# Aplicar migraciones
+python manage.py migrate
 
 # Shell de Django
 python manage.py shell
 
-# Ejecutar tests
-python manage.py test
+# Crear superusuario
+python manage.py createsuperuser
 
 # Recolectar archivos estáticos
 python manage.py collectstatic
 ```
 
----
+### Base de datos
+```bash
+# Resetear base de datos
+python manage.py flush
 
-## 📞 Soporte para Compañeros
+# Backup de datos
+python manage.py dumpdata > backup.json
 
-### Si algo no funciona:
-
-1. **Verificar Python 3.12:**
-   ```powershell
-   py --list
-   ```
-
-2. **Verificar entorno virtual:**
-   ```powershell
-   # Deberías ver (venv312) al inicio
-   (venv312) PS C:\Users\albur\Desktop\leanmaker\Backend>
-   ```
-
-3. **Verificar que estés en el directorio correcto:**
-   ```powershell
-   pwd
-   # Debería mostrar: C:\Users\albur\Desktop\leanmaker\Backend
-   ```
-
-4. **Reiniciar desde cero:**
-   ```powershell
-   # Detener servidor (Ctrl+C)
-   # Luego:
-   .\venv312\Scripts\Activate.ps1
-   python manage.py runserver
-   ```
-
----
-
-## 🎯 Flujo de Trabajo para Pruebas
-
-### Inicio de Sesión de Pruebas:
-```powershell
-cd C:\Users\albur\Desktop\leanmaker\Backend
-.\venv312\Scripts\Activate.ps1
-python manage.py runserver
+# Restaurar datos
+python manage.py loaddata backup.json
 ```
 
-### Durante las Pruebas:
-- Mantén la terminal abierta
-- El servidor se reinicia automáticamente con cambios
-- Usa otra terminal para comandos adicionales
+## 🚀 Deployment
 
-### URLs para Probar:
-1. http://127.0.0.1:8000 (página principal)
-2. http://127.0.0.1:8000/api/schema/swagger-ui/ (documentación API)
-3. http://127.0.0.1:8000/api/health/ (health check)
-4. http://127.0.0.1:8000/admin (admin Django)
+### Configuración para producción
+1. Cambiar `DEBUG = False`
+2. Configurar `ALLOWED_HOSTS`
+3. Usar `SECRET_KEY` segura
+4. Configurar base de datos de producción
+5. Configurar CORS para dominio de producción
 
-### Fin de Pruebas:
-- Presiona `Ctrl+C` para detener el servidor
-- O cierra la terminal
-
----
-
-## 📊 URLs Disponibles
-
-| URL | Descripción | Estado |
-|-----|-------------|--------|
-| http://127.0.0.1:8000 | Página principal | ✅ Funcionando |
-| http://127.0.0.1:8000/admin | Admin Django | ✅ Funcionando |
-| http://127.0.0.1:8000/api/schema/swagger-ui/ | API Docs | ✅ Funcionando |
-| http://127.0.0.1:8000/api/health/ | Health Check | ✅ Funcionando |
-| http://127.0.0.1:8000/api/token/ | Login JWT | ✅ Funcionando |
-
----
-
-## 🔄 Reinicio Completo (Si algo se rompe)
-
-```powershell
-# 1. Detener servidor (Ctrl+C)
-# 2. Eliminar entorno virtual
-Remove-Item -Recurse -Force venv312
-
-# 3. Recrear entorno virtual
-py -3.12 -m venv venv312
-
-# 4. Activar entorno virtual
-.\venv312\Scripts\Activate.ps1
-
-# 5. Instalar dependencias
-pip install -r requirements.txt
-
-# 6. Ejecutar migraciones
-python manage.py migrate
-
-# 7. Iniciar servidor
-python manage.py runserver
+### Variables de entorno de producción
+```env
+DEBUG=False
+SECRET_KEY=clave_super_secreta_y_larga
+ALLOWED_HOSTS=tu-dominio.com,www.tu-dominio.com
+DATABASE_URL=mssql://usuario:password@servidor:1433/leanmaker_prod
+CORS_ALLOWED_ORIGINS=https://tu-dominio.com
 ```
 
----
+## 📝 Logs
 
-## 🎉 ¡Listo para Probar!
-
-El backend está **100% funcional** y listo para que tus compañeros lo prueben. Solo necesitan seguir los pasos del "Inicio Rápido" y tendrán acceso a toda la API.
-
-**Comandos finales para recordar:**
-```powershell
-cd Backend
-venv312\Scripts\Activate
-python manage.py runserver
+Los logs se guardan en:
+```
+logs/django.log
 ```
 
-**URLs principales:**
-- **API Docs:** http://127.0.0.1:8000/api/schema/swagger-ui/
-- **Health Check:** http://127.0.0.1:8000/api/health/
-- **Admin:** http://127.0.0.1:8000/admin
+### Configuración de logging
+```python
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/django.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+```
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crear rama para feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 👥 Autores
+
+- **Tu Nombre** - *Desarrollo inicial* - [TuGitHub](https://github.com/tuusuario)
+
+## 🙏 Agradecimientos
+
+- Django REST Framework
+- SQL Server
+- Comunidad de desarrolladores
+
+---
+
+**LeanMaker Backend** - Conectando estudiantes con oportunidades profesionales 🚀

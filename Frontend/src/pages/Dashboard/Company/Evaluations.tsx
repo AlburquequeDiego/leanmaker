@@ -7,7 +7,6 @@ import {
   Button,
   Chip,
   Avatar,
-  Stack,
   Select,
   MenuItem,
   FormControl,
@@ -26,7 +25,6 @@ import {
   Assessment as AssessmentIcon,
   CheckCircle as CheckCircleIcon,
   PauseCircle as PauseCircleIcon,
-  AccessTime as AccessTimeIcon,
   Person as PersonIcon,
   Star as StarIcon,
   Visibility as VisibilityIcon,
@@ -248,8 +246,7 @@ export const CompanyEvaluations: React.FC = () => {
 
   // Estado para filtro y modal de evaluaciones recibidas
   const [cantidadRecibidas, setCantidadRecibidas] = useState<string | number>(5);
-  const [modalRecibidaOpen, setModalRecibidaOpen] = useState(false);
-  const [selectedRecibida, setSelectedRecibida] = useState<any>(null);
+
 
   // Handlers para abrir/cerrar modales y guardar evaluación
   const handleOpenEvaluar = (student: any, project: any) => {
@@ -296,11 +293,7 @@ export const CompanyEvaluations: React.FC = () => {
 
   const recibidasFiltradas = cantidadRecibidas === 'todas' ? mockEvaluacionesRecibidas : mockEvaluacionesRecibidas.slice(0, Number(cantidadRecibidas));
 
-  const handleOpenRecibida = (ev: any) => {
-    setSelectedRecibida(ev);
-    setModalRecibidaOpen(true);
-  };
-  const handleCloseRecibida = () => setModalRecibidaOpen(false);
+
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -740,58 +733,7 @@ export const CompanyEvaluations: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={modalRecibidaOpen} onClose={handleCloseRecibida} maxWidth="md" fullWidth>
-        <DialogTitle>Detalle de Evaluación</DialogTitle>
-        <DialogContent>
-          {selectedRecibida && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                {selectedRecibida.project}
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 2 }}>
-                <Card sx={{ flex: '1 1 300px', mb: 2 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2">Información del Proyecto</Typography>
-                    <Typography variant="body2"><b>Empresa:</b> {selectedRecibida.company}</Typography>
-                    <Typography variant="body2"><b>Evaluador:</b> {selectedRecibida.student}</Typography>
-                    <Typography variant="body2"><b>Fecha:</b> {selectedRecibida.date}</Typography>
-                    <Typography variant="body2"><b>Duración:</b> {selectedRecibida.totalHours / 40} meses</Typography>
-                  </CardContent>
-                </Card>
-                <Card sx={{ flex: '1 1 200px', mb: 2 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2">Calificación General</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Rating value={selectedRecibida.gpa} readOnly precision={0.5} />
-                      <Typography variant="h5" sx={{ ml: 1 }}>{selectedRecibida.gpa}/5</Typography>
-                    </Box>
-                    <Typography variant="body2">Evaluación Final</Typography>
-                  </CardContent>
-                </Card>
-              </Box>
-              <Typography variant="subtitle1" sx={{ mt: 2 }}>Comentarios del Estudiante</Typography>
-              <Typography variant="body2" paragraph>
-                {selectedRecibida.comment}
-              </Typography>
-              <Typography variant="subtitle1" color="success.main">Fortalezas</Typography>
-              <ul style={{ margin: 0, paddingLeft: 16 }}>
-                {selectedRecibida.fortalezas.map((f: string, i: number) => (
-                  <li key={i}><Typography variant="body2">{f}</Typography></li>
-                ))}
-              </ul>
-              <Typography variant="subtitle1" color="warning.main">Áreas de Mejora</Typography>
-              <ul style={{ margin: 0, paddingLeft: 16 }}>
-                {selectedRecibida.mejoras.map((m: string, i: number) => (
-                  <li key={i}><Typography variant="body2">{m}</Typography></li>
-                ))}
-              </ul>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseRecibida}>Cerrar</Button>
-        </DialogActions>
-      </Dialog>
+
     </Box>
   );
 };

@@ -33,7 +33,8 @@ export interface StudentProfile {
 class StudentService {
   // Students
   async getStudents(params?: any): Promise<Student[]> {
-    return await apiService.get<Student[]>(API_ENDPOINTS.STUDENTS, { params });
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return await apiService.get<Student[]>(`${API_ENDPOINTS.STUDENTS}${queryString}`);
   }
 
   async getStudent(id: number): Promise<Student> {
@@ -52,25 +53,26 @@ class StudentService {
     return await apiService.delete(`${API_ENDPOINTS.STUDENTS}${id}/`);
   }
 
-  // Student Profiles
+  // Student Profiles - Using students endpoint since profiles are part of student model
   async getStudentProfiles(params?: any): Promise<StudentProfile[]> {
-    return await apiService.get<StudentProfile[]>(API_ENDPOINTS.STUDENT_PROFILES, { params });
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return await apiService.get<StudentProfile[]>(`${API_ENDPOINTS.STUDENTS}${queryString}`);
   }
 
   async getStudentProfile(id: number): Promise<StudentProfile> {
-    return await apiService.get<StudentProfile>(`${API_ENDPOINTS.STUDENT_PROFILES}${id}/`);
+    return await apiService.get<StudentProfile>(`${API_ENDPOINTS.STUDENTS}${id}/`);
   }
 
   async createStudentProfile(profileData: Partial<StudentProfile>): Promise<StudentProfile> {
-    return await apiService.post<StudentProfile>(API_ENDPOINTS.STUDENT_PROFILES, profileData);
+    return await apiService.post<StudentProfile>(API_ENDPOINTS.STUDENTS, profileData);
   }
 
   async updateStudentProfile(id: number, profileData: Partial<StudentProfile>): Promise<StudentProfile> {
-    return await apiService.put<StudentProfile>(`${API_ENDPOINTS.STUDENT_PROFILES}${id}/`, profileData);
+    return await apiService.put<StudentProfile>(`${API_ENDPOINTS.STUDENTS}${id}/`, profileData);
   }
 
   async deleteStudentProfile(id: number): Promise<void> {
-    return await apiService.delete(`${API_ENDPOINTS.STUDENT_PROFILES}${id}/`);
+    return await apiService.delete(`${API_ENDPOINTS.STUDENTS}${id}/`);
   }
 
   // Get current user's student profile

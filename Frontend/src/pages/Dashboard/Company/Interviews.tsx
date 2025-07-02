@@ -31,7 +31,6 @@ import {
   Person as PersonIcon,
   Schedule as ScheduleIcon,
   CheckCircle as CheckCircleIcon,
-  Add as AddIcon,
   Event as EventIcon,
   LocationOn as LocationIcon,
   Email as EmailIcon,
@@ -135,7 +134,7 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
     rating: 0,
     feedback: '',
   });
-  const [showAddDialog, setShowAddDialog] = useState(false);
+
   const [newInterview, setNewInterview] = useState<Partial<Interview>>({
     studentName: '',
     projectTitle: '',
@@ -242,50 +241,7 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
     }
   };
 
-  const handleAddInterview = () => {
-    const interview: Interview = {
-      ...newInterview as Interview,
-      id: Date.now().toString(),
-      studentId: 'temp',
-      studentEmail: 'temp@email.com',
-      studentPhone: '+56 9 0000 0000',
-      projectId: 'temp',
-      status: 'scheduled',
-      outcome: 'pending',
-      feedback: '',
-      nextSteps: '',
-    };
-    setInterviews(prev => [interview, ...prev]);
-    setShowAddDialog(false);
-    setNewInterview({
-      studentName: '',
-      projectTitle: '',
-      type: 'technical',
-      scheduledDate: '',
-      duration: 60,
-      location: '',
-      interviewers: [],
-      notes: '',
-    });
-    // Sincroniza con el calendario
-    if (onAddEvent) {
-      onAddEvent({
-        id: interview.id,
-        title: `Evento: ${interview.projectTitle}`,
-        type: 'interview',
-        start: new Date(interview.scheduledDate),
-        end: new Date(new Date(interview.scheduledDate).getTime() + (interview.duration || 60) * 60000),
-        duration: `${interview.duration || 60} minutos`,
-        location: interview.location,
-        company: 'Empresa',
-        project: interview.projectTitle,
-        description: interview.notes,
-        status: 'upcoming',
-        priority: 'high',
-        student: interview.studentName,
-      });
-    }
-  };
+
 
   const filteredInterviews = interviews.filter(interview => {
     switch (selectedTab) {

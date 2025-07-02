@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import Usuario
+from django.conf import settings
 from projects.models import Proyecto
 import uuid
 
@@ -9,7 +9,7 @@ class Rating(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='ratings')
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='ratings_given')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ratings_given')
     
     # Calificación
     rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])

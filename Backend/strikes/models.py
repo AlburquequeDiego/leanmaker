@@ -1,5 +1,5 @@
 from projects.models import Proyecto
-from users.models import Usuario
+from django.conf import settings
 from companies.models import Empresa
 from django.db import models
 from students.models import Estudiante
@@ -26,7 +26,7 @@ class Strike(models.Model):
     reason = models.TextField(verbose_name='Motivo de la Amonestación')
     description = models.TextField(null=True, blank=True)  # Campo agregado para coincidir con frontend
     severity = models.CharField(max_length=20, choices=SEVERITY_CHOICES, default='medium')
-    issued_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='strikes_issued', null=True, blank=True)
+    issued_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='strikes_issued', null=True, blank=True)
     
     # Fechas - coinciden con frontend
     issued_at = models.DateTimeField(auto_now_add=True)

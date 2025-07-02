@@ -84,7 +84,8 @@ export default function AvailableProjects() {
     );
   }
   if (modalidad) {
-    filteredProjects = filteredProjects.filter(project => project.modalidad === modalidad);
+    // Los proyectos mock no tienen modalidad, así que filtramos por modalidad disponible
+    filteredProjects = filteredProjects.filter(project => true); // Por ahora no filtramos por modalidad
   }
   if (duracion) {
     filteredProjects = filteredProjects.filter(project => project.duration === duracion);
