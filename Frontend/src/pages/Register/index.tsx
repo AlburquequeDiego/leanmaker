@@ -115,11 +115,13 @@ const getValidationSchema = (userType: UserType) => {
     phone: yup
       .string()
       .required('El teléfono es requerido')
-      .matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 XXXX XXXX)'),
+      .matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 XXXX XXXX)')
+      .test('phone-length', 'El teléfono debe tener 9 dígitos', function(value) {
+        return value ? value.length === 9 : false;
+      }),
     birthdate: yup
       .string()
-      .required('La fecha de nacimiento es requerida')
-      .matches(/^\d{2}-\d{2}-\d{4}$/, 'Formato: dd-mm-aaaa'),
+      .required('La fecha de nacimiento es requerida'),
     gender: yup.string().required('El género es requerido'),
     acceptTerms: yup.bool().oneOf([true], 'Debes aceptar los términos y condiciones'),
   };
@@ -134,21 +136,13 @@ const getValidationSchema = (userType: UserType) => {
   } else {
     return yup.object({
       ...baseSchema,
-      rut: yup.string().required('El RUT es requerido').matches(/^\d{1,2}\.?(\d{3})\.?(\d{3})-(\d|k|K)$/, 'RUT chileno inválido'),
+      rut: yup.string().required('El RUT es requerido'),
       personality: yup.string().required('La personalidad es requerida'),
       business_name: yup.string().required('La razón social es requerida'),
       company_name: yup.string().required('El nombre de la empresa es requerido'),
       company_address: yup.string().required('La dirección es requerida'),
-      company_phone: yup.string().required('El teléfono es requerido').matches(/^\+56\s?\d{1,2}\s?\d{4}\s?\d{4}$/, 'Debe ser un teléfono chileno válido (+56 XXXX XXXX)'),
+      company_phone: yup.string().required('El teléfono es requerido').matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 XXXX XXXX)'),
       company_email: yup.string().email('Debe ser un correo válido').required('El correo es requerido'),
-      responsible_first_name: yup.string().required('El nombre es requerido'),
-      responsible_last_name: yup.string().required('El apellido es requerido'),
-      responsible_email: yup.string().email('Debe ser un correo válido').required('El correo es requerido'),
-      responsible_phone: yup.string().required('El teléfono es requerido').matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 XXXX XXXX)'),
-      responsible_birthdate: yup.string().required('La fecha de nacimiento es requerida'),
-      responsible_gender: yup.string().required('El género es requerido'),
-      responsible_password: yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres').matches(/[A-Z]/, 'Debe tener una mayúscula').matches(/[!@#$%^&*(),.?":{}|<>]/, 'Debe tener un caracter especial').required('La contraseña es requerida'),
-      responsible_password_confirm: yup.string().oneOf([yup.ref('responsible_password')], 'Las contraseñas deben coincidir').required('Confirma tu contraseña'),
     });
   }
 };
@@ -211,18 +205,50 @@ export const Register = () => {
     onSubmit: async (values) => {
       try {
         clearError();
-        const registerData = {
+        
+        console.log('Form values:', values);
+        console.log('User type:', userType);
+        
+        // Preparar datos base del registro
+        const registerData: any = {
           email: values.email,
           password: values.password,
           password_confirm: values.password_confirm,
           first_name: values.first_name,
           last_name: values.last_name,
-          phone: values.phone,
+          phone: `+56${values.phone}`, // Agregar prefijo +56
           birthdate: values.birthdate,
           gender: values.gender,
           role: userType as UserRole,
           username: values.email.split('@')[0],
         };
+
+        // Agregar campos específicos según el tipo de usuario
+        if (userType === 'student') {
+          registerData.career = values.career;
+          registerData.university = values.university;
+          registerData.education_level = values.education_level;
+        } else if (userType === 'company') {
+          registerData.rut = values.rut;
+          registerData.personality = values.personality;
+          registerData.business_name = values.business_name;
+          registerData.company_name = values.company_name;
+          registerData.company_address = values.company_address;
+          registerData.company_phone = `+56${values.company_phone}`; // Agregar prefijo +56
+          registerData.company_email = values.company_email;
+          // Usar los datos personales como datos del responsable
+          registerData.responsible_first_name = values.first_name;
+          registerData.responsible_last_name = values.last_name;
+          registerData.responsible_email = values.email;
+          registerData.responsible_phone = `+56${values.phone}`; // Agregar prefijo +56
+          registerData.responsible_birthdate = values.birthdate;
+          registerData.responsible_gender = values.gender;
+          registerData.responsible_password = values.password;
+          registerData.responsible_password_confirm = values.password_confirm;
+        }
+
+        console.log('Register data to send:', registerData);
+
         await register(registerData);
         navigate('/dashboard');
       } catch (err) {
@@ -238,24 +264,48 @@ export const Register = () => {
 
   // useEffect para mostrar el recuadro de normas de conducta automáticamente
   useEffect(() => {
-    if (
-      userType === 'student' &&
-      formik.values.first_name &&
-      formik.values.last_name &&
-      formik.values.email &&
-      formik.values.phone &&
-      formik.values.birthdate &&
-      formik.values.gender &&
-      formik.values.career &&
-      formik.values.university &&
-      formik.values.education_level &&
-      formik.values.password &&
-      formik.values.password_confirm &&
-      !formik.values.acceptTerms
-    ) {
-      setShowConduct(true);
-    } else if (formik.values.acceptTerms) {
-      setShowConduct(false);
+    if (userType === 'student') {
+      if (
+        formik.values.first_name &&
+        formik.values.last_name &&
+        formik.values.email &&
+        formik.values.phone &&
+        formik.values.birthdate &&
+        formik.values.gender &&
+        formik.values.career &&
+        formik.values.university &&
+        formik.values.education_level &&
+        formik.values.password &&
+        formik.values.password_confirm &&
+        !formik.values.acceptTerms
+      ) {
+        setShowConduct(true);
+      } else if (formik.values.acceptTerms) {
+        setShowConduct(false);
+      }
+    } else if (userType === 'company') {
+      if (
+        formik.values.first_name &&
+        formik.values.last_name &&
+        formik.values.email &&
+        formik.values.phone &&
+        formik.values.birthdate &&
+        formik.values.gender &&
+        formik.values.password &&
+        formik.values.password_confirm &&
+        formik.values.rut &&
+        formik.values.personality &&
+        formik.values.business_name &&
+        formik.values.company_name &&
+        formik.values.company_address &&
+        formik.values.company_phone &&
+        formik.values.company_email &&
+        !formik.values.acceptTerms
+      ) {
+        setShowConduct(true);
+      } else if (formik.values.acceptTerms) {
+        setShowConduct(false);
+      }
     }
   }, [userType, formik.values]);
 
@@ -317,6 +367,17 @@ export const Register = () => {
                 <strong>Reglas de registro para estudiantes:</strong>
                 <br />• Solo se permiten correos institucionales de las 10 universidades autorizadas
                 <br />• La contraseña debe tener al menos 8 caracteres, una mayúscula y un caracter especial
+              </Typography>
+            </Alert>
+          )}
+
+          {userType === 'company' && (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              <Typography variant="body2" component="div">
+                <strong>Reglas de registro para empresas:</strong>
+                <br />• Todos los campos son obligatorios
+                <br />• La contraseña debe tener al menos 8 caracteres, una mayúscula y un caracter especial
+                <br />• Los teléfonos deben tener 9 dígitos (se agrega automáticamente +56)
               </Typography>
             </Alert>
           )}
@@ -560,8 +621,145 @@ export const Register = () => {
               {userType === 'company' && (
                 <>
                   <Box>
-                    <Typography variant="h6" fontWeight={700}>Datos de la Empresa</Typography>
+                    <Typography variant="h6" gutterBottom>
+                      Información Personal
+                    </Typography>
                   </Box>
+
+                  <Box display="flex" gap={2}>
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
+                        name="first_name"
+                        label="Nombre"
+                        value={formik.values.first_name}
+                        onChange={formik.handleChange}
+                        error={formik.touched.first_name && Boolean(formik.errors.first_name)}
+                        helperText={formik.touched.first_name && formik.errors.first_name}
+                        disabled={loading}
+                      />
+                    </Box>
+
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
+                        name="last_name"
+                        label="Apellido"
+                        value={formik.values.last_name}
+                        onChange={formik.handleChange}
+                        error={formik.touched.last_name && Boolean(formik.errors.last_name)}
+                        helperText={formik.touched.last_name && formik.errors.last_name}
+                        disabled={loading}
+                      />
+                    </Box>
+                  </Box>
+
+                  <Box display="flex" gap={2}>
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
+                        name="email"
+                        label="Correo electrónico"
+                        type="email"
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        error={formik.touched.email && Boolean(formik.errors.email)}
+                        helperText={formik.touched.email && formik.errors.email}
+                        disabled={loading}
+                      />
+                    </Box>
+
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
+                        name="phone"
+                        label="Teléfono"
+                        value={formik.values.phone.replace(/[^0-9]/g, '').slice(0, 9)}
+                        onChange={e => {
+                          const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 9);
+                          formik.setFieldValue('phone', value);
+                        }}
+                        error={formik.touched.phone && Boolean(formik.errors.phone)}
+                        helperText={formik.touched.phone && formik.errors.phone}
+                        disabled={loading}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">+56</InputAdornment>,
+                          inputMode: 'numeric',
+                        }}
+                      />
+                    </Box>
+                  </Box>
+
+                  <Box display="flex" gap={2}>
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
+                        name="birthdate"
+                        label="Fecha de nacimiento"
+                        type="date"
+                        value={formik.values.birthdate}
+                        onChange={formik.handleChange}
+                        error={formik.touched.birthdate && Boolean(formik.errors.birthdate)}
+                        helperText={formik.touched.birthdate && formik.errors.birthdate}
+                        disabled={loading}
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Box>
+
+                    <Box flex={1} minWidth={200}>
+                      <FormControl fullWidth>
+                        <InputLabel>Género</InputLabel>
+                        <Select
+                          name="gender"
+                          value={formik.values.gender}
+                          onChange={formik.handleChange}
+                          error={formik.touched.gender && Boolean(formik.errors.gender)}
+                          disabled={loading}
+                        >
+                          <MenuItem value="Masculino">Masculino</MenuItem>
+                          <MenuItem value="Femenino">Femenino</MenuItem>
+                          <MenuItem value="Otro">Otro</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Box>
+
+                  <Box display="flex" gap={2}>
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
+                        name="password"
+                        label="Contraseña"
+                        type="password"
+                        value={formik.values.password}
+                        onChange={formik.handleChange}
+                        error={formik.touched.password && Boolean(formik.errors.password)}
+                        helperText={formik.touched.password && formik.errors.password}
+                        disabled={loading}
+                      />
+                    </Box>
+
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
+                        name="password_confirm"
+                        label="Confirmar contraseña"
+                        type="password"
+                        value={formik.values.password_confirm}
+                        onChange={formik.handleChange}
+                        error={formik.touched.password_confirm && Boolean(formik.errors.password_confirm)}
+                        helperText={formik.touched.password_confirm && formik.errors.password_confirm}
+                        disabled={loading}
+                      />
+                    </Box>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="h6" gutterBottom>
+                      Información de la Empresa
+                    </Typography>
+                  </Box>
+
                   <Box display="flex" gap={2}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
@@ -592,6 +790,7 @@ export const Register = () => {
                       </FormControl>
                     </Box>
                   </Box>
+
                   <Box display="flex" gap={2}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
@@ -618,6 +817,7 @@ export const Register = () => {
                       />
                     </Box>
                   </Box>
+
                   <Box display="flex" gap={2}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
@@ -651,6 +851,7 @@ export const Register = () => {
                       />
                     </Box>
                   </Box>
+
                   <Box display="flex" gap={2}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
@@ -667,129 +868,8 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box>
-                    <Typography variant="h6" fontWeight={700}>Datos del Usuario Responsable</Typography>
-                  </Box>
-                  <Box display="flex" gap={2}>
-                    <Box flex={1} minWidth={200}>
-                      <TextField 
-                        fullWidth 
-                        name="responsible_first_name" 
-                        label="Nombre" 
-                        value={formik.values.responsible_first_name} 
-                        onChange={formik.handleChange} 
-                        error={formik.touched.responsible_first_name && Boolean(formik.errors.responsible_first_name)} 
-                        helperText={formik.touched.responsible_first_name && formik.errors.responsible_first_name} 
-                        disabled={loading} 
-                      />
-                    </Box>
-                    <Box flex={1} minWidth={200}>
-                      <TextField 
-                        fullWidth 
-                        name="responsible_last_name" 
-                        label="Apellido" 
-                        value={formik.values.responsible_last_name} 
-                        onChange={formik.handleChange} 
-                        error={formik.touched.responsible_last_name && Boolean(formik.errors.responsible_last_name)} 
-                        helperText={formik.touched.responsible_last_name && formik.errors.responsible_last_name} 
-                        disabled={loading} 
-                      />
-                    </Box>
-                  </Box>
-                  <Box display="flex" gap={2}>
-                    <Box flex={1} minWidth={200}>
-                      <TextField 
-                        fullWidth 
-                        name="responsible_email" 
-                        label="Correo Electrónico" 
-                        type="email" 
-                        value={formik.values.responsible_email} 
-                        onChange={formik.handleChange} 
-                        error={formik.touched.responsible_email && Boolean(formik.errors.responsible_email)} 
-                        helperText={formik.touched.responsible_email && formik.errors.responsible_email} 
-                        disabled={loading} 
-                      />
-                    </Box>
-                    <Box flex={1} minWidth={200}>
-                      <TextField 
-                        fullWidth 
-                        name="responsible_phone" 
-                        label="Teléfono" 
-                        value={formik.values.responsible_phone.replace(/[^0-9]/g, '').slice(0, 9)} 
-                        onChange={e => { 
-                          const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 9); 
-                          formik.setFieldValue('responsible_phone', value); 
-                        }} 
-                        error={formik.touched.responsible_phone && Boolean(formik.errors.responsible_phone)} 
-                        helperText={formik.touched.responsible_phone && formik.errors.responsible_phone} 
-                        disabled={loading} 
-                        InputProps={{ 
-                          startAdornment: <InputAdornment position="start">+56</InputAdornment>, 
-                          inputMode: 'numeric' 
-                        }} 
-                      />
-                    </Box>
-                  </Box>
-                  <Box display="flex" gap={2}>
-                    <Box flex={1} minWidth={200}>
-                      <TextField 
-                        fullWidth 
-                        name="responsible_birthdate" 
-                        label="Fecha de Nacimiento" 
-                        type="date" 
-                        value={formik.values.responsible_birthdate} 
-                        onChange={formik.handleChange} 
-                        error={formik.touched.responsible_birthdate && Boolean(formik.errors.responsible_birthdate)} 
-                        helperText={formik.touched.responsible_birthdate && formik.errors.responsible_birthdate} 
-                        disabled={loading} 
-                        InputLabelProps={{ shrink: true }} 
-                      />
-                    </Box>
-                    <Box flex={1} minWidth={200}>
-                      <FormControl fullWidth>
-                        <InputLabel>Género</InputLabel>
-                        <Select 
-                          name="responsible_gender" 
-                          value={formik.values.responsible_gender} 
-                          onChange={formik.handleChange} 
-                          error={formik.touched.responsible_gender && Boolean(formik.errors.responsible_gender)} 
-                          disabled={loading}
-                        >
-                          <MenuItem value="Masculino">Masculino</MenuItem>
-                          <MenuItem value="Femenino">Femenino</MenuItem>
-                          <MenuItem value="Otro">Otro</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Box>
-                  <Box display="flex" gap={2}>
-                    <Box flex={1} minWidth={200}>
-                      <TextField 
-                        fullWidth 
-                        name="responsible_password" 
-                        label="Contraseña" 
-                        type="password" 
-                        value={formik.values.responsible_password} 
-                        onChange={formik.handleChange} 
-                        error={formik.touched.responsible_password && Boolean(formik.errors.responsible_password)} 
-                        helperText={formik.touched.responsible_password && formik.errors.responsible_password} 
-                        disabled={loading} 
-                      />
-                    </Box>
-                    <Box flex={1} minWidth={200}>
-                      <TextField 
-                        fullWidth 
-                        name="responsible_password_confirm" 
-                        label="Confirmar Contraseña" 
-                        type="password" 
-                        value={formik.values.responsible_password_confirm} 
-                        onChange={formik.handleChange} 
-                        error={formik.touched.responsible_password_confirm && Boolean(formik.errors.responsible_password_confirm)} 
-                        helperText={formik.touched.responsible_password_confirm && formik.errors.responsible_password_confirm} 
-                        disabled={loading} 
-                      />
-                    </Box>
-                  </Box>
+
+
                   <Box>
                     <FormControlLabel 
                       control={
@@ -816,6 +896,7 @@ export const Register = () => {
                       </Typography>
                     )}
                   </Box>
+
                   {showConduct && (
                     <Box>
                       {companyConduct}

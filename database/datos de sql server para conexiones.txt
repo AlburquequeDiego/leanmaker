@@ -36,4 +36,20 @@ FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_TYPE = 'BASE TABLE'
 ORDER BY TABLE_SCHEMA, TABLE_NAME;
 
+Universidad de Chile → @uchile.cl
+Pontificia Universidad Católica de Chile → @uc.cl
+Universidad de Concepción → @udec.cl
+Universidad Técnica Federico Santa María → @usm.cl
+Universidad de Santiago de Chile → @usach.cl
+Universidad Austral de Chile → @uach.cl
+Universidad de Valparaíso → @uv.cl
+Universidad de La Frontera → @ufro.cl
+Universidad de Talca → @utalca.cl
+INACAP → @inacap.cl
 
+
+diego@inacap.cl
+Estudiante123!
+
+aempresa@gmail.com
+Empresa123!
