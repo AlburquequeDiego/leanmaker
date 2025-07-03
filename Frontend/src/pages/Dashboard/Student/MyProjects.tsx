@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -13,14 +13,7 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Avatar,
-  Alert,
   FormControl,
   InputLabel,
   Select,
@@ -34,6 +27,7 @@ import {
   Schedule as ScheduleIcon,
   TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Project {
   id: string;
@@ -55,159 +49,26 @@ interface Project {
   nextMilestoneDate: string;
 }
 
-const mockProjects: Project[] = [
-  {
-    id: '1',
-    title: 'Sistema de Gestión de Inventarios',
-    company: 'TechCorp Solutions',
-    status: 'active',
-    startDate: '2024-01-20',
-    endDate: '2024-04-20',
-    progress: 65,
-    hoursWorked: 52,
-    totalHours: 80,
-    location: 'Remoto',
-    description: 'Desarrollo de un sistema web para gestión de inventarios con base de datos MySQL y frontend en React.',
-    technologies: ['React', 'Node.js', 'MySQL', 'JWT'],
-    teamMembers: 3,
-    mentor: 'Juan Pérez',
-    deliverables: [
-      'Frontend completo con React',
-      'API REST con Node.js',
-      'Base de datos MySQL',
-      'Documentación técnica',
-    ],
-    nextMilestone: 'Implementación de reportes',
-    nextMilestoneDate: '2024-02-15',
-  },
-  {
-    id: '2',
-    title: 'Dashboard de Analytics',
-    company: 'DataCorp',
-    status: 'completed',
-    startDate: '2023-09-01',
-    endDate: '2023-11-01',
-    progress: 100,
-    hoursWorked: 60,
-    totalHours: 60,
-    location: 'Remoto',
-    description: 'Desarrollo de dashboard de analytics para visualización de datos empresariales.',
-    technologies: ['Python', 'Pandas', 'Power BI', 'SQL'],
-    teamMembers: 2,
-    mentor: 'María García',
-    deliverables: [
-      'Dashboard interactivo',
-      'Scripts de procesamiento',
-      'Reportes automatizados',
-      'Documentación de uso',
-    ],
-    nextMilestone: 'Proyecto completado',
-    nextMilestoneDate: '2023-11-01',
-  },
-  {
-    id: '3',
-    title: 'Aplicación Móvil de Delivery',
-    company: 'Digital Dynamics',
-    status: 'paused',
-    startDate: '2024-02-01',
-    endDate: '2024-06-01',
-    progress: 25,
-    hoursWorked: 20,
-    totalHours: 160,
-    location: 'Bogotá',
-    description: 'Desarrollo de aplicación móvil para delivery de alimentos con geolocalización y pagos en línea.',
-    technologies: ['React Native', 'Firebase', 'JavaScript', 'Google Maps API'],
-    teamMembers: 4,
-    mentor: 'Carlos López',
-    deliverables: [
-      'App móvil completa',
-      'Backend con Firebase',
-      'Sistema de pagos',
-      'Integración con mapas',
-    ],
-    nextMilestone: 'Reanudación del proyecto',
-    nextMilestoneDate: '2024-03-01',
-  },
-  {
-    id: '4',
-    title: 'Plataforma de E-learning',
-    company: 'EduTech Solutions',
-    status: 'completed',
-    startDate: '2023-06-01',
-    endDate: '2023-12-01',
-    progress: 100,
-    hoursWorked: 120,
-    totalHours: 120,
-    location: 'Remoto',
-    description: 'Desarrollo de plataforma web para cursos online con sistema de videoconferencias.',
-    technologies: ['Vue.js', 'Laravel', 'PostgreSQL', 'WebRTC'],
-    teamMembers: 5,
-    mentor: 'Ana Rodríguez',
-    deliverables: [
-      'Plataforma web completa',
-      'Sistema de videoconferencias',
-      'Base de datos de usuarios',
-      'Panel de administración',
-    ],
-    nextMilestone: 'Proyecto completado',
-    nextMilestoneDate: '2023-12-01',
-  },
-  {
-    id: '5',
-    title: 'Sistema de Gestión de Clientes',
-    company: 'Business Solutions',
-    status: 'active',
-    startDate: '2024-03-01',
-    endDate: '2024-07-01',
-    progress: 40,
-    hoursWorked: 32,
-    totalHours: 80,
-    location: 'Medellín',
-    description: 'Sistema CRM para gestión de clientes y ventas con reportes avanzados.',
-    technologies: ['Angular', 'Spring Boot', 'MySQL', 'Chart.js'],
-    teamMembers: 3,
-    mentor: 'Luis Martínez',
-    deliverables: [
-      'Frontend con Angular',
-      'API REST con Spring',
-      'Sistema de reportes',
-      'Dashboard de métricas',
-    ],
-    nextMilestone: 'Implementación de reportes',
-    nextMilestoneDate: '2024-04-15',
-  },
-  {
-    id: '6',
-    title: 'App de Gestión de Tareas',
-    company: 'Productivity Inc',
-    status: 'completed',
-    startDate: '2023-03-01',
-    endDate: '2023-08-01',
-    progress: 100,
-    hoursWorked: 100,
-    totalHours: 100,
-    location: 'Remoto',
-    description: 'Aplicación móvil para gestión de tareas y proyectos con colaboración en tiempo real.',
-    technologies: ['Flutter', 'Firebase', 'Dart', 'Cloud Functions'],
-    teamMembers: 4,
-    mentor: 'Carmen Silva',
-    deliverables: [
-      'App móvil multiplataforma',
-      'Backend con Firebase',
-      'Sistema de notificaciones',
-      'Sincronización en tiempo real',
-    ],
-    nextMilestone: 'Proyecto completado',
-    nextMilestoneDate: '2023-08-01',
-  },
-];
-
 export const MyProjects = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeLimit, setActiveLimit] = useState(5);
   const [completedLimit, setCompletedLimit] = useState(5);
   const [pausedLimit, setPausedLimit] = useState(5);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const data = await apiService.get('/api/project-members/');
+        setProjects(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setProjects([]);
+      }
+    }
+    fetchProjects();
+  }, []);
 
   const handleViewDetails = (project: Project) => {
     setSelectedProject(project);
@@ -253,10 +114,10 @@ export const MyProjects = () => {
     }
   };
 
-  const activeProjects = mockProjects.filter(project => project.status === 'active');
-  const completedProjects = mockProjects.filter(project => project.status === 'completed');
-  const pausedProjects = mockProjects.filter(project => project.status === 'paused');
-  const totalHoursWorked = mockProjects.reduce((sum, project) => sum + project.hoursWorked, 0);
+  const activeProjects = projects.filter(project => project.status === 'active');
+  const completedProjects = projects.filter(project => project.status === 'completed');
+  const pausedProjects = projects.filter(project => project.status === 'paused');
+  const totalHoursWorked = projects.reduce((sum, project) => sum + project.hoursWorked, 0);
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>

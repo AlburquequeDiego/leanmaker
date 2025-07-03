@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -29,6 +29,7 @@ import {
   Drafts as DraftsIcon,
   TaskAlt as TaskAltIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Project {
   id: string;
@@ -67,57 +68,6 @@ const STATUS_COLORS: Record<Project['status'], 'primary' | 'success' | 'info' | 
   draft: 'default',
 };
 
-const exampleProjects: Project[] = [
-  {
-    id: '1',
-    title: 'Sistema de Gestión de Inventarios',
-    description: 'Desarrolla un sistema para gestionar inventarios en tiempo real.',
-    requirements: ['React', 'Node.js', 'MongoDB'],
-    duration: '3 meses',
-    studentsNeeded: 2,
-    selectedStudents: 1,
-    status: 'active',
-    applicationsCount: 5,
-    createdAt: '2024-06-01T00:00:00Z',
-  },
-  {
-    id: '2',
-    title: 'Plataforma de E-learning',
-    description: 'Crea una plataforma para cursos online con video y foros.',
-    requirements: ['Vue', 'Firebase'],
-    duration: '4 meses',
-    studentsNeeded: 3,
-    selectedStudents: 2,
-    status: 'completed',
-    applicationsCount: 8,
-    createdAt: '2024-03-01T00:00:00Z',
-  },
-  {
-    id: '3',
-    title: 'App de Reservas',
-    description: 'Permite a los usuarios reservar citas en línea.',
-    requirements: ['Flutter', 'Firebase'],
-    duration: '2 meses',
-    studentsNeeded: 1,
-    selectedStudents: 1,
-    status: 'published',
-    applicationsCount: 3,
-    createdAt: '2024-05-01T00:00:00Z',
-  },
-  {
-    id: '4',
-    title: 'Demo Borrador',
-    description: 'Este es un proyecto en estado borrador.',
-    requirements: ['Angular'],
-    duration: '1 mes',
-    studentsNeeded: 1,
-    selectedStudents: 0,
-    status: 'draft',
-    applicationsCount: 0,
-    createdAt: '2024-07-01T00:00:00Z',
-  },
-];
-
 const COUNT_OPTIONS = [5, 10, 15, 20, 30, 40, -1];
 
 const TRL_QUESTIONS = [
@@ -152,14 +102,7 @@ const SEMESTER_MIN_HOURS = {
 
 const Projects: React.FC = () => {
   const [tab, setTab] = useState(0);
-  const [projects, setProjects] = useState<Project[]>(exampleProjects);
-  const [newProject, setNewProject] = useState({
-    title: '',
-    description: '',
-    requirements: '',
-    duration: '',
-    studentsNeeded: 1,
-  });
+  const [projects, setProjects] = useState<Project[]>([]);
   const [sectionCounts, setSectionCounts] = useState({
     active: 5,
     published: 5,
@@ -190,6 +133,18 @@ const Projects: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const data = await apiService.get('/api/projects/');
+        setProjects(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setProjects([]);
+      }
+    }
+    fetchProjects();
+  }, []);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => setTab(newValue);
 

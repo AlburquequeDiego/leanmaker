@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -19,23 +19,24 @@ import {
   Alert,
   Tabs,
   Tab,
+
 } from '@mui/material';
 import {
   Warning as WarningIcon,
   Person as PersonIcon,
   Add as AddIcon,
   CheckCircle as CheckCircleIcon,
-  TrendingUp as TrendingUpIcon,
-  Group as GroupIcon,
+
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Strike {
   id: string;
-  studentId: string;
-  studentName: string;
-  studentEmail: string;
-  projectId: string;
-  projectTitle: string;
+  student_id: string;
+  student_name: string;
+  student_email: string;
+  project_id: string;
+  project_title: string;
   type: 'attendance' | 'quality' | 'deadline' | 'behavior' | 'other';
   severity: 'low' | 'medium' | 'high' | 'critical';
   description: string;
@@ -43,55 +44,8 @@ interface Strike {
   status: 'active' | 'resolved' | 'appealed';
   evidence?: string;
   resolution?: string;
-  resolvedDate?: string;
+  resolved_date?: string;
 }
-
-const mockStrikes: Strike[] = [
-  {
-    id: '1',
-    studentId: '1',
-    studentName: 'Juan Pérez',
-    studentEmail: 'juan.perez@email.com',
-    projectId: '1',
-    projectTitle: 'Desarrollo Web Frontend',
-    type: 'attendance',
-    severity: 'medium',
-    description: 'Falta injustificada a reunión de seguimiento del proyecto',
-    date: '2024-01-15',
-    status: 'active',
-    evidence: 'Registro de asistencia y comunicación con el estudiante',
-  },
-  {
-    id: '2',
-    studentId: '2',
-    studentName: 'María González',
-    studentEmail: 'maria.gonzalez@email.com',
-    projectId: '2',
-    projectTitle: 'API REST con Django',
-    type: 'deadline',
-    severity: 'high',
-    description: 'Entrega tardía de milestone crítico sin justificación previa',
-    date: '2024-01-10',
-    status: 'resolved',
-    evidence: 'Documentación de fechas de entrega y comunicación',
-    resolution: 'El estudiante presentó justificación médica válida',
-    resolvedDate: '2024-01-12',
-  },
-  {
-    id: '3',
-    studentId: '3',
-    studentName: 'Carlos Rodríguez',
-    studentEmail: 'carlos.rodriguez@email.com',
-    projectId: '3',
-    projectTitle: 'App Móvil React Native',
-    type: 'quality',
-    severity: 'low',
-    description: 'Código entregado no cumple con estándares de calidad establecidos',
-    date: '2024-01-18',
-    status: 'active',
-    evidence: 'Revisión de código y documentación de estándares',
-  },
-];
 
 // Mock de datos para el resumen de 4 indicadores
 const resumen = [
@@ -105,13 +59,14 @@ const cantidadOpciones = [5, 10, 20, 50, 'todas'];
 const tabLabels = ['Todos', 'Activos', 'Resueltos', 'Apelados'];
 
 export const CompanyStrikes: React.FC = () => {
-  const [strikes, setStrikes] = useState<Strike[]>(mockStrikes);
+  const [strikes, setStrikes] = useState<Strike[]>([]);
+
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showResolveDialog, setShowResolveDialog] = useState(false);
   const [selectedStrike, setSelectedStrike] = useState<Strike | null>(null);
   const [newStrike, setNewStrike] = useState<Partial<Strike>>({
-    studentName: '',
-    projectTitle: '',
+    student_name: '',
+    project_title: '',
     type: 'other',
     severity: 'medium',
     description: '',
@@ -121,6 +76,19 @@ export const CompanyStrikes: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   // Filtros de cantidad por tab
   const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
+
+  useEffect(() => {
+    async function fetchStrikes() {
+      try {
+        const data = await apiService.get('/api/strikes/');
+        setStrikes(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching strikes:', error);
+        setStrikes([]);
+      }
+    }
+    fetchStrikes();
+  }, []);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -180,58 +148,68 @@ export const CompanyStrikes: React.FC = () => {
     }
   };
 
-  const handleAddStrike = () => {
-    const strike: Strike = {
-      ...newStrike as Strike,
-      id: Date.now().toString(),
-      studentId: 'temp',
-      studentEmail: 'temp@email.com',
-      projectId: 'temp',
-      date: new Date().toISOString().split('T')[0],
-      status: 'active',
-    };
-    setStrikes(prev => [strike, ...prev]);
-    setShowAddDialog(false);
-    setNewStrike({
-      studentName: '',
-      projectTitle: '',
-      type: 'other',
-      severity: 'medium',
-      description: '',
-      evidence: '',
-    });
-  };
+  const handleAddStrike = async () => {
+    try {
+      const strikeData = {
+        student_name: newStrike.student_name,
+        project_title: newStrike.project_title,
+        type: newStrike.type,
+        severity: newStrike.severity,
+        description: newStrike.description,
+        evidence: newStrike.evidence,
+        date: new Date().toISOString().split('T')[0],
+        status: 'active',
+      };
 
-  const handleResolveStrike = () => {
-    if (selectedStrike) {
-      setStrikes(prev =>
-        prev.map(strike =>
-          strike.id === selectedStrike.id
-            ? {
-                ...strike,
-                status: 'resolved',
-                resolution: resolutionText,
-                resolvedDate: new Date().toISOString().split('T')[0],
-              }
-            : strike
-        )
-      );
-      setShowResolveDialog(false);
-      setSelectedStrike(null);
-      setResolutionText('');
+      const createdStrike = await apiService.post('/api/strikes/', strikeData);
+      setStrikes(prev => [createdStrike as Strike, ...prev]);
+      setShowAddDialog(false);
+      setNewStrike({
+        student_name: '',
+        project_title: '',
+        type: 'other',
+        severity: 'medium',
+        description: '',
+        evidence: '',
+      });
+    } catch (error) {
+      console.error('Error creating strike:', error);
     }
   };
 
-  const handleDeleteStrike = (strikeId: string) => {
-    setStrikes(prev => prev.filter(strike => strike.id !== strikeId));
+  const handleResolveStrike = async () => {
+    if (selectedStrike) {
+      try {
+        const updatedStrike = await apiService.patch(`/api/strikes/${selectedStrike.id}/`, {
+          status: 'resolved',
+          resolution: resolutionText,
+          resolved_date: new Date().toISOString().split('T')[0],
+        });
+
+        setStrikes(prev =>
+          prev.map(strike =>
+            strike.id === selectedStrike.id ? (updatedStrike as Strike) : strike
+          )
+        );
+        setShowResolveDialog(false);
+        setSelectedStrike(null);
+        setResolutionText('');
+      } catch (error) {
+        console.error('Error resolving strike:', error);
+      }
+    }
   };
 
-  const stats = {
-    total: strikes.length,
-    active: strikes.filter(s => s.status === 'active').length,
-    resolved: strikes.filter(s => s.status === 'resolved').length,
-    appealed: strikes.filter(s => s.status === 'appealed').length,
+  const handleDeleteStrike = async (strikeId: string) => {
+    try {
+      await apiService.delete(`/api/strikes/${strikeId}/`);
+      setStrikes(prev => prev.filter(strike => strike.id !== strikeId));
+    } catch (error) {
+      console.error('Error deleting strike:', error);
+    }
   };
+
+
 
   const handleCantidadChange = (tabIdx: number, value: number | string) => {
     setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
@@ -283,7 +261,7 @@ export const CompanyStrikes: React.FC = () => {
       {/* Tabs de subsecciones */}
       <Box sx={{ mb: 2 }}>
         <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
-          {tabLabels.map((label, idx) => (
+          {tabLabels.map((label) => (
             <Tab key={label} label={label} />
           ))}
         </Tabs>
@@ -318,10 +296,10 @@ export const CompanyStrikes: React.FC = () => {
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" gutterBottom>
-                      {strike.studentName}
+                      {strike.student_name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {strike.studentEmail}
+                      {strike.student_email}
                     </Typography>
                   </Box>
                   <Box>
@@ -334,7 +312,7 @@ export const CompanyStrikes: React.FC = () => {
                 </Box>
 
                 <Typography variant="body1" gutterBottom>
-                  <strong>Proyecto:</strong> {strike.projectTitle}
+                  <strong>Proyecto:</strong> {strike.project_title}
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -371,7 +349,7 @@ export const CompanyStrikes: React.FC = () => {
                       <strong>Resolución:</strong> {strike.resolution}
                     </Typography>
                     <Typography variant="caption">
-                      Resuelto el {new Date(strike.resolvedDate!).toLocaleDateString()}
+                      Resuelto el {new Date(strike.resolved_date!).toLocaleDateString()}
                     </Typography>
                   </Alert>
                 )}
@@ -412,8 +390,8 @@ export const CompanyStrikes: React.FC = () => {
               <TextField
                 fullWidth
                 label="Nombre del Estudiante"
-                value={newStrike.studentName}
-                onChange={(e) => setNewStrike(prev => ({ ...prev, studentName: e.target.value }))}
+                value={newStrike.student_name}
+                onChange={(e) => setNewStrike(prev => ({ ...prev, student_name: e.target.value }))}
                 margin="normal"
               />
             </Box>
@@ -421,8 +399,8 @@ export const CompanyStrikes: React.FC = () => {
               <TextField
                 fullWidth
                 label="Proyecto"
-                value={newStrike.projectTitle}
-                onChange={(e) => setNewStrike(prev => ({ ...prev, projectTitle: e.target.value }))}
+                value={newStrike.project_title}
+                onChange={(e) => setNewStrike(prev => ({ ...prev, project_title: e.target.value }))}
                 margin="normal"
               />
             </Box>
@@ -496,10 +474,10 @@ export const CompanyStrikes: React.FC = () => {
           {selectedStrike && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="body1" gutterBottom>
-                <strong>Estudiante:</strong> {selectedStrike.studentName}
+                <strong>Estudiante:</strong> {selectedStrike.student_name}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                <strong>Proyecto:</strong> {selectedStrike.projectTitle}
+                <strong>Proyecto:</strong> {selectedStrike.project_title}
               </Typography>
               <Typography variant="body1" gutterBottom>
                 <strong>Descripción:</strong> {selectedStrike.description}

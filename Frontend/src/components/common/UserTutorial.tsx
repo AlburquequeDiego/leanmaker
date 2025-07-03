@@ -3,7 +3,7 @@ import {
   Box,
   Paper,
   Typography,
-  Button,
+
   List,
   ListItem,
   ListItemIcon,
@@ -131,7 +131,7 @@ export const UserTutorial: React.FC<UserTutorialProps> = ({ userRole, onClose })
 
       {/* Instrucciones paso a paso */}
       <List sx={{ p: 0 }}>
-        {instructions.map((instruction, index) => (
+        {instructions.map((instruction) => (
           <ListItem
             key={instruction.step}
             sx={{

@@ -1,4 +1,4 @@
-import { useState, useImperativeHandle, forwardRef } from 'react';
+import { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -19,6 +19,7 @@ import {
   IconButton,
   Avatar,
   Chip,
+
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -34,8 +35,10 @@ import {
   LocationOn as LocationOnIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
+
 } from '@mui/icons-material';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { apiService } from '../../../services/api.service';
 
 const calendarStyles = `
   .rbc-calendar { font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -62,70 +65,10 @@ if (typeof document !== 'undefined') {
 const locales = { es };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
-const mockEvents = [
-  {
-    id: 1,
-    title: 'Entrevista con TechCorp Solutions',
-    type: 'interview',
-    start: new Date(2025, 5, 18, 10, 0),
-    end: new Date(2025, 5, 18, 11, 0),
-    duration: '1 hora',
-    location: 'Remoto (Zoom)',
-    company: 'TechCorp Solutions',
-    project: 'Sistema de Gestión de Inventarios',
-    description: 'Entrevista técnica para evaluar habilidades en React y Node.js',
-    status: 'upcoming',
-    priority: 'high',
-    students: ['1'],
-    interviewers: ['María González', 'Carlos Rodríguez'],
-    notes: 'Entrevista técnica enfocada en React y TypeScript',
-  },
-  {
-    id: 2,
-    title: 'Entrega del Módulo de Autenticación',
-    type: 'deadline',
-    start: new Date(2025, 5, 20, 23, 59),
-    end: new Date(2025, 5, 20, 23, 59),
-    duration: 'N/A',
-    location: 'N/A',
-    company: 'TechCorp Solutions',
-    project: 'Sistema de Gestión de Inventarios',
-    description: 'Entrega final del módulo de autenticación con JWT',
-    status: 'upcoming',
-    priority: 'high',
-    students: [],
-    interviewers: [],
-    notes: '',
-  },
-  {
-    id: 3,
-    title: 'Reunión de Progreso Semanal',
-    type: 'meeting',
-    start: new Date(2025, 5, 15, 14, 0),
-    end: new Date(2025, 5, 15, 14, 30),
-    duration: '30 minutos',
-    location: 'Remoto (Teams)',
-    company: 'Digital Dynamics',
-    project: 'Aplicación Móvil de Delivery',
-    description: 'Reunión semanal para revisar el progreso del proyecto',
-    status: 'completed',
-    priority: 'medium',
-    students: [],
-    interviewers: [],
-    notes: '',
-  },
-  // ...otros eventos del mock del estudiante...
-];
-
-const mockStudents = [
-  { id: '1', name: 'Juan Pérez', email: 'juan.perez@email.com', phone: '+56 9 1234 5678' },
-  { id: '2', name: 'María González', email: 'maria.gonzalez@email.com', phone: '+56 9 8765 4321' },
-  { id: '3', name: 'Carlos Rodríguez', email: 'carlos.rodriguez@email.com', phone: '+56 9 5555 1234' },
-  { id: '4', name: 'Ana Torres', email: 'ana.torres@email.com', phone: '+56 9 4321 5678' },
-];
-
 export const CompanyCalendar = forwardRef((_, ref) => {
-  const [events, setEvents] = useState<any[]>(mockEvents);
+  const [events, setEvents] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -144,6 +87,30 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     priority: 'medium',
     students: [],
   });
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Obtener eventos del calendario
+        const eventsData = await apiService.get('/api/calendar-events/');
+        const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
+          ...event,
+          start: new Date(event.start_date),
+          end: new Date(event.end_date),
+        })) : [];
+        setEvents(formattedEvents);
+
+        // Obtener estudiantes
+        const studentsData = await apiService.get('/api/students/');
+        setStudents(Array.isArray(studentsData) ? studentsData : []);
+      } catch (error) {
+        console.error('Error fetching calendar data:', error);
+        setEvents([]);
+        setStudents([]);
+      }
+    }
+    fetchData();
+  }, []);
 
   const getEventIcon = (type: string) => {
     switch (type) {
@@ -194,32 +161,49 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     });
   };
 
-  const handleAddEvent = () => {
-    setEvents(prev => [
-      ...prev,
-      {
-        ...newEvent,
-        id: Date.now(),
-        start: newEvent.start,
-        end: newEvent.end,
+  const handleAddEvent = async () => {
+    try {
+      const eventData = {
+        title: newEvent.title,
+        description: newEvent.description,
+        type: newEvent.type,
+        start_date: newEvent.start,
+        end_date: newEvent.end,
+        duration: newEvent.duration,
+        location: newEvent.location,
+        company: newEvent.company,
+        project: newEvent.project,
+        status: newEvent.status,
+        priority: newEvent.priority,
         students: newEvent.students,
-      },
-    ]);
-    setShowAddDialog(false);
-    setNewEvent({
-      title: '',
-      description: '',
-      type: 'meeting',
-      start: '',
-      end: '',
-      duration: '',
-      location: '',
-      company: '',
-      project: '',
-      status: 'upcoming',
-      priority: 'medium',
-      students: [],
-    });
+      };
+
+      const createdEvent = await apiService.post('/api/calendar-events/', eventData);
+      const formattedEvent = {
+        ...(createdEvent as any),
+        start: new Date((createdEvent as any).start_date),
+        end: new Date((createdEvent as any).end_date),
+      };
+
+      setEvents(prev => [...prev, formattedEvent]);
+      setShowAddDialog(false);
+      setNewEvent({
+        title: '',
+        description: '',
+        type: 'meeting',
+        start: '',
+        end: '',
+        duration: '',
+        location: '',
+        company: '',
+        project: '',
+        status: 'upcoming',
+        priority: 'medium',
+        students: [],
+      });
+    } catch (error) {
+      console.error('Error creating event:', error);
+    }
   };
 
   const messages = {
@@ -265,8 +249,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           step={30}
           timeslots={2}
           tooltipAccessor={(event) => `${event.title} - ${event.company}`}
-                    />
-                  </Box>
+        />
+      </Box>
       {/* Modal para agregar evento */}
       <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Agregar Nuevo Evento</DialogTitle>
@@ -281,9 +265,9 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 value={newEvent.students}
                 onChange={e => setNewEvent((prev: any) => ({ ...prev, students: e.target.value }))}
                 label="Estudiantes"
-                renderValue={(selected) => (selected as string[]).map(id => mockStudents.find(s => s.id === id)?.name).join(', ')}
+                renderValue={(selected) => (selected as string[]).map(id => students.find(s => s.id === id)?.name).join(', ')}
               >
-                {mockStudents.map(student => (
+                {students.map(student => (
                   <MenuItem key={student.id} value={student.id}>
                     {student.name}
                   </MenuItem>
@@ -296,16 +280,16 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             </Box>
             <TextField fullWidth type="number" label="Duración (minutos)" value={newEvent.duration} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, duration: e.target.value }))} inputProps={{ min: 0 }} />
             <TextField fullWidth label="Ubicación" value={newEvent.location} onChange={(e) => setNewEvent((prev: any) => ({ ...prev, location: e.target.value }))} />
-              <FormControl fullWidth>
-                <InputLabel>Tipo de Evento</InputLabel>
+            <FormControl fullWidth>
+              <InputLabel>Tipo de Evento</InputLabel>
               <Select value={newEvent.type} label="Tipo de Evento" onChange={(e) => setNewEvent((prev: any) => ({ ...prev, type: e.target.value }))}>
-                  <MenuItem value="meeting">Reunión</MenuItem>
-                  <MenuItem value="interview">Entrevista</MenuItem>
+                <MenuItem value="meeting">Reunión</MenuItem>
+                <MenuItem value="interview">Entrevista</MenuItem>
                 <MenuItem value="presentation">Presentación</MenuItem>
                 <MenuItem value="review">Revisión</MenuItem>
                 <MenuItem value="deadline">Entrega</MenuItem>
-                </Select>
-              </FormControl>
+              </Select>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -327,7 +311,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               if (!selectedEvent) return <Typography color="error">Evento no válido.</Typography>;
               if (selectedEvent.type === 'interview' && Array.isArray(selectedEvent.students) && selectedEvent.students.length > 0) {
                 return selectedEvent.students.map((id: string) => {
-                  const stu = mockStudents.find(s => s.id === id);
+                  const stu = students.find(s => s.id === id);
                   if (!stu) return null;
                   return (
                     <Box key={id} sx={{ mb: 3 }}>
@@ -403,9 +387,9 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         <Typography variant="body2" sx={{ mb: 1 }}><strong>Empresa:</strong> {selectedEvent.company || '-'}</Typography>
                         {Array.isArray(selectedEvent.students) && selectedEvent.students.length > 0 && (
                           <>
-                            <Typography variant="body2" sx={{ mb: 1 }}><strong>Estudiantes:</strong> {selectedEvent.students.map((id: string) => mockStudents.find(s => s.id === id)?.name).join(', ')}</Typography>
+                            <Typography variant="body2" sx={{ mb: 1 }}><strong>Estudiantes:</strong> {selectedEvent.students.map((id: string) => students.find(s => s.id === id)?.name).join(', ')}</Typography>
                             {selectedEvent.students.map((id: string) => {
-                              const stu = mockStudents.find(s => s.id === id);
+                              const stu = students.find(s => s.id === id);
                               return stu && stu.email ? (
                                 <Typography key={id} variant="body2" sx={{ mb: 1, ml: 2 }}><strong>Correo:</strong> {stu.email}</Typography>
                               ) : null;

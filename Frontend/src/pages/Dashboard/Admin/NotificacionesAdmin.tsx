@@ -1,535 +1,647 @@
-import { Box, Paper, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Stack, Chip, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, Avatar } from '@mui/material';
-import { useState } from 'react';
-import { 
-  NotificationsActive as NotificationsActiveIcon, 
-  Send as SendIcon, 
+import { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Chip,
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Card,
+  CardContent,
+  CardActions,
+  Snackbar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  CircularProgress,
+  Alert,
+  InputAdornment,
+  FormControlLabel,
+  Switch,
+} from '@mui/material';
+import {
+
+  Search as SearchIcon,
+  Send as SendIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  Info as InfoIcon,
+  Warning as WarningIcon,
+  Error as ErrorIcon,
   CheckCircle as CheckCircleIcon,
-  Api as ApiIcon,
-  Person as PersonIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon
 } from '@mui/icons-material';
-import Snackbar from '@mui/material/Snackbar';
+import { apiService } from '../../../services/api.service';
 
-const mockHistorial = [
-  { id: 1, mensaje: 'Recordatorio: entrega de proyectos', destinatarios: 'Estudiantes', fecha: '2024-06-10 10:00', estado: 'Enviada' },
-  { id: 2, mensaje: 'Bienvenida a nuevas empresas', destinatarios: 'Empresas', fecha: '2024-06-09 09:00', estado: 'Enviada' },
-  { id: 3, mensaje: 'Aviso de mantenimiento', destinatarios: 'Todos', fecha: '2024-06-08 18:00', estado: 'Enviada' },
-];
-
-const mockNotificacionesAPI = [
-  {
-    id: 1,
-    estudiante: 'María González',
-    email: 'maria.gonzalez@estudiante.edu',
-    nivelActual: 2,
-    nivelSolicitado: 3,
-    fecha: '2024-01-25 14:30',
-    estado: 'Pendiente',
-    puntuacion: 85,
-    comentario: 'He completado varios proyectos exitosamente y creo que estoy listo para el siguiente nivel.'
-  },
-  {
-    id: 2,
-    estudiante: 'Carlos Ruiz',
-    email: 'carlos.ruiz@estudiante.edu',
-    nivelActual: 1,
-    nivelSolicitado: 2,
-    fecha: '2024-01-25 12:15',
-    estado: 'Aprobada',
-    puntuacion: 78,
-    comentario: 'He mejorado significativamente mis habilidades técnicas.'
-  },
-  {
-    id: 3,
-    estudiante: 'Ana Martínez',
-    email: 'ana.martinez@estudiante.edu',
-    nivelActual: 3,
-    nivelSolicitado: 4,
-    fecha: '2024-01-25 10:45',
-    estado: 'Rechazada',
-    puntuacion: 65,
-    comentario: 'Solicito evaluación para nivel experto.'
-  },
-];
-
-const plantillas = [
-  { id: 1, texto: 'Recordatorio: entrega de proyectos' },
-  { id: 2, texto: 'Bienvenida a nuevos usuarios' },
-  { id: 3, texto: 'Aviso de mantenimiento' },
-];
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  target_type: 'all' | 'students' | 'companies' | 'admins' | 'specific';
+  target_ids?: string[];
+  status: 'draft' | 'sent' | 'scheduled';
+  created_at: string;
+  sent_at?: string;
+  scheduled_at?: string;
+  created_by: string;
+  read_count: number;
+  total_recipients: number;
 }
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`notifications-tabpanel-${index}`}
-      aria-labelledby={`notifications-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  );
-}
+
 
 export default function NotificacionesAdmin() {
-  const [tabValue, setTabValue] = useState(0);
-  const [mensaje, setMensaje] = useState('');
-  const [destinatarios, setDestinatarios] = useState('Todos');
-  const [plantilla, setPlantilla] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [error, setError] = useState('');
-  const [selectedNotification, setSelectedNotification] = useState<any>(null);
-  const [apiDialog, setApiDialog] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [historialLimit, setHistorialLimit] = useState<number | 'all'>(10);
-  const [apiLimit, setApiLimit] = useState<number | 'all'>(10);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [targetFilter, setTargetFilter] = useState('');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
+    open: false, 
+    message: '', 
+    severity: 'success' 
+  });
 
-  const handlePlantilla = (id: string) => {
-    const plantillaSeleccionada = plantillas.find(p => p.id.toString() === id);
-    if (plantillaSeleccionada) {
-      setMensaje(plantillaSeleccionada.texto);
-      setPlantilla(id);
+  // Form states
+  const [formData, setFormData] = useState({
+    title: '',
+    message: '',
+    type: 'info' as 'info' | 'warning' | 'error' | 'success',
+    target_type: 'all' as 'all' | 'students' | 'companies' | 'admins' | 'specific',
+    target_ids: [] as string[],
+    scheduled_at: '',
+    save_as_template: false,
+    template_name: '',
+  });
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.get('/api/notifications/');
+      const formattedNotifications = Array.isArray(data) ? data.map((notification: any) => ({
+        id: notification.id,
+        title: notification.title,
+        message: notification.message,
+        type: notification.type || 'info',
+        target_type: notification.target_type || 'all',
+        target_ids: notification.target_ids || [],
+        status: notification.status || 'draft',
+        created_at: notification.created_at,
+        sent_at: notification.sent_at,
+        scheduled_at: notification.scheduled_at,
+        created_by: notification.created_by || 'Admin',
+        read_count: notification.read_count || 0,
+        total_recipients: notification.total_recipients || 0,
+      })) : [];
+      
+      setNotifications(formattedNotifications);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setError('Error al cargar las notificaciones');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSend = () => {
-    if (!mensaje.trim() || !destinatarios) {
-      setError('Completa el mensaje y los destinatarios.');
-      return;
+
+
+  const handleCreateNotification = async () => {
+    try {
+      const notificationData = {
+        ...formData,
+        status: formData.scheduled_at ? 'scheduled' : 'draft',
+      };
+
+      await apiService.post('/api/notifications/', notificationData);
+      
+      if (formData.save_as_template && formData.template_name) {
+        const templateData = {
+          name: formData.template_name,
+          title: formData.title,
+          message: formData.message,
+          type: formData.type,
+          target_type: formData.target_type,
+        };
+        await apiService.post('/api/notification-templates/', templateData);
+      }
+
+      setSnackbar({ 
+        open: true, 
+        message: 'Notificación creada exitosamente', 
+        severity: 'success' 
+      });
+      
+      setShowCreateDialog(false);
+      resetForm();
+      await fetchNotifications();
+    } catch (error) {
+      console.error('Error creating notification:', error);
+      setSnackbar({ 
+        open: true, 
+        message: 'Error al crear la notificación', 
+        severity: 'error' 
+      });
     }
-    setSuccessMessage('¡Notificación enviada exitosamente!');
-    setShowSuccess(true);
-    setMensaje('');
-    setPlantilla('');
-    setError('');
   };
 
-  const handleApiNotification = (notification: any) => {
-    setSelectedNotification(notification);
-    setApiDialog(true);
+  const handleSendNotification = async (notificationId: string) => {
+    try {
+      await apiService.patch(`/api/notifications/${notificationId}/`, {
+        status: 'sent',
+        sent_at: new Date().toISOString(),
+      });
+      
+      setSnackbar({ 
+        open: true, 
+        message: 'Notificación enviada exitosamente', 
+        severity: 'success' 
+      });
+      
+      await fetchNotifications();
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      setSnackbar({ 
+        open: true, 
+        message: 'Error al enviar la notificación', 
+        severity: 'error' 
+      });
+    }
   };
 
-  const handleApiAction = (action: 'approve' | 'reject') => {
-    const actionText = action === 'approve' ? 'aprobada' : 'rechazada';
-    setSuccessMessage(`Solicitud de API ${actionText} para ${selectedNotification.estudiante}`);
-    setShowSuccess(true);
-    setApiDialog(false);
+  const handleDeleteNotification = async (notificationId: string) => {
+    try {
+      await apiService.delete(`/api/notifications/${notificationId}/`);
+      
+      setSnackbar({ 
+        open: true, 
+        message: 'Notificación eliminada exitosamente', 
+        severity: 'success' 
+      });
+      
+      await fetchNotifications();
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      setSnackbar({ 
+        open: true, 
+        message: 'Error al eliminar la notificación', 
+        severity: 'error' 
+      });
+    }
   };
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'Pendiente': return 'warning';
-      case 'Aprobada': return 'success';
-      case 'Rechazada': return 'error';
+
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      message: '',
+      type: 'info',
+      target_type: 'all',
+      target_ids: [],
+      scheduled_at: '',
+      save_as_template: false,
+      template_name: '',
+    });
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'success': return <CheckCircleIcon color="success" />;
+      case 'warning': return <WarningIcon color="warning" />;
+      case 'error': return <ErrorIcon color="error" />;
+      default: return <InfoIcon color="info" />;
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'success': return 'success';
+      case 'warning': return 'warning';
+      case 'error': return 'error';
+      default: return 'info';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'sent': return 'success';
+      case 'scheduled': return 'warning';
+      case 'draft': return 'default';
       default: return 'default';
     }
   };
 
-  const getNivelIcon = (nivelActual: number, nivelSolicitado: number) => {
-    if (nivelSolicitado > nivelActual) {
-      return <TrendingUpIcon color="success" />;
-    } else if (nivelSolicitado < nivelActual) {
-      return <TrendingDownIcon color="error" />;
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'sent': return 'Enviada';
+      case 'scheduled': return 'Programada';
+      case 'draft': return 'Borrador';
+      default: return status;
     }
-    return <ApiIcon color="primary" />;
   };
 
-  return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <NotificationsActiveIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-        <Typography variant="h4">Gestión de Notificaciones</Typography>
+  const getTargetText = (target: string) => {
+    switch (target) {
+      case 'all': return 'Todos';
+      case 'students': return 'Estudiantes';
+      case 'companies': return 'Empresas';
+      case 'admins': return 'Administradores';
+      case 'specific': return 'Específicos';
+      default: return target;
+    }
+  };
+
+  const filteredNotifications = notifications.filter(notification =>
+    notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    notification.message.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (typeFilter ? notification.type === typeFilter : true) &&
+    (statusFilter ? notification.status === statusFilter : true) &&
+    (targetFilter ? notification.target_type === targetFilter : true)
+  );
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress />
       </Box>
+    );
+  }
 
-      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Tab label="Notificaciones Masivas" />
-          <Tab label="Solicitudes de API" />
-        </Tabs>
+  return (
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <InfoIcon sx={{ mr: 2, color: 'primary.main' }} />
+        Gestión de Notificaciones
+      </Typography>
 
-        {/* Tab: Notificaciones Masivas */}
-        <TabPanel value={tabValue} index={0}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-            <SendIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-            <Typography variant="h5">Envío de Notificaciones Masivas</Typography>
-          </Box>
-          <Paper sx={{ p: { xs: 2, sm: 4 }, mb: 4, borderRadius: 4, boxShadow: 3, background: '#f8fafc' }}>
-            <Stack spacing={2}>
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
-                <FormControl fullWidth>
-                  <InputLabel>Plantilla</InputLabel>
-                  <Select
-                    value={plantilla}
-                    label="Plantilla"
-                    onChange={e => handlePlantilla(e.target.value)}
-                    sx={{ borderRadius: 2, bgcolor: 'white' }}
-                  >
-                    <MenuItem value="">Sin plantilla</MenuItem>
-                    {plantillas.map(p => (
-                      <MenuItem key={p.id} value={p.id}>{p.texto}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth>
-                  <InputLabel>Destinatarios</InputLabel>
-                  <Select
-                    value={destinatarios}
-                    label="Destinatarios"
-                    onChange={e => setDestinatarios(e.target.value)}
-                    sx={{ borderRadius: 2, bgcolor: 'white' }}
-                    error={!!error && !destinatarios}
-                  >
-                    <MenuItem value="Todos">Todos</MenuItem>
-                    <MenuItem value="Estudiantes">Estudiantes</MenuItem>
-                    <MenuItem value="Empresas">Empresas</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-              <TextField
-                label="Mensaje"
-                multiline
-                minRows={4}
-                value={mensaje}
-                onChange={e => setMensaje(e.target.value)}
-                fullWidth
-                sx={{ borderRadius: 2, bgcolor: 'white', fontSize: 18 }}
-                error={!!error && !mensaje.trim()}
-                helperText={!!error && !mensaje.trim() ? error : ''}
-                inputProps={{ style: { fontSize: 18 } }}
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  startIcon={<SendIcon />}
-                  sx={{ borderRadius: 2, fontSize: 18, px: 4, py: 1.5, boxShadow: 2, textTransform: 'none' }}
-                  onClick={handleSend}
-                >
-                  Enviar Notificación
-                </Button>
-              </Box>
-            </Stack>
-          </Paper>
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>Historial de Notificaciones</Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+      {/* Filtros y acciones */}
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+          <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
             <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={historialLimit}
-              onChange={e => setHistorialLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              sx={{ minWidth: 110 }}
+              variant="outlined"
+              placeholder="Buscar notificaciones..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              fullWidth
+            />
+          </Box>
+          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
+            <FormControl fullWidth>
+              <InputLabel>Tipo</InputLabel>
+              <Select
+                value={typeFilter}
+                label="Tipo"
+                onChange={(e) => setTypeFilter(e.target.value)}
+              >
+                <MenuItem value="all">Todos</MenuItem>
+                <MenuItem value="info">Información</MenuItem>
+                <MenuItem value="warning">Advertencia</MenuItem>
+                <MenuItem value="error">Error</MenuItem>
+                <MenuItem value="success">Éxito</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
+            <FormControl fullWidth>
+              <InputLabel>Estado</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Estado"
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value="all">Todos</MenuItem>
+                <MenuItem value="draft">Borrador</MenuItem>
+                <MenuItem value="sent">Enviada</MenuItem>
+                <MenuItem value="scheduled">Programada</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
+            <FormControl fullWidth>
+              <InputLabel>Destinatario</InputLabel>
+              <Select
+                value={targetFilter}
+                label="Destinatario"
+                onChange={(e) => setTargetFilter(e.target.value)}
+              >
+                <MenuItem value="all">Todos</MenuItem>
+                <MenuItem value="all">Todos los usuarios</MenuItem>
+                <MenuItem value="students">Estudiantes</MenuItem>
+                <MenuItem value="companies">Empresas</MenuItem>
+                <MenuItem value="admins">Administradores</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ flex: '0 1 auto', minWidth: 0 }}>
+            <Button
+              variant="contained"
+              startIcon={<SendIcon />}
+              onClick={() => setShowCreateDialog(true)}
+              sx={{ whiteSpace: 'nowrap' }}
             >
-              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-              ))}
-              <MenuItem value="all">Todas</MenuItem>
-            </TextField>
+              Nueva Notificación
+            </Button>
           </Box>
-          <Box sx={{ overflowX: 'auto' }}>
-            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 1, minWidth: 600, background: '#f8fafc' }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow sx={{ bgcolor: 'primary.main' }}>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 200 }}>Mensaje</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Destinatarios</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}>Fecha</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Estado</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(historialLimit === 'all' ? mockHistorial : mockHistorial.slice(0, historialLimit)).map(n => (
-                    <TableRow key={n.id} hover sx={{ '&:hover': { background: '#e3eafc' } }}>
-                      <TableCell>
-                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'primary.main' }} noWrap>
-                          {n.mensaje}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip label={n.destinatarios} color="info" size="small" sx={{ fontWeight: 600 }} />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary" noWrap>
-                          {n.fecha}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={n.estado} 
-                          color={n.estado === 'Enviada' ? 'success' : 'warning'} 
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </TabPanel>
-
-        {/* Tab: Solicitudes de API */}
-        <TabPanel value={tabValue} index={1}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-            <ApiIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-            <Typography variant="h5">Solicitudes de Cambio de Nivel API</Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={apiLimit}
-              onChange={e => setApiLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              sx={{ minWidth: 110 }}
-            >
-              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-              ))}
-              <MenuItem value="all">Todas</MenuItem>
-            </TextField>
-          </Box>
-
-          <Box sx={{ overflowX: 'auto' }}>
-            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 800 }}>
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ bgcolor: 'primary.main' }}>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 180 }}>Estudiante</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Nivel Actual</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}>Nivel Solicitado</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80 }}>Puntuación</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}>Fecha</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Estado</TableCell>
-                    <TableCell align="center" sx={{ color: 'white', fontWeight: 600, minWidth: 100 }}>Acciones</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(apiLimit === 'all' ? mockNotificacionesAPI : mockNotificacionesAPI.slice(0, apiLimit)).map(notification => (
-                    <TableRow key={notification.id} hover>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 160 }}>
-                          <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main' }}>
-                            <PersonIcon fontSize="small" />
-                          </Avatar>
-                          <Box sx={{ minWidth: 0, flex: 1 }}>
-                            <Typography variant="body2" fontWeight={600} noWrap>
-                              {notification.estudiante}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap>
-                              {notification.email}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={`API ${notification.nivelActual}`} 
-                          color="primary" 
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {getNivelIcon(notification.nivelActual, notification.nivelSolicitado)}
-                          <Chip 
-                            label={`API ${notification.nivelSolicitado}`} 
-                            color="secondary" 
-                            variant="filled"
-                            size="small"
-                            sx={{ fontWeight: 600 }}
-                          />
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={600}>
-                          {notification.puntuacion}%
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" noWrap>
-                          {notification.fecha}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={notification.estado} 
-                          color={getEstadoColor(notification.estado) as any}
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        {notification.estado === 'Pendiente' && (
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() => handleApiNotification(notification)}
-                            sx={{ borderRadius: 2 }}
-                          >
-                            Revisar
-                          </Button>
-                        )}
-                        {notification.estado !== 'Pendiente' && (
-                          <Button
-                            variant="text"
-                            size="small"
-                            onClick={() => handleApiNotification(notification)}
-                            sx={{ borderRadius: 2 }}
-                          >
-                            Ver Detalles
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </TabPanel>
+        </Box>
       </Paper>
 
-      {/* Diálogo para revisar solicitud de API */}
-      <Dialog 
-        open={apiDialog} 
-        onClose={() => setApiDialog(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <ApiIcon color="primary" />
-          Revisar Solicitud de Cambio de Nivel API
-        </DialogTitle>
-        <DialogContent>
-          {selectedNotification && (
-            <Box>
-              <Typography variant="h6" gutterBottom>
-                Estudiante: {selectedNotification.estudiante}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {selectedNotification.email}
-              </Typography>
-              
-              <Box sx={{ mt: 3, display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-                <Box>
-                  <Typography variant="subtitle1" gutterBottom>Nivel Actual</Typography>
+      {/* Lista de notificaciones */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 3 }}>
+        {filteredNotifications.map((notification) => (
+          <Box key={notification.id}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  {getTypeIcon(notification.type)}
+                  <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                    {notification.title}
+                  </Typography>
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  {notification.message}
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                   <Chip 
-                    label={`API ${selectedNotification.nivelActual}`} 
-                    color="primary" 
-                    variant="filled"
-                    sx={{ fontWeight: 600 }}
+                    label={getTypeText(notification.type)} 
+                    color={getTypeColor(notification.type) as any}
+                    size="small"
+                  />
+                  <Chip 
+                    label={getStatusText(notification.status)} 
+                    color={getStatusColor(notification.status) as any}
+                    size="small"
+                  />
+                  <Chip 
+                    label={getTargetText(notification.target_type)} 
+                    variant="outlined"
+                    size="small"
                   />
                 </Box>
-                <Box>
-                  <Typography variant="subtitle1" gutterBottom>Nivel Solicitado</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {getNivelIcon(selectedNotification.nivelActual, selectedNotification.nivelSolicitado)}
-                    <Chip 
-                      label={`API ${selectedNotification.nivelSolicitado}`} 
-                      color="secondary" 
-                      variant="filled"
-                      sx={{ fontWeight: 600 }}
-                    />
-                  </Box>
+                <Typography variant="caption" color="text.secondary">
+                  {new Date(notification.created_at).toLocaleString()}
+                </Typography>
+              </CardContent>
+              <CardActions sx={{ justifyContent: 'space-between', p: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton 
+                    size="small" 
+                    onClick={() => setSelectedNotification(notification)}
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                  <IconButton 
+                    size="small" 
+                    color="primary"
+                    onClick={() => handleSendNotification(notification.id)}
+                    disabled={notification.status === 'sent'}
+                  >
+                    <SendIcon />
+                  </IconButton>
+                  <IconButton 
+                    size="small" 
+                    color="error"
+                    onClick={() => handleDeleteNotification(notification.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </Box>
-              </Box>
-              
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="subtitle1" gutterBottom>Puntuación del Cuestionario</Typography>
-                <Typography variant="h5" color="primary" fontWeight={600}>
-                  {selectedNotification.puntuacion}%
-                </Typography>
-              </Box>
-              
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="subtitle1" gutterBottom>Comentario del Estudiante</Typography>
-                <Paper sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                  <Typography variant="body2">
-                    {selectedNotification.comentario}
-                  </Typography>
-                </Paper>
-              </Box>
-              
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="subtitle1" gutterBottom>Fecha de Solicitud</Typography>
-                <Typography variant="body2">
-                  {selectedNotification.fecha}
-                </Typography>
-              </Box>
+                {notification.status === 'draft' && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    disabled
+                  >
+                    Borrador
+                  </Button>
+                )}
+                {notification.status === 'scheduled' && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    disabled
+                  >
+                    Programada
+                  </Button>
+                )}
+                {notification.status === 'sent' && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    disabled
+                  >
+                    Enviada
+                  </Button>
+                )}
+              </CardActions>
+            </Card>
+          </Box>
+        ))}
+      </Box>
+
+      {filteredNotifications.length === 0 && !loading && (
+        <Alert severity="info" sx={{ mt: 3 }}>
+          No se encontraron notificaciones que coincidan con los filtros aplicados.
+        </Alert>
+      )}
+
+      {/* Dialog para crear notificación */}
+      <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Crear Nueva Notificación</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <Box>
+              <TextField
+                label="Título"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                fullWidth
+                required
+              />
             </Box>
-          )}
+            <Box>
+              <TextField
+                label="Mensaje"
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                multiline
+                rows={4}
+                fullWidth
+                required
+              />
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Tipo</InputLabel>
+                <Select
+                  value={formData.type}
+                  label="Tipo"
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                >
+                  <MenuItem value="info">Información</MenuItem>
+                  <MenuItem value="warning">Advertencia</MenuItem>
+                  <MenuItem value="error">Error</MenuItem>
+                  <MenuItem value="success">Éxito</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Destinatarios</InputLabel>
+                <Select
+                  value={formData.target_type}
+                  label="Destinatarios"
+                  onChange={(e) => setFormData({ ...formData, target_type: e.target.value as any })}
+                >
+                  <MenuItem value="all">Todos los usuarios</MenuItem>
+                  <MenuItem value="students">Solo estudiantes</MenuItem>
+                  <MenuItem value="companies">Solo empresas</MenuItem>
+                  <MenuItem value="admins">Solo administradores</MenuItem>
+                  <MenuItem value="specific">Usuarios específicos</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box>
+              <TextField
+                label="Programar envío (opcional)"
+                type="datetime-local"
+                value={formData.scheduled_at}
+                onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            </Box>
+            <Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.save_as_template}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, save_as_template: e.target.checked })}
+                  />
+                }
+                label="Guardar como plantilla"
+              />
+            </Box>
+            {formData.save_as_template && (
+              <Box>
+                <TextField
+                  label="Nombre de la plantilla"
+                  value={formData.template_name}
+                  onChange={(e) => setFormData({ ...formData, template_name: e.target.value })}
+                  fullWidth
+                  required
+                />
+              </Box>
+            )}
+          </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={() => setApiDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2 }}
+        <DialogActions>
+          <Button onClick={() => setShowCreateDialog(false)}>Cancelar</Button>
+          <Button
+            variant="contained"
+            onClick={handleCreateNotification}
+            disabled={!formData.title || !formData.message}
           >
-            Cancelar
+            Crear Notificación
           </Button>
-          {selectedNotification?.estado === 'Pendiente' && (
-            <>
-              <Button 
-                onClick={() => handleApiAction('reject')}
-                variant="contained"
-                color="error"
-                sx={{ borderRadius: 2 }}
-              >
-                Rechazar
-              </Button>
-              <Button 
-                onClick={() => handleApiAction('approve')}
-                variant="contained"
-                color="success"
-                sx={{ borderRadius: 2 }}
-              >
-                Aprobar
-              </Button>
-            </>
-          )}
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar de éxito */}
+      {/* Dialog para ver detalles */}
+      <Dialog open={!!selectedNotification} onClose={() => setSelectedNotification(null)} maxWidth="md" fullWidth>
+        {selectedNotification && (
+          <>
+            <DialogTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {getTypeIcon(selectedNotification.type)}
+                {selectedNotification.title}
+              </Box>
+            </DialogTitle>
+            <DialogContent>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {selectedNotification.message}
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                <Chip 
+                  label={getTypeText(selectedNotification.type)} 
+                  color={getTypeColor(selectedNotification.type) as any}
+                />
+                <Chip 
+                  label={getStatusText(selectedNotification.status)} 
+                  color={getStatusColor(selectedNotification.status) as any}
+                />
+                <Chip 
+                  label={getTargetText(selectedNotification.target_type)} 
+                  variant="outlined"
+                />
+              </Box>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Creada:</strong> {new Date(selectedNotification.created_at).toLocaleString()}
+              </Typography>
+              {selectedNotification.sent_at && (
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Enviada:</strong> {new Date(selectedNotification.sent_at).toLocaleString()}
+                </Typography>
+              )}
+              <Typography variant="body2" color="text.secondary">
+                <strong>Leída:</strong> {selectedNotification.read_count} de {selectedNotification.total_recipients} destinatarios
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setSelectedNotification(null)}>Cerrar</Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+
       <Snackbar
-        open={showSuccess}
-        autoHideDuration={4000}
-        onClose={() => setShowSuccess(false)}
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CheckCircleIcon color="success" />
-          <Typography color="success.main" fontWeight={600}>
-            {successMessage}
-          </Typography>
-        </Paper>
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
       </Snackbar>
     </Box>
   );
+}
+
+function getTypeText(type: string): string {
+  switch (type) {
+    case 'success': return 'Éxito';
+    case 'warning': return 'Advertencia';
+    case 'error': return 'Error';
+    default: return 'Información';
+  }
 } 

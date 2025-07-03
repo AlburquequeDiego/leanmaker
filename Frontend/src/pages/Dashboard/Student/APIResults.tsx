@@ -2,8 +2,7 @@ import {
   Box,
   Typography,
   Paper,
-  Card,
-  CardContent,
+
   Button,
   Table,
   TableBody,
@@ -18,6 +17,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
 } from '@mui/material';
 import {
   Assessment as AssessmentIcon,
@@ -29,8 +29,9 @@ import {
   Code as CodeIcon,
 } from '@mui/icons-material';
 import Snackbar from '@mui/material/Snackbar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiService } from '../../../services/api.service';
 
 interface APIResult {
   id: string;
@@ -39,34 +40,9 @@ interface APIResult {
   level: number;
   questionsAnswered: number;
   timeSpent: string;
+  status: 'pending' | 'approved' | 'rejected';
+  feedback?: string;
 }
-
-const mockResults: APIResult[] = [
-  {
-    id: '1',
-    date: '2024-01-15',
-    score: 3.5,
-    level: 3,
-    questionsAnswered: 4,
-    timeSpent: '5 minutos',
-  },
-  {
-    id: '2',
-    date: '2023-12-10',
-    score: 2.8,
-    level: 2,
-    questionsAnswered: 4,
-    timeSpent: '3 minutos',
-  },
-  {
-    id: '3',
-    date: '2023-11-05',
-    score: 2.2,
-    level: 2,
-    questionsAnswered: 4,
-    timeSpent: '2 minutos',
-  },
-];
 
 const apiLevelDescriptions = {
   1: {
@@ -120,12 +96,55 @@ const apiLevelDescriptions = {
 };
 
 export const APIResults = () => {
-  const currentLevel = 3; // Nivel actual del estudiante
-  const currentResult = mockResults[0]; // Resultado más reciente
+  const [results, setResults] = useState<APIResult[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentLevel, setCurrentLevel] = useState<number>(0);
+  const [currentResult, setCurrentResult] = useState<APIResult | null>(null);
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
+
+  const fetchResults = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.get('/api/questionnaires/');
+      const formattedResults = Array.isArray(data) ? data.map((result: any) => ({
+        id: result.id,
+        date: result.submitted_at ? new Date(result.submitted_at).toLocaleDateString() : 'N/A',
+        score: result.average_score || 0,
+        level: result.calculated_level || 0,
+        questionsAnswered: 4, // Siempre 4 preguntas en el cuestionario
+        timeSpent: '5 minutos', // Mock time
+        status: result.status || 'pending',
+        feedback: result.feedback,
+      })) : [];
+      
+      setResults(formattedResults);
+      
+      // Establecer el nivel actual (el más reciente aprobado o el más reciente si no hay aprobados)
+      if (formattedResults.length > 0) {
+        const approvedResults = formattedResults.filter(r => r.status === 'approved');
+        if (approvedResults.length > 0) {
+          setCurrentLevel(approvedResults[0].level);
+          setCurrentResult(approvedResults[0]);
+        } else {
+          setCurrentLevel(formattedResults[0].level);
+          setCurrentResult(formattedResults[0]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching API results:', error);
+      setError('Error al cargar los resultados del cuestionario API');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getLevelColor = (level: number) => {
     switch (level) {
@@ -146,6 +165,44 @@ export const APIResults = () => {
     return Math.max(0, Math.min(100, progress));
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'success';
+      case 'rejected': return 'error';
+      case 'pending': return 'warning';
+      default: return 'default';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'approved': return 'Aprobado';
+      case 'rejected': return 'Rechazado';
+      case 'pending': return 'Pendiente';
+      default: return status;
+    }
+  };
+
+  const handleRequestNewLevel = async () => {
+    try {
+      setRequestSent(true);
+      // Aquí se podría enviar una solicitud para un nuevo cuestionario
+      setShowSuccess(true);
+      setRequestDialogOpen(false);
+    } catch (error) {
+      console.error('Error requesting new level:', error);
+      setError('Error al solicitar nuevo nivel');
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
@@ -153,217 +210,204 @@ export const APIResults = () => {
         Resultados del Nivel API
       </Typography>
 
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
       {/* Nivel API Actual */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-            {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].icon}
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="h5">
-                {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].title}
-              </Typography>
-              <Chip 
-                label={`Nivel API ${currentLevel}`} 
-                color={apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].color}
-                size="small"
+      {currentLevel > 0 && (
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+              {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].icon}
+              <Box sx={{ ml: 2 }}>
+                <Typography variant="h5">
+                  {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].title}
+                </Typography>
+                <Chip 
+                  label={`Nivel API ${currentLevel}`} 
+                  color={apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].color}
+                  size="small"
+                />
+              </Box>
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<QuizIcon />}
+              onClick={() => navigate('/dashboard/student/api-questionnaire')}
+            >
+              Hacer cuestionario
+            </Button>
+          </Box>
+
+          <Typography variant="body1" sx={{ mb: 3 }}>
+            {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].description}
+          </Typography>
+
+          {/* Progreso hacia el siguiente nivel */}
+          {currentLevel < 4 && currentResult && (
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  Progreso hacia Nivel {currentLevel + 1}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {getProgressToNextLevel(currentResult.score).toFixed(1)}%
+                </Typography>
+              </Box>
+              <LinearProgress 
+                variant="determinate" 
+                value={getProgressToNextLevel(currentResult.score)} 
+                sx={{ height: 8, borderRadius: 4 }}
               />
             </Box>
+          )}
+
+          {/* Capacidades del nivel actual */}
+          <Typography variant="h6" gutterBottom>
+            Capacidades de tu nivel:
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<QuizIcon />}
-            onClick={() => navigate('/dashboard/student/api-questionnaire')}
-          >
-            Hacer cuestionario
-          </Button>
-        </Box>
-
-        <Typography variant="body1" sx={{ mb: 3 }}>
-          {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].description}
-        </Typography>
-
-        {/* Progreso hacia el siguiente nivel */}
-        {currentLevel < 4 && (
-          <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Progreso hacia Nivel {currentLevel + 1}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {getProgressToNextLevel(currentResult.score).toFixed(1)}%
-              </Typography>
-            </Box>
-            <LinearProgress 
-              variant="determinate" 
-              value={getProgressToNextLevel(currentResult.score)} 
-              sx={{ height: 8, borderRadius: 4 }}
-            />
-          </Box>
-        )}
-
-        {/* Capacidades del nivel actual */}
-        <Typography variant="h6" gutterBottom>
-          Capacidades de tu nivel:
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].capabilities.map((capability, index) => (
-            <Box key={index} sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+            {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].capabilities.map((capability, index) => (
               <Chip
+                key={index}
                 label={capability}
                 color="success"
                 variant="outlined"
-                sx={{ width: '100%', justifyContent: 'flex-start' }}
+                size="small"
               />
-            </Box>
-          ))}
-        </Box>
-      </Paper>
+            ))}
+          </Box>
+        </Paper>
+      )}
 
-      {/* Estadísticas */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="primary">
-              {mockResults.length}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Tests Realizados
-            </Typography>
-          </CardContent>
-        </Card>
-        
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="success.main">
-              {currentResult.score.toFixed(1)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Último Puntaje
-            </Typography>
-          </CardContent>
-        </Card>
-        
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="info.main">
-              {currentResult.timeSpent}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Tiempo Promedio
-            </Typography>
-          </CardContent>
-        </Card>
-        
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="warning.main">
-              {currentLevel}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Nivel Actual
-            </Typography>
-          </CardContent>
-        </Card>
-      </Box>
-
-      {/* Historial de rendiciones */}
+      {/* Historial de Resultados */}
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-          <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-          Historial de Rendiciones
-        </Typography>
-        
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Fecha</TableCell>
-                <TableCell>Puntaje</TableCell>
-                <TableCell>Nivel Obtenido</TableCell>
-                <TableCell>Preguntas</TableCell>
-                <TableCell>Tiempo</TableCell>
-                <TableCell>Estado</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {mockResults.map((result) => (
-                <TableRow key={result.id}>
-                  <TableCell>
-                    {new Date(result.date).toLocaleDateString('es-ES')}
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight="bold">
-                      {result.score.toFixed(1)}/4.0
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={`API ${result.level}`}
-                      color={getLevelColor(result.level) as any}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {result.questionsAnswered}/4
-                  </TableCell>
-                  <TableCell>
-                    {result.timeSpent}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label="Completado"
-                      color="success"
-                      size="small"
-                    />
-                  </TableCell>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+            <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+            Historial de Cuestionarios
+          </Typography>
+        </Box>
+
+        {results.length === 0 ? (
+          <Alert severity="info">
+            No tienes cuestionarios realizados. Haz tu primer cuestionario para obtener tu nivel API.
+          </Alert>
+        ) : (
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Fecha</TableCell>
+                  <TableCell>Puntuación</TableCell>
+                  <TableCell>Nivel Calculado</TableCell>
+                  <TableCell>Estado</TableCell>
+                  <TableCell>Acciones</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {results.map((result) => (
+                  <TableRow key={result.id}>
+                    <TableCell>{result.date}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2">{result.score.toFixed(1)}</Typography>
+                        <Chip 
+                          label={`Nivel ${result.level}`} 
+                          color={getLevelColor(result.level) as any}
+                          size="small"
+                        />
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={`Nivel API ${result.level}`} 
+                        color={getLevelColor(result.level) as any}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={getStatusText(result.status)} 
+                        color={getStatusColor(result.status) as any}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => {
+                          setCurrentResult(result);
+                          setRequestDialogOpen(true);
+                        }}
+                      >
+                        Ver Detalles
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Paper>
 
-      {/* Recomendaciones */}
-      <Alert severity="info" sx={{ mt: 3 }}>
-        <Typography variant="body2">
-          <strong>Recomendación:</strong> Para mejorar tu nivel API, considera participar en más proyectos prácticos, 
-          tomar cursos especializados, y practicar las habilidades específicas de tu nivel actual. 
-          Puedes rendir un nuevo test cada 30 días para evaluar tu progreso.
-        </Typography>
-      </Alert>
-
-      {/* Dialog de confirmación de solicitud */}
-      <Dialog open={requestDialogOpen} onClose={() => setRequestDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Solicitar nuevo intento</DialogTitle>
+      {/* Dialog para detalles del resultado */}
+      <Dialog open={requestDialogOpen} onClose={() => setRequestDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          <Typography variant="h6">
+            Detalles del Cuestionario
+          </Typography>
+        </DialogTitle>
         <DialogContent>
-          <Typography>¿Estás seguro que deseas solicitar un nuevo intento del cuestionario? La administración deberá aprobar tu solicitud.</Typography>
+          {currentResult && (
+            <Box>
+              <Typography variant="body1" gutterBottom>
+                <strong>Fecha:</strong> {currentResult.date}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                <strong>Puntuación:</strong> {currentResult.score.toFixed(1)} / 4.0
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                <strong>Nivel Calculado:</strong> API {currentResult.level}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                <strong>Estado:</strong> {getStatusText(currentResult.status)}
+              </Typography>
+              {currentResult.feedback && (
+                <Typography variant="body1" gutterBottom>
+                  <strong>Comentarios:</strong> {currentResult.feedback}
+                </Typography>
+              )}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setRequestDialogOpen(false)}>Cancelar</Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setRequestDialogOpen(false);
-              setShowSuccess(true);
-              setRequestSent(true);
-            }}
-          >
-            Enviar solicitud
+          <Button onClick={() => setRequestDialogOpen(false)}>
+            Cerrar
           </Button>
+          {currentResult?.status === 'rejected' && (
+            <Button
+              variant="contained"
+              onClick={handleRequestNewLevel}
+              disabled={requestSent}
+            >
+              Solicitar Nuevo Nivel
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar de éxito */}
       <Snackbar
         open={showSuccess}
-        autoHideDuration={3500}
+        autoHideDuration={6000}
         onClose={() => setShowSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert severity="success" sx={{ width: '100%' }}>
-          Solicitud enviada a administración para aprobación
-        </Alert>
-      </Snackbar>
+        message="Solicitud enviada exitosamente"
+      />
     </Box>
   );
 };

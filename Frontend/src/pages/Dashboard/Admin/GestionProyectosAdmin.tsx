@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -19,8 +19,6 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Card,
-  CardContent,
   Avatar,
   Rating,
   Snackbar,
@@ -29,6 +27,7 @@ import {
   Select,
   MenuItem,
   Stack,
+  CircularProgress,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -42,6 +41,7 @@ import {
   Search as SearchIcon,
   FilterList as FilterListIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Project {
   id: string;
@@ -71,18 +71,7 @@ interface Application {
   skills: string[];
 }
 
-interface CompatibleCandidate {
-  id: string;
-  name: string;
-  email: string;
-  apiLevel: number;
-  gpa: number;
-  completedProjects: number;
-  totalHours: number;
-  skills: string[];
-  compatibility: number;
-  rating: number;
-}
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -124,71 +113,32 @@ export const GestionProyectosAdmin = () => {
   // Estados para límite de registros por sección
   const [projectsLimit, setProjectsLimit] = useState<number | 'all'>(10);
   const [applicationsLimit, setApplicationsLimit] = useState<number | 'all'>(10);
-  const [candidatesLimit, setCandidatesLimit] = useState<number | 'all'>(10);
+  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
 
-  // Mock data
-  const projects: Project[] = [
-    {
-      id: '1',
-      title: 'Sistema de Gestión de Inventarios',
-      company: 'TechCorp Solutions',
-      description: 'Desarrollo de un sistema web para gestión de inventarios con base de datos MySQL y frontend en React.',
-      status: 'active',
-      requiredApiLevel: 2,
-      studentsNeeded: 3,
-      studentsAssigned: 2,
-      applicationsCount: 8,
-      startDate: '2024-02-01',
-      endDate: '2024-05-31',
-      location: 'Remoto',
-      rating: 4.5,
-    },
-    {
-      id: '2',
-      title: 'Aplicación Móvil de Delivery',
-      company: 'Digital Dynamics',
-      description: 'Desarrollo de aplicación móvil para delivery de alimentos con geolocalización y pagos en línea.',
-      status: 'active',
-      requiredApiLevel: 3,
-      studentsNeeded: 2,
-      studentsAssigned: 0,
-      applicationsCount: 5,
-      startDate: '2024-03-01',
-      endDate: '2024-07-31',
-      location: 'Bogotá',
-      rating: 4.2,
-    },
-    {
-      id: '3',
-      title: 'Plataforma de E-learning',
-      company: 'EduTech Solutions',
-      description: 'Plataforma web para cursos online con sistema de videoconferencias y evaluaciones automáticas.',
-      status: 'suspended',
-      requiredApiLevel: 2,
-      studentsNeeded: 4,
-      studentsAssigned: 1,
-      applicationsCount: 12,
-      startDate: '2024-01-15',
-      endDate: '2024-06-15',
-      location: 'Medellín',
-      rating: 4.0,
-    },
-    {
-      id: '4',
-      title: 'Sistema de CRM',
-      company: 'TechCorp Solutions',
-      description: 'Sistema de gestión de relaciones con clientes con integración de APIs y dashboard analítico.',
-      status: 'completed',
-      requiredApiLevel: 4,
-      studentsNeeded: 2,
-      studentsAssigned: 2,
-      applicationsCount: 6,
-      startDate: '2023-09-01',
-      endDate: '2023-12-31',
-      location: 'Remoto',
-      rating: 4.8,
-    },
-  ];
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [projectsData, applicationsData] = await Promise.all([
+        apiService.get('/api/admin/projects/'),
+        apiService.get('/api/admin/applications/')
+      ]);
+      
+      setProjects(Array.isArray(projectsData) ? projectsData : []);
+      setApplications(Array.isArray(applicationsData) ? applicationsData : []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setProjects([]);
+      setApplications([]);
+    }
+    setLoading(false);
+  };
 
   // Filtrado de proyectos
   const filteredProjects = projects.filter(project =>
@@ -203,57 +153,7 @@ export const GestionProyectosAdmin = () => {
   // Obtener valores únicos para los filtros
   const companies = Array.from(new Set(projects.map(p => p.company)));
 
-  const applications: Application[] = [
-    {
-      id: '1',
-      studentName: 'María González',
-      studentEmail: 'maria.gonzalez@estudiante.edu',
-      apiLevel: 2,
-      gpa: 4.2,
-      status: 'pending',
-      date: '2024-01-20',
-      compatibility: 95,
-      skills: ['React', 'Node.js', 'MySQL'],
-    },
-    {
-      id: '2',
-      studentName: 'Carlos Ruiz',
-      studentEmail: 'carlos.ruiz@estudiante.edu',
-      apiLevel: 2,
-      gpa: 3.8,
-      status: 'accepted',
-      date: '2024-01-18',
-      compatibility: 88,
-      skills: ['React', 'JavaScript', 'MongoDB'],
-    },
-  ];
 
-  const compatibleCandidates: CompatibleCandidate[] = [
-    {
-      id: '1',
-      name: 'Ana Martínez',
-      email: 'ana.martinez@estudiante.edu',
-      apiLevel: 3,
-      gpa: 4.5,
-      completedProjects: 5,
-      totalHours: 320,
-      skills: ['React Native', 'Firebase', 'JavaScript'],
-      compatibility: 92,
-      rating: 4.8,
-    },
-    {
-      id: '2',
-      name: 'Luis Pérez',
-      email: 'luis.perez@estudiante.edu',
-      apiLevel: 2,
-      gpa: 4.0,
-      completedProjects: 3,
-      totalHours: 180,
-      skills: ['React', 'Node.js', 'PostgreSQL'],
-      compatibility: 89,
-      rating: 4.3,
-    },
-  ];
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -266,26 +166,63 @@ export const GestionProyectosAdmin = () => {
     setActionReason('');
   };
 
-  const handleActionConfirm = () => {
-    let message = '';
-    switch (actionType) {
-      case 'edit':
-        message = `Proyecto ${selectedProject?.title} actualizado exitosamente`;
-        break;
-      case 'suspend':
-        message = `Proyecto ${selectedProject?.title} suspendido`;
-        break;
-      case 'delete':
-        message = `Proyecto ${selectedProject?.title} eliminado`;
-        break;
-      case 'view_candidates':
-        message = `Viendo candidatos para ${selectedProject?.title}`;
-        break;
+  const handleActionConfirm = async () => {
+    if (!selectedProject) return;
+
+    try {
+      let endpoint = '';
+      let payload: any = {};
+
+      switch (actionType) {
+        case 'edit':
+          endpoint = `/api/admin/projects/${selectedProject.id}/`;
+          payload = { reason: actionReason };
+          break;
+        case 'suspend':
+          endpoint = `/api/admin/projects/${selectedProject.id}/suspend/`;
+          payload = { reason: actionReason };
+          break;
+        case 'delete':
+          endpoint = `/api/admin/projects/${selectedProject.id}/`;
+          await apiService.delete(endpoint);
+          break;
+        case 'view_candidates':
+          // Solo mostrar candidatos, no requiere acción
+          setSuccessMessage(`Viendo candidatos para ${selectedProject.title}`);
+          setShowSuccess(true);
+          setActionDialog(false);
+          setActionReason('');
+          return;
+      }
+
+      if (actionType !== 'delete') {
+        await apiService.patch(endpoint, payload);
+      }
+      
+      // Recargar los datos
+      await fetchData();
+
+      let message = '';
+      switch (actionType) {
+        case 'edit':
+          message = `Proyecto ${selectedProject.title} actualizado exitosamente`;
+          break;
+        case 'suspend':
+          message = `Proyecto ${selectedProject.title} suspendido`;
+          break;
+        case 'delete':
+          message = `Proyecto ${selectedProject.title} eliminado`;
+          break;
+      }
+      setSuccessMessage(message);
+      setShowSuccess(true);
+      setActionDialog(false);
+      setActionReason('');
+    } catch (error) {
+      console.error('Error performing action:', error);
+      setSuccessMessage('Error al realizar la acción');
+      setShowSuccess(true);
     }
-    setSuccessMessage(message);
-    setShowSuccess(true);
-    setActionDialog(false);
-    setActionReason('');
   };
 
   const getDialogTitle = () => {
@@ -401,6 +338,16 @@ export const GestionProyectosAdmin = () => {
     return 'error';
   };
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+          <CircularProgress />
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
@@ -416,7 +363,6 @@ export const GestionProyectosAdmin = () => {
         >
           <Tab label="Proyectos" />
           <Tab label="Postulaciones" />
-          <Tab label="Candidatos" />
         </Tabs>
 
         <TabPanel value={tabValue} index={0}>
@@ -750,99 +696,6 @@ export const GestionProyectosAdmin = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        </TabPanel>
-
-        {/* Tab: Candidatos Compatibles */}
-        <TabPanel value={tabValue} index={2}>
-          {/* Selector de cantidad de registros para candidatos */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={candidatesLimit}
-              onChange={e => setCandidatesLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              sx={{ minWidth: 110 }}
-            >
-              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-              ))}
-              <MenuItem value="all">Todas</MenuItem>
-            </TextField>
-          </Box>
-          
-          <Typography variant="h6" gutterBottom>
-            Candidatos Compatibles para: Aplicación Móvil de Delivery
-          </Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: 3 }}>
-            {(candidatesLimit === 'all' ? compatibleCandidates : compatibleCandidates.slice(0, candidatesLimit)).map((candidate) => (
-              <Card key={candidate.id}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                      <PersonIcon />
-                    </Avatar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="h6">{candidate.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {candidate.email}
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label={`${candidate.compatibility}%`}
-                      color={getCompatibilityColor(candidate.compatibility) as any}
-                      size="small"
-                    />
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                    <Typography variant="body2">
-                      <strong>Nivel API:</strong> {candidate.apiLevel}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>GPA:</strong> {candidate.gpa}
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                    <Typography variant="body2">
-                      <strong>Proyectos:</strong> {candidate.completedProjects}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Horas:</strong> {candidate.totalHours}
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2" gutterBottom>
-                      <strong>Habilidades:</strong>
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {candidate.skills.map((skill) => (
-                        <Chip key={skill} label={skill} size="small" variant="outlined" />
-                      ))}
-                    </Box>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Rating value={candidate.rating} readOnly size="small" />
-                    <Typography variant="body2" sx={{ ml: 1 }}>
-                      ({candidate.rating})
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button size="small" variant="contained" color="primary">
-                      Ver Perfil
-                    </Button>
-                    <Button size="small" variant="outlined" color="primary">
-                      Sugerir
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
         </TabPanel>
       </Paper>
 

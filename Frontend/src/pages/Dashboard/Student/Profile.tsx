@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -25,6 +25,7 @@ import {
   Delete as DeleteIcon,
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 
 interface ProfileData {
@@ -64,35 +65,51 @@ export const Profile = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [skillToDelete, setSkillToDelete] = useState<string>('');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [loading, setLoading] = useState(true);
 
   const [profileData, setProfileData] = useState<ProfileData>({
-    nombre: 'María',
-    apellido: 'González',
-    email: 'maria.gonzalez@estudiante.edu',
-    telefono: '+57 300 123 4567',
-    fechaNacimiento: '2000-05-15',
-    genero: 'Mujer',
-    institucion: 'Universidad de Chile',
-    carrera: 'Ingeniería de Sistemas',
-    nivel: 'Pregrado',
-    habilidades: [
-      { nombre: 'React', nivel: 'Avanzado' },
-      { nombre: 'Node.js', nivel: 'Intermedio' },
-    ],
-    biografia: 'Estudiante apasionada por el desarrollo de software y la innovación tecnológica.',
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    fechaNacimiento: '',
+    genero: '',
+    institucion: '',
+    carrera: '',
+    nivel: '',
+    habilidades: [],
+    biografia: '',
     cv: null,
     certificado: null,
-    area: 'Desarrollo Web',
-    modalidadesDisponibles: ['Tiempo completo', 'Flexible'],
-    experienciaPrevia: 'Práctica profesional en desarrollo frontend en TechCorp Solutions (2023).',
-    linkedin: 'https://linkedin.com/in/mariagonzalez',
-    github: 'https://github.com/mariagonzalez',
-    portafolio: 'https://mariagonzalez.dev',
+    area: '',
+    modalidadesDisponibles: [],
+    experienciaPrevia: '',
+    linkedin: '',
+    github: '',
+    portafolio: '',
   });
 
   const [editData, setEditData] = useState<ProfileData>(profileData);
   const [newSkill, setNewSkill] = useState('');
   const [newSkillLevel, setNewSkillLevel] = useState('Básico');
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const data = await apiService.get('/api/students/profile/');
+      setProfileData(data as ProfileData);
+      setEditData(data as ProfileData);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      setShowError(true);
+      setErrorMessage('Error al cargar el perfil');
+    }
+    setLoading(false);
+  };
 
   // Validaciones
   const validateEmail = (email: string): boolean => {
@@ -162,10 +179,8 @@ export const Profile = () => {
     setIsLoading(true);
     
     try {
-      // Simular llamada a API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setProfileData(editData);
+      const updatedProfile = await apiService.put('/api/students/profile/', editData);
+      setProfileData(updatedProfile as ProfileData);
       setIsEditing(false);
       setShowSuccess(true);
       setValidationErrors({});
@@ -260,6 +275,14 @@ export const Profile = () => {
 
   const handleRemoveCv = () => setEditData(prev => ({ ...prev, cv: null }));
   const handleRemoveCert = () => setEditData(prev => ({ ...prev, certificado: null }));
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>

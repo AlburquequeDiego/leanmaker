@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -31,6 +31,7 @@ import {
   ListItemIcon,
   Snackbar,
   Stack,
+  CircularProgress,
 } from '@mui/material';
 import {
   Warning as WarningIcon,
@@ -48,6 +49,7 @@ import {
   TrendingUp as TrendingUpIcon,
   Assessment as AssessmentIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Student {
   id: string;
@@ -121,90 +123,24 @@ export const GestionEstudiantesAdmin = () => {
   const [studentsLimit, setStudentsLimit] = useState<number | 'all'>(10);
   const [applicationsLimit, setApplicationsLimit] = useState<number | 'all'>(10);
   const [evaluationsLimit, setEvaluationsLimit] = useState<number | 'all'>(10);
+  const [loading, setLoading] = useState(true);
+  const [students, setStudents] = useState<Student[]>([]);
 
-  // Mock data
-  const students: Student[] = [
-    {
-      id: '1',
-      name: 'María González',
-      email: 'maria.gonzalez@estudiante.edu',
-      career: 'Ingeniería de Sistemas',
-      semester: 8,
-      graduationYear: 2024,
-      status: 'approved',
-      apiLevel: 2,
-      strikes: 1,
-      joinDate: '2023-02-15',
-      lastActivity: '2024-01-20',
-      gpa: 4.2,
-      completedProjects: 3,
-      totalHours: 180,
-    },
-    {
-      id: '2',
-      name: 'Carlos Ruiz',
-      email: 'carlos.ruiz@estudiante.edu',
-      career: 'Ingeniería Informática',
-      semester: 6,
-      graduationYear: 2025,
-      status: 'pending',
-      apiLevel: 1,
-      strikes: 0,
-      joinDate: '2024-01-10',
-      lastActivity: '2024-01-18',
-      gpa: 3.8,
-      completedProjects: 1,
-      totalHours: 60,
-    },
-    {
-      id: '3',
-      name: 'Ana Martínez',
-      email: 'ana.martinez@estudiante.edu',
-      career: 'Ingeniería de Software',
-      semester: 10,
-      graduationYear: 2024,
-      status: 'approved',
-      apiLevel: 4,
-      strikes: 0,
-      joinDate: '2022-09-20',
-      lastActivity: '2024-01-22',
-      gpa: 4.5,
-      completedProjects: 5,
-      totalHours: 320,
-    },
-    {
-      id: '4',
-      name: 'Pedro López',
-      email: 'pedro.lopez@estudiante.edu',
-      career: 'Ingeniería de Sistemas',
-      semester: 4,
-      graduationYear: 2026,
-      status: 'approved',
-      apiLevel: 1,
-      strikes: 2,
-      joinDate: '2023-08-15',
-      lastActivity: '2024-01-19',
-      gpa: 3.5,
-      completedProjects: 2,
-      totalHours: 120,
-    },
-    {
-      id: '5',
-      name: 'Laura Silva',
-      email: 'laura.silva@estudiante.edu',
-      career: 'Ingeniería Informática',
-      semester: 8,
-      graduationYear: 2024,
-      status: 'suspended',
-      apiLevel: 3,
-      strikes: 3,
-      joinDate: '2022-03-10',
-      lastActivity: '2024-01-15',
-      gpa: 4.0,
-      completedProjects: 4,
-      totalHours: 240,
-    },
-  ];
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  const fetchStudents = async () => {
+    setLoading(true);
+    try {
+      const data = await apiService.get('/api/admin/students/');
+      setStudents(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      setStudents([]);
+    }
+    setLoading(false);
+  };
 
   // Filtrado de estudiantes
   const filteredStudents = students.filter(student =>
@@ -256,29 +192,68 @@ export const GestionEstudiantesAdmin = () => {
     }
   };
 
-  const handleActionConfirm = () => {
-    let message = '';
-    switch (actionType) {
-      case 'approve':
-        message = `Estudiante ${selectedStudent?.name} aprobado exitosamente`;
-        break;
-      case 'reject':
-        message = `Estudiante ${selectedStudent?.name} rechazado`;
-        break;
-      case 'strike':
-        message = `Strike asignado a ${selectedStudent?.name}`;
-        break;
-      case 'api_level':
-        message = `Nivel API actualizado a ${selectedApiLevel} para ${selectedStudent?.name}`;
-        break;
-      case 'suspend':
-        message = `Estudiante ${selectedStudent?.name} suspendido`;
-        break;
+  const handleActionConfirm = async () => {
+    if (!selectedStudent) return;
+
+    try {
+      let endpoint = '';
+      let payload: any = {};
+
+      switch (actionType) {
+        case 'approve':
+          endpoint = `/api/admin/students/${selectedStudent.id}/approve/`;
+          payload = { reason: actionReason };
+          break;
+        case 'reject':
+          endpoint = `/api/admin/students/${selectedStudent.id}/reject/`;
+          payload = { reason: actionReason };
+          break;
+        case 'strike':
+          endpoint = `/api/admin/students/${selectedStudent.id}/strike/`;
+          payload = { reason: actionReason };
+          break;
+        case 'api_level':
+          endpoint = `/api/admin/students/${selectedStudent.id}/api-level/`;
+          payload = { apiLevel: selectedApiLevel };
+          break;
+        case 'suspend':
+          endpoint = `/api/admin/students/${selectedStudent.id}/suspend/`;
+          payload = { reason: actionReason };
+          break;
+      }
+
+      await apiService.patch(endpoint, payload);
+      
+      // Recargar la lista de estudiantes
+      await fetchStudents();
+
+      let message = '';
+      switch (actionType) {
+        case 'approve':
+          message = `Estudiante ${selectedStudent.name} aprobado exitosamente`;
+          break;
+        case 'reject':
+          message = `Estudiante ${selectedStudent.name} rechazado`;
+          break;
+        case 'strike':
+          message = `Strike asignado a ${selectedStudent.name}`;
+          break;
+        case 'api_level':
+          message = `Nivel API actualizado a ${selectedApiLevel} para ${selectedStudent.name}`;
+          break;
+        case 'suspend':
+          message = `Estudiante ${selectedStudent.name} suspendido`;
+          break;
+      }
+      setSuccessMessage(message);
+      setShowSuccess(true);
+      setActionDialog(false);
+      setActionReason('');
+    } catch (error) {
+      console.error('Error performing action:', error);
+      setSuccessMessage('Error al realizar la acción');
+      setShowSuccess(true);
     }
-    setSuccessMessage(message);
-    setShowSuccess(true);
-    setActionDialog(false);
-    setActionReason('');
   };
 
   const getDialogTitle = () => {
@@ -375,6 +350,16 @@ export const GestionEstudiantesAdmin = () => {
         return <HistoryIcon />;
     }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+          <CircularProgress />
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -29,6 +29,7 @@ import {
   Select,
   MenuItem,
   Stack,
+  CircularProgress,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -39,6 +40,7 @@ import {
   Search as SearchIcon,
   FilterList as FilterListIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Company {
   id: string;
@@ -112,60 +114,35 @@ export const GestionEmpresasAdmin = () => {
   const [empresasLimit, setEmpresasLimit] = useState<number | 'all'>(10);
   const [proyectosLimit, setProyectosLimit] = useState<number | 'all'>(10);
   const [evaluacionesLimit, setEvaluacionesLimit] = useState<number | 'all'>(10);
+  const [loading, setLoading] = useState(true);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
 
-  // Mock data
-  const companies: Company[] = [
-    {
-      id: '1',
-      name: 'TechCorp Solutions',
-      email: 'contact@techcorp.com',
-      status: 'active',
-      projectsCount: 8,
-      rating: 4.5,
-      joinDate: '2023-01-15',
-      lastActivity: '2024-01-20',
-    },
-    {
-      id: '2',
-      name: 'InnovateLab',
-      email: 'info@innovatelab.com',
-      status: 'suspended',
-      projectsCount: 3,
-      rating: 3.8,
-      joinDate: '2023-03-20',
-      lastActivity: '2024-01-10',
-    },
-    {
-      id: '3',
-      name: 'Digital Dynamics',
-      email: 'hello@digitaldynamics.com',
-      status: 'active',
-      projectsCount: 12,
-      rating: 4.2,
-      joinDate: '2023-02-10',
-      lastActivity: '2024-01-22',
-    },
-    {
-      id: '4',
-      name: 'StartupXYZ',
-      email: 'contact@startupxyz.com',
-      status: 'blocked',
-      projectsCount: 1,
-      rating: 2.5,
-      joinDate: '2023-06-15',
-      lastActivity: '2023-12-01',
-    },
-    {
-      id: '5',
-      name: 'TechInnovate',
-      email: 'info@techinnovate.com',
-      status: 'active',
-      projectsCount: 5,
-      rating: 4.8,
-      joinDate: '2023-04-10',
-      lastActivity: '2024-01-25',
-    },
-  ];
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [companiesData, projectsData, evaluationsData] = await Promise.all([
+        apiService.get('/api/admin/companies/'),
+        apiService.get('/api/admin/projects/'),
+        apiService.get('/api/admin/evaluations/')
+      ]);
+      
+      setCompanies(Array.isArray(companiesData) ? companiesData : []);
+      setProjects(Array.isArray(projectsData) ? projectsData : []);
+      setEvaluations(Array.isArray(evaluationsData) ? evaluationsData : []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setCompanies([]);
+      setProjects([]);
+      setEvaluations([]);
+    }
+    setLoading(false);
+  };
 
   // Filtrado de empresas
   const filteredCompanies = companies.filter(company =>
@@ -179,49 +156,7 @@ export const GestionEmpresasAdmin = () => {
       : true)
   );
 
-  const projects: Project[] = [
-    {
-      id: '1',
-      title: 'Sistema de Gestión de Inventarios',
-      status: 'completed',
-      studentsCount: 3,
-      startDate: '2023-09-01',
-      endDate: '2023-12-15',
-      rating: 4.5,
-      companyName: 'TechCorp Solutions',
-    },
-    {
-      id: '2',
-      title: 'Aplicación Móvil de Delivery',
-      status: 'active',
-      studentsCount: 2,
-      startDate: '2024-01-01',
-      endDate: '2024-04-30',
-      rating: 4.0,
-      companyName: 'Digital Dynamics',
-    },
-  ];
 
-  const evaluations: Evaluation[] = [
-    {
-      id: '1',
-      projectTitle: 'Sistema de Gestión de Inventarios',
-      studentName: 'María González',
-      rating: 5,
-      comment: 'Excelente experiencia, aprendí mucho sobre desarrollo backend.',
-      date: '2023-12-20',
-      companyName: 'TechCorp Solutions',
-    },
-    {
-      id: '2',
-      projectTitle: 'Aplicación Móvil de Delivery',
-      studentName: 'Carlos Ruiz',
-      rating: 4,
-      comment: 'Buena oportunidad de aprendizaje, equipo muy colaborativo.',
-      date: '2024-01-15',
-      companyName: 'Digital Dynamics',
-    },
-  ];
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -234,23 +169,53 @@ export const GestionEmpresasAdmin = () => {
     setActionReason('');
   };
 
-  const handleActionConfirm = () => {
-    let message = '';
-    switch (actionType) {
-      case 'block':
-        message = `Empresa ${selectedCompany?.name} bloqueada exitosamente`;
-        break;
-      case 'suspend':
-        message = `Empresa ${selectedCompany?.name} suspendida`;
-        break;
-      case 'activate':
-        message = `Empresa ${selectedCompany?.name} activada`;
-        break;
+  const handleActionConfirm = async () => {
+    if (!selectedCompany) return;
+
+    try {
+      let endpoint = '';
+      let payload: any = {};
+
+      switch (actionType) {
+        case 'block':
+          endpoint = `/api/admin/companies/${selectedCompany.id}/block/`;
+          payload = { reason: actionReason };
+          break;
+        case 'suspend':
+          endpoint = `/api/admin/companies/${selectedCompany.id}/suspend/`;
+          payload = { reason: actionReason };
+          break;
+        case 'activate':
+          endpoint = `/api/admin/companies/${selectedCompany.id}/activate/`;
+          break;
+      }
+
+      await apiService.patch(endpoint, payload);
+      
+      // Recargar los datos
+      await fetchData();
+
+      let message = '';
+      switch (actionType) {
+        case 'block':
+          message = `Empresa ${selectedCompany.name} bloqueada exitosamente`;
+          break;
+        case 'suspend':
+          message = `Empresa ${selectedCompany.name} suspendida`;
+          break;
+        case 'activate':
+          message = `Empresa ${selectedCompany.name} activada`;
+          break;
+      }
+      setSuccessMessage(message);
+      setShowSuccess(true);
+      setActionDialog(false);
+      setActionReason('');
+    } catch (error) {
+      console.error('Error performing action:', error);
+      setSuccessMessage('Error al realizar la acción');
+      setShowSuccess(true);
     }
-    setSuccessMessage(message);
-    setShowSuccess(true);
-    setActionDialog(false);
-    setActionReason('');
   };
 
   const getDialogTitle = () => {
@@ -323,6 +288,16 @@ export const GestionEmpresasAdmin = () => {
         return status;
     }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+          <CircularProgress />
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>

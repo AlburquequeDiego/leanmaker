@@ -4602,3 +4602,11 @@ INFO 2025-07-02 09:06:17,674 autoreload 13280 9856 Watching for file changes wit
 WARNING 2025-07-02 09:06:25,471 log 13280 19092 Not Found: /favicon.ico
 WARNING 2025-07-02 09:07:42,516 log 13280 21972 Method Not Allowed: /api/token/
 WARNING 2025-07-02 09:10:05,532 log 13280 12712 Not Found: /api/auth/logout/
+WARNING 2025-07-02 17:03:47,221 log 13280 2100 Not Found: /api/auth/logout/
+WARNING 2025-07-02 17:55:51,315 log 13280 11204 Bad Request: /api/token/
+WARNING 2025-07-02 17:55:58,685 log 13280 11204 Bad Request: /api/token/
+WARNING 2025-07-02 17:56:05,877 log 13280 20324 Not Found: /api/project-applications/
+WARNING 2025-07-02 17:56:05,899 log 13280 9900 Not Found: /api/project-applications/
+WARNING 2025-07-02 17:56:15,945 log 13280 14500 Not Found: /api/project-applications/
+WARNING 2025-07-02 17:56:15,965 log 13280 14500 Not Found: /api/project-applications/
+WARNING 2025-07-02 17:58:30,664 log 13280 3164 Not Found: /api/auth/logout/

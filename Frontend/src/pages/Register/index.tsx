@@ -23,7 +23,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import BusinessIcon from '@mui/icons-material/Business';
 import LoadingButton from '../../components/common/LoadingButton';
 import { useAuth } from '../../hooks/useAuth';
-import { UNIVERSITIES, type UserRole } from '../../types';
+import { type UserRole } from '../../types';
 
 // Tipos de usuario permitidos
 type UserType = 'student' | 'company';
@@ -160,12 +160,7 @@ const EDUCATION_LEVELS = [
   { value: 'Universidad', label: 'Universidad' },
 ];
 
-// Opciones de personalidad
-const PERSONALITIES = [
-  { value: 'juridica', label: 'Jurídica' },
-  { value: 'natural', label: 'Natural' },
-  { value: 'otra', label: 'Otra' },
-];
+
 
 // Recuadro de normas de conducta para estudiantes
 const studentConduct = (

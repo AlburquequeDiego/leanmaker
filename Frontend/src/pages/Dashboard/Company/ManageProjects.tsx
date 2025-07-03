@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -34,7 +34,7 @@ import {
   AddCircle as AddCircleIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
+import { apiService } from '../../../services/api.service';
 
 interface Project {
   id: string;
@@ -42,74 +42,15 @@ interface Project {
   description: string;
   status: 'draft' | 'published' | 'in-progress' | 'completed' | 'cancelled';
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  apiLevel: number;
-  maxStudents: number;
-  currentStudents: number;
+  api_level: number;
+  max_students: number;
+  current_students: number;
   applications: number;
   deadline: string;
-  createdAt: string;
+  created_at: string;
   skills: string[];
-  trlAnswers?: string[];
+  trl_answers?: string[];
 }
-
-const mockProjects: Project[] = [
-  {
-    id: '1',
-    title: 'Desarrollo Web Frontend',
-    description: 'Crear una aplicación web moderna con React y TypeScript',
-    status: 'published',
-    difficulty: 'intermediate',
-    apiLevel: 3,
-    maxStudents: 2,
-    currentStudents: 1,
-    applications: 5,
-    deadline: '2024-03-15',
-    createdAt: '2024-01-10',
-    skills: ['React', 'TypeScript', 'Material-UI'],
-  },
-  {
-    id: '2',
-    title: 'API REST con Django',
-    description: 'Desarrollar una API REST completa para sistema de inventario',
-    status: 'in-progress',
-    difficulty: 'advanced',
-    apiLevel: 4,
-    maxStudents: 1,
-    currentStudents: 1,
-    applications: 3,
-    deadline: '2024-02-28',
-    createdAt: '2024-01-05',
-    skills: ['Python', 'Django', 'PostgreSQL'],
-  },
-  {
-    id: '3',
-    title: 'App Móvil React Native',
-    description: 'Aplicación móvil para gestión de tareas',
-    status: 'draft',
-    difficulty: 'beginner',
-    apiLevel: 2,
-    maxStudents: 3,
-    currentStudents: 0,
-    applications: 0,
-    deadline: '2024-04-01',
-    createdAt: '2024-01-15',
-    skills: ['React Native', 'JavaScript', 'Firebase'],
-  },
-  {
-    id: '4',
-    title: 'Sistema de Machine Learning',
-    description: 'Implementar algoritmos de ML para análisis de datos',
-    status: 'completed',
-    difficulty: 'advanced',
-    apiLevel: 5,
-    maxStudents: 1,
-    currentStudents: 1,
-    applications: 8,
-    deadline: '2024-01-20',
-    createdAt: '2023-12-01',
-    skills: ['Python', 'TensorFlow', 'Pandas'],
-  },
-];
 
 // TRL options
 const trlOptions = [
@@ -186,15 +127,12 @@ interface NewProject {
   trl: string;
   skills: string[];
   modality: string;
-  trlAnswers?: string[];
+  trl_answers?: string[];
 }
 
 export const ManageProjects: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const theme = useTheme();
   const [showNewProject, setShowNewProject] = useState(false);
   const [newProject, setNewProject] = useState<NewProject>({
     title: '',
@@ -210,6 +148,19 @@ export const ManageProjects: React.FC = () => {
   const [faq, setFaq] = useState<{ question: string; answer: string }[]>([]);
   const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
   const [trlAnswers, setTrlAnswers] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const data = await apiService.get('/api/projects/');
+        setProjects(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        setProjects([]);
+      }
+    }
+    fetchProjects();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -239,25 +190,17 @@ export const ManageProjects: React.FC = () => {
     }
   };
 
-  const handleDelete = (projectId: string) => {
-    setProjects(prev => prev.filter(project => project.id !== projectId));
+  const handleDelete = async (projectId: string) => {
+    try {
+      await apiService.delete(`/api/projects/${projectId}/`);
+      setProjects(prev => prev.filter(project => project.id !== projectId));
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
   };
 
   const handleEdit = (project: Project) => {
-    setEditingProject(project);
-    setShowEditDialog(true);
-  };
-
-  const handleSaveEdit = () => {
-    if (editingProject) {
-      setProjects(prev =>
-        prev.map(project =>
-          project.id === editingProject.id ? editingProject : project
-        )
-      );
-      setShowEditDialog(false);
-      setEditingProject(null);
-    }
+    console.log('Edit project:', project);
   };
 
   const filteredProjects = projects.filter(project => {
@@ -320,32 +263,34 @@ export const ManageProjects: React.FC = () => {
     setFaq(faq.filter((_, i) => i !== index));
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (!validate()) return;
-    // Aquí iría la lógica para guardar el proyecto, incluyendo FAQ y respuestas TRL
-    const newId = (projects.length + 1).toString();
-    const now = new Date();
-    const newProj: Project = {
-      id: newId,
-      title: newProject.title,
-      description: newProject.description,
-      status: 'draft',
-      difficulty: 'beginner', // Por defecto, puedes ajustar esto si lo deseas
-      apiLevel: Number(newProject.trl) || 1,
-      maxStudents: 1, // Por defecto, puedes ajustar esto si lo deseas
-      currentStudents: 0,
-      applications: 0,
-      deadline: '',
-      createdAt: now.toISOString().split('T')[0],
-      skills: newProject.skills,
-      trlAnswers: trlAnswers,
-    };
-    setProjects(prev => [...prev, newProj]);
-    setShowNewProject(false);
-    setNewProject({ title: '', areas: [], description: '', duration: '', trl: '', skills: [], modality: '' });
-    setTrlAnswers([]);
-    setErrors({});
-    setFaq([]);
+    
+    try {
+      const projectData = {
+        title: newProject.title,
+        description: newProject.description,
+        status: 'draft',
+        difficulty: 'beginner',
+        api_level: Number(newProject.trl) || 1,
+        max_students: 1,
+        current_students: 0,
+        applications: 0,
+        deadline: '',
+        skills: newProject.skills,
+        trl_answers: trlAnswers,
+      };
+
+      const createdProject = await apiService.post('/api/projects/', projectData);
+      setProjects(prev => [...prev, createdProject as Project]);
+      setShowNewProject(false);
+      setNewProject({ title: '', areas: [], description: '', duration: '', trl: '', skills: [], modality: '' });
+      setTrlAnswers([]);
+      setErrors({});
+      setFaq([]);
+    } catch (error) {
+      console.error('Error creating project:', error);
+    }
   };
 
   return (
@@ -483,14 +428,14 @@ export const ManageProjects: React.FC = () => {
                   <Box>
                     <Typography variant="body2" color="text.secondary">
                       <PeopleIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                      {project.currentStudents}/{project.maxStudents} estudiantes
+                      {project.current_students}/{project.max_students} estudiantes
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {project.applications} postulaciones
                     </Typography>
                   </Box>
                   <Typography variant="body2" color="text.secondary">
-                    API Level {project.apiLevel}
+                    API Level {project.api_level}
                   </Typography>
                 </Box>
               </CardContent>

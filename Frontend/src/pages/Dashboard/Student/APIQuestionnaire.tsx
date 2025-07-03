@@ -7,15 +7,13 @@ import {
   RadioGroup,
   FormControlLabel,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+
   Card,
   CardContent,
   LinearProgress,
   Alert,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import {
   Quiz as QuizIcon,
@@ -25,6 +23,7 @@ import {
   Code as CodeIcon,
   EmojiEvents as EmojiEventsIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Question {
   id: number;
@@ -143,6 +142,9 @@ export const APIQuestionnaire = () => {
   const [calculatedLevel, setCalculatedLevel] = useState<number>(0);
   const [pendingApproval, setPendingApproval] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleAnswerChange = (questionId: number, value: number) => {
     setAnswers(prev => ({
@@ -175,17 +177,47 @@ export const APIQuestionnaire = () => {
     return 4;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const level = calculateAPILevel();
     if (level) {
       setCalculatedLevel(level);
       setShowResults(true);
       setPendingApproval(true);
+      setError(null);
+      setSuccess(null);
+
+      try {
+        setLoading(true);
+        const questionnaireData = {
+          answers: answers,
+          calculated_level: level,
+          total_score: Object.values(answers).reduce((sum, value) => sum + value, 0),
+          average_score: Object.values(answers).reduce((sum, value) => sum + value, 0) / questions.length,
+          status: 'pending_approval',
+          submitted_at: new Date().toISOString(),
+        };
+
+        await apiService.post('/api/questionnaires/', questionnaireData);
+        setSuccess('Cuestionario enviado exitosamente. Esperando aprobación del administrador.');
+      } catch (error) {
+        console.error('Error submitting questionnaire:', error);
+        setError('Error al enviar el cuestionario. Por favor, inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const progress = (Object.keys(answers).length / questions.length) * 100;
   const canSubmit = Object.keys(answers).length === questions.length && !pendingApproval;
+
+  if (loading && !showResults) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -193,144 +225,153 @@ export const APIQuestionnaire = () => {
         <QuizIcon sx={{ mr: 2, color: 'primary.main' }} />
         Cuestionario de Nivelación API
       </Typography>
-      <Alert severity="info" sx={{ mb: 3 }}>
-      "Recuerda que no hay respuestas correctas o incorrectas, lo importante es que respondas con sinceridad y reflexión."
-      </Alert>
-      {pendingApproval && (
-        <Alert severity="info" sx={{ mb: 3 }}>
-          Tu cuestionario fue enviado y está pendiente de aprobación por administración. No puedes volver a responder hasta que sea aprobado.
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
         </Alert>
       )}
-      {/* Barra de progreso */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            Progreso del cuestionario
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {Object.keys(answers).length} de {questions.length} preguntas
-          </Typography>
-        </Box>
-        <LinearProgress 
-          variant="determinate" 
-          value={progress}
-          sx={{ height: 10, borderRadius: 5 }}
-        />
-      </Box>
-      {/* Pregunta actual tipo carrusel */}
-      {!showResults && !pendingApproval && (
-        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
-          <Card sx={{ minWidth: 350, maxWidth: 500, mx: 2, boxShadow: 3 }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+
+      {success && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          {success}
+        </Alert>
+      )}
+
+      <Alert severity="info" sx={{ mb: 3 }}>
+        "Recuerda que no hay respuestas correctas o incorrectas, lo importante es que respondas con sinceridad y reflexión."
+      </Alert>
+
+      {pendingApproval && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Tu cuestionario ha sido enviado y está pendiente de aprobación por un administrador.
+        </Alert>
+      )}
+
+      {!showResults ? (
+        <Paper sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+          {/* Barra de progreso */}
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Progreso: {Object.keys(answers).length} de {questions.length} preguntas
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {Math.round(progress)}%
+              </Typography>
+            </Box>
+            <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4 }} />
+          </Box>
+
+          {/* Pregunta actual */}
+          {questions[currentQuestion] && (
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 {questions[currentQuestion].icon}
-                <Typography variant="h6" sx={{ ml: 1 }}>
-                  {questions[currentQuestion].question}
+                <Typography variant="h5" sx={{ ml: 2 }}>
+                  Pregunta {currentQuestion + 1} de {questions.length}
                 </Typography>
               </Box>
+
+              <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                {questions[currentQuestion].question}
+              </Typography>
+
               <RadioGroup
                 value={answers[questions[currentQuestion].id] || ''}
-                onChange={e => {
-                  handleAnswerChange(questions[currentQuestion].id, Number(e.target.value));
-                }}
+                onChange={(e) => handleAnswerChange(questions[currentQuestion].id, Number(e.target.value))}
               >
-                {questions[currentQuestion].options.map(option => (
+                {questions[currentQuestion].options.map((option, index) => (
                   <FormControlLabel
-                    key={option.value}
+                    key={index}
                     value={option.value}
                     control={<Radio />}
-                    label={option.text}
-                    disabled={pendingApproval}
+                    label={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography>{option.text}</Typography>
+                        <Chip 
+                          label={`Nivel ${option.apiLevel}`} 
+                          size="small" 
+                          color={getChipColor(option.apiLevel) as any}
+                        />
+                      </Box>
+                    }
+                    sx={{ 
+                      mb: 2, 
+                      p: 2, 
+                      border: '1px solid #e0e0e0', 
+                      borderRadius: 2,
+                      '&:hover': { bgcolor: '#f5f5f5' }
+                    }}
                   />
                 ))}
               </RadioGroup>
+
+              {/* Navegación */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+                <Button
+                  variant="outlined"
+                  onClick={handlePrev}
+                  disabled={currentQuestion === 0}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={!canSubmit || loading}
+                  startIcon={loading ? <CircularProgress size={20} /> : null}
+                >
+                  {loading ? 'Enviando...' : 'Enviar Cuestionario'}
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </Paper>
+      ) : (
+        <Paper sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <CheckCircleIcon sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
+            <Typography variant="h4" gutterBottom>
+              ¡Cuestionario Completado!
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              Tu nivel calculado es:
+            </Typography>
+          </Box>
+
+          <Card sx={{ mb: 4, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+            <CardContent>
+              <Typography variant="h3" gutterBottom>
+                {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].title}
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].description}
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].capabilities.map((capability, index) => (
+                  <Chip key={index} label={capability} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
+                ))}
+              </Box>
             </CardContent>
           </Card>
-        </Box>
-      )}
-      {/* Botón de enviar */}
-      {!showResults && !pendingApproval && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!canSubmit}
-            onClick={handleSubmit}
-          >
-            Enviar Cuestionario
-          </Button>
-        </Box>
-      )}
-      {/* Resultados */}
-      {showResults && (
-        <Dialog open={showResults} onClose={() => setShowResults(false)} maxWidth="md" fullWidth>
-          <DialogTitle>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <EmojiEventsIcon sx={{ mr: 2, color: 'primary.main' }} />
-              <Typography variant="h6">
-                Resultados del Cuestionario API
-              </Typography>
-            </Box>
-          </DialogTitle>
-          <DialogContent>
-            {calculatedLevel > 0 && (
-              <Box>
-                <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" gutterBottom>
-                      {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].title}
-                    </Typography>
-                    <Typography variant="h6">
-                      Nivel API {calculatedLevel}
-                    </Typography>
-                  </CardContent>
-                </Card>
 
-                <Typography variant="body1" sx={{ mb: 3 }}>
-                  {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].description}
-                </Typography>
-
-                <Typography variant="h6" gutterBottom>
-                  Capacidades de tu nivel:
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                  {apiLevelDescriptions[calculatedLevel as keyof typeof apiLevelDescriptions].capabilities.map((capability, index) => (
-                    <Chip
-                      key={index}
-                      label={capability}
-                      color="success"
-                      variant="outlined"
-                      icon={<CheckCircleIcon />}
-                    />
-                  ))}
-                </Box>
-
-                <Alert severity="success">
-                  <Typography variant="body2">
-                    <strong>¡Felicitaciones!</strong> Tu nivel API ha sido evaluado. Este nivel te permitirá acceder a proyectos 
-                    acordes a tus capacidades actuales. Recuerda que puedes mejorar tu nivel realizando más proyectos y 
-                    adquiriendo experiencia práctica.
-                  </Typography>
-                </Alert>
-              </Box>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowResults(false)}>
-              Cerrar
-            </Button>
-            <Button 
-              variant="contained" 
+          <Box sx={{ textAlign: 'center' }}>
+            <Button
+              variant="outlined"
               onClick={() => {
                 setShowResults(false);
-                // Aquí se podría guardar el resultado en la base de datos
-                console.log('Nivel API calculado:', calculatedLevel);
+                setAnswers({});
+                setCurrentQuestion(0);
+                setPendingApproval(false);
+                setError(null);
+                setSuccess(null);
               }}
             >
-              Confirmar Nivel
+              Hacer Otro Cuestionario
             </Button>
-          </DialogActions>
-        </Dialog>
+          </Box>
+        </Paper>
       )}
     </Box>
   );

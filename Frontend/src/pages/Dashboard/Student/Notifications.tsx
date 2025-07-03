@@ -3,13 +3,8 @@ import {
   Box,
   Typography,
   Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
   Avatar,
   Chip,
-  IconButton,
   Badge,
   Divider,
   Button,
@@ -18,13 +13,12 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Alert,
-  Snackbar,
-  CircularProgress,
-  ToggleButton,
-  ToggleButtonGroup,
   TextField,
   InputAdornment,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -37,6 +31,7 @@ import {
   FilterList as FilterIcon,
   Clear as ClearIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Notification {
   id: number;
@@ -47,11 +42,11 @@ interface Notification {
   date: string;
   read: boolean;
   priority: 'high' | 'medium' | 'low';
-  actionUrl?: string;
+  action_url?: string;
   metadata?: {
-    projectId?: string;
-    applicationId?: string;
-    evaluationId?: string;
+    project_id?: string;
+    application_id?: string;
+    evaluation_id?: string;
   };
 }
 
@@ -63,6 +58,8 @@ interface NotificationFilters {
 }
 
 export const Notifications = () => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [limit, setLimit] = useState(10);
@@ -73,76 +70,18 @@ export const Notifications = () => {
     search: '',
   });
 
-  // Mock de notificaciones - esto vendría de la API
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      type: 'application',
-      title: 'Aplicación Aceptada',
-      message: 'Tu aplicación para el proyecto "Sistema de Gestión de Inventarios" ha sido aceptada. Revisa los detalles y confirma tu participación.',
-      company: 'TechCorp Solutions',
-      date: '2024-01-20',
-      read: false,
-      priority: 'high',
-      actionUrl: '/dashboard/student/applications/1',
-      metadata: {
-        applicationId: 'app_001',
-        projectId: 'proj_001',
-      },
-    },
-    {
-      id: 2,
-      type: 'project',
-      title: 'Nuevo Proyecto Disponible',
-      message: 'Hay un nuevo proyecto que coincide con tus habilidades: "Aplicación Móvil de Delivery". ¡Aplica ahora!',
-      company: 'Digital Dynamics',
-      date: '2024-01-19',
-      read: true,
-      priority: 'medium',
-      actionUrl: '/dashboard/student/projects/new',
-      metadata: {
-        projectId: 'proj_002',
-      },
-    },
-    {
-      id: 3,
-      type: 'evaluation',
-      title: 'Evaluación Recibida',
-      message: 'Has recibido una evaluación de 4.5/5 estrellas por tu trabajo en el proyecto anterior. ¡Excelente trabajo!',
-      company: 'TechCorp Solutions',
-      date: '2024-01-18',
-      read: false,
-      priority: 'high',
-      actionUrl: '/dashboard/student/evaluations/1',
-      metadata: {
-        evaluationId: 'eval_001',
-        projectId: 'proj_001',
-      },
-    },
-    {
-      id: 4,
-      type: 'reminder',
-      title: 'Recordatorio de Entrega',
-      message: 'Recuerda que tienes una entrega pendiente para el proyecto actual. Fecha límite: 25 de enero.',
-      company: 'InnovateLab',
-      date: '2024-01-17',
-      read: true,
-      priority: 'low',
-      actionUrl: '/dashboard/student/projects/current',
-      metadata: {
-        projectId: 'proj_003',
-      },
-    },
-    {
-      id: 5,
-      type: 'system',
-      title: 'Mantenimiento Programado',
-      message: 'La plataforma estará en mantenimiento el próximo sábado de 2:00 AM a 6:00 AM.',
-      date: '2024-01-16',
-      read: false,
-      priority: 'medium',
-    },
-  ]);
+  useEffect(() => {
+    async function fetchNotifications() {
+      try {
+        const data = await apiService.get('/api/notifications/');
+        setNotifications(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        setNotifications([]);
+      }
+    }
+    fetchNotifications();
+  }, []);
 
   // Filtrar notificaciones
   const filteredNotifications = notifications.filter(notification => {
@@ -163,9 +102,23 @@ export const Notifications = () => {
     return true;
   });
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     setSelectedNotification(notification);
     setDialogOpen(true);
+    
+    // Marcar como leída si no lo está
+    if (!notification.read) {
+      try {
+        await apiService.patch(`/api/notifications/${notification.id}/`, { read: true });
+        setNotifications(prev =>
+          prev.map(n =>
+            n.id === notification.id ? { ...n, read: true } : n
+          )
+        );
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    }
   };
 
   const handleFilterChange = (filterType: keyof NotificationFilters, value: string) => {

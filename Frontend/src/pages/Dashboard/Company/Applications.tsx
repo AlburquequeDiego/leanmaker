@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -20,6 +20,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -32,18 +33,20 @@ import {
   Language as LanguageIcon,
   GitHub as GitHubIcon,
   LinkedIn as LinkedInIcon,
+
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Application {
   id: string;
-  projectId: string;
-  projectTitle: string;
-  studentId: string;
-  studentName: string;
-  studentEmail: string;
-  studentPhone: string;
-  studentAvatar: string;
-  apiLevel: number;
+  project_id: string;
+  project_title: string;
+  student_id: string;
+  student_name: string;
+  student_email: string;
+  student_phone: string;
+  student_avatar: string;
+  api_level: number;
   skills: string[];
   experience: string;
   portfolio: string;
@@ -51,89 +54,36 @@ interface Application {
   linkedin: string;
   status: 'pending' | 'accepted' | 'rejected' | 'interviewed';
   rating: number;
-  appliedAt: string;
-  coverLetter: string;
-  interviewDate?: string;
-  interviewNotes?: string;
+  applied_at: string;
+  cover_letter: string;
+  interview_date?: string;
+  interview_notes?: string;
 }
-
-const mockApplications: Application[] = [
-  {
-    id: '1',
-    projectId: '1',
-    projectTitle: 'Desarrollo Web Frontend',
-    studentId: '1',
-    studentName: 'Juan Pérez',
-    studentEmail: 'juan.perez@email.com',
-    studentPhone: '+56 9 1234 5678',
-    studentAvatar: '',
-    apiLevel: 3,
-    skills: ['React', 'TypeScript', 'Material-UI', 'Node.js'],
-    experience: '2 años desarrollando aplicaciones web',
-    portfolio: 'https://juanperez.dev',
-    github: 'https://github.com/juanperez',
-    linkedin: 'https://linkedin.com/in/juanperez',
-    status: 'pending',
-    rating: 4.2,
-    appliedAt: '2024-01-15T10:30:00Z',
-    coverLetter: 'Me interesa mucho este proyecto porque me permitirá aplicar mis conocimientos en React y TypeScript...',
-  },
-  {
-    id: '2',
-    projectId: '1',
-    projectTitle: 'Desarrollo Web Frontend',
-    studentId: '2',
-    studentName: 'María González',
-    studentEmail: 'maria.gonzalez@email.com',
-    studentPhone: '+56 9 8765 4321',
-    studentAvatar: '',
-    apiLevel: 4,
-    skills: ['React', 'Vue.js', 'JavaScript', 'CSS', 'HTML'],
-    experience: '1 año en desarrollo frontend',
-    portfolio: 'https://mariagonzalez.dev',
-    github: 'https://github.com/mariagonzalez',
-    linkedin: 'https://linkedin.com/in/mariagonzalez',
-    status: 'interviewed',
-    rating: 4.5,
-    appliedAt: '2024-01-14T15:20:00Z',
-    coverLetter: 'Tengo experiencia en proyectos similares y me gustaría contribuir al desarrollo...',
-    interviewDate: '2024-01-20T15:00:00Z',
-    interviewNotes: 'Excelente candidata, muy preparada técnicamente.',
-  },
-  {
-    id: '3',
-    projectId: '2',
-    projectTitle: 'API REST con Django',
-    studentId: '3',
-    studentName: 'Carlos Rodríguez',
-    studentEmail: 'carlos.rodriguez@email.com',
-    studentPhone: '+56 9 5555 1234',
-    studentAvatar: '',
-    apiLevel: 4,
-    skills: ['Python', 'Django', 'PostgreSQL', 'REST API'],
-    experience: '3 años en desarrollo backend',
-    portfolio: 'https://carlosrodriguez.dev',
-    github: 'https://github.com/carlosrodriguez',
-    linkedin: 'https://linkedin.com/in/carlosrodriguez',
-    status: 'accepted',
-    rating: 4.8,
-    appliedAt: '2024-01-10T09:15:00Z',
-    coverLetter: 'Mi experiencia con Django y APIs REST me hace un candidato ideal...',
-  },
-];
 
 const cantidadOpciones = [5, 10, 20, 50, 'todas'];
 
 export const CompanyApplications: React.FC = () => {
-  const [applications, setApplications] = useState<Application[]>(mockApplications);
+  const [applications, setApplications] = useState<Application[]>([]);
+
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showInterviewDialog, setShowInterviewDialog] = useState(false);
   const [interviewData, setInterviewData] = useState({ date: '', notes: '' });
-
-  // Filtros de cantidad por tab
   const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5, 5]);
+
+  useEffect(() => {
+    async function fetchApplications() {
+      try {
+        const data = await apiService.get('/api/project-applications/');
+        setApplications(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+        setApplications([]);
+      }
+    }
+    fetchApplications();
+  }, []);
 
   const handleCantidadChange = (tabIdx: number, value: number | string) => {
     setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
@@ -186,12 +136,20 @@ export const CompanyApplications: React.FC = () => {
     }
   };
 
-  const handleStatusChange = (applicationId: string, newStatus: Application['status']) => {
-    setApplications(prev =>
-      prev.map(app =>
-        app.id === applicationId ? { ...app, status: newStatus } : app
-      )
-    );
+  const handleStatusChange = async (applicationId: string, newStatus: Application['status']) => {
+    try {
+      const updatedApplication = await apiService.patch(`/api/project-applications/${applicationId}/`, {
+        status: newStatus,
+      });
+
+      setApplications(prev =>
+        prev.map(app =>
+          app.id === applicationId ? (updatedApplication as Application) : app
+        )
+      );
+    } catch (error) {
+      console.error('Error updating application status:', error);
+    }
   };
 
   const handleViewDetails = (application: Application) => {
@@ -204,23 +162,26 @@ export const CompanyApplications: React.FC = () => {
     setShowInterviewDialog(true);
   };
 
-  const handleSaveInterview = () => {
+  const handleSaveInterview = async () => {
     if (selectedApplication) {
-      setApplications(prev =>
-        prev.map(app =>
-          app.id === selectedApplication.id
-            ? {
-                ...app,
-                status: 'interviewed',
-                interviewDate: interviewData.date,
-                interviewNotes: interviewData.notes,
-              }
-            : app
-        )
-      );
-      setShowInterviewDialog(false);
-      setInterviewData({ date: '', notes: '' });
-      setSelectedApplication(null);
+      try {
+        const updatedApplication = await apiService.patch(`/api/project-applications/${selectedApplication.id}/`, {
+          status: 'interviewed',
+          interview_date: interviewData.date,
+          interview_notes: interviewData.notes,
+        });
+
+        setApplications(prev =>
+          prev.map(app =>
+            app.id === selectedApplication.id ? (updatedApplication as Application) : app
+          )
+        );
+        setShowInterviewDialog(false);
+        setInterviewData({ date: '', notes: '' });
+        setSelectedApplication(null);
+      } catch (error) {
+        console.error('Error saving interview:', error);
+      }
     }
   };
 
@@ -324,9 +285,9 @@ export const CompanyApplications: React.FC = () => {
                   <PersonIcon />
                 </Avatar>
                 <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6">{application.studentName}</Typography>
+                  <Typography variant="h6">{application.student_name}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {application.projectTitle}
+                    {application.project_title}
                   </Typography>
                 </Box>
                 <Chip
@@ -338,7 +299,7 @@ export const CompanyApplications: React.FC = () => {
 
               <Box sx={{ mb: 2 }}>
                 <Typography variant="body2" gutterBottom>
-                  <strong>API Level:</strong> {application.apiLevel}
+                  <strong>API Level:</strong> {application.api_level}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <StarIcon sx={{ fontSize: 16, color: 'warning.main', mr: 0.5 }} />
@@ -363,7 +324,7 @@ export const CompanyApplications: React.FC = () => {
               </Box>
 
               <Typography variant="caption" color="text.secondary">
-                Postuló: {new Date(application.appliedAt).toLocaleDateString()}
+                Postuló: {new Date(application.applied_at).toLocaleDateString()}
               </Typography>
             </CardContent>
             <CardActions>
@@ -425,9 +386,9 @@ export const CompanyApplications: React.FC = () => {
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Avatar>
                 <Box>
-                  <Typography variant="h5">{selectedApplication.studentName}</Typography>
+                  <Typography variant="h5">{selectedApplication.student_name}</Typography>
                   <Typography variant="body1" color="text.secondary">
-                    {selectedApplication.projectTitle}
+                    {selectedApplication.project_title}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                     <StarIcon sx={{ color: 'warning.main', mr: 0.5 }} />
@@ -441,11 +402,11 @@ export const CompanyApplications: React.FC = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{selectedApplication.studentEmail}</Typography>
+                  <Typography variant="body2">{selectedApplication.student_email}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{selectedApplication.studentPhone}</Typography>
+                  <Typography variant="body2">{selectedApplication.student_phone}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <LanguageIcon sx={{ mr: 1, color: 'text.secondary' }} />
@@ -461,7 +422,7 @@ export const CompanyApplications: React.FC = () => {
                 </Box>
                 <Box>
                   <Typography variant="body2">
-                    <strong>API Level:</strong> {selectedApplication.apiLevel}
+                    <strong>API Level:</strong> {selectedApplication.api_level}
                   </Typography>
                 </Box>
               </Box>
@@ -491,7 +452,7 @@ export const CompanyApplications: React.FC = () => {
                   <strong>Carta de Presentación:</strong>
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {selectedApplication.coverLetter}
+                  {selectedApplication.cover_letter}
                 </Typography>
               </Box>
             </Box>
@@ -509,7 +470,7 @@ export const CompanyApplications: React.FC = () => {
           {selectedApplication && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6" gutterBottom>
-                {selectedApplication.studentName} - {selectedApplication.projectTitle}
+                {selectedApplication.student_name} - {selectedApplication.project_title}
               </Typography>
               
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

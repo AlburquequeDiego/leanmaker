@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -8,32 +8,25 @@ import {
   Paper,
   Card,
   CardContent,
-  IconButton,
   Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Chip,
-  Tooltip,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Event as EventIcon,
   Business as BusinessIcon,
   Assignment as AssignmentIcon,
   Schedule as ScheduleIcon,
-  LocationOn as LocationIcon,
-  AccessTime as AccessTimeIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
   Info as InfoIcon,
-  Today as TodayIcon,
-  ViewWeek as ViewWeekIcon,
-  ViewModule as ViewModuleIcon,
-  ViewDay as ViewDayIcon,
 } from '@mui/icons-material';
-import Snackbar from '@mui/material/Snackbar';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { apiService } from '../../../services/api.service';
 
 // Estilos personalizados para el calendario
 const calendarStyles = `
@@ -196,304 +189,115 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  type: 'interview' | 'deadline' | 'meeting' | 'presentation' | 'review' | 'other';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  location?: string;
+  description?: string;
+  project?: string;
+  company?: string;
+  status: 'upcoming' | 'in-progress' | 'completed' | 'cancelled';
+}
+
 export const Calendar = () => {
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [requestDialogOpen, setRequestDialogOpen] = useState(false);
-  const [requestText, setRequestText] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState('month');
+  const [date, setDate] = useState(new Date());
 
-  // Mock data for calendar events
-  const events = [
-    {
-      id: 1,
-      title: 'Entrevista con TechCorp Solutions',
-      type: 'interview',
-      start: new Date(2025, 5, 18, 10, 0), // Jun 18, 2025, 10:00 AM
-      end: new Date(2025, 5, 18, 11, 0),   // Jun 18, 2025, 11:00 AM
-      duration: '1 hora',
-      location: 'Remoto (Zoom)',
-      company: 'TechCorp Solutions',
-      project: 'Sistema de Gestión de Inventarios',
-      description: 'Entrevista técnica para evaluar habilidades en React y Node.js',
-      status: 'upcoming',
-      priority: 'high',
-    },
-    {
-      id: 2,
-      title: 'Entrega del Módulo de Autenticación',
-      type: 'deadline',
-      start: new Date(2025, 5, 20, 23, 59), // Jun 20, 2025, 11:59 PM
-      end: new Date(2025, 5, 20, 23, 59),   // Jun 20, 2025, 11:59 PM
-      duration: 'N/A',
-      location: 'N/A',
-      company: 'TechCorp Solutions',
-      project: 'Sistema de Gestión de Inventarios',
-      description: 'Entrega final del módulo de autenticación con JWT',
-      status: 'upcoming',
-      priority: 'high',
-    },
-    {
-      id: 3,
-      title: 'Reunión de Progreso Semanal',
-      type: 'meeting',
-      start: new Date(2025, 5, 15, 14, 0), // Jun 15, 2025, 2:00 PM
-      end: new Date(2025, 5, 15, 14, 30),  // Jun 15, 2025, 2:30 PM
-      duration: '30 minutos',
-      location: 'Remoto (Teams)',
-      company: 'Digital Dynamics',
-      project: 'Aplicación Móvil de Delivery',
-      description: 'Reunión semanal para revisar el progreso del proyecto',
-      status: 'completed',
-      priority: 'medium',
-    },
-    {
-      id: 4,
-      title: 'Presentación Final del Proyecto',
-      type: 'presentation',
-      start: new Date(2025, 5, 22, 15, 0), // Jun 22, 2025, 3:00 PM
-      end: new Date(2025, 5, 22, 16, 0),   // Jun 22, 2025, 4:00 PM
-      duration: '1 hora',
-      location: 'Oficinas de Digital Dynamics',
-      company: 'Digital Dynamics',
-      project: 'Aplicación Móvil de Delivery',
-      description: 'Presentación final del proyecto a los stakeholders',
-      status: 'upcoming',
-      priority: 'high',
-    },
-    {
-      id: 5,
-      title: 'Revisión de Código',
-      type: 'review',
-      start: new Date(2025, 5, 19, 16, 0), // Jun 19, 2025, 4:00 PM
-      end: new Date(2025, 5, 19, 17, 0),   // Jun 19, 2025, 5:00 PM
-      duration: '1 hora',
-      location: 'Remoto (Discord)',
-      company: 'TechCorp Solutions',
-      project: 'Sistema de Gestión de Inventarios',
-      description: 'Revisión del código del módulo de reportes',
-      status: 'upcoming',
-      priority: 'medium',
-    },
-    {
-      id: 6,
-      title: 'Entrevista con InnovateLab',
-      type: 'interview',
-      start: new Date(2025, 5, 23, 9, 0), // Jun 23, 2025, 9:00 AM
-      end: new Date(2025, 5, 23, 10, 0),  // Jun 23, 2025, 10:00 AM
-      duration: '1 hora',
-      location: 'Remoto (Google Meet)',
-      company: 'InnovateLab',
-      project: 'Plataforma de E-learning',
-      description: 'Entrevista para posición de desarrollador frontend',
-      status: 'upcoming',
-      priority: 'high',
-    },
-    {
-      id: 7,
-      title: 'Entrega de Documentación Técnica',
-      type: 'deadline',
-      start: new Date(2025, 5, 17, 23, 59), // Jun 17, 2025, 11:59 PM
-      end: new Date(2025, 5, 17, 23, 59),   // Jun 17, 2025, 11:59 PM
-      duration: 'N/A',
-      location: 'N/A',
-      company: 'Digital Dynamics',
-      project: 'Aplicación Móvil de Delivery',
-      description: 'Entrega de la documentación técnica del proyecto',
-      status: 'completed',
-      priority: 'medium',
-    },
-    {
-      id: 8,
-      title: 'Reunión de Kickoff',
-      type: 'meeting',
-      start: new Date(2025, 5, 16, 10, 0), // Jun 16, 2025, 10:00 AM
-      end: new Date(2025, 5, 16, 11, 0),   // Jun 16, 2025, 11:00 AM
-      duration: '1 hora',
-      location: 'Remoto (Zoom)',
-      company: 'InnovateLab',
-      project: 'Plataforma de E-learning',
-      description: 'Reunión inicial para definir objetivos y cronograma',
-      status: 'completed',
-      priority: 'low',
-    },
-    {
-      id: 9,
-      title: 'Presentación de Avances',
-      type: 'presentation',
-      start: new Date(2025, 5, 21, 14, 0), // Jun 21, 2025, 2:00 PM
-      end: new Date(2025, 5, 21, 15, 0),   // Jun 21, 2025, 3:00 PM
-      duration: '1 hora',
-      location: 'Remoto (Teams)',
-      company: 'TechCorp Solutions',
-      project: 'Sistema de Gestión de Inventarios',
-      description: 'Presentación de avances del proyecto al equipo',
-      status: 'upcoming',
-      priority: 'medium',
-    },
-    {
-      id: 10,
-      title: 'Revisión de Arquitectura',
-      type: 'review',
-      start: new Date(2025, 5, 24, 15, 0), // Jun 24, 2025, 3:00 PM
-      end: new Date(2025, 5, 24, 16, 30),  // Jun 24, 2025, 4:30 PM
-      duration: '1.5 horas',
-      location: 'Remoto (Discord)',
-      company: 'InnovateLab',
-      project: 'Plataforma de E-learning',
-      description: 'Revisión de la arquitectura del sistema',
-      status: 'upcoming',
-      priority: 'high',
-    },
-    {
-      id: 11,
-      title: 'Entrevista con DataFlow Systems',
-      type: 'interview',
-      start: new Date(2025, 6, 7, 11, 0), // Jul 7, 2025, 11:00 AM
-      end: new Date(2025, 6, 7, 12, 0),   // Jul 7, 2025, 12:00 PM
-      duration: '1 hora',
-      location: 'Remoto (Zoom)',
-      company: 'DataFlow Systems',
-      project: 'Sistema de Análisis de Datos',
-      description: 'Entrevista técnica para posición de desarrollador full-stack',
-      status: 'upcoming',
-      priority: 'high',
-    },
-    {
-      id: 12,
-      title: 'Entrega de MVP',
-      type: 'deadline',
-      start: new Date(2025, 6, 10, 23, 59), // Jul 10, 2025, 11:59 PM
-      end: new Date(2025, 6, 10, 23, 59),   // Jul 10, 2025, 11:59 PM
-      duration: 'N/A',
-      location: 'N/A',
-      company: 'DataFlow Systems',
-      project: 'Sistema de Análisis de Datos',
-      description: 'Entrega del MVP del sistema de análisis',
-      status: 'upcoming',
-      priority: 'high',
-    },
-    {
-      id: 13,
-      title: 'Reunión de Retrospectiva',
-      type: 'meeting',
-      start: new Date(2025, 5, 26, 16, 0), // Jun 26, 2025, 4:00 PM
-      end: new Date(2025, 5, 26, 17, 0),   // Jun 26, 2025, 5:00 PM
-      duration: '1 hora',
-      location: 'Remoto (Teams)',
-      company: 'Digital Dynamics',
-      project: 'Aplicación Móvil de Delivery',
-      description: 'Reunión de retrospectiva del sprint',
-      status: 'upcoming',
-      priority: 'low',
-    },
-    {
-      id: 14,
-      title: 'Presentación de Resultados',
-      type: 'presentation',
-      start: new Date(2025, 6, 8, 13, 0), // Jul 8, 2025, 1:00 PM
-      end: new Date(2025, 6, 8, 14, 0),   // Jul 8, 2025, 2:00 PM
-      duration: '1 hora',
-      location: 'Oficinas de InnovateLab',
-      company: 'InnovateLab',
-      project: 'Plataforma de E-learning',
-      description: 'Presentación de resultados del proyecto piloto',
-      status: 'upcoming',
-      priority: 'medium',
-    },
-    {
-      id: 15,
-      title: 'Revisión de Seguridad',
-      type: 'review',
-      start: new Date(2025, 6, 9, 10, 0), // Jul 9, 2025, 10:00 AM
-      end: new Date(2025, 6, 9, 11, 30),  // Jul 9, 2025, 11:30 AM
-      duration: '1.5 horas',
-      location: 'Remoto (Zoom)',
-      company: 'TechCorp Solutions',
-      project: 'Sistema de Gestión de Inventarios',
-      description: 'Revisión de seguridad del sistema',
-      status: 'upcoming',
-      priority: 'high',
-    },
-  ];
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-  const upcomingEvents = events.filter(e => e.status === 'upcoming');
-  const completedEvents = events.filter(e => e.status === 'completed');
-  const highPriorityEvents = events.filter(e => e.priority === 'high');
-  const interviewEvents = events.filter(e => e.type === 'interview');
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.get('/api/calendar-events/');
+      const formattedEvents = Array.isArray(data) ? data.map((event: any) => ({
+        id: event.id,
+        title: event.title,
+        start: new Date(event.start_date),
+        end: new Date(event.end_date),
+        type: event.type || 'other',
+        priority: event.priority || 'medium',
+        location: event.location,
+        description: event.description,
+        project: event.project,
+        company: event.company,
+        status: event.status || 'upcoming',
+      })) : [];
+      
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.error('Error fetching calendar events:', error);
+      setError('Error al cargar los eventos del calendario');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'interview':
-        return <BusinessIcon color="primary" />;
-      case 'deadline':
-        return <AssignmentIcon color="error" />;
-      case 'meeting':
-        return <ScheduleIcon color="info" />;
-      case 'presentation':
-        return <EventIcon color="success" />;
-      case 'review':
-        return <InfoIcon color="warning" />;
-      default:
-        return <InfoIcon color="action" />;
+      case 'interview': return <BusinessIcon color="primary" />;
+      case 'deadline': return <AssignmentIcon color="error" />;
+      case 'meeting': return <ScheduleIcon color="info" />;
+      case 'presentation': return <EventIcon color="success" />;
+      case 'review': return <InfoIcon color="warning" />;
+      default: return <InfoIcon color="action" />;
     }
   };
 
   const getEventTypeText = (type: string) => {
     switch (type) {
-      case 'interview':
-        return 'Entrevista';
-      case 'deadline':
-        return 'Entrega';
-      case 'meeting':
-        return 'Reunión';
-      case 'presentation':
-        return 'Presentación';
-      case 'review':
-        return 'Revisión';
-      default:
-        return type;
+      case 'interview': return 'Entrevista';
+      case 'deadline': return 'Deadline';
+      case 'meeting': return 'Reunión';
+      case 'presentation': return 'Presentación';
+      case 'review': return 'Revisión';
+      default: return 'Otro';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high':
-        return 'error';
-      case 'medium':
-        return 'warning';
-      case 'low':
-        return 'default';
-      default:
-        return 'default';
+      case 'urgent': return 'error';
+      case 'high': return 'warning';
+      case 'medium': return 'info';
+      case 'low': return 'success';
+      default: return 'default';
     }
   };
 
-  const eventStyleGetter = (event: any) => {
+  const eventStyleGetter = (event: CalendarEvent) => {
     let backgroundColor = '#3174ad';
     let borderColor = '#3174ad';
-
+    
     switch (event.type) {
-      case 'interview':
-        backgroundColor = '#1976d2';
-        borderColor = '#1976d2';
+      case 'interview': 
+        backgroundColor = '#1976d2'; 
+        borderColor = '#1976d2'; 
         break;
-      case 'deadline':
-        backgroundColor = '#d32f2f';
-        borderColor = '#d32f2f';
+      case 'deadline': 
+        backgroundColor = '#d32f2f'; 
+        borderColor = '#d32f2f'; 
         break;
-      case 'meeting':
-        backgroundColor = '#0288d1';
-        borderColor = '#0288d1';
+      case 'meeting': 
+        backgroundColor = '#0288d1'; 
+        borderColor = '#0288d1'; 
         break;
-      case 'presentation':
-        backgroundColor = '#388e3c';
-        borderColor = '#388e3c';
+      case 'presentation': 
+        backgroundColor = '#388e3c'; 
+        borderColor = '#388e3c'; 
         break;
-      case 'review':
-        backgroundColor = '#f57c00';
-        borderColor = '#f57c00';
+      case 'review': 
+        backgroundColor = '#f57c00'; 
+        borderColor = '#f57c00'; 
         break;
     }
 
@@ -511,384 +315,236 @@ export const Calendar = () => {
     };
   };
 
-  const handleSelectEvent = (event: any) => {
+  const handleSelectEvent = (event: CalendarEvent) => {
     setSelectedEvent(event);
-    setDialogOpen(true);
   };
 
   const handleSelectSlot = (slotInfo: any) => {
-    // Aquí se podría implementar la creación de nuevos eventos
+    // Para estudiantes, no pueden crear eventos, solo verlos
     console.log('Slot seleccionado:', slotInfo);
   };
 
-  const messages = {
-    allDay: 'Todo el día',
-    previous: 'Anterior',
-    next: 'Siguiente',
-    today: 'Hoy',
-    month: 'Mes',
-    week: 'Semana',
-    day: 'Día',
-    agenda: 'Agenda',
-    date: 'Fecha',
-    time: 'Hora',
-    event: 'Evento',
-    noEventsInRange: 'No hay eventos en este rango',
-    showMore: (total: number) => `+ Ver más (${total})`,
+  const handleCloseDialog = () => {
+    setSelectedEvent(null);
   };
+
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
+    return events
+      .filter(event => event.start > now)
+      .sort((a, b) => a.start.getTime() - b.start.getTime())
+      .slice(0, 5);
+  }, [events]);
+
+  const todayEvents = useMemo(() => {
+    const today = new Date();
+    return events.filter(event => {
+      const eventDate = new Date(event.start);
+      return eventDate.toDateString() === today.toDateString();
+    });
+  }, [events]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">
-          Calendario
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Tooltip title="Vista de mes">
-            <IconButton
-              color={view === 'month' ? 'primary' : 'default'}
-              onClick={() => setView('month')}
-            >
-              <ViewModuleIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Vista de semana">
-            <IconButton
-              color={view === 'week' ? 'primary' : 'default'}
-              onClick={() => setView('week')}
-            >
-              <ViewWeekIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Vista de día">
-            <IconButton
-              color={view === 'day' ? 'primary' : 'default'}
-              onClick={() => setView('day')}
-            >
-              <ViewDayIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Vista de agenda">
-            <IconButton
-              color={view === 'agenda' ? 'primary' : 'default'}
-              onClick={() => setView('agenda')}
-            >
-              <TodayIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
+      <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+        <EventIcon sx={{ mr: 2, color: 'primary.main' }} />
+        Calendario de Actividades
+      </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      {/* Resumen de eventos */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="primary">
+              {events.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Total de Eventos
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="success.main">
+              {upcomingEvents.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Próximos Eventos
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="info.main">
+              {todayEvents.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Eventos Hoy
+            </Typography>
+          </CardContent>
+        </Card>
       </Box>
 
-      {/* Barra de Resumen del Calendario */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Resumen del Calendario
-        </Typography>
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 3,
-          justifyContent: { xs: 'center', md: 'flex-start' }
-        }}>
-          {/* Próximos Eventos */}
-          <Box sx={{ 
-            flex: '1 1 220px',
-            minWidth: 200,
-            maxWidth: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(25% - 18px)' }
-          }}>
-            <Card sx={{
-              bgcolor: 'rgba(33, 150, 243, 0.07)',
-              borderRadius: 3,
-              boxShadow: 2,
-              height: '100%',
-            }}>
-              <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                <EventIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
-                <Typography variant="h3" color="primary.main" fontWeight={700}>
-                  {upcomingEvents.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Próximos Eventos
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Eventos Completados */}
-          <Box sx={{ 
-            flex: '1 1 220px',
-            minWidth: 200,
-            maxWidth: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(25% - 18px)' }
-          }}>
-            <Card sx={{
-              bgcolor: 'rgba(76, 175, 80, 0.07)',
-              borderRadius: 3,
-              boxShadow: 2,
-              height: '100%',
-            }}>
-              <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                <CheckCircleIcon sx={{ fontSize: 40, color: 'success.main', mb: 1 }} />
-                <Typography variant="h3" color="success.main" fontWeight={700}>
-                  {completedEvents.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Eventos Completados
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Alta Prioridad */}
-          <Box sx={{ 
-            flex: '1 1 220px',
-            minWidth: 200,
-            maxWidth: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(25% - 18px)' }
-          }}>
-            <Card sx={{
-              bgcolor: 'rgba(255, 152, 0, 0.07)',
-              borderRadius: 3,
-              boxShadow: 2,
-              height: '100%',
-            }}>
-              <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                <WarningIcon sx={{ fontSize: 40, color: 'warning.main', mb: 1 }} />
-                <Typography variant="h3" color="warning.main" fontWeight={700}>
-                  {highPriorityEvents.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Alta Prioridad
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Entrevistas */}
-          <Box sx={{ 
-            flex: '1 1 220px',
-            minWidth: 200,
-            maxWidth: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(25% - 18px)' }
-          }}>
-            <Card sx={{
-              bgcolor: 'rgba(33, 150, 243, 0.04)',
-              borderRadius: 3,
-              boxShadow: 2,
-              height: '100%',
-            }}>
-              <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                <BusinessIcon sx={{ fontSize: 40, color: 'info.main', mb: 1 }} />
-                <Typography variant="h3" color="info.main" fontWeight={700}>
-                  {interviewEvents.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Entrevistas
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        </Box>
+      {/* Calendario principal */}
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <BigCalendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 600 }}
+          eventPropGetter={eventStyleGetter}
+          onSelectEvent={handleSelectEvent}
+          onSelectSlot={handleSelectSlot}
+          selectable
+          views={['month', 'week', 'day', 'agenda']}
+          defaultView="month"
+          view={view as any}
+          onView={(newView) => setView(newView)}
+          date={date}
+          onNavigate={(newDate) => setDate(newDate)}
+          messages={{
+            next: "Siguiente",
+            previous: "Anterior",
+            today: "Hoy",
+            month: "Mes",
+            week: "Semana",
+            day: "Día",
+            agenda: "Agenda",
+            noEventsInRange: "No hay eventos en este rango de fechas.",
+          }}
+        />
       </Paper>
 
-      {/* Calendario Interactivo */}
-      <Paper sx={{ p: 3 }}>
-        <Box sx={{ height: 600 }}>
-          <BigCalendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: '100%' }}
-            view={view as any}
-            onView={(newView) => setView(newView)}
-            onSelectEvent={handleSelectEvent}
-            onSelectSlot={handleSelectSlot}
-            selectable
-            messages={messages}
-            eventPropGetter={eventStyleGetter}
-            culture="es"
-            defaultView="month"
-            min={new Date(0, 0, 0, 8, 0, 0)} // 8:00 AM
-            max={new Date(0, 0, 0, 20, 0, 0)} // 8:00 PM
-            step={30}
-            timeslots={2}
-            tooltipAccessor={(event) => `${event.title} - ${event.company}`}
-          />
-        </Box>
-      </Paper>
-
-      {/* Dialog para mostrar detalles de eventos */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {selectedEvent && getEventIcon(selectedEvent.type)}
-            <Typography variant="h6">
-              Detalles del Evento
-            </Typography>
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          {selectedEvent && (
-            <Box>
-              <Typography variant="h5" gutterBottom color="primary">
-                {selectedEvent.title}
-              </Typography>
-              
-              <Box sx={{ 
-                display: 'flex', 
-                flexWrap: 'wrap', 
-                gap: 3, 
-                mt: 1 
-              }}>
-                <Box sx={{ 
-                  width: { xs: '100%', md: '48%' },
-                  minWidth: 300
-                }}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Información del Evento
+      {/* Próximos eventos */}
+      {upcomingEvents.length > 0 && (
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+            <ScheduleIcon sx={{ mr: 1, color: 'primary.main' }} />
+            Próximos Eventos
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {upcomingEvents.map((event) => (
+              <Card key={event.id} sx={{ p: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {getEventIcon(event.type)}
+                    <Box>
+                      <Typography variant="h6">{event.title}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {format(event.start, 'dd/MM/yyyy HH:mm')} - {format(event.end, 'HH:mm')}
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        {getEventIcon(selectedEvent.type)}
-                        <Typography variant="body1" sx={{ ml: 1 }}>
-                          <strong>Tipo:</strong> {getEventTypeText(selectedEvent.type)}
+                      {event.location && (
+                        <Typography variant="body2" color="text.secondary">
+                          📍 {event.location}
                         </Typography>
-                      </Box>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>Fecha:</strong> {format(selectedEvent.start, 'EEEE, d \'de\' MMMM \'de\' yyyy', { locale: es })}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>Hora:</strong> {format(selectedEvent.start, 'HH:mm')} - {format(selectedEvent.end, 'HH:mm')}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>Duración:</strong> {selectedEvent.duration}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>Ubicación:</strong> {selectedEvent.location}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-                        <Typography variant="body2">
-                          <strong>Prioridad:</strong>
-                        </Typography>
-                        <Chip
-                          label={selectedEvent.priority === 'high' ? 'Alta' : selectedEvent.priority === 'medium' ? 'Media' : 'Baja'}
-                          size="small"
-                          color={getPriorityColor(selectedEvent.priority) as any}
-                        />
-                      </Box>
-                    </CardContent>
-                  </Card>
+                      )}
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Chip 
+                      label={getEventTypeText(event.type)} 
+                      size="small" 
+                      color="primary" 
+                    />
+                    <Chip 
+                      label={event.priority} 
+                      size="small" 
+                      color={getPriorityColor(event.priority) as any}
+                    />
+                  </Box>
                 </Box>
+              </Card>
+            ))}
+          </Box>
+        </Paper>
+      )}
 
-                <Box sx={{ 
-                  width: { xs: '100%', md: '48%' },
-                  minWidth: 300
-                }}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Proyecto y Empresa
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 2 }}>
-                        <strong>Proyecto:</strong> {selectedEvent.project}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 2 }}>
-                        <strong>Empresa:</strong> {selectedEvent.company}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 2 }}>
-                        <strong>Estado:</strong> 
-                        <Chip
-                          label={selectedEvent.status === 'upcoming' ? 'Próximo' : 'Completado'}
-                          size="small"
-                          color={selectedEvent.status === 'upcoming' ? 'primary' : 'success'}
-                          sx={{ ml: 1 }}
-                        />
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Descripción:</strong>
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        {selectedEvent.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
+      {/* Dialog para detalles del evento */}
+      <Dialog open={!!selectedEvent} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        {selectedEvent && (
+          <>
+            <DialogTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                {getEventIcon(selectedEvent.type)}
+                <Typography variant="h6">{selectedEvent.title}</Typography>
+              </Box>
+            </DialogTitle>
+            <DialogContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold">Fecha y Hora</Typography>
+                  <Typography variant="body1">
+                    {format(selectedEvent.start, 'dd/MM/yyyy HH:mm')} - {format(selectedEvent.end, 'HH:mm')}
+                  </Typography>
+                </Box>
+                
+                {selectedEvent.location && (
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">Ubicación</Typography>
+                    <Typography variant="body1">{selectedEvent.location}</Typography>
+                  </Box>
+                )}
+                
+                {selectedEvent.description && (
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">Descripción</Typography>
+                    <Typography variant="body1">{selectedEvent.description}</Typography>
+                  </Box>
+                )}
+                
+                {selectedEvent.project && (
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">Proyecto</Typography>
+                    <Typography variant="body1">{selectedEvent.project}</Typography>
+                  </Box>
+                )}
+                
+                {selectedEvent.company && (
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">Empresa</Typography>
+                    <Typography variant="body1">{selectedEvent.company}</Typography>
+                  </Box>
+                )}
+                
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Chip 
+                    label={getEventTypeText(selectedEvent.type)} 
+                    color="primary" 
+                  />
+                  <Chip 
+                    label={selectedEvent.priority} 
+                    color={getPriorityColor(selectedEvent.priority) as any}
+                  />
+                  <Chip 
+                    label={selectedEvent.status} 
+                    color={selectedEvent.status === 'completed' ? 'success' : 'default'}
+                  />
                 </Box>
               </Box>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} color="inherit">
-            Cerrar
-          </Button>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => {
-              setDialogOpen(false);
-              setRequestDialogOpen(true);
-            }}
-          >
-            Solicitar cambio
-          </Button>
-        </DialogActions>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cerrar</Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
-
-      {/* Dialog para solicitar cambio */}
-      <Dialog open={requestDialogOpen} onClose={() => setRequestDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Solicitar cambio de evento</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            Escribe tu solicitud o motivo para cambiar este evento. La empresa recibirá tu mensaje.
-          </Typography>
-          <Box component="form">
-            <textarea
-              style={{ 
-                width: '100%', 
-                minHeight: 80, 
-                borderRadius: 8, 
-                border: '1px solid #ccc', 
-                padding: 8,
-                fontFamily: 'inherit',
-                fontSize: '14px',
-                resize: 'vertical'
-              }}
-              value={requestText}
-              onChange={e => setRequestText(e.target.value)}
-              placeholder="Ejemplo: Solicito cambiar la fecha por..."
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRequestDialogOpen(false)}>
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setRequestDialogOpen(false);
-              setShowSuccess(true);
-              setRequestText('');
-            }}
-            disabled={!requestText.trim()}
-          >
-            Enviar solicitud
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar de éxito */}
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={3500}
-        onClose={() => setShowSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Paper elevation={3} sx={{ p: 1 }}>
-          <Typography color="success.main" fontWeight={600}>
-            ¡Solicitud enviada a la empresa!
-          </Typography>
-        </Paper>
-      </Snackbar>
     </Box>
   );
 };

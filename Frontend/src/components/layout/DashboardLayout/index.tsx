@@ -17,7 +17,6 @@ import {
   Menu,
   MenuItem,
   Divider,
-  Badge,
   Tooltip,
   Modal,
   Fade,
@@ -69,7 +68,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const [supportForm, setSupportForm] = useState({ nombre: '', correo: '', mensaje: '' });
 
   // Simulación de notificaciones nuevas
-  const notificationCount = 3;
+
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

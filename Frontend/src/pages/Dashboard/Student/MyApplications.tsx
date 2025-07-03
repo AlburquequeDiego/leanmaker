@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -30,6 +30,7 @@ import {
   Visibility as VisibilityIcon,
   TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Application {
   id: string;
@@ -55,63 +56,6 @@ interface FilterOptions {
   duracion?: string;
   tecnologias?: string[];
 }
-
-const mockApplications: Application[] = [
-  {
-    id: '1',
-    projectTitle: 'Sistema de Gestión de Inventarios',
-    company: 'TechCorp Solutions',
-    status: 'accepted',
-    appliedDate: '2024-01-15',
-    responseDate: '2024-01-20',
-    requiredSkills: ['React', 'Node.js', 'MySQL'],
-    projectDuration: '3 meses',
-    location: 'Remoto',
-    description: 'Desarrollo de un sistema web para gestión de inventarios con base de datos MySQL y frontend en React.',
-    compatibility: 95,
-    notes: 'Proyecto aceptado. Inicio programado para febrero.',
-  },
-  {
-    id: '2',
-    projectTitle: 'Aplicación Móvil de Delivery',
-    company: 'Digital Dynamics',
-    status: 'pending',
-    appliedDate: '2024-01-18',
-    requiredSkills: ['React Native', 'Firebase', 'JavaScript'],
-    projectDuration: '4 meses',
-    location: 'Bogotá',
-    description: 'Desarrollo de aplicación móvil para delivery de alimentos con geolocalización y pagos en línea.',
-    compatibility: 88,
-  },
-  {
-    id: '3',
-    projectTitle: 'Plataforma de E-learning',
-    company: 'EduTech Solutions',
-    status: 'rejected',
-    appliedDate: '2024-01-10',
-    responseDate: '2024-01-12',
-    requiredSkills: ['Vue.js', 'Laravel', 'PostgreSQL'],
-    projectDuration: '6 meses',
-    location: 'Medellín',
-    description: 'Plataforma web para cursos online con sistema de videoconferencias y evaluaciones automáticas.',
-    compatibility: 72,
-    notes: 'Rechazado por falta de experiencia en Vue.js.',
-  },
-  {
-    id: '4',
-    projectTitle: 'Dashboard de Analytics',
-    company: 'DataCorp',
-    status: 'completed',
-    appliedDate: '2023-09-01',
-    responseDate: '2023-09-05',
-    requiredSkills: ['Python', 'Pandas', 'Power BI'],
-    projectDuration: '2 meses',
-    location: 'Remoto',
-    description: 'Desarrollo de dashboard de analytics para visualización de datos empresariales.',
-    compatibility: 92,
-    notes: 'Proyecto completado exitosamente. Evaluación: 4.5/5.',
-  },
-];
 
 // Opciones de filtros
 const areas = ['Tecnología', 'Marketing', 'Diseño', 'Administración'];
@@ -249,10 +193,24 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
 
 // Componente principal de aplicaciones
 export const MyApplications: React.FC = () => {
+  const [applications, setApplications] = useState<Application[]>([]);
+
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [filteredApplications, setFilteredApplications] = useState<Application[]>(mockApplications);
+  const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
   const [historyLimit, setHistoryLimit] = useState(5);
+
+  useEffect(() => {
+    async function fetchApplications() {
+      try {
+        const data = await apiService.get('/api/project-applications/');
+        setApplications(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setApplications([]);
+      }
+    }
+    fetchApplications();
+  }, []);
 
   const handleViewDetails = (application: Application) => {
     setSelectedApplication(application);
@@ -260,7 +218,7 @@ export const MyApplications: React.FC = () => {
   };
 
   const handleFilter = (filters: FilterOptions) => {
-    let filtered = [...mockApplications];
+    let filtered = [...applications];
     
     if (filters.busqueda) {
       filtered = filtered.filter(app => 
@@ -443,7 +401,7 @@ export const MyApplications: React.FC = () => {
             </Typography>
             <Button 
               variant="outlined" 
-              onClick={() => setFilteredApplications(mockApplications)}
+              onClick={() => setFilteredApplications(applications)}
               sx={{ mt: 2 }}
             >
               Mostrar todas las aplicaciones

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -18,50 +18,52 @@ import {
   Select,
   FormControl,
   InputLabel,
+  CircularProgress,
+  Paper,
 } from '@mui/material';
-import { Search as SearchIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import { 
+  Search as SearchIcon, 
+  Visibility as VisibilityIcon,
+
+} from '@mui/icons-material';
+import { apiService } from '../../../../services/api.service';
+
+interface Project {
+  id: string;
+  title: string;
+  company: string;
+  description: string;
+  requirements: string[];
+  duration: string;
+  publishedAt: string;
+  status: string;
+  max_students?: number;
+  current_students?: number;
+  difficulty?: string;
+  api_level?: number;
+  location?: string;
+  modality?: string;
+  skills?: string[];
+}
 
 const areas = ['Tecnología', 'Marketing', 'Diseño', 'Administración'];
 const modalidades = ['Remoto', 'Presencial', 'Híbrido'];
 const duraciones = ['1 mes', '2 meses', '3 meses', '6 meses', '12 meses'];
 const tecnologias = ['React', 'Node.js', 'MongoDB', 'Python', 'Pandas', 'Power BI', 'Figma', 'Adobe XD', 'UI/UX'];
-const empresas = ['Tech Solutions', 'Data Analytics Corp', 'Creative Design'];
-
-const mockProjects = [
-  {
-    id: '1',
-    title: 'Desarrollo de Aplicación Web',
-    company: 'Tech Solutions',
-    description: 'Desarrollo de una aplicación web full-stack utilizando React y Node.js.',
-    requirements: ['React', 'Node.js', 'MongoDB'],
-    duration: '3 meses',
-    publishedAt: '2024-06-01',
-  },
-  {
-    id: '2',
-    title: 'Análisis de Datos',
-    company: 'Data Analytics Corp',
-    description: 'Proyecto de análisis de datos y visualización para dashboard empresarial.',
-    requirements: ['Python', 'Pandas', 'Power BI'],
-    duration: '2 meses',
-    publishedAt: '2024-05-28',
-  },
-  {
-    id: '3',
-    title: 'Diseño de UI/UX',
-    company: 'Creative Design',
-    description: 'Diseño de interfaz de usuario y experiencia para aplicación móvil.',
-    requirements: ['Figma', 'Adobe XD', 'UI/UX'],
-    duration: '1 mes',
-    publishedAt: '2024-06-03',
-  },
-];
 
 export default function AvailableProjects() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [applied, setApplied] = useState<string[]>([]);
-  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
+    open: false, 
+    message: '', 
+    severity: 'success' 
+  });
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
   // Filtros avanzados
@@ -72,7 +74,67 @@ export default function AvailableProjects() {
   const [empresa, setEmpresa] = useState('');
   const [ordenFecha, setOrdenFecha] = useState('recientes');
 
-  let filteredProjects = mockProjects.filter(project =>
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.get('/api/projects/');
+      const availableProjects = Array.isArray(data) ? data.filter((project: any) => 
+        project.status === 'published' || project.status === 'active'
+      ) : [];
+      setProjects(availableProjects);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setError('Error al cargar los proyectos disponibles');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApply = async (projectId: string) => {
+    try {
+      const applicationData = {
+        project_id: projectId,
+        status: 'pending',
+        applied_at: new Date().toISOString(),
+      };
+
+      await apiService.post('/api/project-applications/', applicationData);
+      setApplied((prev) => [...prev, projectId]);
+      setSnackbar({ 
+        open: true, 
+        message: '¡Postulación enviada con éxito!', 
+        severity: 'success' 
+      });
+    } catch (error) {
+      console.error('Error applying to project:', error);
+      setSnackbar({ 
+        open: true, 
+        message: 'Error al enviar la postulación. Inténtalo de nuevo.', 
+        severity: 'error' 
+      });
+    }
+  };
+
+  const handleOpenDetail = (project: Project) => {
+    setSelectedProject(project);
+    setDetailOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+    setSelectedProject(null);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  // Filtrado de proyectos
+  let filteredProjects = projects.filter(project =>
     project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     project.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
     project.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -80,126 +142,154 @@ export default function AvailableProjects() {
 
   if (area) {
     filteredProjects = filteredProjects.filter(project =>
-      project.requirements.some((req: string) => req.toLowerCase().includes(area.toLowerCase()))
+      project.requirements?.some((req: string) => req.toLowerCase().includes(area.toLowerCase())) ||
+      project.skills?.some((skill: string) => skill.toLowerCase().includes(area.toLowerCase()))
     );
   }
+  
   if (modalidad) {
-    // Los proyectos mock no tienen modalidad, así que filtramos por modalidad disponible
-    filteredProjects = filteredProjects.filter(project => true); // Por ahora no filtramos por modalidad
+    filteredProjects = filteredProjects.filter(project => 
+      project.modality?.toLowerCase() === modalidad.toLowerCase()
+    );
   }
+  
   if (duracion) {
     filteredProjects = filteredProjects.filter(project => project.duration === duracion);
   }
+  
   if (tecs.length > 0) {
     filteredProjects = filteredProjects.filter(project =>
-      tecs.every(tec => project.requirements.map((r: string) => r.toLowerCase()).includes(tec.toLowerCase()))
+      tecs.every(tec => 
+        (project.requirements?.map((r: string) => r.toLowerCase()).includes(tec.toLowerCase())) ||
+        (project.skills?.map((s: string) => s.toLowerCase()).includes(tec.toLowerCase()))
+      )
     );
   }
+  
   if (empresa) {
     filteredProjects = filteredProjects.filter(project => project.company === empresa);
   }
+  
   if (ordenFecha === 'recientes') {
-    filteredProjects = filteredProjects.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    filteredProjects = filteredProjects.sort((a, b) => 
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    );
   } else {
-    filteredProjects = filteredProjects.sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
+    filteredProjects = filteredProjects.sort((a, b) => 
+      new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime()
+    );
   }
 
-  const handleApply = (id: string) => {
-    setApplied((prev) => [...prev, id]);
-    setSnackbar({ open: true, message: '¡Postulación enviada con éxito!' });
-  };
+  const empresas = [...new Set(projects.map(p => p.company))];
 
-  const handleOpenDetail = (project: any) => {
-    setSelectedProject(project);
-    setDetailOpen(true);
-  };
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Proyectos Disponibles
       </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
       {/* Filtros avanzados y barra de búsqueda */}
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
-        <TextField
-          variant="outlined"
-          placeholder="Buscar proyectos..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ minWidth: 220, flex: 1 }}
-        />
-        <TextField
-          select
-          label="Área"
-          value={area}
-          onChange={e => setArea(e.target.value)}
-          sx={{ minWidth: 140 }}
-          size="small"
-        >
-          <MenuItem value="">Todas</MenuItem>
-          {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
-        </TextField>
-        <TextField
-          select
-          label="Modalidad"
-          value={modalidad}
-          onChange={e => setModalidad(e.target.value)}
-          sx={{ minWidth: 140 }}
-          size="small"
-        >
-          <MenuItem value="">Todas</MenuItem>
-          {modalidades.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
-        </TextField>
-        <TextField
-          select
-          label="Duración"
-          value={duracion}
-          onChange={e => setDuracion(e.target.value)}
-          sx={{ minWidth: 120 }}
-          size="small"
-        >
-          <MenuItem value="">Todas</MenuItem>
-          {duraciones.map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
-        </TextField>
-        <Autocomplete
-          multiple
-          options={tecnologias}
-          value={tecs}
-          onChange={(_, value) => setTecs(value)}
-          renderInput={(params) => <TextField {...params} label="Tecnologías" size="small" />}
-          sx={{ minWidth: 180 }}
-        />
-        <TextField
-          select
-          label="Empresa"
-          value={empresa}
-          onChange={e => setEmpresa(e.target.value)}
-          sx={{ minWidth: 140 }}
-          size="small"
-        >
-          <MenuItem value="">Todas</MenuItem>
-          {empresas.map(emp => <MenuItem key={emp} value={emp}>{emp}</MenuItem>)}
-        </TextField>
-        <FormControl size="small" sx={{ minWidth: 140 }}>
-          <InputLabel>Ordenar por</InputLabel>
-          <Select
-            value={ordenFecha}
-            label="Ordenar por"
-            onChange={e => setOrdenFecha(e.target.value)}
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+          <TextField
+            variant="outlined"
+            placeholder="Buscar proyectos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ minWidth: 300, flex: 1 }}
+          />
+          <TextField
+            select
+            label="Área"
+            value={area}
+            onChange={e => setArea(e.target.value)}
+            sx={{ minWidth: 140 }}
+            size="small"
           >
-            <MenuItem value="recientes">Más recientes</MenuItem>
-            <MenuItem value="antiguos">Más antiguos</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      {/* Lista de proyectos */}
+            <MenuItem value="">Todas</MenuItem>
+            {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+          </TextField>
+          <TextField
+            select
+            label="Modalidad"
+            value={modalidad}
+            onChange={e => setModalidad(e.target.value)}
+            sx={{ minWidth: 140 }}
+            size="small"
+          >
+            <MenuItem value="">Todas</MenuItem>
+            {modalidades.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+          </TextField>
+          <TextField
+            select
+            label="Duración"
+            value={duracion}
+            onChange={e => setDuracion(e.target.value)}
+            sx={{ minWidth: 120 }}
+            size="small"
+          >
+            <MenuItem value="">Todas</MenuItem>
+            {duraciones.map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
+          </TextField>
+          <Autocomplete
+            multiple
+            options={tecnologias}
+            value={tecs}
+            onChange={(_, value) => setTecs(value)}
+            renderInput={(params) => <TextField {...params} label="Tecnologías" size="small" />}
+            sx={{ minWidth: 180 }}
+          />
+          <TextField
+            select
+            label="Empresa"
+            value={empresa}
+            onChange={e => setEmpresa(e.target.value)}
+            sx={{ minWidth: 140 }}
+            size="small"
+          >
+            <MenuItem value="">Todas</MenuItem>
+            {empresas.map(emp => <MenuItem key={emp} value={emp}>{emp}</MenuItem>)}
+          </TextField>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>Ordenar por</InputLabel>
+            <Select
+              value={ordenFecha}
+              label="Ordenar por"
+              onChange={e => setOrdenFecha(e.target.value)}
+            >
+              <MenuItem value="recientes">Más recientes</MenuItem>
+              <MenuItem value="antiguos">Más antiguos</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Paper>
+
+      {/* Resultados */}
+      <Typography variant="h6" gutterBottom>
+        {filteredProjects.length} proyecto{filteredProjects.length !== 1 ? 's' : ''} encontrado{filteredProjects.length !== 1 ? 's' : ''}
+      </Typography>
+
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}>
         {filteredProjects.map((project) => (
           <Box key={project.id} sx={{ width: { xs: '100%', sm: '48%', md: '32%' }, mb: 3, display: 'flex' }}>
@@ -220,7 +310,7 @@ export default function AvailableProjects() {
                   {project.description}
                 </Typography>
                 <Box sx={{ mb: 2 }}>
-                  {project.requirements.map((req, index) => (
+                  {(project.requirements || project.skills || []).slice(0, 3).map((req, index) => (
                     <Chip
                       key={index}
                       label={req}
@@ -228,6 +318,13 @@ export default function AvailableProjects() {
                       sx={{ mr: 1, mb: 1 }}
                     />
                   ))}
+                  {(project.requirements || project.skills || []).length > 3 && (
+                    <Chip
+                      label={`+${(project.requirements || project.skills || []).length - 3}`}
+                      size="small"
+                      sx={{ mr: 1, mb: 1 }}
+                    />
+                  )}
                 </Box>
                 <Typography variant="body2" color="text.secondary">
                   Duración: {project.duration}
@@ -252,59 +349,109 @@ export default function AvailableProjects() {
           </Box>
         ))}
       </Box>
-      {/* Dialog de detalle de proyecto */}
-      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth>
+
+      {filteredProjects.length === 0 && !loading && (
+        <Alert severity="info" sx={{ mt: 3 }}>
+          No se encontraron proyectos que coincidan con los filtros aplicados.
+        </Alert>
+      )}
+
+      {/* Dialog de detalles */}
+      <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="md" fullWidth>
         {selectedProject && (
           <Box sx={{ p: 3 }}>
-            <Typography variant="h5" fontWeight={700} gutterBottom>
-              {selectedProject.title}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-              {selectedProject.company}
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>{selectedProject.description}</Typography>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Requisitos:</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                {selectedProject.requirements.map((req: string, idx: number) => (
-                  <Chip key={idx} label={req} size="small" variant="outlined" />
-                ))}
-              </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h5">{selectedProject.title}</Typography>
+              <IconButton onClick={handleCloseDetail}>
+                <CloseIcon />
+              </IconButton>
             </Box>
-            <Box sx={{ display: 'flex', gap: 3, mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
-                <Typography variant="body1">{selectedProject.duration}</Typography>
+                <Typography variant="subtitle1" fontWeight="bold">Empresa</Typography>
+                <Typography variant="body1">{selectedProject.company}</Typography>
               </Box>
+
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Publicado</Typography>
-                <Typography variant="body1">{new Date(selectedProject.publishedAt).toLocaleDateString('es-ES')}</Typography>
+                <Typography variant="subtitle1" fontWeight="bold">Descripción</Typography>
+                <Typography variant="body1">{selectedProject.description}</Typography>
               </Box>
+
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">Requerimientos</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {(selectedProject.requirements || selectedProject.skills || []).map((req, index) => (
+                    <Chip key={index} label={req} color="primary" />
+                  ))}
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: 4 }}>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold">Duración</Typography>
+                  <Typography variant="body1">{selectedProject.duration}</Typography>
+                </Box>
+                {selectedProject.location && (
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">Ubicación</Typography>
+                    <Typography variant="body1">{selectedProject.location}</Typography>
+                  </Box>
+                )}
+                {selectedProject.modality && (
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">Modalidad</Typography>
+                    <Typography variant="body1">{selectedProject.modality}</Typography>
+                  </Box>
+                )}
+              </Box>
+
+              {selectedProject.difficulty && (
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold">Dificultad</Typography>
+                  <Typography variant="body1">{selectedProject.difficulty}</Typography>
+                </Box>
+              )}
+
+              {selectedProject.api_level && (
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold">Nivel API Requerido</Typography>
+                  <Typography variant="body1">Nivel {selectedProject.api_level}</Typography>
+                </Box>
+              )}
+
+              {selectedProject.max_students && (
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold">Estudiantes</Typography>
+                  <Typography variant="body1">
+                    {selectedProject.current_students || 0} de {selectedProject.max_students} estudiantes
+                  </Typography>
+                </Box>
+              )}
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+              <Button onClick={handleCloseDetail}>Cerrar</Button>
               <Button
                 variant="contained"
-                color="primary"
                 disabled={applied.includes(selectedProject.id)}
-                onClick={() => { handleApply(selectedProject.id); setDetailOpen(false); }}
-                sx={{ minWidth: 160, borderRadius: 2 }}
+                onClick={() => {
+                  handleApply(selectedProject.id);
+                  handleCloseDetail();
+                }}
               >
-                {applied.includes(selectedProject.id) ? 'Postulado' : 'Postularme'}
-              </Button>
-              <Button onClick={() => setDetailOpen(false)} sx={{ ml: 2, borderRadius: 2 }}>
-                Cerrar
+                {applied.includes(selectedProject.id) ? 'Ya Postulado' : 'Postularse'}
               </Button>
             </Box>
           </Box>
         )}
       </Dialog>
+
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar({ open: false, message: '' })}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>

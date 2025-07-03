@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -26,6 +26,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
+
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -35,97 +36,35 @@ import {
   LocationOn as LocationIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
+
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface Interview {
   id: string;
-  studentId: string;
-  studentName: string;
-  studentEmail: string;
-  studentPhone: string;
-  projectId: string;
-  projectTitle: string;
+  student_id: string;
+  student_name: string;
+  student_email: string;
+  student_phone: string;
+  project_id: string;
+  project_title: string;
   type: 'technical' | 'behavioral' | 'final' | 'follow-up';
   status: 'scheduled' | 'completed' | 'cancelled' | 'rescheduled';
-  scheduledDate: string;
+  scheduled_date: string;
   duration: number; // en minutos
   location: string;
   interviewers: string[];
   notes: string;
   outcome: 'passed' | 'failed' | 'pending' | 'needs-follow-up';
   feedback: string;
-  nextSteps: string;
+  next_steps: string;
   rating?: number;
-}
-
-const mockInterviews: Interview[] = [
-  {
-    id: '1',
-    studentId: '1',
-    studentName: 'Juan Pérez',
-    studentEmail: 'juan.perez@email.com',
-    studentPhone: '+56 9 1234 5678',
-    projectId: '1',
-    projectTitle: 'Desarrollo Web Frontend',
-    type: 'technical',
-    status: 'completed',
-    scheduledDate: '2024-01-15T14:00:00Z',
-    duration: 60,
-    location: 'Sala de Reuniones A',
-    interviewers: ['María González', 'Carlos Rodríguez'],
-    notes: 'Entrevista técnica enfocada en React y TypeScript',
-    outcome: 'passed',
-    feedback: 'Excelente conocimiento técnico. Buenas habilidades de resolución de problemas.',
-    nextSteps: 'Contratación inmediata para el proyecto',
-  },
-  {
-    id: '2',
-    studentId: '2',
-    studentName: 'María González',
-    studentEmail: 'maria.gonzalez@email.com',
-    studentPhone: '+56 9 8765 4321',
-    projectId: '2',
-    projectTitle: 'API REST con Django',
-    type: 'final',
-    status: 'scheduled',
-    scheduledDate: '2024-01-20T10:00:00Z',
-    duration: 90,
-    location: 'Zoom Meeting',
-    interviewers: ['Juan Pérez'],
-    notes: 'Entrevista final para evaluación completa',
-    outcome: 'pending',
-    feedback: '',
-    nextSteps: '',
-  },
-  {
-    id: '3',
-    studentId: '3',
-    studentName: 'Carlos Rodríguez',
-    studentEmail: 'carlos.rodriguez@email.com',
-    studentPhone: '+56 9 5555 1234',
-    projectId: '3',
-    projectTitle: 'App Móvil React Native',
-    type: 'behavioral',
-    status: 'cancelled',
-    scheduledDate: '2024-01-18T16:00:00Z',
-    duration: 45,
-    location: 'Oficina Principal',
-    interviewers: ['Ana Silva'],
-    notes: 'Entrevista cancelada por el estudiante',
-    outcome: 'failed',
-    feedback: 'No se presentó a la entrevista',
-    nextSteps: 'No proceder con la candidatura',
-  },
-];
-
-interface CompanyInterviewsProps {
-  onAddEvent?: (event: any) => void;
 }
 
 const cantidadOpciones = [5, 10, 20, 50, 'todas'];
 
-export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent }) => {
-  const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
+export const CompanyInterviews: React.FC = () => {
+  const [interviews, setInterviews] = useState<Interview[]>([]);
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
   const [showDialog, setShowDialog] = useState(false);
@@ -135,18 +74,21 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
     feedback: '',
   });
 
-  const [newInterview, setNewInterview] = useState<Partial<Interview>>({
-    studentName: '',
-    projectTitle: '',
-    type: 'technical',
-    scheduledDate: '',
-    duration: 60,
-    location: '',
-    interviewers: [],
-    notes: '',
-  });
   // Filtros de cantidad por tab
   const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
+
+  useEffect(() => {
+    async function fetchInterviews() {
+      try {
+        const data = await apiService.get('/api/interviews/');
+        setInterviews(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching interviews:', error);
+        setInterviews([]);
+      }
+    }
+    fetchInterviews();
+  }, []);
 
   const handleCantidadChange = (tabIdx: number, value: number | string) => {
     setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
@@ -227,21 +169,27 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
     }
   };
 
-  const handleSaveFeedback = () => {
+  const handleSaveFeedback = async () => {
     if (selectedInterview) {
-      setInterviews(prev =>
-        prev.map(interview =>
-          interview.id === selectedInterview.id
-            ? { ...interview, ...feedbackData }
-            : interview
-        )
-      );
-      setShowFeedbackDialog(false);
-      setSelectedInterview(null);
+      try {
+        const updatedInterview = await apiService.patch(`/api/interviews/${selectedInterview.id}/`, {
+          rating: feedbackData.rating,
+          feedback: feedbackData.feedback,
+        });
+
+        setInterviews(prev =>
+          prev.map(interview =>
+            interview.id === selectedInterview.id ? (updatedInterview as Interview) : interview
+          )
+        );
+        setShowFeedbackDialog(false);
+        setSelectedInterview(null);
+        setFeedbackData({ rating: 0, feedback: '' });
+      } catch (error) {
+        console.error('Error saving feedback:', error);
+      }
     }
   };
-
-
 
   const filteredInterviews = interviews.filter(interview => {
     switch (selectedTab) {
@@ -338,10 +286,10 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" gutterBottom>
-                      {interview.studentName}
+                      {interview.student_name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {interview.studentEmail}
+                      {interview.student_email}
                     </Typography>
                   </Box>
                   <Chip
@@ -352,7 +300,7 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
                 </Box>
 
                 <Typography variant="body1" gutterBottom>
-                  <strong>Proyecto:</strong> {interview.projectTitle}
+                  <strong>Proyecto:</strong> {interview.project_title}
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -374,7 +322,7 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  <strong>Fecha:</strong> {new Date(interview.scheduledDate).toLocaleString()}
+                  <strong>Fecha:</strong> {new Date(interview.scheduled_date).toLocaleString()}
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
@@ -429,10 +377,10 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
                 </Avatar>
                 <Box>
                   <Typography variant="h6" gutterBottom>
-                    {selectedInterview.studentName}
+                    {selectedInterview.student_name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {selectedInterview.studentEmail}
+                    {selectedInterview.student_email}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
                     <Chip
@@ -452,7 +400,7 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
               </Box>
 
               <Typography variant="h6" gutterBottom>
-                Proyecto: {selectedInterview.projectTitle}
+                Proyecto: {selectedInterview.project_title}
               </Typography>
 
               <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
@@ -465,7 +413,7 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
                   <ScheduleIcon sx={{ mr: 2, color: 'text.secondary' }} />
                   <ListItemText
                     primary="Fecha y Hora"
-                    secondary={new Date(selectedInterview.scheduledDate).toLocaleString()}
+                    secondary={new Date(selectedInterview.scheduled_date).toLocaleString()}
                   />
                 </ListItem>
                 <ListItem>
@@ -479,14 +427,14 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
                   <EmailIcon sx={{ mr: 2, color: 'text.secondary' }} />
                   <ListItemText
                     primary="Email"
-                    secondary={selectedInterview.studentEmail}
+                    secondary={selectedInterview.student_email}
                   />
                 </ListItem>
                 <ListItem>
                   <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
                   <ListItemText
                     primary="Teléfono"
-                    secondary={selectedInterview.studentPhone}
+                    secondary={selectedInterview.student_phone}
                   />
                 </ListItem>
               </List>
@@ -520,13 +468,13 @@ export const CompanyInterviews: React.FC<CompanyInterviewsProps> = ({ onAddEvent
                 </>
               )}
 
-              {selectedInterview.nextSteps && (
+              {selectedInterview.next_steps && (
                 <>
                   <Typography variant="h6" gutterBottom>
                     Próximos Pasos
                   </Typography>
                   <Typography variant="body2" paragraph>
-                    {selectedInterview.nextSteps}
+                    {selectedInterview.next_steps}
                   </Typography>
                 </>
               )}

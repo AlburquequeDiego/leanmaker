@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -30,139 +30,29 @@ import {
   Visibility as VisibilityIcon,
   RateReview as RateReviewIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
-// Mock de proyectos y estudiantes
-const mockProjects = [
-  {
-    id: 'p1',
-    title: 'Sistema de Gestión de Inventarios',
-    company: 'TechCorp Solutions',
-    description: 'Desarrollo de un sistema web para gestión de inventarios con base de datos MySQL y frontend en React...',
-    status: 'active',
-    progress: 65,
-    tech: ['React', 'Node.js', 'MySQL'],
-    hours: 52,
-    totalHours: 80,
-    location: 'Remoto',
-    students: [
-      { id: 's1', name: 'Juan Pérez', evaluated: false },
-      { id: 's2', name: 'María González', evaluated: true },
-    ],
-  },
-  {
-    id: 'p2',
-    title: 'Sistema de Gestión de Clientes',
-    company: 'Business Solutions',
-    description: 'Sistema CRM para gestión de clientes y ventas con reportes avanzados....',
-    status: 'active',
-    progress: 40,
-    tech: ['Angular', 'Spring Boot', 'MySQL'],
-    hours: 32,
-    totalHours: 80,
-    location: 'Medellín',
-    students: [
-      { id: 's3', name: 'Carlos Rodríguez', evaluated: false },
-    ],
-  },
-  {
-    id: 'p3',
-    title: 'Dashboard de Analytics',
-    company: 'DataCorp',
-    description: 'Desarrollo de dashboard de analytics para visualización de datos empresariales....',
-    status: 'completed',
-    progress: 100,
-    tech: ['Python', 'Pandas', 'Power BI'],
-    hours: 60,
-    totalHours: 60,
-    location: 'Remoto',
-    students: [
-      { id: 's4', name: 'Ana Torres', evaluated: true },
-    ],
-  },
-  {
-    id: 'p4',
-    title: 'Plataforma de E-learning',
-    company: 'EduTech Solutions',
-    description: 'Desarrollo de plataforma web para cursos online con sistema de videoconferencias....',
-    status: 'completed',
-    progress: 100,
-    tech: ['Vue.js', 'Laravel', 'PostgreSQL'],
-    hours: 120,
-    totalHours: 120,
-    location: 'Remoto',
-    students: [
-      { id: 's5', name: 'Luis Fernández', evaluated: false },
-      { id: 's6', name: 'Sofía Ramírez', evaluated: true },
-    ],
-  },
-  {
-    id: 'p5',
-    title: 'App de Gestión de Tareas',
-    company: 'Productivity Inc',
-    description: 'Aplicación móvil para gestión de tareas y proyectos con colaboración en tiempo real....',
-    status: 'completed',
-    progress: 100,
-    tech: ['Flutter', 'Firebase', 'Dart'],
-    hours: 100,
-    totalHours: 100,
-    location: 'Remoto',
-    students: [
-      { id: 's7', name: 'Pedro López', evaluated: false },
-    ],
-  },
-  {
-    id: 'p6',
-    title: 'Sistema de Reservas',
-    company: 'BookingPro',
-    description: 'Sistema de reservas para hoteles y restaurantes...',
-    status: 'paused',
-    progress: 30,
-    tech: ['Java', 'Spring', 'Oracle'],
-    hours: 20,
-    totalHours: 80,
-    location: 'Remoto',
-    students: [
-      { id: 's8', name: 'Marta Ruiz', evaluated: false },
-    ],
-  },
-];
+interface Project {
+  id: string;
+  title: string;
+  company: string;
+  description: string;
+  status: 'active' | 'completed' | 'paused';
+  progress: number;
+  tech: string[];
+  hours: number;
+  total_hours: number;
+  location: string;
+  students: Student[];
+}
 
-// Mock de evaluaciones recibidas por la empresa
-const mockEvaluacionesRecibidas = [
-  {
-    id: 'e1',
-    project: 'Sistema de Gestión de Inventarios',
-    student: 'Juan Pérez',
-    date: '2024-06-10',
-    gpa: 4.7,
-    code: 5,
-    deadlines: 5,
-    teamwork: 4,
-    communication: 5,
-    documentation: 4,
-    innovation: 5,
-    comment: 'Excelente ambiente de trabajo y apoyo del equipo de la empresa.',
-    fortalezas: ['Comunicación clara', 'Soporte técnico'],
-    mejoras: ['Más feedback en las reuniones'],
-  },
-  {
-    id: 'e2',
-    project: 'Dashboard de Analytics',
-    student: 'Ana Torres',
-    date: '2024-05-20',
-    gpa: 4.5,
-    code: 4,
-    deadlines: 5,
-    teamwork: 5,
-    communication: 4,
-    documentation: 4,
-    innovation: 5,
-    comment: 'Me sentí muy apoyada por la empresa y aprendí mucho.',
-    fortalezas: ['Mentoría', 'Recursos disponibles'],
-    mejoras: ['Mejorar onboarding inicial'],
-  },
-  // ...más mock data...
-];
+interface Student {
+  id: string;
+  name: string;
+  evaluated: boolean;
+}
+
+
 
 // Opciones para fortalezas y áreas de mejora
 const fortalezasOpciones = [
@@ -172,23 +62,13 @@ const fortalezasOpciones = [
   'Excelente resolución de problemas',
   'Código limpio y bien estructurado',
 ];
+
 const mejorasOpciones = [
   'Participación más activa en las reuniones',
   'Mejorar la cobertura de pruebas unitarias',
   'Optimizar consultas a la base de datos',
   'Comunicación en equipo',
   'Gestión del tiempo',
-];
-
-// Agrega la card de estudiantes a evaluar
-const totalEstudiantesAEvaluar = mockProjects
-  .filter(p => p.status === 'completed')
-  .reduce((acc, p) => acc + p.students.filter(stu => !stu.evaluated).length, 0);
-const resumen = [
-  { label: 'Proyectos Activos', value: mockProjects.filter(p => p.status === 'active').length, icon: <CheckCircleIcon />, color: '#66BB6A' },
-  { label: 'Proyectos Completados', value: mockProjects.filter(p => p.status === 'completed').length, icon: <AssessmentIcon />, color: '#42A5F5' },
-  { label: 'Proyectos Pausados', value: mockProjects.filter(p => p.status === 'paused').length, icon: <PauseCircleIcon />, color: '#FFA726' },
-  { label: 'Estudiantes a Evaluar', value: totalEstudiantesAEvaluar, icon: <PersonIcon />, color: '#AB47BC' },
 ];
 
 const cantidadOpciones = [5, 10, 20, 'todas'];
@@ -211,23 +91,14 @@ interface EvaluationFormState {
 }
 
 export const CompanyEvaluations: React.FC = () => {
-  // Filtros de cantidad para cada sección
+  const [projects, setProjects] = useState<Project[]>([]);
   const [cantidadActivos, setCantidadActivos] = useState<string | number>(5);
   const [cantidadCompletados, setCantidadCompletados] = useState<string | number>(5);
-
-  // Proyectos filtrados
-  const activos = mockProjects.filter(p => p.status === 'active');
-  const completados = mockProjects.filter(p => p.status === 'completed');
-
-  const activosFiltrados = cantidadActivos === 'todas' ? activos : activos.slice(0, Number(cantidadActivos));
-  const completadosFiltrados = cantidadCompletados === 'todas' ? completados : completados.slice(0, Number(cantidadCompletados));
-
-  // Estado para modal de evaluación y detalle
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetalleOpen, setModalDetalleOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [evaluacion, setEvaluacion] = useState<EvaluationFormState>({
+  const [evaluationForm, setEvaluationForm] = useState<EvaluationFormState>({
     code: 0,
     deadlines: 0,
     teamwork: 0,
@@ -242,11 +113,27 @@ export const CompanyEvaluations: React.FC = () => {
     tecnologias: '',
     entregables: '',
   });
-  const [evaluacionesGuardadas, setEvaluacionesGuardadas] = useState<any[]>([]);
 
-  // Estado para filtro y modal de evaluaciones recibidas
-  const [cantidadRecibidas, setCantidadRecibidas] = useState<string | number>(5);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Obtener proyectos
+        const projectsData = await apiService.get('/api/projects/');
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setProjects([]);
+      }
+    }
+    fetchData();
+  }, []);
 
+  // Filtros de cantidad para cada sección
+  const activos = projects.filter(p => p.status === 'active');
+  const completados = projects.filter(p => p.status === 'completed');
+
+  const activosFiltrados = cantidadActivos === 'todas' ? activos : activos.slice(0, Number(cantidadActivos));
+  const completadosFiltrados = cantidadCompletados === 'todas' ? completados : completados.slice(0, Number(cantidadCompletados));
 
   // Handlers para abrir/cerrar modales y guardar evaluación
   const handleOpenEvaluar = (student: any, project: any) => {
@@ -261,39 +148,73 @@ export const CompanyEvaluations: React.FC = () => {
   };
   const handleCloseModal = () => {
     setModalOpen(false);
-    setEvaluacion({
+    setEvaluationForm({
       code: 0, deadlines: 0, teamwork: 0, communication: 0, documentation: 0, innovation: 0,
       comment: '', fortalezas: [], fortalezasExtra: '', mejoras: [], mejorasExtra: '', tecnologias: '', entregables: ''
     });
   };
   const handleCloseDetalle = () => setModalDetalleOpen(false);
 
-  const handleSaveEvaluacion = () => {
-    setEvaluacionesGuardadas(prev => [
-      ...prev,
-      {
-        studentId: selectedStudent.id,
-        projectId: selectedProject.id,
-        ...evaluacion,
-        gpa: (
-          (evaluacion.code + evaluacion.deadlines + evaluacion.teamwork + evaluacion.communication + evaluacion.documentation + evaluacion.innovation) / 6
-        ).toFixed(1),
-      }
-    ]);
-    selectedProject.students.find((stu: any) => stu.id === selectedStudent.id).evaluated = true;
-    setModalOpen(false);
-    setEvaluacion({
-      code: 0, deadlines: 0, teamwork: 0, communication: 0, documentation: 0, innovation: 0,
-      comment: '', fortalezas: [], fortalezasExtra: '', mejoras: [], mejorasExtra: '', tecnologias: '', entregables: ''
-    });
+  const handleSaveEvaluacion = async () => {
+    try {
+      const evaluationData = {
+        project_id: selectedProject.id,
+        student_id: selectedStudent.id,
+        code: evaluationForm.code,
+        deadlines: evaluationForm.deadlines,
+        teamwork: evaluationForm.teamwork,
+        communication: evaluationForm.communication,
+        documentation: evaluationForm.documentation,
+        innovation: evaluationForm.innovation,
+        comment: evaluationForm.comment,
+        fortalezas: evaluationForm.fortalezas,
+        mejoras: evaluationForm.mejoras,
+        tecnologias: evaluationForm.tecnologias,
+        entregables: evaluationForm.entregables,
+      };
+
+      const createdEvaluation = await apiService.post('/api/evaluations/', evaluationData);
+      setProjects(prev => [...prev, createdEvaluation as Project]);
+      setModalOpen(false);
+      setSelectedStudent(null);
+      setSelectedProject(null);
+      setEvaluationForm({
+        code: 0,
+        deadlines: 0,
+        teamwork: 0,
+        communication: 0,
+        documentation: 0,
+        innovation: 0,
+        comment: '',
+        fortalezas: [],
+        fortalezasExtra: '',
+        mejoras: [],
+        mejorasExtra: '',
+        tecnologias: '',
+        entregables: '',
+      });
+    } catch (error) {
+      console.error('Error saving evaluation:', error);
+    }
   };
 
-  const getEvaluacionGuardada = (studentId: string, projectId: string) =>
-    evaluacionesGuardadas.find((ev: any) => ev.studentId === studentId && ev.projectId === projectId);
+  const getEvaluacionGuardada = (studentId: string, projectId: string): any => {
+    const project = projects.find((p: Project) => p.id === projectId);
+    const student = project?.students.find((stu: Student) => stu.id === studentId);
+    return student || null;
+  };
 
-  const recibidasFiltradas = cantidadRecibidas === 'todas' ? mockEvaluacionesRecibidas : mockEvaluacionesRecibidas.slice(0, Number(cantidadRecibidas));
+  // Calcular estadísticas
+  const totalEstudiantesAEvaluar = projects
+    .filter((p: Project) => p.status === 'completed')
+    .reduce((acc: number, p: Project) => acc + p.students.filter((stu: Student) => !stu.evaluated).length, 0);
 
-
+  const resumen = [
+    { label: 'Proyectos Activos', value: projects.filter((p: Project) => p.status === 'active').length, icon: <CheckCircleIcon />, color: '#66BB6A' },
+    { label: 'Proyectos Completados', value: projects.filter((p: Project) => p.status === 'completed').length, icon: <AssessmentIcon />, color: '#42A5F5' },
+    { label: 'Proyectos Pausados', value: projects.filter((p: Project) => p.status === 'paused').length, icon: <PauseCircleIcon />, color: '#FFA726' },
+    { label: 'Estudiantes a Evaluar', value: totalEstudiantesAEvaluar, icon: <PersonIcon />, color: '#AB47BC' },
+  ];
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -361,7 +282,7 @@ export const CompanyEvaluations: React.FC = () => {
                     {proj.tech.length > 3 && <Chip label={`+${proj.tech.length - 3}`} size="small" variant="outlined" />}
                 </Box>
                   <Typography variant="caption" color="text.secondary">
-                    {proj.hours}/{proj.totalHours} horas • {proj.location}
+                    {proj.hours}/{proj.total_hours} horas • {proj.location}
                   </Typography>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="subtitle2">Estudiantes asignados:</Typography>
@@ -431,9 +352,9 @@ export const CompanyEvaluations: React.FC = () => {
                     ))}
                     {proj.tech.length > 3 && <Chip label={`+${proj.tech.length - 3}`} size="small" variant="outlined" />}
                   </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {proj.hours}/{proj.totalHours} horas • {proj.location}
-                </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                    {proj.hours}/{proj.total_hours} horas • {proj.location}
+                  </Typography>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="subtitle2">Estudiantes asignados:</Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
@@ -457,69 +378,6 @@ export const CompanyEvaluations: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Nueva sección de evaluaciones recibidas */}
-      <Card sx={{ mt: 4 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-              <AssessmentIcon sx={{ mr: 1, color: 'info.main' }} /> Evaluaciones Recibidas ({recibidasFiltradas.length})
-                </Typography>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Mostrar</InputLabel>
-              <Select
-                value={cantidadRecibidas}
-                label="Mostrar"
-                onChange={e => setCantidadRecibidas(e.target.value)}
-              >
-                {cantidadOpciones.map(op => (
-                  <MenuItem key={op} value={op}>{op === 'todas' ? 'Todas' : `Últimas ${op}`}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Divider sx={{ mb: 2 }} />
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {recibidasFiltradas.map(ev => (
-              <Card key={ev.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' }, p: 2 }}>
-                <CardContent>
-                  <Typography variant="h6">{ev.project}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {ev.student}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    {ev.date}
-                  </Typography>
-                  <Box sx={{ mb: 1 }}>
-                    <Typography variant="caption">Calificación General</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Rating value={ev.gpa} readOnly precision={0.5} />
-                      <Typography variant="h5" sx={{ ml: 1 }}>{ev.gpa}/5</Typography>
-                    </Box>
-                  </Box>
-                  <Typography variant="subtitle1" sx={{ mt: 2 }}>Comentarios del Estudiante</Typography>
-                  <Typography variant="body2" paragraph>
-                    {ev.comment}
-                  </Typography>
-                  <Typography variant="subtitle1" color="success.main">Fortalezas</Typography>
-                  <ul style={{ margin: 0, paddingLeft: 16 }}>
-                    {ev.fortalezas.map((f: string, i: number) => (
-                      <li key={i}><Typography variant="body2">{f}</Typography></li>
-                    ))}
-                  </ul>
-                  <Typography variant="subtitle1" color="warning.main">Áreas de Mejora</Typography>
-                  <ul style={{ margin: 0, paddingLeft: 16 }}>
-                    {ev.mejoras.map((m: string, i: number) => (
-                      <li key={i}><Typography variant="body2">{m}</Typography></li>
-                    ))}
-                  </ul>
-              </CardContent>
-            </Card>
-            ))}
-            {recibidasFiltradas.length === 0 && <Typography color="text.secondary">No hay evaluaciones recibidas para mostrar.</Typography>}
-          </Box>
-        </CardContent>
-      </Card>
-
       {/* Modales */}
       <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="md" fullWidth>
         <DialogTitle>Evaluar Estudiante</DialogTitle>
@@ -531,27 +389,27 @@ export const CompanyEvaluations: React.FC = () => {
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 2 }}>
               <Box>
                 <Typography variant="subtitle2">Calidad del Código</Typography>
-                <Rating value={evaluacion.code} onChange={(_, v) => setEvaluacion(ev => ({ ...ev, code: v || 1 }))} max={5} />
+                <Rating value={evaluationForm.code} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, code: v || 1 }))} max={5} />
               </Box>
               <Box>
                 <Typography variant="subtitle2">Cumplimiento de Plazos</Typography>
-                <Rating value={evaluacion.deadlines} onChange={(_, v) => setEvaluacion(ev => ({ ...ev, deadlines: v || 1 }))} max={5} />
+                <Rating value={evaluationForm.deadlines} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, deadlines: v || 1 }))} max={5} />
               </Box>
               <Box>
                 <Typography variant="subtitle2">Trabajo en Equipo</Typography>
-                <Rating value={evaluacion.teamwork} onChange={(_, v) => setEvaluacion(ev => ({ ...ev, teamwork: v || 1 }))} max={5} />
+                <Rating value={evaluationForm.teamwork} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, teamwork: v || 1 }))} max={5} />
               </Box>
               <Box>
                 <Typography variant="subtitle2">Comunicación</Typography>
-                <Rating value={evaluacion.communication} onChange={(_, v) => setEvaluacion(ev => ({ ...ev, communication: v || 1 }))} max={5} />
+                <Rating value={evaluationForm.communication} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, communication: v || 1 }))} max={5} />
               </Box>
               <Box>
                 <Typography variant="subtitle2">Documentación</Typography>
-                <Rating value={evaluacion.documentation} onChange={(_, v) => setEvaluacion(ev => ({ ...ev, documentation: v || 1 }))} max={5} />
+                <Rating value={evaluationForm.documentation} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, documentation: v || 1 }))} max={5} />
               </Box>
               <Box>
                 <Typography variant="subtitle2">Innovación</Typography>
-                <Rating value={evaluacion.innovation} onChange={(_, v) => setEvaluacion(ev => ({ ...ev, innovation: v || 1 }))} max={5} />
+                <Rating value={evaluationForm.innovation} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, innovation: v || 1 }))} max={5} />
               </Box>
             </Box>
               <TextField
@@ -559,22 +417,22 @@ export const CompanyEvaluations: React.FC = () => {
                 fullWidth
               multiline
               rows={3}
-              value={evaluacion.comment}
-              onChange={e => setEvaluacion(ev => ({ ...ev, comment: e.target.value }))}
+              value={evaluationForm.comment}
+              onChange={e => setEvaluationForm(ev => ({ ...ev, comment: e.target.value }))}
               sx={{ mb: 2 }}
             />
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel>Fortalezas</InputLabel>
                 <Select
                 multiple
-                value={evaluacion.fortalezas}
-                onChange={e => setEvaluacion(ev => ({ ...ev, fortalezas: Array.isArray(e.target.value) ? e.target.value : [] }))}
+                value={evaluationForm.fortalezas}
+                onChange={e => setEvaluationForm(ev => ({ ...ev, fortalezas: Array.isArray(e.target.value) ? e.target.value : [] }))}
                 renderValue={selected => (selected as string[]).join(', ')}
                 label="Fortalezas"
               >
                 {fortalezasOpciones.map(opt => (
                   <MenuItem key={opt} value={opt}>
-                    <Checkbox checked={evaluacion.fortalezas.indexOf(opt) > -1} />
+                    <Checkbox checked={evaluationForm.fortalezas.indexOf(opt) > -1} />
                     <ListItemText primary={opt} />
                   </MenuItem>
                 ))}
@@ -583,22 +441,22 @@ export const CompanyEvaluations: React.FC = () => {
               <TextField
               label="Otra fortaleza (opcional)"
                 fullWidth
-              value={evaluacion.fortalezasExtra}
-              onChange={e => setEvaluacion(ev => ({ ...ev, fortalezasExtra: e.target.value }))}
+              value={evaluationForm.fortalezasExtra}
+              onChange={e => setEvaluationForm(ev => ({ ...ev, fortalezasExtra: e.target.value }))}
               sx={{ mb: 2 }}
             />
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel>Áreas de Mejora</InputLabel>
               <Select
                 multiple
-                value={evaluacion.mejoras}
-                onChange={e => setEvaluacion(ev => ({ ...ev, mejoras: Array.isArray(e.target.value) ? e.target.value : [] }))}
+                value={evaluationForm.mejoras}
+                onChange={e => setEvaluationForm(ev => ({ ...ev, mejoras: Array.isArray(e.target.value) ? e.target.value : [] }))}
                 renderValue={selected => (selected as string[]).join(', ')}
                 label="Áreas de Mejora"
               >
                 {mejorasOpciones.map(opt => (
                   <MenuItem key={opt} value={opt}>
-                    <Checkbox checked={evaluacion.mejoras.indexOf(opt) > -1} />
+                    <Checkbox checked={evaluationForm.mejoras.indexOf(opt) > -1} />
                     <ListItemText primary={opt} />
                   </MenuItem>
                 ))}
@@ -607,22 +465,22 @@ export const CompanyEvaluations: React.FC = () => {
               <TextField
               label="Otra área de mejora (opcional)"
                 fullWidth
-              value={evaluacion.mejorasExtra}
-              onChange={e => setEvaluacion(ev => ({ ...ev, mejorasExtra: e.target.value }))}
+              value={evaluationForm.mejorasExtra}
+              onChange={e => setEvaluationForm(ev => ({ ...ev, mejorasExtra: e.target.value }))}
               sx={{ mb: 2 }}
             />
               <TextField
               label="Tecnologías Utilizadas (opcional)"
                 fullWidth
-              value={evaluacion.tecnologias}
-              onChange={e => setEvaluacion(ev => ({ ...ev, tecnologias: e.target.value }))}
+              value={evaluationForm.tecnologias}
+              onChange={e => setEvaluationForm(ev => ({ ...ev, tecnologias: e.target.value }))}
               sx={{ mb: 2 }}
             />
               <TextField
               label="Entregables (opcional)"
                 fullWidth
-              value={evaluacion.entregables}
-              onChange={e => setEvaluacion(ev => ({ ...ev, entregables: e.target.value }))}
+              value={evaluationForm.entregables}
+              onChange={e => setEvaluationForm(ev => ({ ...ev, entregables: e.target.value }))}
               sx={{ mb: 2 }}
             />
           </Box>
@@ -648,15 +506,15 @@ export const CompanyEvaluations: React.FC = () => {
                     <Typography variant="body2"><b>Empresa:</b> {selectedProject.company}</Typography>
                     <Typography variant="body2"><b>Evaluador:</b> Empresa</Typography>
                     <Typography variant="body2"><b>Fecha:</b> {new Date().toLocaleDateString()}</Typography>
-                    <Typography variant="body2"><b>Duración:</b> {selectedProject.totalHours / 40} meses</Typography>
+                    <Typography variant="body2"><b>Duración:</b> {selectedProject.total_hours / 40} meses</Typography>
                   </CardContent>
                 </Card>
                 <Card sx={{ flex: '1 1 200px', mb: 2 }}>
                   <CardContent>
                     <Typography variant="subtitle2">Calificación General</Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Rating value={Number(getEvaluacionGuardada(selectedStudent.id, selectedProject.id).gpa)} readOnly precision={0.5} />
-                      <Typography variant="h5" sx={{ ml: 1 }}>{getEvaluacionGuardada(selectedStudent.id, selectedProject.id).gpa}/5</Typography>
+                      <Rating value={Number(getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.gpa)} readOnly precision={0.5} />
+                      <Typography variant="h5" sx={{ ml: 1 }}>{getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.gpa}/5</Typography>
                     </Box>
                     <Typography variant="body2">Evaluación Final</Typography>
                   </CardContent>
@@ -665,12 +523,12 @@ export const CompanyEvaluations: React.FC = () => {
               <Typography variant="subtitle1" sx={{ mt: 2 }}>Evaluación por Categorías</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                 {[
-                  { label: 'Calidad del Código', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id).code },
-                  { label: 'Cumplimiento de Plazos', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id).deadlines },
-                  { label: 'Trabajo en Equipo', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id).teamwork },
-                  { label: 'Comunicación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id).communication },
-                  { label: 'Documentación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id).documentation },
-                  { label: 'Innovación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id).innovation },
+                  { label: 'Calidad del Código', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.code },
+                  { label: 'Cumplimiento de Plazos', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.deadlines },
+                  { label: 'Trabajo en Equipo', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.teamwork },
+                  { label: 'Comunicación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.communication },
+                  { label: 'Documentación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.documentation },
+                  { label: 'Innovación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.innovation },
                 ].map((cat, i) => (
                   <Card key={i} sx={{ flex: '1 1 200px' }}>
                     <CardContent>
@@ -686,7 +544,7 @@ export const CompanyEvaluations: React.FC = () => {
                   <CardContent>
                     <Typography variant="subtitle2">Tecnologías Utilizadas</Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                      {getEvaluacionGuardada(selectedStudent.id, selectedProject.id).tecnologias?.split(',').map((t: string, i: number) => (
+                      {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.tecnologias?.split(',').map((t: string, i: number) => (
                         <Chip key={i} label={t.trim()} variant="outlined" />
                       ))}
                 </Box>
@@ -696,7 +554,7 @@ export const CompanyEvaluations: React.FC = () => {
                   <CardContent>
                     <Typography variant="subtitle2">Entregables</Typography>
                     <ul style={{ margin: 0, paddingLeft: 16 }}>
-                      {getEvaluacionGuardada(selectedStudent.id, selectedProject.id).entregables?.split(',').map((e: string, i: number) => (
+                      {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.entregables?.split(',').map((e: string, i: number) => (
                         <li key={i}><Typography variant="body2">{e.trim()}</Typography></li>
                       ))}
                     </ul>
@@ -705,24 +563,24 @@ export const CompanyEvaluations: React.FC = () => {
               </Box>
               <Typography variant="subtitle1" sx={{ mt: 2 }}>Comentarios del Evaluador</Typography>
               <Typography variant="body2" paragraph>
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id).comment}
+                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.comment}
               </Typography>
               <Typography variant="subtitle1" color="success.main">Fortalezas</Typography>
               <ul style={{ margin: 0, paddingLeft: 16 }}>
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id).fortalezas.map((f: string, i: number) => (
+                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.fortalezas.map((f: string, i: number) => (
                   <li key={i}><Typography variant="body2">{f}</Typography></li>
                 ))}
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id).fortalezasExtra && (
-                  <li><Typography variant="body2">{getEvaluacionGuardada(selectedStudent.id, selectedProject.id).fortalezasExtra}</Typography></li>
+                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.fortalezasExtra && (
+                  <li><Typography variant="body2">{getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.fortalezasExtra}</Typography></li>
                 )}
               </ul>
               <Typography variant="subtitle1" color="warning.main">Áreas de Mejora</Typography>
               <ul style={{ margin: 0, paddingLeft: 16 }}>
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id).mejoras.map((m: string, i: number) => (
+                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.mejoras.map((m: string, i: number) => (
                   <li key={i}><Typography variant="body2">{m}</Typography></li>
                 ))}
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id).mejorasExtra && (
-                  <li><Typography variant="body2">{getEvaluacionGuardada(selectedStudent.id, selectedProject.id).mejorasExtra}</Typography></li>
+                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.mejorasExtra && (
+                  <li><Typography variant="body2">{getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.mejorasExtra}</Typography></li>
                 )}
               </ul>
             </Box>

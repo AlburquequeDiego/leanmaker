@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Box, Paper, Typography, useTheme } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Box, Paper, Typography, useTheme, CircularProgress } from '@mui/material';
 import WorkIcon from '@mui/icons-material/Work';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SchoolIcon from '@mui/icons-material/School';
@@ -10,11 +10,57 @@ import EventIcon from '@mui/icons-material/Event';
 import HistoryIcon from '@mui/icons-material/History';
 import FolderIcon from '@mui/icons-material/Folder';
 import { UserTutorial } from '../../../components/common/UserTutorial';
+import { apiService } from '../../../services/api.service';
 
 export const CompanyDashboard = () => {
   const theme = useTheme();
   // Estado para mostrar el tutorial (se puede controlar con localStorage para mostrar solo la primera vez)
   const [showTutorial, setShowTutorial] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [applications, setApplications] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [evaluations, setEvaluations] = useState<any[]>([]);
+  const [gpa, setGpa] = useState(0);
+  const [successRate, setSuccessRate] = useState(0);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        // Obtener proyectos de la empresa actual
+        const projectsData = await apiService.get('/api/projects/');
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
+        // Obtener aplicaciones a proyectos de la empresa
+        const applicationsData = await apiService.get('/api/project-applications/');
+        setApplications(Array.isArray(applicationsData) ? applicationsData : []);
+        // Obtener estudiantes activos en proyectos de la empresa
+        const studentsData = await apiService.get('/api/students/');
+        setStudents(Array.isArray(studentsData) ? studentsData : []);
+        // Obtener evaluaciones de la empresa
+        const evaluationsData = await apiService.get('/api/evaluations/');
+        setEvaluations(Array.isArray(evaluationsData) ? evaluationsData : []);
+        // Calcular GPA promedio de la empresa
+        if (Array.isArray(evaluationsData) && evaluationsData.length > 0) {
+          const avgGpa = evaluationsData.reduce((acc: number, e: any) => acc + (e.overall_rating || 0), 0) / evaluationsData.length;
+          setGpa(Number(avgGpa.toFixed(2)));
+        } else {
+          setGpa(0);
+        }
+        // Calcular tasa de éxito (proyectos completados / total proyectos)
+        if (Array.isArray(projectsData)) {
+          const completed = projectsData.filter((p: any) => p.status && (p.status.name === 'completed' || p.status === 'completed')).length;
+          setSuccessRate(projectsData.length > 0 ? Math.round((completed / projectsData.length) * 100) : 0);
+        } else {
+          setSuccessRate(0);
+        }
+      } catch (error) {
+        // Puedes mostrar un mensaje de error si lo deseas
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1, p: { xs: 1, sm: 3 }, bgcolor: 'grey.100', minHeight: '100vh' }}>
@@ -30,6 +76,11 @@ export const CompanyDashboard = () => {
         Dashboard de Empresa
       </Typography>
       
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
         {/* Proyectos Activos */}
         <Paper
@@ -52,7 +103,7 @@ export const CompanyDashboard = () => {
           <Typography variant="h6" fontWeight={600} gutterBottom>
             Proyectos Activos
           </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>5</Typography>
+          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{projects.length}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Proyectos en desarrollo
           </Typography>
@@ -79,7 +130,7 @@ export const CompanyDashboard = () => {
           <Typography variant="h6" fontWeight={600} gutterBottom>
             Postulantes
           </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>15</Typography>
+          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{applications.length}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Nuevas solicitudes pendientes
           </Typography>
@@ -106,7 +157,7 @@ export const CompanyDashboard = () => {
           <Typography variant="h6" fontWeight={600} gutterBottom>
             Estudiantes Activos
           </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>8</Typography>
+          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{students.length}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Participando en proyectos
           </Typography>
@@ -133,7 +184,7 @@ export const CompanyDashboard = () => {
           <Typography variant="h6" fontWeight={600} gutterBottom>
             Evaluaciones Pendientes
           </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>3</Typography>
+          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{evaluations.length}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Por completar este mes
           </Typography>
@@ -160,7 +211,7 @@ export const CompanyDashboard = () => {
           <Typography variant="h6" fontWeight={600} gutterBottom>
             GPA Empresa
           </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>4.2</Typography>
+          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{gpa}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Calificación promedio
           </Typography>
@@ -187,12 +238,13 @@ export const CompanyDashboard = () => {
           <Typography variant="h6" fontWeight={600} gutterBottom>
             Tasa de Éxito
           </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>85%</Typography>
+          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{successRate}%</Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Proyectos completados
           </Typography>
         </Paper>
       </Box>
+      )}
 
       <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
         {/* Próximas Evaluaciones */}
