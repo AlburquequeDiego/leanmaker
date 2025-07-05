@@ -61,9 +61,10 @@ export const MyProjects = () => {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const data = await apiService.get('/api/project-members/');
+        const data = await apiService.get('/api/projects/my_projects/');
         setProjects(Array.isArray(data) ? data : []);
       } catch (error) {
+        console.error('Error fetching projects:', error);
         setProjects([]);
       }
     }

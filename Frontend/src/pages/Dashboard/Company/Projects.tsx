@@ -137,9 +137,11 @@ const Projects: React.FC = () => {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const data = await apiService.get('/api/projects/');
+        // Obtener proyectos específicos de la empresa
+        const data = await apiService.get('/api/projects/my_projects/');
         setProjects(Array.isArray(data) ? data : []);
       } catch (error) {
+        console.error('Error fetching projects:', error);
         setProjects([]);
       }
     }

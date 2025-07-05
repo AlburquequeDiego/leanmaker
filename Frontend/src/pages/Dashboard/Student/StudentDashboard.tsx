@@ -1,54 +1,90 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { UserTutorial } from '../../../components/common/UserTutorial';
-import { apiService } from '../../../services/api.service';
+import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
+import { NotificationSystem, useNotifications } from '../../../components/common/NotificationSystem';
+import { useDashboardStats } from '../../../hooks/useRealTimeData';
 
 export default function StudentDashboard() {
   const [showTutorial, setShowTutorial] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [student, setStudent] = useState<any>(null);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [applications, setApplications] = useState<any[]>([]);
-  const [activeProjects, setActiveProjects] = useState<any[]>([]);
+  const [previousStats, setPreviousStats] = useState<any>(null);
+  
+  // Usar hook de tiempo real para estadísticas
+  const { data: stats, loading, error, lastUpdate, refresh, isPolling } = useDashboardStats('student');
+  
+  // Sistema de notificaciones
+  const { notifications, addNotification, removeNotification } = useNotifications();
 
+  // Detectar cambios en las estadísticas y mostrar notificaciones
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        // Obtener perfil del estudiante actual
-        const studentsData = await apiService.get('/api/students/');
-        setStudent(Array.isArray(studentsData) && studentsData.length > 0 ? studentsData[0] : null);
-        // Obtener proyectos disponibles
-        const projectsData = await apiService.get('/api/projects/');
-        setProjects(Array.isArray(projectsData) ? projectsData : []);
-        // Obtener aplicaciones del estudiante
-        const applicationsData = await apiService.get('/api/project-applications/');
-        setApplications(Array.isArray(applicationsData) ? applicationsData : []);
-        // Obtener proyectos activos del estudiante
-        const activeProjectsData = await apiService.get('/api/project-members/');
-        setActiveProjects(Array.isArray(activeProjectsData) ? activeProjectsData : []);
-      } catch (error) {
-        // Puedes mostrar un mensaje de error si lo deseas
+    if (stats && previousStats) {
+      // Detectar cambios en aplicaciones pendientes
+      if (stats.pending_applications > previousStats.pending_applications) {
+        addNotification({
+          type: 'info',
+          title: 'Nueva aplicación pendiente',
+          message: `Tienes ${stats.pending_applications} aplicaciones esperando respuesta`,
+        });
       }
-      setLoading(false);
-    }
-    fetchData();
-  }, []);
 
-  // Cálculos de KPIs
-  const totalHours = student?.total_hours || 0;
-  const currentGPA = student?.gpa || 0;
-  const strikes = student?.strikes || 0;
+      // Detectar cambios en aplicaciones aceptadas
+      if (stats.accepted_applications > previousStats.accepted_applications) {
+        addNotification({
+          type: 'success',
+          title: '¡Aplicación aceptada!',
+          message: 'Una empresa ha aceptado tu aplicación',
+        });
+      }
+
+      // Detectar cambios en proyectos activos
+      if (stats.active_projects > previousStats.active_projects) {
+        addNotification({
+          type: 'success',
+          title: '¡Nuevo proyecto activo!',
+          message: `Ahora tienes ${stats.active_projects} proyectos en curso`,
+        });
+      }
+
+      // Detectar cambios en strikes
+      if (stats.strikes > previousStats.strikes) {
+        addNotification({
+          type: 'warning',
+          title: 'Strike asignado',
+          message: `Tienes ${stats.strikes} strikes. Ten cuidado con las entregas.`,
+        });
+      }
+    }
+
+    if (stats) {
+      setPreviousStats(stats);
+    }
+  }, [stats, previousStats, addNotification]);
+
+  // Cálculos de KPIs usando datos reales
+  const totalHours = stats?.total_hours || 0;
+  const currentGPA = stats?.gpa || 0;
+  const strikes = stats?.strikes || 0;
   const maxStrikes = 3;
-  const proyectosDisponibles = projects.length;
-  const misAplicaciones = applications.length;
-  const proyectosActivos = activeProjects.length;
+  const proyectosDisponibles = stats?.available_projects || 0;
+  const misAplicaciones = stats?.total_applications || 0;
+  const proyectosActivos = stats?.active_projects || 0;
+  const proyectosCompletados = stats?.completed_projects || 0;
+  const aplicacionesPendientes = stats?.pending_applications || 0;
+  const aplicacionesAceptadas = stats?.accepted_applications || 0;
+  const rating = stats?.rating || 0;
 
   return (
     <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+      {/* Sistema de notificaciones */}
+      <NotificationSystem
+        notifications={notifications}
+        onClose={removeNotification}
+        maxNotifications={3}
+      />
+
       {/* Tutorial para usuarios nuevos */}
       {showTutorial && (
         <UserTutorial 
@@ -56,10 +92,22 @@ export default function StudentDashboard() {
           onClose={() => setShowTutorial(false)} 
         />
       )}
-      <Typography variant="h4" fontWeight={700} mb={3}>
-        Bienvenido a tu Dashboard (Estudiante)
-      </Typography>
-      {loading ? (
+      
+      {/* Header con título y estado de conexión */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Typography variant="h4" fontWeight={700}>
+          Bienvenido a tu Dashboard (Estudiante)
+        </Typography>
+        <ConnectionStatus
+          isConnected={!error}
+          isPolling={isPolling}
+          lastUpdate={lastUpdate}
+          error={error}
+          onRefresh={refresh}
+        />
+      </Box>
+      
+      {loading && !stats ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
           <CircularProgress />
         </Box>
@@ -86,7 +134,7 @@ export default function StudentDashboard() {
             <BarChartIcon sx={{ fontSize: 32, mr: 1 }} />
             <Typography variant="h6" fontWeight={700}>GPA Actual</Typography>
           </Box>
-          <Typography variant="h4" fontWeight={700}>{currentGPA}</Typography>
+          <Typography variant="h4" fontWeight={700}>{currentGPA.toFixed(2)}</Typography>
           <Typography variant="body2">Promedio académico actual</Typography>
         </Paper>
         <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#42a5f5', color: 'white', boxShadow: 2, borderRadius: 3 }}>
@@ -111,6 +159,26 @@ export default function StudentDashboard() {
           <Typography variant="h6" fontWeight={700}>Proyectos Activos</Typography>
           <Typography variant="h4" fontWeight={700}>{proyectosActivos}</Typography>
           <Typography variant="body2">Proyectos en curso</Typography>
+        </Paper>
+        <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#8bc34a', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+          <Typography variant="h6" fontWeight={700}>Proyectos Completados</Typography>
+          <Typography variant="h4" fontWeight={700}>{proyectosCompletados}</Typography>
+          <Typography variant="body2">Proyectos finalizados exitosamente</Typography>
+        </Paper>
+        <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ff9800', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+          <Typography variant="h6" fontWeight={700}>Aplicaciones Pendientes</Typography>
+          <Typography variant="h4" fontWeight={700}>{aplicacionesPendientes}</Typography>
+          <Typography variant="body2">Esperando respuesta de empresas</Typography>
+        </Paper>
+        <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#4caf50', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+          <Typography variant="h6" fontWeight={700}>Aplicaciones Aceptadas</Typography>
+          <Typography variant="h4" fontWeight={700}>{aplicacionesAceptadas}</Typography>
+          <Typography variant="body2">Aplicaciones aprobadas</Typography>
+        </Paper>
+        <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#9c27b0', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+          <Typography variant="h6" fontWeight={700}>Rating Promedio</Typography>
+          <Typography variant="h4" fontWeight={700}>{rating.toFixed(1)}</Typography>
+          <Typography variant="body2">Calificación promedio recibida</Typography>
         </Paper>
       </Box>
       {/* Puedes agregar más secciones aquí si lo deseas, usando los datos reales */}

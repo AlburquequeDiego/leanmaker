@@ -216,27 +216,26 @@ export const Calendar = () => {
   }, []);
 
   const fetchEvents = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const data = await apiService.get('/api/calendar-events/');
-      const formattedEvents = Array.isArray(data) ? data.map((event: any) => ({
+      // Obtener eventos específicos del estudiante
+      const eventsData = await apiService.get('/api/calendar-events/student_events/');
+      const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
         id: event.id,
         title: event.title,
         start: new Date(event.start_date),
         end: new Date(event.end_date),
-        type: event.type || 'other',
+        type: event.event_type || 'other',
         priority: event.priority || 'medium',
         location: event.location,
         description: event.description,
-        project: event.project,
-        company: event.company,
+        company: event.project?.empresa?.nombre || 'Sin empresa',
         status: event.status || 'upcoming',
       })) : [];
-      
       setEvents(formattedEvents);
     } catch (error) {
-      console.error('Error fetching calendar events:', error);
-      setError('Error al cargar los eventos del calendario');
+      console.error('Error fetching events:', error);
+      setEvents([]);
     } finally {
       setLoading(false);
     }

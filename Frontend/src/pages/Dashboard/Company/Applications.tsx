@@ -75,7 +75,8 @@ export const CompanyApplications: React.FC = () => {
   useEffect(() => {
     async function fetchApplications() {
       try {
-        const data = await apiService.get('/api/project-applications/');
+        // Obtener aplicaciones específicas de la empresa
+        const data = await apiService.get('/api/project-applications/my_applications/');
         setApplications(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching applications:', error);

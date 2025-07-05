@@ -24,23 +24,42 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'area', 'modality', 'difficulty', 'is_paid', 'is_featured', 'is_urgent']
-    search_fields = ['title', 'description', 'required_skills', 'preferred_skills']
-    ordering_fields = ['created_at', 'start_date', 'estimated_end_date', 'payment_amount']
-    ordering = ['-created_at']
+    filterset_fields = ['status', 'empresa', 'area']
+    search_fields = ['titulo', 'descripcion', 'empresa__nombre']
+    ordering_fields = ['fecha_creacion', 'fecha_inicio', 'fecha_fin']
+    ordering = ['-fecha_creacion']
 
     def get_queryset(self):
-        """Filtrar queryset según el rol del usuario"""
+        """Filtrar proyectos según el rol del usuario"""
         user = self.request.user
         
-        if user.role == 'admin':
+        if user.es_admin:
+            # Admin ve todos los proyectos
             return Proyecto.objects.all()
-        elif user.role == 'company':
-            # Las empresas ven sus propios proyectos
-            return Proyecto.objects.filter(company=user.empresa)
-        else:
-            # Los estudiantes ven proyectos publicados
-            return Proyecto.objects.filter(status__name__in=['published', 'active', 'open', 'en curso'])
+        elif user.es_empresa:
+            # Empresa ve solo sus proyectos
+            try:
+                empresa = user.empresa_profile
+                return Proyecto.objects.filter(empresa=empresa)
+            except:
+                return Proyecto.objects.none()
+        elif user.es_estudiante:
+            # Estudiante ve proyectos publicados y donde es miembro
+            try:
+                estudiante = user.estudiante_profile
+                # Proyectos donde es miembro
+                member_projects = MiembroProyecto.objects.filter(estudiante=estudiante).values_list('proyecto_id', flat=True)
+                # Proyectos publicados
+                published_projects = Proyecto.objects.filter(status__name='published')
+                # Combinar ambos
+                return Proyecto.objects.filter(
+                    models.Q(id__in=member_projects) | 
+                    models.Q(status__name='published')
+                ).distinct()
+            except:
+                return Proyecto.objects.filter(status__name='published')
+        
+        return Proyecto.objects.none()
 
     def get_serializer_class(self):
         """Retornar serializer específico según la acción"""
@@ -57,44 +76,52 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer.save(company=self.request.user.empresa)
 
     @action(detail=False, methods=['get'])
-    def available(self, request):
-        """Proyectos disponibles para estudiantes"""
-        if request.user.role != 'student':
-            return Response(
-                {"error": "Esta vista es solo para estudiantes"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+    def my_projects(self, request):
+        """Obtener proyectos del usuario autenticado"""
+        user = request.user
         
-        queryset = Proyecto.objects.filter(
-            status__name__in=['published', 'active', 'open', 'en curso'],
-            current_students__lt=F('max_students')
-        ).exclude(
-            aplicaciones__estudiante=request.user.estudiante
-        )
+        if user.es_empresa:
+            try:
+                empresa = user.empresa_profile
+                projects = Proyecto.objects.filter(empresa=empresa)
+                serializer = self.get_serializer(projects, many=True)
+                return Response(serializer.data)
+            except:
+                return Response([], status=status.HTTP_404_NOT_FOUND)
+        elif user.es_estudiante:
+            try:
+                estudiante = user.estudiante_profile
+                member_projects = MiembroProyecto.objects.filter(estudiante=estudiante)
+                projects = [mp.proyecto for mp in member_projects]
+                serializer = self.get_serializer(projects, many=True)
+                return Response(serializer.data)
+            except:
+                return Response([], status=status.HTTP_404_NOT_FOUND)
         
-        serializer = ProjectSearchSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response({'error': 'Rol no soportado'}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
-    def my_projects(self, request):
-        """Proyectos del usuario actual"""
-        if request.user.role == 'student':
-            # Proyectos donde el estudiante aplicó y fue aceptado
-            queryset = Proyecto.objects.filter(
-                aplicaciones__estudiante=request.user.estudiante,
-                aplicaciones__estado='aceptado'
-            )
-        elif request.user.role == 'company':
-            # Proyectos de la empresa
-            queryset = Proyecto.objects.filter(company=request.user.empresa)
-        else:
-            return Response(
-                {"error": "Esta vista no está disponible para administradores"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+    def available_projects(self, request):
+        """Obtener proyectos disponibles para estudiantes"""
+        if not request.user.es_estudiante:
+            return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
         
-        serializer = ProjectSerializer(queryset, many=True)
-        return Response(serializer.data)
+        try:
+            estudiante = request.user.estudiante_profile
+            # Proyectos ya aplicados
+            applied_project_ids = AplicacionProyecto.objects.filter(
+                estudiante=estudiante
+            ).values_list('proyecto_id', flat=True)
+            
+            # Proyectos disponibles (publicados y no aplicados)
+            available_projects = Proyecto.objects.filter(
+                status__name='published'
+            ).exclude(id__in=applied_project_ids)
+            
+            serializer = self.get_serializer(available_projects, many=True)
+            return Response(serializer.data)
+        except:
+            return Response([], status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=True, methods=['post'])
     def publish(self, request, pk=None):
@@ -358,6 +385,25 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
         application.save()
         
         return Response({"message": "Aplicación retirada correctamente"})
+
+    @action(detail=False, methods=['get'])
+    def pending_applications(self, request):
+        """Obtener aplicaciones pendientes"""
+        user = request.user
+        
+        if user.es_empresa:
+            try:
+                empresa = user.empresa_profile
+                applications = Aplicacion.objects.filter(
+                    project__company=empresa,
+                    status='pending'
+                )
+                serializer = self.get_serializer(applications, many=True)
+                return Response(serializer.data)
+            except:
+                return Response([], status=status.HTTP_404_NOT_FOUND)
+        
+        return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
 
 class ProjectMemberViewSet(viewsets.ModelViewSet):
     queryset = MiembroProyecto.objects.all()

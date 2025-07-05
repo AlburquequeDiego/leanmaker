@@ -91,8 +91,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Obtener eventos del calendario
-        const eventsData = await apiService.get('/api/calendar-events/');
+        // Obtener eventos específicos de la empresa
+        const eventsData = await apiService.get('/api/calendar-events/company_events/');
         const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
           ...event,
           start: new Date(event.start_date),
@@ -100,7 +100,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         })) : [];
         setEvents(formattedEvents);
 
-        // Obtener estudiantes
+        // Obtener estudiantes para invitar a eventos
         const studentsData = await apiService.get('/api/students/');
         setStudents(Array.isArray(studentsData) ? studentsData : []);
       } catch (error) {

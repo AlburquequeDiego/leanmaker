@@ -20,6 +20,12 @@ Credenciales funcionales:
 admin@gmail.com / admin
 
 
+diego@inacap.cl
+Estudiante123!
+
+empresa@gmail.com
+Empresa123!
+
 
 Backend: http://localhost:8000/
 Admin: http://localhost:8000/admin/
@@ -47,11 +53,3 @@ Universidad de La Frontera → @ufro.cl
 Universidad de Talca → @utalca.cl
 INACAP → @inacap.cl
 
-
-
-
-diego@inacap.cl
-Estudiante123!
-
-aempresa@gmail.com
-Empresa123!

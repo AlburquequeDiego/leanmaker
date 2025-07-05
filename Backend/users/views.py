@@ -213,56 +213,163 @@ class DashboardViewSet(viewsets.ViewSet):
         
         return Response({'error': 'Rol no reconocido'}, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['get'])
+    def student_stats(self, request):
+        """Estadísticas específicas para estudiantes"""
+        if not request.user.es_estudiante:
+            return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
+        return self._student_stats(request.user)
+
+    @action(detail=False, methods=['get'])
+    def company_stats(self, request):
+        """Estadísticas específicas para empresas"""
+        if not request.user.es_empresa:
+            return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
+        return self._company_stats(request.user)
+
+    @action(detail=False, methods=['get'])
+    def admin_stats(self, request):
+        """Estadísticas específicas para administradores"""
+        if not request.user.es_admin:
+            return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
+        return self._admin_stats()
+
     def _admin_stats(self):
         """Estadísticas para administradores"""
+        from projects.models import Proyecto, AplicacionProyecto
+        from students.models import Estudiante
+        from companies.models import Empresa
+        
+        # Optimizar consultas con select_related y prefetch_related
         total_users = Usuario.objects.count()
         active_users = Usuario.objects.filter(is_active=True).count()
         students = Usuario.objects.filter(role='student').count()
         companies = Usuario.objects.filter(role='company').count()
+        
+        # Optimizar consultas de proyectos
+        total_projects = Proyecto.objects.select_related('status', 'empresa').count()
+        active_projects = Proyecto.objects.select_related('status').filter(status__name='active').count()
+        
+        # Optimizar consultas de aplicaciones
+        total_applications = AplicacionProyecto.objects.select_related('proyecto', 'estudiante').count()
+        pending_applications = AplicacionProyecto.objects.select_related('proyecto').filter(status='pending').count()
         
         return Response({
             'total_users': total_users,
             'active_users': active_users,
             'students': students,
             'companies': companies,
+            'total_projects': total_projects,
+            'active_projects': active_projects,
+            'total_applications': total_applications,
+            'pending_applications': pending_applications,
         })
 
     def _student_stats(self, user):
         """Estadísticas para estudiantes"""
+        from projects.models import Proyecto, AplicacionProyecto, MiembroProyecto
+        from students.models import Estudiante
+        
         try:
             estudiante = user.estudiante_profile
+            
+            # Optimizar consultas de proyectos del estudiante
+            my_projects = MiembroProyecto.objects.filter(estudiante=estudiante).select_related(
+                'proyecto', 'proyecto__status'
+            )
+            active_projects = my_projects.filter(proyecto__status__name='active').count()
+            completed_projects = my_projects.filter(proyecto__status__name='completed').count()
+            
+            # Optimizar consultas de aplicaciones del estudiante
+            my_applications = AplicacionProyecto.objects.filter(estudiante=estudiante).select_related(
+                'proyecto', 'proyecto__status'
+            )
+            pending_applications = my_applications.filter(status='pending').count()
+            accepted_applications = my_applications.filter(status='accepted').count()
+            
+            # Optimizar consulta de proyectos disponibles
+            applied_project_ids = my_applications.values_list('proyecto_id', flat=True)
+            available_projects = Proyecto.objects.select_related('status').filter(
+                status__name='published'
+            ).exclude(id__in=applied_project_ids).count()
+            
             return Response({
                 'strikes': estudiante.strikes,
                 'gpa': float(estudiante.gpa),
-                'completed_projects': estudiante.completed_projects,
+                'completed_projects': completed_projects,
                 'total_hours': estudiante.total_hours,
                 'rating': float(estudiante.rating),
+                'active_projects': active_projects,
+                'pending_applications': pending_applications,
+                'accepted_applications': accepted_applications,
+                'available_projects': available_projects,
+                'total_applications': my_applications.count(),
             })
-        except:
+        except Exception as e:
             return Response({
                 'strikes': 0,
                 'gpa': 0.0,
                 'completed_projects': 0,
                 'total_hours': 0,
                 'rating': 0.0,
+                'active_projects': 0,
+                'pending_applications': 0,
+                'accepted_applications': 0,
+                'available_projects': 0,
+                'total_applications': 0,
             })
 
     def _company_stats(self, user):
         """Estadísticas para empresas"""
+        from projects.models import Proyecto, AplicacionProyecto, MiembroProyecto
+        from companies.models import Empresa
+        
         try:
             empresa = user.empresa_profile
+            
+            # Optimizar consultas de proyectos de la empresa
+            company_projects = Proyecto.objects.filter(empresa=empresa).select_related('status')
+            active_projects = company_projects.filter(status__name='active').count()
+            completed_projects = company_projects.filter(status__name='completed').count()
+            published_projects = company_projects.filter(status__name='published').count()
+            
+            # Optimizar consultas de aplicaciones a proyectos de la empresa
+            company_applications = AplicacionProyecto.objects.filter(
+                proyecto__empresa=empresa
+            ).select_related('proyecto', 'estudiante')
+            pending_applications = company_applications.filter(status='pending').count()
+            accepted_applications = company_applications.filter(status='accepted').count()
+            
+            # Optimizar consulta de estudiantes activos
+            active_students = MiembroProyecto.objects.filter(
+                proyecto__empresa=empresa,
+                proyecto__status__name='active'
+            ).select_related('estudiante', 'proyecto').values('estudiante').distinct().count()
+            
             return Response({
                 'rating': float(empresa.rating),
-                'total_projects': empresa.total_projects,
-                'projects_completed': empresa.projects_completed,
+                'total_projects': company_projects.count(),
+                'projects_completed': completed_projects,
                 'total_hours_offered': empresa.total_hours_offered,
+                'active_projects': active_projects,
+                'published_projects': published_projects,
+                'pending_applications': pending_applications,
+                'accepted_applications': accepted_applications,
+                'active_students': active_students,
+                'total_applications': company_applications.count(),
             })
-        except:
+        except Exception as e:
             return Response({
                 'rating': 0.0,
                 'total_projects': 0,
                 'projects_completed': 0,
                 'total_hours_offered': 0,
+                'active_projects': 0,
+                'published_projects': 0,
+                'pending_applications': 0,
+                'accepted_applications': 0,
+                'active_students': 0,
+                'total_applications': 0,
             })
 
 class UserRegistrationView(APIView):
