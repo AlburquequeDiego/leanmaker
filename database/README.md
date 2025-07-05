@@ -38,32 +38,6 @@ Facilitar la conexión entre estudiantes universitarios y empresas para realizar
 - `sp_ApproveWorkHours` - Aprobar horas trabajadas
 - `sp_CompleteProject` - Completar proyecto
 
-## 👥 Usuarios de Ejemplo
-
-### **1. Administradores (2 usuarios)**
-- **admin1@leanmaker.cl** - Administrador Principal
-- **admin2@leanmaker.cl** - Supervisor General
-- **Contraseña**: `admin123` (hash de Django en la base de datos)
-
-### **2. Empresas (15 empresas)**
-- Correos: `empresa01@empresa.cl`, `empresa02@empresa.cl`, ...
-- Ejemplo:
-  | Email | Empresa | Industria | Tamaño |
-  |-------|---------|-----------|--------|
-  | empresa01@empresa.cl | Empresa 01 | Tecnología | Startup |
-  | empresa02@empresa.cl | Empresa 02 | Marketing | Pequeña |
-  | ... | ... | ... | ... |
-
-### **3. Estudiantes (15 estudiantes)**
-- Todos los correos usan dominios permitidos: `@inacap.cl`, `@duoc.cl`, `@uchile.cl`, `@usach.cl`, `@udec.cl`, `@usm.cl`, `@uv.cl`, `@uach.cl`, `@uc.cl`, `@puc.cl`, `@unab.cl`
-- Ejemplo:
-  | Email | Nombre | Carrera | Semestre | Estado |
-  |-------|--------|---------|----------|--------|
-  | juan@inacap.cl | Juan González | Ing. Informática | 5 | Aprobado |
-  | maria@duoc.cl | María Rodríguez | Ing. Civil | 6 | Aprobado |
-  | ... | ... | ... | ... | ... |
-
-**Contraseña para todos**: `test123` (hash de Django en la base de datos)
 
 ## 🔧 Características Técnicas
 
