@@ -26,27 +26,6 @@ Tu sistema LeanMaker está **100% operativo** con:
 - **Login**: http://localhost:3000/login
 - **Test Connection**: http://localhost:3000/test-connection
 
----
-
-## 🔑 **CREDENCIALES DE PRUEBA**
-
-### **Administrador**
-- **Email**: admin@gmail.com
-- **Contraseña**: admin
-- **Rol**: Administrador completo
-
-### **Estudiantes**
-- **Email**: maria.gonzalez@estudiante.cl
-- **Contraseña**: estudiante123
-- **Rol**: Estudiante (Ingeniería Informática, Semestre 8)
-
-- **Email**: carlos.rodriguez@estudiante.cl  
-- **Contraseña**: estudiante123
-- **Rol**: Estudiante (Ingeniería Civil Informática, Semestre 6)
-
-- **Email**: ana.martinez@estudiante.cl
-- **Contraseña**: estudiante123
-- **Rol**: Estudiante (Ingeniería en Computación, Semestre 7)
 
 ---
 
