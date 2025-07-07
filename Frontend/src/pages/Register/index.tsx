@@ -265,23 +265,23 @@ export const Register = () => {
   // useEffect para mostrar el recuadro de normas de conducta automáticamente
   useEffect(() => {
     if (userType === 'student') {
-      if (
-        formik.values.first_name &&
-        formik.values.last_name &&
-        formik.values.email &&
-        formik.values.phone &&
-        formik.values.birthdate &&
-        formik.values.gender &&
-        formik.values.career &&
-        formik.values.university &&
-        formik.values.education_level &&
-        formik.values.password &&
-        formik.values.password_confirm &&
-        !formik.values.acceptTerms
-      ) {
-        setShowConduct(true);
-      } else if (formik.values.acceptTerms) {
-        setShowConduct(false);
+    if (
+      formik.values.first_name &&
+      formik.values.last_name &&
+      formik.values.email &&
+      formik.values.phone &&
+      formik.values.birthdate &&
+      formik.values.gender &&
+      formik.values.career &&
+      formik.values.university &&
+      formik.values.education_level &&
+      formik.values.password &&
+      formik.values.password_confirm &&
+      !formik.values.acceptTerms
+    ) {
+      setShowConduct(true);
+    } else if (formik.values.acceptTerms) {
+      setShowConduct(false);
       }
     } else if (userType === 'company') {
       if (

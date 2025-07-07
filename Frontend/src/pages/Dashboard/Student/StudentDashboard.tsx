@@ -55,7 +55,7 @@ export default function StudentDashboard() {
           title: 'Strike asignado',
           message: `Tienes ${stats.strikes} strikes. Ten cuidado con las entregas.`,
         });
-      }
+    }
     }
 
     if (stats) {
@@ -96,8 +96,8 @@ export default function StudentDashboard() {
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>
-          Bienvenido a tu Dashboard (Estudiante)
-        </Typography>
+        Bienvenido a tu Dashboard (Estudiante)
+      </Typography>
         <ConnectionStatus
           isConnected={!error}
           isPolling={isPolling}

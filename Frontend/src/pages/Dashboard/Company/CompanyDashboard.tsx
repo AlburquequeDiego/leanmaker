@@ -33,9 +33,9 @@ export const CompanyDashboard = () => {
 
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" gutterBottom fontWeight={700}>
-          Dashboard de Empresa
-        </Typography>
+      <Typography variant="h4" gutterBottom fontWeight={700}>
+        Dashboard de Empresa
+      </Typography>
         <ConnectionStatus
           isConnected={!error}
           isPolling={isPolling}

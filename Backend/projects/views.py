@@ -97,7 +97,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data)
             except:
                 return Response([], status=status.HTTP_404_NOT_FOUND)
-        
         return Response({'error': 'Rol no soportado'}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
@@ -105,19 +104,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """Obtener proyectos disponibles para estudiantes"""
         if not request.user.es_estudiante:
             return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
-        
         try:
             estudiante = request.user.estudiante_profile
             # Proyectos ya aplicados
             applied_project_ids = AplicacionProyecto.objects.filter(
                 estudiante=estudiante
             ).values_list('proyecto_id', flat=True)
-            
             # Proyectos disponibles (publicados y no aplicados)
             available_projects = Proyecto.objects.filter(
                 status__name='published'
             ).exclude(id__in=applied_project_ids)
-            
             serializer = self.get_serializer(available_projects, many=True)
             return Response(serializer.data)
         except:

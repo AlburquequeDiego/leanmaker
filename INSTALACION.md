@@ -6,7 +6,7 @@ Esta guía te llevará paso a paso para instalar y configurar completamente el s
 ## 📋 Prerrequisitos
 
 ### Software Requerido
-- **Python 3.11+** - [Descargar Python](https://www.python.org/downloads/)
+- **Python 3.12** - [Descargar Python](https://www.python.org/downloads/)
 - **Node.js 18+** - [Descargar Node.js](https://nodejs.org/)
 - **SQL Server** - [Descargar SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 - **Git** - [Descargar Git](https://git-scm.com/)
