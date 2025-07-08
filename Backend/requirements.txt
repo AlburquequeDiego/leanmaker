@@ -1,3 +1,10 @@
+# ========================================
+# LEANMAKER BACKEND - REQUIREMENTS
+# ========================================
+# IMPORTANTE: Usar Python 3.12.0 exactamente
+# Instalar primero: pip install --only-binary=:all: pyodbc Pillow==9.5.0
+# ========================================
+
 # Django y DRF
 Django==3.2.23
 djangorestframework==3.14.0
@@ -8,13 +15,14 @@ django-filter==22.1
 djangorestframework-simplejwt==5.3.0
 
 # Base de datos SQL Server
-# Si tienes problemas con pyodbc, prueba: pip install --only-binary=:all: pyodbc
-pyodbc>=4.0.39,<5.0.0
+# REQUERIDO: Microsoft ODBC Driver 17 for SQL Server
+# Si tienes problemas: pip install --only-binary=:all: pyodbc
+pyodbc==4.0.39
 django-mssql-backend==2.8.1
 
 # Utilidades
-# Se recomienda instalar Pillow primero con: pip install --only-binary=:all: Pillow
-Pillow>=9.5.0,<10.0.0
+# REQUERIDO: Instalar primero con --only-binary=:all:
+Pillow==9.5.0
 django-storages==1.14.2
 
 # Desarrollo y testing
