@@ -269,6 +269,47 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
     'SCHEMA_PATH_PREFIX': '/api/',
+    
+    # Configuraciones para reducir warnings
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': True,
+    },
+    
+    # Configuraciones para manejar warnings
+    # 'ENUM_NAME_OVERRIDES': {
+    #     'StatusEnum': 'projects.models.Project._meta.get_field("status").choices',
+    #     'PriorityEnum': 'projects.models.Project._meta.get_field("priority").choices',
+    #     'SeverityEnum': 'disciplinary_records.models.DisciplinaryRecord._meta.get_field("severity").choices',
+    #     'NotificationTypeEnum': 'notifications.models.Notification._meta.get_field("notification_type").choices',
+    # },
+    
+    # Configuraciones para mejorar la generación del esquema
+    'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+    'GENERATE_UNIQUE_NAMES': True,
+    
+    # Configuraciones para reducir warnings de type hints
+    'COMPONENT_NO_READ_ONLY_REQUIRED': True,
+    'SORT_OPERATIONS': False,
+    
+    # Configuraciones para manejar vistas sin serializers
+    'DEFAULT_INFO': None,
+    'DEFAULT_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
+    
+    # Configuraciones para mejorar la documentación
+    'TAGS': [
+        {'name': 'auth', 'description': 'Autenticación y autorización'},
+        {'name': 'users', 'description': 'Gestión de usuarios'},
+        {'name': 'companies', 'description': 'Gestión de empresas'},
+        {'name': 'students', 'description': 'Gestión de estudiantes'},
+        {'name': 'projects', 'description': 'Gestión de proyectos'},
+        {'name': 'applications', 'description': 'Gestión de aplicaciones'},
+        {'name': 'evaluations', 'description': 'Evaluaciones y calificaciones'},
+        {'name': 'notifications', 'description': 'Sistema de notificaciones'},
+        {'name': 'reports', 'description': 'Reportes y estadísticas'},
+    ],
 }
 
 # Custom User Model

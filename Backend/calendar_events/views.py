@@ -16,6 +16,10 @@ class CalendarEventViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filtrar eventos según el rol del usuario"""
+        # Verificar si es una vista fake para drf-spectacular
+        if getattr(self, 'swagger_fake_view', False):
+            return CalendarEvent.objects.none()
+            
         user = self.request.user
         
         if user.es_admin:
@@ -123,6 +127,10 @@ class CalendarSettingsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filtrar configuraciones por usuario"""
+        # Verificar si es una vista fake para drf-spectacular
+        if getattr(self, 'swagger_fake_view', False):
+            return CalendarSettings.objects.none()
+            
         return CalendarSettings.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):

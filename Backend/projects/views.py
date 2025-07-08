@@ -24,10 +24,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'empresa', 'area']
-    search_fields = ['titulo', 'descripcion', 'empresa__nombre']
-    ordering_fields = ['fecha_creacion', 'fecha_inicio', 'fecha_fin']
-    ordering = ['-fecha_creacion']
+    filterset_fields = ['status', 'company', 'area']
+    search_fields = ['title', 'description', 'company__company_name']
+    ordering_fields = ['created_at', 'start_date', 'estimated_end_date']
+    ordering = ['-created_at']
 
     def get_queryset(self):
         """Filtrar proyectos según el rol del usuario"""

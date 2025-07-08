@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenRefreshView
 from users.views import CustomTokenObtainPairView
-from .views import api_config, health_check, simple_health_check, home
+from .views import ApiConfigView, HealthCheckView, simple_health_check, home
 
 urlpatterns = [
     path('', home, name='home'),
@@ -34,9 +34,9 @@ urlpatterns = [
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     # API Configuration
-    path('api/health/', health_check, name='health-check'),
+    path('api/health/', HealthCheckView.as_view(), name='health-check'),
     path('api/health-simple/', simple_health_check, name='health-check-simple'),
-    path('api/config/', api_config, name='api-config'),
+    path('api/config/', ApiConfigView.as_view(), name='api-config'),
 
     # App-specific URLs
     path('api/users/', include('users.urls')),

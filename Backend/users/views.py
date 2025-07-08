@@ -31,6 +31,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
+    queryset = Usuario.objects.none()  # Para evitar problemas con drf-spectacular
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.filter(is_active=True)
@@ -146,6 +147,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class AuthViewSet(viewsets.ViewSet):
     """ViewSet para autenticación"""
     permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
 
     @action(detail=False, methods=['post'])
     def login(self, request):
@@ -178,6 +180,7 @@ class AuthViewSet(viewsets.ViewSet):
 class PasswordViewSet(viewsets.ViewSet):
     """ViewSet para gestión de contraseñas"""
     permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
 
     @action(detail=False, methods=['post'])
     def change_password(self, request):
@@ -198,6 +201,7 @@ class PasswordViewSet(viewsets.ViewSet):
 class DashboardViewSet(viewsets.ViewSet):
     """ViewSet para dashboard"""
     permission_classes = [IsAuthenticated]
+    serializer_class = UsuarioSerializer
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
@@ -375,6 +379,7 @@ class DashboardViewSet(viewsets.ViewSet):
 class UserRegistrationView(APIView):
     """Vista para registro de usuarios"""
     permission_classes = [AllowAny]
+    serializer_class = UserRegistrationSerializer
 
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
@@ -389,6 +394,7 @@ class UserRegistrationView(APIView):
 class TestAuthView(APIView):
     """Vista de prueba para verificar autenticación"""
     permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
     
     def post(self, request):
         """Probar autenticación con email y password"""

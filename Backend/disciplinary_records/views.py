@@ -23,7 +23,7 @@ class DisciplinaryRecordViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['severity', 'student', 'company', 'recorded_by']
-    search_fields = ['description', 'action_taken', 'student__user__full_name', 'company__name']
+    search_fields = ['description', 'action_taken', 'student__user__full_name', 'company__company_name']
     ordering_fields = ['incident_date', 'recorded_at', 'severity']
     ordering = ['-incident_date']
 

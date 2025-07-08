@@ -1,22 +1,44 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import serializers
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 import json
 import os
 
-@api_view(['GET'])
-def health_check(request):
+class HealthCheckSerializer(serializers.Serializer):
+    status = serializers.CharField()
+    timestamp = serializers.DateTimeField()
+    version = serializers.CharField()
+    message = serializers.CharField()
+
+class HealthCheckView(APIView):
     """
     Endpoint de health check para verificar que el backend esté funcionando.
     """
-    return Response({
-        'status': 'healthy',
-        'timestamp': timezone.now().isoformat(),
-        'version': '1.0.0',
-        'message': 'Leanmaker Backend está funcionando correctamente'
-    })
+    serializer_class = HealthCheckSerializer
+    
+    def get(self, request):
+        return Response({
+            'status': 'healthy',
+            'timestamp': timezone.now().isoformat(),
+            'version': '1.0.0',
+            'message': 'Leanmaker Backend está funcionando correctamente'
+        })
+
+# @api_view(['GET'])
+# def health_check(request):
+#     """
+#     Endpoint de health check para verificar que el backend esté funcionando.
+#     """
+#     return Response({
+#         'status': 'healthy',
+#         'timestamp': timezone.now().isoformat(),
+#         'version': '1.0.0',
+#         'message': 'Leanmaker Backend está funcionando correctamente'
+#     })
 
 def simple_health_check(request):
     """
@@ -29,21 +51,42 @@ def simple_health_check(request):
         'message': 'Leanmaker Backend está funcionando correctamente'
     })
 
-@api_view(['GET'])
-def api_config(request):
+class ApiConfigSerializer(serializers.Serializer):
+    config = serializers.DictField()
+
+class ApiConfigView(APIView):
     """
     Endpoint para servir la configuración de la API al frontend.
     """
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'api_config.json')
+    serializer_class = ApiConfigSerializer
     
-    try:
-        with open(config_path, 'r', encoding='utf-8') as f:
-            config = json.load(f)
-        return Response(config)
-    except FileNotFoundError:
-        return Response({'error': 'Configuración no encontrada'}, status=404)
-    except json.JSONDecodeError:
-        return Response({'error': 'Error en la configuración'}, status=500)
+    def get(self, request):
+        config_path = os.path.join(os.path.dirname(__file__), '..', 'api_config.json')
+        
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            return Response(config)
+        except FileNotFoundError:
+            return Response({'error': 'Configuración no encontrada'}, status=404)
+        except json.JSONDecodeError:
+            return Response({'error': 'Error en la configuración'}, status=500)
+
+# @api_view(['GET'])
+# def api_config(request):
+#     """
+#     Endpoint para servir la configuración de la API al frontend.
+#     """
+#     config_path = os.path.join(os.path.dirname(__file__), '..', 'api_config.json')
+#     
+#     try:
+#         with open(config_path, 'r', encoding='utf-8') as f:
+#             config = json.load(f)
+#         return Response(config)
+#     except FileNotFoundError:
+#         return Response({'error': 'Configuración no encontrada'}, status=404)
+#     except json.JSONDecodeError:
+#         return Response({'error': 'Error en la configuración'}, status=500)
 
 def home(request):
     return HttpResponse("""

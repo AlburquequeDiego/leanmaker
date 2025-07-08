@@ -4,7 +4,7 @@ from .models import Usuario
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    full_name = serializers.ReadOnlyField()
+    full_name = serializers.ReadOnlyField(help_text="Nombre completo del usuario")
     
     class Meta:
         model = Usuario

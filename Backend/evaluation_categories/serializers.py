@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import EvaluationCategory
 
-class EvaluationCategorySerializer(serializers.ModelSerializer):
+class EvaluationCategoryModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = EvaluationCategory
         fields = ['id', 'name', 'description', 'is_active']

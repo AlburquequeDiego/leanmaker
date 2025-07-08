@@ -35,7 +35,7 @@ echo    PROYECTO INICIADO EXITOSAMENTE
 echo ========================================
 echo.
 echo Backend Django: http://localhost:8000
-echo Frontend React: http://localhost:5173
+echo Frontend React: http://localhost:3000
 echo Admin Django:   http://localhost:8000/admin/
 echo API Docs:       http://localhost:8000/api/v1/docs/
 echo.
