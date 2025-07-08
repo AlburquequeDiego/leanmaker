@@ -16,17 +16,6 @@ Nombre del servidor:servidortesis.database.windows.net
 nombre de la base de datos : leanmaker_db
 
 
-Credenciales funcionales:
-admin@gmail.com / admin
-
-
-diego@inacap.cl
-Estudiante123!
-
-empresa@gmail.com
-Empresa123!
-
-
 Backend: http://localhost:8000/
 Admin: http://localhost:8000/admin/
 Swagger UI: http://localhost:8000/api/schema/swagger-ui/
