@@ -20,7 +20,6 @@ export default function AdminDashboard() {
             isPolling={isPolling}
             lastUpdate={lastUpdate}
             error={error}
-            onRefresh={refresh}
           />
         </Box>
         

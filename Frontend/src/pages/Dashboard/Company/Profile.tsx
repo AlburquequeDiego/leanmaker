@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -30,6 +30,7 @@ import {
   Person as PersonIcon,
   Badge as BadgeIcon,
 } from '@mui/icons-material';
+import { apiService } from '../../../services/api.service';
 
 interface CompanyProfileData {
   // Datos de la empresa
@@ -59,36 +60,25 @@ interface CompanyProfileData {
   averageRating: number;
 }
 
-const mockCompanyProfile: CompanyProfileData = {
-  id: '1',
-  rut: '76.123.456-7',
-  personalidad: 'Jurídica',
-  razonSocial: 'TechCorp Solutions SpA',
-  nombreEmpresa: 'TechCorp Solutions',
-  direccion: 'Av. Providencia 1234, Providencia',
-  telefonoEmpresa: '+56 2 2345 6789',
-  email: 'contacto@techcorp.cl',
-  website: 'www.techcorp.cl',
-  description: 'Empresa líder en desarrollo de software y soluciones tecnológicas innovadoras.',
-  industry: 'Tecnología',
-  nombreResponsable: 'Juan',
-  apellidoResponsable: 'Pérez',
-  correoResponsable: 'juan.perez@techcorp.cl',
-  telefonoResponsable: '+56 9 8765 4321',
-  fechaNacimientoResponsable: '1985-06-15',
-  generoResponsable: 'Hombre',
-  rating: 4.5,
-  totalProjects: 25,
-  activeStudents: 8,
-  completedProjects: 17,
-  averageRating: 4.2,
-};
-
 export const CompanyProfile: React.FC = () => {
-  const [profile, setProfile] = useState<CompanyProfileData>(mockCompanyProfile);
+  const [profile, setProfile] = useState<CompanyProfileData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<CompanyProfileData>(profile);
+  const [editData, setEditData] = useState<CompanyProfileData | null>(null);
   const [activeTab, setActiveTab] = useState<'empresa' | 'responsable'>('empresa');
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const data = await apiService.get('/api/companies/profile/');
+      setProfile(data as CompanyProfileData);
+      setEditData(data as CompanyProfileData);
+    } catch (error) {
+      // Manejar error
+    }
+  };
 
   const handleEdit = () => {
     setEditData(profile);
@@ -106,8 +96,12 @@ export const CompanyProfile: React.FC = () => {
   };
 
   const handleInputChange = (field: keyof CompanyProfileData, value: string) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
+    setEditData(prev => prev ? { ...prev, [field]: value } : null);
   };
+
+  if (!profile || !editData) {
+    return <Box sx={{ p: 3 }}><Typography>Cargando perfil...</Typography></Box>;
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -135,15 +129,15 @@ export const CompanyProfile: React.FC = () => {
               </Avatar>
               <Box>
                 <Typography variant="h5" gutterBottom>
-                  {profile.nombreEmpresa}
+                  {profile?.nombreEmpresa || ''}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <StarIcon sx={{ color: 'warning.main', mr: 1 }} />
                   <Typography variant="body1">
-                    {profile.rating} / 5.0
+                    {profile?.rating.toFixed(1) || ''} / 5.0
                   </Typography>
                 </Box>
-                <Chip label={profile.industry} color="primary" size="small" />
+                <Chip label={profile?.industry || ''} color="primary" size="small" />
               </Box>
             </Box>
 
@@ -155,7 +149,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <BadgeIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>RUT:</strong> {profile.rut}
+                    <strong>RUT:</strong> {profile?.rut || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -163,7 +157,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Personalidad:</strong> {profile.personalidad}
+                    <strong>Personalidad:</strong> {profile?.personalidad || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -171,7 +165,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Razón Social:</strong> {profile.razonSocial}
+                    <strong>Razón Social:</strong> {profile?.razonSocial || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -179,7 +173,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <LocationIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Dirección:</strong> {profile.direccion}
+                    <strong>Dirección:</strong> {profile?.direccion || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -187,7 +181,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Teléfono:</strong> {profile.telefonoEmpresa}
+                    <strong>Teléfono:</strong> {profile?.telefonoEmpresa || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -195,7 +189,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Email:</strong> {profile.email}
+                    <strong>Email:</strong> {profile?.email || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -203,7 +197,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <WebIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Sitio Web:</strong> {profile.website}
+                    <strong>Sitio Web:</strong> {profile?.website || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -213,7 +207,7 @@ export const CompanyProfile: React.FC = () => {
               Descripción
             </Typography>
             <Typography variant="body2" paragraph>
-              {profile.description}
+              {profile?.description || ''}
             </Typography>
 
             <Divider sx={{ my: 3 }} />
@@ -226,7 +220,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Nombre:</strong> {profile.nombreResponsable} {profile.apellidoResponsable}
+                    <strong>Nombre:</strong> {profile?.nombreResponsable || ''} {profile?.apellidoResponsable || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -234,7 +228,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Email:</strong> {profile.correoResponsable}
+                    <strong>Email:</strong> {profile?.correoResponsable || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -242,7 +236,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
                   <Typography variant="body2">
-                    <strong>Teléfono:</strong> {profile.telefonoResponsable}
+                    <strong>Teléfono:</strong> {profile?.telefonoResponsable || ''}
                   </Typography>
                 </Box>
               </Box>
@@ -262,7 +256,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <AssignmentIcon sx={{ mr: 1 }} />
                   <Box>
-                    <Typography variant="h4">{profile.totalProjects}</Typography>
+                    <Typography variant="h4">{profile?.totalProjects || 0}</Typography>
                     <Typography variant="body2">Total Proyectos</Typography>
                   </Box>
                 </Box>
@@ -274,7 +268,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <PeopleIcon sx={{ mr: 1 }} />
                   <Box>
-                    <Typography variant="h4">{profile.activeStudents}</Typography>
+                    <Typography variant="h4">{profile?.activeStudents || 0}</Typography>
                     <Typography variant="body2">Estudiantes Activos</Typography>
                   </Box>
                 </Box>
@@ -286,7 +280,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <TrendingUpIcon sx={{ mr: 1 }} />
                   <Box>
-                    <Typography variant="h4">{profile.completedProjects}</Typography>
+                    <Typography variant="h4">{profile?.completedProjects || 0}</Typography>
                     <Typography variant="body2">Proyectos Completados</Typography>
                   </Box>
                 </Box>
@@ -298,7 +292,7 @@ export const CompanyProfile: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <StarIcon sx={{ mr: 1 }} />
                   <Box>
-                    <Typography variant="h4">{profile.averageRating}</Typography>
+                    <Typography variant="h4">{profile?.averageRating.toFixed(1) || ''}</Typography>
                     <Typography variant="body2">Rating Promedio</Typography>
                   </Box>
                 </Box>
@@ -335,7 +329,7 @@ export const CompanyProfile: React.FC = () => {
               <TextField
                 fullWidth
                 label="RUT"
-                value={editData.rut}
+                value={editData?.rut || ''}
                 onChange={(e) => handleInputChange('rut', e.target.value)}
                 margin="normal"
               />
@@ -343,7 +337,7 @@ export const CompanyProfile: React.FC = () => {
                 fullWidth
                 select
                 label="Personalidad"
-                value={editData.personalidad}
+                value={editData?.personalidad || ''}
                 onChange={(e) => handleInputChange('personalidad', e.target.value)}
                 margin="normal"
               >
@@ -353,49 +347,49 @@ export const CompanyProfile: React.FC = () => {
               <TextField
                 fullWidth
                 label="Razón Social"
-                value={editData.razonSocial}
+                value={editData?.razonSocial || ''}
                 onChange={(e) => handleInputChange('razonSocial', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Nombre de la Empresa"
-                value={editData.nombreEmpresa}
+                value={editData?.nombreEmpresa || ''}
                 onChange={(e) => handleInputChange('nombreEmpresa', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Dirección"
-                value={editData.direccion}
+                value={editData?.direccion || ''}
                 onChange={(e) => handleInputChange('direccion', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Teléfono de la Empresa"
-                value={editData.telefonoEmpresa}
+                value={editData?.telefonoEmpresa || ''}
                 onChange={(e) => handleInputChange('telefonoEmpresa', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Email"
-                value={editData.email}
+                value={editData?.email || ''}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Sitio Web"
-                value={editData.website}
+                value={editData?.website || ''}
                 onChange={(e) => handleInputChange('website', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Industria"
-                value={editData.industry}
+                value={editData?.industry || ''}
                 onChange={(e) => handleInputChange('industry', e.target.value)}
                 margin="normal"
               />
@@ -404,7 +398,7 @@ export const CompanyProfile: React.FC = () => {
                 multiline
                 rows={4}
                 label="Descripción"
-                value={editData.description}
+                value={editData?.description || ''}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 margin="normal"
               />
@@ -414,28 +408,28 @@ export const CompanyProfile: React.FC = () => {
               <TextField
                 fullWidth
                 label="Nombre"
-                value={editData.nombreResponsable}
+                value={editData?.nombreResponsable || ''}
                 onChange={(e) => handleInputChange('nombreResponsable', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Apellido"
-                value={editData.apellidoResponsable}
+                value={editData?.apellidoResponsable || ''}
                 onChange={(e) => handleInputChange('apellidoResponsable', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Email"
-                value={editData.correoResponsable}
+                value={editData?.correoResponsable || ''}
                 onChange={(e) => handleInputChange('correoResponsable', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Teléfono"
-                value={editData.telefonoResponsable}
+                value={editData?.telefonoResponsable || ''}
                 onChange={(e) => handleInputChange('telefonoResponsable', e.target.value)}
                 margin="normal"
               />
@@ -443,7 +437,7 @@ export const CompanyProfile: React.FC = () => {
                 fullWidth
                 label="Fecha de Nacimiento"
                 type="date"
-                value={editData.fechaNacimientoResponsable}
+                value={editData?.fechaNacimientoResponsable || ''}
                 onChange={(e) => handleInputChange('fechaNacimientoResponsable', e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 margin="normal"
@@ -452,7 +446,7 @@ export const CompanyProfile: React.FC = () => {
                 fullWidth
                 select
                 label="Género"
-                value={editData.generoResponsable}
+                value={editData?.generoResponsable || ''}
                 onChange={(e) => handleInputChange('generoResponsable', e.target.value)}
                 margin="normal"
               >

@@ -4991,3 +4991,153 @@ WARNING 2025-07-06 10:25:47,917 log 2848 15712 Not Found: /api/dashboard/student
 WARNING 2025-07-06 10:26:17,914 log 2848 8776 Not Found: /api/dashboard/student_stats/
 WARNING 2025-07-06 10:26:47,934 log 2848 17128 Not Found: /api/dashboard/student_stats/
 WARNING 2025-07-06 10:27:17,926 log 2848 15500 Not Found: /api/dashboard/student_stats/
+INFO 2025-07-07 21:09:54,238 autoreload 11648 10204 Watching for file changes with StatReloader
+INFO 2025-07-07 21:11:03,394 autoreload 8972 6556 Watching for file changes with StatReloader
+WARNING 2025-07-07 21:11:07,838 log 8972 16544 Not Found: /favicon.ico
+WARNING 2025-07-07 21:12:35,355 log 8972 2912 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-07 21:12:35,367 log 8972 2912 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-07 21:12:38,150 log 8972 2912 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-07 21:12:41,165 log 8972 2912 Not Found: /api/users/profile/
+WARNING 2025-07-07 21:12:41,176 log 8972 16316 Not Found: /api/users/profile/
+WARNING 2025-07-07 21:12:45,928 log 8972 17892 Not Found: /api/admin/companies/
+WARNING 2025-07-07 21:12:45,930 log 8972 7852 Not Found: /api/admin/projects/
+WARNING 2025-07-07 21:12:45,931 log 8972 17432 Not Found: /api/admin/evaluations/
+WARNING 2025-07-07 21:12:45,947 log 8972 7852 Not Found: /api/admin/projects/
+WARNING 2025-07-07 21:12:45,949 log 8972 17892 Not Found: /api/admin/companies/
+WARNING 2025-07-07 21:12:45,955 log 8972 17432 Not Found: /api/admin/evaluations/
+WARNING 2025-07-07 21:12:46,835 log 8972 17432 Not Found: /api/admin/students/
+WARNING 2025-07-07 21:12:46,842 log 8972 17892 Not Found: /api/admin/students/
+WARNING 2025-07-07 21:12:48,383 log 8972 7852 Not Found: /api/admin/projects/
+WARNING 2025-07-07 21:12:48,386 log 8972 17892 Not Found: /api/admin/applications/
+WARNING 2025-07-07 21:12:48,398 log 8972 17432 Not Found: /api/admin/applications/
+WARNING 2025-07-07 21:12:48,400 log 8972 7852 Not Found: /api/admin/projects/
+WARNING 2025-07-07 21:12:49,385 log 8972 17432 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-07 21:12:49,395 log 8972 17432 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-07 21:12:50,314 log 8972 7852 Not Found: /api/admin/projects/
+WARNING 2025-07-07 21:12:50,316 log 8972 17432 Not Found: /api/admin/applications/
+WARNING 2025-07-07 21:12:50,327 log 8972 7852 Not Found: /api/admin/projects/
+WARNING 2025-07-07 21:12:50,334 log 8972 9272 Not Found: /api/admin/applications/
+WARNING 2025-07-07 21:12:54,602 log 8972 3336 Not Found: /api/users/profile/
+WARNING 2025-07-07 21:12:54,613 log 8972 3336 Not Found: /api/users/profile/
+WARNING 2025-07-07 21:12:55,628 log 8972 3336 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-07 21:12:55,638 log 8972 3336 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-07 21:13:00,924 log 8972 3336 Not Found: /api/auth/logout/
+WARNING 2025-07-07 21:13:04,541 log 8972 7612 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-07 21:13:04,548 log 8972 7612 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-07 21:13:34,852 log 8972 3532 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-07 21:14:05,274 log 8972 17360 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-07 21:14:35,275 log 8972 18048 Not Found: /api/dashboard/company_stats/
+ERROR 2025-07-07 21:15:00,972 log 8972 7620 Internal Server Error: /api/schema/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\views.py", line 84, in get
+    return self._get_schema_response(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\views.py", line 92, in _get_schema_response
+    data=generator.get_schema(request=request, public=self.serve_public),
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\generators.py", line 285, in get_schema
+    paths=self.parse(request, public),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\generators.py", line 256, in parse
+    operation = view.schema.get_operation(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\openapi.py", line 92, in get_operation
+    parameters = self._get_parameters()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\openapi.py", line 264, in _get_parameters
+    **dict_helper(self._get_filter_parameters()),
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\openapi.py", line 555, in _get_filter_parameters
+    parameters += filter_extension.get_schema_operation_parameters(self)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\contrib\django_filters.py", line 58, in get_schema_operation_parameters
+    filterset_class = self.target.get_filterset_class(auto_schema.view, get_manager(model).none())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django_filters\rest_framework\backends.py", line 51, in get_filterset_class
+    class AutoFilterSet(self.filterset_base):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django_filters\filterset.py", line 62, in __new__
+    new_class.base_filters = new_class.get_filters()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django_filters\filterset.py", line 349, in get_filters
+    raise TypeError(
+TypeError: 'Meta.fields' must not contain non-model field names: empresa
+ERROR 2025-07-07 21:15:01,885 log 8972 7620 Internal Server Error: /api/schema/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\views.py", line 84, in get
+    return self._get_schema_response(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\views.py", line 92, in _get_schema_response
+    data=generator.get_schema(request=request, public=self.serve_public),
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\generators.py", line 285, in get_schema
+    paths=self.parse(request, public),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\generators.py", line 256, in parse
+    operation = view.schema.get_operation(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\openapi.py", line 92, in get_operation
+    parameters = self._get_parameters()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\openapi.py", line 264, in _get_parameters
+    **dict_helper(self._get_filter_parameters()),
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\openapi.py", line 555, in _get_filter_parameters
+    parameters += filter_extension.get_schema_operation_parameters(self)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\drf_spectacular\contrib\django_filters.py", line 58, in get_schema_operation_parameters
+    filterset_class = self.target.get_filterset_class(auto_schema.view, get_manager(model).none())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django_filters\rest_framework\backends.py", line 51, in get_filterset_class
+    class AutoFilterSet(self.filterset_base):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django_filters\filterset.py", line 62, in __new__
+    new_class.base_filters = new_class.get_filters()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django_filters\filterset.py", line 349, in get_filters
+    raise TypeError(
+TypeError: 'Meta.fields' must not contain non-model field names: empresa
+WARNING 2025-07-07 21:15:05,279 log 8972 3720 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-07 21:15:34,973 log 8972 3720 Not Found: /api/dashboard/company_stats/

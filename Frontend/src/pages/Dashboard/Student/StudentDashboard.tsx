@@ -103,7 +103,6 @@ export default function StudentDashboard() {
           isPolling={isPolling}
           lastUpdate={lastUpdate}
           error={error}
-          onRefresh={refresh}
         />
       </Box>
       

@@ -41,7 +41,6 @@ export const CompanyDashboard = () => {
           isPolling={isPolling}
           lastUpdate={lastUpdate}
           error={error}
-          onRefresh={refresh}
         />
       </Box>
       

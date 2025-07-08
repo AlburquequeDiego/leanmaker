@@ -255,8 +255,8 @@ class ProjectApplicationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'project', 'student']
-    ordering_fields = ['fecha_aplicacion', 'fecha_revision', 'fecha_respuesta']
-    ordering = ['-fecha_aplicacion']
+    ordering_fields = ['applied_at', 'reviewed_at', 'responded_at']
+    ordering = ['-applied_at']
 
     def get_queryset(self):
         """Filtrar queryset según el rol del usuario"""
