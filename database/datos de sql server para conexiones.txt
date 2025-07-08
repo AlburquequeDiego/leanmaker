@@ -42,3 +42,53 @@ Universidad de La Frontera → @ufro.cl
 Universidad de Talca → @utalca.cl
 INACAP → @inacap.cl
 
+
+Contraseñas:
+Estudiantes: Estudiante123!
+Empresas: Empresa123!
+Administradores: Admin123!
+
+
+Lista de cuentas
+
+Administradores
+Nombre	        Correo	                Contraseña
+Laura Martínez	admin1@leanmaker.com	Admin123!
+Carlos Ramírez	admin2@leanmaker.com	Admin123!
+
+Empresas
+Nombre Empresa	Correo	                     Contraseña
+InovaTech S.A.	contacto@inovatech.com  	Empresa123!
+AgroSoluciones	contacto@agrosoluciones.com	Empresa123!
+EcoLogística	contacto@ecologistica.com	Empresa123!
+SaludVital   	contacto@saludvital.com	    Empresa123!
+ConstruRed	    contacto@construred.com	    Empresa123!
+FinanPlus	    contacto@finanplus.com	    Empresa123!
+EducaFuturo	    contacto@educafuturo.com	Empresa123!
+MoviTrans	    contacto@movitrans.com	    Empresa123!
+BioEnergía	    contacto@bioenergia.com	    Empresa123!
+SegurMax	    contacto@segurmax.com	    Empresa123!
+RedComercial	contacto@redcomercial.com	Empresa123!
+AgroMarket	    contacto@agromarket.com	    Empresa123!
+TecnoVision 	contacto@tecnovision.com	Empresa123!
+Medilab 	    contacto@medilab.com	    Empresa123!
+Urbaniza	    contacto@urbaniza.com	    Empresa123!
+
+
+Estudiantes
+Nombre Completo    Correo institucional                Contraseña
+Juan Pérez         juan.perez@uchile.cl                Estudiante123!
+Ana Gómez          ana.gomez@uc.cl                     Estudiante123!
+Luis Torres        luis.torres@udec.cl                 Estudiante123!
+María Rodríguez    maria.rodriguez@usm.cl              Estudiante123!
+Pedro Sánchez      pedro.sanchez@usach.cl              Estudiante123!
+Sofía Ramírez      sofia.ramirez@uach.cl               Estudiante123!
+Diego Fernández    diego.fernandez@uv.cl               Estudiante123!
+Valentina López    valentina.lopez@ufro.cl             Estudiante123!
+Daniel Castro      daniel.castro@utalca.cl             Estudiante123!
+Camila Herrera     camila.herrera@inacap.cl            Estudiante123!
+Mateo Ruiz         mateo.ruiz@uchile.cl                Estudiante123!
+Isabella Morales   isabella.morales@uc.cl              Estudiante123!
+Santiago Vargas    santiago.vargas@udec.cl             Estudiante123!
+Paula Jiménez      paula.jimenez@usm.cl                Estudiante123!
+Alejandro Mendoza  alejandro.mendoza@usach.cl          Estudiante123!
