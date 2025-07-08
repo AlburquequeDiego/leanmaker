@@ -21,6 +21,19 @@ Antes de empezar, asegúrate de tener instalado:
 git clone <URL_DEL_REPOSITORIO>
 cd leanmaker
 ```
+Elimina el entorno virtual actual:
+En la carpeta Backend, elimina la carpeta venv312 (puedes hacerlo desde el explorador de archivos o con este comando en PowerShell):
+Remove-Item -Recurse -Force venv312
+
+Crea un nuevo entorno virtual:
+python -m venv venv312
+
+Actívalo:
+venv312\Scripts\activate
+
+Instala las dependencias (asegúrate de escribir bien el nombre):
+pip install -r requirements.txt
+
 
 ---
 
