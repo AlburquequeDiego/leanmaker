@@ -31,6 +31,25 @@ FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_TYPE = 'BASE TABLE'
 ORDER BY TABLE_SCHEMA, TABLE_NAME;
 
+use leanmaker_db;
+go
+
+--SELECT TABLE_SCHEMA, TABLE_NAME
+--FROM INFORMATION_SCHEMA.TABLES
+--WHERE TABLE_TYPE = 'BASE TABLE'
+--ORDER BY TABLE_SCHEMA, TABLE_NAME;
+
+-- Ver usuarios creados
+SELECT * FROM users;
+
+-- Ver empresas
+SELECT * FROM companies;
+
+-- Ver estudiantes
+SELECT * FROM students;
+
+
+
 Universidad de Chile → @uchile.cl
 Pontificia Universidad Católica de Chile → @uc.cl
 Universidad de Concepción → @udec.cl
@@ -42,6 +61,11 @@ Universidad de La Frontera → @ufro.cl
 Universidad de Talca → @utalca.cl
 INACAP → @inacap.cl
 
+
+super ususario : 
+
+admin@gmai.com
+admin
 
 Contraseñas:
 Estudiantes: Estudiante123!

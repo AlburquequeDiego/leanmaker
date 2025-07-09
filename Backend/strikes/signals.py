@@ -10,8 +10,9 @@ def create_strike_notification(sender, instance, created, **kwargs):
     """
     if created:
         Notification.objects.create(
-            recipient=instance.student.user,
+            user=instance.student.user,
             title=f"Has recibido una amonestación en el proyecto {instance.project.title}",
-            message=f"La empresa {instance.company.name} te ha emitido una amonestación. Motivo: {instance.reason}",
-            # link=f'/projects/{instance.project.id}/strikes/' # Ejemplo
+            message=f"La empresa {instance.company.company_name} te ha emitido una amonestación. Motivo: {instance.reason}",
+            type='warning',
+            read=False,
         ) 

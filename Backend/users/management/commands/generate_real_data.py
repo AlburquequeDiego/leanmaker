@@ -5,9 +5,12 @@ from companies.models import Empresa
 from students.models import Estudiante
 from projects.models import Proyecto, MiembroProyecto, AplicacionProyecto
 from calendar_events.models import CalendarEvent
-from evaluations.models import Evaluation
+from evaluations.models import Evaluation, EvaluationCategory
 from strikes.models import Strike
 from notifications.models import Notification
+from trl_levels.models import TRLLevel
+from project_status.models import ProjectStatus
+from areas.models import Area
 from django.utils import timezone
 import random
 
@@ -17,6 +20,90 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User = get_user_model()
         self.stdout.write(self.style.SUCCESS('--- Generando datos realistas para Leanmaker ---'))
+
+        # 0. Poblar tablas de referencia primero
+        self.stdout.write('Poblando tablas de referencia...')
+        
+        # Poblar TRL Levels
+        trl_data = [
+            {"level": 1, "name": "Principios básicos observados", "description": "Se han identificado y reportado los principios básicos de la tecnología.", "min_hours": 10},
+            {"level": 2, "name": "Concepto de tecnología formulado", "description": "Se han formulado las aplicaciones potenciales de la tecnología.", "min_hours": 20},
+            {"level": 3, "name": "Prueba experimental de concepto", "description": "Se ha validado experimentalmente el concepto de la tecnología.", "min_hours": 30},
+            {"level": 4, "name": "Validación de componentes en laboratorio", "description": "Se han validado los componentes tecnológicos en un entorno de laboratorio.", "min_hours": 40},
+            {"level": 5, "name": "Validación de componentes en entorno relevante", "description": "Los componentes han sido validados en un entorno relevante para su aplicación.", "min_hours": 50},
+            {"level": 6, "name": "Modelo de sistema en entorno relevante", "description": "El sistema o subsistema ha sido demostrado en un entorno relevante.", "min_hours": 60},
+            {"level": 7, "name": "Demostración de sistema en entorno real", "description": "El sistema prototipo ha sido demostrado en un entorno real.", "min_hours": 70},
+            {"level": 8, "name": "Sistema completo y calificado", "description": "El sistema real ha sido completado y calificado a través de pruebas y demostraciones.", "min_hours": 80},
+            {"level": 9, "name": "Sistema probado en operación real", "description": "El sistema ha sido probado con éxito en una operación real.", "min_hours": 90},
+        ]
+        
+        for trl in trl_data:
+            TRLLevel.objects.get_or_create(
+                level=trl["level"],
+                defaults={
+                    "name": trl["name"],
+                    "description": trl["description"],
+                    "min_hours": trl["min_hours"],
+                    "is_active": True,
+                }
+            )
+
+        # Poblar Project Status
+        status_data = [
+            {"name": "Abierto", "description": "Proyecto abierto para aplicaciones", "color": "#28a745"},
+            {"name": "En Progreso", "description": "Proyecto en desarrollo", "color": "#007bff"},
+            {"name": "Completado", "description": "Proyecto finalizado exitosamente", "color": "#6c757d"},
+            {"name": "Cancelado", "description": "Proyecto cancelado", "color": "#dc3545"},
+        ]
+        
+        for status in status_data:
+            ProjectStatus.objects.get_or_create(
+                name=status["name"],
+                defaults={
+                    "description": status["description"],
+                    "color": status["color"],
+                    "is_active": True,
+                }
+            )
+
+        # Poblar Areas
+        areas_data = [
+            {"name": "Tecnología", "description": "Proyectos relacionados con desarrollo de software, IA, etc."},
+            {"name": "Salud", "description": "Proyectos en el área de la salud y medicina"},
+            {"name": "Educación", "description": "Proyectos educativos y de formación"},
+            {"name": "Finanzas", "description": "Proyectos financieros y de inversión"},
+            {"name": "Medio Ambiente", "description": "Proyectos de sostenibilidad y ecología"},
+            {"name": "Logística", "description": "Proyectos de transporte y distribución"},
+            {"name": "Construcción", "description": "Proyectos de construcción e infraestructura"},
+            {"name": "Agricultura", "description": "Proyectos agrícolas y agroindustriales"},
+        ]
+        
+        for area in areas_data:
+            Area.objects.get_or_create(
+                name=area["name"],
+                defaults={
+                    "description": area["description"],
+                    "is_active": True,
+                }
+            )
+
+        # Poblar Evaluation Categories
+        eval_categories_data = [
+            {"name": "Habilidades Técnicas", "description": "Evaluación de competencias técnicas y conocimientos específicos"},
+            {"name": "Trabajo en Equipo", "description": "Evaluación de habilidades de colaboración y comunicación"},
+            {"name": "Liderazgo", "description": "Evaluación de capacidades de liderazgo y gestión"},
+            {"name": "Innovación", "description": "Evaluación de creatividad y pensamiento innovador"},
+            {"name": "Calidad del Trabajo", "description": "Evaluación de la calidad y precisión del trabajo entregado"},
+        ]
+        
+        for category in eval_categories_data:
+            EvaluationCategory.objects.get_or_create(
+                name=category["name"],
+                defaults={
+                    "description": category["description"],
+                    "is_active": True,
+                }
+            )
 
         # 1. Datos base
         admins = [
@@ -135,17 +222,21 @@ class Command(BaseCommand):
 
         # 5. Crear proyectos para empresas
         proyectos = []
+        # Obtener IDs válidos de las tablas de referencia
+        trl_ids = list(TRLLevel.objects.values_list('id', flat=True))
+        status_ids = list(ProjectStatus.objects.values_list('id', flat=True))
+        area_ids = list(Area.objects.values_list('id', flat=True))
+        
         for empresa in empresa_objs:
             for _ in range(random.randint(1, 2)):
-                status = random.choice(['open', 'in-progress', 'completed'])
                 proyecto = Proyecto.objects.create(
                     company=empresa,
                     title=f"Proyecto de {empresa.company_name} #{random.randint(1,100)}",
                     description=f"Proyecto realista generado para {empresa.company_name}.",
                     requirements="Requisitos del proyecto.",
-                    status_id=random.randint(1, 3),
-                    area_id=1,
-                    trl_id=1,
+                    status_id=random.choice(status_ids),
+                    area_id=random.choice(area_ids),
+                    trl_id=random.choice(trl_ids),
                     required_hours=random.randint(80, 200),
                     min_api_level=1,
                     max_students=random.randint(1, 3),
@@ -177,7 +268,7 @@ class Command(BaseCommand):
 
         # 6. Asignar estudiantes a proyectos y empresas
         for estudiante in estudiante_objs:
-            proyectos_asignados = random.sample(proyectos, k=random.randint(1, 2))
+            proyectos_asignados = random.sample(proyectos, k=min(random.randint(1, 2), len(proyectos)))
             for proyecto in proyectos_asignados:
                 AplicacionProyecto.objects.get_or_create(
                     proyecto=proyecto,
@@ -202,41 +293,74 @@ class Command(BaseCommand):
                 )
 
         # 7. Crear evaluaciones y strikes
+        # Obtener categorías de evaluación
+        eval_categories = list(EvaluationCategory.objects.all())
+        
         for estudiante in estudiante_objs:
             for _ in range(random.randint(1, 2)):
                 Evaluation.objects.create(
-                    proyecto=random.choice(proyectos),
-                    evaluador=random.choice(empresa_objs).user,
-                    evaluado=estudiante.user,
-                    nota=round(random.uniform(4.0, 7.0), 1),
-                    comentario='Evaluación generada automáticamente.',
-                    fecha=timezone.now() - timezone.timedelta(days=random.randint(1, 60))
+                    project=random.choice(proyectos),
+                    student=estudiante.user,
+                    evaluator=random.choice(empresa_objs).user,
+                    category=random.choice(eval_categories),
+                    score=round(random.uniform(60.0, 100.0), 1),
+                    comments='Evaluación generada automáticamente.',
+                    evaluation_date=timezone.now().date() - timezone.timedelta(days=random.randint(1, 60)),
+                    company=random.choice(empresa_objs),
+                    evaluator_role='Supervisor',
+                    status='completed',
+                    type='final',
+                    overall_rating=round(random.uniform(60.0, 100.0), 1),
+                    strengths='Trabajo en equipo, Comunicación efectiva, Puntualidad',
+                    areas_for_improvement='Gestión del tiempo, Documentación técnica',
+                    project_duration=f'{random.randint(2, 6)} meses',
+                    technologies='Python, Django, React, SQL',
+                    deliverables='Aplicación web funcional, Documentación técnica',
                 )
+            
+            # Crear strikes para estudiantes que los tengan
             for _ in range(estudiante.strikes):
                 Strike.objects.create(
-                    estudiante=estudiante,
-                    motivo='No entregar proyecto a tiempo',
-                    fecha=timezone.now() - timezone.timedelta(days=random.randint(1, 60))
+                    student=estudiante,
+                    project=random.choice(proyectos),
+                    company=random.choice(empresa_objs),
+                    reason='No entregar proyecto a tiempo',
+                    description='El estudiante no cumplió con los plazos establecidos para la entrega del proyecto.',
+                    severity=random.choice(['low', 'medium', 'high']),
+                    issued_by=random.choice(empresa_objs).user,
+                    expires_at=timezone.now() + timezone.timedelta(days=random.randint(30, 90)),
+                    is_active=True,
                 )
 
         # 8. Crear eventos de calendario para empresas
         for empresa in empresa_objs:
             for _ in range(2):
                 CalendarEvent.objects.create(
-                    empresa=empresa,
-                    titulo=f'Evento {random.randint(1,100)} de {empresa.company_name}',
-                    descripcion='Reunión de coordinación',
-                    fecha_inicio=timezone.now() + timezone.timedelta(days=random.randint(1, 30)),
-                    fecha_fin=timezone.now() + timezone.timedelta(days=random.randint(31, 60)),
+                    title=f'Evento {random.randint(1,100)} de {empresa.company_name}',
+                    description='Reunión de coordinación y seguimiento del proyecto',
+                    event_type=random.choice(['meeting', 'deadline', 'reminder']),
+                    start_date=timezone.now() + timezone.timedelta(days=random.randint(1, 30)),
+                    end_date=timezone.now() + timezone.timedelta(days=random.randint(1, 30), hours=random.randint(1, 3)),
+                    all_day=False,
+                    location='Santiago, Chile',
+                    created_by=empresa.user,
+                    priority=random.choice(['low', 'medium', 'high']),
+                    status='scheduled',
+                    is_online=random.choice([True, False]),
+                    meeting_url='https://meet.google.com/abc-defg-hij' if random.choice([True, False]) else None,
+                    color='#1976d2',
+                    reminder_minutes=15,
                 )
 
         # 9. Crear notificaciones para estudiantes
         for estudiante in estudiante_objs:
             Notification.objects.create(
-                usuario=estudiante.user,
-                mensaje='Tienes una nueva aplicación aceptada',
-                tipo='success',
-                leida=False
+                user=estudiante.user,
+                title='Nueva aplicación aceptada',
+                message='Tu aplicación al proyecto ha sido aceptada. ¡Felicidades!',
+                type='success',
+                read=False,
+                priority='normal',
             )
 
         self.stdout.write(self.style.SUCCESS('--- Datos generados exitosamente ---'))
