@@ -321,11 +321,11 @@ export const Register = () => {
         py: 4,
       }}
     >
-      <Container maxWidth="md">
+      <Container maxWidth="md" sx={{ px: { xs: 1, sm: 4 } }}>
         <Paper
           elevation={3}
           sx={{
-            p: 4,
+            p: { xs: 2, sm: 4 },
             borderRadius: 3,
             bgcolor: 'white',
           }}
@@ -393,7 +393,7 @@ export const Register = () => {
                     </Typography>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -421,7 +421,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -457,7 +457,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -497,7 +497,7 @@ export const Register = () => {
                     </Typography>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <FormControl fullWidth>
                         <InputLabel>Institución Educativa</InputLabel>
@@ -552,7 +552,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -626,7 +626,7 @@ export const Register = () => {
                     </Typography>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -654,7 +654,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -690,7 +690,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -724,7 +724,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -760,7 +760,7 @@ export const Register = () => {
                     </Typography>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
                         fullWidth 
@@ -791,7 +791,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
                         fullWidth 
@@ -818,7 +818,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
                         fullWidth 
@@ -852,7 +852,7 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box flex={1} minWidth={200}>
                       <TextField 
                         fullWidth 
