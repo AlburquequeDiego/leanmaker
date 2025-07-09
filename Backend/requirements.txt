@@ -17,7 +17,7 @@ djangorestframework-simplejwt==5.3.0
 # Base de datos SQL Server
 # REQUERIDO: Microsoft ODBC Driver 17 for SQL Server
 # Si tienes problemas: pip install --only-binary=:all: pyodbc
-pyodbc==4.0.39
+pyodbc==5.0.1
 django-mssql-backend==2.8.1
 
 # Utilidades

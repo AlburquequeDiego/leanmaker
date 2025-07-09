@@ -12,69 +12,50 @@ Antes de empezar, asegúrate de tener instalado:
 - **Node.js 18+** y **npm**
 - **Git** (para clonar el repositorio)
 - **Acceso a la base de datos SQL Server** (ya configurado)
+- **https://visualstudio.microsoft.com/es/visual-cpp-build-tools/** descargar c++
+-**https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server** descargar el ODBC for sql server  
 
 ---
 
-## 🔧 Paso 1: Clonar el Repositorio
 
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd leanmaker
-```
-Elimina el entorno virtual actual:
+
+PRIMERO ENTRA AL BACKEND: 
+
+## cd Backend 
+
+antes de tienes que Elimina el entorno virtual actual:
 En la carpeta Backend, elimina la carpeta venv312 (puedes hacerlo desde el explorador de archivos o con este comando en PowerShell):
 Remove-Item -Recurse -Force venv312
 
-Crea un nuevo entorno virtual:
+## Crea un nuevo entorno virtual:
 python -m venv venv312
 
-Actívalo:
+## Actívalo:
 venv312\Scripts\activate
 
-Instala las dependencias (asegúrate de escribir bien el nombre):
+## Instala setuptools primero (base para otras dependencias):
+pip install setuptools
+
+## Instala las dependencias base:
 pip install -r requirements.txt
 
+## Desinstala el backend antiguo e instala el recomendado:
+pip uninstall django-mssql-backend
+pip install mssql-django
 
----
-
-## 🐍 Paso 2: Configurar y Ejecutar el Backend (Django)
-
-### 2.1 Navegar al directorio del backend
-```bash
-cd Backend
-```
-
-### 2.2 Activar el entorno virtual
-```bash
-# Windows
-venv312\Scripts\activate
-
-# Linux/Mac
-source venv312/bin/activate
-```
-
-### 2.3 Instalar dependencias
-```bash
-pip install -r requirements.txt
-```
-
-### 2.4 Verificar configuración de base de datos
-La base de datos ya está configurada en `leanmaker_backend/settings.py`. Solo verifica que puedas conectarte.
-
-### 2.5 Ejecutar migraciones (si es necesario)
-```bash
+## Ahora puedes hacer las migraciones correctamente:
 python manage.py migrate
-```
 
-### 2.6 Crear superusuario (opcional)
-```bash
+
+###  Crear superusuario (opcional)
+
 python manage.py createsuperuser
-```
 
-### 2.7 Iniciar el servidor backend
-```bash
+
+###  Iniciar el servidor backend
+
 python manage.py runserver
-```
+
 
 ✅ **Backend funcionando en:** http://127.0.0.1:8000
 
