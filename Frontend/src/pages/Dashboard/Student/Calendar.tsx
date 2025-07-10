@@ -219,7 +219,7 @@ export const Calendar = () => {
     setLoading(true);
     try {
       // Obtener eventos específicos del estudiante
-      const eventsData = await apiService.get('/api/calendar-events/student_events/');
+              const eventsData = await apiService.get('/api/calendar/events/student_events/');
       const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
         id: event.id,
         title: event.title,

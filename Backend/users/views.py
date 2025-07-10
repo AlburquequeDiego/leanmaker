@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Q
+from django.db.models import Q, Sum, Avg
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Usuario
 from .serializers import (
@@ -64,6 +64,40 @@ class UserViewSet(viewsets.ModelViewSet):
             return Usuario.objects.all()
         return Usuario.objects.filter(id=user.id)
 
+    def get_object(self):
+        """Obtener objeto o crear perfil si no existe"""
+        obj = super().get_object()
+        
+        # Si es el usuario actual y no tiene perfil, crearlo automáticamente
+        if obj == self.request.user:
+            if obj.role == 'student' and not hasattr(obj, 'estudiante_profile'):
+                from students.models import Estudiante
+                Estudiante.objects.create(
+                    user=obj,
+                    status='pending',
+                    api_level=1,
+                    strikes=0,
+                    gpa=0.0,
+                    completed_projects=0,
+                    total_hours=0,
+                    experience_years=0,
+                    rating=0.0
+                )
+            elif obj.role == 'company' and not hasattr(obj, 'empresa_profile'):
+                from companies.models import Empresa
+                Empresa.objects.create(
+                    user=obj,
+                    company_name=obj.first_name or obj.email,
+                    verified=False,
+                    rating=0.0,
+                    total_projects=0,
+                    projects_completed=0,
+                    total_hours_offered=0,
+                    status='active'
+                )
+        
+        return obj
+
     @action(detail=False, methods=['post'])
     def login(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -110,39 +144,37 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def profile(self, request):
         """Obtener perfil del usuario actual"""
-        serializer = UsuarioSerializer(request.user)
+        user = request.user
+        
+        # Crear perfil automáticamente si no existe
+        if user.role == 'student' and not hasattr(user, 'estudiante_profile'):
+            from students.models import Estudiante
+            Estudiante.objects.create(
+                user=user,
+                status='pending',
+                api_level=1,
+                strikes=0,
+                gpa=0.0,
+                completed_projects=0,
+                total_hours=0,
+                experience_years=0,
+                rating=0.0
+            )
+        elif user.role == 'company' and not hasattr(user, 'empresa_profile'):
+            from companies.models import Empresa
+            Empresa.objects.create(
+                user=user,
+                company_name=user.first_name or user.email,
+                verified=False,
+                rating=0.0,
+                total_projects=0,
+                projects_completed=0,
+                total_hours_offered=0,
+                status='active'
+            )
+        
+        serializer = UsuarioSerializer(user)
         return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def admin_dashboard_stats(self, request):
-        """Estadísticas para el dashboard de administrador"""
-        if not request.user.is_superuser:
-            return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
-        
-        total_users = Usuario.objects.count()
-        active_users = Usuario.objects.filter(is_active=True).count()
-        verified_users = Usuario.objects.filter(is_verified=True).count()
-        students = Usuario.objects.filter(role='student').count()
-        companies = Usuario.objects.filter(role='company').count()
-        
-        return Response({
-            'total_users': total_users,
-            'active_users': active_users,
-            'verified_users': verified_users,
-            'students': students,
-            'companies': companies,
-        })
-
-    @action(detail=False, methods=['get'])
-    def user_activity_chart(self, request):
-        """Datos para gráfico de actividad de usuarios"""
-        if not request.user.is_superuser:
-            return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
-        
-        # Implementar lógica de gráfico de actividad
-        return Response({
-            'chart_data': []
-        })
 
 class AuthViewSet(viewsets.ViewSet):
     """ViewSet para autenticación"""
@@ -227,9 +259,19 @@ class DashboardViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def company_stats(self, request):
         """Estadísticas específicas para empresas"""
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"[company_stats] Llamada por usuario: {request.user} (id={request.user.id}, email={request.user.email}, es_empresa={getattr(request.user, 'es_empresa', None)})")
         if not request.user.es_empresa:
+            logger.warning(f"[company_stats] Acceso denegado para usuario: {request.user} (id={request.user.id})")
             return Response({'error': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
-        return self._company_stats(request.user)
+        try:
+            resp = self._company_stats(request.user)
+            logger.info(f"[company_stats] Respuesta: {resp.data}")
+            return resp
+        except Exception as e:
+            logger.error(f"[company_stats] Error interno: {str(e)}", exc_info=True)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
     def admin_stats(self, request):
@@ -243,39 +285,98 @@ class DashboardViewSet(viewsets.ViewSet):
         from projects.models import Proyecto, AplicacionProyecto
         from students.models import Estudiante
         from companies.models import Empresa
+        import logging
         
-        # Optimizar consultas con select_related y prefetch_related
-        total_users = Usuario.objects.count()
-        active_users = Usuario.objects.filter(is_active=True).count()
-        students = Usuario.objects.filter(role='student').count()
-        companies = Usuario.objects.filter(role='company').count()
+        logger = logging.getLogger(__name__)
+        logger.info("[_admin_stats] Calculando estadísticas de administrador")
         
-        # Optimizar consultas de proyectos
-        total_projects = Proyecto.objects.select_related('status', 'empresa').count()
-        active_projects = Proyecto.objects.select_related('status').filter(status__name='active').count()
-        
-        # Optimizar consultas de aplicaciones
-        total_applications = AplicacionProyecto.objects.select_related('proyecto', 'estudiante').count()
-        pending_applications = AplicacionProyecto.objects.select_related('proyecto').filter(status='pending').count()
-        
-        return Response({
-            'total_users': total_users,
-            'active_users': active_users,
-            'students': students,
-            'companies': companies,
-            'total_projects': total_projects,
-            'active_projects': active_projects,
-            'total_applications': total_applications,
-            'pending_applications': pending_applications,
-        })
+        try:
+            # Optimizar consultas con select_related y prefetch_related
+            total_users = Usuario.objects.count()
+            active_users = Usuario.objects.filter(is_active=True).count()
+            students = Usuario.objects.filter(role='student').count()
+            companies = Usuario.objects.filter(role='company').count()
+            
+            # Optimizar consultas de proyectos
+            total_projects = Proyecto.objects.select_related('status', 'empresa').count()
+            active_projects = Proyecto.objects.select_related('status').filter(status__name='active').count()
+            completed_projects = Proyecto.objects.select_related('status').filter(status__name='completed').count()
+            
+            # Optimizar consultas de aplicaciones
+            total_applications = AplicacionProyecto.objects.select_related('proyecto', 'estudiante').count()
+            pending_applications = AplicacionProyecto.objects.select_related('proyecto').filter(status='pending').count()
+            
+            # Calcular horas totales
+            total_hours = Estudiante.objects.aggregate(total=Sum('total_hours'))['total'] or 0
+            
+            # Calcular rating promedio
+            avg_rating = Estudiante.objects.aggregate(avg=Avg('rating'))['avg'] or 0.0
+            
+            stats = {
+                'total_users': total_users,
+                'active_users': active_users,
+                'students': students,
+                'companies': companies,
+                'total_projects': total_projects,
+                'active_projects': active_projects,
+                'completed_projects': completed_projects,
+                'total_applications': total_applications,
+                'pending_applications': pending_applications,
+                'total_hours': total_hours,
+                'average_rating': float(avg_rating),
+                'new_users_this_month': 0,  # TODO: Implementar cálculo por mes
+                'projects_this_month': 0,   # TODO: Implementar cálculo por mes
+            }
+            
+            logger.info(f"[_admin_stats] Estadísticas calculadas: {stats}")
+            return Response(stats)
+            
+        except Exception as e:
+            logger.error(f"[_admin_stats] Error calculando estadísticas: {str(e)}", exc_info=True)
+            return Response({
+                'total_users': 0,
+                'active_users': 0,
+                'students': 0,
+                'companies': 0,
+                'total_projects': 0,
+                'active_projects': 0,
+                'completed_projects': 0,
+                'total_applications': 0,
+                'pending_applications': 0,
+                'total_hours': 0,
+                'average_rating': 0.0,
+                'new_users_this_month': 0,
+                'projects_this_month': 0,
+            })
 
     def _student_stats(self, user):
         """Estadísticas para estudiantes"""
         from projects.models import Proyecto, AplicacionProyecto, MiembroProyecto
         from students.models import Estudiante
+        import logging
+        
+        logger = logging.getLogger(__name__)
+        logger.info(f"[_student_stats] Procesando estadísticas para usuario: {user.email} (id={user.id})")
         
         try:
-            estudiante = user.estudiante_profile
+            # Asegurar que el estudiante tenga perfil
+            if not hasattr(user, 'estudiante_profile'):
+                logger.info(f"[_student_stats] Creando perfil de estudiante para: {user.email}")
+                estudiante = Estudiante.objects.create(
+                    user=user,
+                    status='pending',
+                    api_level=1,
+                    strikes=0,
+                    gpa=0.0,
+                    completed_projects=0,
+                    total_hours=0,
+                    experience_years=0,
+                    rating=0.0
+                )
+            else:
+                estudiante = user.estudiante_profile
+            
+            logger.info(f"[_student_stats] Perfil de estudiante encontrado: {estudiante.id}")
             
             # Optimizar consultas de proyectos del estudiante
             my_projects = MiembroProyecto.objects.filter(estudiante=estudiante).select_related(
@@ -297,7 +398,7 @@ class DashboardViewSet(viewsets.ViewSet):
                 status__name='published'
             ).exclude(id__in=applied_project_ids).count()
             
-            return Response({
+            stats = {
                 'strikes': estudiante.strikes,
                 'gpa': float(estudiante.gpa),
                 'completed_projects': completed_projects,
@@ -308,8 +409,13 @@ class DashboardViewSet(viewsets.ViewSet):
                 'accepted_applications': accepted_applications,
                 'available_projects': available_projects,
                 'total_applications': my_applications.count(),
-            })
+            }
+            
+            logger.info(f"[_student_stats] Estadísticas calculadas: {stats}")
+            return Response(stats)
+            
         except Exception as e:
+            logger.error(f"[_student_stats] Error calculando estadísticas: {str(e)}", exc_info=True)
             return Response({
                 'strikes': 0,
                 'gpa': 0.0,
@@ -327,9 +433,29 @@ class DashboardViewSet(viewsets.ViewSet):
         """Estadísticas para empresas"""
         from projects.models import Proyecto, AplicacionProyecto, MiembroProyecto
         from companies.models import Empresa
+        import logging
+        
+        logger = logging.getLogger(__name__)
+        logger.info(f"[_company_stats] Procesando estadísticas para empresa: {user.email} (id={user.id})")
         
         try:
-            empresa = user.empresa_profile
+            # Asegurar que la empresa tenga perfil
+            if not hasattr(user, 'empresa_profile'):
+                logger.info(f"[_company_stats] Creando perfil de empresa para: {user.email}")
+                empresa = Empresa.objects.create(
+                    user=user,
+                    company_name=user.first_name or user.email,
+                    verified=False,
+                    rating=0.0,
+                    total_projects=0,
+                    projects_completed=0,
+                    total_hours_offered=0,
+                    status='active'
+                )
+            else:
+                empresa = user.empresa_profile
+            
+            logger.info(f"[_company_stats] Perfil de empresa encontrado: {empresa.id}")
             
             # Optimizar consultas de proyectos de la empresa
             company_projects = Proyecto.objects.filter(empresa=empresa).select_related('status')
@@ -350,7 +476,7 @@ class DashboardViewSet(viewsets.ViewSet):
                 proyecto__status__name='active'
             ).select_related('estudiante', 'proyecto').values('estudiante').distinct().count()
             
-            return Response({
+            stats = {
                 'rating': float(empresa.rating),
                 'total_projects': company_projects.count(),
                 'projects_completed': completed_projects,
@@ -361,8 +487,13 @@ class DashboardViewSet(viewsets.ViewSet):
                 'accepted_applications': accepted_applications,
                 'active_students': active_students,
                 'total_applications': company_applications.count(),
-            })
+            }
+            
+            logger.info(f"[_company_stats] Estadísticas calculadas: {stats}")
+            return Response(stats)
+            
         except Exception as e:
+            logger.error(f"[_company_stats] Error calculando estadísticas: {str(e)}", exc_info=True)
             return Response({
                 'rating': 0.0,
                 'total_projects': 0,

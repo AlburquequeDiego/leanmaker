@@ -39,6 +39,18 @@ body {
     background: #2563eb !important;
     border-radius: 6px;
 }
+/* Mejorar contraste en tablas y filas */
 .module th, .module td {
-    border-color: #2d3748 !important;
+  color: #222 !important;
+  background-color: #e3e6e8 !important;
+}
+.module tr:nth-child(even) td {
+  background-color: #cfd8dc !important;
+}
+.module tr:nth-child(odd) td {
+  background-color: #e3e6e8 !important;
+}
+.module th {
+  background-color: #397393 !important;
+  color: #ffe082 !important;
 }

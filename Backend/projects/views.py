@@ -42,7 +42,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 empresa = user.empresa_profile
                 return Proyecto.objects.filter(empresa=empresa)
             except:
-                return Proyecto.objects.none()
+                # Crear perfil de empresa si no existe
+                from companies.models import Empresa
+                empresa = Empresa.objects.create(
+                    user=user,
+                    company_name=user.first_name or user.email,
+                    verified=False,
+                    rating=0.0,
+                    total_projects=0,
+                    projects_completed=0,
+                    total_hours_offered=0,
+                    status='active'
+                )
+                return Proyecto.objects.filter(empresa=empresa)
         elif user.es_estudiante:
             # Estudiante ve proyectos publicados y donde es miembro
             try:
@@ -57,6 +69,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
                     models.Q(status__name='published')
                 ).distinct()
             except:
+                # Crear perfil de estudiante si no existe
+                from students.models import Estudiante
+                Estudiante.objects.create(
+                    user=user,
+                    status='pending',
+                    api_level=1,
+                    strikes=0,
+                    gpa=0.0,
+                    completed_projects=0,
+                    total_hours=0,
+                    experience_years=0,
+                    rating=0.0
+                )
                 return Proyecto.objects.filter(status__name='published')
         
         return Proyecto.objects.none()

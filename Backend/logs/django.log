@@ -5858,3 +5858,605 @@ WARNING 2025-07-09 18:53:09,921 log 20068 2228 Not Found: /api/calendar-events/c
 WARNING 2025-07-09 18:53:15,189 log 20068 2228 Not Found: /api/dashboard/company_stats/
 WARNING 2025-07-09 18:53:15,213 log 20068 2228 Not Found: /api/dashboard/company_stats/
 WARNING 2025-07-09 18:53:21,163 log 20068 13424 Not Found: /api/auth/logout/
+ERROR 2025-07-09 19:37:50,181 log 20068 17964 Internal Server Error: /admin/reports/report/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\db\models\options.py", line 681, in get_field
+    return self.fields_map[field_name]
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+KeyError: 'status_display'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\utils.py", line 272, in lookup_field
+    f = _get_non_gfk_field(opts, name)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\utils.py", line 303, in _get_non_gfk_field
+    field = opts.get_field(name)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\db\models\options.py", line 683, in get_field
+    raise FieldDoesNotExist(
+django.core.exceptions.FieldDoesNotExist: Report has no field named 'status_display'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\templatetags\base.py", line 45, in render
+    return super().render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\template\library.py", line 258, in render
+    _dict = self.func(*resolved_args, **resolved_kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 336, in result_list
+    "results": list(results(cl)),
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 312, in results
+    yield ResultList(None, items_for_result(cl, res, None))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 303, in __init__
+    super().__init__(*items)
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\templatetags\admin_list.py", line 213, in items_for_result
+    f, attr, value = lookup_field(field_name, result, cl.model_admin)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\contrib\admin\utils.py", line 281, in lookup_field
+    value = attr(obj)
+            ^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\reports\admin.py", line 59, in status_display
+    color, obj.get_status_display()
+           ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Report' object has no attribute 'get_status_display'
+INFO 2025-07-09 19:55:38,657 autoreload 14460 20256 Watching for file changes with StatReloader
+WARNING 2025-07-09 19:55:45,979 log 14460 6512 Not Found: /favicon.ico
+WARNING 2025-07-09 20:00:49,532 log 14460 19748 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:00:49,544 log 14460 19748 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:00:55,940 log 14460 9192 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:00:55,948 log 14460 9192 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:00:58,298 log 14460 19088 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:00:58,306 log 14460 19088 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:01:00,470 log 14460 9248 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 20:01:00,480 log 14460 19088 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 20:01:13,116 log 14460 10316 Not Found: /api/project-applications/my_applications/
+WARNING 2025-07-09 20:01:13,125 log 14460 15352 Not Found: /api/project-applications/my_applications/
+WARNING 2025-07-09 20:01:18,442 log 14460 10316 Not Found: /api/calendar-events/company_events/
+WARNING 2025-07-09 20:01:18,454 log 14460 10316 Not Found: /api/calendar-events/company_events/
+WARNING 2025-07-09 20:01:35,919 log 14460 7856 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:01:35,928 log 14460 7856 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:02:05,921 log 14460 13188 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:02:36,687 log 14460 14472 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:03:06,694 log 14460 2972 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:03:36,699 log 14460 15700 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:04:06,687 log 14460 14920 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:04:36,696 log 14460 9888 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:05:06,685 log 14460 6500 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:05:23,751 log 14460 5596 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:05:23,762 log 14460 5596 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:05:52,297 log 14460 9888 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:05:52,308 log 14460 9888 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:06:30,799 log 14460 19792 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:06:30,811 log 14460 19792 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:06:41,691 log 14460 6336 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:07:12,691 log 14460 14652 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:07:42,734 log 14460 6336 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:11:03,614 log 14460 16232 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:11:03,626 log 14460 16232 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:11:33,886 log 14460 18828 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:11:35,919 log 14460 18828 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:11:35,928 log 14460 18828 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:11:36,977 log 14460 18828 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 20:11:36,998 log 14460 18828 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 20:11:38,778 log 14460 18828 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:11:38,786 log 14460 18828 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:11:45,323 log 14460 18828 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:11:45,331 log 14460 19576 Not Found: /api/companies/profile/
+WARNING 2025-07-09 20:11:47,265 log 14460 19576 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:11:47,272 log 14460 18828 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:12:17,696 log 14460 16492 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:12:47,686 log 14460 16736 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:13:17,369 log 14460 16736 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:13:47,381 log 14460 16736 Not Found: /api/dashboard/company_stats/
+INFO 2025-07-09 20:14:12,370 autoreload 14460 20256 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-09 20:14:13,839 autoreload 14856 12376 Watching for file changes with StatReloader
+WARNING 2025-07-09 20:14:17,599 log 14856 4424 Not Found: /api/dashboard/company_stats/
+INFO 2025-07-09 20:14:25,871 autoreload 14856 12376 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-09 20:14:27,078 autoreload 10644 20332 Watching for file changes with StatReloader
+WARNING 2025-07-09 20:14:44,629 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:44,638 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:46,804 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:46,812 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:47,403 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:47,412 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:47,734 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:47,740 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:47,973 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:47,980 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:48,215 log 10644 14816 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:48,225 log 10644 13116 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:48,474 log 10644 13116 Not Found: /api/dashboard/company_stats/
+WARNING 2025-07-09 20:14:48,482 log 10644 13116 Not Found: /api/dashboard/company_stats/
+INFO 2025-07-09 21:08:48,488 autoreload 1284 16632 Watching for file changes with StatReloader
+WARNING 2025-07-09 21:08:53,470 log 1284 16716 Not Found: /favicon.ico
+WARNING 2025-07-09 21:12:41,157 log 1284 16252 Not Found: /api/users/profile/
+WARNING 2025-07-09 21:12:41,367 log 1284 8456 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-09 21:12:41,396 log 1284 8456 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-09 21:12:44,399 log 1284 8456 Not Found: /api/users/profile/
+WARNING 2025-07-09 21:12:44,426 log 1284 16252 Not Found: /api/users/profile/
+WARNING 2025-07-09 21:12:46,142 log 1284 17872 Not Found: /api/admin/projects/
+WARNING 2025-07-09 21:12:46,153 log 1284 10160 Not Found: /api/admin/companies/
+WARNING 2025-07-09 21:12:46,158 log 1284 8004 Not Found: /api/admin/evaluations/
+WARNING 2025-07-09 21:12:46,170 log 1284 17872 Not Found: /api/admin/projects/
+WARNING 2025-07-09 21:12:46,187 log 1284 8004 Not Found: /api/admin/evaluations/
+WARNING 2025-07-09 21:12:46,187 log 1284 10160 Not Found: /api/admin/companies/
+WARNING 2025-07-09 21:12:46,494 log 1284 10160 Not Found: /api/admin/students/
+WARNING 2025-07-09 21:12:46,507 log 1284 7408 Not Found: /api/admin/students/
+WARNING 2025-07-09 21:12:47,872 log 1284 8004 Not Found: /api/admin/projects/
+WARNING 2025-07-09 21:12:47,889 log 1284 7408 Not Found: /api/admin/applications/
+WARNING 2025-07-09 21:12:47,907 log 1284 10160 Not Found: /api/admin/applications/
+WARNING 2025-07-09 21:12:47,921 log 1284 8004 Not Found: /api/admin/projects/
+WARNING 2025-07-09 21:12:48,357 log 1284 17872 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-09 21:12:48,374 log 1284 10160 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-09 21:12:52,645 log 1284 10160 Not Found: /api/users/profile/
+WARNING 2025-07-09 21:12:52,667 log 1284 17872 Not Found: /api/users/profile/
+WARNING 2025-07-09 21:12:53,357 log 1284 7408 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-09 21:12:53,378 log 1284 17872 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-09 22:27:49,152 autoreload 21384 16836 Watching for file changes with StatReloader
+WARNING 2025-07-09 22:27:52,979 log 21384 15272 Not Found: /favicon.ico
+WARNING 2025-07-09 22:28:50,797 log 21384 21776 Not Found: /api/users/profile/
+INFO 2025-07-09 22:28:51,051 views 21384 21776 [company_stats] Llamada por usuario: contacto@bioenergia.com (Empresa) (id=3c478a01-a86a-4c32-bba4-d19dfa41098e, email=contacto@bioenergia.com, es_empresa=True)
+INFO 2025-07-09 22:28:51,118 views 21384 21776 [company_stats] Respuesta: {'rating': 0.0, 'total_projects': 0, 'projects_completed': 0, 'total_hours_offered': 0, 'active_projects': 0, 'published_projects': 0, 'pending_applications': 0, 'accepted_applications': 0, 'active_students': 0, 'total_applications': 0}
+INFO 2025-07-09 22:28:51,309 views 21384 21776 [company_stats] Llamada por usuario: contacto@bioenergia.com (Empresa) (id=3c478a01-a86a-4c32-bba4-d19dfa41098e, email=contacto@bioenergia.com, es_empresa=True)
+INFO 2025-07-09 22:28:51,362 views 21384 21776 [company_stats] Respuesta: {'rating': 0.0, 'total_projects': 0, 'projects_completed': 0, 'total_hours_offered': 0, 'active_projects': 0, 'published_projects': 0, 'pending_applications': 0, 'accepted_applications': 0, 'active_students': 0, 'total_applications': 0}
+WARNING 2025-07-09 22:28:54,981 log 21384 12256 Not Found: /api/companies/profile/
+WARNING 2025-07-09 22:28:55,006 log 21384 12256 Not Found: /api/companies/profile/
+WARNING 2025-07-09 22:28:55,795 log 21384 21776 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 22:28:55,828 log 21384 21776 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 22:28:56,696 log 21384 12256 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 22:28:56,721 log 21384 21776 Not Found: /api/projects/my_projects/
+ERROR 2025-07-09 22:28:57,247 log 21384 21104 Internal Server Error: /api/projects/applications/received_applications/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py", line 310, in received_applications
+    queryset = Aplicacion.objects.filter(project__company=request.user.empresa)
+                                                          ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Usuario' object has no attribute 'empresa'. Did you mean: 'es_empresa'?
+ERROR 2025-07-09 22:28:57,618 log 21384 21776 Internal Server Error: /api/projects/applications/received_applications/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py", line 310, in received_applications
+    queryset = Aplicacion.objects.filter(project__company=request.user.empresa)
+                                                          ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Usuario' object has no attribute 'empresa'. Did you mean: 'es_empresa'?
+ERROR 2025-07-09 22:28:58,175 log 21384 21776 Internal Server Error: /api/projects/applications/received_applications/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py", line 310, in received_applications
+    queryset = Aplicacion.objects.filter(project__company=request.user.empresa)
+                                                          ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Usuario' object has no attribute 'empresa'. Did you mean: 'es_empresa'?
+ERROR 2025-07-09 22:28:58,562 log 21384 21104 Internal Server Error: /api/projects/applications/received_applications/
+Traceback (most recent call last):
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\albur\Desktop\leanmaker\Backend\venv312\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py", line 310, in received_applications
+    queryset = Aplicacion.objects.filter(project__company=request.user.empresa)
+                                                          ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Usuario' object has no attribute 'empresa'. Did you mean: 'es_empresa'?
+WARNING 2025-07-09 22:29:10,403 log 21384 21104 Not Found: /api/calendar/events/company_events/
+WARNING 2025-07-09 22:29:10,633 log 21384 21104 Not Found: /api/calendar/events/company_events/
+WARNING 2025-07-09 22:29:11,512 log 21384 21104 Not Found: /api/companies/profile/
+WARNING 2025-07-09 22:29:11,536 log 21384 21776 Not Found: /api/companies/profile/
+INFO 2025-07-09 22:29:12,523 views 21384 21776 [company_stats] Llamada por usuario: contacto@bioenergia.com (Empresa) (id=3c478a01-a86a-4c32-bba4-d19dfa41098e, email=contacto@bioenergia.com, es_empresa=True)
+INFO 2025-07-09 22:29:12,572 views 21384 21776 [company_stats] Respuesta: {'rating': 0.0, 'total_projects': 0, 'projects_completed': 0, 'total_hours_offered': 0, 'active_projects': 0, 'published_projects': 0, 'pending_applications': 0, 'accepted_applications': 0, 'active_students': 0, 'total_applications': 0}
+INFO 2025-07-09 22:29:12,763 views 21384 21776 [company_stats] Llamada por usuario: contacto@bioenergia.com (Empresa) (id=3c478a01-a86a-4c32-bba4-d19dfa41098e, email=contacto@bioenergia.com, es_empresa=True)
+INFO 2025-07-09 22:29:12,831 views 21384 21776 [company_stats] Respuesta: {'rating': 0.0, 'total_projects': 0, 'projects_completed': 0, 'total_hours_offered': 0, 'active_projects': 0, 'published_projects': 0, 'pending_applications': 0, 'accepted_applications': 0, 'active_students': 0, 'total_applications': 0}
+WARNING 2025-07-09 22:29:23,781 log 21384 21776 Not Found: /api/companies/profile/
+WARNING 2025-07-09 22:29:23,807 log 21384 21776 Not Found: /api/companies/profile/
+WARNING 2025-07-09 22:29:25,864 log 21384 21776 Not Found: /api/auth/logout/
+WARNING 2025-07-09 22:29:29,087 log 21384 21776 Bad Request: /api/token/
+WARNING 2025-07-09 22:29:40,817 log 21384 21776 Not Found: /api/users/profile/
+INFO 2025-07-09 22:29:41,061 views 21384 21776 [company_stats] Llamada por usuario: empresa19@example.com (Empresa) (id=f5a88370-3225-49a2-9073-b69dc33b6cd9, email=empresa19@example.com, es_empresa=True)
+INFO 2025-07-09 22:29:41,119 views 21384 21776 [company_stats] Respuesta: {'rating': 0.0, 'total_projects': 0, 'projects_completed': 0, 'total_hours_offered': 0, 'active_projects': 0, 'published_projects': 0, 'pending_applications': 0, 'accepted_applications': 0, 'active_students': 0, 'total_applications': 0}
+INFO 2025-07-09 22:29:41,300 views 21384 21776 [company_stats] Llamada por usuario: empresa19@example.com (Empresa) (id=f5a88370-3225-49a2-9073-b69dc33b6cd9, email=empresa19@example.com, es_empresa=True)
+INFO 2025-07-09 22:29:41,364 views 21384 21776 [company_stats] Respuesta: {'rating': 0.0, 'total_projects': 0, 'projects_completed': 0, 'total_hours_offered': 0, 'active_projects': 0, 'published_projects': 0, 'pending_applications': 0, 'accepted_applications': 0, 'active_students': 0, 'total_applications': 0}
+WARNING 2025-07-09 22:29:53,232 log 21384 21776 Not Found: /api/auth/logout/
+WARNING 2025-07-09 22:30:05,777 log 21384 21776 Not Found: /api/users/profile/
+WARNING 2025-07-09 22:30:08,928 log 21384 21776 Not Found: /api/students/profile/
+WARNING 2025-07-09 22:30:08,946 log 21384 21776 Not Found: /api/students/profile/
+WARNING 2025-07-09 22:30:10,759 log 21384 21776 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 22:30:10,784 log 21384 12256 Not Found: /api/projects/my_projects/
+WARNING 2025-07-09 22:30:12,166 log 21384 21776 Not Found: /api/company-ratings/
+WARNING 2025-07-09 22:30:12,465 log 21384 3524 Not Found: /api/company-ratings/
+WARNING 2025-07-09 22:30:15,510 log 21384 12256 Not Found: /api/calendar/events/student_events/
+WARNING 2025-07-09 22:30:15,760 log 21384 12256 Not Found: /api/calendar/events/student_events/
+WARNING 2025-07-09 22:31:03,175 log 21384 11160 Not Found: /api/students/profile/
+WARNING 2025-07-09 22:31:03,207 log 21384 20444 Not Found: /api/students/profile/
+WARNING 2025-07-09 22:31:39,279 log 21384 11160 Not Found: /api/users/profile/
+WARNING 2025-07-09 22:31:39,322 log 21384 20444 Not Found: /api/auth/logout/
+WARNING 2025-07-09 22:31:39,343 log 21384 11160 Not Found: /api/users/profile/
+WARNING 2025-07-09 22:31:39,385 log 21384 11160 Not Found: /api/auth/logout/
+WARNING 2025-07-09 22:32:03,833 log 21384 21596 Not Found: /api/users/profile/
+INFO 2025-07-09 22:35:08,068 autoreload 21384 16836 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-09 22:35:09,346 autoreload 696 21132 Watching for file changes with StatReloader
+INFO 2025-07-10 00:41:03,331 autoreload 8736 19032 Watching for file changes with StatReloader
+WARNING 2025-07-10 00:41:09,698 log 8736 21440 Not Found: /favicon.ico
+WARNING 2025-07-10 00:41:25,597 log 8736 16140 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:41:25,606 log 8736 16140 Not Found: /api/auth/logout/
+WARNING 2025-07-10 00:41:25,614 log 8736 18748 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:41:25,622 log 8736 18748 Not Found: /api/auth/logout/
+WARNING 2025-07-10 00:42:19,313 log 8736 7900 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:42:19,390 log 8736 7900 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:42:19,400 log 8736 17252 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:42:26,569 log 8736 9584 Not Found: /api/students/profile/
+WARNING 2025-07-10 00:42:26,590 log 8736 9584 Not Found: /api/students/profile/
+WARNING 2025-07-10 00:42:33,600 log 8736 9584 Not Found: /api/projects/my_projects/
+WARNING 2025-07-10 00:42:33,617 log 8736 14852 Not Found: /api/projects/my_projects/
+WARNING 2025-07-10 00:42:35,011 log 8736 18940 Not Found: /api/company-ratings/
+WARNING 2025-07-10 00:42:35,208 log 8736 9584 Not Found: /api/company-ratings/
+WARNING 2025-07-10 00:42:43,558 log 8736 9584 Not Found: /api/calendar/events/student_events/
+WARNING 2025-07-10 00:42:44,107 log 8736 9584 Not Found: /api/calendar/events/student_events/
+WARNING 2025-07-10 00:42:48,199 log 8736 1784 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:42:48,223 log 8736 7364 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:43:07,867 log 8736 5828 Not Found: /api/auth/logout/
+WARNING 2025-07-10 00:43:12,435 log 8736 5828 Bad Request: /api/token/
+WARNING 2025-07-10 00:43:23,307 log 8736 17800 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:43:23,358 log 8736 17800 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:43:23,376 log 8736 17800 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:43:53,972 log 8736 18052 Not Found: /api/dashboard/student-stats/
+INFO 2025-07-10 00:52:13,516 autoreload 8504 5168 Watching for file changes with StatReloader
+WARNING 2025-07-10 00:52:54,571 log 8504 18388 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:52:54,588 log 8504 18388 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:52:54,596 log 8504 16804 Not Found: /api/auth/logout/
+WARNING 2025-07-10 00:52:54,604 log 8504 18388 Not Found: /api/auth/logout/
+WARNING 2025-07-10 00:54:19,172 log 8504 17932 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:54:19,377 log 8504 17932 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:54:23,414 log 8504 17932 Not Found: /api/students/profile/
+WARNING 2025-07-10 00:54:23,435 log 8504 17932 Not Found: /api/students/profile/
+WARNING 2025-07-10 00:54:27,261 log 8504 19788 Not Found: /api/projects/my_projects/
+WARNING 2025-07-10 00:54:27,294 log 8504 19788 Not Found: /api/projects/my_projects/
+WARNING 2025-07-10 00:54:28,150 log 8504 17668 Not Found: /api/company-ratings/
+WARNING 2025-07-10 00:54:28,373 log 8504 19788 Not Found: /api/company-ratings/
+WARNING 2025-07-10 00:54:29,885 log 8504 17668 Not Found: /api/calendar/events/student_events/
+WARNING 2025-07-10 00:54:30,141 log 8504 17668 Not Found: /api/calendar/events/student_events/
+WARNING 2025-07-10 00:54:35,729 log 8504 17668 Not Found: /api/students/profile/
+WARNING 2025-07-10 00:54:35,753 log 8504 17668 Not Found: /api/students/profile/
+WARNING 2025-07-10 00:54:36,001 log 8504 17668 Not Found: /api/dashboard/student-stats/
+WARNING 2025-07-10 00:54:43,221 log 8504 10860 Not Found: /api/auth/logout/
+WARNING 2025-07-10 00:55:43,085 log 8504 7700 Not Found: /api/users/profile/
+WARNING 2025-07-10 00:55:43,142 log 8504 7700 Not Found: /api/dashboard/student-stats/
+INFO 2025-07-10 09:09:20,467 autoreload 14244 14088 Watching for file changes with StatReloader
+WARNING 2025-07-10 09:09:30,003 log 14244 17380 Not Found: /favicon.ico
+WARNING 2025-07-10 09:09:51,023 log 14244 19108 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:09:51,039 log 14244 13936 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:09:59,134 log 14244 18716 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:09:59,224 log 14244 15120 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:10:04,083 log 14244 2388 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:10:04,130 log 14244 7868 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:10:05,847 log 14244 10672 Not Found: /api/admin/companies/
+WARNING 2025-07-10 09:10:05,875 log 14244 18240 Not Found: /api/admin/projects/
+WARNING 2025-07-10 09:10:05,904 log 14244 15956 Not Found: /api/admin/evaluations/
+WARNING 2025-07-10 09:10:05,913 log 14244 16500 Not Found: /api/admin/companies/
+WARNING 2025-07-10 09:10:05,927 log 14244 8252 Not Found: /api/admin/projects/
+WARNING 2025-07-10 09:10:05,943 log 14244 21312 Not Found: /api/admin/evaluations/
+WARNING 2025-07-10 09:10:06,148 log 14244 22060 Not Found: /api/admin/students/
+WARNING 2025-07-10 09:10:06,189 log 14244 13928 Not Found: /api/admin/students/
+WARNING 2025-07-10 09:10:07,199 log 14244 18204 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-10 09:10:07,231 log 14244 17988 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-10 09:10:46,049 log 14244 11440 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:10:46,165 log 14244 19224 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:11:01,361 log 14244 14384 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:11:01,523 log 14244 16736 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:11:27,529 log 14244 1716 Bad Request: /api/token/
+WARNING 2025-07-10 09:11:55,838 log 14244 21976 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:11:56,013 log 14244 13708 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:12:07,853 log 14244 13072 Bad Request: /api/token/
+WARNING 2025-07-10 09:16:44,120 log 14244 20756 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:16:44,202 log 14244 6316 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:16:50,143 log 14244 8740 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:16:50,255 log 14244 17800 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:20:51,672 log 14244 16532 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:20:51,807 log 14244 4004 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:20:58,734 log 14244 15208 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:20:58,816 log 14244 2432 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:33:37,468 log 14244 21700 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:33:37,488 log 14244 17944 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:33:59,332 log 14244 17168 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:33:59,551 log 14244 21188 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:34:05,555 log 14244 4368 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:34:05,756 log 14244 14208 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:34:22,071 log 14244 1008 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:34:22,111 log 14244 13864 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:34:32,911 log 14244 20904 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:34:32,996 log 14244 6316 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:34:34,444 log 14244 20284 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:34:34,476 log 14244 13408 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:35:19,388 log 14244 8516 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:35:19,458 log 14244 18888 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:36:17,499 log 14244 15172 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:36:17,698 log 14244 17156 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:36:24,071 log 14244 10456 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:36:24,143 log 14244 16512 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-10 09:40:48,258 autoreload 3184 16856 Watching for file changes with StatReloader
+WARNING 2025-07-10 09:41:01,376 log 3184 17024 Not Found: /favicon.ico
+WARNING 2025-07-10 09:42:07,171 log 3184 11760 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:42:07,256 log 3184 4480 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:42:13,344 log 3184 10236 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:42:13,438 log 3184 15884 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:42:37,414 log 3184 21044 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:42:37,505 log 3184 7292 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:42:43,195 log 3184 10796 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:42:43,266 log 3184 4152 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-10 09:44:19,289 autoreload 21960 12448 Watching for file changes with StatReloader
+WARNING 2025-07-10 09:44:39,466 log 21960 20688 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:44:39,477 log 21960 12668 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:44:45,145 log 21960 2476 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:44:45,236 log 21960 21740 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-10 09:48:55,704 autoreload 10000 11652 Watching for file changes with StatReloader
+WARNING 2025-07-10 09:50:07,659 log 10000 11332 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:50:07,693 log 10000 16176 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:50:33,807 log 10000 2512 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:50:33,904 log 10000 15908 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:51:50,242 log 10000 21508 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:51:50,686 log 10000 18368 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:52:27,821 log 10000 18368 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:52:27,849 log 10000 18368 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:52:34,884 log 10000 2164 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:52:34,995 log 10000 2164 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:53:06,464 log 10000 13740 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:53:06,487 log 10000 13740 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:53:11,964 log 10000 1832 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:53:12,074 log 10000 1832 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-10 09:54:24,223 autoreload 7092 12148 Watching for file changes with StatReloader
+WARNING 2025-07-10 09:56:02,226 log 7092 22044 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:56:02,246 log 7092 22044 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:56:07,783 log 7092 2964 Not Found: /api/users/profile/
+WARNING 2025-07-10 09:56:07,884 log 7092 2964 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 09:56:32,534 log 7092 11296 Unauthorized: /api/users/
+WARNING 2025-07-10 09:56:47,535 log 7092 7188 Not Found: /api/users/profile/
+INFO 2025-07-10 10:01:06,677 autoreload 7092 12148 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:07,718 autoreload 16660 17056 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:10,912 autoreload 16660 17056 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:11,925 autoreload 6612 21668 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:14,700 autoreload 6612 21668 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:15,667 autoreload 20412 12928 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:18,447 autoreload 20412 12928 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:19,484 autoreload 18608 7264 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:21,180 autoreload 18608 7264 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:22,119 autoreload 13304 6772 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:23,898 autoreload 13304 6772 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:24,901 autoreload 14332 19784 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:30,930 autoreload 14332 19784 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:31,839 autoreload 19688 21712 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:33,585 autoreload 19688 21712 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:01:34,682 autoreload 21892 14112 Watching for file changes with StatReloader
+INFO 2025-07-10 10:01:58,600 autoreload 21892 14112 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:02:00,508 autoreload 8920 22216 Watching for file changes with StatReloader
+INFO 2025-07-10 10:02:32,327 autoreload 9632 13380 Watching for file changes with StatReloader
+INFO 2025-07-10 10:02:54,837 autoreload 9632 13380 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:02:55,900 autoreload 7460 20224 Watching for file changes with StatReloader
+INFO 2025-07-10 10:03:08,118 autoreload 7460 20224 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:03:08,925 autoreload 9300 19596 Watching for file changes with StatReloader
+INFO 2025-07-10 10:03:18,050 autoreload 9300 19596 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:03:19,028 autoreload 12652 6812 Watching for file changes with StatReloader
+INFO 2025-07-10 10:03:20,819 autoreload 12652 6812 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:03:21,776 autoreload 14984 13924 Watching for file changes with StatReloader
+INFO 2025-07-10 10:03:30,813 autoreload 14984 13924 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:03:31,677 autoreload 20436 18448 Watching for file changes with StatReloader
+INFO 2025-07-10 10:03:38,661 autoreload 20436 18448 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:03:39,575 autoreload 17728 18384 Watching for file changes with StatReloader
+INFO 2025-07-10 10:04:13,832 autoreload 17728 18384 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:04:15,079 autoreload 14884 6740 Watching for file changes with StatReloader
+INFO 2025-07-10 10:06:51,157 autoreload 14884 6740 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:06:52,081 autoreload 4004 20604 Watching for file changes with StatReloader
+INFO 2025-07-10 10:07:13,936 autoreload 4004 20604 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-10 10:07:14,828 autoreload 19428 21232 Watching for file changes with StatReloader
+INFO 2025-07-10 10:08:04,163 autoreload 11472 4604 Watching for file changes with StatReloader
+INFO 2025-07-10 10:10:42,230 autoreload 1828 17828 Watching for file changes with StatReloader
+WARNING 2025-07-10 10:10:51,354 log 1828 15056 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:10:51,379 log 1828 15056 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:11:02,062 log 1828 15056 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:11:02,171 log 1828 15056 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 10:12:02,072 log 1828 2000 Not Found: /api/
+WARNING 2025-07-10 10:12:02,175 log 1828 2000 Not Found: /favicon.ico
+WARNING 2025-07-10 10:12:17,940 log 1828 2000 Unauthorized: /api/users/
+WARNING 2025-07-10 10:12:21,624 log 1828 2000 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-07-10 10:13:08,490 log 1828 2000 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 10:14:03,462 log 1828 20000 Unauthorized: /api/users/
+WARNING 2025-07-10 10:14:07,232 log 1828 20000 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-10 10:15:41,162 autoreload 19620 22184 Watching for file changes with StatReloader
+WARNING 2025-07-10 10:16:04,139 log 19620 17760 Unauthorized: /api/users/
+WARNING 2025-07-10 10:16:09,845 log 19620 17760 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 10:17:07,427 log 19620 21340 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:17:07,457 log 19620 21340 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:17:12,718 log 19620 21340 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:17:12,821 log 19620 21340 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-10 10:18:27,320 autoreload 19620 22184 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-10 10:18:28,527 autoreload 19996 728 Watching for file changes with StatReloader
+WARNING 2025-07-10 10:18:54,860 log 19996 10036 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:18:54,873 log 19996 10036 Not Found: /api/users/profile/
+INFO 2025-07-10 10:19:01,484 autoreload 19852 8812 Watching for file changes with StatReloader
+WARNING 2025-07-10 10:19:17,346 log 19852 14384 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:19:17,422 log 19852 14384 Not Found: /api/dashboard/admin_stats/
+INFO 2025-07-10 10:22:41,698 autoreload 19632 11060 Watching for file changes with StatReloader
+WARNING 2025-07-10 10:22:53,277 log 19632 8028 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 10:23:09,128 log 19632 18040 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:23:09,162 log 19632 18040 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:23:21,428 log 19632 17952 Not Found: /api/dashboard/admin_stats/
+WARNING 2025-07-10 10:23:53,160 log 19632 17952 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:23:53,184 log 19632 8708 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:27:22,094 log 19632 18872 Not Found: /users/dashboard/admin_stats/
+WARNING 2025-07-10 10:27:38,493 log 19632 18872 Not Found: /users/dashboard/admin_stats/
+WARNING 2025-07-10 10:28:30,673 log 19632 18872 Not Found: /users/users/
+WARNING 2025-07-10 10:28:48,174 log 19632 9220 Unauthorized: /api/users/
+WARNING 2025-07-10 10:28:59,894 log 19632 11784 Not Found: /users/users/
+WARNING 2025-07-10 10:29:14,984 log 19632 11784 Unauthorized: /api/users/users/
+WARNING 2025-07-10 10:35:21,354 log 19632 22384 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:35:21,385 log 19632 22384 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:35:24,657 log 19632 22384 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:35:24,685 log 19632 22384 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:35:29,475 log 19632 17220 Not Found: /api/users/profile/
+WARNING 2025-07-10 10:35:29,501 log 19632 17220 Not Found: /api/users/profile/
+WARNING 2025-07-10 15:03:39,465 log 19632 22880 Not Found: /api/users/profile/
+WARNING 2025-07-10 15:03:39,498 log 19632 22880 Not Found: /api/users/profile/

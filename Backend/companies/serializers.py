@@ -33,6 +33,8 @@ class EmpresaSerializer(serializers.ModelSerializer):
         # Asegurar que el campo user sea un string (UUID)
         if instance.user:
             data['user'] = str(instance.user.id)
+        # Asegurar que el ID sea string (UUID)
+        data['id'] = str(instance.id)
         return data
 
 # Alias para compatibilidad

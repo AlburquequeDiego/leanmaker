@@ -76,7 +76,7 @@ export const CompanyApplications: React.FC = () => {
     async function fetchApplications() {
       try {
         // Obtener aplicaciones específicas de la empresa
-        const data = await apiService.get('/api/project-applications/my_applications/');
+        const data = await apiService.get('/api/projects/applications/received_applications/');
         setApplications(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching applications:', error);
@@ -139,7 +139,7 @@ export const CompanyApplications: React.FC = () => {
 
   const handleStatusChange = async (applicationId: string, newStatus: Application['status']) => {
     try {
-      const updatedApplication = await apiService.patch(`/api/project-applications/${applicationId}/`, {
+              const updatedApplication = await apiService.patch(`/api/projects/applications/${applicationId}/`, {
         status: newStatus,
       });
 
@@ -166,7 +166,7 @@ export const CompanyApplications: React.FC = () => {
   const handleSaveInterview = async () => {
     if (selectedApplication) {
       try {
-        const updatedApplication = await apiService.patch(`/api/project-applications/${selectedApplication.id}/`, {
+        const updatedApplication = await apiService.patch(`/api/projects/applications/${selectedApplication.id}/`, {
           status: 'interviewed',
           interview_date: interviewData.date,
           interview_notes: interviewData.notes,

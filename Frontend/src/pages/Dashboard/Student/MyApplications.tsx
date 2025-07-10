@@ -204,7 +204,7 @@ export const MyApplications: React.FC = () => {
     async function fetchApplications() {
       try {
         // Obtener aplicaciones específicas del estudiante
-        const data = await apiService.get('/api/project-applications/my_applications/');
+        const data = await apiService.get('/api/projects/applications/my_applications/');
         setApplications(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching applications:', error);

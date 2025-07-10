@@ -9,29 +9,42 @@ export interface LoginCredentials {
 
 class AuthService {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await apiService.post<LoginResponse>(API_ENDPOINTS.LOGIN, credentials);
+    try {
+      const response = await apiService.post<LoginResponse>(API_ENDPOINTS.LOGIN, credentials);
     
     // Store tokens in localStorage
     localStorage.setItem('accessToken', response.access);
     localStorage.setItem('refreshToken', response.refresh);
     
-    // Store user data from the response
-    if (response.user) {
-      localStorage.setItem('user', JSON.stringify(response.user));
+    // Get user data from profile endpoint
+    try {
+        const user = await apiService.get<User>(API_ENDPOINTS.USER_PROFILE);
+      localStorage.setItem('user', JSON.stringify(user));
+      return { ...response, user };
+    } catch (error) {
+      console.warn('Could not fetch user profile, using basic response');
+      return response;
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
     }
-    
-    return response;
   }
 
   async register(userData: RegisterData): Promise<{ message: string; user: User }> {
-    const response = await apiService.post<{ message: string; user: User }>(API_ENDPOINTS.REGISTER, userData);
+    try {
+      const response = await apiService.post<{ message: string; user: User }>(API_ENDPOINTS.AUTH_REGISTER, userData);
     return response;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
   }
 
   async logout(): Promise<void> {
     try {
       // Call logout endpoint if available
-      await apiService.post(API_ENDPOINTS.LOGOUT);
+      await apiService.post(API_ENDPOINTS.AUTH_LOGOUT);
     } catch (error) {
       console.warn('Logout endpoint not available, clearing local storage only');
     } finally {
@@ -42,17 +55,16 @@ class AuthService {
     }
   }
 
-  async getCurrentUser(): Promise<User> {
+  async getCurrentUser(): Promise<User | null> {
     try {
-      // Get user from localStorage since we don't have a profile endpoint
-      const user = this.getUser();
-      if (!user) {
-        throw new Error('No user found in localStorage');
-      }
+      // Get user from API endpoint
+      const user = await apiService.get<User>(API_ENDPOINTS.USER_PROFILE);
+      // Update stored user data
+      localStorage.setItem('user', JSON.stringify(user));
       return user;
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      throw error;
+      return null;
     }
   }
 
@@ -71,17 +83,31 @@ class AuthService {
       throw new Error('No refresh token available');
     }
 
-    const response = await apiService.post<{ access: string }>(API_ENDPOINTS.REFRESH_TOKEN, {
+    try {
+      const response = await apiService.post<{ access: string }>(API_ENDPOINTS.REFRESH_TOKEN, {
       refresh: refreshToken
     });
 
     // Update stored access token
     localStorage.setItem('accessToken', response.access);
     return response;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // Clear tokens on refresh failure
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      throw error;
+    }
   }
 
   async changePassword(data: { old_password: string; new_password: string; new_password_confirm: string }): Promise<{ message: string }> {
-    return await apiService.post<{ message: string }>(API_ENDPOINTS.CHANGE_PASSWORD, data);
+    try {
+      return await apiService.post<{ message: string }>(API_ENDPOINTS.PASSWORDS_CHANGE, data);
+    } catch (error) {
+      console.error('Password change failed:', error);
+      throw error;
+    }
   }
 
   isAuthenticated(): boolean {

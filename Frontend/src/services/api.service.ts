@@ -6,7 +6,11 @@ class ApiService {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
+    // Construir URL completa - usar proxy en desarrollo
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+    console.log(`[apiService] Making request to: ${url}`);
+    console.log(`[apiService] API_BASE_URL: ${API_BASE_URL}`);
+    console.log(`[apiService] Endpoint: ${endpoint}`);
     
     // Get access token
     const token = authService.getAccessToken();
@@ -36,7 +40,11 @@ class ApiService {
             };
             const retryResponse = await fetch(url, config);
             if (retryResponse.ok) {
-              return await retryResponse.json();
+              const contentType = retryResponse.headers.get('content-type');
+              if (contentType && contentType.includes('application/json')) {
+                return await retryResponse.json();
+              }
+              return {} as T;
             }
           }
         } catch (refreshError) {
@@ -49,15 +57,19 @@ class ApiService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error(`[apiService] HTTP error ${response.status}:`, errorData);
         throw new Error(errorData.detail || errorData.message || `HTTP error! status: ${response.status}`);
       }
 
       // Handle empty responses
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
-        return await response.json();
+        const data = await response.json();
+        console.log(`[apiService] Response data:`, data);
+        return data;
       }
       
+      console.warn(`[apiService] No JSON content type, returning empty object`);
       return {} as T;
     } catch (error) {
       console.error('API request failed:', error);

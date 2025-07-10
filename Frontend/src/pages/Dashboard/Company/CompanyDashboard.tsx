@@ -1,301 +1,168 @@
-import { useState } from 'react';
-import { Box, Paper, Typography, useTheme, CircularProgress } from '@mui/material';
-import WorkIcon from '@mui/icons-material/Work';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import SchoolIcon from '@mui/icons-material/School';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import GradeIcon from '@mui/icons-material/Grade';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import EventIcon from '@mui/icons-material/Event';
-import HistoryIcon from '@mui/icons-material/History';
-import FolderIcon from '@mui/icons-material/Folder';
-import { UserTutorial } from '../../../components/common/UserTutorial';
-import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
+import { useState, useEffect } from 'react';
+import { Box, Paper, Typography, CircularProgress } from '@mui/material';
+import BusinessIcon from '@mui/icons-material/Business';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PendingIcon from '@mui/icons-material/Pending';
+import PeopleIcon from '@mui/icons-material/People';
+import StarIcon from '@mui/icons-material/Star';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
+import { useAuth } from '../../../hooks/useAuth';
 
-export const CompanyDashboard = () => {
-  const theme = useTheme();
-  // Estado para mostrar el tutorial (se puede controlar con localStorage para mostrar solo la primera vez)
-  const [showTutorial, setShowTutorial] = useState(true);
+export default function CompanyDashboard() {
+  const { user } = useAuth();
+  const [previousStats, setPreviousStats] = useState<any>(null);
   
   // Usar hook de tiempo real para estadísticas
   const { data: stats, loading, error, lastUpdate, refresh, isPolling } = useDashboardStats('company');
 
-  return (
-    <Box sx={{ flexGrow: 1, p: { xs: 1, sm: 3 }, bgcolor: 'grey.100', minHeight: '100vh' }}>
-      {/* Tutorial para usuarios nuevos */}
-      {showTutorial && (
-        <UserTutorial 
-          userRole="company" 
-          onClose={() => setShowTutorial(false)} 
-        />
-      )}
+  // Detectar cambios en las estadísticas
+  useEffect(() => {
+    if (stats) {
+      console.log('[CompanyDashboard] Stats received:', stats);
+      setPreviousStats(stats);
+    }
+  }, [stats]);
 
-      {/* Header con título y estado de conexión */}
+  // Log para debugging
+  useEffect(() => {
+    console.log('[CompanyDashboard] Component state:', {
+      loading,
+      error,
+      hasStats: !!stats,
+      stats,
+      user: user?.email
+    });
+  }, [loading, error, stats, user]);
+
+  // Cálculos de KPIs usando datos reales
+  const totalProjects = stats?.total_projects || 0;
+  const activeProjects = stats?.active_projects || 0;
+  const completedProjects = stats?.completed_projects || 0;
+  const pendingApplications = stats?.pending_applications || 0;
+  const totalStudents = stats?.active_students || 0;
+  const averageRating = stats?.rating || 0;
+  const totalHours = stats?.total_hours_offered || 0;
+  const projectsThisMonth = stats?.projects_this_month || 0;
+  const applicationsThisMonth = stats?.applications_this_month || 0;
+
+  return (
+    <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+      {/* Header con título */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-      <Typography variant="h4" gutterBottom fontWeight={700}>
-        Dashboard de Empresa
-      </Typography>
-        <ConnectionStatus
-          isConnected={!error}
-          isPolling={isPolling}
-          lastUpdate={lastUpdate}
-          error={error}
-        />
+        <Typography variant="h4" fontWeight={700}>
+          Dashboard de Empresa
+        </Typography>
+        {lastUpdate && (
+          <Typography variant="caption" color="text.secondary">
+            Última actualización: {lastUpdate.toLocaleTimeString()}
+          </Typography>
+        )}
       </Box>
       
-      {loading && !stats ? (
+      {/* Estado de carga */}
+      {loading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
           <CircularProgress />
         </Box>
-      ) : (
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
-        {/* Proyectos Activos */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <WorkIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Proyectos Activos
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.active_projects || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Proyectos en desarrollo
-          </Typography>
-        </Paper>
+      )}
 
-        {/* Postulantes */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: theme.palette.secondary.main,
-            color: theme.palette.secondary.contrastText,
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <GroupAddIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Postulantes
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.pending_applications || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Nuevas solicitudes pendientes
-          </Typography>
-        </Paper>
+      {/* Error discreto */}
+      {error && !loading && (
+        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+          No se pudo cargar la información.
+        </Typography>
+      )}
 
-        {/* Estudiantes Activos */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
+      {/* Contenido solo si hay datos */}
+      {!loading && !error && stats && (
+        <>
+          {/* KPIs principales */}
+          <Box sx={{
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'success.main',
-            color: 'success.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <SchoolIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Estudiantes Activos
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.active_students || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Participando en proyectos
-          </Typography>
-        </Paper>
-
-        {/* Proyectos Publicados */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'info.main',
-            color: 'info.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <FolderIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Proyectos Publicados
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.published_projects || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Disponibles para estudiantes
-          </Typography>
-        </Paper>
-
-        {/* Proyectos Completados */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'success.main',
-            color: 'success.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <HistoryIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Proyectos Completados
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.projects_completed || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Finalizados exitosamente
-          </Typography>
-        </Paper>
-
-        {/* Total de Proyectos */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'warning.main',
-            color: 'warning.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <TrendingUpIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Total de Proyectos
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.total_projects || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Todos los proyectos creados
-          </Typography>
-        </Paper>
-
-        {/* Aplicaciones Aceptadas */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'success.main',
-            color: 'success.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <AssignmentTurnedInIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Aplicaciones Aceptadas
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.accepted_applications || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Estudiantes aprobados
-          </Typography>
-        </Paper>
-
-        {/* Rating de la Empresa */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'purple.main',
-            color: 'purple.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <GradeIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Rating de la Empresa
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.rating?.toFixed(1) || '0.0'}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Calificación promedio
-          </Typography>
-        </Paper>
-
-        {/* Horas Ofrecidas */}
-        <Paper
-          sx={{
-            flex: { xs: '1 1 100%', sm: '1 1 calc(33.333% - 24px)' },
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            minWidth: 220,
-            bgcolor: 'info.main',
-            color: 'info.contrastText',
-            borderRadius: 3,
-            boxShadow: 3,
-            transition: 'transform 0.15s',
-            '&:hover': { transform: 'translateY(-4px) scale(1.03)', boxShadow: 6 },
-          }}
-        >
-          <EventIcon sx={{ fontSize: 40, mb: 1, opacity: 0.8 }} />
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Horas Ofrecidas
-          </Typography>
-          <Typography variant="h3" fontWeight={700} lineHeight={1.1}>{stats?.total_hours_offered || 0}</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Total de horas ofrecidas
-          </Typography>
-        </Paper>
-      </Box>
+            flexWrap: 'wrap',
+            gap: 3,
+            mb: 4,
+            justifyContent: { xs: 'center', md: 'flex-start' }
+          }}>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#42a5f5', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <BusinessIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Total de Proyectos</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{totalProjects}</Typography>
+              <Typography variant="body2">Proyectos creados en total</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#43a047', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <PlayArrowIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Proyectos Activos</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{activeProjects}</Typography>
+              <Typography variant="body2">Proyectos en curso actualmente</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#8bc34a', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <CheckCircleIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Proyectos Completados</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{completedProjects}</Typography>
+              <Typography variant="body2">Proyectos finalizados exitosamente</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ff9800', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <PendingIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Aplicaciones Pendientes</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{pendingApplications}</Typography>
+              <Typography variant="body2">Aplicaciones esperando revisión</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#9c27b0', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <PeopleIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Estudiantes Participando</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{totalStudents}</Typography>
+              <Typography variant="body2">Estudiantes en proyectos activos</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ffb300', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <StarIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Rating Promedio</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{averageRating.toFixed(1)}</Typography>
+              <Typography variant="body2">Calificación promedio de estudiantes</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#42a5f5', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <AccessTimeIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Horas Totales</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{totalHours}</Typography>
+              <Typography variant="body2">Horas acumuladas en proyectos</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ab47bc', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <CalendarMonthIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Proyectos Este Mes</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{projectsThisMonth}</Typography>
+              <Typography variant="body2">Nuevos proyectos este mes</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ffa726', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <AssignmentIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Aplicaciones Este Mes</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{applicationsThisMonth}</Typography>
+              <Typography variant="body2">Aplicaciones recibidas este mes</Typography>
+            </Paper>
+          </Box>
+        </>
       )}
     </Box>
   );
-};
-
-export default CompanyDashboard;
+}

@@ -58,6 +58,12 @@ from data_backups.views import DataBackupViewSet
 # Importar ViewSets adicionales que faltan
 from students.views import EstudianteViewSet, PerfilEstudianteViewSet
 from companies.views import EmpresaViewSet, CalificacionEmpresaViewSet
+from areas.views import AreaViewSet
+from trl_levels.views import TRLLevelViewSet
+from project_status.views import ProjectStatusViewSet
+from assignments.views import AssignmentViewSet
+from evaluation_categories.views import EvaluationCategoryViewSet
+from ratings.views import RatingViewSet
 
 # Crear router principal
 router = DefaultRouter()
@@ -80,6 +86,13 @@ router.register(r'company-ratings', CalificacionEmpresaViewSet, basename='compan
 router.register(r'projects', ProjectViewSet, basename='project')
 router.register(r'project-applications', ProjectApplicationViewSet, basename='project-application')
 router.register(r'project-members', ProjectMemberViewSet, basename='project-member')
+
+# Registrar ViewSets adicionales que faltan
+router.register(r'areas', AreaViewSet, basename='area')
+router.register(r'trl-levels', TRLLevelViewSet, basename='trl-level')
+router.register(r'project-status', ProjectStatusViewSet, basename='project-status')
+router.register(r'assignments', AssignmentViewSet, basename='assignment')
+router.register(r'ratings', RatingViewSet, basename='rating')
 
 # Registrar ViewSets de evaluaciones
 router.register(r'evaluations', EvaluationViewSet, basename='evaluation')

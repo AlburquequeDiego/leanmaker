@@ -18,6 +18,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+    def to_representation(self, instance):
+        """Asegurar que el ID sea string (UUID)"""
+        data = super().to_representation(instance)
+        data['id'] = str(instance.id)
+        return data
+
 # Alias para compatibilidad
 UserSerializer = UsuarioSerializer
 

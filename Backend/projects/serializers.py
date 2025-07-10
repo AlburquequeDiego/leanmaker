@@ -76,6 +76,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         # Asegurar que el campo company sea un string (UUID)
         if instance.company:
             data['company'] = str(instance.company.id)
+        # Asegurar que el ID sea string (UUID)
+        data['id'] = str(instance.id)
+        # Asegurar que el status sea string
+        if instance.status:
+            data['status'] = instance.status.name
         return data
 
 # Alias para compatibilidad
@@ -243,6 +248,8 @@ class ProjectApplicationSerializer(serializers.ModelSerializer):
             data['project'] = str(instance.project.id)
         if instance.student:
             data['student'] = str(instance.student.id)
+        # Asegurar que el ID sea string (UUID)
+        data['id'] = str(instance.id)
         return data
 
 class ProjectApplicationDetailSerializer(ProjectApplicationSerializer):

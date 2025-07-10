@@ -20,11 +20,15 @@ export interface User {
   created_at: string;
   updated_at: string;
   full_name?: string;
+  // Campos del perfil de estudiante si aplica
+  student_profile?: Student;
+  // Campos del perfil de empresa si aplica
+  company_profile?: Company;
 }
 
 // Tipos de estudiante - Coinciden con el modelo Estudiante del backend
 export interface Student {
-  id: number;
+  id: string; // Cambiado a string para UUID
   user: string; // UUID del usuario
   career?: string;
   semester?: number;
@@ -85,11 +89,12 @@ export interface Project {
   title: string;
   description: string;
   company: string; // UUID de la empresa
+  area: string; // UUID del área
+  status: string; // UUID del estado del proyecto
   requirements: string;
   min_api_level: number;
   max_students: number;
   current_students: number;
-  status: 'open' | 'in-progress' | 'completed' | 'cancelled';
   modality: 'remote' | 'hybrid' | 'onsite';
   duration_weeks: number;
   hours_per_week: number;
@@ -100,6 +105,7 @@ export interface Project {
   application_deadline?: string;
   start_date?: string;
   end_date?: string;
+  created_by: string; // UUID del creador
   created_at: string;
   updated_at: string;
 }
@@ -213,7 +219,114 @@ export interface CalendarEvent {
   updated_at: string;
 }
 
-// Tipos de respuesta de API
+// Tipos de cuestionario - Coinciden con el modelo Cuestionario del backend
+export interface Questionnaire {
+  id: string;
+  title: string;
+  description?: string;
+  questions: Question[];
+  created_by: string; // UUID del creador
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Question {
+  id: string;
+  questionnaire: string; // UUID del cuestionario
+  text: string;
+  type: 'text' | 'multiple_choice' | 'rating' | 'boolean';
+  required: boolean;
+  choices?: Choice[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Choice {
+  id: string;
+  question: string; // UUID de la pregunta
+  text: string;
+  value: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Answer {
+  id: string;
+  question: string; // UUID de la pregunta
+  user: string; // UUID del usuario
+  value: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos de área - Coinciden con el modelo Area del backend
+export interface Area {
+  id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos de nivel TRL - Coinciden con el modelo TRLLevel del backend
+export interface TRLLevel {
+  id: string;
+  name: string;
+  description?: string;
+  level: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos de estado de proyecto - Coinciden con el modelo ProjectStatus del backend
+export interface ProjectStatus {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos de asignación - Coinciden con el modelo Assignment del backend
+export interface Assignment {
+  id: string;
+  project: string; // UUID del proyecto
+  student: string; // UUID del estudiante
+  title: string;
+  description?: string;
+  due_date?: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'overdue';
+  priority: 'low' | 'medium' | 'high';
+  assigned_by: string; // UUID del asignador
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos de categoría de evaluación - Coinciden con el modelo EvaluationCategory del backend
+export interface EvaluationCategory {
+  id: string;
+  name: string;
+  description?: string;
+  weight: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos de calificación - Coinciden con el modelo Rating del backend
+export interface Rating {
+  id: string;
+  rater: string; // UUID del evaluador
+  rated: string; // UUID del evaluado
+  project?: string; // UUID del proyecto
+  score: number;
+  comments?: string;
+  category?: string; // UUID de la categoría
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos de respuesta de API genérica
 export interface ApiResponse<T> {
   data?: T;
   message?: string;
@@ -221,12 +334,14 @@ export interface ApiResponse<T> {
   status: number;
 }
 
+// Tipos de respuesta de login
 export interface LoginResponse {
   access: string;
   refresh: string;
-  user: User;
+  user?: User;
 }
 
+// Tipos de datos de registro
 export interface RegisterData {
   email: string;
   password: string;
@@ -238,19 +353,20 @@ export interface RegisterData {
   phone?: string;
 }
 
-// Tipos para formularios
+// Tipos de formulario de login
 export interface LoginFormData {
   email: string;
   password: string;
 }
 
+// Tipos de cambio de contraseña
 export interface ChangePasswordData {
   old_password: string;
   new_password: string;
   new_password_confirm: string;
 }
 
-// Tipos para dashboard
+// Tipos de estadísticas del dashboard
 export interface DashboardStats {
   total_users: number;
   active_users: number;
@@ -263,18 +379,19 @@ export interface DashboardStats {
   pending_applications: number;
 }
 
-// Tipos para universidades (las 10 permitidas)
+// Universidades disponibles
 export const UNIVERSITIES = [
-  'Universidad de Chile',
-  'Pontificia Universidad Católica de Chile',
-  'Universidad de Concepción',
-  'Universidad Técnica Federico Santa María',
-  'Universidad de Santiago de Chile',
-  'Universidad Austral de Chile',
-  'Universidad de Valparaíso',
-  'Universidad de La Frontera',
-  'Universidad de Talca',
-  'Universidad de Antofagasta'
+  'Universidad Nacional Autónoma de México (UNAM)',
+  'Instituto Politécnico Nacional (IPN)',
+  'Universidad Autónoma Metropolitana (UAM)',
+  'Instituto Tecnológico y de Estudios Superiores de Monterrey (ITESM)',
+  'Universidad Iberoamericana (UIA)',
+  'Universidad Anáhuac',
+  'Universidad del Valle de México (UVM)',
+  'Universidad La Salle',
+  'Universidad Panamericana',
+  'Instituto Tecnológico Autónomo de México (ITAM)',
+  'Otra'
 ] as const;
 
 export type University = typeof UNIVERSITIES[number]; 

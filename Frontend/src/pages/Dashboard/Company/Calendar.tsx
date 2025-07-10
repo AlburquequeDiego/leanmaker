@@ -92,7 +92,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     async function fetchData() {
       try {
         // Obtener eventos específicos de la empresa
-        const eventsData = await apiService.get('/api/calendar-events/company_events/');
+        const eventsData = await apiService.get('/api/calendar/events/company_events/');
         const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
           ...event,
           start: new Date(event.start_date),
@@ -178,7 +178,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         students: newEvent.students,
       };
 
-      const createdEvent = await apiService.post('/api/calendar-events/', eventData);
+              const createdEvent = await apiService.post('/api/calendar/events/', eventData);
       const formattedEvent = {
         ...(createdEvent as any),
         start: new Date((createdEvent as any).start_date),
