@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}LeanMaker - Conexión Estudiantil-Empresarial{% endblock %}
+
+{% block content %}
+<div class="row align-items-center min-vh-75">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold text-dark mb-4">
+            Conecta estudiantes con 
+            <span class="text-primary">oportunidades reales</span>
+        </h1>
+        <p class="lead text-secondary mb-4">
+            LeanMaker es la plataforma que une estudiantes talentosos con empresas innovadoras, 
+            creando experiencias profesionales valiosas y proyectos impactantes.
+        </p>
+        
+        {% if not user.is_authenticated %}
+        <div class="d-flex gap-3">
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket me-2"></i>
+                Comenzar Ahora
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                Iniciar Sesión
+            </a>
+        </div>
+        {% else %}
+        <div class="d-flex gap-3">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Ir al Dashboard
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="text-center">
+            <img src="https://via.placeholder.com/600x400/2563eb/ffffff?text=LeanMaker" 
+                 alt="LeanMaker Platform" 
+                 class="img-fluid rounded shadow">
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section class="py-5 mt-5">
+    <div class="row text-center">
+        <div class="col-12">
+            <h2 class="fw-bold mb-5">¿Por qué elegir LeanMaker?</h2>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-graduation-cap fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Para Estudiantes</h5>
+                    <p class="card-text text-secondary">
+                        Accede a proyectos reales, desarrolla habilidades prácticas y construye tu portafolio profesional.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-building fa-2x text-success"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Para Empresas</h5>
+                    <p class="card-text text-secondary">
+                        Encuentra talento joven, ejecuta proyectos innovadores y contribuye al desarrollo profesional.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-chart-line fa-2x text-warning"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Crecimiento Mutuo</h5>
+                    <p class="card-text text-secondary">
+                        Sistema de evaluaciones bidireccionales que beneficia tanto a estudiantes como a empresas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-light rounded-3">
+    <div class="row text-center">
+        <div class="col-md-3">
+            <h3 class="fw-bold text-primary">500+</h3>
+            <p class="text-secondary">Estudiantes Activos</p>
+        </div>
+        <div class="col-md-3">
+            <h3 class="fw-bold text-success">50+</h3>
+            <p class="text-secondary">Empresas Participantes</p>
+        </div>
+        <div class="col-md-3">
+            <h3 class="fw-bold text-warning">200+</h3>
+            <p class="text-secondary">Proyectos Completados</p>
+        </div>
+        <div class="col-md-3">
+            <h3 class="fw-bold text-info">95%</h3>
+            <p class="text-secondary">Satisfacción</p>
+        </div>
+    </div>
+</section>
+{% endblock %} 
