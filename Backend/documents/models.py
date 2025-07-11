@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
-from users.models import Usuario
+from users.models import User
 from projects.models import Proyecto
 
 
@@ -36,7 +36,7 @@ class Document(models.Model):
     file_url = models.CharField(max_length=500)
     file_type = models.CharField(max_length=50, null=True, blank=True)
     file_size = models.IntegerField(null=True, blank=True)
-    uploaded_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='documents_uploaded')
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents_uploaded')
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='documents')
     is_public = models.BooleanField(default=False)
     download_count = models.IntegerField(

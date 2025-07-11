@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import Usuario
+from users.models import User
 from projects.models import Proyecto, AplicacionProyecto
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -29,7 +29,7 @@ class Notification(models.Model):
 
     # Campos básicos - coinciden con frontend
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notifications')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=200)
     message = models.TextField()
     
@@ -148,7 +148,7 @@ class NotificationPreference(models.Model):
     """Preferencias de notificación por usuario"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notification_preferences')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notification_preferences')
     
     # Tipos de notificación habilitados
     enabled_types = models.TextField(default='[]')  # JSON array de tipos habilitados

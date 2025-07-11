@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from projects.models import Proyecto, AplicacionProyecto
 from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import Usuario
+from users.models import User
 import uuid
 import json
 from django.utils import timezone
@@ -49,8 +49,8 @@ class CalendarEvent(models.Model):
     location = models.CharField(max_length=200, null=True, blank=True)
     
     # Participantes - coinciden con frontend
-    attendees = models.ManyToManyField(Usuario, related_name='attended_events', blank=True)  # Campo para coincidir con frontend
-    created_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='created_events')  # Campo para coincidir con frontend
+    attendees = models.ManyToManyField(User, related_name='attended_events', blank=True)  # Campo para coincidir con frontend
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_events')  # Campo para coincidir con frontend
     
     # Campos adicionales para compatibilidad
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
@@ -58,7 +58,7 @@ class CalendarEvent(models.Model):
     is_all_day = models.BooleanField(default=False)  # Campo original para compatibilidad
     is_online = models.BooleanField(default=False)
     meeting_url = models.URLField(blank=True, null=True)
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
     
     # Relaciones opcionales
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
@@ -175,7 +175,7 @@ class EventReminder(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event = models.ForeignKey(CalendarEvent, on_delete=models.CASCADE, related_name='reminders')
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='event_reminders')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_reminders')
     
     # Configuración del recordatorio
     reminder_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
@@ -209,7 +209,7 @@ class CalendarSettings(models.Model):
     """Configuraciones de calendario por usuario"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calendar_settings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='calendar_settings')
     
     # Configuración de vista
     default_view = models.CharField(max_length=20, choices=(

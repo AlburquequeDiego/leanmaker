@@ -1,18 +1,26 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import (
-    UserViewSet, AuthViewSet, PasswordViewSet, DashboardViewSet, UserRegistrationView, TestAuthView, EmailTokenObtainPairView
-)
+"""
+URLs para la app users.
+"""
 
-router = DefaultRouter()
-router.register(r'users', UserViewSet, basename='user')
-router.register(r'auth', AuthViewSet, basename='auth')
-router.register(r'passwords', PasswordViewSet, basename='password')
-router.register(r'dashboard', DashboardViewSet, basename='dashboard')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('register/', UserRegistrationView.as_view(), name='user-register'),
-    path('test-auth/', TestAuthView.as_view(), name='test-auth'),
-    path('token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # Lista de usuarios
+    path('', views.user_list, name='user_list'),
+    
+    # Detalle de usuario
+    path('<str:user_id>/', views.user_detail, name='user_detail'),
+    
+    # Crear usuario
+    path('create/', views.user_create, name='user_create'),
+    
+    # Actualizar usuario
+    path('<str:user_id>/update/', views.user_update, name='user_update'),
+    
+    # Eliminar usuario
+    path('<str:user_id>/delete/', views.user_delete, name='user_delete'),
+    
+    # Cambiar contraseña
+    path('change-password/', views.change_password, name='change_password'),
 ] 

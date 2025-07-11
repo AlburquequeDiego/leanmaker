@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 import json
@@ -23,7 +23,7 @@ class Estudiante(models.Model):
     
     # Campos básicos (coinciden exactamente con interface Student del frontend)
     id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='estudiante_profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='estudiante_profile')
     
     # Campos opcionales (NULL permitido) - coinciden con frontend
     career = models.CharField(max_length=200, null=True, blank=True)

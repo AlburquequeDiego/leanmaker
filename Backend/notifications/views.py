@@ -1,234 +1,461 @@
-from django.shortcuts import render
-from rest_framework import viewsets, mixins, permissions, status, filters
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Q, Count
+"""
+Views para la app notifications.
+"""
+
+import json
+import uuid
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils import timezone
 from .models import Notification, NotificationTemplate, NotificationPreference
-from .serializers import (
-    NotificationSerializer, NotificationDetailSerializer, NotificationCreateSerializer,
-    NotificationUpdateSerializer, NotificationTemplateSerializer, NotificationStatsSerializer,
-    NotificationPreferenceSerializer
-)
+from .serializers import NotificationSerializer, NotificationTemplateSerializer, NotificationPreferenceSerializer
+from users.models import User
+from core.auth_utils import get_user_from_token, require_auth, require_admin
 
-# Create your views here.
+# --- NOTIFICACIONES ---
 
-class NotificationViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestión de notificaciones"""
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['user', 'notification_type', 'is_read', 'priority']
-    search_fields = ['title', 'message']
-    ordering_fields = ['created_at', 'read_at', 'priority']
-    ordering = ['-created_at']
-
-    def get_queryset(self):
-        """Filtrar queryset según el rol del usuario"""
-        user = self.request.user
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def notifications_list(request):
+    """Lista notificaciones del usuario con filtros y paginación"""
+    try:
+        user = get_user_from_token(request)
         
-        if user.role == 'admin':
-            return Notification.objects.all()
-        else:
-            # Los usuarios ven solo sus notificaciones
-            return Notification.objects.filter(user=user)
-
-    def get_serializer_class(self):
-        """Retornar serializer específico según la acción"""
-        if self.action == 'create':
-            return NotificationCreateSerializer
-        elif self.action == 'update' or self.action == 'partial_update':
-            return NotificationUpdateSerializer
-        elif self.action == 'retrieve':
-            return NotificationDetailSerializer
-        return NotificationSerializer
-
-    def perform_create(self, serializer):
-        """Asignar el remitente al crear la notificación"""
-        serializer.save(sender=self.request.user)
-
-    @action(detail=False, methods=['get'])
-    def unread(self, request):
-        """Notificaciones no leídas del usuario actual"""
-        queryset = Notification.objects.filter(
-            user=request.user,
-            is_read=False
-        )
-        serializer = NotificationSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def recent(self, request):
-        """Notificaciones recientes del usuario actual"""
-        queryset = Notification.objects.filter(
-            user=request.user
-        ).order_by('-created_at')[:10]
-        serializer = NotificationSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['post'])
-    def mark_as_read(self, request, pk=None):
-        """Marcar notificación como leída"""
-        notification = self.get_object()
+        # Filtros
+        type_filter = request.GET.get('type')
+        read = request.GET.get('read')
+        priority = request.GET.get('priority')
+        search = request.GET.get('search')
+        page = int(request.GET.get('page', 1))
+        limit = min(int(request.GET.get('limit', 20)), 100)
         
-        if notification.user != request.user:
-            return Response(
-                {"error": "No puedes marcar notificaciones de otros usuarios"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Construir query base
+        queryset = Notification.objects.filter(user=user)
         
-        notification.is_read = True
-        notification.read_at = timezone.now()
-        notification.save()
+        # Aplicar filtros
+        if type_filter:
+            queryset = queryset.filter(type=type_filter)
+        if read is not None:
+            queryset = queryset.filter(read=(read.lower() == 'true'))
+        if priority:
+            queryset = queryset.filter(priority=priority)
+        if search:
+            queryset = queryset.filter(Q(title__icontains=search) | Q(message__icontains=search))
         
-        return Response({"message": "Notificación marcada como leída"})
-
-    @action(detail=True, methods=['post'])
-    def mark_as_unread(self, request, pk=None):
-        """Marcar notificación como no leída"""
-        notification = self.get_object()
+        # Paginación
+        total = queryset.count()
+        offset = (page - 1) * limit
+        queryset = queryset.order_by('-created_at')[offset:offset + limit]
         
-        if notification.user != request.user:
-            return Response(
-                {"error": "No puedes marcar notificaciones de otros usuarios"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Serializar resultados
+        data = [NotificationSerializer.to_dict(notification) for notification in queryset]
         
-        notification.is_read = False
-        notification.read_at = None
-        notification.save()
-        
-        return Response({"message": "Notificación marcada como no leída"})
-
-    @action(detail=False, methods=['post'])
-    def mark_all_as_read(self, request):
-        """Marcar todas las notificaciones como leídas"""
-        Notification.objects.filter(
-            user=request.user,
-            is_read=False
-        ).update(
-            is_read=True,
-            read_at=timezone.now()
-        )
-        
-        return Response({"message": "Todas las notificaciones marcadas como leídas"})
-
-    @action(detail=False, methods=['get'])
-    def by_type(self, request):
-        """Notificaciones por tipo"""
-        notification_type = request.query_params.get('notification_type')
-        if not notification_type:
-            return Response(
-                {"error": "Se requiere notification_type"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        queryset = Notification.objects.filter(
-            user=request.user,
-            notification_type=notification_type
-        )
-        serializer = NotificationSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Estadísticas de notificaciones"""
-        if request.user.role == 'admin':
-            # Estadísticas generales
-            stats = {
-                'total_notifications': Notification.objects.count(),
-                'unread_notifications': Notification.objects.filter(is_read=False).count(),
-                'sent_today': Notification.objects.filter(
-                    created_at__date=timezone.now().date()
-                ).count(),
-                'notifications_by_type': Notification.objects.values('notification_type').annotate(count=Count('id')),
-                'notifications_by_priority': Notification.objects.values('priority').annotate(count=Count('id')),
+        return JsonResponse({
+            'success': True,
+            'data': data,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total,
+                'pages': (total + limit - 1) // limit
             }
-        else:
-            # Estadísticas del usuario
-            user_notifications = Notification.objects.filter(user=request.user)
-            stats = {
-                'total_notifications': user_notifications.count(),
-                'unread_notifications': user_notifications.filter(is_read=False).count(),
-                'read_notifications': user_notifications.filter(is_read=True).count(),
-                'notifications_by_type': user_notifications.values('notification_type').annotate(count=Count('id')),
-                'recent_notifications': user_notifications.order_by('-created_at')[:5],
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al listar notificaciones: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def notifications_detail(request, notification_id):
+    """Obtiene los detalles de una notificación específica"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = Notification.objects.get(id=notification_uuid, user=user)
+        except Notification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        return JsonResponse({
+            'success': True,
+            'data': NotificationSerializer.to_dict(notification)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al obtener notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def notifications_create(request):
+    """Crea una nueva notificación"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        # Validar datos
+        errors = NotificationSerializer.validate_data(data)
+        if errors:
+            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        
+        # Crear notificación
+        notification = NotificationSerializer.create(data, user)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación creada exitosamente',
+            'data': NotificationSerializer.to_dict(notification)
+        }, status=201)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al crear notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["PUT"])
+@require_auth
+def notifications_update(request, notification_id):
+    """Actualiza una notificación existente"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = Notification.objects.get(id=notification_uuid, user=user)
+        except Notification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        # Validar datos
+        errors = NotificationSerializer.validate_data(data)
+        if errors:
+            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        
+        # Actualizar notificación
+        notification = NotificationSerializer.update(notification, data)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación actualizada exitosamente',
+            'data': NotificationSerializer.to_dict(notification)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al actualizar notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+@require_auth
+def notifications_delete(request, notification_id):
+    """Elimina una notificación"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = Notification.objects.get(id=notification_uuid, user=user)
+        except Notification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        # Eliminar notificación
+        notification.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación eliminada exitosamente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al eliminar notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def mark_notifications_read(request):
+    """Marca notificaciones como leídas"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        notification_ids = data.get('notification_ids', [])
+        if not notification_ids:
+            return JsonResponse({'error': 'Debe proporcionar al menos una notificación'}, status=400)
+        
+        updated = 0
+        for notif_id in notification_ids:
+            try:
+                notification = Notification.objects.get(id=notif_id, user=user)
+                notification.read = True
+                notification.read_at = timezone.now()
+                notification.save()
+                updated += 1
+            except Notification.DoesNotExist:
+                continue
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{updated} notificaciones marcadas como leídas',
+            'updated': updated
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al marcar notificaciones: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def bulk_notification_action(request):
+    """Acciones masivas en notificaciones"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        action = data.get('action')
+        notification_ids = data.get('notification_ids', [])
+        
+        if not notification_ids:
+            return JsonResponse({'error': 'Debe proporcionar al menos una notificación'}, status=400)
+        
+        valid_actions = ['mark_read', 'mark_unread', 'delete']
+        if action not in valid_actions:
+            return JsonResponse({'error': 'Acción no válida'}, status=400)
+        
+        updated = 0
+        deleted = 0
+        
+        for notif_id in notification_ids:
+            try:
+                notification = Notification.objects.get(id=notif_id, user=user)
+                
+                if action == 'mark_read':
+                    notification.read = True
+                    notification.read_at = timezone.now()
+                    notification.save()
+                    updated += 1
+                elif action == 'mark_unread':
+                    notification.read = False
+                    notification.read_at = None
+                    notification.save()
+                    updated += 1
+                elif action == 'delete':
+                    notification.delete()
+                    deleted += 1
+                    
+            except Notification.DoesNotExist:
+                continue
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Acción completada: {updated} actualizadas, {deleted} eliminadas',
+            'updated': updated,
+            'deleted': deleted
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error en acción masiva: {str(e)}'}, status=500)
+
+# --- PLANTILLAS DE NOTIFICACIÓN ---
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def notification_templates_list(request):
+    """Lista plantillas de notificación"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Filtros
+        notification_type = request.GET.get('notification_type')
+        is_active = request.GET.get('is_active')
+        priority = request.GET.get('priority')
+        search = request.GET.get('search')
+        page = int(request.GET.get('page', 1))
+        limit = min(int(request.GET.get('limit', 20)), 100)
+        
+        # Construir query
+        queryset = NotificationTemplate.objects.all()
+        
+        # Filtrar por rol
+        if user.role != 'admin':
+            queryset = queryset.filter(is_active=True)
+        
+        # Aplicar filtros
+        if notification_type:
+            queryset = queryset.filter(notification_type=notification_type)
+        if is_active is not None:
+            queryset = queryset.filter(is_active=(is_active.lower() == 'true'))
+        if priority:
+            queryset = queryset.filter(priority=priority)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(title_template__icontains=search) | 
+                Q(message_template__icontains=search)
+            )
+        
+        # Paginación
+        total = queryset.count()
+        offset = (page - 1) * limit
+        queryset = queryset.order_by('name')[offset:offset + limit]
+        
+        # Serializar resultados
+        data = [NotificationTemplateSerializer.to_dict(template) for template in queryset]
+        
+        return JsonResponse({
+            'success': True,
+            'data': data,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total,
+                'pages': (total + limit - 1) // limit
             }
+        })
         
-        return Response(stats)
+    except Exception as e:
+        return JsonResponse({'error': f'Error al listar plantillas: {str(e)}'}, status=500)
 
-class NotificationTemplateViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestión de plantillas de notificaciones"""
-    queryset = NotificationTemplate.objects.all()
-    serializer_class = NotificationTemplateSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['notification_type', 'is_active']
-    search_fields = ['name', 'title_template', 'message_template']
-    ordering_fields = ['created_at', 'updated_at']
-    ordering = ['name']
-
-    def get_queryset(self):
-        """Filtrar queryset según el rol del usuario"""
-        user = self.request.user
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def notification_templates_create(request):
+    """Crea una nueva plantilla de notificación"""
+    try:
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
         
+        # Validar datos
+        errors = NotificationTemplateSerializer.validate_data(data)
+        if errors:
+            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        
+        # Crear plantilla
+        template = NotificationTemplateSerializer.create(data)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Plantilla creada exitosamente',
+            'data': NotificationTemplateSerializer.to_dict(template)
+        }, status=201)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al crear plantilla: {str(e)}'}, status=500)
+
+# --- PREFERENCIAS DE NOTIFICACIÓN ---
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def notification_preferences_list(request):
+    """Lista preferencias de notificación"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Filtros
+        page = int(request.GET.get('page', 1))
+        limit = min(int(request.GET.get('limit', 20)), 100)
+        
+        # Construir query
         if user.role == 'admin':
-            return NotificationTemplate.objects.all()
+            queryset = NotificationPreference.objects.all()
         else:
-            # Otros usuarios ven solo plantillas activas
-            return NotificationTemplate.objects.filter(is_active=True)
+            queryset = NotificationPreference.objects.filter(user=user)
+        
+        # Paginación
+        total = queryset.count()
+        offset = (page - 1) * limit
+        queryset = queryset.order_by('-created_at')[offset:offset + limit]
+        
+        # Serializar resultados
+        data = [NotificationPreferenceSerializer.to_dict(preference) for preference in queryset]
+        
+        return JsonResponse({
+            'success': True,
+            'data': data,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total,
+                'pages': (total + limit - 1) // limit
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al listar preferencias: {str(e)}'}, status=500)
 
-    @action(detail=False, methods=['get'])
-    def by_type(self, request):
-        """Plantillas por tipo"""
-        notification_type = request.query_params.get('notification_type')
-        if not notification_type:
-            return Response(
-                {"error": "Se requiere notification_type"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def notification_preferences_create(request):
+    """Crea nuevas preferencias de notificación"""
+    try:
+        user = get_user_from_token(request)
         
-        queryset = NotificationTemplate.objects.filter(
-            notification_type=notification_type,
-            is_active=True
-        )
-        serializer = NotificationTemplateSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['post'])
-    def activate(self, request, pk=None):
-        """Activar plantilla (solo para admins)"""
-        if request.user.role != 'admin':
-            return Response(
-                {"error": "Solo los administradores pueden activar plantillas"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
         
-        template = self.get_object()
-        template.is_active = True
-        template.save()
+        # Validar datos
+        errors = NotificationPreferenceSerializer.validate_data(data)
+        if errors:
+            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
         
-        return Response({"message": "Plantilla activada correctamente"})
-
-    @action(detail=True, methods=['post'])
-    def deactivate(self, request, pk=None):
-        """Desactivar plantilla (solo para admins)"""
-        if request.user.role != 'admin':
-            return Response(
-                {"error": "Solo los administradores pueden desactivar plantillas"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Crear preferencias
+        preference = NotificationPreferenceSerializer.create(data, user)
         
-        template = self.get_object()
-        template.is_active = False
-        template.save()
+        return JsonResponse({
+            'success': True,
+            'message': 'Preferencias creadas exitosamente',
+            'data': NotificationPreferenceSerializer.to_dict(preference)
+        }, status=201)
         
-        return Response({"message": "Plantilla desactivada correctamente"})
-
-class NotificationPreferenceViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestión de preferencias de notificaciones"""
-    queryset = NotificationPreference.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = NotificationPreferenceSerializer
+    except Exception as e:
+        return JsonResponse({'error': f'Error al crear preferencias: {str(e)}'}, status=500)

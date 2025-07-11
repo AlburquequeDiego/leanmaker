@@ -1,12 +1,15 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ProjectViewSet, ProjectApplicationViewSet  # , ProjectMemberViewSet
+"""
+URLs para la app projects.
+"""
 
-router = DefaultRouter()
-router.register(r'projects', ProjectViewSet, basename='project')
-router.register(r'applications', ProjectApplicationViewSet, basename='project-application')
-# router.register(r'members', ProjectMemberViewSet, basename='project-member')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', views.projects_list, name='projects_list'),
+    path('<str:project_id>/', views.projects_detail, name='projects_detail'),
+    path('create/', views.projects_create, name='projects_create'),
+    path('<str:project_id>/update/', views.projects_update, name='projects_update'),
+    path('<str:project_id>/delete/', views.projects_delete, name='projects_delete'),
+    # Puedes agregar aquí rutas para endpoints adicionales como stats, featured, urgent, etc.
 ] 

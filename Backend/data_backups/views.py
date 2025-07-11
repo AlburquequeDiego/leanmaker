@@ -1,268 +1,289 @@
-from django.shortcuts import render
-from rest_framework import viewsets, status, filters
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Q, Count, Avg, Sum
-from django.utils import timezone
-from datetime import timedelta
+"""
+Views para la app data_backups.
+"""
 
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from .models import DataBackup
-from .serializers import (
-    DataBackupSerializer, DataBackupListSerializer, DataBackupCreateSerializer,
-    DataBackupStatsSerializer, DataBackupRestoreSerializer, DataBackupScheduleSerializer
-)
+from core.views import verify_token
+from django.core.paginator import Paginator
+from django.utils import timezone
+from datetime import datetime, timedelta
 
+@csrf_exempt
+@require_http_methods(["GET"])
+def data_backups_list(request):
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Solo administradores pueden ver respaldos'}, status=403)
+        
+        # Filtros y paginación
+        page = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 20)
+        status = request.GET.get('status')
+        backup_type = request.GET.get('backup_type')
+        created_by = request.GET.get('created_by')
+        
+        queryset = DataBackup.objects.select_related('created_by').all()
+        
+        # Aplicar filtros
+        if status:
+            queryset = queryset.filter(status=status)
+        if backup_type:
+            queryset = queryset.filter(backup_type=backup_type)
+        if created_by:
+            queryset = queryset.filter(created_by__id=created_by)
+        
+        paginator = Paginator(queryset, per_page)
+        page_obj = paginator.get_page(page)
+        
+        backups_data = []
+        for backup in page_obj:
+            backups_data.append({
+                'id': backup.id,
+                'backup_name': backup.backup_name,
+                'backup_type': backup.backup_type,
+                'file_url': backup.file_url,
+                'file_size': backup.file_size,
+                'file_size_mb': backup.file_size_mb,
+                'file_size_gb': backup.file_size_gb,
+                'file_path': backup.file_path,
+                'checksum': backup.checksum,
+                'status': backup.status,
+                'created_by': {
+                    'id': str(backup.created_by.id),
+                    'full_name': backup.created_by.get_full_name(),
+                    'email': backup.created_by.email
+                } if backup.created_by else None,
+                'created_at': backup.created_at.isoformat(),
+                'completed_at': backup.completed_at.isoformat() if backup.completed_at else None,
+                'expires_at': backup.expires_at.isoformat() if backup.expires_at else None,
+                'is_expired': backup.is_expired,
+                'is_completed': backup.is_completed,
+                'duration_minutes': backup.duration_minutes
+            })
+        
+        return JsonResponse({
+            'results': backups_data,
+            'count': paginator.count,
+            'total_pages': paginator.num_pages,
+            'current_page': page_obj.number,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous()
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-class DataBackupViewSet(viewsets.ModelViewSet):
-    """ViewSet para respaldos de datos"""
-    queryset = DataBackup.objects.all()
-    serializer_class = DataBackupSerializer
-    permission_classes = [IsAdminUser]  # Solo administradores pueden gestionar respaldos
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['backup_type', 'status', 'created_by']
-    search_fields = ['backup_name']
-    ordering_fields = ['created_at', 'completed_at', 'backup_type', 'file_size']
-    ordering = ['-created_at']
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return DataBackupListSerializer
-        elif self.action == 'create':
-            return DataBackupCreateSerializer
-        return DataBackupSerializer
-
-    def get_queryset(self):
-        """Optimizar consultas"""
-        return super().get_queryset().select_related('created_by')
-
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Obtener estadísticas de respaldos"""
-        queryset = self.get_queryset()
+@csrf_exempt
+@require_http_methods(["GET"])
+def data_backups_detail(request, data_backups_id):
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Solo administradores pueden ver respaldos'}, status=403)
         
-        # Fechas para filtros
-        now = timezone.now()
-        this_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        this_year_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        try:
+            backup = DataBackup.objects.select_related('created_by').get(id=data_backups_id)
+        except DataBackup.DoesNotExist:
+            return JsonResponse({'error': 'Respaldo no encontrado'}, status=404)
         
-        # Estadísticas básicas
-        total_backups = queryset.count()
-        completed_backups = queryset.filter(status='completed').count()
-        pending_backups = queryset.filter(status='pending').count()
-        failed_backups = queryset.filter(status='failed').count()
-        backups_this_month = queryset.filter(created_at__gte=this_month_start).count()
-        backups_this_year = queryset.filter(created_at__gte=this_year_start).count()
-        
-        # Tamaño total
-        total_size = queryset.aggregate(total=Sum('file_size'))['total'] or 0
-        total_size_mb = round(total_size / (1024 * 1024), 2)
-        total_size_gb = round(total_size / (1024 * 1024 * 1024), 2)
-        
-        # Duración promedio
-        completed_backups_with_duration = queryset.filter(status='completed')
-        if completed_backups_with_duration.exists():
-            avg_duration = completed_backups_with_duration.aggregate(
-                avg=Avg('duration_minutes')
-            )['avg'] or 0
-        else:
-            avg_duration = 0
-        
-        # Por tipo
-        backups_by_type = {}
-        for backup_type in ['full', 'incremental', 'differential', 'schema_only', 'data_only']:
-            count = queryset.filter(backup_type=backup_type).count()
-            if count > 0:
-                backups_by_type[backup_type] = count
-        
-        # Top creadores
-        top_creators = queryset.values('created_by__full_name').annotate(
-            count=Count('id')
-        ).order_by('-count')[:10]
-        
-        stats = {
-            'total_backups': total_backups,
-            'completed_backups': completed_backups,
-            'pending_backups': pending_backups,
-            'failed_backups': failed_backups,
-            'backups_this_month': backups_this_month,
-            'backups_this_year': backups_this_year,
-            'total_size_mb': total_size_mb,
-            'total_size_gb': total_size_gb,
-            'average_duration_minutes': round(avg_duration, 2),
-            'backups_by_type': backups_by_type,
-            'top_creators': list(top_creators),
+        backup_data = {
+            'id': backup.id,
+            'backup_name': backup.backup_name,
+            'backup_type': backup.backup_type,
+            'file_url': backup.file_url,
+            'file_size': backup.file_size,
+            'file_size_mb': backup.file_size_mb,
+            'file_size_gb': backup.file_size_gb,
+            'file_path': backup.file_path,
+            'checksum': backup.checksum,
+            'status': backup.status,
+            'created_by': {
+                'id': str(backup.created_by.id),
+                'full_name': backup.created_by.get_full_name(),
+                'email': backup.created_by.email
+            } if backup.created_by else None,
+            'created_at': backup.created_at.isoformat(),
+            'completed_at': backup.completed_at.isoformat() if backup.completed_at else None,
+            'expires_at': backup.expires_at.isoformat() if backup.expires_at else None,
+            'is_expired': backup.is_expired,
+            'is_completed': backup.is_completed,
+            'duration_minutes': backup.duration_minutes
         }
         
-        serializer = DataBackupStatsSerializer(stats)
-        return Response(serializer.data)
+        return JsonResponse(backup_data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-    @action(detail=True, methods=['post'])
-    def execute(self, request, pk=None):
-        """Ejecutar respaldo"""
-        backup = self.get_object()
+@csrf_exempt
+@require_http_methods(["POST"])
+def data_backups_create(request):
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Solo administradores pueden crear respaldos'}, status=403)
         
-        if backup.status != 'pending':
-            return Response(
-                {'error': 'El respaldo ya no está pendiente'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        data = json.loads(request.body)
+        required_fields = ['backup_name', 'backup_type']
+        for field in required_fields:
+            if not data.get(field):
+                return JsonResponse({'error': f'El campo {field} es requerido'}, status=400)
         
-        try:
-            # Aquí iría la lógica de respaldo real
-            # Por ahora simulamos el respaldo
-            
-            # Simular procesamiento
-            import time
-            time.sleep(3)  # Simular tiempo de respaldo
-            
-            # Marcar como completado
-            backup.mark_as_completed(
-                file_path=f"/backups/{backup.id}_{backup.backup_type}.sql",
-                file_size=50 * 1024 * 1024,  # 50MB simulado
-                checksum="abc123def456"
-            )
-            
-            return Response({'message': 'Respaldo ejecutado exitosamente'})
-        except Exception as e:
-            backup.mark_as_failed()
-            return Response(
-                {'error': f'Error al ejecutar el respaldo: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-    @action(detail=True, methods=['post'])
-    def restore(self, request, pk=None):
-        """Restaurar respaldo"""
-        backup = self.get_object()
+        # Validar tipo de respaldo
+        valid_types = ['full', 'partial', 'incremental', 'differential']
+        if data['backup_type'] not in valid_types:
+            return JsonResponse({'error': f'Tipo de respaldo inválido. Tipos válidos: {", ".join(valid_types)}'}, status=400)
         
-        if not backup.is_completed:
-            return Response(
-                {'error': 'El respaldo no está completado'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        # Calcular fecha de expiración (por defecto 30 días)
+        expires_at = None
+        if data.get('expires_in_days'):
+            expires_at = timezone.now() + timedelta(days=data['expires_in_days'])
+        elif data.get('expires_at'):
+            try:
+                expires_at = datetime.fromisoformat(data['expires_at'].replace('Z', '+00:00'))
+            except ValueError:
+                return JsonResponse({'error': 'Formato de fecha de expiración inválido'}, status=400)
         
-        serializer = DataBackupRestoreSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            # Aquí iría la lógica de restauración real
-            # Por ahora simulamos la restauración
-            
-            # Simular procesamiento
-            import time
-            time.sleep(5)  # Simular tiempo de restauración
-            
-            return Response({'message': 'Respaldo restaurado exitosamente'})
-        except Exception as e:
-            return Response(
-                {'error': f'Error al restaurar el respaldo: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-    @action(detail=False, methods=['post'])
-    def create_backup(self, request):
-        """Crear y ejecutar respaldo en una sola operación"""
-        serializer = DataBackupCreateSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        data = serializer.validated_data
-        
-        # Crear respaldo
         backup = DataBackup.objects.create(
             backup_name=data['backup_name'],
             backup_type=data['backup_type'],
-            created_by=request.user,
-            status='pending'
+            status=data.get('status', 'pending'),
+            created_by=current_user,
+            expires_at=expires_at
         )
         
-        # Ejecutar respaldo (simulado)
+        backup_data = {
+            'id': backup.id,
+            'backup_name': backup.backup_name,
+            'backup_type': backup.backup_type,
+            'status': backup.status,
+            'created_by': {
+                'id': str(backup.created_by.id),
+                'full_name': backup.created_by.get_full_name()
+            },
+            'created_at': backup.created_at.isoformat(),
+            'expires_at': backup.expires_at.isoformat() if backup.expires_at else None,
+            'is_expired': backup.is_expired,
+            'is_completed': backup.is_completed
+        }
+        
+        return JsonResponse(backup_data, status=201)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["PUT"])
+def data_backups_update(request, data_backups_id):
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Solo administradores pueden actualizar respaldos'}, status=403)
+        
         try:
-            import time
-            time.sleep(2)  # Simular procesamiento
-            
-            backup.mark_as_completed(
-                file_path=f"/backups/{backup.id}_{backup.backup_type}.sql",
-                file_size=25 * 1024 * 1024,  # 25MB simulado
-                checksum="xyz789abc123"
-            )
-            
-            serializer = self.get_serializer(backup)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            backup.mark_as_failed()
-            return Response(
-                {'error': f'Error al ejecutar el respaldo: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            backup = DataBackup.objects.get(id=data_backups_id)
+        except DataBackup.DoesNotExist:
+            return JsonResponse({'error': 'Respaldo no encontrado'}, status=404)
+        
+        data = json.loads(request.body)
+        
+        # Actualizar campos permitidos
+        allowed_fields = ['backup_name', 'backup_type', 'status', 'file_url', 'file_path', 'checksum']
+        for field in allowed_fields:
+            if field in data:
+                setattr(backup, field, data[field])
+        
+        # Manejar campos especiales
+        if 'file_size' in data:
+            backup.file_size = data['file_size']
+        
+        if 'completed_at' in data:
+            if data['completed_at']:
+                try:
+                    backup.completed_at = datetime.fromisoformat(data['completed_at'].replace('Z', '+00:00'))
+                except ValueError:
+                    return JsonResponse({'error': 'Formato de fecha de completado inválido'}, status=400)
+            else:
+                backup.completed_at = None
+        
+        if 'expires_at' in data:
+            if data['expires_at']:
+                try:
+                    backup.expires_at = datetime.fromisoformat(data['expires_at'].replace('Z', '+00:00'))
+                except ValueError:
+                    return JsonResponse({'error': 'Formato de fecha de expiración inválido'}, status=400)
+            else:
+                backup.expires_at = None
+        
+        backup.save()
+        
+        backup_data = {
+            'id': backup.id,
+            'backup_name': backup.backup_name,
+            'backup_type': backup.backup_type,
+            'file_url': backup.file_url,
+            'file_size': backup.file_size,
+            'file_size_mb': backup.file_size_mb,
+            'file_size_gb': backup.file_size_gb,
+            'file_path': backup.file_path,
+            'checksum': backup.checksum,
+            'status': backup.status,
+            'created_by': {
+                'id': str(backup.created_by.id),
+                'full_name': backup.created_by.get_full_name()
+            } if backup.created_by else None,
+            'created_at': backup.created_at.isoformat(),
+            'completed_at': backup.completed_at.isoformat() if backup.completed_at else None,
+            'expires_at': backup.expires_at.isoformat() if backup.expires_at else None,
+            'is_expired': backup.is_expired,
+            'is_completed': backup.is_completed,
+            'duration_minutes': backup.duration_minutes
+        }
+        
+        return JsonResponse(backup_data)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-    @action(detail=False, methods=['get'])
-    def pending(self, request):
-        """Obtener respaldos pendientes"""
-        queryset = self.get_queryset().filter(status='pending')
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def data_backups_delete(request, data_backups_id):
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Solo administradores pueden eliminar respaldos'}, status=403)
         
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        try:
+            backup = DataBackup.objects.get(id=data_backups_id)
+        except DataBackup.DoesNotExist:
+            return JsonResponse({'error': 'Respaldo no encontrado'}, status=404)
         
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def completed(self, request):
-        """Obtener respaldos completados"""
-        queryset = self.get_queryset().filter(status='completed')
-        
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def recent(self, request):
-        """Obtener respaldos recientes (últimos 7 días)"""
-        queryset = self.get_queryset()
-        seven_days_ago = timezone.now() - timedelta(days=7)
-        
-        recent_backups = queryset.filter(created_at__gte=seven_days_ago)
-        
-        page = self.paginate_queryset(recent_backups)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        
-        serializer = self.get_serializer(recent_backups, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def expired(self, request):
-        """Obtener respaldos expirados"""
-        queryset = self.get_queryset()
-        expired_backups = [backup for backup in queryset if backup.is_expired]
-        
-        page = self.paginate_queryset(expired_backups)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        
-        serializer = self.get_serializer(expired_backups, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['post'])
-    def schedule(self, request):
-        """Programar respaldo automático"""
-        serializer = DataBackupScheduleSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Aquí iría la lógica para programar respaldos automáticos
-        # Por ahora solo retornamos éxito
-        
-        return Response({'message': 'Respaldo programado exitosamente'})
+        backup.delete()
+        return JsonResponse({'message': 'Respaldo eliminado exitosamente'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

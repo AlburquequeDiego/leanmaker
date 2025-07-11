@@ -1,84 +1,56 @@
 # ========================================
-# LEANMAKER BACKEND - REQUIREMENTS
+# LEANMAKER BACKEND - DJANGO PURO + TYPESCRIPT
 # ========================================
-# IMPORTANTE: Usar Python 3.12.0 exactamente
-# Instalar primero: pip install --only-binary=:all: pyodbc Pillow==9.5.0
+# Python 3.11+ | Django 4.2+ | Sin APIs REST
 # ========================================
 
-# Django y DRF
-Django==3.2.23
-djangorestframework==3.14.0
-django-cors-headers==3.14.0
-django-filter==22.1
+# Core Django
+Django==4.2.7
+django-cors-headers==4.3.1
 
-# Autenticación JWT
-djangorestframework-simplejwt==5.3.0
-
-# Base de datos SQL Server
-# REQUERIDO: Microsoft ODBC Driver 17 for SQL Server
-# Si tienes problemas: pip install --only-binary=:all: pyodbc
-pyodbc==5.0.1
+# Database (SQL Server Azure)
 django-mssql-backend==2.8.1
+pyodbc==5.0.1
 
-# Utilidades
-# REQUERIDO: Instalar primero con --only-binary=:all:
-Pillow==9.5.0
+# Development & Testing
+django-debug-toolbar==4.2.0
+pytest==7.4.3
+pytest-django==4.7.0
+
+# Utilities
+python-decouple==3.8
+Pillow==10.1.0
 django-storages==1.14.2
 
-# Desarrollo y testing
-django-debug-toolbar==3.8.1
-pytest==7.4.3
-pytest-django==4.5.2
+# Background Tasks
+celery==5.3.4
+redis==5.0.1
 
-# Documentación API
-drf-spectacular==0.26.5
-
-# Validación y serialización
-marshmallow==3.19.0
-
-# Si tienes problemas con Pillow en Windows, prueba:
-# pip install Pillow==9.5.0
-
-# PostgreSQL (backup) - OPCIONAL
-# psycopg2-binary==2.9.7
-
-# Decouple
-python-decouple==3.8
-
-# Health check
-django-health-check==3.17.0
-
-# Nested routers
-drf-nested-routers==0.93.4
-
-# Django admin interface
-django-admin-interface==0.26.0
-django-colorfield==0.11.0
-
-# File handling
+# File Handling
 python-magic==0.4.27
 
-# Date handling
+# Date & JSON
 python-dateutil==2.8.2
-
-# JSON handling
 simplejson==3.18.4
 
-# Email handling
+# Email
 django-anymail==10.2
 
 # Caching
 django-redis==5.3.0
 
-# Background tasks
-celery==5.3.4
-redis==4.6.0
+# Type Checking (for development)
+mypy==1.7.1
+django-stubs==4.2.7
 
-# Monitoring
-django-prometheus==2.3.1
+# Template Engine (for server-side rendering)
+jinja2==3.1.2
+
+# Static Files
+whitenoise==6.6.0
 
 # Security
 django-ratelimit==4.1.0
 
 # Logging
-structlog==23.2.0
+structlog==23.2.0 

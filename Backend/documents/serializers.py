@@ -1,132 +1,140 @@
-from rest_framework import serializers
+"""
+Serializers para la app documents.
+"""
+
+import json
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.utils import timezone
 from .models import Document
+from users.models import User
+from projects.models import Proyecto
 
-
-class DocumentSerializer(serializers.ModelSerializer):
-    """Serializer para documentos"""
-    uploaded_by_name = serializers.CharField(source='uploaded_by.full_name', read_only=True)
-    project_name = serializers.CharField(source='project.title', read_only=True)
-    document_type_display = serializers.CharField(source='get_document_type_display', read_only=True)
-    file_size_mb = serializers.ReadOnlyField()
-    file_extension = serializers.ReadOnlyField()
+class DocumentSerializer:
+    """Serializer para el modelo Document"""
     
-    class Meta:
-        model = Document
-        fields = [
-            'id', 'title', 'description', 'document_type', 'document_type_display',
-            'file', 'file_url', 'file_type', 'file_size', 'file_size_mb', 'file_extension',
-            'uploaded_by', 'uploaded_by_name', 'project', 'project_name',
-            'is_public', 'download_count', 'created_at', 'updated_at'
-        ]
-        read_only_fields = [
-            'uploaded_by', 'created_at', 'updated_at', 'file_size', 
-            'file_type', 'download_count'
-        ]
-
-    def validate_file(self, value):
-        """Validación del archivo"""
-        if value:
-            # Validar tamaño máximo (50MB)
-            max_size = 50 * 1024 * 1024  # 50MB en bytes
-            if value.size > max_size:
-                raise serializers.ValidationError(
-                    "El archivo no puede ser mayor a 50MB."
-                )
+    @staticmethod
+    def to_dict(document):
+        """Convierte un objeto Document a diccionario"""
+        return {
+            'id': str(document.id),
+            'title': document.title,
+            'description': document.description,
+            'document_type': document.document_type,
+            'file': document.file.url if document.file else None,
+            'file_url': document.file_url,
+            'file_type': document.file_type,
+            'file_size': document.file_size,
+            'file_size_mb': round(document.file_size / (1024 * 1024), 2) if document.file_size else 0,
+            'file_extension': document.file.name.split('.')[-1].lower() if document.file and '.' in document.file.name else None,
+            'uploaded_by_id': str(document.uploaded_by.id) if document.uploaded_by else None,
+            'uploaded_by_name': document.uploaded_by.full_name if document.uploaded_by else None,
+            'project_id': str(document.project.id) if document.project else None,
+            'project_title': document.project.title if document.project else None,
+            'is_public': document.is_public,
+            'download_count': document.download_count,
+            'created_at': document.created_at.isoformat(),
+            'updated_at': document.updated_at.isoformat()
+        }
+    
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos del documento"""
+        errors = {}
+        
+        # Validar título
+        if 'title' in data:
+            title = data['title'].strip()
+            if len(title) < 3:
+                errors['title'] = 'El título debe tener al menos 3 caracteres'
+            data['title'] = title
+        
+        # Validar project_id
+        if 'project_id' in data and data['project_id']:
+            try:
+                project = Proyecto.objects.get(id=data['project_id'])
+                data['project'] = project
+            except Proyecto.DoesNotExist:
+                errors['project_id'] = 'El proyecto especificado no existe'
+            except Exception as e:
+                errors['project_id'] = f'Error al validar el proyecto: {str(e)}'
+        
+        # Validar document_type
+        if 'document_type' in data:
+            valid_types = [choice[0] for choice in Document.DOCUMENT_TYPE_CHOICES]
+            if data['document_type'] not in valid_types:
+                errors['document_type'] = 'Tipo de documento no válido'
+        
+        return errors
+    
+    @staticmethod
+    def create(data, user):
+        """Crea un nuevo documento"""
+        with transaction.atomic():
+            document = Document.objects.create(
+                title=data.get('title'),
+                description=data.get('description', ''),
+                document_type=data.get('document_type', 'other'),
+                file=data.get('file'),
+                uploaded_by=user,
+                project=data.get('project'),
+                is_public=data.get('is_public', False)
+            )
             
-            # Validar tipo de archivo
-            allowed_types = [
-                'application/pdf', 'application/msword', 
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'application/vnd.ms-powerpoint',
-                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                'application/vnd.ms-excel',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'text/plain', 'image/jpeg', 'image/png'
+            # Calcular información del archivo
+            if document.file:
+                document.file_url = document.file.url if hasattr(document.file, 'url') else ''
+                document.file_type = document.file.content_type
+                document.file_size = document.file.size
+                document.save(update_fields=['file_url', 'file_type', 'file_size'])
+            
+            return document
+    
+    @staticmethod
+    def update(document, data):
+        """Actualiza un documento existente"""
+        with transaction.atomic():
+            # Actualizar campos básicos
+            basic_fields = [
+                'title', 'description', 'document_type', 'is_public'
             ]
             
-            if hasattr(value, 'content_type') and value.content_type not in allowed_types:
-                raise serializers.ValidationError(
-                    "Tipo de archivo no permitido."
-                )
-        
-        return value
+            for field in basic_fields:
+                if field in data:
+                    setattr(document, field, data[field])
+            
+            # Actualizar archivo si se proporciona
+            if 'file' in data:
+                document.file = data['file']
+                document.file_url = document.file.url if hasattr(document.file, 'url') else ''
+                document.file_type = document.file.content_type
+                document.file_size = document.file.size
+            
+            # Actualizar proyecto si se proporciona
+            if 'project' in data:
+                document.project = data['project']
+            
+            document.save()
+            return document
 
-    def create(self, validated_data):
-        """Crear documento y establecer metadatos"""
-        # Establecer usuario que subió el archivo
-        validated_data['uploaded_by'] = self.context['request'].user
-        
-        # Establecer metadatos del archivo
-        file_obj = validated_data.get('file')
-        if file_obj:
-            validated_data['file_size'] = file_obj.size
-            validated_data['file_type'] = file_obj.content_type if hasattr(file_obj, 'content_type') else None
-        
-        document = super().create(validated_data)
-        
-        # Generar URL del archivo
-        if file_obj:
-            document.file_url = file_obj.url
-            document.save(update_fields=['file_url'])
-        
-        return document
-
-
-class DocumentListSerializer(serializers.ModelSerializer):
-    """Serializer simplificado para listar documentos"""
-    uploaded_by_name = serializers.CharField(source='uploaded_by.full_name', read_only=True)
-    project_name = serializers.CharField(source='project.title', read_only=True)
-    document_type_display = serializers.CharField(source='get_document_type_display', read_only=True)
-    file_size_mb = serializers.ReadOnlyField()
-    file_extension = serializers.ReadOnlyField()
+class DocumentListSerializer:
+    """Serializer para listar documentos"""
     
-    class Meta:
-        model = Document
-        fields = [
-            'id', 'title', 'document_type', 'document_type_display',
-            'file_url', 'file_size_mb', 'file_extension', 'uploaded_by_name',
-            'project_name', 'is_public', 'download_count', 'created_at'
-        ]
-
-
-class DocumentUploadSerializer(serializers.ModelSerializer):
-    """Serializer para subida de documentos"""
-    class Meta:
-        model = Document
-        fields = ['title', 'description', 'document_type', 'file', 'is_public']
-
-    def validate(self, data):
-        """Validación personalizada"""
-        # Verificar que el proyecto existe y el usuario tiene acceso
-        project = data.get('project')
-        user = self.context['request'].user
-        
-        if project:
-            # Aquí podrías agregar lógica para verificar permisos del proyecto
-            pass
-        
-        return data
-
-
-class DocumentStatsSerializer(serializers.Serializer):
-    """Serializer para estadísticas de documentos"""
-    total_documents = serializers.IntegerField()
-    documents_this_month = serializers.IntegerField()
-    documents_this_year = serializers.IntegerField()
-    total_size_mb = serializers.FloatField()
-    total_downloads = serializers.IntegerField()
-    public_documents = serializers.IntegerField()
-    private_documents = serializers.IntegerField()
-    documents_by_type = serializers.DictField()
-    top_downloaded = serializers.ListField()
-
-
-class DocumentSearchSerializer(serializers.Serializer):
-    """Serializer para búsqueda de documentos"""
-    query = serializers.CharField(required=False)
-    document_type = serializers.CharField(required=False)
-    project = serializers.IntegerField(required=False)
-    uploaded_by = serializers.IntegerField(required=False)
-    is_public = serializers.BooleanField(required=False)
-    date_from = serializers.DateField(required=False)
-    date_to = serializers.DateField(required=False) 
+    @staticmethod
+    def to_dict(document):
+        """Convierte un objeto Document a diccionario para listado"""
+        return {
+            'id': str(document.id),
+            'title': document.title,
+            'description': document.description,
+            'document_type': document.document_type,
+            'file_url': document.file_url,
+            'file_type': document.file_type,
+            'file_size_mb': round(document.file_size / (1024 * 1024), 2) if document.file_size else 0,
+            'file_extension': document.file.name.split('.')[-1].lower() if document.file and '.' in document.file.name else None,
+            'uploaded_by_name': document.uploaded_by.full_name if document.uploaded_by else None,
+            'project_title': document.project.title if document.project else None,
+            'is_public': document.is_public,
+            'download_count': document.download_count,
+            'created_at': document.created_at.isoformat()
+        } 

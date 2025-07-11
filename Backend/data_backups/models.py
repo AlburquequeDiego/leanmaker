@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 
 
 class DataBackup(models.Model):
@@ -15,7 +15,7 @@ class DataBackup(models.Model):
     file_path = models.CharField(max_length=500, null=True, blank=True)
     checksum = models.CharField(max_length=128, null=True, blank=True)
     status = models.CharField(max_length=20, default='pending')
-    created_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='backups_created')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='backups_created')
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     expires_at = models.DateTimeField(null=True, blank=True)

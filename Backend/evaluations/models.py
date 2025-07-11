@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from projects.models import Proyecto, AplicacionProyecto
 from companies.models import Empresa
 from students.models import Estudiante
-from users.models import Usuario
+from users.models import User
 from evaluation_categories.models import EvaluationCategory
 import uuid
 import json
@@ -41,8 +41,8 @@ class Evaluation(models.Model):
     # Campos básicos - coinciden con frontend
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='evaluations')
-    student = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='evaluations_received')  # Campo renombrado para coincidir con frontend
-    evaluator = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='evaluations_done')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_received')  # Campo renombrado para coincidir con frontend
+    evaluator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_done')
     category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE, related_name='evaluations')  # Campo agregado para coincidir con frontend
     
     # Campos de evaluación - coinciden con frontend
@@ -163,7 +163,7 @@ class StudentSkill(models.Model):
     
     # Validación
     is_verified = models.BooleanField(default=False)
-    verified_by = models.ForeignKey(Usuario, on_delete=models.SET_NULL, related_name='verified_skills', blank=True, null=True)
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='verified_skills', blank=True, null=True)
     verified_at = models.DateTimeField(blank=True, null=True)
     
     # Fechas

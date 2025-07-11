@@ -1,10 +1,14 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import AreaViewSet
+"""
+URLs para la app areas.
+"""
 
-router = DefaultRouter()
-router.register(r'areas', AreaViewSet, basename='area')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-] 
+    path('', views.areas_list, name='areas_list'),
+    path('<str:areas_id>/', views.areas_detail, name='areas_detail'),
+    path('create/', views.areas_create, name='areas_create'),
+    path('<str:areas_id>/update/', views.areas_update, name='areas_update'),
+    path('<str:areas_id>/delete/', views.areas_delete, name='areas_delete'),
+]

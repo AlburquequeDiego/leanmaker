@@ -4,7 +4,7 @@ from companies.models import Empresa
 from areas.models import Area
 from trl_levels.models import TRLLevel
 from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import Usuario
+from users.models import User
 import uuid
 from django.utils import timezone
 import json
@@ -251,7 +251,7 @@ class HistorialEstadosProyecto(models.Model):
     id = models.AutoField(primary_key=True)
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='historial_estados')
     status = models.ForeignKey('project_status.ProjectStatus', on_delete=models.CASCADE, related_name='historial_cambios')
-    user = models.ForeignKey('users.Usuario', on_delete=models.CASCADE, related_name='cambios_estado_proyecto')
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='cambios_estado_proyecto')
     
     # Campos adicionales
     fecha_cambio = models.DateTimeField(auto_now_add=True)
@@ -282,7 +282,7 @@ class AplicacionProyecto(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='project_applications')
-    estudiante = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='aplicaciones_estudiante')
+    estudiante = models.ForeignKey(User, on_delete=models.CASCADE, related_name='aplicaciones_estudiante')
     
     # Información de la aplicación - coinciden con frontend
     cover_letter = models.TextField()  # Campo renombrado para coincidir con frontend
@@ -357,7 +357,7 @@ class MiembroProyecto(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='miembros')
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='membresias_proyecto')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='membresias_proyecto')
     rol = models.CharField(max_length=20, choices=ROLES, default='estudiante')
     
     # Fechas

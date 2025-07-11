@@ -1,362 +1,326 @@
-# LeanMaker Backend API
+# 🚀 LeanMaker Backend - Django Puro + TypeScript
 
 ## 📋 Descripción
 
-Backend API para la plataforma LeanMaker, un sistema integral de gestión de proyectos y conexión entre estudiantes y empresas. Desarrollado con Django REST Framework y autenticación JWT.
+Backend completamente reescrito para la plataforma LeanMaker con **Django 4.2+ puro** y **integración TypeScript**, sin APIs REST complejas.
 
-## 🏗️ Arquitectura del Sistema
+## 🎯 Características
 
-### Tecnologías Principales
-- **Django 4.2+**: Framework web principal
-- **Django REST Framework**: API REST
-- **SQL Server**: Base de datos principal
-- **JWT Authentication**: Autenticación segura
-- **CORS**: Soporte para frontend React
-- **drf-spectacular**: Documentación automática de API
+- ✅ **Django 4.2+ Puro** - Sin DRF, sin APIs REST complejas
+- ✅ **TypeScript Integration** - Integración directa con frontend TypeScript
+- ✅ **Autenticación por Sesiones** - Sistema tradicional de Django
+- ✅ **SQL Server** - Base de datos empresarial
+- ✅ **Templates Django** - Renderizado del lado del servidor
+- ✅ **Formularios Django** - Validación y procesamiento nativo
+- ✅ **Archivos Estáticos** - WhiteNoise para producción
+- ✅ **CORS Configurado** - Compatible con frontend React
+- ✅ **Arquitectura Simple** - Fácil de mantener y extender
 
-### Estructura de Apps
+## 🏗️ Arquitectura
+
 ```
-Backend/
-├── users/                 # Gestión de usuarios y autenticación
-├── students/             # Gestión de estudiantes
-├── companies/            # Gestión de empresas
-├── projects/             # Gestión de proyectos
-├── applications/         # Postulaciones a proyectos
-├── evaluations/          # Sistema de evaluaciones
-├── interviews/           # Gestión de entrevistas
-├── notifications/        # Sistema de notificaciones
-├── calendar_events/      # Eventos de calendario
-├── work_hours/           # Control de horas trabajadas
-├── strikes/              # Sistema de strikes
-├── documents/            # Gestión de documentos
-├── reports/              # Generación de reportes
-└── platform_settings/    # Configuración de plataforma
+Backend-NEW/
+├── core/                 # Configuración principal
+│   ├── settings.py      # Configuración Django
+│   ├── urls.py          # URLs principales
+│   └── views.py         # Vistas core
+├── users/               # App de usuarios
+│   ├── models.py        # Modelo User personalizado
+│   ├── forms.py         # Formularios Django
+│   ├── views.py         # Vistas Django
+│   └── urls.py          # URLs de usuarios
+├── templates/           # Templates Django
+│   ├── base.html        # Template base
+│   └── home.html        # Página de inicio
+├── static/              # Archivos estáticos
+│   └── js/
+│       └── typescript-integration.ts
+├── requirements.txt     # Dependencias Python
+├── manage.py           # Comando Django
+└── setup.py            # Script de configuración
 ```
 
-## 🚀 Instalación y Configuración
+## 🚀 Instalación Rápida
 
-### Prerrequisitos
+### 1. Prerrequisitos
 - Python 3.11+
-- SQL Server
-- pip
+- SQL Server (Azure o local)
+- Git
 
-### 1. Clonar el repositorio
+### 2. Clonar y configurar
 ```bash
-git clone <repository-url>
-cd leanmaker/Backend
+# Navegar al directorio
+cd Backend-NEW
+
+# Ejecutar script de configuración
+python setup.py
 ```
 
-### 2. Crear entorno virtual
+### 3. Configuración manual (alternativa)
 ```bash
-python -m venv venv312
-# Windows
-venv312\Scripts\activate
-# Linux/Mac
-source venv312/bin/activate
-```
+# Crear entorno virtual
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
 
-### 3. Instalar dependencias
-```bash
+# Instalar dependencias
 pip install -r requirements.txt
-```
 
-### 4. Configurar base de datos
-Editar `leanmaker_backend/settings.py`:
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'leanmaker_db',
-        'USER': 'tu_usuario',
-        'PASSWORD': 'tu_password',
-        'HOST': 'localhost',
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    }
-}
-```
+# Crear archivo .env
+cp .env.example .env
+# Editar .env con tus configuraciones
 
-### 5. Configurar variables de entorno
-Crear archivo `.env` en la raíz del backend:
-```env
-SECRET_KEY=tu_clave_secreta_muy_larga
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=mssql://usuario:password@localhost:1433/leanmaker_db
-```
-
-### 6. Ejecutar migraciones
-```bash
+# Migraciones
 python manage.py makemigrations
 python manage.py migrate
-```
 
-### 7. Crear superusuario
-```bash
+# Crear superusuario
 python manage.py createsuperuser
-```
 
-### 8. Ejecutar el servidor
-```bash
+# Ejecutar servidor
 python manage.py runserver
 ```
 
-El servidor estará disponible en: `http://localhost:8000`
+## 🌐 Endpoints Principales
 
-## 🔐 Autenticación y Autorización
+### Páginas Web
+- `/` - Página de inicio
+- `/login/` - Página de login
+- `/register/` - Página de registro
+- `/dashboard/` - Dashboard principal
+- `/users/profile/` - Perfil de usuario
 
-### JWT Authentication
-El sistema utiliza JWT (JSON Web Tokens) para autenticación:
+### Endpoints JSON (para TypeScript)
+- `GET /users/api/data/` - Datos del usuario actual
+- `POST /users/api/login/` - Login via JSON
+- `POST /users/api/register/` - Registro via JSON
+- `GET /api-data/` - Datos generales del sistema
 
-```bash
-# Login
-POST /api/auth/login/
-{
-    "email": "usuario@ejemplo.com",
-    "password": "password123"
-}
+### Admin
+- `/admin/` - Panel de administración Django
 
-# Response
-{
-    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
-}
+## 🔧 Configuración
+
+### Variables de Entorno (.env)
+```env
+# Django
+SECRET_KEY=tu-secret-key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database
+DB_NAME=leanmaker_db
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+DB_HOST=tu_host
+DB_PORT=1433
+
+# CORS
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
 ```
 
-### Roles de Usuario
-- **Admin**: Acceso completo al sistema
-- **Company**: Gestión de proyectos y evaluaciones
-- **Student**: Postulación y participación en proyectos
+### Base de Datos
+El proyecto está configurado para SQL Server Azure por defecto. Para cambiar:
+
+1. Edita `core/settings.py`
+2. Modifica la configuración `DATABASES`
+3. Ejecuta las migraciones
 
 ## 📊 Modelos Principales
 
-### Usuario (User)
+### User (Usuario)
 ```python
-{
-    "id": 1,
-    "email": "usuario@ejemplo.com",
-    "first_name": "Juan",
-    "last_name": "Pérez",
-    "role": "student",
-    "is_active": true,
-    "date_joined": "2024-01-01T00:00:00Z"
-}
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    role = models.CharField(choices=ROLES)  # admin, student, company
+    phone = models.CharField()
+    avatar = models.URLField()
+    bio = models.TextField()
+    is_verified = models.BooleanField()
 ```
 
-### Estudiante (Student)
-```python
-{
-    "id": 1,
-    "user": 1,
-    "career": "Ingeniería de Sistemas",
-    "semester": 8,
-    "graduation_year": 2024,
-    "gpa": 4.2,
-    "api_level": 2,
-    "strikes": 0,
-    "total_hours": 180
-}
+## 🔐 Autenticación
+
+### Sistema de Sesiones
+- **Sesiones Django** - Autenticación tradicional
+- **CSRF Protection** - Protección contra ataques CSRF
+- **Login/Logout** - Sistema nativo de Django
+
+### Roles de Usuario
+- **admin**: Administradores del sistema
+- **student**: Estudiantes
+- **company**: Empresas
+
+## 💻 Integración TypeScript
+
+### Configuración Global
+```typescript
+window.LEANMAKER_CONFIG = {
+    apiBaseUrl: 'http://localhost:8000',
+    csrfToken: 'token-csrf',
+    user: { /* datos del usuario */ },
+    debug: true
+};
 ```
 
-### Empresa (Company)
-```python
-{
-    "id": 1,
-    "user": 2,
-    "name": "TechCorp Solutions",
-    "industry": "Tecnología",
-    "size": "medium",
-    "description": "Empresa de desarrollo de software",
-    "website": "https://techcorp.com"
-}
+### Clases TypeScript
+```typescript
+// API Client
+const api = new LeanMakerAPI();
+
+// Form Handler
+const formHandler = new FormHandler();
+
+// Dashboard Utils
+const dashboardUtils = new DashboardUtils();
 ```
 
-### Proyecto (Project)
-```python
-{
-    "id": 1,
-    "company": 1,
-    "title": "Desarrollo Web Frontend",
-    "description": "Proyecto de desarrollo web",
-    "requirements": ["React", "TypeScript"],
-    "duration": "3 meses",
-    "status": "active",
-    "max_students": 2
-}
+### Ejemplo de Uso
+```typescript
+// Login
+const response = await api.login({
+    email: 'user@example.com',
+    password: 'password123'
+});
+
+// Obtener datos del usuario
+const userData = await api.getUserData();
+
+// Actualizar perfil
+const updateResponse = await api.updateUser({
+    firstName: 'Nuevo Nombre'
+});
 ```
 
-## 🔌 Endpoints Principales
+## 🛠️ Desarrollo
 
-### Autenticación
-- `POST /api/auth/login/` - Iniciar sesión
-- `POST /api/auth/refresh/` - Renovar token
-- `POST /api/auth/logout/` - Cerrar sesión
-- `POST /api/auth/register/` - Registro de usuarios
-
-### Usuarios
-- `GET /api/users/` - Listar usuarios
-- `GET /api/users/{id}/` - Obtener usuario
-- `PUT /api/users/{id}/` - Actualizar usuario
-- `DELETE /api/users/{id}/` - Eliminar usuario
-
-### Estudiantes
-- `GET /api/students/` - Listar estudiantes
-- `POST /api/students/` - Crear estudiante
-- `GET /api/students/{id}/` - Obtener estudiante
-- `PUT /api/students/{id}/` - Actualizar estudiante
-
-### Empresas
-- `GET /api/companies/` - Listar empresas
-- `POST /api/companies/` - Crear empresa
-- `GET /api/companies/{id}/` - Obtener empresa
-- `PUT /api/companies/{id}/` - Actualizar empresa
-
-### Proyectos
-- `GET /api/projects/` - Listar proyectos
-- `POST /api/projects/` - Crear proyecto
-- `GET /api/projects/{id}/` - Obtener proyecto
-- `PUT /api/projects/{id}/` - Actualizar proyecto
-
-### Aplicaciones
-- `GET /api/applications/` - Listar aplicaciones
-- `POST /api/applications/` - Crear aplicación
-- `GET /api/applications/{id}/` - Obtener aplicación
-- `PUT /api/applications/{id}/` - Actualizar aplicación
-
-## 📚 Documentación de API
-
-### Swagger UI
-Accede a la documentación interactiva en:
-```
-http://localhost:8000/api/schema/swagger-ui/
-```
-
-### ReDoc
-Documentación alternativa en:
-```
-http://localhost:8000/api/schema/redoc/
-```
-
-## 🧪 Testing
-
-### Ejecutar tests
+### Comandos útiles
 ```bash
-python manage.py test
-```
-
-### Cobertura de tests
-```bash
-coverage run --source='.' manage.py test
-coverage report
-coverage html
-```
-
-## 🔧 Comandos Útiles
-
-### Desarrollo
-```bash
-# Verificar configuración
-python manage.py check
+# Ejecutar servidor
+python manage.py runserver
 
 # Crear migraciones
 python manage.py makemigrations
 
-# Aplicar migraciones
+# Ejecutar migraciones
 python manage.py migrate
 
 # Shell de Django
 python manage.py shell
 
-# Crear superusuario
-python manage.py createsuperuser
+# Tests
+python manage.py test
 
-# Recolectar archivos estáticos
+# Collect static
 python manage.py collectstatic
 ```
 
-### Base de datos
+### Estructura de Apps
+Cada app sigue la estructura Django estándar:
+```
+app_name/
+├── __init__.py
+├── admin.py
+├── apps.py
+├── models.py
+├── forms.py
+├── views.py
+├── urls.py
+└── migrations/
+```
+
+## 📝 Templates Django
+
+### Template Base
+```html
+{% extends 'base.html' %}
+
+{% block title %}Mi Página{% endblock %}
+
+{% block content %}
+    <h1>Contenido de la página</h1>
+{% endblock %}
+```
+
+### Integración TypeScript
+```html
+<script>
+    window.LEANMAKER_CONFIG = {
+        apiBaseUrl: '{{ request.scheme }}://{{ request.get_host }}',
+        csrfToken: '{{ csrf_token }}',
+        user: {% if user.is_authenticated %}{/* datos del usuario */}{% else %}null{% endif %},
+        debug: {% if debug %}true{% else %}false{% endif %}
+    };
+</script>
+<script src="{% static 'js/typescript-integration.js' %}"></script>
+```
+
+## 🔍 Testing
+
 ```bash
-# Resetear base de datos
-python manage.py flush
+# Ejecutar todos los tests
+python manage.py test
 
-# Backup de datos
-python manage.py dumpdata > backup.json
-
-# Restaurar datos
-python manage.py loaddata backup.json
+# Tests específicos
+python manage.py test users
+python manage.py test companies
 ```
 
-## 🚀 Deployment
+## 📦 Deployment
 
-### Configuración para producción
+### Producción
 1. Cambiar `DEBUG = False`
-2. Configurar `ALLOWED_HOSTS`
-3. Usar `SECRET_KEY` segura
-4. Configurar base de datos de producción
-5. Configurar CORS para dominio de producción
+2. Configurar `SECRET_KEY` segura
+3. Configurar base de datos de producción
+4. Configurar `ALLOWED_HOSTS`
+5. Configurar `CORS_ALLOWED_ORIGINS`
+6. Ejecutar `python manage.py collectstatic`
 
-### Variables de entorno de producción
-```env
-DEBUG=False
-SECRET_KEY=clave_super_secreta_y_larga
-ALLOWED_HOSTS=tu-dominio.com,www.tu-dominio.com
-DATABASE_URL=mssql://usuario:password@servidor:1433/leanmaker_prod
-CORS_ALLOWED_ORIGINS=https://tu-dominio.com
+### Docker (opcional)
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 ```
 
-## 📝 Logs
+## 🐛 Troubleshooting
 
-Los logs se guardan en:
-```
-logs/django.log
-```
+### Error de conexión a base de datos
+1. Verificar credenciales en `.env`
+2. Verificar que SQL Server esté ejecutándose
+3. Verificar firewall y puertos
 
-### Configuración de logging
-```python
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/django.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-}
+### Error de migraciones
+```bash
+# Resetear migraciones
+python manage.py migrate --fake-initial
 ```
 
-## 🤝 Contribución
+### Error de CORS
+1. Verificar `CORS_ALLOWED_ORIGINS` en `.env`
+2. Verificar que el frontend esté en los orígenes permitidos
 
-1. Fork el proyecto
-2. Crear rama para feature (`git checkout -b feature/AmazingFeature`)
-3. Commit cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir Pull Request
+### Error de TypeScript
+1. Verificar que el archivo JS esté compilado
+2. Verificar la configuración global en el template
+3. Revisar la consola del navegador
 
-## 📄 Licencia
+## 📞 Soporte
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Para problemas o preguntas:
+1. Revisar logs en `logs/django.log`
+2. Verificar configuración en `.env`
+3. Ejecutar `python manage.py check`
+4. Revisar la consola del navegador para errores TypeScript
 
-## 👥 Autores
+## 🎉 ¡Listo!
 
-- **Tu Nombre** - *Desarrollo inicial* - [TuGitHub](https://github.com/tuusuario)
-
-## 🙏 Agradecimientos
-
-- Django REST Framework
-- SQL Server
-- Comunidad de desarrolladores
+Tu backend está configurado y listo para usar. El sistema funciona con Django puro y tiene integración TypeScript para el frontend.
 
 ---
 
-**LeanMaker Backend** - Conectando estudiantes con oportunidades profesionales 🚀
+**LeanMaker Backend - Versión 2.0 (Django Puro + TypeScript)** 🚀 

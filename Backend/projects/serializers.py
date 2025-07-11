@@ -1,359 +1,328 @@
-from rest_framework import serializers
-from django.db.models import Avg, Count
-from .models import Proyecto, MiembroProyecto
-from applications.models import Aplicacion
-from users.serializers import UsuarioSerializer
-from companies.serializers import EmpresaSerializer
+"""
+Serializers para la app projects.
+"""
 
-class ProjectSerializer(serializers.ModelSerializer):
-    """Serializer básico para proyectos"""
-    company_name = serializers.CharField(source='company.company_name', read_only=True)
-    company_avatar = serializers.CharField(source='company.avatar', read_only=True)
-    is_available = serializers.SerializerMethodField()
-    completion_percentage = serializers.SerializerMethodField()
-    applications_count = serializers.SerializerMethodField()
-    average_rating = serializers.SerializerMethodField()
-    required_skills = serializers.SerializerMethodField()
-    preferred_skills = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
-    technologies = serializers.SerializerMethodField()
-    benefits = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = Proyecto
-        fields = [
-            'id', 'title', 'description', 'company', 'company_name', 'company_avatar',
-            'area', 'modality', 'location', 'difficulty', 'required_skills', 'preferred_skills',
-            'min_api_level', 'duration_weeks', 'hours_per_week', 'start_date', 'estimated_end_date',
-            'is_paid', 'payment_amount', 'payment_currency', 'stipend_amount', 'stipend_currency',
-            'status', 'max_students', 'current_students', 'is_featured', 'is_urgent', 'tags',
-            'technologies', 'benefits', 'requirements', 'application_deadline', 'created_at',
-            'is_available', 'completion_percentage', 'applications_count', 'average_rating'
-        ]
-        read_only_fields = ['id', 'created_at', 'is_available', 'completion_percentage', 'applications_count', 'average_rating']
-    
-    def get_required_skills(self, obj):
-        """Obtiene las habilidades requeridas como lista"""
-        return obj.get_required_skills_list()
-    
-    def get_preferred_skills(self, obj):
-        """Obtiene las habilidades preferidas como lista"""
-        return obj.get_preferred_skills_list()
-    
-    def get_tags(self, obj):
-        """Obtiene las etiquetas como lista"""
-        return obj.get_tags_list()
-    
-    def get_technologies(self, obj):
-        """Obtiene las tecnologías como lista"""
-        return obj.get_technologies_list()
-    
-    def get_benefits(self, obj):
-        """Obtiene los beneficios como lista"""
-        return obj.get_benefits_list()
-    
-    def get_is_available(self, obj):
-        return obj.status.name in ['active', 'open', 'en curso'] and obj.current_students < obj.max_students
-    
-    def get_completion_percentage(self, obj):
-        if obj.max_students == 0:
-            return 0
-        return (obj.current_students / obj.max_students) * 100
-    
-    def get_applications_count(self, obj):
-        return obj.aplicaciones.count()
-    
-    def get_average_rating(self, obj):
-        from evaluations.models import Evaluation
-        evaluations = Evaluation.objects.filter(project=obj)
-        if evaluations:
-            return evaluations.aggregate(Avg('score'))['score__avg']
-        return 0
-    
-    def to_representation(self, instance):
-        """Convierte la instancia a diccionario para la API"""
-        data = super().to_representation(instance)
-        # Asegurar que el campo company sea un string (UUID)
-        if instance.company:
-            data['company'] = str(instance.company.id)
-        # Asegurar que el ID sea string (UUID)
-        data['id'] = str(instance.id)
-        # Asegurar que el status sea string
-        if instance.status:
-            data['status'] = instance.status.name
-        return data
+import json
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from .models import Proyecto, HistorialEstadosProyecto, AplicacionProyecto, MiembroProyecto
+from users.models import User
+from companies.models import Empresa
+from areas.models import Area
+from trl_levels.models import TRLLevel
+from project_status.models import ProjectStatus
 
-# Alias para compatibilidad
-ProyectoSerializer = ProjectSerializer
+class ProyectoSerializer:
+    """Serializer para el modelo Proyecto"""
+    
+    @staticmethod
+    def to_dict(proyecto):
+        """Convierte un objeto Proyecto a diccionario"""
+        return {
+            'id': str(proyecto.id),
+            'company_id': str(proyecto.company.id) if proyecto.company else None,
+            'company_name': proyecto.company.name if proyecto.company else None,
+            'status_id': proyecto.status.id if proyecto.status else None,
+            'status_name': proyecto.status.name if proyecto.status else None,
+            'area_id': proyecto.area.id if proyecto.area else None,
+            'area_name': proyecto.area.name if proyecto.area else None,
+            'title': proyecto.title,
+            'description': proyecto.description,
+            'requirements': proyecto.requirements,
+            'trl_id': proyecto.trl.id if proyecto.trl else None,
+            'trl_name': proyecto.trl.name if proyecto.trl else None,
+            'api_level': proyecto.api_level,
+            'required_hours': proyecto.required_hours,
+            'min_api_level': proyecto.min_api_level,
+            'max_students': proyecto.max_students,
+            'current_students': proyecto.current_students,
+            'duration_weeks': proyecto.duration_weeks,
+            'hours_per_week': proyecto.hours_per_week,
+            'start_date': proyecto.start_date.isoformat() if proyecto.start_date else None,
+            'estimated_end_date': proyecto.estimated_end_date.isoformat() if proyecto.estimated_end_date else None,
+            'real_end_date': proyecto.real_end_date.isoformat() if proyecto.real_end_date else None,
+            'application_deadline': proyecto.application_deadline.isoformat() if proyecto.application_deadline else None,
+            'modality': proyecto.modality,
+            'location': proyecto.location,
+            'difficulty': proyecto.difficulty,
+            'required_skills': proyecto.get_required_skills_list(),
+            'preferred_skills': proyecto.get_preferred_skills_list(),
+            'tags': proyecto.get_tags_list(),
+            'technologies': proyecto.get_technologies_list(),
+            'benefits': proyecto.get_benefits_list(),
+            'is_paid': proyecto.is_paid,
+            'payment_amount': proyecto.payment_amount,
+            'payment_currency': proyecto.payment_currency,
+            'stipend_amount': proyecto.stipend_amount,
+            'stipend_currency': proyecto.stipend_currency,
+            'applications_count': proyecto.applications_count,
+            'views_count': proyecto.views_count,
+            'is_featured': proyecto.is_featured,
+            'is_urgent': proyecto.is_urgent,
+            'published_at': proyecto.published_at.isoformat() if proyecto.published_at else None,
+            'created_at': proyecto.created_at.isoformat(),
+            'updated_at': proyecto.updated_at.isoformat()
+        }
+    
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos del proyecto"""
+        errors = {}
+        
+        # Validar campos requeridos
+        required_fields = ['title', 'description', 'requirements']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                errors[field] = f'El campo {field} es requerido'
+        
+        # Validar company_id
+        if 'company_id' in data and data['company_id']:
+            try:
+                company = Empresa.objects.get(id=data['company_id'])
+                data['company'] = company
+            except Empresa.DoesNotExist:
+                errors['company_id'] = 'La empresa especificada no existe'
+            except Exception as e:
+                errors['company_id'] = f'Error al validar la empresa: {str(e)}'
+        
+        # Validar status_id
+        if 'status_id' in data and data['status_id']:
+            try:
+                status = ProjectStatus.objects.get(id=data['status_id'])
+                data['status'] = status
+            except ProjectStatus.DoesNotExist:
+                errors['status_id'] = 'El estado especificado no existe'
+            except Exception as e:
+                errors['status_id'] = f'Error al validar el estado: {str(e)}'
+        
+        # Validar area_id
+        if 'area_id' in data and data['area_id']:
+            try:
+                area = Area.objects.get(id=data['area_id'])
+                data['area'] = area
+            except Area.DoesNotExist:
+                errors['area_id'] = 'El área especificada no existe'
+            except Exception as e:
+                errors['area_id'] = f'Error al validar el área: {str(e)}'
+        
+        # Validar trl_id
+        if 'trl_id' in data and data['trl_id']:
+            try:
+                trl = TRLLevel.objects.get(id=data['trl_id'])
+                data['trl'] = trl
+            except TRLLevel.DoesNotExist:
+                errors['trl_id'] = 'El nivel TRL especificado no existe'
+            except Exception as e:
+                errors['trl_id'] = f'Error al validar el nivel TRL: {str(e)}'
+        
+        # Validar campos numéricos
+        numeric_fields = ['max_students', 'duration_weeks', 'hours_per_week', 'payment_amount', 'stipend_amount']
+        for field in numeric_fields:
+            if field in data and data[field] is not None:
+                try:
+                    value = int(data[field])
+                    if value < 0:
+                        errors[field] = f'El campo {field} no puede ser negativo'
+                    data[field] = value
+                except (ValueError, TypeError):
+                    errors[field] = f'El campo {field} debe ser un número entero'
+        
+        # Validar campos de texto
+        if 'title' in data and data['title']:
+            if len(data['title'].strip()) < 5:
+                errors['title'] = 'El título debe tener al menos 5 caracteres'
+            data['title'] = data['title'].strip()
+        
+        if 'description' in data and data['description']:
+            if len(data['description'].strip()) < 20:
+                errors['description'] = 'La descripción debe tener al menos 20 caracteres'
+            data['description'] = data['description'].strip()
+        
+        if 'requirements' in data and data['requirements']:
+            if len(data['requirements'].strip()) < 10:
+                errors['requirements'] = 'Los requisitos deben tener al menos 10 caracteres'
+            data['requirements'] = data['requirements'].strip()
+        
+        return errors
+    
+    @staticmethod
+    def create(data, user):
+        """Crea un nuevo proyecto"""
+        with transaction.atomic():
+            proyecto = Proyecto.objects.create(
+                company=data.get('company'),
+                status=data.get('status'),
+                area=data.get('area'),
+                title=data['title'],
+                description=data['description'],
+                requirements=data['requirements'],
+                trl=data.get('trl'),
+                api_level=data.get('api_level', 1),
+                required_hours=data.get('required_hours', 0),
+                min_api_level=data.get('min_api_level', 1),
+                max_students=data.get('max_students', 1),
+                duration_weeks=data.get('duration_weeks', 1),
+                hours_per_week=data.get('hours_per_week', 1),
+                start_date=data.get('start_date'),
+                estimated_end_date=data.get('estimated_end_date'),
+                application_deadline=data.get('application_deadline'),
+                modality=data.get('modality', 'presencial'),
+                location=data.get('location', ''),
+                difficulty=data.get('difficulty', 'intermedio'),
+                required_skills=data.get('required_skills', '[]'),
+                preferred_skills=data.get('preferred_skills', '[]'),
+                tags=data.get('tags', '[]'),
+                technologies=data.get('technologies', '[]'),
+                benefits=data.get('benefits', '[]'),
+                is_paid=data.get('is_paid', False),
+                payment_amount=data.get('payment_amount', 0),
+                payment_currency=data.get('payment_currency', 'USD'),
+                stipend_amount=data.get('stipend_amount', 0),
+                stipend_currency=data.get('stipend_currency', 'USD'),
+                is_featured=data.get('is_featured', False),
+                is_urgent=data.get('is_urgent', False)
+            )
+            
+            return proyecto
+    
+    @staticmethod
+    def update(proyecto, data):
+        """Actualiza un proyecto existente"""
+        with transaction.atomic():
+            # Actualizar campos básicos
+            basic_fields = [
+                'title', 'description', 'requirements', 'api_level', 'required_hours',
+                'min_api_level', 'max_students', 'duration_weeks', 'hours_per_week',
+                'start_date', 'estimated_end_date', 'application_deadline', 'modality',
+                'location', 'difficulty', 'required_skills', 'preferred_skills',
+                'tags', 'technologies', 'benefits', 'is_paid', 'payment_amount',
+                'payment_currency', 'stipend_amount', 'stipend_currency',
+                'is_featured', 'is_urgent'
+            ]
+            
+            for field in basic_fields:
+                if field in data:
+                    setattr(proyecto, field, data[field])
+            
+            # Actualizar relaciones
+            if 'company' in data:
+                proyecto.company = data['company']
+            if 'status' in data:
+                proyecto.status = data['status']
+            if 'area' in data:
+                proyecto.area = data['area']
+            if 'trl' in data:
+                proyecto.trl = data['trl']
+            
+            proyecto.save()
+            return proyecto
 
-class ProjectDetailSerializer(ProjectSerializer):
-    """Serializer detallado para proyectos"""
-    company_details = EmpresaSerializer(source='company', read_only=True)
-    recent_applications = serializers.SerializerMethodField()
+class AplicacionProyectoSerializer:
+    """Serializer para el modelo AplicacionProyecto"""
     
-    class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + [
-            'company_details', 'recent_applications', 'published_at', 'updated_at'
-        ]
-        read_only_fields = ProjectSerializer.Meta.read_only_fields + ['published_at', 'updated_at']
+    @staticmethod
+    def to_dict(aplicacion):
+        """Convierte un objeto AplicacionProyecto a diccionario"""
+        return {
+            'id': str(aplicacion.id),
+            'proyecto_id': str(aplicacion.proyecto.id),
+            'proyecto_title': aplicacion.proyecto.title,
+            'estudiante_id': str(aplicacion.estudiante.id),
+            'estudiante_name': aplicacion.estudiante.full_name,
+            'cover_letter': aplicacion.cover_letter,
+            'estado': aplicacion.estado,
+            'compatibility_score': aplicacion.compatibility_score,
+            'applied_at': aplicacion.applied_at.isoformat() if aplicacion.applied_at else None,
+            'reviewed_at': aplicacion.reviewed_at.isoformat() if aplicacion.reviewed_at else None,
+            'responded_at': aplicacion.responded_at.isoformat() if aplicacion.responded_at else None,
+            'company_notes': aplicacion.company_notes,
+            'student_notes': aplicacion.student_notes,
+            'portfolio_url': aplicacion.portfolio_url,
+            'github_url': aplicacion.github_url,
+            'linkedin_url': aplicacion.linkedin_url,
+            'created_at': aplicacion.created_at.isoformat(),
+            'updated_at': aplicacion.updated_at.isoformat()
+        }
     
-    def get_recent_applications(self, obj):
-        applications = obj.application_project.all().order_by('-applied_at')[:5]
-        return ProjectApplicationSerializer(applications, many=True).data
-
-class ProjectCreateSerializer(serializers.ModelSerializer):
-    """Serializer para crear proyectos"""
-    required_skills = serializers.ListField(child=serializers.CharField(), required=False)
-    preferred_skills = serializers.ListField(child=serializers.CharField(), required=False)
-    tags = serializers.ListField(child=serializers.CharField(), required=False)
-    technologies = serializers.ListField(child=serializers.CharField(), required=False)
-    benefits = serializers.ListField(child=serializers.CharField(), required=False)
-    
-    class Meta:
-        model = Proyecto
-        fields = [
-            'title', 'description', 'requirements', 'area', 'modality', 'location', 'difficulty',
-            'required_skills', 'preferred_skills', 'min_api_level', 'duration_weeks',
-            'hours_per_week', 'start_date', 'estimated_end_date', 'application_deadline',
-            'is_paid', 'payment_amount', 'payment_currency', 'stipend_amount', 'stipend_currency',
-            'max_students', 'tags', 'technologies', 'benefits'
-        ]
-    
-    def validate(self, attrs):
-        # Validar que las fechas sean coherentes
-        if 'start_date' in attrs and 'estimated_end_date' in attrs:
-            if attrs['start_date'] >= attrs['estimated_end_date']:
-                raise serializers.ValidationError("La fecha de inicio debe ser anterior a la fecha de fin.")
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos de la aplicación"""
+        errors = {}
         
-        # Validar que el número máximo de estudiantes sea positivo
-        if attrs['max_students'] <= 0:
-            raise serializers.ValidationError("El número máximo de estudiantes debe ser mayor a 0.")
+        # Validar proyecto_id
+        if 'proyecto_id' not in data:
+            errors['proyecto_id'] = 'El ID del proyecto es requerido'
+        else:
+            try:
+                proyecto = Proyecto.objects.get(id=data['proyecto_id'])
+                data['proyecto'] = proyecto
+            except Proyecto.DoesNotExist:
+                errors['proyecto_id'] = 'El proyecto especificado no existe'
+            except Exception as e:
+                errors['proyecto_id'] = f'Error al validar el proyecto: {str(e)}'
         
-        # Validar que las horas por semana sean razonables
-        if attrs['hours_per_week'] <= 0 or attrs['hours_per_week'] > 40:
-            raise serializers.ValidationError("Las horas por semana deben estar entre 1 y 40.")
+        # Validar cover_letter
+        if 'cover_letter' not in data or not data['cover_letter']:
+            errors['cover_letter'] = 'La carta de presentación es requerida'
+        elif len(data['cover_letter'].strip()) < 50:
+            errors['cover_letter'] = 'La carta de presentación debe tener al menos 50 caracteres'
+        else:
+            data['cover_letter'] = data['cover_letter'].strip()
         
-        return attrs
-    
-    def create(self, validated_data):
-        # Manejar campos JSON
-        required_skills = validated_data.pop('required_skills', [])
-        preferred_skills = validated_data.pop('preferred_skills', [])
-        tags = validated_data.pop('tags', [])
-        technologies = validated_data.pop('technologies', [])
-        benefits = validated_data.pop('benefits', [])
+        # Validar compatibility_score
+        if 'compatibility_score' in data and data['compatibility_score'] is not None:
+            try:
+                score = float(data['compatibility_score'])
+                if score < 0 or score > 100:
+                    errors['compatibility_score'] = 'El puntaje de compatibilidad debe estar entre 0 y 100'
+                data['compatibility_score'] = score
+            except (ValueError, TypeError):
+                errors['compatibility_score'] = 'El puntaje de compatibilidad debe ser un número'
         
-        validated_data['company'] = self.context['request'].user.empresa
-        proyecto = Proyecto.objects.create(**validated_data)
-        proyecto.set_required_skills_list(required_skills)
-        proyecto.set_preferred_skills_list(preferred_skills)
-        proyecto.set_tags_list(tags)
-        proyecto.set_technologies_list(technologies)
-        proyecto.set_benefits_list(benefits)
-        proyecto.save()
-        
-        return proyecto
-
-class ProjectUpdateSerializer(serializers.ModelSerializer):
-    """Serializer para actualizar proyectos"""
-    required_skills = serializers.ListField(child=serializers.CharField(), required=False)
-    preferred_skills = serializers.ListField(child=serializers.CharField(), required=False)
-    tags = serializers.ListField(child=serializers.CharField(), required=False)
-    technologies = serializers.ListField(child=serializers.CharField(), required=False)
-    benefits = serializers.ListField(child=serializers.CharField(), required=False)
+        return errors
     
-    class Meta:
-        model = Proyecto
-        fields = [
-            'title', 'description', 'requirements', 'area', 'modality', 'location', 'difficulty',
-            'required_skills', 'preferred_skills', 'min_api_level', 'duration_weeks',
-            'hours_per_week', 'start_date', 'estimated_end_date', 'application_deadline',
-            'is_paid', 'payment_amount', 'payment_currency', 'stipend_amount', 'stipend_currency',
-            'max_students', 'status', 'tags', 'technologies', 'benefits', 'is_featured', 'is_urgent'
-        ]
-        read_only_fields = ['status']  # El status se maneja por separado
+    @staticmethod
+    def create(data, user):
+        """Crea una nueva aplicación"""
+        with transaction.atomic():
+            # Verificar que el usuario no haya aplicado antes
+            existing_application = AplicacionProyecto.objects.filter(
+                proyecto=data['proyecto'],
+                estudiante=user
+            ).first()
+            
+            if existing_application:
+                raise ValidationError('Ya has aplicado a este proyecto')
+            
+            # Crear la aplicación
+            aplicacion = AplicacionProyecto.objects.create(
+                proyecto=data['proyecto'],
+                estudiante=user,
+                cover_letter=data['cover_letter'],
+                estado=data.get('estado', 'pendiente'),
+                compatibility_score=data.get('compatibility_score'),
+                company_notes=data.get('company_notes', ''),
+                student_notes=data.get('student_notes', ''),
+                portfolio_url=data.get('portfolio_url', ''),
+                github_url=data.get('github_url', ''),
+                linkedin_url=data.get('linkedin_url', '')
+            )
+            
+            return aplicacion
     
-    def validate(self, attrs):
-        # Validaciones similares a ProjectCreateSerializer
-        if 'start_date' in attrs and 'estimated_end_date' in attrs:
-            if attrs['start_date'] >= attrs['estimated_end_date']:
-                raise serializers.ValidationError("La fecha de inicio debe ser anterior a la fecha de fin.")
-        
-        return attrs
-    
-    def update(self, instance, validated_data):
-        # Manejar campos JSON
-        if 'required_skills' in validated_data:
-            instance.set_required_skills_list(validated_data.pop('required_skills'))
-        if 'preferred_skills' in validated_data:
-            instance.set_preferred_skills_list(validated_data.pop('preferred_skills'))
-        if 'tags' in validated_data:
-            instance.set_tags_list(validated_data.pop('tags'))
-        if 'technologies' in validated_data:
-            instance.set_technologies_list(validated_data.pop('technologies'))
-        if 'benefits' in validated_data:
-            instance.set_benefits_list(validated_data.pop('benefits'))
-        
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        
-        instance.save()
-        return instance
-
-class ProjectApplicationSerializer(serializers.ModelSerializer):
-    """Serializer para aplicaciones a proyectos"""
-    student_name = serializers.SerializerMethodField()
-    student_email = serializers.CharField(source='student.user.email', read_only=True)
-    student_avatar = serializers.CharField(source='student.user.avatar', read_only=True)
-    student_api_level = serializers.IntegerField(source='student.api_level', read_only=True)
-    project_title = serializers.CharField(source='project.title', read_only=True)
-    company_name = serializers.CharField(source='project.company.company_name', read_only=True)
-    
-    class Meta:
-        model = Aplicacion
-        fields = [
-            'id', 'project', 'project_title', 'student', 'student_name', 'student_email',
-            'student_avatar', 'student_api_level', 'company_name', 'cover_letter', 'status',
-            'compatibility_score', 'applied_at', 'reviewed_at', 'responded_at',
-            'company_notes', 'student_notes', 'portfolio_url', 'github_url', 'linkedin_url'
-        ]
-        read_only_fields = ['id', 'applied_at', 'reviewed_at', 'responded_at']
-    
-    def get_student_name(self, obj):
-        return obj.student.user.full_name if obj.student and obj.student.user else ""
-    
-    def validate(self, attrs):
-        # Verificar que el estudiante no haya aplicado ya a este proyecto
-        if Aplicacion.objects.filter(
-            project=attrs['project'], 
-            student=attrs['student']
-        ).exists():
-            raise serializers.ValidationError("Ya has aplicado a este proyecto.")
-        
-        # Verificar que el proyecto esté disponible
-        if attrs['project'].status and attrs['project'].status.name not in ['active', 'open', 'en curso']:
-            raise serializers.ValidationError("Este proyecto no está disponible para aplicaciones.")
-        
-        # Verificar que el proyecto no esté lleno
-        if attrs['project'].current_students >= attrs['project'].max_students:
-            raise serializers.ValidationError("Este proyecto ya no acepta más estudiantes.")
-        
-        return attrs
-    
-    def to_representation(self, instance):
-        """Convierte la instancia a diccionario para la API"""
-        data = super().to_representation(instance)
-        # Asegurar que los campos de relación sean strings (UUIDs)
-        if instance.project:
-            data['project'] = str(instance.project.id)
-        if instance.student:
-            data['student'] = str(instance.student.id)
-        # Asegurar que el ID sea string (UUID)
-        data['id'] = str(instance.id)
-        return data
-
-class ProjectApplicationDetailSerializer(ProjectApplicationSerializer):
-    """Serializer detallado para aplicaciones"""
-    student_details = UsuarioSerializer(source='student.user', read_only=True)
-    project_details = ProjectSerializer(source='project', read_only=True)
-    
-    class Meta(ProjectApplicationSerializer.Meta):
-        fields = ProjectApplicationSerializer.Meta.fields + ['student_details', 'project_details']
-
-class ProjectApplicationUpdateSerializer(serializers.ModelSerializer):
-    """Serializer para actualizar aplicaciones (solo empresas)"""
-    
-    class Meta:
-        model = Aplicacion
-        fields = ['status', 'company_notes']
-    
-    def validate_status(self, value):
-        valid_states = ['pending', 'reviewing', 'interviewed', 'accepted', 'rejected', 'withdrawn', 'completed']
-        if value not in valid_states:
-            raise serializers.ValidationError(f"Estado inválido. Estados válidos: {', '.join(valid_states)}")
-        return value
-    
-    def update(self, instance, validated_data):
-        # Actualizar fechas según el cambio de estado
-        from django.utils import timezone
-        
-        if 'status' in validated_data:
-            if validated_data['status'] == 'accepted':
-                instance.responded_at = timezone.now()
-            elif validated_data['status'] in ['rejected', 'withdrawn']:
-                instance.responded_at = timezone.now()
-        
-        return super().update(instance, validated_data)
-
-class ProjectStatsSerializer(serializers.ModelSerializer):
-    """Serializer para estadísticas de proyectos"""
-    company_name = serializers.CharField(source='company.company_name', read_only=True)
-    applications_count = serializers.SerializerMethodField()
-    accepted_applications_count = serializers.SerializerMethodField()
-    average_rating = serializers.SerializerMethodField()
-    completion_percentage = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = Proyecto
-        fields = [
-            'id', 'title', 'company_name', 'applications_count', 'accepted_applications_count',
-            'average_rating', 'completion_percentage', 'current_students', 'max_students',
-            'created_at', 'published_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'published_at']
-    
-    def get_applications_count(self, obj):
-        return obj.application_project.count()
-    
-    def get_accepted_applications_count(self, obj):
-        return obj.application_project.filter(status='accepted').count()
-    
-    def get_average_rating(self, obj):
-        from evaluations.models import Evaluation
-        evaluations = Evaluation.objects.filter(project=obj)
-        if evaluations:
-            return evaluations.aggregate(Avg('score'))['score__avg']
-        return 0
-    
-    def get_completion_percentage(self, obj):
-        if obj.max_students == 0:
-            return 0
-        return (obj.current_students / obj.max_students) * 100
-
-class ProjectSearchSerializer(serializers.ModelSerializer):
-    """Serializer para búsqueda de proyectos"""
-    company_name = serializers.CharField(source='company.company_name', read_only=True)
-    is_available = serializers.SerializerMethodField()
-    applications_count = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = Proyecto
-        fields = [
-            'id', 'title', 'description', 'company_name', 'area', 'modality',
-            'location', 'difficulty', 'required_skills', 'min_api_level',
-            'duration_months', 'hours_per_week', 'is_paid', 'payment_amount',
-            'status', 'is_available', 'applications_count', 'created_at',
-            'is_featured', 'is_urgent'
-        ]
-        read_only_fields = ['id', 'created_at', 'is_available', 'applications_count']
-    
-    def get_is_available(self, obj):
-        return obj.status.name in ['active', 'open', 'en curso'] and obj.current_students < obj.max_students
-    
-    def get_applications_count(self, obj):
-        return obj.application_project.count() 
-
-class ProjectMemberSerializer(serializers.ModelSerializer):
-    """Serializer para miembros de proyecto"""
-    user_name = serializers.CharField(source='usuario.full_name', read_only=True)
-    user_email = serializers.CharField(source='usuario.email', read_only=True)
-    project_title = serializers.CharField(source='proyecto.title', read_only=True)
-    
-    class Meta:
-        model = MiembroProyecto
-        fields = [
-            'id', 'proyecto', 'project_title', 'usuario', 'user_name', 'user_email',
-            'rol', 'fecha_ingreso', 'fecha_salida', 'horas_trabajadas', 'tareas_completadas',
-            'evaluacion_promedio', 'esta_activo', 'es_verificado', 'responsabilidades', 'notas'
-        ]
-        read_only_fields = ['id', 'fecha_ingreso'] 
+    @staticmethod
+    def update(aplicacion, data):
+        """Actualiza una aplicación existente"""
+        with transaction.atomic():
+            # Solo permitir actualizar ciertos campos
+            allowed_fields = [
+                'estado', 'compatibility_score', 'company_notes', 'student_notes',
+                'portfolio_url', 'github_url', 'linkedin_url'
+            ]
+            
+            for field in allowed_fields:
+                if field in data:
+                    setattr(aplicacion, field, data[field])
+            
+            aplicacion.save()
+            return aplicacion 

@@ -1,10 +1,16 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import PlatformSettingViewSet
+"""
+URLs para la app platform_settings.
+"""
 
-router = DefaultRouter()
-router.register(r'settings', PlatformSettingViewSet, basename='platform-setting')
+from django.urls import path
+from . import views
+
+app_name = 'platform_settings'
 
 urlpatterns = [
-    path('', include(router.urls)),
+    # Endpoints principales
+    path('', views.platform_setting_list_create, name='setting-list-create'),
+    path('<uuid:setting_id>/', views.platform_setting_detail, name='setting-detail'),
+    # Endpoint para obtener por clave
+    path('key/<str:key>/', views.get_setting_by_key, name='get-setting-by-key'),
 ] 

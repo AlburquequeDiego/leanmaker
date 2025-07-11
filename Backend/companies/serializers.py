@@ -1,113 +1,81 @@
-from rest_framework import serializers
-from .models import Empresa, CalificacionEmpresa
-from users.serializers import UsuarioSerializer
+# Serializers simples para Django puro + TypeScript
+# Sin REST Framework, solo Django
 
-class EmpresaSerializer(serializers.ModelSerializer):
-    user = UsuarioSerializer(read_only=True)
-    technologies_used = serializers.SerializerMethodField()
-    benefits_offered = serializers.SerializerMethodField()
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from .models import Empresa, CalificacionEmpresa
+from users.serializers import UserSerializer
+
+class EmpresaSerializer:
+    """Serializer simple para convertir Empresa a JSON para TypeScript"""
     
-    class Meta:
-        model = Empresa
-        fields = [
-            'id', 'user', 'company_name', 'description', 'industry', 'size',
-            'website', 'address', 'city', 'country', 'founded_year', 'logo_url',
-            'verified', 'rating', 'total_projects', 'projects_completed',
-            'total_hours_offered', 'technologies_used', 'benefits_offered',
-            'remote_work_policy', 'internship_duration', 'stipend_range',
-            'contact_email', 'contact_phone', 'status', 'created_at', 'updated_at'
-        ]
-        read_only_fields = ['id', 'rating', 'total_projects', 'projects_completed', 'created_at', 'updated_at']
+    @staticmethod
+    def to_dict(empresa):
+        """Convierte una empresa a diccionario para JSON"""
+        if not empresa:
+            return {}
+        
+        return {
+            'id': str(empresa.id),
+            'user': UserSerializer.to_dict(empresa.user) if empresa.user else None,
+            'company_name': empresa.company_name,
+            'description': empresa.description,
+            'industry': empresa.industry,
+            'size': empresa.size,
+            'website': empresa.website,
+            'address': empresa.address,
+            'city': empresa.city,
+            'country': empresa.country,
+            'founded_year': empresa.founded_year,
+            'logo_url': empresa.logo_url,
+            'verified': empresa.verified,
+            'rating': empresa.rating,
+            'total_projects': empresa.total_projects,
+            'projects_completed': empresa.projects_completed,
+            'total_hours_offered': empresa.total_hours_offered,
+            'technologies_used': empresa.get_technologies_list() if hasattr(empresa, 'get_technologies_list') else [],
+            'benefits_offered': empresa.get_benefits_list() if hasattr(empresa, 'get_benefits_list') else [],
+            'remote_work_policy': empresa.remote_work_policy,
+            'internship_duration': empresa.internship_duration,
+            'stipend_range': empresa.stipend_range,
+            'contact_email': empresa.contact_email,
+            'contact_phone': empresa.contact_phone,
+            'status': empresa.status,
+            'created_at': empresa.created_at.isoformat() if empresa.created_at else None,
+            'updated_at': empresa.updated_at.isoformat() if empresa.updated_at else None,
+        }
     
-    def get_technologies_used(self, obj):
-        """Obtiene las tecnologías como lista"""
-        return obj.get_technologies_list()
-    
-    def get_benefits_offered(self, obj):
-        """Obtiene los beneficios como lista"""
-        return obj.get_benefits_list()
-    
-    def to_representation(self, instance):
-        """Convierte la instancia a diccionario para la API"""
-        data = super().to_representation(instance)
-        # Asegurar que el campo user sea un string (UUID)
-        if instance.user:
-            data['user'] = str(instance.user.id)
-        # Asegurar que el ID sea string (UUID)
-        data['id'] = str(instance.id)
-        return data
+    @staticmethod
+    def to_json(empresa):
+        """Convierte una empresa a JSON string"""
+        return json.dumps(EmpresaSerializer.to_dict(empresa), cls=DjangoJSONEncoder)
 
 # Alias para compatibilidad
 CompanySerializer = EmpresaSerializer
 
-class EmpresaCreateSerializer(serializers.ModelSerializer):
-    technologies_used = serializers.ListField(child=serializers.CharField(), required=False)
-    benefits_offered = serializers.ListField(child=serializers.CharField(), required=False)
+class CalificacionEmpresaSerializer:
+    """Serializer simple para convertir CalificacionEmpresa a JSON para TypeScript"""
     
-    class Meta:
-        model = Empresa
-        fields = [
-            'company_name', 'description', 'industry', 'size', 'website',
-            'address', 'city', 'country', 'founded_year', 'logo_url',
-            'technologies_used', 'benefits_offered', 'remote_work_policy',
-            'internship_duration', 'stipend_range', 'contact_email', 'contact_phone'
-        ]
-    
-    def create(self, validated_data):
-        # Manejar campos JSON
-        technologies = validated_data.pop('technologies_used', [])
-        benefits = validated_data.pop('benefits_offered', [])
+    @staticmethod
+    def to_dict(calificacion):
+        """Convierte una calificación a diccionario para JSON"""
+        if not calificacion:
+            return {}
         
-        empresa = Empresa.objects.create(**validated_data)
-        empresa.set_technologies_list(technologies)
-        empresa.set_benefits_list(benefits)
-        empresa.save()
-        
-        return empresa
-
-class EmpresaUpdateSerializer(serializers.ModelSerializer):
-    technologies_used = serializers.ListField(child=serializers.CharField(), required=False)
-    benefits_offered = serializers.ListField(child=serializers.CharField(), required=False)
+        return {
+            'id': str(calificacion.id),
+            'empresa': EmpresaSerializer.to_dict(calificacion.empresa) if calificacion.empresa else None,
+            'estudiante': UserSerializer.to_dict(calificacion.estudiante) if calificacion.estudiante else None,
+            'puntuacion': calificacion.puntuacion,
+            'comentario': calificacion.comentario,
+            'comunicacion': calificacion.comunicacion,
+            'flexibilidad': calificacion.flexibilidad,
+            'aprendizaje': calificacion.aprendizaje,
+            'ambiente_trabajo': calificacion.ambiente_trabajo,
+            'fecha_calificacion': calificacion.fecha_calificacion.isoformat() if calificacion.fecha_calificacion else None,
+        }
     
-    class Meta:
-        model = Empresa
-        fields = [
-            'company_name', 'description', 'industry', 'size', 'website',
-            'address', 'city', 'country', 'founded_year', 'logo_url',
-            'technologies_used', 'benefits_offered', 'remote_work_policy',
-            'internship_duration', 'stipend_range', 'contact_email', 'contact_phone', 'status'
-        ]
-    
-    def update(self, instance, validated_data):
-        # Manejar campos JSON
-        if 'technologies_used' in validated_data:
-            instance.set_technologies_list(validated_data.pop('technologies_used'))
-        if 'benefits_offered' in validated_data:
-            instance.set_benefits_list(validated_data.pop('benefits_offered'))
-        
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        
-        instance.save()
-        return instance
-
-class CalificacionEmpresaSerializer(serializers.ModelSerializer):
-    empresa = EmpresaSerializer(read_only=True)
-    estudiante = UsuarioSerializer(read_only=True)
-    
-    class Meta:
-        model = CalificacionEmpresa
-        fields = [
-            'id', 'empresa', 'estudiante', 'puntuacion', 'comentario',
-            'comunicacion', 'flexibilidad', 'aprendizaje', 'ambiente_trabajo',
-            'fecha_calificacion'
-        ]
-        read_only_fields = ['id', 'fecha_calificacion']
-
-class CalificacionEmpresaCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CalificacionEmpresa
-        fields = [
-            'empresa', 'puntuacion', 'comentario', 'comunicacion',
-            'flexibilidad', 'aprendizaje', 'ambiente_trabajo'
-        ] 
+    @staticmethod
+    def to_json(calificacion):
+        """Convierte una calificación a JSON string"""
+        return json.dumps(CalificacionEmpresaSerializer.to_dict(calificacion), cls=DjangoJSONEncoder) 

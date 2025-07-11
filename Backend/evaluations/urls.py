@@ -1,12 +1,23 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import EvaluationViewSet, EvaluationCategoryViewSet, EvaluationTemplateViewSet
+"""
+URLs para la app evaluations.
+"""
 
-router = DefaultRouter()
-router.register(r'evaluations', EvaluationViewSet, basename='evaluation')
-router.register(r'categories', EvaluationCategoryViewSet, basename='evaluation-category')
-router.register(r'templates', EvaluationTemplateViewSet, basename='evaluation-template')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-] 
+    # Endpoints principales de evaluaciones
+    path('', views.evaluations_list, name='evaluations_list'),
+    path('<str:evaluation_id>/', views.evaluations_detail, name='evaluations_detail'),
+    path('create/', views.evaluations_create, name='evaluations_create'),
+    path('<str:evaluation_id>/update/', views.evaluations_update, name='evaluations_update'),
+    path('<str:evaluation_id>/delete/', views.evaluations_delete, name='evaluations_delete'),
+    
+    # Endpoints de plantillas
+    path('templates/', views.evaluation_templates_list, name='evaluation_templates_list'),
+    path('templates/create/', views.evaluation_templates_create, name='evaluation_templates_create'),
+    
+    # Endpoints de habilidades de estudiantes
+    path('skills/', views.student_skills_list, name='student_skills_list'),
+    path('skills/create/', views.student_skills_create, name='student_skills_create'),
+]

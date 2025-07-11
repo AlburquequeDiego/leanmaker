@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 from projects.models import Proyecto
 from applications.models import Aplicacion
 import uuid
@@ -10,8 +10,8 @@ class Assignment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey('projects.Proyecto', on_delete=models.CASCADE, related_name='assignments', null=True, blank=True)
     application = models.ForeignKey('applications.Aplicacion', on_delete=models.CASCADE, related_name='assignments', null=True, blank=True)
-    assigned_by = models.ForeignKey('users.Usuario', on_delete=models.CASCADE, related_name='assignments_created', null=True, blank=True)
-    assigned_to = models.ForeignKey('users.Usuario', on_delete=models.CASCADE, related_name='assignments_assigned', null=True, blank=True)
+    assigned_by = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='assignments_created', null=True, blank=True)
+    assigned_to = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='assignments_assigned', null=True, blank=True)
     title = models.CharField(max_length=200, help_text="Título de la asignación")
     description = models.TextField(help_text="Descripción detallada de la tarea")
     due_date = models.DateTimeField(help_text="Fecha límite de la tarea")

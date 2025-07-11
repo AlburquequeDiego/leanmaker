@@ -1,198 +1,388 @@
-from django.shortcuts import render
-from rest_framework import viewsets, status, filters
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Q, Count, Avg
+"""
+Views para la app mass_notifications.
+"""
+
+import json
+import uuid
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ValidationError
+from django.db.models import Q, Count, Sum
 from django.utils import timezone
-from datetime import timedelta
-
 from .models import MassNotification, NotificationTemplate
-from .serializers import (
-    MassNotificationSerializer, NotificationTemplateSerializer
-)
+from .serializers import MassNotificationSerializer, NotificationTemplateSerializer
+from users.models import User
+from core.auth_utils import get_user_from_token, require_auth, require_admin
 
+# --- NOTIFICACIONES MASIVAS ---
 
-class NotificationTemplateViewSet(viewsets.ModelViewSet):
-    """ViewSet para plantillas de notificaciones"""
-    queryset = NotificationTemplate.objects.all()
-    serializer_class = NotificationTemplateSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['notification_type', 'is_active']
-    search_fields = ['name', 'title_template', 'message_template']
-    ordering_fields = ['name', 'created_at', 'updated_at']
-    ordering = ['name']
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-    @action(detail=True, methods=['post'])
-    def use_template(self, request, pk=None):
-        """Usar una plantilla para crear una notificación"""
-        template = self.get_object()
-        context = request.data.get('context', {})
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin
+def mass_notifications_list(request):
+    """Lista notificaciones masivas con filtros y paginación"""
+    try:
+        user = get_user_from_token(request)
         
+        # Filtros
+        status_filter = request.GET.get('status')
+        notification_type = request.GET.get('notification_type')
+        priority = request.GET.get('priority')
+        search = request.GET.get('search')
+        page = int(request.GET.get('page', 1))
+        limit = min(int(request.GET.get('limit', 20)), 100)
+        
+        # Construir query base
+        queryset = MassNotification.objects.select_related('created_by')
+        
+        # Aplicar filtros
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        if notification_type:
+            queryset = queryset.filter(notification_type=notification_type)
+        if priority:
+            queryset = queryset.filter(priority=priority)
+        if search:
+            queryset = queryset.filter(Q(title__icontains=search) | Q(message__icontains=search))
+        
+        # Paginación
+        total = queryset.count()
+        offset = (page - 1) * limit
+        queryset = queryset.order_by('-created_at')[offset:offset + limit]
+        
+        # Serializar resultados
+        data = [MassNotificationSerializer.to_dict(notification) for notification in queryset]
+        
+        return JsonResponse({
+            'success': True,
+            'data': data,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total,
+                'pages': (total + limit - 1) // limit
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al listar notificaciones masivas: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin
+def mass_notifications_detail(request, notification_id):
+    """Obtiene los detalles de una notificación masiva específica"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
         try:
-            title, message = template.render_template(context)
-            return Response({
-                'title': title,
-                'message': message,
-                'notification_type': template.notification_type
-            })
-        except Exception as e:
-            return Response(
-                {'error': f'Error al renderizar la plantilla: {str(e)}'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-
-class MassNotificationViewSet(viewsets.ModelViewSet):
-    """ViewSet para notificaciones masivas"""
-    queryset = MassNotification.objects.all()
-    serializer_class = MassNotificationSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'notification_type', 'priority', 'created_by']
-    search_fields = ['title', 'message']
-    ordering_fields = ['created_at', 'scheduled_at', 'sent_at', 'priority']
-    ordering = ['-created_at']
-
-    def get_serializer_class(self):
-        return MassNotificationSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Obtener estadísticas de notificaciones"""
-        queryset = self.get_queryset()
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
         
-        # Estadísticas básicas
-        total_notifications = queryset.count()
-        sent_notifications = queryset.filter(status='sent').count()
-        scheduled_notifications = queryset.filter(status='scheduled').count()
-        draft_notifications = queryset.filter(status='draft').count()
-        failed_notifications = queryset.filter(status='failed').count()
-        
-        # Estadísticas de envío
-        total_recipients = queryset.aggregate(total=Count('total_recipients'))['total'] or 0
-        total_sent = queryset.aggregate(total=Count('sent_count'))['total'] or 0
-        total_failed = queryset.aggregate(total=Count('failed_count'))['total'] or 0
-        total_read = queryset.aggregate(total=Count('read_count'))['total'] or 0
-        
-        # Tasas promedio
-        sent_notifications_with_recipients = queryset.filter(status='sent', total_recipients__gt=0)
-        if sent_notifications_with_recipients.exists():
-            avg_success_rate = sent_notifications_with_recipients.aggregate(
-                avg=Avg('sent_count') * 100.0 / Avg('total_recipients')
-            )['avg'] or 0
-            avg_read_rate = sent_notifications_with_recipients.aggregate(
-                avg=Avg('read_count') * 100.0 / Avg('sent_count')
-            )['avg'] or 0
-        else:
-            avg_success_rate = 0
-            avg_read_rate = 0
-        
-        stats = {
-            'total_notifications': total_notifications,
-            'sent_notifications': sent_notifications,
-            'scheduled_notifications': scheduled_notifications,
-            'draft_notifications': draft_notifications,
-            'failed_notifications': failed_notifications,
-            'total_recipients': total_recipients,
-            'total_sent': total_sent,
-            'total_failed': total_failed,
-            'total_read': total_read,
-            'average_success_rate': round(avg_success_rate, 2),
-            'average_read_rate': round(avg_read_rate, 2),
-        }
-        
-        return Response(stats)
-
-    @action(detail=True, methods=['post'])
-    def send_now(self, request, pk=None):
-        """Enviar notificación inmediatamente"""
-        notification = self.get_object()
-        
-        if notification.status != 'draft':
-            return Response(
-                {'error': 'Solo se pueden enviar notificaciones en estado borrador'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
+        # Buscar notificación
         try:
-            # Aquí iría la lógica de envío real
-            notification.status = 'sending'
-            notification.save()
-            
-            # Simular envío
-            notification.mark_as_sent()
-            notification.increment_sent_count()
-            
-            return Response({'message': 'Notificación enviada exitosamente'})
-        except Exception as e:
-            notification.status = 'failed'
-            notification.save()
-            return Response(
-                {'error': f'Error al enviar la notificación: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            notification = MassNotification.objects.select_related('created_by').get(id=notification_uuid)
+        except MassNotification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        return JsonResponse({
+            'success': True,
+            'data': MassNotificationSerializer.to_dict(notification)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al obtener notificación: {str(e)}'}, status=500)
 
-    @action(detail=True, methods=['post'])
-    def schedule(self, request, pk=None):
-        """Programar notificación"""
-        notification = self.get_object()
-        scheduled_at = request.data.get('scheduled_at')
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def mass_notifications_create(request):
+    """Crea una nueva notificación masiva"""
+    try:
+        user = get_user_from_token(request)
         
-        if not scheduled_at:
-            return Response(
-                {'error': 'Debe proporcionar una fecha de programación'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
+        # Parsear datos
         try:
-            from django.utils.dateparse import parse_datetime
-            scheduled_datetime = parse_datetime(scheduled_at)
-            
-            if scheduled_datetime <= timezone.now():
-                return Response(
-                    {'error': 'La fecha programada debe ser futura'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            
-            notification.scheduled_at = scheduled_datetime
-            notification.status = 'scheduled'
-            notification.save()
-            
-            return Response({'message': 'Notificación programada exitosamente'})
-        except Exception as e:
-            return Response(
-                {'error': f'Error al programar la notificación: {str(e)}'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-    @action(detail=True, methods=['post'])
-    def cancel(self, request, pk=None):
-        """Cancelar notificación"""
-        notification = self.get_object()
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
         
+        # Validar datos
+        errors = MassNotificationSerializer.validate_data(data)
+        if errors:
+            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        
+        # Crear notificación
+        notification = MassNotificationSerializer.create(data, user)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación masiva creada exitosamente',
+            'data': MassNotificationSerializer.to_dict(notification)
+        }, status=201)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al crear notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["PUT"])
+@require_admin
+def mass_notifications_update(request, notification_id):
+    """Actualiza una notificación masiva existente"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = MassNotification.objects.get(id=notification_uuid)
+        except MassNotification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        # Validar datos
+        errors = MassNotificationSerializer.validate_data(data)
+        if errors:
+            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        
+        # Actualizar notificación
+        notification = MassNotificationSerializer.update(notification, data)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación actualizada exitosamente',
+            'data': MassNotificationSerializer.to_dict(notification)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al actualizar notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+@require_admin
+def mass_notifications_delete(request, notification_id):
+    """Elimina una notificación masiva"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = MassNotification.objects.get(id=notification_uuid)
+        except MassNotification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        # Eliminar notificación
+        notification.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación eliminada exitosamente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al eliminar notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def send_notification(request, notification_id):
+    """Envía una notificación masiva"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = MassNotification.objects.get(id=notification_uuid)
+        except MassNotification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        # Verificar que la notificación esté en estado válido
         if notification.status not in ['draft', 'scheduled']:
-            return Response(
-                {'error': 'Solo se pueden cancelar notificaciones en borrador o programadas'},
-                status=status.HTTP_400_BAD_REQUEST
+            return JsonResponse({
+                'error': 'La notificación no puede ser enviada en su estado actual'
+            }, status=400)
+        
+        # Marcar como enviando
+        notification.status = 'sending'
+        notification.save(update_fields=['status'])
+        
+        # Aquí se implementaría la lógica real de envío
+        # Por ahora, simulamos el envío
+        notification.mark_as_sent()
+        notification.sent_count = notification.total_recipients
+        notification.save(update_fields=['sent_count'])
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación enviada exitosamente',
+            'data': MassNotificationSerializer.to_dict(notification)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al enviar notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def schedule_notification(request, notification_id):
+    """Programa una notificación masiva"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = MassNotification.objects.get(id=notification_uuid)
+        except MassNotification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        scheduled_at = data.get('scheduled_at')
+        if not scheduled_at:
+            return JsonResponse({'error': 'La fecha programada es requerida'}, status=400)
+        
+        # Validar fecha programada
+        try:
+            scheduled_datetime = timezone.datetime.fromisoformat(scheduled_at.replace('Z', '+00:00'))
+            if scheduled_datetime <= timezone.now():
+                return JsonResponse({'error': 'La fecha programada debe ser futura'}, status=400)
+        except (ValueError, TypeError):
+            return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
+        
+        # Programar notificación
+        notification.scheduled_at = scheduled_datetime
+        notification.status = 'scheduled'
+        notification.save(update_fields=['scheduled_at', 'status'])
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación programada exitosamente',
+            'data': MassNotificationSerializer.to_dict(notification)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al programar notificación: {str(e)}'}, status=500)
+
+# --- PLANTILLAS DE NOTIFICACIÓN ---
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def notification_templates_list(request):
+    """Lista plantillas de notificación"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Filtros
+        notification_type = request.GET.get('notification_type')
+        is_active = request.GET.get('is_active')
+        search = request.GET.get('search')
+        page = int(request.GET.get('page', 1))
+        limit = min(int(request.GET.get('limit', 20)), 100)
+        
+        # Construir query
+        queryset = NotificationTemplate.objects.select_related('created_by')
+        
+        # Filtrar por rol
+        if user.role != 'admin':
+            queryset = queryset.filter(is_active=True)
+        
+        # Aplicar filtros
+        if notification_type:
+            queryset = queryset.filter(notification_type=notification_type)
+        if is_active is not None:
+            queryset = queryset.filter(is_active=(is_active.lower() == 'true'))
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(title_template__icontains=search) | 
+                Q(message_template__icontains=search)
             )
         
-        notification.status = 'cancelled'
-        notification.save()
+        # Paginación
+        total = queryset.count()
+        offset = (page - 1) * limit
+        queryset = queryset.order_by('name')[offset:offset + limit]
         
-        return Response({'message': 'Notificación cancelada exitosamente'})
+        # Serializar resultados
+        data = [NotificationTemplateSerializer.to_dict(template) for template in queryset]
+        
+        return JsonResponse({
+            'success': True,
+            'data': data,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total,
+                'pages': (total + limit - 1) // limit
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al listar plantillas: {str(e)}'}, status=500)
 
-
-class NotificationPreferenceViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestión de preferencias de notificaciones"""
-    queryset = NotificationTemplate.objects.all()  # Placeholder, ajustar según modelo real
-    permission_classes = [IsAuthenticated]
-    serializer_class = None  # Stub, para que el equipo lo complete
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def notification_templates_create(request):
+    """Crea una nueva plantilla de notificación"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        # Validar datos
+        errors = NotificationTemplateSerializer.validate_data(data)
+        if errors:
+            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        
+        # Crear plantilla
+        template = NotificationTemplateSerializer.create(data, user)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Plantilla creada exitosamente',
+            'data': NotificationTemplateSerializer.to_dict(template)
+        }, status=201)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al crear plantilla: {str(e)}'}, status=500)

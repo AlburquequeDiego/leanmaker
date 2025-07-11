@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 from projects.models import AplicacionProyecto
 import uuid
 from django.utils import timezone
@@ -19,7 +19,7 @@ class Interview(models.Model):
     # Campos básicos - coinciden con frontend
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, related_name='interviews')  # Campo renombrado para coincidir con frontend
-    interviewer = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='interviews_conducted')
+    interviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='interviews_conducted')
     
     # Información de la entrevista - coinciden con frontend
     interview_date = models.DateTimeField()

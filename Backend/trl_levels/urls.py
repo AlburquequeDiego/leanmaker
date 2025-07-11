@@ -1,10 +1,14 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import TRLLevelViewSet
+"""
+URLs para la app trl_levels.
+"""
 
-router = DefaultRouter()
-router.register(r'trl-levels', TRLLevelViewSet, basename='trl-level')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-] 
+    path('', views.trl_levels_list, name='trl_levels_list'),
+    path('<str:trl_levels_id>/', views.trl_levels_detail, name='trl_levels_detail'),
+    path('create/', views.trl_levels_create, name='trl_levels_create'),
+    path('<str:trl_levels_id>/update/', views.trl_levels_update, name='trl_levels_update'),
+    path('<str:trl_levels_id>/delete/', views.trl_levels_delete, name='trl_levels_delete'),
+]

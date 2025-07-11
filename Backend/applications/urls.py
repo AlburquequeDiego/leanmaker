@@ -1,11 +1,14 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ApplicationViewSet, AssignmentViewSet
+"""
+URLs para la app applications.
+"""
 
-router = DefaultRouter()
-router.register(r'applications', ApplicationViewSet, basename='application')
-router.register(r'assignments', AssignmentViewSet, basename='assignment')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-] 
+    path('', views.applications_list, name='applications_list'),
+    path('<str:applications_id>/', views.applications_detail, name='applications_detail'),
+    path('create/', views.applications_create, name='applications_create'),
+    path('<str:applications_id>/update/', views.applications_update, name='applications_update'),
+    path('<str:applications_id>/delete/', views.applications_delete, name='applications_delete'),
+]

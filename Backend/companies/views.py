@@ -1,63 +1,62 @@
-from rest_framework import viewsets, filters, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
+# Vistas simples para Django puro + TypeScript
+# Sin REST Framework, solo Django
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from .models import Empresa, CalificacionEmpresa
-from .serializers import (
-    EmpresaSerializer, EmpresaCreateSerializer, EmpresaUpdateSerializer,
-    CalificacionEmpresaSerializer, CalificacionEmpresaCreateSerializer
-)
+from .serializers import EmpresaSerializer, CalificacionEmpresaSerializer
 
-class EmpresaViewSet(viewsets.ModelViewSet):
-    queryset = Empresa.objects.filter(status='active')
-    serializer_class = EmpresaSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'verified', 'size', 'industry']
-    search_fields = ['company_name', 'description', 'industry']
-    ordering_fields = ['company_name', 'rating', 'total_projects', 'created_at']
-    ordering = ['company_name']
+@csrf_exempt
+@require_http_methods(["GET"])
+def companies_list(request):
+    return JsonResponse({'message': 'companies_list placeholder'})
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return EmpresaCreateSerializer
-        elif self.action in ['update', 'partial_update']:
-            return EmpresaUpdateSerializer
-        return EmpresaSerializer
+@csrf_exempt
+@require_http_methods(["GET"])
+def companies_detail(request, companies_id):
+    return JsonResponse({'message': f'companies_detail placeholder for {companies_id}'})
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+@csrf_exempt
+@require_http_methods(["POST"])
+def companies_create(request):
+    return JsonResponse({'message': 'companies_create placeholder'})
 
-    def get_queryset(self):
-        return Empresa.objects.filter(status='active')
+@csrf_exempt
+@require_http_methods(["PUT"])
+def companies_update(request, companies_id):
+    return JsonResponse({'message': f'companies_update placeholder for {companies_id}'})
 
-    @action(detail=True, methods=['post'])
-    def verify(self, request, pk=None):
-        empresa = self.get_object()
-        empresa.verified = True
-        empresa.save()
-        return Response({'message': 'Empresa verificada'}, status=status.HTTP_200_OK)
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def companies_delete(request, companies_id):
+    return JsonResponse({'message': f'companies_delete placeholder for {companies_id}'})
 
-class CalificacionEmpresaViewSet(viewsets.ModelViewSet):
-    queryset = CalificacionEmpresa.objects.all()
-    serializer_class = CalificacionEmpresaSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['empresa', 'estudiante']
-    ordering_fields = ['fecha_calificacion', 'puntuacion']
-    ordering = ['-fecha_calificacion']
+@require_http_methods(["GET"])
+def calificaciones_list(request):
+    """Lista todas las calificaciones en formato JSON para TypeScript"""
+    calificaciones = CalificacionEmpresa.objects.all()
+    data = [CalificacionEmpresaSerializer.to_dict(cal) for cal in calificaciones]
+    return JsonResponse({'calificaciones': data})
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return CalificacionEmpresaCreateSerializer
-        return CalificacionEmpresaSerializer
+@require_http_methods(["GET"])
+def calificacion_detail(request, calificacion_id):
+    """Obtiene una calificación específica en formato JSON para TypeScript"""
+    calificacion = get_object_or_404(CalificacionEmpresa, id=calificacion_id)
+    data = CalificacionEmpresaSerializer.to_dict(calificacion)
+    return JsonResponse(data)
 
-    def perform_create(self, serializer):
-        serializer.save(estudiante=self.request.user)
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.role == 'company':
-            return CalificacionEmpresa.objects.filter(empresa=user.empresa)
-        return CalificacionEmpresa.objects.filter(estudiante=user) 
+@csrf_exempt
+@require_http_methods(["POST"])
+@login_required
+def calificacion_create(request):
+    """Crea una nueva calificación desde datos JSON de TypeScript"""
+    try:
+        data = json.loads(request.body)
+        calificacion = CalificacionEmpresa.objects.create(**data)
+        return JsonResponse(CalificacionEmpresaSerializer.to_dict(calificacion), status=201)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400) 

@@ -1,10 +1,14 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import AssignmentViewSet
+"""
+URLs para la app assignments.
+"""
 
-router = DefaultRouter()
-router.register(r'assignments', AssignmentViewSet, basename='assignment')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-] 
+    path('', views.assignments_list, name='assignments_list'),
+    path('<str:assignments_id>/', views.assignments_detail, name='assignments_detail'),
+    path('create/', views.assignments_create, name='assignments_create'),
+    path('<str:assignments_id>/update/', views.assignments_update, name='assignments_update'),
+    path('<str:assignments_id>/delete/', views.assignments_delete, name='assignments_delete'),
+]

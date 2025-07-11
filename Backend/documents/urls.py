@@ -1,10 +1,18 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import DocumentViewSet
+"""
+URLs para la app documents.
+"""
 
-router = DefaultRouter()
-router.register(r'documents', DocumentViewSet, basename='document')
+from django.urls import path
+from . import views
+
+app_name = 'documents'
 
 urlpatterns = [
-    path('', include(router.urls)),
-] 
+    # Endpoints principales
+    path('', views.document_list_create, name='document-list-create'),
+    path('<uuid:document_id>/', views.document_detail, name='document-detail'),
+    
+    # Endpoints adicionales
+    path('<uuid:document_id>/download/', views.download_document, name='download-document'),
+    path('stats/', views.document_stats, name='document-stats'),
+]

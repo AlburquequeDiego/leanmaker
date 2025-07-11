@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from users.models import Usuario
+from users.models import User
 
 
 class ActivityLog(models.Model):
@@ -11,7 +11,7 @@ class ActivityLog(models.Model):
     """
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
-        Usuario,
+        User,
         on_delete=models.CASCADE,
         related_name='activity_logs',
         help_text="Usuario que realizó la acción"

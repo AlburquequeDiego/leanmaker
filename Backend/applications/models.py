@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from projects.models import Proyecto
 from students.models import Estudiante
-from users.models import Usuario
+from users.models import User
 import uuid
 from django.core.validators import MinValueValidator, MaxValueValidator
 

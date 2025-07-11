@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 
 
 class Report(models.Model):
@@ -11,7 +11,7 @@ class Report(models.Model):
     report_type = models.CharField(max_length=50)
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    generated_by = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='reports_generated')
+    generated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports_generated')
     report_data = models.TextField(null=True, blank=True)  # JSON
     file_url = models.CharField(max_length=500, null=True, blank=True)
     file_size = models.BigIntegerField(null=True, blank=True)

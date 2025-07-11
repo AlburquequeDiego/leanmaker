@@ -1,220 +1,303 @@
-from rest_framework import serializers
-from django.utils import timezone
+"""
+Serializers para la app notifications.
+"""
+
+import json
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from .models import Notification, NotificationTemplate, NotificationPreference
-from users.serializers import UserSerializer
-from projects.serializers import ProjectSerializer, ProjectApplicationSerializer
+from users.models import User
 
-class NotificationSerializer(serializers.ModelSerializer):
-    """Serializer básico para notificaciones"""
-    recipient_name = serializers.CharField(source='user.get_full_name', read_only=True)
-    recipient_avatar = serializers.CharField(source='user.avatar', read_only=True)
-    time_ago = serializers.CharField(read_only=True)
-    is_urgent = serializers.BooleanField(read_only=True)
+class NotificationSerializer:
+    """Serializer para el modelo Notification"""
     
-    class Meta:
-        model = Notification
-        fields = [
-            'id', 'user', 'recipient_name', 'recipient_avatar', 'title', 'message',
-            'notification_type', 'priority', 'is_read', 'created_at',
-            'read_at', 'expires_at', 'action_url', 'time_ago', 'is_urgent'
-        ]
-        read_only_fields = ['id', 'created_at', 'read_at', 'time_ago', 'is_urgent']
+    @staticmethod
+    def to_dict(notification):
+        """Convierte un objeto Notification a diccionario"""
+        return {
+            'id': str(notification.id),
+            'user_id': str(notification.user.id),
+            'user_name': notification.user.full_name,
+            'title': notification.title,
+            'message': notification.message,
+            'type': notification.type,
+            'read': notification.read,
+            'related_url': notification.related_url,
+            'notification_type': notification.notification_type,
+            'is_read': notification.is_read,
+            'read_at': notification.read_at.isoformat() if notification.read_at else None,
+            'created_at': notification.created_at.isoformat(),
+            'expires_at': notification.expires_at.isoformat() if notification.expires_at else None,
+            'action_url': notification.action_url,
+            'priority': notification.priority,
+            'updated_at': notification.updated_at.isoformat()
+        }
+    
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos de la notificación"""
+        errors = {}
+        
+        # Validar campos requeridos
+        if 'title' not in data or not data['title']:
+            errors['title'] = 'El título es requerido'
+        elif len(data['title'].strip()) < 3:
+            errors['title'] = 'El título debe tener al menos 3 caracteres'
+        else:
+            data['title'] = data['title'].strip()
+        
+        if 'message' not in data or not data['message']:
+            errors['message'] = 'El mensaje es requerido'
+        elif len(data['message'].strip()) < 5:
+            errors['message'] = 'El mensaje debe tener al menos 5 caracteres'
+        else:
+            data['message'] = data['message'].strip()
+        
+        # Validar type
+        if 'type' in data:
+            valid_types = [choice[0] for choice in Notification.TYPE_CHOICES]
+            if data['type'] not in valid_types:
+                errors['type'] = 'Tipo de notificación no válido'
+        
+        # Validar priority
+        if 'priority' in data:
+            valid_priorities = [choice[0] for choice in Notification.PRIORITY_CHOICES]
+            if data['priority'] not in valid_priorities:
+                errors['priority'] = 'Prioridad no válida'
+        
+        return errors
+    
+    @staticmethod
+    def create(data, user):
+        """Crea una nueva notificación"""
+        with transaction.atomic():
+            notification = Notification.objects.create(
+                user=user,
+                title=data['title'],
+                message=data['message'],
+                type=data.get('type', 'info'),
+                read=data.get('read', False),
+                related_url=data.get('related_url', ''),
+                notification_type=data.get('notification_type', 'general'),
+                action_url=data.get('action_url', ''),
+                priority=data.get('priority', 'normal'),
+                expires_at=data.get('expires_at')
+            )
+            
+            return notification
+    
+    @staticmethod
+    def update(notification, data):
+        """Actualiza una notificación existente"""
+        with transaction.atomic():
+            # Actualizar campos básicos
+            basic_fields = [
+                'title', 'message', 'type', 'read', 'related_url',
+                'notification_type', 'action_url', 'priority', 'expires_at'
+            ]
+            
+            for field in basic_fields:
+                if field in data:
+                    setattr(notification, field, data[field])
+            
+            # Manejar is_read
+            if 'read' in data:
+                notification.read = data['read']
+                if data['read'] and not notification.read_at:
+                    from django.utils import timezone
+                    notification.read_at = timezone.now()
+                elif not data['read']:
+                    notification.read_at = None
+            
+            notification.save()
+            return notification
 
-class NotificationDetailSerializer(NotificationSerializer):
-    """Serializer detallado para notificaciones"""
-    recipient_details = UserSerializer(source='user', read_only=True)
+class NotificationTemplateSerializer:
+    """Serializer para el modelo NotificationTemplate"""
     
-    class Meta(NotificationSerializer.Meta):
-        fields = NotificationSerializer.Meta.fields + [
-            'recipient_details'
-        ]
+    @staticmethod
+    def to_dict(template):
+        """Convierte un objeto NotificationTemplate a diccionario"""
+        return {
+            'id': str(template.id),
+            'name': template.name,
+            'notification_type': template.notification_type,
+            'title_template': template.title_template,
+            'message_template': template.message_template,
+            'is_active': template.is_active,
+            'priority': template.priority,
+            'available_variables': template.get_available_variables_list(),
+            'created_at': template.created_at.isoformat(),
+            'updated_at': template.updated_at.isoformat()
+        }
+    
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos de la plantilla"""
+        errors = {}
+        
+        # Validar campos requeridos
+        if 'name' not in data or not data['name']:
+            errors['name'] = 'El nombre es requerido'
+        elif len(data['name'].strip()) < 3:
+            errors['name'] = 'El nombre debe tener al menos 3 caracteres'
+        else:
+            data['name'] = data['name'].strip()
+        
+        if 'title_template' not in data or not data['title_template']:
+            errors['title_template'] = 'La plantilla del título es requerida'
+        elif len(data['title_template'].strip()) < 5:
+            errors['title_template'] = 'La plantilla del título debe tener al menos 5 caracteres'
+        else:
+            data['title_template'] = data['title_template'].strip()
+        
+        if 'message_template' not in data or not data['message_template']:
+            errors['message_template'] = 'La plantilla del mensaje es requerida'
+        elif len(data['message_template'].strip()) < 10:
+            errors['message_template'] = 'La plantilla del mensaje debe tener al menos 10 caracteres'
+        else:
+            data['message_template'] = data['message_template'].strip()
+        
+        # Validar available_variables
+        if 'available_variables' in data and data['available_variables']:
+            try:
+                if isinstance(data['available_variables'], str):
+                    json.loads(data['available_variables'])
+                elif isinstance(data['available_variables'], list):
+                    json.dumps(data['available_variables'])
+            except (json.JSONDecodeError, TypeError):
+                errors['available_variables'] = 'El campo available_variables debe ser un JSON válido'
+        
+        return errors
+    
+    @staticmethod
+    def create(data):
+        """Crea una nueva plantilla"""
+        with transaction.atomic():
+            template = NotificationTemplate.objects.create(
+                name=data['name'],
+                notification_type=data.get('notification_type', 'general'),
+                title_template=data['title_template'],
+                message_template=data['message_template'],
+                is_active=data.get('is_active', True),
+                priority=data.get('priority', 'normal'),
+                available_variables=data.get('available_variables', '[]')
+            )
+            
+            return template
+    
+    @staticmethod
+    def update(template, data):
+        """Actualiza una plantilla existente"""
+        with transaction.atomic():
+            # Actualizar campos
+            if 'name' in data:
+                template.name = data['name']
+            if 'notification_type' in data:
+                template.notification_type = data['notification_type']
+            if 'title_template' in data:
+                template.title_template = data['title_template']
+            if 'message_template' in data:
+                template.message_template = data['message_template']
+            if 'is_active' in data:
+                template.is_active = data['is_active']
+            if 'priority' in data:
+                template.priority = data['priority']
+            if 'available_variables' in data:
+                template.available_variables = data['available_variables']
+            
+            template.save()
+            return template
 
-class NotificationCreateSerializer(serializers.ModelSerializer):
-    """Serializer para crear notificaciones"""
+class NotificationPreferenceSerializer:
+    """Serializer para el modelo NotificationPreference"""
     
-    class Meta:
-        model = Notification
-        fields = [
-            'user', 'title', 'message', 'notification_type', 'priority',
-            'expires_at', 'action_url'
-        ]
+    @staticmethod
+    def to_dict(preference):
+        """Convierte un objeto NotificationPreference a diccionario"""
+        return {
+            'id': str(preference.id),
+            'user_id': str(preference.user.id),
+            'user_name': preference.user.full_name,
+            'enabled_types': preference.get_enabled_types_list(),
+            'email_enabled': preference.email_enabled,
+            'push_enabled': preference.push_enabled,
+            'sms_enabled': preference.sms_enabled,
+            'digest_frequency': preference.digest_frequency,
+            'quiet_hours_start': preference.quiet_hours_start.isoformat() if preference.quiet_hours_start else None,
+            'quiet_hours_end': preference.quiet_hours_end.isoformat() if preference.quiet_hours_end else None,
+            'created_at': preference.created_at.isoformat(),
+            'updated_at': preference.updated_at.isoformat()
+        }
     
-    def validate(self, attrs):
-        # Validar que el tipo de notificación sea válido
-        notification_type = attrs.get('notification_type')
-        if notification_type not in dict(Notification.TYPE_CHOICES):
-            raise serializers.ValidationError("Tipo de notificación inválido.")
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos de las preferencias"""
+        errors = {}
         
-        # Validar que la prioridad sea válida
-        priority = attrs.get('priority', 'medium')
-        if priority not in dict(Notification.PRIORITY_CHOICES):
-            raise serializers.ValidationError("Prioridad inválida.")
+        # Validar enabled_types
+        if 'enabled_types' in data and data['enabled_types']:
+            try:
+                if isinstance(data['enabled_types'], str):
+                    types_list = json.loads(data['enabled_types'])
+                elif isinstance(data['enabled_types'], list):
+                    types_list = data['enabled_types']
+                else:
+                    errors['enabled_types'] = 'Formato inválido para enabled_types'
+                    return errors
+                
+                # Validar que todos los tipos sean válidos
+                valid_types = [choice[0] for choice in Notification.TYPE_CHOICES]
+                for notification_type in types_list:
+                    if notification_type not in valid_types:
+                        errors['enabled_types'] = f'Tipo de notificación inválido: {notification_type}'
+                        break
+            except json.JSONDecodeError:
+                errors['enabled_types'] = 'El campo enabled_types debe ser un JSON válido'
         
-        return attrs
-
-class NotificationUpdateSerializer(serializers.ModelSerializer):
-    """Serializer para actualizar notificaciones"""
+        # Validar horas silenciosas
+        if 'quiet_hours_start' in data and data['quiet_hours_start'] and 'quiet_hours_end' in data and data['quiet_hours_end']:
+            if data['quiet_hours_start'] >= data['quiet_hours_end']:
+                errors['quiet_hours_start'] = 'La hora de inicio debe ser anterior a la hora de fin'
+        
+        return errors
     
-    class Meta:
-        model = Notification
-        fields = ['is_read']
+    @staticmethod
+    def create(data, user):
+        """Crea nuevas preferencias"""
+        with transaction.atomic():
+            preference = NotificationPreference.objects.create(
+                user=user,
+                enabled_types=data.get('enabled_types', '[]'),
+                email_enabled=data.get('email_enabled', True),
+                push_enabled=data.get('push_enabled', True),
+                sms_enabled=data.get('sms_enabled', False),
+                digest_frequency=data.get('digest_frequency', 'daily'),
+                quiet_hours_start=data.get('quiet_hours_start'),
+                quiet_hours_end=data.get('quiet_hours_end')
+            )
+            
+            return preference
     
-    def update(self, instance, validated_data):
-        # Si se marca como leída, actualizar la fecha de lectura
-        if validated_data.get('is_read') and not instance.is_read:
-            validated_data['read_at'] = timezone.now()
-        
-        return super().update(instance, validated_data)
-
-class NotificationTemplateSerializer(serializers.ModelSerializer):
-    """Serializer para plantillas de notificaciones"""
-    
-    class Meta:
-        model = NotificationTemplate
-        fields = [
-            'id', 'name', 'notification_type', 'title_template', 'message_template',
-            'is_active', 'priority', 'available_variables', 'created_at', 'updated_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
-    
-    def validate(self, attrs):
-        # Validar que el tipo de notificación sea válido
-        notification_type = attrs.get('notification_type')
-        if notification_type not in dict(Notification.TYPE_CHOICES):
-            raise serializers.ValidationError("Tipo de notificación inválido.")
-        
-        # Validar que la prioridad sea válida
-        priority = attrs.get('priority', 'medium')
-        if priority not in dict(Notification.PRIORITY_CHOICES):
-            raise serializers.ValidationError("Prioridad inválida.")
-        
-        return attrs
-
-class NotificationPreferenceSerializer(serializers.ModelSerializer):
-    """Serializer para preferencias de notificación"""
-    
-    class Meta:
-        model = NotificationPreference
-        fields = [
-            'id', 'user', 'enabled_types', 'email_enabled', 'push_enabled', 'sms_enabled',
-            'digest_frequency', 'quiet_hours_start', 'quiet_hours_end', 'created_at', 'updated_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
-
-class NotificationPreferenceUpdateSerializer(serializers.ModelSerializer):
-    """Serializer para actualizar preferencias de notificación"""
-    
-    class Meta:
-        model = NotificationPreference
-        fields = [
-            'enabled_types', 'email_enabled', 'push_enabled', 'sms_enabled',
-            'digest_frequency', 'quiet_hours_start', 'quiet_hours_end'
-        ]
-    
-    def validate(self, attrs):
-        # Validar que los tipos habilitados sean válidos
-        enabled_types = attrs.get('enabled_types', [])
-        valid_types = [choice[0] for choice in Notification.TYPE_CHOICES]
-        
-        for notification_type in enabled_types:
-            if notification_type not in valid_types:
-                raise serializers.ValidationError(f"Tipo de notificación inválido: {notification_type}")
-        
-        # Validar que la frecuencia de digest sea válida
-        digest_frequency = attrs.get('digest_frequency', 'immediate')
-        valid_frequencies = ['immediate', 'hourly', 'daily', 'weekly']
-        if digest_frequency not in valid_frequencies:
-            raise serializers.ValidationError("Frecuencia de digest inválida.")
-        
-        return attrs
-
-class NotificationStatsSerializer(serializers.Serializer):
-    """Serializer para estadísticas de notificaciones"""
-    total_notifications = serializers.IntegerField()
-    unread_count = serializers.IntegerField()
-    read_count = serializers.IntegerField()
-    notifications_by_type = serializers.DictField()
-    notifications_by_priority = serializers.DictField()
-    recent_notifications = NotificationSerializer(many=True)
-    
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        
-        # Calcular estadísticas por tipo
-        notifications = instance.notifications.all()
-        type_stats = {}
-        
-        for notification_type, _ in Notification.TYPE_CHOICES:
-            type_notifications = notifications.filter(notification_type=notification_type)
-            if type_notifications.exists():
-                type_stats[notification_type] = type_notifications.count()
-        
-        data['notifications_by_type'] = type_stats
-        
-        # Calcular estadísticas por prioridad
-        priority_stats = {}
-        for priority, _ in Notification.PRIORITY_CHOICES:
-            priority_notifications = notifications.filter(priority=priority)
-            if priority_notifications.exists():
-                priority_stats[priority] = priority_notifications.count()
-        
-        data['notifications_by_priority'] = priority_stats
-        return data
-
-class NotificationBulkUpdateSerializer(serializers.Serializer):
-    """Serializer para actualización masiva de notificaciones"""
-    notification_ids = serializers.ListField(
-        child=serializers.UUIDField(),
-        help_text="Lista de IDs de notificaciones a actualizar"
-    )
-    action = serializers.ChoiceField(
-        choices=['mark_read', 'mark_unread'],
-        help_text="Acción a realizar en las notificaciones"
-    )
-    
-    def validate(self, attrs):
-        notification_ids = attrs.get('notification_ids', [])
-        if not notification_ids:
-            raise serializers.ValidationError("Debe proporcionar al menos un ID de notificación.")
-        
-        # Verificar que todas las notificaciones pertenezcan al usuario
-        user = self.context['request'].user
-        existing_notifications = Notification.objects.filter(
-            id__in=notification_ids,
-            user=user
-        )
-        
-        if existing_notifications.count() != len(notification_ids):
-            raise serializers.ValidationError("Algunas notificaciones no existen o no te pertenecen.")
-        
-        return attrs
-    
-    def update(self, instance, validated_data):
-        notification_ids = validated_data['notification_ids']
-        action = validated_data['action']
-        
-        notifications = Notification.objects.filter(id__in=notification_ids)
-        
-        if action == 'mark_read':
-            notifications.update(is_read=True, read_at=timezone.now())
-        elif action == 'mark_unread':
-            notifications.update(is_read=False, read_at=None)
-        
-        return {'updated_count': notifications.count()}
-
-class NotificationSummarySerializer(serializers.Serializer):
-    """Serializer para resumen de notificaciones"""
-    user = UserSerializer()
-    total_notifications = serializers.IntegerField()
-    unread_count = serializers.IntegerField()
-    urgent_count = serializers.IntegerField()
-    recent_notifications = NotificationSerializer(many=True)
-    
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        
-        # Obtener notificaciones recientes
-        recent_notifications = instance.notifications.order_by('-created_at')[:10]
-        
-        data['recent_notifications'] = NotificationSerializer(recent_notifications, many=True).data
-        return data 
+    @staticmethod
+    def update(preference, data):
+        """Actualiza preferencias existentes"""
+        with transaction.atomic():
+            # Actualizar campos
+            if 'enabled_types' in data:
+                preference.enabled_types = data['enabled_types']
+            if 'email_enabled' in data:
+                preference.email_enabled = data['email_enabled']
+            if 'push_enabled' in data:
+                preference.push_enabled = data['push_enabled']
+            if 'sms_enabled' in data:
+                preference.sms_enabled = data['sms_enabled']
+            if 'digest_frequency' in data:
+                preference.digest_frequency = data['digest_frequency']
+            if 'quiet_hours_start' in data:
+                preference.quiet_hours_start = data['quiet_hours_start']
+            if 'quiet_hours_end' in data:
+                preference.quiet_hours_end = data['quiet_hours_end']
+            
+            preference.save()
+            return preference 

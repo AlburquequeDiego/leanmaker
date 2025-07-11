@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 from students.models import Estudiante
 from companies.models import Empresa
 
@@ -10,7 +10,7 @@ class NotificationTemplate(models.Model):
     title_template = models.CharField(max_length=200)
     message_template = models.TextField()
     is_active = models.BooleanField(default=True)
-    created_by = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, related_name='notification_templates_created')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='notification_templates_created')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -130,7 +130,7 @@ class MassNotification(models.Model):
     
     # Metadatos
     created_by = models.ForeignKey(
-        Usuario,
+        User,
         on_delete=models.CASCADE,
         related_name='mass_notifications_created',
         help_text="Usuario que creó la notificación"

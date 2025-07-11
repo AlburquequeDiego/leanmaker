@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 import uuid
 import json
 
@@ -28,7 +28,7 @@ class Empresa(models.Model):
     
     # Campos básicos (coinciden exactamente con interface Company del frontend)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='empresa_profile', null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='empresa_profile', null=True, blank=True)
     company_name = models.CharField(max_length=200)
     
     # Campos opcionales (NULL permitido) - coinciden con frontend
@@ -169,7 +169,7 @@ class CalificacionEmpresa(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='calificaciones')
-    estudiante = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='calificaciones_dadas')
+    estudiante = models.ForeignKey(User, on_delete=models.CASCADE, related_name='calificaciones_dadas')
     
     # Calificación
     puntuacion = models.PositiveIntegerField()  # 1-5 estrellas

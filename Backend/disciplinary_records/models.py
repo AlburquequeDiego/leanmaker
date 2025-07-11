@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 from students.models import Estudiante
 from companies.models import Empresa
 
@@ -47,7 +47,7 @@ class DisciplinaryRecord(models.Model):
         help_text="Severidad del incidente"
     )
     recorded_by = models.ForeignKey(
-        Usuario,
+        User,
         on_delete=models.CASCADE,
         related_name='disciplinary_records_recorded',
         help_text="Usuario que registró el incidente"

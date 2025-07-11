@@ -1,168 +1,236 @@
-from rest_framework import serializers
+"""
+Serializers para la app interviews.
+"""
+
+import json
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.utils import timezone
 from .models import Interview
-# from .models import InterviewQuestion, InterviewResponse, InterviewSchedule  # No existen en models.py
-from users.serializers import UserSerializer
-from projects.serializers import ProjectSerializer, ProjectApplicationSerializer
+from users.models import User
 
-class InterviewSerializer(serializers.ModelSerializer):
-    """Serializer básico para entrevistas"""
-    interviewer_name = serializers.CharField(source='interviewer.full_name', read_only=True)
-    interviewer_avatar = serializers.CharField(source='interviewer.avatar', read_only=True)
-    duration_minutes = serializers.IntegerField(read_only=True)
+class InterviewSerializer:
+    """Serializer para el modelo Interview"""
     
-    class Meta:
-        model = Interview
-        fields = [
-            'id', 'application_id', 'interviewer', 'interviewer_name', 'interviewer_avatar',
-            'interview_type', 'status', 'interview_date', 'duration_minutes',
-            'notes', 'feedback', 'rating', 'created_at', 'updated_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
-
-class InterviewDetailSerializer(InterviewSerializer):
-    """Serializer detallado para entrevistas"""
-    interviewer_details = UserSerializer(source='interviewer', read_only=True)
+    @staticmethod
+    def to_dict(interview):
+        """Convierte un objeto Interview a diccionario"""
+        return {
+            'id': str(interview.id),
+            'application_id': str(interview.application.id) if interview.application else None,
+            'application_title': interview.application.project.title if interview.application and interview.application.project else None,
+            'interviewer_id': str(interview.interviewer.id) if interview.interviewer else None,
+            'interviewer_name': interview.interviewer.full_name if interview.interviewer else None,
+            'interview_date': interview.interview_date.isoformat() if interview.interview_date else None,
+            'duration_minutes': interview.duration_minutes,
+            'status': interview.status,
+            'notes': interview.notes,
+            'feedback': interview.feedback,
+            'rating': interview.rating,
+            'interview_type': interview.interview_type,
+            'created_at': interview.created_at.isoformat(),
+            'updated_at': interview.updated_at.isoformat()
+        }
     
-    class Meta(InterviewSerializer.Meta):
-        fields = InterviewSerializer.Meta.fields + ['interviewer_details']
-
-class InterviewCreateSerializer(serializers.ModelSerializer):
-    """Serializer para crear entrevistas"""
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos de la entrevista"""
+        errors = {}
+        
+        # Validar application_id
+        if 'application_id' in data and data['application_id']:
+            try:
+                from applications.models import AplicacionProyecto
+                application = AplicacionProyecto.objects.get(id=data['application_id'])
+                data['application'] = application
+            except AplicacionProyecto.DoesNotExist:
+                errors['application_id'] = 'La aplicación especificada no existe'
+            except Exception as e:
+                errors['application_id'] = f'Error al validar la aplicación: {str(e)}'
+        
+        # Validar interview_date
+        if 'interview_date' in data and data['interview_date']:
+            try:
+                interview_date = timezone.datetime.fromisoformat(data['interview_date'].replace('Z', '+00:00'))
+                if interview_date <= timezone.now():
+                    errors['interview_date'] = 'La fecha de entrevista debe ser futura'
+                data['interview_date'] = interview_date
+            except (ValueError, TypeError):
+                errors['interview_date'] = 'Formato de fecha inválido'
+        
+        # Validar duration_minutes
+        if 'duration_minutes' in data:
+            try:
+                duration = int(data['duration_minutes'])
+                if duration < 15 or duration > 480:
+                    errors['duration_minutes'] = 'La duración debe estar entre 15 y 480 minutos'
+                data['duration_minutes'] = duration
+            except (ValueError, TypeError):
+                errors['duration_minutes'] = 'La duración debe ser un número entero'
+        
+        # Validar rating
+        if 'rating' in data and data['rating'] is not None:
+            try:
+                rating = float(data['rating'])
+                if rating < 1 or rating > 5:
+                    errors['rating'] = 'La calificación debe estar entre 1 y 5'
+                data['rating'] = rating
+            except (ValueError, TypeError):
+                errors['rating'] = 'La calificación debe ser un número'
+        
+        # Validar status
+        if 'status' in data:
+            valid_statuses = [choice[0] for choice in Interview.STATUS_CHOICES]
+            if data['status'] not in valid_statuses:
+                errors['status'] = 'Estado de entrevista no válido'
+        
+        # Validar interview_type
+        if 'interview_type' in data:
+            valid_types = [choice[0] for choice in Interview.INTERVIEW_TYPE_CHOICES]
+            if data['interview_type'] not in valid_types:
+                errors['interview_type'] = 'Tipo de entrevista no válido'
+        
+        return errors
     
-    class Meta:
-        model = Interview
-        fields = [
-            'application_id', 'interviewer', 'interview_type', 'interview_date',
-            'duration_minutes', 'notes', 'feedback', 'status'
-        ]
-    
-    def validate(self, attrs):
-        # Verificar que el usuario tenga permisos para crear entrevistas
-        user = self.context['request'].user
-        if user.role not in ['admin', 'company']:
-            raise serializers.ValidationError("Solo administradores y empresas pueden crear entrevistas.")
-        
-        # Validar que la fecha sea futura
-        from django.utils import timezone
-        if attrs.get('interview_date') <= timezone.now():
-            raise serializers.ValidationError("La fecha de la entrevista debe ser futura.")
-        
-        # Validar que la duración sea razonable
-        duration = attrs.get('duration_minutes', 60)
-        if duration <= 0 or duration > 480:  # Máximo 8 horas
-            raise serializers.ValidationError("La duración debe estar entre 1 y 480 minutos.")
-        
-        return attrs
-    
-    def create(self, validated_data):
-        interview = super().create(validated_data)
-        return interview
-
-class InterviewUpdateSerializer(serializers.ModelSerializer):
-    """Serializer para actualizar entrevistas"""
-    
-    class Meta:
-        model = Interview
-        fields = [
-            'interview_type', 'interview_date', 'duration_minutes',
-            'notes', 'status', 'feedback'
-        ]
-    
-    def validate(self, attrs):
-        # Validar que el estado sea válido
-        status = attrs.get('status')
-        if status and status not in dict(Interview.STATUS_CHOICES):
-            raise serializers.ValidationError("Estado de entrevista inválido.")
-        
-        # Si se está completando la entrevista, verificar que tenga feedback
-        if status == 'completed' and not attrs.get('feedback'):
-            raise serializers.ValidationError("Debe proporcionar feedback al completar la entrevista.")
-        
-        return attrs
-    
-    def update(self, instance, validated_data):
-        interview = super().update(instance, validated_data)
-        return interview
-
-class InterviewStatsSerializer(serializers.Serializer):
-    """Serializer para estadísticas de entrevistas"""
-    total_interviews = serializers.IntegerField()
-    completed_interviews = serializers.IntegerField()
-    scheduled_interviews = serializers.IntegerField()
-    cancelled_interviews = serializers.IntegerField()
-    interviews_by_type = serializers.DictField()
-    interviews_by_month = serializers.ListField()
-    recent_interviews = InterviewSerializer(many=True)
-    
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        
-        # Calcular estadísticas por tipo
-        interviews = Interview.objects.all()
-        type_stats = {}
-        
-        for interview_type, _ in Interview.INTERVIEW_TYPE_CHOICES:
-            type_interviews = interviews.filter(interview_type=interview_type)
-            if type_interviews.exists():
-                type_stats[interview_type] = type_interviews.count()
-        
-        data['interviews_by_type'] = type_stats
-        return data
-
-class StudentInterviewSummarySerializer(serializers.Serializer):
-    """Serializer para resumen de entrevistas de un estudiante"""
-    student = UserSerializer()
-    total_interviews = serializers.IntegerField()
-    completed_interviews = serializers.IntegerField()
-    recent_interviews = InterviewSerializer(many=True)
-    upcoming_interviews = InterviewSerializer(many=True)
-    
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        
-        # Obtener entrevistas recientes
-        from django.utils import timezone
-        recent_interviews = instance.interviews.filter(
-            status='completed'
-        ).order_by('-interview_date')[:5]
-        data['recent_interviews'] = InterviewSerializer(recent_interviews, many=True).data
-        
-        # Obtener entrevistas próximas
-        upcoming_interviews = instance.interviews.filter(
-            status='scheduled',
-            interview_date__gte=timezone.now()
-        ).order_by('interview_date')[:5]
-        data['upcoming_interviews'] = InterviewSerializer(upcoming_interviews, many=True).data
-        
-        return data
-
-class CompanyInterviewSummarySerializer(serializers.Serializer):
-    """Serializer para resumen de entrevistas de una empresa"""
-    company = UserSerializer()
-    total_interviews_conducted = serializers.IntegerField()
-    completed_interviews = serializers.IntegerField()
-    interviews_by_project = serializers.DictField()
-    recent_interviews = InterviewSerializer(many=True)
-    
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        
-        # Calcular estadísticas por proyecto
-        interviews = instance.interviews_conducted.all()
-        project_stats = {}
-        
-        for interview in interviews:
-            project_id = str(interview.application.project.id)
-            if project_id not in project_stats:
-                project_stats[project_id] = {
-                    'project_title': interview.application.project.title,
-                    'total_interviews': 0,
-                    'completed_interviews': 0
-                }
+    @staticmethod
+    def create(data, user):
+        """Crea una nueva entrevista"""
+        with transaction.atomic():
+            interview = Interview.objects.create(
+                application=data.get('application'),
+                interviewer=user,
+                interview_date=data.get('interview_date'),
+                duration_minutes=data.get('duration_minutes', 60),
+                status=data.get('status', 'scheduled'),
+                notes=data.get('notes', ''),
+                feedback=data.get('feedback', ''),
+                rating=data.get('rating'),
+                interview_type=data.get('interview_type', 'technical')
+            )
             
-            project_stats[project_id]['total_interviews'] += 1
-            if interview.status == 'completed':
-                project_stats[project_id]['completed_interviews'] += 1
+            return interview
+    
+    @staticmethod
+    def update(interview, data):
+        """Actualiza una entrevista existente"""
+        with transaction.atomic():
+            # Actualizar campos básicos
+            basic_fields = [
+                'interview_date', 'duration_minutes', 'status', 'notes',
+                'feedback', 'rating', 'interview_type'
+            ]
+            
+            for field in basic_fields:
+                if field in data:
+                    setattr(interview, field, data[field])
+            
+            # Actualizar relaciones
+            if 'application' in data:
+                interview.application = data['application']
+            
+            # Marcar como completada si se proporciona feedback
+            if 'feedback' in data and data['feedback']:
+                interview.status = 'completed'
+            
+            interview.save()
+            return interview
+
+class InterviewFeedbackSerializer:
+    """Serializer para actualizar feedback y calificación"""
+    
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos del feedback"""
+        errors = {}
         
-        data['interviews_by_project'] = project_stats
-        return data 
+        # Validar rating
+        if 'rating' in data and data['rating'] is not None:
+            try:
+                rating = float(data['rating'])
+                if rating < 1 or rating > 5:
+                    errors['rating'] = 'La calificación debe estar entre 1 y 5'
+                data['rating'] = rating
+            except (ValueError, TypeError):
+                errors['rating'] = 'La calificación debe ser un número'
+        
+        return errors
+    
+    @staticmethod
+    def update(interview, data):
+        """Actualiza el feedback de una entrevista"""
+        with transaction.atomic():
+            # Actualizar campos de feedback
+            if 'feedback' in data:
+                interview.feedback = data['feedback']
+            if 'rating' in data:
+                interview.rating = data['rating']
+            if 'notes' in data:
+                interview.notes = data['notes']
+            
+            # Marcar como completada si se proporciona feedback
+            if 'feedback' in data and data['feedback']:
+                interview.status = 'completed'
+            
+            interview.save()
+            return interview
+
+class InterviewScheduleSerializer:
+    """Serializer para programar entrevistas"""
+    
+    @staticmethod
+    def validate_data(data):
+        """Valida los datos para programar entrevista"""
+        errors = {}
+        
+        # Validar application_id
+        if 'application_id' not in data or not data['application_id']:
+            errors['application_id'] = 'El ID de la aplicación es requerido'
+        else:
+            try:
+                from applications.models import AplicacionProyecto
+                application = AplicacionProyecto.objects.get(id=data['application_id'])
+                data['application'] = application
+            except AplicacionProyecto.DoesNotExist:
+                errors['application_id'] = 'La aplicación especificada no existe'
+            except Exception as e:
+                errors['application_id'] = f'Error al validar la aplicación: {str(e)}'
+        
+        # Validar interview_date
+        if 'interview_date' not in data or not data['interview_date']:
+            errors['interview_date'] = 'La fecha de entrevista es requerida'
+        else:
+            try:
+                interview_date = timezone.datetime.fromisoformat(data['interview_date'].replace('Z', '+00:00'))
+                if interview_date <= timezone.now():
+                    errors['interview_date'] = 'La fecha de entrevista debe ser futura'
+                data['interview_date'] = interview_date
+            except (ValueError, TypeError):
+                errors['interview_date'] = 'Formato de fecha inválido'
+        
+        # Validar duration_minutes
+        if 'duration_minutes' in data:
+            try:
+                duration = int(data['duration_minutes'])
+                if duration < 15 or duration > 480:
+                    errors['duration_minutes'] = 'La duración debe estar entre 15 y 480 minutos'
+                data['duration_minutes'] = duration
+            except (ValueError, TypeError):
+                errors['duration_minutes'] = 'La duración debe ser un número entero'
+        
+        return errors
+    
+    @staticmethod
+    def create(data, user):
+        """Crea una nueva entrevista programada"""
+        with transaction.atomic():
+            interview = Interview.objects.create(
+                application=data['application'],
+                interviewer=user,
+                interview_date=data['interview_date'],
+                duration_minutes=data.get('duration_minutes', 60),
+                status='scheduled',
+                notes=data.get('notes', ''),
+                interview_type=data.get('interview_type', 'technical')
+            )
+            
+            return interview 

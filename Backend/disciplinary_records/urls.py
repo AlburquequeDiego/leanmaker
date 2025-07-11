@@ -1,10 +1,14 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import DisciplinaryRecordViewSet
+"""
+URLs para la app disciplinary_records.
+"""
 
-router = DefaultRouter()
-router.register(r'records', DisciplinaryRecordViewSet, basename='disciplinary-record')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-] 
+    path('', views.disciplinary_records_list, name='disciplinary_records_list'),
+    path('<str:disciplinary_records_id>/', views.disciplinary_records_detail, name='disciplinary_records_detail'),
+    path('create/', views.disciplinary_records_create, name='disciplinary_records_create'),
+    path('<str:disciplinary_records_id>/update/', views.disciplinary_records_update, name='disciplinary_records_update'),
+    path('<str:disciplinary_records_id>/delete/', views.disciplinary_records_delete, name='disciplinary_records_delete'),
+]

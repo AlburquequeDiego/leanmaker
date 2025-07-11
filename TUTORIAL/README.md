@@ -206,3 +206,7 @@ Si encuentras problemas:
 ✅ **¡Listo! Tu entorno de desarrollo está configurado y funcionando.**
 
 Ahora puedes desarrollar y probar Leanmaker en tu máquina local.
+
+
+terminar con la logica de las interfaces 
+probarlo en front y el backend y la base de datos

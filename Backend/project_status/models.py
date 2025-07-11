@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Usuario
+from users.models import User
 
 class ProjectStatus(models.Model):
     """Modelo para estados de proyecto"""
@@ -24,7 +24,7 @@ class ProjectStatusHistory(models.Model):
     id = models.AutoField(primary_key=True)
     project = models.ForeignKey('projects.Proyecto', on_delete=models.CASCADE, related_name='status_history')
     status = models.ForeignKey('ProjectStatus', on_delete=models.CASCADE, related_name='status_history')
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='status_changes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='status_changes')
     fecha_cambio = models.DateTimeField(auto_now_add=True)
     comentario = models.TextField(null=True, blank=True)
     class Meta:
