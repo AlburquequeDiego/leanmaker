@@ -6,6 +6,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Vista de prueba
+    path('test/', views.student_test, name='student_test'),
+    path('me/', views.student_me, name='student_me'),
+    
     # Lista de estudiantes
     path('', views.student_list, name='student_list'),
     
@@ -20,9 +24,6 @@ urlpatterns = [
     
     # Eliminar estudiante
     path('<str:student_id>/delete/', views.student_delete, name='student_delete'),
-    
-    # Perfil del estudiante actual
-    path('me/', views.student_me, name='student_me'),
     
     # Proyectos del estudiante
     path('<str:student_id>/projects/', views.student_projects, name='student_projects'),

@@ -192,36 +192,77 @@ def student_update(request, student_id):
         
         data = json.loads(request.body)
         
-        # Actualizar campos permitidos
-        if 'first_name' in data:
-            student.first_name = data['first_name']
-        if 'last_name' in data:
-            student.last_name = data['last_name']
-        if 'phone' in data:
-            student.phone = data['phone']
-        if 'bio' in data:
-            student.bio = data['bio']
-        if 'avatar' in data:
-            student.avatar = data['avatar']
+        # Actualizar campos del modelo User
+        if 'nombre' in data:
+            student.first_name = data['nombre']
+        if 'apellido' in data:
+            student.last_name = data['apellido']
+        if 'telefono' in data:
+            student.phone = data['telefono']
+        if 'biografia' in data:
+            student.bio = data['biografia']
         
         student.save()
         
+        # Actualizar campos del modelo Estudiante
+        try:
+            from .models import Estudiante
+            estudiante = Estudiante.objects.get(user=student)
+        except Estudiante.DoesNotExist:
+            # Crear perfil de estudiante si no existe
+            estudiante = Estudiante.objects.create(user=student)
+        
+        # Actualizar campos del modelo Estudiante
+        if 'institucion' in data:
+            estudiante.university = data['institucion']
+        if 'carrera' in data:
+            estudiante.career = data['carrera']
+        if 'nivel' in data:
+            try:
+                estudiante.api_level = int(data['nivel'])
+            except (ValueError, TypeError):
+                estudiante.api_level = 1
+        if 'habilidades' in data:
+            estudiante.skills = json.dumps(data['habilidades'])
+        if 'experienciaPrevia' in data:
+            try:
+                estudiante.experience_years = int(data['experienciaPrevia'])
+            except (ValueError, TypeError):
+                estudiante.experience_years = 0
+        if 'linkedin' in data:
+            estudiante.linkedin_url = data['linkedin']
+        if 'github' in data:
+            estudiante.github_url = data['github']
+        if 'portafolio' in data:
+            estudiante.portfolio_url = data['portafolio']
+        if 'modalidadesDisponibles' in data and data['modalidadesDisponibles']:
+            estudiante.availability = data['modalidadesDisponibles'][0]
+        
+        estudiante.save()
+        
+        # Retornar datos actualizados en formato del frontend
+        skills_list = estudiante.get_skills_list()
         student_data = {
             'id': str(student.id),
+            'nombre': student.first_name,
+            'apellido': student.last_name,
             'email': student.email,
-            'first_name': student.first_name,
-            'last_name': student.last_name,
-            'username': student.username,
-            'phone': student.phone,
-            'avatar': student.avatar,
-            'bio': student.bio,
-            'is_active': student.is_active,
-            'is_verified': student.is_verified,
-            'date_joined': student.date_joined.isoformat(),
-            'last_login': student.last_login.isoformat() if student.last_login else None,
-            'created_at': student.created_at.isoformat(),
-            'updated_at': student.updated_at.isoformat(),
-            'full_name': student.full_name
+            'telefono': student.phone or '',
+            'fechaNacimiento': '',
+            'genero': '',
+            'institucion': estudiante.university or '',
+            'carrera': estudiante.career or '',
+            'nivel': str(estudiante.api_level),
+            'habilidades': skills_list,
+            'biografia': student.bio or '',
+            'cv': None,
+            'certificado': None,
+            'area': '',
+            'modalidadesDisponibles': [estudiante.availability] if estudiante.availability else [],
+            'experienciaPrevia': str(estudiante.experience_years),
+            'linkedin': estudiante.linkedin_url or '',
+            'github': estudiante.github_url or '',
+            'portafolio': estudiante.portfolio_url or '',
         }
         
         return JsonResponse(student_data)
@@ -266,44 +307,102 @@ def student_delete(request, student_id):
 
 @csrf_exempt
 @require_http_methods(["GET"])
+def student_test(request):
+    """Vista de prueba simple."""
+    print(f"[student_test] Vista de prueba alcanzada")
+    print(f"[student_test] Headers: {dict(request.headers)}")
+    return JsonResponse({'message': 'Vista de prueba funcionando'})
+
+@csrf_exempt
 def student_me(request):
     """Perfil del estudiante actual."""
+    print(f"[student_me] VISTA EJECUTÁNDOSE - Método: {request.method}")
+    print(f"[student_me] Headers: {dict(request.headers)}")
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
+        print(f"[student_me] Auth header: {auth_header}")
+        
         if not auth_header or not auth_header.startswith('Bearer '):
+            print(f"[student_me] Token requerido o formato incorrecto")
             return JsonResponse({'error': 'Token requerido'}, status=401)
         
         token = auth_header.split(' ')[1]
+        print(f"[student_me] Token extraído: {token[:50]}...")
+        
         current_user = verify_token(token)
+        print(f"[student_me] Usuario autenticado: id={getattr(current_user, 'id', None)}, email={getattr(current_user, 'email', None)}, rol={getattr(current_user, 'role', None)}")
+        
         if not current_user:
+            print(f"[student_me] Token inválido - usuario no encontrado")
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
         # Solo estudiantes pueden acceder a su perfil
-        if current_user.role != 'student':
-            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        print(f"[student_me] Verificando rol: {current_user.role} vs 'student'")
+        print(f"[student_me] current_user.role repr: {repr(current_user.role)}")
+        if not current_user.role or current_user.role.strip().lower() != 'student':
+            print(f"[student_me] Acceso denegado. Rol actual: {current_user.role}")
+            return JsonResponse({'error': 'Acceso denegado. Solo estudiantes pueden acceder a este endpoint.'}, status=403)
         
+        # Obtener datos del modelo Estudiante si existe
+        try:
+            from .models import Estudiante
+            estudiante = Estudiante.objects.get(user=current_user)
+            print(f"[student_me] Perfil de estudiante encontrado: {estudiante}")
+            skills_list = estudiante.get_skills_list()
+        except Estudiante.DoesNotExist:
+            print(f"[student_me] Perfil de estudiante NO encontrado, creando uno...")
+            estudiante = Estudiante.objects.create(user=current_user)
+            skills_list = []
+        except Exception as e:
+            print(f"[student_me] Error obteniendo perfil de estudiante: {e}")
+            estudiante = None
+            skills_list = []
+        
+        # Convertir habilidades al formato que espera el frontend
+        habilidades_formateadas = []
+        if skills_list:
+            for skill in skills_list:
+                if isinstance(skill, dict) and 'nombre' in skill and 'nivel' in skill:
+                    habilidades_formateadas.append(skill)
+                elif isinstance(skill, str):
+                    habilidades_formateadas.append({'nombre': skill, 'nivel': 'Básico'})
+        
+        # Adaptar datos para el frontend
         student_data = {
             'id': str(current_user.id),
-            'email': current_user.email,
-            'first_name': current_user.first_name,
-            'last_name': current_user.last_name,
-            'username': current_user.username,
-            'phone': current_user.phone,
-            'avatar': current_user.avatar,
-            'bio': current_user.bio,
-            'is_active': current_user.is_active,
-            'is_verified': current_user.is_verified,
-            'date_joined': current_user.date_joined.isoformat(),
-            'last_login': current_user.last_login.isoformat() if current_user.last_login else None,
-            'created_at': current_user.created_at.isoformat(),
-            'updated_at': current_user.updated_at.isoformat(),
-            'full_name': current_user.full_name
+            'nombre': current_user.first_name or '',
+            'apellido': current_user.last_name or '',
+            'email': current_user.email or '',
+            'telefono': current_user.phone or '',
+            'fechaNacimiento': '',
+            'genero': '',
+            'institucion': estudiante.university if estudiante else '',
+            'carrera': estudiante.career if estudiante else '',
+            'nivel': str(estudiante.api_level) if estudiante else '1',
+            'habilidades': habilidades_formateadas,
+            'biografia': current_user.bio or '',
+            'cv': None,
+            'certificado': None,
+            'area': '',
+            'modalidadesDisponibles': [estudiante.availability] if estudiante and estudiante.availability else [],
+            'experienciaPrevia': str(estudiante.experience_years) if estudiante else '0',
+            'linkedin': estudiante.linkedin_url if estudiante else '',
+            'github': estudiante.github_url if estudiante else '',
+            'portafolio': estudiante.portfolio_url if estudiante else '',
         }
         
+        print(f"[student_me] Datos devueltos: {student_data}")
+        print(f"[student_me] Nombre: '{student_data['nombre']}'")
+        print(f"[student_me] Apellido: '{student_data['apellido']}'")
+        print(f"[student_me] Email: '{student_data['email']}'")
+        print(f"[student_me] Institución: '{student_data['institucion']}'")
+        print(f"[student_me] Carrera: '{student_data['carrera']}'")
+        print(f"[student_me] Habilidades: {student_data['habilidades']}")
         return JsonResponse(student_data)
         
     except Exception as e:
+        print(f"[student_me] Error: {e}")
         return JsonResponse({'error': str(e)}, status=500)
 
 

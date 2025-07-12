@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -19,6 +19,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import {
@@ -27,21 +29,10 @@ import {
   Clear as ClearIcon,
   Assignment as AssignmentIcon,
 } from '@mui/icons-material';
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  requirements: string[];
-  skills: string[];
-  duration: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  apiLevel: number;
-  maxStudents: number;
-  deadline: string;
-  status: 'draft' | 'published' | 'in-progress' | 'completed';
-  createdAt: string;
-}
+import { useApi } from '../../../hooks/useApi';
+import { adaptProjectList } from '../../../utils/adapters';
+import type { Project } from '../../../types';
+import { projectService } from '../../../services/project.service';
 
 const availableSkills = [
   'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Angular', 'Node.js',
@@ -65,7 +56,10 @@ const MenuProps = {
 };
 
 export const PublishProjects: React.FC = () => {
+  const api = useApi();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [currentProject, setCurrentProject] = useState<Partial<Project>>({
     title: '',
@@ -81,6 +75,28 @@ export const PublishProjects: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [updatingProject, setUpdatingProject] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.get('/api/projects/my_projects/');
+      const adaptedProjects = adaptProjectList(response.data.data || response.data);
+      setProjects(adaptedProjects);
+      
+    } catch (err: any) {
+      console.error('Error cargando proyectos:', err);
+      setError(err.response?.data?.error || 'Error al cargar proyectos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (field: keyof Project, value: any) => {
     setCurrentProject(prev => ({ ...prev, [field]: value }));
@@ -123,49 +139,77 @@ export const PublishProjects: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validateForm()) return;
 
-    const newProject: Project = {
-      ...currentProject as Project,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-
-    setProjects(prev => [newProject, ...prev]);
-    setShowDialog(false);
-    setCurrentProject({
-      title: '',
-      description: '',
-      requirements: [],
-      skills: [],
-      duration: '',
-      difficulty: 'intermediate',
-      apiLevel: 1,
-      maxStudents: 1,
-      deadline: '',
-      status: 'draft',
-    });
-    setErrors({});
+    try {
+      setUpdatingProject('new');
+      // Usar el servicio adaptado para crear el proyecto
+      const newProject = await projectService.createProject(currentProject);
+      setProjects(prev => [newProject, ...prev]);
+      setShowDialog(false);
+      setCurrentProject({
+        title: '',
+        description: '',
+        requirements: [],
+        skills: [],
+        duration: '',
+        difficulty: 'intermediate',
+        apiLevel: 1,
+        maxStudents: 1,
+        deadline: '',
+        status: 'draft',
+      });
+      setErrors({});
+    } catch (error: any) {
+      console.error('Error creating project:', error);
+      setError(error.response?.data?.error || 'Error al crear proyecto');
+    } finally {
+      setUpdatingProject(null);
+    }
   };
 
-  const handlePublish = (projectId: string) => {
-    setProjects(prev =>
-      prev.map(project =>
-        project.id === projectId ? { ...project, status: 'published' } : project
-      )
-    );
+  const handlePublish = async (projectId: string) => {
+    try {
+      setUpdatingProject(projectId);
+      const response = await api.patch(`/api/projects/${projectId}/`, {
+        status: 'published'
+      });
+      
+      const updatedProject = response.data;
+      setProjects(prev =>
+        prev.map(project =>
+          project.id === projectId ? { ...project, status: updatedProject.status } : project
+        )
+      );
+    } catch (error: any) {
+      console.error('Error publishing project:', error);
+      setError(error.response?.data?.error || 'Error al publicar proyecto');
+    } finally {
+      setUpdatingProject(null);
+    }
   };
 
-  const handleDelete = (projectId: string) => {
-    setProjects(prev => prev.filter(project => project.id !== projectId));
+  const handleDelete = async (projectId: string) => {
+    try {
+      setUpdatingProject(projectId);
+      await api.delete(`/api/projects/${projectId}/`);
+      setProjects(prev => prev.filter(project => project.id !== projectId));
+    } catch (error: any) {
+      console.error('Error deleting project:', error);
+      setError(error.response?.data?.error || 'Error al eliminar proyecto');
+    } finally {
+      setUpdatingProject(null);
+    }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'published':
+      case 'open':
         return 'success';
       case 'in-progress':
+      case 'active':
         return 'info';
       case 'completed':
         return 'primary';
@@ -187,6 +231,27 @@ export const PublishProjects: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadProjects} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -198,97 +263,106 @@ export const PublishProjects: React.FC = () => {
           startIcon={<AddIcon />}
           onClick={() => setShowDialog(true)}
         >
-          Crear Nuevo Proyecto
+          Nuevo Proyecto
         </Button>
       </Box>
 
-      {/* Proyectos existentes */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {projects.map((project) => (
-          <Box key={project.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Typography variant="h6" component="div">
-                    {project.title}
+        {projects.length === 0 ? (
+          <Box sx={{ flex: '1 1 100%', textAlign: 'center', py: 4 }}>
+            <Typography color="text.secondary">
+              No hay proyectos para mostrar.
+            </Typography>
+          </Box>
+        ) : (
+          projects.map((project) => (
+            <Box key={project.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
+              <Card>
+                <CardContent>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <Typography variant="h6" component="div">
+                      {project.title}
+                    </Typography>
+                    <Box>
+                      <Chip
+                        label={project.status}
+                        color={getStatusColor(project.status) as any}
+                        size="small"
+                      />
+                    </Box>
+                  </Box>
+
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    {project.description}
                   </Typography>
-                  <Chip
-                    label={project.status}
-                    color={getStatusColor(project.status) as any}
-                    size="small"
-                  />
-                </Box>
-                
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {project.description.substring(0, 100)}...
-                </Typography>
 
-                <Box sx={{ mb: 2 }}>
-                  <Chip
-                    label={project.difficulty}
-                    color={getDifficultyColor(project.difficulty) as any}
-                    size="small"
-                    sx={{ mr: 1 }}
-                  />
-                  <Chip
-                    label={`API ${project.apiLevel}`}
-                    color="primary"
-                    size="small"
-                    sx={{ mr: 1 }}
-                  />
-                  <Chip
-                    label={`${project.maxStudents} estudiante${project.maxStudents > 1 ? 's' : ''}`}
-                    color="secondary"
-                    size="small"
-                  />
-                </Box>
+                  <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                    <Chip
+                      label={project.difficulty}
+                      color={getDifficultyColor(project.difficulty) as any}
+                      size="small"
+                    />
+                    <Chip
+                      label={`API ${project.min_api_level}`}
+                      color="info"
+                      size="small"
+                    />
+                    <Chip
+                      label={`${project.duration_weeks} semanas`}
+                      color="secondary"
+                      size="small"
+                    />
+                  </Box>
 
-                <Typography variant="caption" color="text.secondary">
-                  Duración: {project.duration}
-                </Typography>
-                <br />
-                <Typography variant="caption" color="text.secondary">
-                  Fecha límite: {new Date(project.deadline).toLocaleDateString()}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                {project.status === 'draft' && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <AssignmentIcon fontSize="small" />
+                      <Typography variant="body2">
+                        {project.current_students}/{project.max_students} estudiantes
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography variant="body2">
+                        {project.applications_count || 0} aplicaciones
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  {project.start_date && (
+                    <Typography variant="caption" color="text.secondary">
+                      Inicio: {new Date(project.start_date).toLocaleDateString()}
+                    </Typography>
+                  )}
+                </CardContent>
+                <CardActions>
+                  {(project.status === 'draft' || project.status === 'active') && (
+                    <Button
+                      size="small"
+                      color="success"
+                      onClick={() => handlePublish(project.id)}
+                      disabled={updatingProject === project.id}
+                    >
+                      {updatingProject === project.id ? <CircularProgress size={16} /> : 'Publicar'}
+                    </Button>
+                  )}
                   <Button
                     size="small"
-                    color="primary"
-                    onClick={() => handlePublish(project.id)}
+                    color="error"
+                    onClick={() => handleDelete(project.id)}
+                    disabled={updatingProject === project.id}
                   >
-                    Publicar
+                    {updatingProject === project.id ? <CircularProgress size={16} /> : 'Eliminar'}
                   </Button>
-                )}
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={() => handleDelete(project.id)}
-                >
-                  Eliminar
-                </Button>
-              </CardActions>
-            </Card>
-          </Box>
-        ))}
+                </CardActions>
+              </Card>
+            </Box>
+          ))
+        )}
       </Box>
 
-      {projects.length === 0 && (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <AssignmentIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            No hay proyectos creados
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Crea tu primer proyecto para empezar a recibir postulaciones de estudiantes
-          </Typography>
-        </Paper>
-      )}
-
-      {/* Dialog para crear/editar proyecto */}
+      {/* Dialog para nuevo proyecto */}
       <Dialog open={showDialog} onClose={() => setShowDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Crear Nuevo Proyecto</DialogTitle>
+        <DialogTitle>Nuevo Proyecto</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
             <Box sx={{ flex: '1 1 100%' }}>
@@ -306,8 +380,8 @@ export const PublishProjects: React.FC = () => {
               <TextField
                 fullWidth
                 multiline
-                rows={4}
-                label="Descripción del Proyecto"
+                rows={3}
+                label="Descripción"
                 value={currentProject.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 error={!!errors.description}
@@ -318,10 +392,10 @@ export const PublishProjects: React.FC = () => {
             <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
-                label="Duración Estimada"
+                label="Duración (semanas)"
+                type="number"
                 value={currentProject.duration}
                 onChange={(e) => handleInputChange('duration', e.target.value)}
-                placeholder="Ej: 3 meses, 6 semanas"
                 error={!!errors.duration}
                 helperText={errors.duration}
                 margin="normal"
@@ -330,22 +404,22 @@ export const PublishProjects: React.FC = () => {
             <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
-                type="date"
                 label="Fecha Límite"
+                type="date"
                 value={currentProject.deadline}
                 onChange={(e) => handleInputChange('deadline', e.target.value)}
-                InputLabelProps={{ shrink: true }}
                 error={!!errors.deadline}
                 helperText={errors.deadline}
                 margin="normal"
+                InputLabelProps={{ shrink: true }}
               />
             </Box>
             <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <FormControl fullWidth margin="normal">
-                <InputLabel>Nivel de Dificultad</InputLabel>
+                <InputLabel>Dificultad</InputLabel>
                 <Select
                   value={currentProject.difficulty}
-                  label="Nivel de Dificultad"
+                  label="Dificultad"
                   onChange={(e) => handleInputChange('difficulty', e.target.value)}
                 >
                   <MenuItem value="beginner">Principiante</MenuItem>
@@ -357,27 +431,27 @@ export const PublishProjects: React.FC = () => {
             <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
+                label="Nivel API"
                 type="number"
-                label="Nivel API Requerido"
                 value={currentProject.apiLevel}
                 onChange={(e) => handleInputChange('apiLevel', parseInt(e.target.value))}
-                inputProps={{ min: 1, max: 5 }}
                 margin="normal"
+                inputProps={{ min: 1, max: 4 }}
               />
             </Box>
             <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
               <TextField
                 fullWidth
-                type="number"
                 label="Máximo de Estudiantes"
+                type="number"
                 value={currentProject.maxStudents}
                 onChange={(e) => handleInputChange('maxStudents', parseInt(e.target.value))}
-                inputProps={{ min: 1, max: 10 }}
                 margin="normal"
+                inputProps={{ min: 1 }}
               />
             </Box>
             <Box sx={{ flex: '1 1 100%' }}>
-              <FormControl fullWidth margin="normal" error={!!errors.skills}>
+              <FormControl fullWidth margin="normal">
                 <InputLabel>Habilidades Requeridas</InputLabel>
                 <Select
                   multiple
@@ -392,6 +466,7 @@ export const PublishProjects: React.FC = () => {
                     </Box>
                   )}
                   MenuProps={MenuProps}
+                  error={!!errors.skills}
                 >
                   {availableSkills.map((skill) => (
                     <MenuItem key={skill} value={skill}>
@@ -399,42 +474,19 @@ export const PublishProjects: React.FC = () => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.skills && <FormHelperText>{errors.skills}</FormHelperText>}
-              </FormControl>
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Requisitos Adicionales</InputLabel>
-                <Select
-                  multiple
-                  value={currentProject.requirements || []}
-                  onChange={handleRequirementsChange}
-                  input={<OutlinedInput label="Requisitos Adicionales" />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} size="small" />
-                      ))}
-                    </Box>
-                  )}
-                  MenuProps={MenuProps}
-                >
-                  <MenuItem value="portfolio">Portfolio requerido</MenuItem>
-                  <MenuItem value="github">GitHub activo</MenuItem>
-                  <MenuItem value="experience">Experiencia previa</MenuItem>
-                  <MenuItem value="certification">Certificaciones</MenuItem>
-                  <MenuItem value="interview">Entrevista obligatoria</MenuItem>
-                </Select>
+                {errors.skills && <FormHelperText error>{errors.skills}</FormHelperText>}
               </FormControl>
             </Box>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDialog(false)} startIcon={<ClearIcon />}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSave} variant="contained" startIcon={<SaveIcon />}>
-            Guardar Proyecto
+          <Button onClick={() => setShowDialog(false)}>Cancelar</Button>
+          <Button 
+            onClick={handleSave} 
+            variant="contained"
+            disabled={updatingProject === 'new'}
+          >
+            {updatingProject === 'new' ? <CircularProgress size={20} /> : 'Guardar Proyecto'}
           </Button>
         </DialogActions>
       </Dialog>

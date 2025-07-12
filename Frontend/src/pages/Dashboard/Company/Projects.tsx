@@ -16,6 +16,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
+  Alert,
+  Grid,
+  Paper,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import {
@@ -29,329 +33,240 @@ import {
   Drafts as DraftsIcon,
   TaskAlt as TaskAltIcon,
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  requirements: string[];
-  duration: string;
-  studentsNeeded: number;
-  selectedStudents: number;
-  status: 'active' | 'completed' | 'published' | 'draft';
-  applicationsCount: number;
-  createdAt: string;
-  horas?: number;
-  meses?: number;
-  tipo?: string;
-  comoLlegaronInstitucion?: string;
-  comentario?: string;
-  fechaIngreso?: string;
-  fechaEgreso?: string;
-  encargado?: string;
-  equipo?: string;
-  cierre?: string;
-  trlLevel?: number;
-}
-
-const STATUS_LABELS: Record<Project['status'], string> = {
-  active: 'En Curso',
-  completed: 'Completado',
-  published: 'Publicado',
-  draft: 'Borrador',
-};
-const STATUS_COLORS: Record<Project['status'], 'primary' | 'success' | 'info' | 'default'> = {
-  active: 'primary',
-  completed: 'success',
-  published: 'info',
-  draft: 'default',
-};
+import { useApi } from '../../../hooks/useApi';
+import { adaptProjectList } from '../../../utils/adapters';
+import type { Project } from '../../../types';
+import { projectService } from '../../../services/project.service';
 
 const COUNT_OPTIONS = [5, 10, 15, 20, 30, 40, -1];
 
-const TRL_QUESTIONS = [
-  'Este proyecto está en fase de idea, sin una definición clara y no cuenta con desarrollo previo.',
-  'Este proyecto cuenta con una definición clara y antecedentes de lo que se desea desarrollar.',
-  'Hemos desarrollados pruebas y validaciones de concepto. Algunos componentes del proyecto se han evaluado por separado.',
-  'Contamos con un prototipo mínimo viable que ha sido probado en condiciones controladas simples.',
-  'Contamos con un prototipo mínimo viable que ha sido probado en condiciones similares al entorno real.',
-  'Contamos con un prototipo que ha sido probado mediante un piloto en condiciones reales.',
-  'Contamos con un desarrollo que ha sido probado en condiciones reales, por un periodo de tiempo prolongado.',
-  'Contamos con un producto validado en lo técnico y lo comercial.',
-  'Contamos con un producto completamente desarrollado y disponible para la sociedad.'
-];
-
-const TRL_TO_SEMESTER = {
-  1: 1,
-  2: 1,
-  3: 2,
-  4: 2,
-  5: 3,
-  6: 3,
-  7: 4,
-  8: 4,
-  9: 4,
-};
-const SEMESTER_MIN_HOURS = {
-  1: 20,
-  2: 40,
-  3: 80,
-  4: 160,
-};
-
 const Projects: React.FC = () => {
+  const api = useApi();
   const [tab, setTab] = useState(0);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [sectionCounts, setSectionCounts] = useState({
     active: 5,
     published: 5,
     completed: 5,
     draft: 5,
   });
-  const [createStep, setCreateStep] = useState(0);
-  const [trlSelected, setTrlSelected] = useState<number | null>(null);
-  const [form, setForm] = useState({
-    nombre: '',
-    tipo: '',
-    objetivo: '',
-    comoLlegaronInstitucion: '',
-    comentario: '',
-    fechaIngreso: '',
-    fechaEgreso: '',
-    encargado: '',
-    equipo: '',
-    participantes: '',
-    cierre: '',
-    horas: '',
-    meses: '',
-  });
-  const [hoursError, setHoursError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [editProjectId, setEditProjectId] = useState<string | null>(null);
+  const [updatingProject, setUpdatingProject] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchProjects() {
-      try {
-        // Obtener proyectos específicos de la empresa
-        const data = await apiService.get('/api/projects/my_projects/');
-        setProjects(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-        setProjects([]);
-      }
-    }
-    fetchProjects();
+    loadProjects();
   }, []);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const adaptedProjects = await projectService.getMyProjects();
+      setProjects(adaptedProjects);
+    } catch (err: any) {
+      console.error('Error cargando proyectos:', err);
+      setError(err.response?.data?.error || 'Error al cargar proyectos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => setTab(newValue);
 
-  const handleSectionCountChange = (status: Project['status']) => (e: SelectChangeEvent<number>) => {
+  const handleSectionCountChange = (status: string) => (e: SelectChangeEvent<number>) => {
     setSectionCounts({ ...sectionCounts, [status]: Number(e.target.value) });
   };
 
-  const statusCounts = {
-    active: projects.filter(p => p.status === 'active').length,
-    published: projects.filter(p => p.status === 'published').length,
+  const getStatusCounts = () => {
+    return {
+      active: projects.filter(p => p.status === 'active' || p.status === 'open').length,
+      published: projects.filter(p => p.status === 'published' || p.status === 'open').length,
     completed: projects.filter(p => p.status === 'completed').length,
     draft: projects.filter(p => p.status === 'draft').length,
   };
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    if (e.target.name === 'horas' && trlSelected) {
-      const semestre = TRL_TO_SEMESTER[trlSelected as keyof typeof TRL_TO_SEMESTER];
-      const minHoras = SEMESTER_MIN_HOURS[semestre as keyof typeof SEMESTER_MIN_HOURS];
-      if (Number(e.target.value) < minHoras) {
-        setHoursError(`El mínimo para este nivel es ${minHoras} horas.`);
-      } else {
-        setHoursError(null);
-      }
-    }
   };
 
-  const nextStep = () => {
-    if (createStep === 1 && trlSelected) {
-      const semestre = TRL_TO_SEMESTER[trlSelected as keyof typeof TRL_TO_SEMESTER];
-      const minHoras = SEMESTER_MIN_HOURS[semestre as keyof typeof SEMESTER_MIN_HOURS];
-      if (Number(form.horas) < minHoras) {
-        setHoursError(`El mínimo para este nivel es ${minHoras} horas.`);
-        return;
-      }
-    }
-    setCreateStep((s) => Math.min(s + 1, 3));
-  };
+  const statusCounts = getStatusCounts();
 
-  const prevStep = () => setCreateStep((s) => Math.max(s - 1, 0));
-
-  const handleCreateProjectWizard = () => {
-    if (!form.nombre || !form.tipo || !form.objetivo || !trlSelected || !form.horas || !form.meses) return;
-    setProjects([
-      ...projects,
-      {
-        id: (projects.length + 1).toString(),
-        title: form.nombre,
-        description: form.objetivo,
-        requirements: [],
-        duration: `${form.meses} meses`,
-        studentsNeeded: Number(form.participantes) || 1,
-        selectedStudents: 0,
-        status: 'published',
-        applicationsCount: 0,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-    setForm({
-      nombre: '', tipo: '', objetivo: '', comoLlegaronInstitucion: '', comentario: '', fechaIngreso: '', fechaEgreso: '', encargado: '', equipo: '', participantes: '', cierre: '', horas: '', meses: '',
-    });
-    setTrlSelected(null);
-    setCreateStep(0);
-    setTab(0);
-  };
-
-  const renderStep = () => {
-    switch (createStep) {
-      case 0:
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6">Información Básica del Proyecto</Typography>
-            <TextField label="Nombre del Proyecto" name="nombre" value={form.nombre} onChange={handleFormChange} fullWidth required />
-            <TextField label="Tipo de Actividad" name="tipo" value={form.tipo} onChange={handleFormChange} fullWidth required placeholder="Formación, Curricular, Co-curricular, Otro" />
-            <TextField label="Objetivo del Proyecto" name="objetivo" value={form.objetivo} onChange={handleFormChange} fullWidth required />
-            <TextField label="¿Cómo llegaron a la institución?" name="comoLlegaronInstitucion" value={form.comoLlegaronInstitucion} onChange={handleFormChange} fullWidth />
-            <TextField label="Comentario adicional de registro (opcional)" name="comentario" value={form.comentario} onChange={handleFormChange} fullWidth />
-          </Box>
-        );
-      case 1:
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6">Diagnóstico TRL</Typography>
-            {TRL_QUESTIONS.map((q, idx) => (
-              <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <input
-                  type="radio"
-                  id={`trl${idx + 1}`}
-                  name="trl"
-                  checked={trlSelected === idx + 1}
-                  onChange={() => {
-                    setTrlSelected(idx + 1);
-                    // Autocompletar horas según TRL
-                    let minHoras = 20;
-                    if (idx + 1 >= 3 && idx + 1 <= 4) minHoras = 40;
-                    if (idx + 1 >= 5 && idx + 1 <= 6) minHoras = 80;
-                    if (idx + 1 >= 7) minHoras = 160;
-                    setForm(f => ({ ...f, horas: minHoras.toString() }));
-                  }}
-                  style={{ marginRight: 8 }}
-                />
-                <label htmlFor={`trl${idx + 1}`} style={{ cursor: 'pointer' }}>
-                  <b>TRL {idx + 1}:</b> {q}
-                </label>
-              </Box>
-            ))}
-            {/* Tabla de referencia */}
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" fontWeight={700}>Referencia de horas mínimas según TRL</Typography>
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 8 }}>
-                <thead>
-                  <tr style={{ background: '#f5f5f5' }}>
-                    <th style={{ padding: 6, border: '1px solid #ddd' }}>Semestre</th>
-                    <th style={{ padding: 6, border: '1px solid #ddd' }}>Nivel de desarrollo</th>
-                    <th style={{ padding: 6, border: '1px solid #ddd' }}>Horas de práctica</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>1</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría</td><td style={{ padding: 6, border: '1px solid #ddd' }}>20</td></tr>
-                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>2</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría + Propuesta solución</td><td style={{ padding: 6, border: '1px solid #ddd' }}>40</td></tr>
-                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>3</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría + Propuesta solución + implementación</td><td style={{ padding: 6, border: '1px solid #ddd' }}>80</td></tr>
-                  <tr><td style={{ padding: 6, border: '1px solid #ddd' }}>4</td><td style={{ padding: 6, border: '1px solid #ddd' }}>Asesoría + Propuesta solución + implementación + upgrade/controll</td><td style={{ padding: 6, border: '1px solid #ddd' }}>160</td></tr>
-                </tbody>
-              </table>
-            </Box>
-          </Box>
-        );
-      case 2:
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6">Información General</Typography>
-            <TextField label="Fecha de ingreso" name="fechaIngreso" type="date" value={form.fechaIngreso} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
-            <TextField label="Fecha de egreso" name="fechaEgreso" type="date" value={form.fechaEgreso} onChange={handleFormChange} fullWidth InputLabelProps={{ shrink: true }} />
-            <TextField label="Encargado de proyecto" name="encargado" value={form.encargado} onChange={handleFormChange} fullWidth />
-            <TextField label="Equipo de proyecto" name="equipo" value={form.equipo} onChange={handleFormChange} fullWidth />
-            <TextField label="Número de participantes" name="participantes" type="number" value={form.participantes} onChange={handleFormChange} fullWidth />
-            <TextField label="Estado de cierre" name="cierre" value={form.cierre} onChange={handleFormChange} fullWidth placeholder="Egresado o Cerrado" />
-            <TextField label="Horas de práctica ofrecidas" name="horas" type="number" value={form.horas} onChange={handleFormChange} fullWidth error={Boolean(hoursError) || Boolean(trlSelected && Number(form.horas) < (trlSelected <= 2 ? 20 : trlSelected <= 4 ? 40 : trlSelected <= 6 ? 80 : 160))} helperText={trlSelected && Number(form.horas) < (trlSelected <= 2 ? 20 : trlSelected <= 4 ? 40 : trlSelected <= 6 ? 80 : 160) ? `Debe ofrecer al menos ${trlSelected <= 2 ? 20 : trlSelected <= 4 ? 40 : trlSelected <= 6 ? 80 : 160} horas para el TRL seleccionado` : hoursError} required />
-            <TextField label="Duración en meses" name="meses" type="number" value={form.meses} onChange={handleFormChange} fullWidth required />
-          </Box>
-        );
-      case 3:
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6">Confirmación y Resumen</Typography>
-            <Typography variant="subtitle2">Nombre: {form.nombre}</Typography>
-            <Typography variant="subtitle2">Tipo: {form.tipo}</Typography>
-            <Typography variant="subtitle2">Objetivo: {form.objetivo}</Typography>
-            <Typography variant="subtitle2">¿Cómo llegaron?: {form.comoLlegaronInstitucion}</Typography>
-            <Typography variant="subtitle2">Comentario: {form.comentario}</Typography>
-            <Typography variant="subtitle2">Fecha de ingreso: {form.fechaIngreso}</Typography>
-            <Typography variant="subtitle2">Fecha de egreso: {form.fechaEgreso}</Typography>
-            <Typography variant="subtitle2">Encargado: {form.encargado}</Typography>
-            <Typography variant="subtitle2">Equipo: {form.equipo}</Typography>
-            <Typography variant="subtitle2">Participantes: {form.participantes}</Typography>
-            <Typography variant="subtitle2">Cierre: {form.cierre}</Typography>
-            <Typography variant="subtitle2">Horas de práctica ofrecidas: {form.horas}</Typography>
-            <Typography variant="subtitle2">Duración en meses: {form.meses}</Typography>
-            <Typography variant="subtitle2">TRL Seleccionado: {trlSelected ? `TRL ${trlSelected}` : 'No seleccionado'}</Typography>
-          </Box>
-        );
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'active':
+      case 'open':
+        return 'Activo';
+      case 'completed':
+        return 'Completado';
+      case 'published':
+        return 'Publicado';
+      case 'draft':
+        return 'Borrador';
+      case 'cancelled':
+        return 'Cancelado';
       default:
-        return null;
+        return status;
     }
   };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+      case 'open':
+        return 'primary';
+      case 'completed':
+        return 'success';
+      case 'published':
+        return 'info';
+      case 'draft':
+        return 'default';
+      case 'cancelled':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  const handleDeleteClick = (project: Project) => {
+    setSelectedProject(project);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedProject) return;
+    
+    try {
+      setUpdatingProject(selectedProject.id);
+      await api.delete(`/api/projects/${selectedProject.id}/`);
+      setProjects(projects.filter(p => p.id !== selectedProject.id));
+      setDeleteDialogOpen(false);
+      setSelectedProject(null);
+    } catch (error: any) {
+      console.error('Error eliminando proyecto:', error);
+      setError(error.response?.data?.error || 'Error al eliminar proyecto');
+    } finally {
+      setUpdatingProject(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setSelectedProject(null);
+  };
+
+  const handleCompleteClick = (project: Project) => {
+    setSelectedProject(project);
+    setCompleteDialogOpen(true);
+  };
+
+  const handleCompleteConfirm = async () => {
+    if (!selectedProject) return;
+    
+    try {
+      setUpdatingProject(selectedProject.id);
+      const response = await api.patch(`/api/projects/${selectedProject.id}/`, {
+        status: 'completed'
+      });
+      
+      const updatedProject = response.data;
+      setProjects(projects.map(p =>
+        p.id === selectedProject.id ? {
+          ...p,
+          status: updatedProject.status
+        } : p
+      ));
+      setCompleteDialogOpen(false);
+      setSelectedProject(null);
+    } catch (error: any) {
+      console.error('Error completando proyecto:', error);
+      setError(error.response?.data?.error || 'Error al completar proyecto');
+    } finally {
+      setUpdatingProject(null);
+    }
+  };
+
+  const handleCompleteCancel = () => {
+    setCompleteDialogOpen(false);
+    setSelectedProject(null);
+  };
+
+  const handleViewClick = (project: Project) => {
+    setSelectedProject(project);
+    setViewDialogOpen(true);
+  };
+
+  const handleViewClose = () => {
+    setViewDialogOpen(false);
+    setSelectedProject(null);
+  };
+
+  if (loading) {
+        return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+          </Box>
+        );
+  }
+
+  if (error) {
+        return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadProjects} variant="contained">
+          Reintentar
+        </Button>
+          </Box>
+        );
+    }
 
   const renderDashboard = () => (
-    <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-      <Box sx={{ flex: 1, minWidth: 220 }}>
+    <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid item xs={12} sm={6} md={3}>
         <Card sx={{ bgcolor: '#e8f5e9', color: '#388e3c', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#388e3c' }}>{statusCounts.active}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#388e3c' }}>Proyectos Activos</Typography>
         </Card>
-      </Box>
-      <Box sx={{ flex: 1, minWidth: 220 }}>
+      </Grid>
+      <Grid item xs={12} sm={6} md={3}>
         <Card sx={{ bgcolor: '#e3f2fd', color: '#1976d2', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#1976d2' }}>{statusCounts.completed}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#1976d2' }}>Proyectos Completados</Typography>
           </Card>
-        </Box>
-      <Box sx={{ flex: 1, minWidth: 220 }}>
+      </Grid>
+      <Grid item xs={12} sm={6} md={3}>
         <Card sx={{ bgcolor: '#fff3e0', color: '#f57c00', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#f57c00' }}>{statusCounts.published}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#f57c00' }}>Proyectos Publicados</Typography>
           </Card>
-        </Box>
-      <Box sx={{ flex: 1, minWidth: 220 }}>
+      </Grid>
+      <Grid item xs={12} sm={6} md={3}>
         <Card sx={{ bgcolor: '#f5f5f5', color: '#757575', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#757575' }}>{statusCounts.draft}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#757575' }}>Proyectos Borradores</Typography>
           </Card>
-        </Box>
-      </Box>
+      </Grid>
+    </Grid>
   );
 
-  const renderSection = (status: Project['status'], icon: React.ReactNode) => {
-    const filtered = projects.filter(p => p.status === status);
-    const count = sectionCounts[status];
+  const renderSection = (status: string, icon: React.ReactNode, title: string) => {
+    const filtered = projects.filter(p => {
+      if (status === 'active') return p.status === 'active' || p.status === 'open';
+      if (status === 'published') return p.status === 'published' || p.status === 'open';
+      return p.status === status;
+    });
+    const count = sectionCounts[status as keyof typeof sectionCounts];
     const toShow = count === -1 ? filtered : filtered.slice(0, count);
+    
     return (
       <Box sx={{ mb: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           {icon}
           <Typography variant="h6" fontWeight={700} color="primary" sx={{ ml: 1 }}>
-            {STATUS_LABELS[status]} ({filtered.length})
+            {title} ({filtered.length})
                     </Typography>
           <Box sx={{ ml: 2 }}>
             <FormControl size="small">
@@ -369,40 +284,55 @@ const Projects: React.FC = () => {
                 </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {toShow.length === 0 && (
-            <Typography color="text.secondary">No hay proyectos {STATUS_LABELS[status].toLowerCase()}.</Typography>
+            <Paper sx={{ p: 4, textAlign: 'center' }}>
+              <Typography color="text.secondary">No hay proyectos {title.toLowerCase()}.</Typography>
+            </Paper>
           )}
           {toShow.map((project) => (
             <Card key={project.id} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', p: 2, boxShadow: 1, borderRadius: 2 }}>
               <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="h6" fontWeight={600} sx={{ mr: 1 }}>{project.title}</Typography>
-                  <Chip label={STATUS_LABELS[project.status]} color={STATUS_COLORS[project.status]} size="small" />
+                  <Chip label={getStatusLabel(project.status)} color={getStatusColor(project.status) as any} size="small" />
                 </Box>
                     <Typography variant="body2" color="text.secondary">
                   {project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description}
                     </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
-                  {project.requirements.map((req, idx) => (
-                    <Chip key={idx} label={req} size="small" variant="outlined" />
-                  ))}
-                  </Box>
                 <Box sx={{ display: 'flex', gap: 2, mt: 1, alignItems: 'center' }}>
                   <Typography variant="caption" color="text.secondary">
-                    {project.horas ? `${project.horas} horas • ` : ''} {project.duration}
+                    {project.duration_weeks ? `${project.duration_weeks} semanas • ` : ''} {project.hours_per_week} horas/semana
                   </Typography>
-                  <Chip label={`${project.applicationsCount} postulaciones`} size="small" color="info" />
-                  <Chip label={`${project.selectedStudents}/${project.studentsNeeded} estudiantes`} size="small" color="success" />
+                  <Chip label={`${project.applications_count || 0} postulaciones`} size="small" color="info" />
+                  <Chip label={`${project.current_students}/${project.max_students} estudiantes`} size="small" color="success" />
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1, minWidth: 120, ml: 2 }}>
-                {(project.status === 'published' || project.status === 'active') && (
-                  <IconButton color="info" size="small" onClick={() => handleEditClick(project)}><EditIcon /></IconButton>
+                {(project.status === 'published' || project.status === 'open' || project.status === 'active') && (
+                  <IconButton color="info" size="small" onClick={() => handleViewClick(project)}>
+                    <EditIcon />
+                  </IconButton>
                 )}
-                {(project.status === 'active' || project.status === 'published') && (
-                  <IconButton color="success" size="small" onClick={() => handleCompleteClick(project)}><TaskAltIcon /></IconButton>
+                {(project.status === 'active' || project.status === 'open' || project.status === 'published') && (
+                  <IconButton 
+                    color="success" 
+                    size="small" 
+                    onClick={() => handleCompleteClick(project)}
+                    disabled={updatingProject === project.id}
+                  >
+                    {updatingProject === project.id ? <CircularProgress size={16} /> : <TaskAltIcon />}
+                  </IconButton>
                 )}
-                <IconButton color="primary" size="small" onClick={() => handleViewClick(project)}><VisibilityIcon /></IconButton>
-                <IconButton color="error" size="small" onClick={() => handleDeleteClick(project)}><DeleteIcon /></IconButton>
+                <IconButton color="primary" size="small" onClick={() => handleViewClick(project)}>
+                  <VisibilityIcon />
+                </IconButton>
+                <IconButton 
+                  color="error" 
+                  size="small" 
+                  onClick={() => handleDeleteClick(project)}
+                  disabled={updatingProject === project.id}
+                >
+                  {updatingProject === project.id ? <CircularProgress size={16} /> : <DeleteIcon />}
+                </IconButton>
               </Box>
             </Card>
           ))}
@@ -411,175 +341,48 @@ const Projects: React.FC = () => {
     );
   };
 
-  // Eliminar proyecto
-  const handleDeleteClick = (project: Project) => {
-    setSelectedProject(project);
-    setDeleteDialogOpen(true);
-  };
-  const handleDeleteConfirm = () => {
-    if (selectedProject) {
-      setProjects(projects.filter(p => p.id !== selectedProject.id));
-    }
-    setDeleteDialogOpen(false);
-    setSelectedProject(null);
-  };
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-    setSelectedProject(null);
-  };
-
-  // Completar proyecto
-  const handleCompleteClick = (project: Project) => {
-    setSelectedProject(project);
-    setCompleteDialogOpen(true);
-  };
-  const handleCompleteConfirm = () => {
-    if (selectedProject) {
-      setProjects(projects.map(p =>
-        p.id === selectedProject.id
-          ? { ...p, status: 'completed' as const }
-          : p
-      ));
-    }
-    setCompleteDialogOpen(false);
-    setSelectedProject(null);
-  };
-  const handleCompleteCancel = () => {
-    setCompleteDialogOpen(false);
-    setSelectedProject(null);
-  };
-
-  // Ver proyecto
-  const handleViewClick = (project: Project) => {
-    setSelectedProject(project);
-    setViewDialogOpen(true);
-  };
-  const handleViewClose = () => {
-    setViewDialogOpen(false);
-    setSelectedProject(null);
-  };
-
-  // Editar proyecto (precarga y modo edición)
-  const handleEditClick = (project: Project) => {
-    setSelectedProject(project);
-    setEditMode(true);
-    setEditProjectId(project.id);
-    setTab(1);
-    setCreateStep(0);
-    setForm({
-      nombre: project.title,
-      tipo: project.tipo || '',
-      objetivo: project.description,
-      comoLlegaronInstitucion: project.comoLlegaronInstitucion || '',
-      comentario: project.comentario || '',
-      fechaIngreso: project.fechaIngreso || '',
-      fechaEgreso: project.fechaEgreso || '',
-      encargado: project.encargado || '',
-      equipo: project.equipo || '',
-      participantes: project.studentsNeeded?.toString() || '',
-      cierre: project.cierre || '',
-      horas: project.horas ? project.horas.toString() : '',
-      meses: project.duration ? project.duration.replace(' meses', '') : '',
-    });
-    setTrlSelected(project.trlLevel || null);
-  };
-
-  // Guardar cambios al editar
-  const handleSaveEditProject = () => {
-    if (!editProjectId) return;
-    setProjects(projects.map(p =>
-      p.id === editProjectId
-        ? {
-            ...p,
-            title: form.nombre,
-            description: form.objetivo,
-            studentsNeeded: Number(form.participantes) || 1,
-            horas: Number(form.horas) || undefined,
-            duration: form.meses ? `${form.meses} meses` : '',
-            tipo: form.tipo,
-            comoLlegaronInstitucion: form.comoLlegaronInstitucion,
-            comentario: form.comentario,
-            fechaIngreso: form.fechaIngreso,
-            fechaEgreso: form.fechaEgreso,
-            encargado: form.encargado,
-            equipo: form.equipo,
-            cierre: form.cierre,
-            trlLevel: trlSelected || undefined,
-          } as Project
-        : p
-    ));
-    setEditMode(false);
-    setEditProjectId(null);
-    setForm({ nombre: '', tipo: '', objetivo: '', comoLlegaronInstitucion: '', comentario: '', fechaIngreso: '', fechaEgreso: '', encargado: '', equipo: '', participantes: '', cierre: '', horas: '', meses: '' });
-    setTrlSelected(null);
-    setCreateStep(0);
-    setTab(0);
-  };
-
   return (
     <Box sx={{ width: '100%', p: { xs: 1, md: 3 } }}>
       <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 3 }}>
         <Tab label="Proyectos" />
         <Tab label="Crear Proyecto" icon={<AddIcon />} iconPosition="start" />
       </Tabs>
+      
       {tab === 0 && (
         <Box>
           {renderDashboard()}
-          {renderSection('active', <PlayArrowIcon color="primary" />)}
-          {renderSection('published', <PublishIcon color="info" />)}
-          {renderSection('completed', <CheckCircleIcon color="success" />)}
-          {renderSection('draft', <DraftsIcon color="disabled" />)}
+          {renderSection('active', <PlayArrowIcon color="primary" />, 'Proyectos Activos')}
+          {renderSection('published', <PublishIcon color="info" />, 'Proyectos Publicados')}
+          {renderSection('completed', <CheckCircleIcon color="success" />, 'Proyectos Completados')}
+          {renderSection('draft', <DraftsIcon color="disabled" />, 'Proyectos Borradores')}
         </Box>
       )}
+      
       {tab === 1 && (
-        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 2 }}>
-          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>
-            {[0, 1, 2, 3].map((step) => (
-              <Box key={step} sx={{ width: 40, height: 8, borderRadius: 4, bgcolor: createStep === step ? 'primary.main' : 'grey.300' }} />
-            ))}
-          </Box>
-          {renderStep()}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-            <Button disabled={createStep === 0} onClick={prevStep} variant="outlined">Anterior</Button>
-            {editMode ? (
-              createStep < 3 ? (
-                <Button variant="contained" color="primary" onClick={nextStep}>Siguiente</Button>
-              ) : (
-              <Button variant="contained" color="success" onClick={handleSaveEditProject}>Guardar Cambios</Button>
-              )
-            ) : (
-              createStep < 3 ? (
-                <Button variant="contained" color="primary" onClick={nextStep}>Siguiente</Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={handleCreateProjectWizard}
-                  disabled={
-                    !form.nombre ||
-                    !form.tipo ||
-                    !form.objetivo ||
-                    !trlSelected ||
-                    !form.horas ||
-                    !form.meses
-                  }
-                >
-                  Crear Proyecto
-                </Button>
-              )
-            )}
-          </Box>
-        </Box>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Funcionalidad de Creación de Proyectos
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Esta funcionalidad está en desarrollo. Por favor, contacta al administrador para crear nuevos proyectos.
+          </Typography>
+        </Paper>
       )}
+
       {/* Diálogo de eliminar */}
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>¿Eliminar proyecto?</DialogTitle>
-        <DialogContent>¿Seguro que deseas eliminar el proyecto "{selectedProject?.title}"?</DialogContent>
+        <DialogContent>
+          ¿Seguro que deseas eliminar el proyecto "{selectedProject?.title}"?
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteCancel}>Cancelar</Button>
-          <Button onClick={handleDeleteConfirm} color="error">Eliminar</Button>
+          <Button onClick={handleDeleteConfirm} color="error">
+            {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Eliminar'}
+          </Button>
         </DialogActions>
       </Dialog>
+
       {/* Diálogo de completar proyecto */}
       <Dialog open={completeDialogOpen} onClose={handleCompleteCancel}>
         <DialogTitle>¿Marcar proyecto como completado?</DialogTitle>
@@ -591,86 +394,86 @@ const Projects: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCompleteCancel}>Cancelar</Button>
-          <Button onClick={handleCompleteConfirm} color="success" variant="contained">
-            Marcar como Completado
+          <Button 
+            onClick={handleCompleteConfirm} 
+            color="success" 
+            variant="contained"
+            disabled={updatingProject === selectedProject?.id}
+          >
+            {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Marcar como Completado'}
           </Button>
         </DialogActions>
       </Dialog>
+
       {/* Modal de ver proyecto */}
       <Dialog open={viewDialogOpen} onClose={handleViewClose} maxWidth="md" fullWidth>
         <DialogTitle>Detalles del Proyecto</DialogTitle>
         <DialogContent>
+          {selectedProject && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6" color="primary">{selectedProject?.title}</Typography>
-            
-            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Descripción</Typography>
-          <Typography variant="body2">{selectedProject?.description}</Typography>
-              </Box>
+              <Typography variant="h6" color="primary">{selectedProject.title}</Typography>
               
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Tipo de Actividad</Typography>
-                <Typography variant="body2">{selectedProject?.tipo || 'No especificado'}</Typography>
-              </Box>
-              
-              <Box>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="subtitle2" color="text.secondary">Descripción</Typography>
+                  <Typography variant="body2">{selectedProject.description}</Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="subtitle2" color="text.secondary">Requerimientos</Typography>
+                  <Typography variant="body2">{selectedProject.requirements}</Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
                 <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
-                <Typography variant="body2">{selectedProject?.duration}</Typography>
-              </Box>
+                  <Typography variant="body2">
+                    {selectedProject.duration_weeks} semanas • {selectedProject.hours_per_week} horas/semana
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="subtitle2" color="text.secondary">Modalidad</Typography>
+                  <Typography variant="body2">{selectedProject.modality}</Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="subtitle2" color="text.secondary">Dificultad</Typography>
+                  <Typography variant="body2">{selectedProject.difficulty}</Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="subtitle2" color="text.secondary">Nivel API Mínimo</Typography>
+                  <Typography variant="body2">{selectedProject.min_api_level}</Typography>
+                </Grid>
+                
+                {selectedProject.start_date && (
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Fecha de Inicio</Typography>
+                    <Typography variant="body2">{new Date(selectedProject.start_date).toLocaleDateString()}</Typography>
+                  </Grid>
+                )}
+                
+                {selectedProject.estimated_end_date && (
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Fecha Estimada de Fin</Typography>
+                    <Typography variant="body2">{new Date(selectedProject.estimated_end_date).toLocaleDateString()}</Typography>
+                  </Grid>
+                )}
+              </Grid>
               
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Horas de Práctica</Typography>
-                <Typography variant="body2">{selectedProject?.horas ? `${selectedProject.horas} horas` : 'No especificado'}</Typography>
-              </Box>
-              
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Fecha de Ingreso</Typography>
-                <Typography variant="body2">{selectedProject?.fechaIngreso || 'No especificado'}</Typography>
-              </Box>
-              
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Fecha de Egreso</Typography>
-                <Typography variant="body2">{selectedProject?.fechaEgreso || 'No especificado'}</Typography>
-              </Box>
-              
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Encargado</Typography>
-                <Typography variant="body2">{selectedProject?.encargado || 'No especificado'}</Typography>
-              </Box>
-              
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Equipo</Typography>
-                <Typography variant="body2">{selectedProject?.equipo || 'No especificado'}</Typography>
-              </Box>
-              
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Estado de Cierre</Typography>
-                <Typography variant="body2">{selectedProject?.cierre || 'No especificado'}</Typography>
-              </Box>
-              
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">TRL Level</Typography>
-                <Typography variant="body2">{selectedProject?.trlLevel ? `TRL ${selectedProject.trlLevel}` : 'No especificado'}</Typography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Chip label={`${selectedProject.applications_count || 0} postulaciones`} size="small" color="info" />
+                <Chip label={`${selectedProject.current_students}/${selectedProject.max_students} estudiantes`} size="small" color="success" />
+                <Chip label={getStatusLabel(selectedProject.status)} color={getStatusColor(selectedProject.status) as any} size="small" />
+                {selectedProject.is_paid && (
+                  <Chip label="Remunerado" size="small" color="warning" />
+                )}
+                {selectedProject.is_featured && (
+                  <Chip label="Destacado" size="small" color="secondary" />
+                )}
               </Box>
             </Box>
-            
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">¿Cómo llegaron a la institución?</Typography>
-              <Typography variant="body2">{selectedProject?.comoLlegaronInstitucion || 'No especificado'}</Typography>
-            </Box>
-            
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">Comentario Adicional</Typography>
-              <Typography variant="body2">{selectedProject?.comentario || 'No especificado'}</Typography>
-            </Box>
-            
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              <Chip label={`${selectedProject?.applicationsCount} postulaciones`} size="small" color="info" />
-              <Chip label={`${selectedProject?.selectedStudents}/${selectedProject?.studentsNeeded} estudiantes`} size="small" color="success" />
-              <Chip label={STATUS_LABELS[selectedProject?.status || 'draft']} color={STATUS_COLORS[selectedProject?.status || 'draft']} size="small" />
-            </Box>
-          </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleViewClose}>Cerrar</Button>

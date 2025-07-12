@@ -26,7 +26,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
-
+  CircularProgress,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -36,35 +36,21 @@ import {
   LocationOn as LocationIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
-
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-
-interface Interview {
-  id: string;
-  student_id: string;
-  student_name: string;
-  student_email: string;
-  student_phone: string;
-  project_id: string;
-  project_title: string;
-  type: 'technical' | 'behavioral' | 'final' | 'follow-up';
-  status: 'scheduled' | 'completed' | 'cancelled' | 'rescheduled';
-  scheduled_date: string;
-  duration: number; // en minutos
-  location: string;
-  interviewers: string[];
-  notes: string;
-  outcome: 'passed' | 'failed' | 'pending' | 'needs-follow-up';
-  feedback: string;
-  next_steps: string;
-  rating?: number;
-}
+import { useApi } from '../../../hooks/useApi';
+import { adaptInterviewList } from '../../../utils/adapters';
+import type { Interview, Application } from '../../../types';
 
 const cantidadOpciones = [5, 10, 20, 50, 'todas'];
 
 export const CompanyInterviews: React.FC = () => {
+  const api = useApi();
   const [interviews, setInterviews] = useState<Interview[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
   const [showDialog, setShowDialog] = useState(false);
@@ -78,35 +64,37 @@ export const CompanyInterviews: React.FC = () => {
   const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
 
   useEffect(() => {
-    async function fetchInterviews() {
-      try {
-        const data = await apiService.get('/api/interviews/');
-        setInterviews(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching interviews:', error);
-        setInterviews([]);
-      }
-    }
-    fetchInterviews();
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Obtener entrevistas
+      const interviewsResponse = await api.get('/api/interviews/');
+      const adaptedInterviews = adaptInterviewList(interviewsResponse.data.results || interviewsResponse.data);
+      setInterviews(adaptedInterviews);
+
+      // Obtener aplicaciones para contexto
+      const applicationsResponse = await api.get('/api/applications/');
+      setApplications(applicationsResponse.data.results || applicationsResponse.data);
+
+      // Obtener usuarios
+      const usersResponse = await api.get('/api/users/');
+      setUsers(usersResponse.data);
+      
+    } catch (err: any) {
+      console.error('Error cargando entrevistas:', err);
+      setError(err.response?.data?.error || 'Error al cargar entrevistas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCantidadChange = (tabIdx: number, value: number | string) => {
     setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
-  };
-
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'technical':
-        return 'Técnica';
-      case 'behavioral':
-        return 'Conductual';
-      case 'final':
-        return 'Final';
-      case 'follow-up':
-        return 'Seguimiento';
-      default:
-        return type;
-    }
   };
 
   const getStatusColor = (status: string) => {
@@ -117,7 +105,7 @@ export const CompanyInterviews: React.FC = () => {
         return 'success';
       case 'cancelled':
         return 'error';
-      case 'rescheduled':
+      case 'no-show':
         return 'warning';
       default:
         return 'default';
@@ -132,62 +120,81 @@ export const CompanyInterviews: React.FC = () => {
         return 'Completada';
       case 'cancelled':
         return 'Cancelada';
-      case 'rescheduled':
-        return 'Reprogramada';
+      case 'no-show':
+        return 'No se presentó';
       default:
         return status;
-    }
-  };
-
-  const getOutcomeColor = (outcome: string) => {
-    switch (outcome) {
-      case 'passed':
-        return 'success';
-      case 'failed':
-        return 'error';
-      case 'pending':
-        return 'warning';
-      case 'needs-follow-up':
-        return 'info';
-      default:
-        return 'default';
-    }
-  };
-
-  const getOutcomeLabel = (outcome: string) => {
-    switch (outcome) {
-      case 'passed':
-        return 'Aprobada';
-      case 'failed':
-        return 'Reprobada';
-      case 'pending':
-        return 'Pendiente';
-      case 'needs-follow-up':
-        return 'Necesita Seguimiento';
-      default:
-        return outcome;
     }
   };
 
   const handleSaveFeedback = async () => {
     if (selectedInterview) {
       try {
-        const updatedInterview = await apiService.patch(`/api/interviews/${selectedInterview.id}/`, {
+        const updatedInterviewResponse = await api.patch(`/api/interviews/${selectedInterview.id}/`, {
           rating: feedbackData.rating,
           feedback: feedbackData.feedback,
+          status: 'completed',
         });
+
+        const updatedInterview = updatedInterviewResponse.data;
 
         setInterviews(prev =>
           prev.map(interview =>
-            interview.id === selectedInterview.id ? (updatedInterview as Interview) : interview
+            interview.id === selectedInterview.id ? {
+              ...interview,
+              rating: updatedInterview.rating,
+              feedback: updatedInterview.feedback,
+              status: updatedInterview.status,
+            } : interview
           )
         );
         setShowFeedbackDialog(false);
         setSelectedInterview(null);
         setFeedbackData({ rating: 0, feedback: '' });
-      } catch (error) {
-        console.error('Error saving feedback:', error);
+      } catch (error: any) {
+        console.error('Error guardando feedback:', error);
+        setError(error.response?.data?.error || 'Error al guardar feedback');
       }
+    }
+  };
+
+  const handleCompleteInterview = async (interviewId: string) => {
+    try {
+      const response = await api.post(`/api/interviews/${interviewId}/complete/`);
+      const updatedInterview = response.data;
+      
+      setInterviews(prev =>
+        prev.map(interview =>
+          interview.id === interviewId ? {
+            ...interview,
+            status: updatedInterview.status,
+          } : interview
+        )
+      );
+      setShowDialog(false);
+    } catch (error: any) {
+      console.error('Error completando entrevista:', error);
+      setError(error.response?.data?.error || 'Error al completar entrevista');
+      }
+  };
+
+  const handleCancelInterview = async (interviewId: string) => {
+    try {
+      const response = await api.post(`/api/interviews/${interviewId}/cancel/`);
+      const updatedInterview = response.data;
+      
+      setInterviews(prev =>
+        prev.map(interview =>
+          interview.id === interviewId ? {
+            ...interview,
+            status: updatedInterview.status,
+          } : interview
+        )
+      );
+      setShowDialog(false);
+    } catch (error: any) {
+      console.error('Error cancelando entrevista:', error);
+      setError(error.response?.data?.error || 'Error al cancelar entrevista');
     }
   };
 
@@ -200,7 +207,7 @@ export const CompanyInterviews: React.FC = () => {
       case 2: // Completadas
         return interview.status === 'completed';
       case 3: // Canceladas
-        return interview.status === 'cancelled';
+        return interview.status === 'cancelled' || interview.status === 'no-show';
       default:
         return true;
     }
@@ -209,14 +216,24 @@ export const CompanyInterviews: React.FC = () => {
   const cantidadActual = cantidadPorTab[selectedTab];
   const entrevistasMostradas = cantidadActual === 'todas' ? filteredInterviews : filteredInterviews.slice(0, Number(cantidadActual));
 
+  // Obtener información del estudiante y proyecto desde la aplicación
+  const getInterviewInfo = (interview: Interview) => {
+    const application = applications.find(app => app.id === interview.application);
+    if (!application) return { student: null, project: null };
+    
+    const student = users.find(user => user.id === application.student);
+    const project = application.project; // Asumiendo que el proyecto está en la aplicación
+    
+    return { student, project };
+  };
+
   const stats = {
     total: interviews.length,
     scheduled: interviews.filter(i => i.status === 'scheduled').length,
     completed: interviews.filter(i => i.status === 'completed').length,
-    cancelled: interviews.filter(i => i.status === 'cancelled').length,
+    cancelled: interviews.filter(i => i.status === 'cancelled' || i.status === 'no-show').length,
   };
 
-  // Mock de datos para el resumen de entrevistas
   const resumen = [
     { label: 'Total', value: stats.total, icon: <ScheduleIcon />, color: '#42A5F5' },
     { label: 'Programadas', value: stats.scheduled, icon: <ScheduleIcon />, color: '#29B6F6' },
@@ -224,11 +241,32 @@ export const CompanyInterviews: React.FC = () => {
     { label: 'Canceladas', value: stats.cancelled, icon: <EventIcon />, color: '#EF5350' },
   ];
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadData} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" gutterBottom>
-          Eventos
+          Entrevistas
         </Typography>
       </Box>
 
@@ -274,9 +312,13 @@ export const CompanyInterviews: React.FC = () => {
         </FormControl>
       </Box>
 
-      {/* Lista de Eventos */}
+      {/* Lista de Entrevistas */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {entrevistasMostradas.map((interview) => (
+        {entrevistasMostradas.map((interview) => {
+          const { student, project } = getInterviewInfo(interview);
+          const interviewer = users.find(user => user.id === interview.interviewer);
+          
+          return (
           <Box key={interview.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
             <Card>
               <CardContent>
@@ -286,10 +328,10 @@ export const CompanyInterviews: React.FC = () => {
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" gutterBottom>
-                      {interview.student_name}
+                        {student?.full_name || 'Estudiante no encontrado'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {interview.student_email}
+                        {student?.email || 'Email no disponible'}
                     </Typography>
                   </Box>
                   <Chip
@@ -300,39 +342,41 @@ export const CompanyInterviews: React.FC = () => {
                 </Box>
 
                 <Typography variant="body1" gutterBottom>
-                  <strong>Proyecto:</strong> {interview.project_title}
+                    <strong>Proyecto:</strong> {project || 'Proyecto no encontrado'}
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                   <Chip
-                    label={getTypeLabel(interview.type)}
+                      label={`${interview.duration_minutes} min`}
+                      color="secondary"
+                      size="small"
+                    />
+                    {interview.rating && (
+                      <Chip
+                        label={`${interview.rating}/5`}
                     color="primary"
                     size="small"
                     variant="outlined"
                   />
-                  <Chip
-                    label={`${interview.duration} min`}
-                    color="secondary"
-                    size="small"
-                  />
+                    )}
                 </Box>
 
                 <Typography variant="body2" color="text.secondary" paragraph>
-                  {interview.notes}
+                    {interview.notes || 'Sin notas'}
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  <strong>Fecha:</strong> {new Date(interview.scheduled_date).toLocaleString()}
+                    <strong>Fecha:</strong> {new Date(interview.interview_date).toLocaleString()}
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  <strong>Ubicación:</strong> {interview.location}
+                    <strong>Entrevistador:</strong> {interviewer?.full_name || 'No asignado'}
                 </Typography>
 
-                {interview.outcome !== 'pending' && (
-                  <Alert severity={interview.outcome === 'passed' ? 'success' : 'error'} sx={{ mt: 2 }}>
+                  {interview.feedback && (
+                    <Alert severity="info" sx={{ mt: 2 }}>
                     <Typography variant="body2">
-                      <strong>Resultado:</strong> {getOutcomeLabel(interview.outcome)}
+                        <strong>Feedback:</strong> {interview.feedback}
                     </Typography>
                   </Alert>
                 )}
@@ -353,7 +397,7 @@ export const CompanyInterviews: React.FC = () => {
                     color="success"
                     onClick={() => {
                       setSelectedInterview(interview);
-                      setShowDialog(true);
+                        setShowFeedbackDialog(true);
                     }}
                   >
                     Completar
@@ -362,14 +406,19 @@ export const CompanyInterviews: React.FC = () => {
               </CardActions>
             </Card>
           </Box>
-        ))}
+          );
+        })}
       </Box>
 
-      {/* Dialog para editar evento */}
+      {/* Dialog para detalles de entrevista */}
       <Dialog open={showDialog} onClose={() => setShowDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Detalles del Evento</DialogTitle>
+        <DialogTitle>Detalles de la Entrevista</DialogTitle>
         <DialogContent>
-          {selectedInterview && (
+          {selectedInterview && (() => {
+            const { student, project } = getInterviewInfo(selectedInterview);
+            const interviewer = users.find(user => user.id === selectedInterview.interviewer);
+            
+            return (
             <Box sx={{ mt: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <Avatar sx={{ mr: 2, width: 60, height: 60, bgcolor: 'primary.main' }}>
@@ -377,10 +426,10 @@ export const CompanyInterviews: React.FC = () => {
                 </Avatar>
                 <Box>
                   <Typography variant="h6" gutterBottom>
-                    {selectedInterview.student_name}
+                      {student?.full_name || 'Estudiante no encontrado'}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {selectedInterview.student_email}
+                      {student?.email || 'Email no disponible'}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
                     <Chip
@@ -388,10 +437,10 @@ export const CompanyInterviews: React.FC = () => {
                       color={getStatusColor(selectedInterview.status) as any}
                       size="small"
                     />
-                    {selectedInterview.outcome !== 'pending' && (
+                      {selectedInterview.rating && (
                       <Chip
-                        label={getOutcomeLabel(selectedInterview.outcome)}
-                        color={getOutcomeColor(selectedInterview.outcome) as any}
+                          label={`${selectedInterview.rating}/5`}
+                          color="primary"
                         size="small"
                       />
                     )}
@@ -400,12 +449,11 @@ export const CompanyInterviews: React.FC = () => {
               </Box>
 
               <Typography variant="h6" gutterBottom>
-                Proyecto: {selectedInterview.project_title}
+                  Proyecto: {project || 'Proyecto no encontrado'}
               </Typography>
 
               <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                <Chip label={getTypeLabel(selectedInterview.type)} color="primary" />
-                <Chip label={`${selectedInterview.duration} minutos`} color="secondary" />
+                  <Chip label={`${selectedInterview.duration_minutes} minutos`} color="secondary" />
               </Box>
 
               <List dense>
@@ -413,28 +461,28 @@ export const CompanyInterviews: React.FC = () => {
                   <ScheduleIcon sx={{ mr: 2, color: 'text.secondary' }} />
                   <ListItemText
                     primary="Fecha y Hora"
-                    secondary={new Date(selectedInterview.scheduled_date).toLocaleString()}
+                      secondary={new Date(selectedInterview.interview_date).toLocaleString()}
                   />
                 </ListItem>
                 <ListItem>
-                  <LocationIcon sx={{ mr: 2, color: 'text.secondary' }} />
+                    <PersonIcon sx={{ mr: 2, color: 'text.secondary' }} />
                   <ListItemText
-                    primary="Ubicación"
-                    secondary={selectedInterview.location}
+                      primary="Entrevistador"
+                      secondary={interviewer?.full_name || 'No asignado'}
                   />
                 </ListItem>
                 <ListItem>
                   <EmailIcon sx={{ mr: 2, color: 'text.secondary' }} />
                   <ListItemText
-                    primary="Email"
-                    secondary={selectedInterview.student_email}
+                      primary="Email del Estudiante"
+                      secondary={student?.email || 'No disponible'}
                   />
                 </ListItem>
                 <ListItem>
                   <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
                   <ListItemText
-                    primary="Teléfono"
-                    secondary={selectedInterview.student_phone}
+                      primary="Teléfono del Estudiante"
+                      secondary={student?.phone || 'No disponible'}
                   />
                 </ListItem>
               </List>
@@ -442,19 +490,10 @@ export const CompanyInterviews: React.FC = () => {
               <Divider sx={{ my: 2 }} />
 
               <Typography variant="h6" gutterBottom>
-                Entrevistadores
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                {selectedInterview.interviewers.map((interviewer, index) => (
-                  <Chip key={index} label={interviewer} color="primary" size="small" />
-                ))}
-              </Box>
-
-              <Typography variant="h6" gutterBottom>
                 Notas
               </Typography>
               <Typography variant="body2" paragraph>
-                {selectedInterview.notes}
+                  {selectedInterview.notes || 'Sin notas'}
               </Typography>
 
               {selectedInterview.feedback && (
@@ -468,39 +507,52 @@ export const CompanyInterviews: React.FC = () => {
                 </>
               )}
 
-              {selectedInterview.next_steps && (
+                {selectedInterview.rating && (
                 <>
                   <Typography variant="h6" gutterBottom>
-                    Próximos Pasos
+                      Calificación
                   </Typography>
-                  <Typography variant="body2" paragraph>
-                    {selectedInterview.next_steps}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Rating value={selectedInterview.rating} readOnly />
+                      <Typography variant="body2" sx={{ ml: 1 }}>
+                        {selectedInterview.rating}/5
                   </Typography>
+                    </Box>
                 </>
               )}
             </Box>
-          )}
+            );
+          })()}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDialog(false)}>Cerrar</Button>
           {selectedInterview?.status === 'scheduled' && (
+            <>
+              <Button
+                onClick={() => handleCancelInterview(selectedInterview.id)}
+                variant="outlined"
+                color="error"
+              >
+                Cancelar
+              </Button>
             <Button
               onClick={() => {
-                // Aquí se implementaría la lógica para completar la entrevista
                 setShowDialog(false);
+                  setShowFeedbackDialog(true);
               }}
               variant="contained"
               color="success"
             >
-              Completar Evento
+                Completar Entrevista
             </Button>
+            </>
           )}
         </DialogActions>
       </Dialog>
 
       {/* Dialog para feedback */}
       <Dialog open={showFeedbackDialog} onClose={() => setShowFeedbackDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Agregar Feedback</DialogTitle>
+        <DialogTitle>Completar Entrevista</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
             <Box sx={{ flex: '1 1 100%' }}>
@@ -518,7 +570,7 @@ export const CompanyInterviews: React.FC = () => {
                 fullWidth
                 multiline
                 rows={4}
-                label="Comentarios"
+                label="Feedback"
                 value={feedbackData.feedback}
                 onChange={(e) => setFeedbackData(prev => ({ ...prev, feedback: e.target.value }))}
                 margin="normal"
@@ -529,7 +581,7 @@ export const CompanyInterviews: React.FC = () => {
         <DialogActions>
           <Button onClick={() => setShowFeedbackDialog(false)}>Cancelar</Button>
           <Button onClick={handleSaveFeedback} variant="contained">
-            Guardar Feedback
+            Completar Entrevista
           </Button>
         </DialogActions>
       </Dialog>

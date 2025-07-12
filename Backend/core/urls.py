@@ -10,7 +10,8 @@ from django.views.generic import TemplateView
 from .views import (
     home, health_check, 
     api_login, api_register, api_logout, api_user_profile,
-    api_refresh_token, api_verify_token
+    api_refresh_token, api_verify_token,
+    api_dashboard_company_stats, api_dashboard_student_stats, api_dashboard_admin_stats
 )
 
 urlpatterns = [
@@ -31,6 +32,11 @@ urlpatterns = [
     path('api/auth/register/', api_register, name='api_register'),
     path('api/auth/logout/', api_logout, name='api_logout'),
     path('api/users/profile/', api_user_profile, name='api_user_profile'),
+    
+    # Dashboard endpoints
+    path('api/dashboard/company_stats/', api_dashboard_company_stats, name='api_dashboard_company_stats'),
+    path('api/dashboard/student_stats/', api_dashboard_student_stats, name='api_dashboard_student_stats'),
+    path('api/dashboard/admin_stats/', api_dashboard_admin_stats, name='api_dashboard_admin_stats'),
 
     # API endpoints para todas las apps
     path('api/users/', include('users.urls')),

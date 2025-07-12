@@ -20,6 +20,8 @@ import {
   CardActions,
   Tabs,
   Tab,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -34,23 +36,9 @@ import {
   AddCircle as AddCircleIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  status: 'draft' | 'published' | 'in-progress' | 'completed' | 'cancelled';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  api_level: number;
-  max_students: number;
-  current_students: number;
-  applications: number;
-  deadline: string;
-  created_at: string;
-  skills: string[];
-  trl_answers?: string[];
-}
+import { useApi } from '../../../hooks/useApi';
+import { adaptProjectList } from '../../../utils/adapters';
+import type { Project } from '../../../types';
 
 // TRL options
 const trlOptions = [
@@ -131,7 +119,10 @@ interface NewProject {
 }
 
 export const ManageProjects: React.FC = () => {
+  const api = useApi();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState(0);
   const [showNewProject, setShowNewProject] = useState(false);
   const [newProject, setNewProject] = useState<NewProject>({
@@ -148,25 +139,36 @@ export const ManageProjects: React.FC = () => {
   const [faq, setFaq] = useState<{ question: string; answer: string }[]>([]);
   const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
   const [trlAnswers, setTrlAnswers] = useState<string[]>([]);
+  const [updatingProject, setUpdatingProject] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchProjects() {
-      try {
-        const data = await apiService.get('/api/projects/');
-        setProjects(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-        setProjects([]);
-      }
-    }
-    fetchProjects();
+    loadProjects();
   }, []);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.get('/api/projects/my_projects/');
+      const adaptedProjects = adaptProjectList(response.data.data || response.data);
+      setProjects(adaptedProjects);
+      
+    } catch (err: any) {
+      console.error('Error cargando proyectos:', err);
+      setError(err.response?.data?.error || 'Error al cargar proyectos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'published':
+      case 'open':
         return 'success';
       case 'in-progress':
+      case 'active':
         return 'info';
       case 'completed':
         return 'primary';
@@ -192,225 +194,165 @@ export const ManageProjects: React.FC = () => {
 
   const handleDelete = async (projectId: string) => {
     try {
-      await apiService.delete(`/api/projects/${projectId}/`);
+      setUpdatingProject(projectId);
+      await api.delete(`/api/projects/${projectId}/`);
       setProjects(prev => prev.filter(project => project.id !== projectId));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting project:', error);
+      setError(error.response?.data?.error || 'Error al eliminar proyecto');
+    } finally {
+      setUpdatingProject(null);
     }
   };
 
   const handleEdit = (project: Project) => {
+    // Implementar edición de proyecto
     console.log('Edit project:', project);
   };
 
-  const filteredProjects = projects.filter(project => {
-    switch (selectedTab) {
-      case 0: // Todos
-        return true;
-      case 1: // Publicados
-        return project.status === 'published';
-      case 2: // En Progreso
-        return project.status === 'in-progress';
-      case 3: // Completados
-        return project.status === 'completed';
-      case 4: // Borradores
-        return project.status === 'draft';
-      default:
-        return true;
-    }
-  });
-
-  const stats = {
-    total: projects.length,
-    published: projects.filter(p => p.status === 'published').length,
-    inProgress: projects.filter(p => p.status === 'in-progress').length,
-    completed: projects.filter(p => p.status === 'completed').length,
-    draft: projects.filter(p => p.status === 'draft').length,
-  };
-
   const handleTrlChange = (trlValue: string) => {
-    setNewProject({ ...newProject, trl: trlValue });
-    setTrlAnswers(Array(trlQuestions[trlValue]?.length || 0).fill(''));
+    setNewProject(prev => ({ ...prev, trl: trlValue }));
+    setTrlAnswers(new Array(trlQuestions[trlValue]?.length || 0).fill(''));
   };
 
   const validate = () => {
-    const errs: any = {};
-    if (!newProject.title) errs.title = 'Requerido';
-    if (!newProject.areas.length) errs.areas = 'Requerido';
-    if (!newProject.description) errs.description = 'Requerido';
-    if (!newProject.duration) errs.duration = 'Requerido';
-    if (!newProject.trl) errs.trl = 'Requerido';
-    if (!newProject.modality) errs.modality = 'Requerido';
-    if (newProject.trl && trlQuestions[newProject.trl]) {
-      trlQuestions[newProject.trl].forEach((_, idx) => {
-        if (!trlAnswers[idx] || !trlAnswers[idx].trim()) {
-          errs[`trlAnswer${idx}`] = 'Requerido';
-        }
-      });
-    }
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+    const newErrors: any = {};
+    if (!newProject.title) newErrors.title = 'Título requerido';
+    if (!newProject.description) newErrors.description = 'Descripción requerida';
+    if (!newProject.duration) newErrors.duration = 'Duración requerida';
+    if (!newProject.trl) newErrors.trl = 'TRL requerido';
+    if (newProject.skills.length === 0) newErrors.skills = 'Habilidades requeridas';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleAddFaq = () => {
-    if (newFaq.question.trim() && newFaq.answer.trim()) {
-      setFaq([...faq, newFaq]);
+    if (newFaq.question && newFaq.answer) {
+      setFaq(prev => [...prev, newFaq]);
       setNewFaq({ question: '', answer: '' });
     }
   };
 
   const handleRemoveFaq = (index: number) => {
-    setFaq(faq.filter((_, i) => i !== index));
+    setFaq(prev => prev.filter((_, i) => i !== index));
   };
 
   const handlePublish = async () => {
     if (!validate()) return;
     
     try {
+      setUpdatingProject('new');
       const projectData = {
         title: newProject.title,
         description: newProject.description,
-        status: 'draft',
-        difficulty: 'beginner',
-        api_level: Number(newProject.trl) || 1,
+        requirements: newProject.skills.join(', '),
+        duration_weeks: parseInt(newProject.duration),
+        difficulty: 'intermediate',
+        modality: newProject.modality || 'remote',
+        min_api_level: 1,
         max_students: 1,
-        current_students: 0,
-        applications: 0,
-        deadline: '',
-        skills: newProject.skills,
-        trl_answers: trlAnswers,
+        hours_per_week: 20,
+        trl: parseInt(newProject.trl),
       };
 
-      const createdProject = await apiService.post('/api/projects/', projectData);
-      setProjects(prev => [...prev, createdProject as Project]);
+      const response = await api.post('/api/projects/', projectData);
+      const newProjectData = response.data;
+      setProjects(prev => [newProjectData, ...prev]);
       setShowNewProject(false);
-      setNewProject({ title: '', areas: [], description: '', duration: '', trl: '', skills: [], modality: '' });
-      setTrlAnswers([]);
+      setNewProject({
+        title: '',
+        areas: [],
+        description: '',
+        duration: '',
+        trl: '',
+        skills: [],
+        modality: '',
+      });
       setErrors({});
-      setFaq([]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating project:', error);
+      setError(error.response?.data?.error || 'Error al crear proyecto');
+    } finally {
+      setUpdatingProject(null);
     }
   };
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadProjects} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
+
+  const filteredProjects = projects.filter(project => {
+    switch (selectedTab) {
+      case 0: return true; // Todos
+      case 1: return project.status === 'published' || project.status === 'open';
+      case 2: return project.status === 'active' || project.status === 'in-progress';
+      case 3: return project.status === 'completed';
+      default: return true;
+    }
+  });
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Gestión de Proyectos
+          Gestionar Proyectos
       </Typography>
-
-      {/* Estadísticas */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(20% - 16px)' } }}>
-          <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <AssignmentIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.total}</Typography>
-                  <Typography variant="body2">Total</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(20% - 16px)' } }}>
-          <Card sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <CheckCircleIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.published}</Typography>
-                  <Typography variant="body2">Publicados</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(20% - 16px)' } }}>
-          <Card sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <TrendingUpIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.inProgress}</Typography>
-                  <Typography variant="body2">En Progreso</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(20% - 16px)' } }}>
-          <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ScheduleIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.completed}</Typography>
-                  <Typography variant="body2">Completados</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(20% - 16px)' } }}>
-          <Card sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <WarningIcon sx={{ mr: 1 }} />
-                <Box>
-                  <Typography variant="h4">{stats.draft}</Typography>
-                  <Typography variant="body2">Borradores</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddCircleIcon />}
+          onClick={() => setShowNewProject(true)}
+        >
+          Nuevo Proyecto
+        </Button>
       </Box>
 
-      {/* Tabs */}
-      <Paper sx={{ mb: 3 }}>
-        <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
+      <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)} sx={{ mb: 3 }}>
           <Tab label="Todos" />
           <Tab label="Publicados" />
           <Tab label="En Progreso" />
           <Tab label="Completados" />
-          <Tab label="Borradores" />
         </Tabs>
-      </Paper>
 
-      {/* Lista de Proyectos */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {filteredProjects.map((project) => (
+        {filteredProjects.length === 0 ? (
+          <Box sx={{ flex: '1 1 100%', textAlign: 'center', py: 4 }}>
+            <Typography color="text.secondary">
+              No hay proyectos para mostrar.
+            </Typography>
+          </Box>
+        ) : (
+          filteredProjects.map((project) => (
           <Box key={project.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant="h6" component="div">
                       {project.title}
                     </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                    <Box>
                       <Chip
                         label={project.status}
                         color={getStatusColor(project.status) as any}
                         size="small"
                       />
-                      <Chip
-                        label={project.difficulty}
-                        color={getDifficultyColor(project.difficulty) as any}
-                        size="small"
-                        variant="outlined"
-                      />
-                    </Box>
-                  </Box>
-                  <Box>
-                    <IconButton size="small" onClick={() => handleEdit(project)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => handleDelete(project.id)}>
-                      <DeleteIcon />
-                    </IconButton>
                   </Box>
                 </Box>
 
@@ -418,247 +360,154 @@ export const ManageProjects: React.FC = () => {
                   {project.description}
                 </Typography>
 
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                  {project.skills.map((skill, index) => (
-                    <Chip key={index} label={skill} size="small" variant="outlined" />
-                  ))}
+                  <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                    <Chip
+                      label={project.difficulty}
+                      color={getDifficultyColor(project.difficulty) as any}
+                      size="small"
+                    />
+                    <Chip
+                      label={`API ${project.min_api_level}`}
+                      color="info"
+                      size="small"
+                    />
+                    <Chip
+                      label={`${project.duration_weeks} semanas`}
+                      color="secondary"
+                      size="small"
+                    />
                 </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      <PeopleIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                      {project.current_students}/{project.max_students} estudiantes
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <PeopleIcon fontSize="small" />
+                      <Typography variant="body2">
+                        {project.current_students}/{project.max_students}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {project.applications} postulaciones
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <AssignmentIcon fontSize="small" />
+                      <Typography variant="body2">
+                        {project.applications_count || 0} aplicaciones
                     </Typography>
+                    </Box>
                   </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    API Level {project.api_level}
+
+                  {project.start_date && (
+                    <Typography variant="caption" color="text.secondary">
+                      Inicio: {new Date(project.start_date).toLocaleDateString()}
                   </Typography>
-                </Box>
+                  )}
               </CardContent>
               <CardActions>
-                <Button size="small" startIcon={<ViewIcon />}>
-                  Ver Detalles
-                </Button>
-                <Button size="small" color="primary">
-                  Gestionar
-                </Button>
+                  <IconButton size="small" onClick={() => handleEdit(project)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton size="small">
+                    <ViewIcon />
+                  </IconButton>
+                  <IconButton 
+                    size="small" 
+                    color="error"
+                    onClick={() => handleDelete(project.id)}
+                    disabled={updatingProject === project.id}
+                  >
+                    {updatingProject === project.id ? <CircularProgress size={16} /> : <DeleteIcon />}
+                  </IconButton>
               </CardActions>
             </Card>
           </Box>
-        ))}
+          ))
+        )}
       </Box>
 
-      {/* Botón para publicar nuevo proyecto */}
-      <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          startIcon={<AddCircleIcon />}
-          sx={{ borderRadius: 3, fontWeight: 600, fontSize: 18, px: 4, py: 2, boxShadow: 2 }}
-          onClick={() => setShowNewProject(true)}
-        >
-          Publicar Nuevo Proyecto
-        </Button>
-      </Box>
-
-      {/* Modal para nuevo proyecto */}
+      {/* Dialog para nuevo proyecto */}
       <Dialog open={showNewProject} onClose={() => setShowNewProject(false)} maxWidth="md" fullWidth>
-        <DialogTitle fontWeight={700}>Publicar Nuevo Proyecto</DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <DialogTitle>Nuevo Proyecto</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+            <Box sx={{ flex: '1 1 100%' }}>
             <TextField
-              label="Nombre del Proyecto"
+                fullWidth
+                label="Título del Proyecto"
               value={newProject.title}
-              onChange={e => setNewProject({ ...newProject, title: e.target.value })}
+                onChange={(e) => setNewProject(prev => ({ ...prev, title: e.target.value }))}
               error={!!errors.title}
               helperText={errors.title}
-              fullWidth
-            />
-            <FormControl fullWidth error={!!errors.areas}>
-              <InputLabel>Área de estudiantes requerida</InputLabel>
-              <Select
-                multiple
-                value={newProject.areas}
-                onChange={e => setNewProject({ ...newProject, areas: e.target.value as string[] })}
-                label="Área de estudiantes requerida"
-              >
-                {studentAreas.map(area => (
-                  <MenuItem key={area} value={area}>{area}</MenuItem>
-                ))}
-              </Select>
-              {errors.areas && <Typography color="error" variant="caption">{errors.areas}</Typography>}
-            </FormControl>
+                margin="normal"
+              />
+            </Box>
+            <Box sx={{ flex: '1 1 100%' }}>
             <TextField
-              label="Descripción del Proyecto"
+                fullWidth
+                multiline
+                rows={3}
+                label="Descripción"
               value={newProject.description}
-              onChange={e => setNewProject({ ...newProject, description: e.target.value })}
+                onChange={(e) => setNewProject(prev => ({ ...prev, description: e.target.value }))}
               error={!!errors.description}
               helperText={errors.description}
-              multiline
-              minRows={3}
-              fullWidth
+                margin="normal"
             />
+            </Box>
+            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
             <TextField
+                fullWidth
               label="Duración (semanas)"
               type="number"
               value={newProject.duration}
-              onChange={e => setNewProject({ ...newProject, duration: e.target.value })}
+                onChange={(e) => setNewProject(prev => ({ ...prev, duration: e.target.value }))}
               error={!!errors.duration}
               helperText={errors.duration}
-              fullWidth
-              inputProps={{ min: 1 }}
-            />
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Typography variant="subtitle1" fontWeight={600}>Nivel TRL del Proyecto</Typography>
-                <IconButton size="small" onClick={() => setShowTrlHelp(true)}><InfoIcon /></IconButton>
-              </Box>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                {trlOptions.map(opt => (
-                  <Button
-                    key={opt.value}
-                    variant={newProject.trl === String(opt.value) ? 'contained' : 'outlined'}
-                    color="primary"
-                    onClick={() => handleTrlChange(String(opt.value))}
-                    sx={{ minWidth: 90 }}
-                  >
-                    {opt.label}
-                  </Button>
-                ))}
-              </Box>
-              {errors.trl && <Typography color="error" variant="caption">{errors.trl}</Typography>}
+                margin="normal"
+              />
             </Box>
-            {newProject.trl && trlQuestions[newProject.trl] && (
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Preguntas para evaluar el estado actual del proyecto (TRL {newProject.trl})
-                </Typography>
-                {trlQuestions[newProject.trl].map((q, idx) => (
-                  <TextField
-                    key={idx}
-                    label={q}
-                    value={trlAnswers[idx] || ''}
-                    onChange={e => {
-                      const updated = [...trlAnswers];
-                      updated[idx] = e.target.value;
-                      setTrlAnswers(updated);
-                    }}
-                    error={!!errors[`trlAnswer${idx}`]}
-                    helperText={errors[`trlAnswer${idx}`]}
-                    fullWidth
-                    multiline
-                    minRows={2}
-                    sx={{ mb: 2 }}
-                  />
-                ))}
-              </Box>
-            )}
-            <FormControl fullWidth>
-              <InputLabel>Modalidad</InputLabel>
+            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>TRL</InputLabel>
               <Select
-                value={newProject.modality}
-                onChange={e => setNewProject({ ...newProject, modality: e.target.value })}
-                label="Modalidad"
-                error={!!errors.modality}
+                  value={newProject.trl}
+                  label="TRL"
+                  onChange={(e) => handleTrlChange(e.target.value)}
+                  error={!!errors.trl}
               >
-                <MenuItem value="">Selecciona una opción</MenuItem>
-                <MenuItem value="Remoto">Remoto</MenuItem>
-                <MenuItem value="Presencial">Presencial</MenuItem>
-                <MenuItem value="Híbrido">Híbrido</MenuItem>
+                  {trlOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
               </Select>
-              {errors.modality && <Typography color="error" variant="caption">{errors.modality}</Typography>}
             </FormControl>
-            <FormControl fullWidth>
-              <InputLabel>Habilidades requeridas</InputLabel>
+            </Box>
+            <Box sx={{ flex: '1 1 100%' }}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Habilidades Requeridas</InputLabel>
               <Select
                 multiple
                 value={newProject.skills}
-                onChange={e => setNewProject({ ...newProject, skills: e.target.value as string[] })}
-                label="Habilidades requeridas"
+                  label="Habilidades Requeridas"
+                  onChange={(e) => setNewProject(prev => ({ ...prev, skills: e.target.value as string[] }))}
+                  error={!!errors.skills}
               >
-                {skillsList.map(skill => (
-                  <MenuItem key={skill} value={skill}>{skill}</MenuItem>
+                  {skillsList.map((skill) => (
+                    <MenuItem key={skill} value={skill}>
+                      {skill}
+                    </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <Box>
-              <Typography variant="h6" gutterBottom>Preguntas Frecuentes (FAQ) para el Proyecto</Typography>
-              {faq.length > 0 && (
-                <Box sx={{ mb: 2 }}>
-                  {faq.map((item, idx) => (
-                    <Box key={idx} sx={{ mb: 1, p: 1, bgcolor: 'grey.100', borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle2">Q: {item.question}</Typography>
-                        <Typography variant="body2" color="text.secondary">A: {item.answer}</Typography>
-                      </Box>
-                      <IconButton size="small" color="error" onClick={() => handleRemoveFaq(idx)}><DeleteIcon /></IconButton>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-              <Box sx={{ display: 'flex', gap: 2, mb: 1, flexWrap: 'wrap' }}>
-                <TextField
-                  label="Pregunta"
-                  value={newFaq.question}
-                  onChange={e => setNewFaq({ ...newFaq, question: e.target.value })}
-                  size="small"
-                  sx={{ flex: 1, minWidth: 180 }}
-                />
-                <TextField
-                  label="Respuesta"
-                  value={newFaq.answer}
-                  onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })}
-                  size="small"
-                  sx={{ flex: 2, minWidth: 220 }}
-                />
-                <Button variant="outlined" onClick={handleAddFaq} sx={{ height: 40, alignSelf: 'center' }}>Agregar</Button>
-              </Box>
-              <Typography variant="caption" color="text.secondary">Puedes agregar preguntas y respuestas que los estudiantes verán al postularse.</Typography>
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={() => setShowNewProject(false)} variant="outlined">Cancelar</Button>
-          <Button onClick={handlePublish} variant="contained" color="primary">Publicar</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Modal de ayuda TRL */}
-      <Dialog open={showTrlHelp} onClose={() => setShowTrlHelp(false)} maxWidth="sm">
-        <DialogTitle>¿Qué es el TRL?</DialogTitle>
-        <DialogContent>
-          <Box sx={{ p: 1 }}>
-            <Typography variant="subtitle2" fontWeight={700} align="center" gutterBottom>
-              Adaptación simple TRLs para diagnóstico al ingreso y egreso/cierre de proyectos.
-            </Typography>
-            <Typography variant="body2" color="text.secondary" align="center" gutterBottom>
-              No aplica para actividades formativas o curriculares
-            </Typography>
-            <Box component="table" sx={{ width: '100%', border: '1px solid #ccc', borderRadius: 2, mt: 2 }}>
-              <Box component="thead" sx={{ bgcolor: 'grey.100' }}>
-                <Box component="tr">
-                  <Box component="th" sx={{ p: 1, fontWeight: 700, border: '1px solid #ccc' }}>TRL</Box>
-                  <Box component="th" sx={{ p: 1, fontWeight: 700, border: '1px solid #ccc' }}>Descripción</Box>
-                </Box>
-              </Box>
-              <Box component="tbody">
-                {trlOptions.map(opt => (
-                  <Box component="tr" key={opt.value}>
-                    <Box component="td" sx={{ p: 1, border: '1px solid #ccc', fontWeight: 600 }}>{opt.label}</Box>
-                    <Box component="td" sx={{ p: 1, border: '1px solid #ccc' }}>{opt.desc}</Box>
-                  </Box>
-                ))}
-              </Box>
             </Box>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowTrlHelp(false)} variant="contained">Cerrar</Button>
+          <Button onClick={() => setShowNewProject(false)}>Cancelar</Button>
+          <Button 
+            onClick={handlePublish} 
+            variant="contained"
+            disabled={updatingProject === 'new'}
+          >
+            {updatingProject === 'new' ? <CircularProgress size={20} /> : 'Crear Proyecto'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

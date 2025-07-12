@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -9,21 +9,23 @@ import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function CompanyDashboard() {
   const { user } = useAuth();
-  const [previousStats, setPreviousStats] = useState<any>(null);
+
   
   // Usar hook de tiempo real para estadísticas
-  const { data: stats, loading, error, lastUpdate, refresh, isPolling } = useDashboardStats('company');
+  const { data: stats, loading, error, lastUpdate } = useDashboardStats('company');
 
   // Detectar cambios en las estadísticas
   useEffect(() => {
+    console.log('[CompanyDashboard] Stats changed:', stats);
     if (stats) {
       console.log('[CompanyDashboard] Stats received:', stats);
-      setPreviousStats(stats);
+
     }
   }, [stats]);
 
@@ -56,11 +58,26 @@ export default function CompanyDashboard() {
         <Typography variant="h4" fontWeight={700}>
           Dashboard de Empresa
         </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         {lastUpdate && (
           <Typography variant="caption" color="text.secondary">
             Última actualización: {lastUpdate.toLocaleTimeString()}
           </Typography>
         )}
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              marginLeft: 8
+            }}
+            title="Actualizar"
+          >
+            <RefreshIcon style={{ color: '#1976d2', fontSize: 28 }} />
+          </button>
+        </Box>
       </Box>
       
       {/* Estado de carga */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -21,6 +21,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -37,90 +39,9 @@ import {
   Visibility as VisibilityIcon,
   Send as SendIcon,
 } from '@mui/icons-material';
-
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  avatar: string;
-  university: string;
-  career: string;
-  semester: number;
-  skills: string[];
-  experience: string;
-  rating: number;
-  projectsCompleted: number;
-  github: string;
-  linkedin: string;
-  portfolio: string;
-  availability: 'full-time' | 'part-time' | 'flexible';
-  location: string;
-  languages: string[];
-}
-
-const mockStudents: Student[] = [
-  {
-    id: '1',
-    name: 'Juan Pérez',
-    email: 'juan.perez@email.com',
-    phone: '+56 9 1234 5678',
-    avatar: '',
-    university: 'Universidad de Chile',
-    career: 'Ingeniería Civil en Informática',
-    semester: 8,
-    skills: ['React', 'TypeScript', 'Node.js', 'MongoDB', 'Git'],
-    experience: '2 años desarrollando aplicaciones web',
-    rating: 4.5,
-    projectsCompleted: 3,
-    github: 'https://github.com/juanperez',
-    linkedin: 'https://linkedin.com/in/juanperez',
-    portfolio: 'https://juanperez.dev',
-    availability: 'full-time',
-    location: 'Santiago, Chile',
-    languages: ['Español', 'Inglés'],
-  },
-  {
-    id: '2',
-    name: 'María González',
-    email: 'maria.gonzalez@email.com',
-    phone: '+56 9 8765 4321',
-    avatar: '',
-    university: 'Pontificia Universidad Católica',
-    career: 'Ingeniería Civil en Computación',
-    semester: 7,
-    skills: ['Python', 'Django', 'PostgreSQL', 'Docker', 'AWS'],
-    experience: '1.5 años en desarrollo backend',
-    rating: 4.2,
-    projectsCompleted: 2,
-    github: 'https://github.com/mariagonzalez',
-    linkedin: 'https://linkedin.com/in/mariagonzalez',
-    portfolio: 'https://mariagonzalez.dev',
-    availability: 'part-time',
-    location: 'Valparaíso, Chile',
-    languages: ['Español', 'Inglés', 'Portugués'],
-  },
-  {
-    id: '3',
-    name: 'Carlos Rodríguez',
-    email: 'carlos.rodriguez@email.com',
-    phone: '+56 9 5555 1234',
-    avatar: '',
-    university: 'Universidad Técnica Federico Santa María',
-    career: 'Ingeniería Civil Informática',
-    semester: 9,
-    skills: ['Java', 'Spring Boot', 'MySQL', 'React Native', 'Firebase'],
-    experience: '3 años en desarrollo móvil y backend',
-    rating: 4.8,
-    projectsCompleted: 5,
-    github: 'https://github.com/carlosrodriguez',
-    linkedin: 'https://linkedin.com/in/carlosrodriguez',
-    portfolio: 'https://carlosrodriguez.dev',
-    availability: 'flexible',
-    location: 'Concepción, Chile',
-    languages: ['Español', 'Inglés'],
-  },
-];
+import { useApi } from '../../../hooks/useApi';
+import { adaptStudentList } from '../../../utils/adapters';
+import type { Student } from '../../../types';
 
 // Agrega las áreas posibles
 const AREAS = [
@@ -134,26 +55,81 @@ const AREAS = [
 ];
 
 export const SearchStudents: React.FC = () => {
-  const students = mockStudents;
+  const api = useApi();
+  const [students, setStudents] = useState<Student[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
   const [areaFilter, setAreaFilter] = useState<string>('Todas');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showContactDialog, setShowContactDialog] = useState(false);
 
-  const allSkills = Array.from(new Set(students.flatMap(student => student.skills)));
+  // Cargar estudiantes al montar el componente
+  useEffect(() => {
+    loadStudents();
+  }, []);
+
+  const loadStudents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Obtener usuarios con rol student
+      const usersResponse = await api.get('/api/users/');
+      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
+      setUsers(studentUsers);
+
+      // Obtener perfiles de estudiantes
+      const studentsResponse = await api.get('/api/students/');
+      const adaptedStudents = adaptStudentList(studentsResponse.data);
+      setStudents(adaptedStudents);
+      
+    } catch (err: any) {
+      console.error('Error cargando estudiantes:', err);
+      setError(err.response?.data?.error || 'Error al cargar estudiantes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Combinar datos de usuario y perfil de estudiante
+  const getStudentWithUser = (student: Student): Student & { userData?: any } => {
+    const userData = users.find(user => user.id === student.user);
+    return { ...student, userData };
+  };
+
+  // Obtener todas las habilidades únicas de los estudiantes
+  const allSkills = Array.from(
+    new Set(
+      students.flatMap(student => student.skills || [])
+    )
+  );
 
   // Lógica de filtrado incluyendo área
-  const filteredStudents = students.filter(student => {
-    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.university.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.career.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredStudents = students
+    .map(getStudentWithUser)
+    .filter(student => {
+      const userData = student.userData;
+      if (!userData) return false;
+
+      const matchesSearch = 
+        userData.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.university?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.career?.toLowerCase().includes(searchTerm.toLowerCase());
+      
     const matchesSkills = selectedSkills.length === 0 || 
-                         selectedSkills.some(skill => student.skills.includes(skill));
+        selectedSkills.some(skill => student.skills?.includes(skill));
+      
     const matchesAvailability = !availabilityFilter || student.availability === availabilityFilter;
-    const matchesArea = areaFilter === 'Todas' || student.career.toLowerCase().includes(areaFilter.toLowerCase());
+      
+      const matchesArea = areaFilter === 'Todas' || 
+        student.career?.toLowerCase().includes(areaFilter.toLowerCase());
+      
     return matchesSearch && matchesSkills && matchesAvailability && matchesArea;
   });
 
@@ -165,23 +141,27 @@ export const SearchStudents: React.FC = () => {
     );
   };
 
-  const handleContactStudent = (student: Student) => {
+  const handleContactStudent = (student: Student & { userData?: User }) => {
     setSelectedStudent(student);
+    setSelectedUser(student.userData || null);
     setShowContactDialog(true);
   };
 
-  const handleSendEmail = (student: Student) => {
+  const handleSendEmail = (student: Student & { userData?: User }) => {
+    const userData = student.userData;
+    if (!userData) return;
+
     const subject = encodeURIComponent('Interés en colaboración - LeanMaker');
-    const body = encodeURIComponent(`Hola ${student.name},
+    const body = encodeURIComponent(`Hola ${userData.full_name},
 
 He revisado tu perfil en LeanMaker y me interesa mucho la posibilidad de trabajar contigo.
 
 Información de tu perfil:
-- Universidad: ${student.university}
-- Carrera: ${student.career}
-- Semestre: ${student.semester}°
-- Habilidades: ${student.skills.join(', ')}
-- Experiencia: ${student.experience}
+- Universidad: ${student.university || 'No especificada'}
+- Carrera: ${student.career || 'No especificada'}
+- Semestre: ${student.semester ? `${student.semester}°` : 'No especificado'}
+- Habilidades: ${student.skills?.join(', ') || 'No especificadas'}
+- Experiencia: ${student.experience_years || 0} años
 
 ¿Te gustaría que conversemos sobre posibles oportunidades de colaboración?
 
@@ -189,10 +169,31 @@ Saludos cordiales,
 [Tu nombre]
 [Tu empresa]`);
     
-    const mailtoLink = `mailto:${student.email}?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:${userData.email}?subject=${subject}&body=${body}`;
     window.open(mailtoLink, '_blank');
     setShowContactDialog(false);
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadStudents} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -268,7 +269,11 @@ Saludos cordiales,
 
       {/* Lista de estudiantes */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {filteredStudents.map((student) => (
+        {filteredStudents.map((student) => {
+          const userData = student.userData;
+          if (!userData) return null;
+
+          return (
           <Box key={student.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
             <Card>
               <CardContent>
@@ -278,10 +283,10 @@ Saludos cordiales,
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" gutterBottom>
-                      {student.name}
+                        {userData.full_name}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Rating value={student.rating} readOnly size="small" />
+                        <Rating value={Number(student.rating)} readOnly size="small" />
                       <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
                         ({student.rating})
                       </Typography>
@@ -291,15 +296,16 @@ Saludos cordiales,
 
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   <SchoolIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
-                  {student.university}
+                    {student.university || 'Universidad no especificada'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   <WorkIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
-                  {student.career} - {student.semester}° semestre
+                    {student.career || 'Carrera no especificada'}
+                    {student.semester && ` - ${student.semester}° semestre`}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   <StarIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
-                  {student.projectsCompleted} proyectos completados
+                    {student.completed_projects} proyectos completados
                 </Typography>
 
                 <Box sx={{ mt: 2, mb: 2 }}>
@@ -307,7 +313,7 @@ Saludos cordiales,
                     Habilidades:
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {student.skills.slice(0, 4).map((skill) => (
+                      {(student.skills || []).slice(0, 4).map((skill) => (
                       <Chip
                         key={skill}
                         label={skill}
@@ -315,9 +321,9 @@ Saludos cordiales,
                         variant="outlined"
                       />
                     ))}
-                    {student.skills.length > 4 && (
+                      {(student.skills || []).length > 4 && (
                       <Chip
-                        label={`+${student.skills.length - 4}`}
+                          label={`+${(student.skills || []).length - 4}`}
                         size="small"
                         variant="outlined"
                       />
@@ -339,6 +345,7 @@ Saludos cordiales,
                   startIcon={<VisibilityIcon />}
                   onClick={() => {
                     setSelectedStudent(student);
+                      setSelectedUser(userData);
                     setShowDetailDialog(true);
                   }}
                 >
@@ -355,14 +362,27 @@ Saludos cordiales,
               </CardActions>
             </Card>
           </Box>
-        ))}
+          );
+        })}
       </Box>
+
+      {/* Mensaje cuando no hay resultados */}
+      {filteredStudents.length === 0 && !loading && (
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            No se encontraron estudiantes
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Intenta ajustar los filtros de búsqueda
+          </Typography>
+        </Box>
+      )}
 
       {/* Dialog de detalles del estudiante */}
       <Dialog open={showDetailDialog} onClose={() => setShowDetailDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>Detalles del Estudiante</DialogTitle>
         <DialogContent>
-          {selectedStudent && (
+          {selectedStudent && selectedUser && (
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <Avatar sx={{ mr: 2, width: 80, height: 80, bgcolor: 'primary.main' }}>
@@ -370,12 +390,12 @@ Saludos cordiales,
                 </Avatar>
                 <Box>
                   <Typography variant="h5" gutterBottom>
-                    {selectedStudent.name}
+                    {selectedUser.full_name}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Rating value={selectedStudent.rating} readOnly />
+                    <Rating value={Number(selectedStudent.rating)} readOnly />
                     <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                      ({selectedStudent.rating}) - {selectedStudent.projectsCompleted} proyectos
+                      ({selectedStudent.rating}) - {selectedStudent.completed_projects} proyectos
                     </Typography>
                   </Box>
                   <Chip
@@ -395,19 +415,25 @@ Saludos cordiales,
                     <ListItem>
                       <ListItemText
                         primary="Universidad"
-                        secondary={selectedStudent.university}
+                        secondary={selectedStudent.university || 'No especificada'}
                       />
                     </ListItem>
                     <ListItem>
                       <ListItemText
                         primary="Carrera"
-                        secondary={selectedStudent.career}
+                        secondary={selectedStudent.career || 'No especificada'}
                       />
                     </ListItem>
                     <ListItem>
                       <ListItemText
                         primary="Semestre"
-                        secondary={`${selectedStudent.semester}° semestre`}
+                        secondary={selectedStudent.semester ? `${selectedStudent.semester}° semestre` : 'No especificado'}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="Años de experiencia"
+                        secondary={`${selectedStudent.experience_years || 0} años`}
                       />
                     </ListItem>
                   </List>
@@ -420,15 +446,15 @@ Saludos cordiales,
                   <List dense>
                     <ListItem>
                       <EmailIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                      <ListItemText primary={selectedStudent.email} />
+                      <ListItemText primary={selectedUser.email} />
                     </ListItem>
                     <ListItem>
                       <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                      <ListItemText primary={selectedStudent.phone} />
+                      <ListItemText primary={selectedUser.phone || 'No especificado'} />
                     </ListItem>
                     <ListItem>
                       <LanguageIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                      <ListItemText primary={selectedStudent.location} />
+                      <ListItemText primary={selectedStudent.location || 'No especificada'} />
                     </ListItem>
                   </List>
                 </Box>
@@ -438,19 +464,31 @@ Saludos cordiales,
                     Habilidades
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {selectedStudent.skills.map((skill) => (
+                    {(selectedStudent.skills || []).map((skill) => (
                       <Chip key={skill} label={skill} color="primary" />
                     ))}
+                    {(selectedStudent.skills || []).length === 0 && (
+                      <Typography variant="body2" color="text.secondary">
+                        No se han especificado habilidades
+                      </Typography>
+                    )}
                   </Box>
                 </Box>
 
                 <Box sx={{ flex: '1 1 100%' }}>
                   <Typography variant="h6" gutterBottom>
-                    Experiencia
+                    Idiomas
                   </Typography>
-                  <Typography variant="body2" paragraph>
-                    {selectedStudent.experience}
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {(selectedStudent.languages || []).map((language) => (
+                      <Chip key={language} label={language} variant="outlined" />
+                    ))}
+                    {(selectedStudent.languages || []).length === 0 && (
+                      <Typography variant="body2" color="text.secondary">
+                        No se han especificado idiomas
                   </Typography>
+                    )}
+                  </Box>
                 </Box>
 
                 <Box sx={{ flex: '1 1 100%' }}>
@@ -458,33 +496,44 @@ Saludos cordiales,
                     Enlaces
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 2 }}>
+                    {selectedStudent.github_url && (
                     <Button
                       startIcon={<GitHubIcon />}
-                      href={selectedStudent.github}
+                        href={selectedStudent.github_url}
                       target="_blank"
                       variant="outlined"
                       size="small"
                     >
                       GitHub
                     </Button>
+                    )}
+                    {selectedStudent.linkedin_url && (
                     <Button
                       startIcon={<LinkedInIcon />}
-                      href={selectedStudent.linkedin}
+                        href={selectedStudent.linkedin_url}
                       target="_blank"
                       variant="outlined"
                       size="small"
                     >
                       LinkedIn
                     </Button>
+                    )}
+                    {selectedStudent.portfolio_url && (
                     <Button
                       startIcon={<LanguageIcon />}
-                      href={selectedStudent.portfolio}
+                        href={selectedStudent.portfolio_url}
                       target="_blank"
                       variant="outlined"
                       size="small"
                     >
                       Portfolio
                     </Button>
+                    )}
+                    {!selectedStudent.github_url && !selectedStudent.linkedin_url && !selectedStudent.portfolio_url && (
+                      <Typography variant="body2" color="text.secondary">
+                        No se han especificado enlaces
+                      </Typography>
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -496,7 +545,9 @@ Saludos cordiales,
           <Button
             onClick={() => {
               setShowDetailDialog(false);
-              handleContactStudent(selectedStudent!);
+              if (selectedStudent && selectedUser) {
+                handleContactStudent({ ...selectedStudent, userData: selectedUser });
+              }
             }}
             variant="contained"
             color="primary"
@@ -510,10 +561,10 @@ Saludos cordiales,
       <Dialog open={showContactDialog} onClose={() => setShowContactDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Contactar Estudiante</DialogTitle>
         <DialogContent>
-          {selectedStudent && (
+          {selectedStudent && selectedUser && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="body1" gutterBottom>
-                ¿Deseas contactar a <strong>{selectedStudent.name}</strong>?
+                ¿Deseas contactar a <strong>{selectedUser.full_name}</strong>?
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
                 Se enviará una notificación al estudiante con tu interés en trabajar con él/ella.
@@ -521,11 +572,11 @@ Saludos cordiales,
               <List dense>
                 <ListItem>
                   <EmailIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                  <ListItemText primary={selectedStudent.email} />
+                  <ListItemText primary={selectedUser.email} />
                 </ListItem>
                 <ListItem>
                   <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                  <ListItemText primary={selectedStudent.phone} />
+                  <ListItemText primary={selectedUser.phone || 'No especificado'} />
                 </ListItem>
               </List>
             </Box>
@@ -534,7 +585,7 @@ Saludos cordiales,
         <DialogActions>
           <Button onClick={() => setShowContactDialog(false)}>Cancelar</Button>
           <Button
-            onClick={() => handleSendEmail(selectedStudent!)}
+            onClick={() => handleSendEmail({ ...selectedStudent!, userData: selectedUser! })}
             variant="contained"
             color="primary"
           >

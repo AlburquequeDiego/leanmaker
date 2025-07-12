@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from users.models import User
 import uuid
 import json
@@ -197,3 +199,10 @@ class CalificacionEmpresa(models.Model):
         # Actualizar calificación promedio de la empresa
         super().save(*args, **kwargs)
         self.empresa.actualizar_calificacion(self.puntuacion)
+
+@receiver(post_save, sender=User)
+def crear_perfil_empresa(sender, instance, created, **kwargs):
+    if created and instance.role == 'company':
+        from .models import Empresa
+        if not hasattr(instance, 'empresa_profile'):
+            Empresa.objects.create(user=instance, company_name=instance.email)

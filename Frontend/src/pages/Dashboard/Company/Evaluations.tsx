@@ -2,596 +2,518 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
+  Paper,
   Button,
-  Chip,
-  Avatar,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Divider,
-  Rating,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
-  Checkbox,
-  ListItemText,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Chip,
+  IconButton,
+  Alert,
+  CircularProgress,
+  Card,
+  CardContent,
+  Grid,
+  Rating,
+  Slider,
 } from '@mui/material';
 import {
-  Assessment as AssessmentIcon,
-  CheckCircle as CheckCircleIcon,
-  PauseCircle as PauseCircleIcon,
-  Person as PersonIcon,
-  Star as StarIcon,
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   RateReview as RateReviewIcon,
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-
-interface Project {
-  id: string;
-  title: string;
-  company: string;
-  description: string;
-  status: 'active' | 'completed' | 'paused';
-  progress: number;
-  tech: string[];
-  hours: number;
-  total_hours: number;
-  location: string;
-  students: Student[];
-}
-
-interface Student {
-  id: string;
-  name: string;
-  evaluated: boolean;
-}
-
-
+import { useApi } from '../../../hooks/useApi';
+import { adaptProjectList, adaptEvaluation } from '../../../utils/adapters';
+import type { Project, Evaluation } from '../../../types';
 
 // Opciones para fortalezas y áreas de mejora
-const fortalezasOpciones = [
-  'Buen manejo de Git y control de versiones',
-  'Documentación clara y concisa',
-  'Implementación eficiente de funcionalidades',
-  'Excelente resolución de problemas',
-  'Código limpio y bien estructurado',
+const strengthsOptions = [
+  'Trabajo en equipo', 'Comunicación', 'Liderazgo', 'Resolución de problemas',
+  'Creatividad', 'Organización', 'Adaptabilidad', 'Iniciativa'
 ];
 
-const mejorasOpciones = [
-  'Participación más activa en las reuniones',
-  'Mejorar la cobertura de pruebas unitarias',
-  'Optimizar consultas a la base de datos',
-  'Comunicación en equipo',
-  'Gestión del tiempo',
+const improvementAreas = [
+  'Gestión del tiempo', 'Comunicación escrita', 'Presentaciones', 'Análisis de datos',
+  'Programación', 'Diseño', 'Investigación', 'Documentación'
 ];
 
-const cantidadOpciones = [5, 10, 20, 'todas'];
-
-// Define un tipo para el estado de evaluación
 interface EvaluationFormState {
-  code: number;
-  deadlines: number;
-  teamwork: number;
-  communication: number;
-  documentation: number;
-  innovation: number;
-  comment: string;
-  fortalezas: string[];
-  fortalezasExtra: string;
-  mejoras: string[];
-  mejorasExtra: string;
-  tecnologias: string;
-  entregables: string;
+  score: number;
+  comments: string;
+  strengths: string[];
+  improvement_areas: string[];
 }
 
 export const CompanyEvaluations: React.FC = () => {
+  const api = useApi();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [cantidadActivos, setCantidadActivos] = useState<string | number>(5);
-  const [cantidadCompletados, setCantidadCompletados] = useState<string | number>(5);
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetalleOpen, setModalDetalleOpen] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<any>(null);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [evaluationForm, setEvaluationForm] = useState<EvaluationFormState>({
-    code: 0,
-    deadlines: 0,
-    teamwork: 0,
-    communication: 0,
-    documentation: 0,
-    innovation: 0,
-    comment: '',
-    fortalezas: [],
-    fortalezasExtra: '',
-    mejoras: [],
-    mejorasExtra: '',
-    tecnologias: '',
-    entregables: '',
+    score: 0,
+    comments: '',
+    strengths: [],
+    improvement_areas: [],
   });
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        // Obtener proyectos
-        const projectsData = await apiService.get('/api/projects/');
-        setProjects(Array.isArray(projectsData) ? projectsData : []);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setProjects([]);
-      }
-    }
-    fetchData();
+    loadData();
   }, []);
 
-  // Filtros de cantidad para cada sección
-  const activos = projects.filter(p => p.status === 'active');
-  const completados = projects.filter(p => p.status === 'completed');
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Obtener proyectos
+      const projectsResponse = await api.get('/api/projects/');
+      const adaptedProjects = adaptProjectList(projectsResponse.data.results || projectsResponse.data);
+      setProjects(adaptedProjects);
 
-  const activosFiltrados = cantidadActivos === 'todas' ? activos : activos.slice(0, Number(cantidadActivos));
-  const completadosFiltrados = cantidadCompletados === 'todas' ? completados : completados.slice(0, Number(cantidadCompletados));
+      // Obtener evaluaciones
+      const evaluationsResponse = await api.get('/api/evaluations/');
+      const adaptedEvaluations = (evaluationsResponse.data.results || evaluationsResponse.data).map(adaptEvaluation);
+      setEvaluations(adaptedEvaluations);
 
-  // Handlers para abrir/cerrar modales y guardar evaluación
-  const handleOpenEvaluar = (student: any, project: any) => {
+      // Obtener usuarios
+      const usersResponse = await api.get('/api/users/');
+      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
+      setUsers(studentUsers);
+      
+    } catch (err: any) {
+      console.error('Error cargando datos:', err);
+      setError(err.response?.data?.error || 'Error al cargar datos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filtrar proyectos por estado
+  const activos = projects.filter(project => project.status === 'active');
+  const completados = projects.filter(project => project.status === 'completed');
+  const cancelados = projects.filter(project => project.status === 'cancelled');
+
+  // Verificar si un estudiante ya fue evaluado en un proyecto
+  const isStudentEvaluated = (studentId: string, projectId: string) => {
+    return evaluations.some(evaluation =>
+      evaluation.student === studentId && evaluation.project === projectId
+    );
+  };
+
+  // Obtener evaluación existente
+  const getExistingEvaluation = (studentId: string, projectId: string) => {
+    return evaluations.find(evaluation =>
+      evaluation.student === studentId && evaluation.project === projectId
+    );
+  };
+
+  const handleOpenEvaluar = (student: any, project: Project) => {
     setSelectedStudent(student);
     setSelectedProject(project);
+    
+    // Cargar evaluación existente si existe
+    const existingEvaluation = getExistingEvaluation(student.id, project.id);
+    if (existingEvaluation) {
+      setEvaluationForm({
+        score: existingEvaluation.score,
+        comments: existingEvaluation.comments || '',
+        strengths: [],
+        improvement_areas: [],
+      });
+    } else {
+      setEvaluationForm({
+        score: 0,
+        comments: '',
+        strengths: [],
+        improvement_areas: [],
+      });
+    }
+    
     setModalOpen(true);
   };
-  const handleOpenDetalle = (student: any, project: any) => {
+
+  const handleOpenDetalle = (student: any, project: Project) => {
     setSelectedStudent(student);
     setSelectedProject(project);
     setModalDetalleOpen(true);
   };
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setEvaluationForm({
-      code: 0, deadlines: 0, teamwork: 0, communication: 0, documentation: 0, innovation: 0,
-      comment: '', fortalezas: [], fortalezasExtra: '', mejoras: [], mejorasExtra: '', tecnologias: '', entregables: ''
-    });
-  };
-  const handleCloseDetalle = () => setModalDetalleOpen(false);
 
-  const handleSaveEvaluacion = async () => {
+  const handleSaveEvaluation = async () => {
+    if (!selectedStudent || !selectedProject) return;
+
     try {
       const evaluationData = {
-        project_id: selectedProject.id,
-        student_id: selectedStudent.id,
-        code: evaluationForm.code,
-        deadlines: evaluationForm.deadlines,
-        teamwork: evaluationForm.teamwork,
-        communication: evaluationForm.communication,
-        documentation: evaluationForm.documentation,
-        innovation: evaluationForm.innovation,
-        comment: evaluationForm.comment,
-        fortalezas: evaluationForm.fortalezas,
-        mejoras: evaluationForm.mejoras,
-        tecnologias: evaluationForm.tecnologias,
-        entregables: evaluationForm.entregables,
+        project: selectedProject.id,
+        student: selectedStudent.id,
+        score: evaluationForm.score,
+        comments: evaluationForm.comments,
+        category: 'general', // Categoría por defecto
       };
 
-      const createdEvaluation = await apiService.post('/api/evaluations/', evaluationData);
-      setProjects(prev => [...prev, createdEvaluation as Project]);
+      const existingEvaluation = getExistingEvaluation(selectedStudent.id, selectedProject.id);
+      
+      if (existingEvaluation) {
+        // Actualizar evaluación existente
+        const response = await api.patch(`/api/evaluations/${existingEvaluation.id}/`, evaluationData);
+        const updatedEvaluation = adaptEvaluation(response.data);
+                 setEvaluations(prev =>
+           prev.map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
+         );
+      } else {
+        // Crear nueva evaluación
+        const response = await api.post('/api/evaluations/', evaluationData);
+        const newEvaluation = adaptEvaluation(response.data);
+        setEvaluations(prev => [...prev, newEvaluation]);
+      }
+
       setModalOpen(false);
       setSelectedStudent(null);
       setSelectedProject(null);
       setEvaluationForm({
-        code: 0,
-        deadlines: 0,
-        teamwork: 0,
-        communication: 0,
-        documentation: 0,
-        innovation: 0,
-        comment: '',
-        fortalezas: [],
-        fortalezasExtra: '',
-        mejoras: [],
-        mejorasExtra: '',
-        tecnologias: '',
-        entregables: '',
+        score: 0,
+        comments: '',
+        strengths: [],
+        improvement_areas: [],
       });
-    } catch (error) {
-      console.error('Error saving evaluation:', error);
+    } catch (error: any) {
+      console.error('Error guardando evaluación:', error);
+      setError(error.response?.data?.error || 'Error al guardar evaluación');
     }
   };
 
-  const getEvaluacionGuardada = (studentId: string, projectId: string): any => {
-    const project = projects.find((p: Project) => p.id === projectId);
-    const student = project?.students.find((stu: Student) => stu.id === studentId);
-    return student || null;
+  const handleDeleteEvaluation = async (evaluationId: string) => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar esta evaluación?')) return;
+
+    try {
+      await api.delete(`/api/evaluations/${evaluationId}/`);
+      setEvaluations(prev => prev.filter(evaluation => evaluation.id !== evaluationId));
+    } catch (error: any) {
+      console.error('Error eliminando evaluación:', error);
+      setError(error.response?.data?.error || 'Error al eliminar evaluación');
+    }
   };
 
-  // Calcular estadísticas
-  const totalEstudiantesAEvaluar = projects
-    .filter((p: Project) => p.status === 'completed')
-    .reduce((acc: number, p: Project) => acc + p.students.filter((stu: Student) => !stu.evaluated).length, 0);
+  const getProjectStudents = (projectId: string) => {
+    // En un caso real, esto vendría del backend
+    // Por ahora, simulamos estudiantes
+    return users.filter(user => user.role === 'student').slice(0, 3);
+  };
 
-  const resumen = [
-    { label: 'Proyectos Activos', value: projects.filter((p: Project) => p.status === 'active').length, icon: <CheckCircleIcon />, color: '#66BB6A' },
-    { label: 'Proyectos Completados', value: projects.filter((p: Project) => p.status === 'completed').length, icon: <AssessmentIcon />, color: '#42A5F5' },
-    { label: 'Proyectos Pausados', value: projects.filter((p: Project) => p.status === 'paused').length, icon: <PauseCircleIcon />, color: '#FFA726' },
-    { label: 'Estudiantes a Evaluar', value: totalEstudiantesAEvaluar, icon: <PersonIcon />, color: '#AB47BC' },
-  ];
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'success';
+      case 'completed':
+        return 'info';
+      case 'cancelled':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'Activo';
+      case 'completed':
+        return 'Completado';
+      case 'cancelled':
+        return 'Cancelado';
+      default:
+        return status;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadData} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
-          Evaluaciones
+      {/* Header */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Evaluaciones de Estudiantes
         </Typography>
-      {/* Resumen superior: 4 cards en una sola fila */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
-        {resumen.map((item, idx) => (
-          <Box key={idx} sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-            <Card sx={{ bgcolor: item.color, color: '#fff', borderRadius: 3, boxShadow: 1, minHeight: 100 }}>
-              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>{item.value}</Typography>
-                <Typography variant="body2" sx={{ mb: 1 }}>{item.label}</Typography>
-                <Box>{item.icon}</Box>
-            </CardContent>
-          </Card>
-        </Box>
-        ))}
+        <Typography variant="body1" color="text.secondary">
+          Evalúa el desempeño de los estudiantes en tus proyectos
+        </Typography>
       </Box>
 
-      {/* Proyectos Activos */}
-      <Card sx={{ mb: 4 }}>
-            <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-              <CheckCircleIcon sx={{ mr: 1, color: 'success.main' }} /> Proyectos Activos ({activos.length})
-            </Typography>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Mostrar</InputLabel>
-              <Select
-                value={cantidadActivos}
-                label="Mostrar"
-                onChange={e => setCantidadActivos(e.target.value)}
+      {/* Tabs */}
+      <Box sx={{ mb: 3 }}>
+        <Grid container spacing={1}>
+          {['Activos', 'Completados', 'Cancelados'].map((tab, index) => (
+            <Grid item key={index}>
+              <Button
+                variant={selectedTab === index ? 'contained' : 'outlined'}
+                onClick={() => setSelectedTab(index)}
+                sx={{ minWidth: 120 }}
               >
-                {cantidadOpciones.map(op => (
-                  <MenuItem key={op} value={op}>{op === 'todas' ? 'Todos' : `Últimos ${op}`}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-                </Box>
-          <Divider sx={{ mb: 2 }} />
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {activosFiltrados.map(proj => (
-              <Card key={proj.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' }, p: 2 }}>
-                <CardContent>
-                  <Typography variant="h6">{proj.title}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {proj.company}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    {proj.description}
-                  </Typography>
-                  <Box sx={{ mb: 1 }}>
-                    <Typography variant="caption">Progreso</Typography>
-                    <Box sx={{ width: '100%', background: '#eee', borderRadius: 1, height: 8, mt: 0.5 }}>
-                      <Box sx={{ width: `${proj.progress}%`, background: '#1976d2', height: 8, borderRadius: 1 }} />
-              </Box>
-                    <Typography variant="body2" sx={{ mt: 0.5 }}>{proj.progress}%</Typography>
-        </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                    {proj.tech.map((t, i) => (
-                      <Chip key={i} label={t} size="small" variant="outlined" />
-                    ))}
-                    {proj.tech.length > 3 && <Chip label={`+${proj.tech.length - 3}`} size="small" variant="outlined" />}
-                </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {proj.hours}/{proj.total_hours} horas • {proj.location}
-                  </Typography>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="subtitle2">Estudiantes asignados:</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                    {proj.students.map(stu => (
-                      <Chip
-                        key={stu.id}
-                        avatar={<Avatar><PersonIcon fontSize="small" /></Avatar>}
-                        label={stu.name}
-                        color={stu.evaluated ? 'success' : 'default'}
-                        variant={stu.evaluated ? 'filled' : 'outlined'}
-                        onClick={() => alert(`Ver detalles de ${stu.name}`)}
-                        icon={<VisibilityIcon fontSize="small" />}
-                      />
-                    ))}
-              </Box>
-            </CardContent>
-          </Card>
-            ))}
-            {activosFiltrados.length === 0 && <Typography color="text.secondary">No hay proyectos activos para mostrar.</Typography>}
-              </Box>
-            </CardContent>
-          </Card>
+                {tab}
+              </Button>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
-      {/* Proyectos Completados */}
-            <Card>
-              <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-              <AssessmentIcon sx={{ mr: 1, color: 'info.main' }} /> Proyectos Completados ({completados.length})
-                    </Typography>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Mostrar</InputLabel>
-              <Select
-                value={cantidadCompletados}
-                label="Mostrar"
-                onChange={e => setCantidadCompletados(e.target.value)}
-              >
-                {cantidadOpciones.map(op => (
-                  <MenuItem key={op} value={op}>{op === 'todas' ? 'Todos' : `Últimos ${op}`}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Divider sx={{ mb: 2 }} />
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {completadosFiltrados.map(proj => (
-              <Card key={proj.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' }, p: 2 }}>
-                <CardContent>
-                  <Typography variant="h6">{proj.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                    {proj.company}
+      {/* Lista de Proyectos */}
+      <Box>
+        {(() => {
+          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
+          
+          return currentProjects.map((project) => (
+            <Paper key={project.id} sx={{ p: 3, mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                <Box>
+                  <Typography variant="h6" gutterBottom>
+                    {project.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    {proj.description}
-                    </Typography>
-                  <Box sx={{ mb: 1 }}>
-                    <Typography variant="caption">Progreso</Typography>
-                    <Box sx={{ width: '100%', background: '#eee', borderRadius: 1, height: 8, mt: 0.5 }}>
-                      <Box sx={{ width: `${proj.progress}%`, background: '#1976d2', height: 8, borderRadius: 1 }} />
-                    </Box>
-                    <Typography variant="body2" sx={{ mt: 0.5 }}>{proj.progress}%</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                    {proj.tech.map((t, i) => (
-                      <Chip key={i} label={t} size="small" variant="outlined" />
-                    ))}
-                    {proj.tech.length > 3 && <Chip label={`+${proj.tech.length - 3}`} size="small" variant="outlined" />}
-                  </Box>
-                                    <Typography variant="caption" color="text.secondary">
-                    {proj.hours}/{proj.total_hours} horas • {proj.location}
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    {project.description}
                   </Typography>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="subtitle2">Estudiantes asignados:</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                    {proj.students.map(stu => (
-                  <Chip
-                        key={stu.id}
-                        avatar={<Avatar><PersonIcon fontSize="small" /></Avatar>}
-                        label={stu.name}
-                        color={stu.evaluated ? 'success' : 'default'}
-                        variant={stu.evaluated ? 'filled' : 'outlined'}
-                        onClick={() => stu.evaluated ? handleOpenDetalle(stu, proj) : handleOpenEvaluar(stu, proj)}
-                        icon={stu.evaluated ? <StarIcon fontSize="small" /> : <RateReviewIcon fontSize="small" />}
-                      />
-                    ))}
+                  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                    <Chip
+                      label={getStatusLabel(project.status)}
+                      color={getStatusColor(project.status) as any}
+                      size="small"
+                    />
+                    <Chip
+                      label={`${project.current_students}/${project.max_students} estudiantes`}
+                      variant="outlined"
+                      size="small"
+                    />
                   </Box>
-                </CardContent>
-              </Card>
-            ))}
-            {completadosFiltrados.length === 0 && <Typography color="text.secondary">No hay proyectos completados para mostrar.</Typography>}
                 </Box>
-        </CardContent>
-      </Card>
+              </Box>
 
-      {/* Modales */}
-      <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="md" fullWidth>
-        <DialogTitle>Evaluar Estudiante</DialogTitle>
+              {/* Estudiantes del proyecto */}
+              <Typography variant="h6" gutterBottom>
+                Estudiantes Participantes
+              </Typography>
+              <Grid container spacing={2}>
+                {getProjectStudents(project.id).map((student) => {
+                  const isEvaluated = isStudentEvaluated(student.id, project.id);
+                  const existingEvaluation = getExistingEvaluation(student.id, project.id);
+                  
+                  return (
+                    <Grid item xs={12} sm={6} md={4} key={student.id}>
+                      <Card variant="outlined">
+                        <CardContent>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                            <Typography variant="subtitle1">
+                              {student.first_name} {student.last_name}
+                            </Typography>
+                            <Chip
+                              label={isEvaluated ? 'Evaluado' : 'Pendiente'}
+                              color={isEvaluated ? 'success' : 'warning'}
+                              size="small"
+                            />
+                          </Box>
+                          
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            {student.email}
+                          </Typography>
+                          
+                          {existingEvaluation && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                              <Rating value={existingEvaluation.score} readOnly size="small" />
+                              <Typography variant="body2" sx={{ ml: 1 }}>
+                                {existingEvaluation.score}/5
+                              </Typography>
+                            </Box>
+                          )}
+                          
+                          <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                            <Button
+                              size="small"
+                              variant={isEvaluated ? 'outlined' : 'contained'}
+                              onClick={() => handleOpenEvaluar(student, project)}
+                              startIcon={isEvaluated ? <EditIcon /> : <RateReviewIcon />}
+                            >
+                              {isEvaluated ? 'Reevaluar' : 'Evaluar'}
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleOpenDetalle(student, project)}
+                              startIcon={<VisibilityIcon />}
+                            >
+                              Ver
+                            </Button>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Paper>
+          ));
+        })()}
+        
+        {(() => {
+          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
+          if (currentProjects.length === 0) {
+            return (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="h6" color="text.secondary">
+                  No hay proyectos en esta categoría
+                </Typography>
+              </Box>
+            );
+          }
+        })()}
+      </Box>
+
+      {/* Modal de Evaluación */}
+      <Dialog
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedStudent && selectedProject ? 
+            `Evaluar a ${selectedStudent.first_name} ${selectedStudent.last_name} en ${selectedProject.title}` :
+            'Evaluar Estudiante'
+          }
+        </DialogTitle>
         <DialogContent>
-          <Box sx={{ mt: 2 }}>
+          <Box sx={{ pt: 2 }}>
             <Typography variant="h6" gutterBottom>
-              {selectedStudent?.name} - {selectedProject?.title}
+              Calificación General
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 2 }}>
-              <Box>
-                <Typography variant="subtitle2">Calidad del Código</Typography>
-                <Rating value={evaluationForm.code} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, code: v || 1 }))} max={5} />
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Cumplimiento de Plazos</Typography>
-                <Rating value={evaluationForm.deadlines} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, deadlines: v || 1 }))} max={5} />
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Trabajo en Equipo</Typography>
-                <Rating value={evaluationForm.teamwork} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, teamwork: v || 1 }))} max={5} />
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Comunicación</Typography>
-                <Rating value={evaluationForm.communication} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, communication: v || 1 }))} max={5} />
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Documentación</Typography>
-                <Rating value={evaluationForm.documentation} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, documentation: v || 1 }))} max={5} />
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Innovación</Typography>
-                <Rating value={evaluationForm.innovation} onChange={(_, v) => setEvaluationForm(ev => ({ ...ev, innovation: v || 1 }))} max={5} />
-              </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+              <Rating
+                value={evaluationForm.score}
+                onChange={(_, value) => setEvaluationForm(prev => ({ ...prev, score: value || 0 }))}
+                size="large"
+              />
+              <Typography variant="h6" sx={{ ml: 2 }}>
+                {evaluationForm.score}/5
+              </Typography>
             </Box>
-              <TextField
-              label="Comentarios del Evaluador"
-                fullWidth
+            
+            <TextField
+              fullWidth
+              label="Comentarios"
+              value={evaluationForm.comments}
+              onChange={(e) => setEvaluationForm(prev => ({ ...prev, comments: e.target.value }))}
               multiline
-              rows={3}
-              value={evaluationForm.comment}
-              onChange={e => setEvaluationForm(ev => ({ ...ev, comment: e.target.value }))}
-              sx={{ mb: 2 }}
-            />
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Fortalezas</InputLabel>
-                <Select
-                multiple
-                value={evaluationForm.fortalezas}
-                onChange={e => setEvaluationForm(ev => ({ ...ev, fortalezas: Array.isArray(e.target.value) ? e.target.value : [] }))}
-                renderValue={selected => (selected as string[]).join(', ')}
-                label="Fortalezas"
-              >
-                {fortalezasOpciones.map(opt => (
-                  <MenuItem key={opt} value={opt}>
-                    <Checkbox checked={evaluationForm.fortalezas.indexOf(opt) > -1} />
-                    <ListItemText primary={opt} />
-                  </MenuItem>
-                ))}
-                </Select>
-              </FormControl>
-              <TextField
-              label="Otra fortaleza (opcional)"
-                fullWidth
-              value={evaluationForm.fortalezasExtra}
-              onChange={e => setEvaluationForm(ev => ({ ...ev, fortalezasExtra: e.target.value }))}
-              sx={{ mb: 2 }}
-            />
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Áreas de Mejora</InputLabel>
-              <Select
-                multiple
-                value={evaluationForm.mejoras}
-                onChange={e => setEvaluationForm(ev => ({ ...ev, mejoras: Array.isArray(e.target.value) ? e.target.value : [] }))}
-                renderValue={selected => (selected as string[]).join(', ')}
-                label="Áreas de Mejora"
-              >
-                {mejorasOpciones.map(opt => (
-                  <MenuItem key={opt} value={opt}>
-                    <Checkbox checked={evaluationForm.mejoras.indexOf(opt) > -1} />
-                    <ListItemText primary={opt} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-              <TextField
-              label="Otra área de mejora (opcional)"
-                fullWidth
-              value={evaluationForm.mejorasExtra}
-              onChange={e => setEvaluationForm(ev => ({ ...ev, mejorasExtra: e.target.value }))}
-              sx={{ mb: 2 }}
-            />
-              <TextField
-              label="Tecnologías Utilizadas (opcional)"
-                fullWidth
-              value={evaluationForm.tecnologias}
-              onChange={e => setEvaluationForm(ev => ({ ...ev, tecnologias: e.target.value }))}
-              sx={{ mb: 2 }}
-            />
-              <TextField
-              label="Entregables (opcional)"
-                fullWidth
-              value={evaluationForm.entregables}
-              onChange={e => setEvaluationForm(ev => ({ ...ev, entregables: e.target.value }))}
-              sx={{ mb: 2 }}
+              rows={4}
+              sx={{ mb: 3 }}
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseModal}>Cancelar</Button>
-          <Button onClick={handleSaveEvaluacion} variant="contained">Guardar</Button>
+          <Button onClick={() => setModalOpen(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSaveEvaluation}
+            variant="contained"
+            disabled={evaluationForm.score === 0}
+          >
+            Guardar Evaluación
+          </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={modalDetalleOpen} onClose={handleCloseDetalle} maxWidth="md" fullWidth>
-        <DialogTitle>Detalle de Evaluación</DialogTitle>
+      {/* Modal de Detalles */}
+      <Dialog
+        open={modalDetalleOpen}
+        onClose={() => setModalDetalleOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Detalles de Evaluación
+        </DialogTitle>
         <DialogContent>
-          {selectedStudent && selectedProject && getEvaluacionGuardada(selectedStudent.id, selectedProject.id) && (
-            <Box sx={{ mt: 2 }}>
+          {selectedStudent && selectedProject && (
+            <Box sx={{ pt: 2 }}>
               <Typography variant="h6" gutterBottom>
-                {selectedProject.title}
+                Estudiante: {selectedStudent.first_name} {selectedStudent.last_name}
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 2 }}>
-                <Card sx={{ flex: '1 1 300px', mb: 2 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2">Información del Proyecto</Typography>
-                    <Typography variant="body2"><b>Empresa:</b> {selectedProject.company}</Typography>
-                    <Typography variant="body2"><b>Evaluador:</b> Empresa</Typography>
-                    <Typography variant="body2"><b>Fecha:</b> {new Date().toLocaleDateString()}</Typography>
-                    <Typography variant="body2"><b>Duración:</b> {selectedProject.total_hours / 40} meses</Typography>
-                  </CardContent>
-                </Card>
-                <Card sx={{ flex: '1 1 200px', mb: 2 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2">Calificación General</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Rating value={Number(getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.gpa)} readOnly precision={0.5} />
-                      <Typography variant="h5" sx={{ ml: 1 }}>{getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.gpa}/5</Typography>
+              <Typography variant="body1" gutterBottom>
+                Proyecto: {selectedProject.title}
+              </Typography>
+              
+              {(() => {
+                const evaluation = getExistingEvaluation(selectedStudent.id, selectedProject.id);
+                if (evaluation) {
+                  return (
+                    <Box>
+                      <Typography variant="h6" gutterBottom>
+                        Evaluación
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Rating value={evaluation.score} readOnly />
+                        <Typography variant="body1" sx={{ ml: 2 }}>
+                          {evaluation.score}/5
+                        </Typography>
+                      </Box>
+                      {evaluation.comments && (
+                        <Typography variant="body1" paragraph>
+                          <strong>Comentarios:</strong> {evaluation.comments}
+                        </Typography>
+                      )}
+                      <Typography variant="body2" color="text.secondary">
+                        Evaluado el: {new Date(evaluation.evaluation_date).toLocaleDateString()}
+                      </Typography>
                     </Box>
-                    <Typography variant="body2">Evaluación Final</Typography>
-                  </CardContent>
-                </Card>
-              </Box>
-              <Typography variant="subtitle1" sx={{ mt: 2 }}>Evaluación por Categorías</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-                {[
-                  { label: 'Calidad del Código', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.code },
-                  { label: 'Cumplimiento de Plazos', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.deadlines },
-                  { label: 'Trabajo en Equipo', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.teamwork },
-                  { label: 'Comunicación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.communication },
-                  { label: 'Documentación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.documentation },
-                  { label: 'Innovación', value: getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.innovation },
-                ].map((cat, i) => (
-                  <Card key={i} sx={{ flex: '1 1 200px' }}>
-                    <CardContent>
-                      <Typography variant="subtitle2">{cat.label}</Typography>
-                      <Rating value={cat.value} readOnly />
-                      <Typography variant="body2">{cat.value}/5</Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-                </Box>
-              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                <Card sx={{ flex: 1 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2">Tecnologías Utilizadas</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                      {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.tecnologias?.split(',').map((t: string, i: number) => (
-                        <Chip key={i} label={t.trim()} variant="outlined" />
-                      ))}
-                </Box>
-                  </CardContent>
-                </Card>
-                <Card sx={{ flex: 1 }}>
-                  <CardContent>
-                    <Typography variant="subtitle2">Entregables</Typography>
-                    <ul style={{ margin: 0, paddingLeft: 16 }}>
-                      {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.entregables?.split(',').map((e: string, i: number) => (
-                        <li key={i}><Typography variant="body2">{e.trim()}</Typography></li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </Box>
-              <Typography variant="subtitle1" sx={{ mt: 2 }}>Comentarios del Evaluador</Typography>
-              <Typography variant="body2" paragraph>
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.comment}
-              </Typography>
-              <Typography variant="subtitle1" color="success.main">Fortalezas</Typography>
-              <ul style={{ margin: 0, paddingLeft: 16 }}>
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.fortalezas.map((f: string, i: number) => (
-                  <li key={i}><Typography variant="body2">{f}</Typography></li>
-                ))}
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.fortalezasExtra && (
-                  <li><Typography variant="body2">{getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.fortalezasExtra}</Typography></li>
-                )}
-              </ul>
-              <Typography variant="subtitle1" color="warning.main">Áreas de Mejora</Typography>
-              <ul style={{ margin: 0, paddingLeft: 16 }}>
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.mejoras.map((m: string, i: number) => (
-                  <li key={i}><Typography variant="body2">{m}</Typography></li>
-                ))}
-                {getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.mejorasExtra && (
-                  <li><Typography variant="body2">{getEvaluacionGuardada(selectedStudent.id, selectedProject.id)?.mejorasExtra}</Typography></li>
-                )}
-              </ul>
+                  );
+                } else {
+                  return (
+                    <Typography variant="body1" color="text.secondary">
+                      No hay evaluación registrada para este estudiante en este proyecto.
+                    </Typography>
+                  );
+                }
+              })()}
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDetalle}>Cerrar</Button>
+          <Button onClick={() => setModalDetalleOpen(false)}>
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
-
-
     </Box>
   );
 };

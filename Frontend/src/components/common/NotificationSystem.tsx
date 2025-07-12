@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Snackbar, Alert, AlertTitle, Box, Typography, IconButton } from '@mui/material';
 import {
-  Notifications as NotificationsIcon,
   Close as CloseIcon,
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,

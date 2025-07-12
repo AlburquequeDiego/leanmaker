@@ -70,7 +70,7 @@ def applications_list(request):
                 'project': {
                     'id': str(application.project.id),
                     'title': application.project.title,
-                    'company': application.project.company.name if application.project.company else None
+                    'company': application.project.company.company_name if application.project.company else None
                 } if application.project else None,
                 'student': {
                     'id': str(application.student.id),
@@ -141,7 +141,7 @@ def applications_detail(request, applications_id):
                 'description': application.project.description,
                 'company': {
                     'id': str(application.project.company.id),
-                    'name': application.project.company.name
+                    'name': application.project.company.company_name
                 } if application.project.company else None
             } if application.project else None,
             'student': {
@@ -398,6 +398,151 @@ def applications_delete(request, applications_id):
         application.delete()
         
         return JsonResponse({'message': 'Aplicación eliminada exitosamente'})
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def applications_received_applications(request):
+    """Obtener aplicaciones recibidas por una empresa."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo empresas pueden ver aplicaciones recibidas
+        if current_user.role != 'company':
+            return JsonResponse({'error': 'Solo empresas pueden acceder a este endpoint'}, status=403)
+        
+        # Obtener aplicaciones a proyectos de la empresa
+        queryset = Aplicacion.objects.select_related(
+            'project', 'student', 'student__user'
+        ).filter(project__company__user=current_user)
+        
+        # Aplicar filtros opcionales
+        status = request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Ordenar por fecha de aplicación (más recientes primero)
+        queryset = queryset.order_by('-applied_at')
+        
+        applications_data = []
+        for application in queryset:
+            applications_data.append({
+                'id': str(application.id),
+                'project': {
+                    'id': str(application.project.id),
+                    'title': application.project.title,
+                    'description': application.project.description,
+                    'company': {
+                        'id': str(application.project.company.id),
+                        'name': application.project.company.company_name
+                    } if application.project.company else None
+                } if application.project else None,
+                'student': {
+                    'id': str(application.student.id),
+                    'full_name': application.student.user.full_name,
+                    'email': application.student.user.email,
+                    'university': application.student.university,
+                    'career': application.student.career
+                } if application.student else None,
+                'status': application.status,
+                'compatibility_score': application.compatibility_score,
+                'cover_letter': application.cover_letter,
+                'company_notes': application.company_notes,
+                'portfolio_url': application.portfolio_url,
+                'github_url': application.github_url,
+                'linkedin_url': application.linkedin_url,
+                'applied_at': application.applied_at.isoformat(),
+                'reviewed_at': application.reviewed_at.isoformat() if application.reviewed_at else None,
+                'responded_at': application.responded_at.isoformat() if application.responded_at else None
+            })
+        
+        return JsonResponse({
+            'results': applications_data,
+            'total': len(applications_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def applications_my_applications(request):
+    """Obtener aplicaciones del estudiante actual."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo estudiantes pueden ver sus aplicaciones
+        if current_user.role != 'student':
+            return JsonResponse({'error': 'Solo estudiantes pueden acceder a este endpoint'}, status=403)
+        
+        # Obtener aplicaciones del estudiante
+        from students.models import Estudiante
+        try:
+            student = Estudiante.objects.get(user=current_user)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        
+        queryset = Aplicacion.objects.select_related(
+            'project', 'project__company', 'project__company__user'
+        ).filter(student=student)
+        
+        # Aplicar filtros opcionales
+        status = request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Ordenar por fecha de aplicación (más recientes primero)
+        queryset = queryset.order_by('-applied_at')
+        
+        applications_data = []
+        for application in queryset:
+            applications_data.append({
+                'id': str(application.id),
+                'project': {
+                    'id': str(application.project.id),
+                    'title': application.project.title,
+                    'description': application.project.description,
+                    'company': {
+                        'id': str(application.project.company.id),
+                        'name': application.project.company.company_name
+                    } if application.project.company else None
+                } if application.project else None,
+                'status': application.status,
+                'compatibility_score': application.compatibility_score,
+                'cover_letter': application.cover_letter,
+                'student_notes': application.student_notes,
+                'portfolio_url': application.portfolio_url,
+                'github_url': application.github_url,
+                'linkedin_url': application.linkedin_url,
+                'applied_at': application.applied_at.isoformat(),
+                'reviewed_at': application.reviewed_at.isoformat() if application.reviewed_at else None,
+                'responded_at': application.responded_at.isoformat() if application.responded_at else None
+            })
+        
+        return JsonResponse({
+            'results': applications_data,
+            'total': len(applications_data)
+        })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

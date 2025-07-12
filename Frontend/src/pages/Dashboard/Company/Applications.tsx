@@ -20,71 +20,58 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
   Person as PersonIcon,
   Schedule as ScheduleIcon,
   CheckCircle as CheckCircleIcon,
-  Star as StarIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
+
   Language as LanguageIcon,
   GitHub as GitHubIcon,
   LinkedIn as LinkedInIcon,
-
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-
-interface Application {
-  id: string;
-  project_id: string;
-  project_title: string;
-  student_id: string;
-  student_name: string;
-  student_email: string;
-  student_phone: string;
-  student_avatar: string;
-  api_level: number;
-  skills: string[];
-  experience: string;
-  portfolio: string;
-  github: string;
-  linkedin: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'interviewed';
-  rating: number;
-  applied_at: string;
-  cover_letter: string;
-  interview_date?: string;
-  interview_notes?: string;
-}
+import { useApi } from '../../../hooks/useApi';
+import { adaptApplicationList } from '../../../utils/adapters';
+import type { Application } from '../../../types';
 
 const cantidadOpciones = [5, 10, 20, 50, 'todas'];
 
 export const CompanyApplications: React.FC = () => {
+  const api = useApi();
   const [applications, setApplications] = useState<Application[]>([]);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showInterviewDialog, setShowInterviewDialog] = useState(false);
   const [interviewData, setInterviewData] = useState({ date: '', notes: '' });
   const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5, 5]);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchApplications() {
-      try {
-        // Obtener aplicaciones específicas de la empresa
-        const data = await apiService.get('/api/projects/applications/received_applications/');
-        setApplications(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching applications:', error);
-        setApplications([]);
-      }
-    }
-    fetchApplications();
+    loadApplications();
   }, []);
+
+  const loadApplications = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.get('/api/applications/received_applications/');
+      const adaptedApplications = adaptApplicationList(response.data.results || response.data);
+      setApplications(adaptedApplications);
+      
+    } catch (err: any) {
+      console.error('Error cargando aplicaciones:', err);
+      setError(err.response?.data?.error || 'Error al cargar aplicaciones');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCantidadChange = (tabIdx: number, value: number | string) => {
     setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
@@ -117,6 +104,8 @@ export const CompanyApplications: React.FC = () => {
         return 'error';
       case 'interviewed':
         return 'info';
+      case 'reviewing':
+        return 'warning';
       default:
         return 'warning';
     }
@@ -126,12 +115,18 @@ export const CompanyApplications: React.FC = () => {
     switch (status) {
       case 'pending':
         return 'Pendiente';
+      case 'reviewing':
+        return 'En Revisión';
       case 'accepted':
         return 'Aceptada';
       case 'rejected':
         return 'Rechazada';
       case 'interviewed':
         return 'Entrevistada';
+      case 'withdrawn':
+        return 'Retirada';
+      case 'completed':
+        return 'Completada';
       default:
         return status;
     }
@@ -139,17 +134,28 @@ export const CompanyApplications: React.FC = () => {
 
   const handleStatusChange = async (applicationId: string, newStatus: Application['status']) => {
     try {
-              const updatedApplication = await apiService.patch(`/api/projects/applications/${applicationId}/`, {
+      setUpdatingStatus(applicationId);
+      
+      const response = await api.patch(`/api/applications/${applicationId}/`, {
         status: newStatus,
       });
 
+      const updatedApplication = response.data;
+      
       setApplications(prev =>
         prev.map(app =>
-          app.id === applicationId ? (updatedApplication as Application) : app
+          app.id === applicationId ? {
+            ...app,
+            status: updatedApplication.status,
+            company_notes: updatedApplication.company_notes,
+          } : app
         )
       );
-    } catch (error) {
-      console.error('Error updating application status:', error);
+    } catch (error: any) {
+      console.error('Error actualizando estado de aplicación:', error);
+      setError(error.response?.data?.error || 'Error al actualizar estado');
+    } finally {
+      setUpdatingStatus(null);
     }
   };
 
@@ -166,22 +172,28 @@ export const CompanyApplications: React.FC = () => {
   const handleSaveInterview = async () => {
     if (selectedApplication) {
       try {
-        const updatedApplication = await apiService.patch(`/api/projects/applications/${selectedApplication.id}/`, {
+        const response = await api.patch(`/api/applications/${selectedApplication.id}/`, {
           status: 'interviewed',
-          interview_date: interviewData.date,
-          interview_notes: interviewData.notes,
+          company_notes: interviewData.notes,
         });
 
+        const updatedApplication = response.data;
+        
         setApplications(prev =>
           prev.map(app =>
-            app.id === selectedApplication.id ? (updatedApplication as Application) : app
+            app.id === selectedApplication.id ? {
+              ...app,
+              status: updatedApplication.status,
+              company_notes: updatedApplication.company_notes,
+            } : app
           )
         );
         setShowInterviewDialog(false);
         setInterviewData({ date: '', notes: '' });
         setSelectedApplication(null);
-      } catch (error) {
-        console.error('Error saving interview:', error);
+      } catch (error: any) {
+        console.error('Error guardando entrevista:', error);
+        setError(error.response?.data?.error || 'Error al guardar entrevista');
       }
     }
   };
@@ -189,10 +201,32 @@ export const CompanyApplications: React.FC = () => {
   const stats = {
     total: applications.length,
     pending: applications.filter(app => app.status === 'pending').length,
+    reviewing: applications.filter(app => app.status === 'reviewing').length,
     interviewed: applications.filter(app => app.status === 'interviewed').length,
     accepted: applications.filter(app => app.status === 'accepted').length,
     rejected: applications.filter(app => app.status === 'rejected').length,
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadApplications} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -218,7 +252,7 @@ export const CompanyApplications: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <ScheduleIcon sx={{ mr: 1 }} />
               <Box>
-                <Typography variant="h4">{stats.pending}</Typography>
+                <Typography variant="h4">{stats.pending + stats.reviewing}</Typography>
                 <Typography variant="body2">Pendientes</Typography>
               </Box>
             </Box>
@@ -252,7 +286,7 @@ export const CompanyApplications: React.FC = () => {
       <Paper sx={{ mb: 3 }}>
         <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
           <Tab label={`Todas (${stats.total})`} />
-          <Tab label={`Pendientes (${stats.pending})`} />
+          <Tab label={`Pendientes (${stats.pending + stats.reviewing})`} />
           <Tab label={`Entrevistadas (${stats.interviewed})`} />
           <Tab label={`Aceptadas (${stats.accepted})`} />
           <Tab label={`Rechazadas (${stats.rejected})`} />
@@ -278,103 +312,97 @@ export const CompanyApplications: React.FC = () => {
 
       {/* Lista de Postulaciones */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
-        {aplicacionesMostradas.map((application) => (
-          <Card key={application.id}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                  <PersonIcon />
-                </Avatar>
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6">{application.student_name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {application.project_title}
-                  </Typography>
+        {aplicacionesMostradas.length === 0 ? (
+          <Box sx={{ gridColumn: '1 / -1', textAlign: 'center', py: 4 }}>
+            <PersonIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              No hay postulaciones en esta categoría
+            </Typography>
+          </Box>
+        ) : (
+          aplicacionesMostradas.map((application) => (
+            <Card key={application.id}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+                    <PersonIcon />
+                  </Avatar>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6">
+                      {application.student ? 'Estudiante' : 'Estudiante no encontrado'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {application.project || 'Proyecto no encontrado'}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={getStatusLabel(application.status)}
+                    color={getStatusColor(application.status) as any}
+                    size="small"
+                  />
                 </Box>
-                <Chip
-                  label={getStatusLabel(application.status)}
-                  color={getStatusColor(application.status) as any}
-                  size="small"
-                />
-              </Box>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" gutterBottom>
-                  <strong>API Level:</strong> {application.api_level}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <StarIcon sx={{ fontSize: 16, color: 'warning.main', mr: 0.5 }} />
-                  <Typography variant="body2">
-                    {application.rating} / 5.0
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Habilidades:
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {application.skills.slice(0, 3).map((skill) => (
-                    <Chip key={skill} label={skill} size="small" />
-                  ))}
-                  {application.skills.length > 3 && (
-                    <Chip label={`+${application.skills.length - 3}`} size="small" />
+                <Box sx={{ mb: 2 }}>
+                  {application.compatibility_score && (
+                    <Typography variant="body2" gutterBottom>
+                      <strong>Compatibilidad:</strong> {application.compatibility_score}%
+                    </Typography>
                   )}
                 </Box>
-              </Box>
 
-              <Typography variant="caption" color="text.secondary">
-                Postuló: {new Date(application.applied_at).toLocaleDateString()}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                onClick={() => handleViewDetails(application)}
-              >
-                Ver Detalles
-              </Button>
-              {application.status === 'pending' && (
+                {application.cover_letter && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="body2" color="text.secondary" noWrap>
+                      {application.cover_letter.substring(0, 100)}...
+                    </Typography>
+                  </Box>
+                )}
+
+                <Typography variant="caption" color="text.secondary">
+                  Postuló: {new Date(application.applied_at).toLocaleDateString()}
+                </Typography>
+              </CardContent>
+              <CardActions>
                 <Button
                   size="small"
-                  color="primary"
-                  onClick={() => handleScheduleInterview(application)}
+                  onClick={() => handleViewDetails(application)}
                 >
-                  Entrevistar
+                  Ver Detalles
                 </Button>
-              )}
-              {application.status === 'pending' && (
-                <>
+                {(application.status === 'pending' || application.status === 'reviewing') && (
                   <Button
                     size="small"
-                    color="success"
-                    onClick={() => handleStatusChange(application.id, 'accepted')}
+                    color="primary"
+                    onClick={() => handleScheduleInterview(application)}
                   >
-                    Aceptar
+                    Entrevistar
                   </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => handleStatusChange(application.id, 'rejected')}
-                  >
-                    Rechazar
-                  </Button>
-                </>
-              )}
-            </CardActions>
-          </Card>
-        ))}
+                )}
+                {(application.status === 'pending' || application.status === 'reviewing') && (
+                  <>
+                    <Button
+                      size="small"
+                      color="success"
+                      onClick={() => handleStatusChange(application.id, 'accepted')}
+                      disabled={updatingStatus === application.id}
+                    >
+                      {updatingStatus === application.id ? <CircularProgress size={16} /> : 'Aceptar'}
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleStatusChange(application.id, 'rejected')}
+                      disabled={updatingStatus === application.id}
+                    >
+                      {updatingStatus === application.id ? <CircularProgress size={16} /> : 'Rechazar'}
+                    </Button>
+                  </>
+                )}
+              </CardActions>
+            </Card>
+          ))
+        )}
       </Box>
-
-      {aplicacionesMostradas.length === 0 && (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <PersonIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            No hay postulaciones en esta categoría
-          </Typography>
-        </Paper>
-      )}
 
       {/* Dialog de Detalles */}
       <Dialog open={showDetailDialog} onClose={() => setShowDetailDialog(false)} maxWidth="md" fullWidth>
@@ -387,74 +415,94 @@ export const CompanyApplications: React.FC = () => {
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Avatar>
                 <Box>
-                  <Typography variant="h5">{selectedApplication.student_name}</Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    {selectedApplication.project_title}
+                  <Typography variant="h5">
+                    {selectedApplication.student ? 'Estudiante' : 'Estudiante no encontrado'}
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                    <StarIcon sx={{ color: 'warning.main', mr: 0.5 }} />
-                    <Typography variant="body1">
-                      {selectedApplication.rating} / 5.0
-                    </Typography>
-                  </Box>
+                  <Typography variant="body1" color="text.secondary">
+                    {selectedApplication.project || 'Proyecto no encontrado'}
+                  </Typography>
+                  {selectedApplication.compatibility_score && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                      <Typography variant="body1">
+                        Compatibilidad: {selectedApplication.compatibility_score}%
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Box>
 
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{selectedApplication.student_email}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{selectedApplication.student_phone}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <LanguageIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{selectedApplication.portfolio}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <GitHubIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{selectedApplication.github}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <LinkedInIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">{selectedApplication.linkedin}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="body2">
-                    <strong>API Level:</strong> {selectedApplication.api_level}
+                {selectedApplication.portfolio_url && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <LanguageIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                    <Typography variant="body2">
+                      <a href={selectedApplication.portfolio_url} target="_blank" rel="noopener noreferrer">
+                        Portfolio
+                      </a>
+                    </Typography>
+                  </Box>
+                )}
+                {selectedApplication.github_url && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <GitHubIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                    <Typography variant="body2">
+                      <a href={selectedApplication.github_url} target="_blank" rel="noopener noreferrer">
+                        GitHub
+                      </a>
+                    </Typography>
+                  </Box>
+                )}
+                {selectedApplication.linkedin_url && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <LinkedInIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                    <Typography variant="body2">
+                      <a href={selectedApplication.linkedin_url} target="_blank" rel="noopener noreferrer">
+                        LinkedIn
+                      </a>
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              {selectedApplication.cover_letter && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body2" gutterBottom>
+                    <strong>Carta de Presentación:</strong>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {selectedApplication.cover_letter}
                   </Typography>
                 </Box>
-              </Box>
+              )}
 
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" gutterBottom>
-                  <strong>Experiencia:</strong>
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {selectedApplication.experience}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" gutterBottom>
-                  <strong>Habilidades:</strong>
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selectedApplication.skills.map((skill) => (
-                    <Chip key={skill} label={skill} />
-                  ))}
+              {selectedApplication.company_notes && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body2" gutterBottom>
+                    <strong>Notas de la Empresa:</strong>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {selectedApplication.company_notes}
+                  </Typography>
                 </Box>
-              </Box>
+              )}
 
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2" gutterBottom>
-                  <strong>Carta de Presentación:</strong>
+                  <strong>Estado:</strong> {getStatusLabel(selectedApplication.status)}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {selectedApplication.cover_letter}
+                  <strong>Fecha de postulación:</strong> {new Date(selectedApplication.applied_at).toLocaleString()}
                 </Typography>
+                {selectedApplication.reviewed_at && (
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Revisada:</strong> {new Date(selectedApplication.reviewed_at).toLocaleString()}
+                  </Typography>
+                )}
+                {selectedApplication.responded_at && (
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Respondida:</strong> {new Date(selectedApplication.responded_at).toLocaleString()}
+                  </Typography>
+                )}
               </Box>
             </Box>
           )}
@@ -471,7 +519,7 @@ export const CompanyApplications: React.FC = () => {
           {selectedApplication && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6" gutterBottom>
-                {selectedApplication.student_name} - {selectedApplication.project_title}
+                {selectedApplication.student ? 'Estudiante' : 'Estudiante no encontrado'} - {selectedApplication.project || 'Proyecto no encontrado'}
               </Typography>
               
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

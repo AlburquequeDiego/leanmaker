@@ -36,7 +36,7 @@ def projects_list(request):
         limit = min(int(request.GET.get('limit', 20)), 100)
         queryset = Proyecto.objects.all()
         if user.role == 'company':
-            queryset = queryset.filter(company=user.company)
+            queryset = queryset.filter(company=user.empresa_profile)
         elif user.role == 'student':
             queryset = queryset.filter(status__is_active=True)
         # Aplicar filtros
@@ -84,7 +84,7 @@ def projects_detail(request, project_id):
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
         # Permisos: admin, empresa dueña, o estudiante si es activo
-        if user.role == 'company' and proyecto.company != user.company:
+        if user.role == 'company' and proyecto.company != user.empresa_profile:
             return JsonResponse({'error': 'No tienes permisos para ver este proyecto'}, status=403)
         if user.role == 'student' and not proyecto.status.is_active:
             return JsonResponse({'error': 'No tienes permisos para ver este proyecto'}, status=403)
@@ -119,7 +119,7 @@ def projects_update(request, project_id):
             proyecto = Proyecto.objects.get(id=project_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
-        if user.role == 'company' and proyecto.company != user.company:
+        if user.role == 'company' and proyecto.company != user.empresa_profile:
             return JsonResponse({'error': 'No tienes permisos para actualizar este proyecto'}, status=403)
         data = json.loads(request.body)
         errors = ProyectoSerializer.validate_data(data)
@@ -140,7 +140,7 @@ def projects_delete(request, project_id):
             proyecto = Proyecto.objects.get(id=project_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
-        if user.role == 'company' and proyecto.company != user.company:
+        if user.role == 'company' and proyecto.company != user.empresa_profile:
             return JsonResponse({'error': 'No tienes permisos para eliminar este proyecto'}, status=403)
         proyecto.delete()
         return JsonResponse({'success': True, 'message': 'Proyecto eliminado exitosamente'})
@@ -148,3 +148,42 @@ def projects_delete(request, project_id):
         return JsonResponse({'error': f'Error al eliminar proyecto: {str(e)}'}, status=500)
 
 # Puedes agregar endpoints adicionales para estadísticas, destacados, urgentes, etc. siguiendo este patrón.
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def projects_my_projects(request):
+    """Obtener proyectos del usuario actual (empresa o estudiante)"""
+    try:
+        user = get_user_from_token(request)
+        
+        if user.role == 'company':
+            # Para empresas: obtener sus proyectos
+            queryset = Proyecto.objects.filter(company=user.empresa_profile)
+        elif user.role == 'student':
+            # Para estudiantes: obtener proyectos donde han aplicado
+            queryset = Proyecto.objects.filter(
+                project_applications__estudiante=user
+            ).distinct()
+        else:
+            return JsonResponse({'error': 'Rol no válido para esta operación'}, status=403)
+        
+        # Aplicar filtros opcionales
+        status = request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status_id=status)
+        
+        # Ordenar por fecha de creación (más recientes primero)
+        queryset = queryset.order_by('-created_at')
+        
+        # Serializar datos
+        data = [ProyectoSerializer.to_dict(p) for p in queryset]
+        
+        return JsonResponse({
+            'success': True,
+            'data': data,
+            'total': len(data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al obtener mis proyectos: {str(e)}'}, status=500)

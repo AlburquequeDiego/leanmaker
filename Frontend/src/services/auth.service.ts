@@ -2,6 +2,7 @@ import { apiService } from './api.service';
 import { API_ENDPOINTS } from '../config/api.config';
 import type { User, LoginResponse, RegisterData } from '../types';
 
+
 export interface LoginCredentials {
   email: string;
   password: string;

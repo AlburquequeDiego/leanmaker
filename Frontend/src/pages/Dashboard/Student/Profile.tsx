@@ -89,9 +89,30 @@ export const Profile = () => {
     portafolio: '',
   });
 
-  const [editData, setEditData] = useState<ProfileData>(profileData);
+  const [editData, setEditData] = useState<ProfileData>({
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    fechaNacimiento: '',
+    genero: '',
+    institucion: '',
+    carrera: '',
+    nivel: '',
+    habilidades: [],
+    biografia: '',
+    cv: null,
+    certificado: null,
+    area: '',
+    modalidadesDisponibles: [],
+    experienciaPrevia: '',
+    linkedin: '',
+    github: '',
+    portafolio: '',
+  });
   const [newSkill, setNewSkill] = useState('');
   const [newSkillLevel, setNewSkillLevel] = useState('Básico');
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
     fetchProfile();
@@ -100,9 +121,48 @@ export const Profile = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const data = await apiService.get('/api/students/profile/');
-      setProfileData(data as ProfileData);
-      setEditData(data as ProfileData);
+      // Hacer la petición directamente sin usar el adaptador
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch('http://localhost:8000/api/students/me/', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Profile data received:', data);
+      
+      // Asegurar que todos los campos tengan valores por defecto
+      const safeData: ProfileData = {
+        nombre: data.nombre || '',
+        apellido: data.apellido || '',
+        email: data.email || '',
+        telefono: data.telefono || '',
+        fechaNacimiento: data.fechaNacimiento || '',
+        genero: data.genero || '',
+        institucion: data.institucion || '',
+        carrera: data.carrera || '',
+        nivel: data.nivel || '1',
+        habilidades: Array.isArray(data.habilidades) ? data.habilidades : [],
+        biografia: data.biografia || '',
+        cv: data.cv || null,
+        certificado: data.certificado || null,
+        area: data.area || '',
+        modalidadesDisponibles: Array.isArray(data.modalidadesDisponibles) ? data.modalidadesDisponibles : [],
+        experienciaPrevia: data.experienciaPrevia || '',
+        linkedin: data.linkedin || '',
+        github: data.github || '',
+        portafolio: data.portafolio || '',
+      };
+      
+      setProfileData(safeData);
+      setEditData(safeData);
+      setUserId(data.id || '');
     } catch (error) {
       console.error('Error fetching profile:', error);
       setShowError(true);
@@ -179,7 +239,22 @@ export const Profile = () => {
     setIsLoading(true);
     
     try {
-      const updatedProfile = await apiService.put('/api/students/profile/', editData);
+      // Hacer la petición directamente sin usar el adaptador
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`http://localhost:8000/api/students/${userId}/update/`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editData),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const updatedProfile = await response.json();
       setProfileData(updatedProfile as ProfileData);
       setIsEditing(false);
       setShowSuccess(true);
@@ -215,7 +290,7 @@ export const Profile = () => {
       return;
     }
 
-    if (editData.habilidades.some(h => h.nombre.toLowerCase() === newSkill.trim().toLowerCase())) {
+    if ((editData.habilidades || []).some(h => h.nombre.toLowerCase() === newSkill.trim().toLowerCase())) {
       setErrorMessage('Esta habilidad ya existe en tu perfil');
       setShowError(true);
       return;
@@ -223,7 +298,7 @@ export const Profile = () => {
 
     setEditData(prev => ({
       ...prev,
-      habilidades: [...prev.habilidades, { nombre: newSkill.trim(), nivel: newSkillLevel }],
+      habilidades: [...(prev.habilidades || []), { nombre: newSkill.trim(), nivel: newSkillLevel }],
     }));
     setNewSkill('');
     setNewSkillLevel('Básico');
@@ -237,7 +312,7 @@ export const Profile = () => {
   const confirmDeleteSkill = () => {
     setEditData(prev => ({
       ...prev,
-      habilidades: prev.habilidades.filter(h => h.nombre !== skillToDelete),
+      habilidades: (prev.habilidades || []).filter(h => h.nombre !== skillToDelete),
     }));
     setDeleteDialogOpen(false);
     setSkillToDelete('');
@@ -326,7 +401,7 @@ export const Profile = () => {
           <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
               label="Nombre"
-              value={isEditing ? editData.nombre : profileData.nombre}
+              value={isEditing ? (editData.nombre || '') : (profileData.nombre || '')}
               onChange={e => handleInputChange('nombre', e.target.value)}
               disabled={!isEditing}
               fullWidth
@@ -335,7 +410,7 @@ export const Profile = () => {
             />
             <TextField
               label="Apellido"
-              value={isEditing ? editData.apellido : profileData.apellido}
+              value={isEditing ? (editData.apellido || '') : (profileData.apellido || '')}
               onChange={e => handleInputChange('apellido', e.target.value)}
               disabled={!isEditing}
               fullWidth
@@ -345,7 +420,7 @@ export const Profile = () => {
           </Box>
           <TextField
             label="Correo Electrónico"
-            value={isEditing ? editData.email : profileData.email}
+            value={isEditing ? (editData.email || '') : (profileData.email || '')}
             onChange={e => handleInputChange('email', e.target.value)}
             disabled={!isEditing}
             fullWidth
@@ -354,7 +429,7 @@ export const Profile = () => {
           />
           <TextField
             label="Teléfono"
-            value={isEditing ? editData.telefono : profileData.telefono}
+            value={isEditing ? (editData.telefono || '') : (profileData.telefono || '')}
             onChange={e => handleInputChange('telefono', e.target.value)}
             disabled={!isEditing}
             fullWidth
@@ -365,7 +440,7 @@ export const Profile = () => {
             <TextField
               label="Fecha de Nacimiento"
               type="date"
-              value={isEditing ? editData.fechaNacimiento : profileData.fechaNacimiento}
+              value={isEditing ? (editData.fechaNacimiento || '') : (profileData.fechaNacimiento || '')}
               onChange={e => handleInputChange('fechaNacimiento', e.target.value)}
               disabled={!isEditing}
               fullWidth
@@ -374,7 +449,7 @@ export const Profile = () => {
             <TextField
               label="Género"
               select
-              value={isEditing ? editData.genero : profileData.genero}
+              value={isEditing ? (editData.genero || '') : (profileData.genero || '')}
               onChange={e => handleInputChange('genero', e.target.value)}
               disabled={!isEditing}
               fullWidth
@@ -387,7 +462,7 @@ export const Profile = () => {
           </Box>
           <TextField
             label="Institución Educativa"
-            value={isEditing ? editData.institucion : profileData.institucion}
+            value={isEditing ? (editData.institucion || '') : (profileData.institucion || '')}
             onChange={e => handleInputChange('institucion', e.target.value)}
             disabled={!isEditing}
             fullWidth
@@ -396,7 +471,7 @@ export const Profile = () => {
           />
           <TextField
             label="Carrera"
-            value={isEditing ? editData.carrera : profileData.carrera}
+            value={isEditing ? (editData.carrera || '') : (profileData.carrera || '')}
             onChange={e => handleInputChange('carrera', e.target.value)}
             disabled={!isEditing}
             fullWidth
@@ -405,17 +480,29 @@ export const Profile = () => {
           />
           <TextField
             label="Nivel Educativo"
-            value={isEditing ? editData.nivel : profileData.nivel}
+            select
+            value={isEditing ? (editData.nivel || '') : (profileData.nivel || '')}
             onChange={e => handleInputChange('nivel', e.target.value)}
             disabled={!isEditing}
             fullWidth
-          />
+          >
+            <MenuItem value="1">Primer año</MenuItem>
+            <MenuItem value="2">Segundo año</MenuItem>
+            <MenuItem value="3">Tercer año</MenuItem>
+            <MenuItem value="4">Cuarto año</MenuItem>
+            <MenuItem value="5">Quinto año</MenuItem>
+            <MenuItem value="6">Sexto año</MenuItem>
+            <MenuItem value="7">Séptimo año</MenuItem>
+            <MenuItem value="8">Octavo año</MenuItem>
+            <MenuItem value="9">Noveno año</MenuItem>
+            <MenuItem value="10">Décimo año</MenuItem>
+          </TextField>
 
           {/* Habilidades */}
           <Divider sx={{ my: 2 }} />
           <Typography variant="h6" fontWeight={600}>Habilidades</Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-            {editData.habilidades.map((h) => (
+            {(editData.habilidades || []).map((h) => (
               <Chip
                 key={h.nombre}
                 label={`${h.nombre} (${h.nivel})`}
@@ -517,13 +604,13 @@ export const Profile = () => {
             fullWidth
             multiline
             minRows={4}
-            value={isEditing ? editData.biografia : profileData.biografia}
+            value={isEditing ? (editData.biografia || '') : (profileData.biografia || '')}
             onChange={e => handleInputChange('biografia', e.target.value)}
             disabled={!isEditing}
             placeholder="Cuéntanos sobre ti... (mínimo 50 caracteres)"
             sx={{ borderRadius: 2 }}
             error={!!validationErrors.biografia}
-            helperText={validationErrors.biografia || `${editData.biografia.length}/50 caracteres mínimos`}
+            helperText={validationErrors.biografia || `${(editData.biografia || '').length}/50 caracteres mínimos`}
           />
 
           {/* Datos adicionales */}

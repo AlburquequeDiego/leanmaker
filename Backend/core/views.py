@@ -14,11 +14,21 @@ import json
 from datetime import datetime, timedelta
 import jwt
 from django.conf import settings
+from companies.serializers import EmpresaSerializer
 
 def home(request):
     """Vista principal de la aplicación."""
-    return render(request, 'home.html', {
-        'title': 'LeanMaker - Conexión Estudiantil-Empresarial'
+    return JsonResponse({
+        'message': 'LeanMaker Backend API',
+        'version': '1.0.0',
+        'status': 'running',
+        'endpoints': {
+            'health': '/api/health-simple/',
+            'auth': '/api/token/',
+            'users': '/api/users/',
+            'projects': '/api/projects/',
+            'dashboard': '/api/dashboard/'
+        }
     })
 
 def health_check(request):
@@ -202,7 +212,7 @@ def api_user_profile(request):
                 'error': 'Token inválido'
             }, status=401)
         
-        return JsonResponse({
+        user_data = {
             'id': str(user.id),
             'email': user.email,
             'first_name': user.first_name,
@@ -221,8 +231,15 @@ def api_user_profile(request):
             'created_at': user.created_at.isoformat(),
             'updated_at': user.updated_at.isoformat(),
             'full_name': user.full_name
-        })
-        
+        }
+        # Si es empresa, agregar perfil de empresa
+        if user.role == 'company':
+            try:
+                empresa = user.empresa_profile
+                user_data['company_profile'] = EmpresaSerializer.to_dict(empresa)
+            except Exception:
+                user_data['company_profile'] = None
+        return JsonResponse(user_data)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
@@ -298,6 +315,211 @@ def api_verify_token(request):
         return JsonResponse({
             'error': 'JSON inválido'
         }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
+
+# Dashboard endpoints
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_dashboard_company_stats(request):
+    """API endpoint para estadísticas del dashboard de empresa."""
+    import traceback  # <--- Agregado para depuración
+    try:
+        # Verificar token de autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({
+                'error': 'Token de autenticación requerido'
+            }, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user:
+            return JsonResponse({
+                'error': 'Token inválido'
+            }, status=401)
+        
+        if user.role != 'company':
+            return JsonResponse({
+                'error': 'Acceso denegado. Solo empresas pueden acceder a este endpoint.'
+            }, status=403)
+        
+        # Importar modelos necesarios
+        from projects.models import Proyecto
+        from applications.models import Aplicacion
+        from students.models import Estudiante
+        
+        # Obtener la empresa del usuario
+        try:
+            company = user.empresa_profile
+        except Exception as e:
+            print('❌ Error obteniendo empresa_profile:', e)
+            traceback.print_exc()
+            return JsonResponse({
+                'error': 'Perfil de empresa no encontrado',
+                'exception': str(e)
+            }, status=404)
+        
+        # Obtener estadísticas básicas
+        try:
+            total_projects = Proyecto.objects.filter(company=company).count()
+            # Simplificar la consulta de proyectos activos
+            active_projects = Proyecto.objects.filter(company=company).count()  # Por ahora, todos los proyectos
+            total_applications = Aplicacion.objects.filter(project__company=company).count()
+            pending_applications = Aplicacion.objects.filter(project__company=company, status='pending').count()
+            
+            # Calcular estadísticas adicionales
+            completed_projects = Proyecto.objects.filter(company=company, status__name='completed').count()
+            active_students = Aplicacion.objects.filter(project__company=company, status='accepted').count()
+            
+            # Rating promedio (placeholder)
+            rating = 4.5  # Por ahora un valor fijo
+            
+            # Horas totales (placeholder)
+            total_hours_offered = 0  # Por ahora 0
+            
+            # Proyectos este mes (placeholder)
+            projects_this_month = 0  # Por ahora 0
+            
+            # Aplicaciones este mes (placeholder)
+            applications_this_month = 0  # Por ahora 0
+            
+        except Exception as e:
+            print('❌ Error calculando estadísticas:', e)
+            traceback.print_exc()
+            return JsonResponse({
+                'error': 'Error calculando estadísticas',
+                'exception': str(e)
+            }, status=500)
+        
+        # Agregar log para depuración
+        response_data = {
+            'total_projects': total_projects,
+            'active_projects': active_projects,
+            'total_applications': total_applications,
+            'pending_applications': pending_applications,
+            'completed_projects': completed_projects,
+            'active_students': active_students,
+            'rating': rating,
+            'total_hours_offered': total_hours_offered,
+            'projects_this_month': projects_this_month,
+            'applications_this_month': applications_this_month,
+            'recent_activity': []
+        }
+        print('✅ Datos del dashboard:', response_data)
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        import traceback
+        print('❌ Error general en api_dashboard_company_stats:', e)
+        traceback.print_exc()
+        return JsonResponse({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_dashboard_student_stats(request):
+    """API endpoint para estadísticas del dashboard de estudiante."""
+    try:
+        # Verificar token de autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({
+                'error': 'Token de autenticación requerido'
+            }, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user:
+            return JsonResponse({
+                'error': 'Token inválido'
+            }, status=401)
+        
+        if user.role != 'student':
+            return JsonResponse({
+                'error': 'Acceso denegado. Solo estudiantes pueden acceder a este endpoint.'
+            }, status=403)
+        
+        # Importar modelos necesarios
+        from applications.models import Aplicacion
+        from projects.models import Proyecto
+        
+        # Obtener el perfil de estudiante del usuario
+        try:
+            student = user.estudiante_profile
+        except:
+            return JsonResponse({
+                'error': 'Perfil de estudiante no encontrado'
+            }, status=404)
+        
+        # Obtener estadísticas básicas
+        total_applications = Aplicacion.objects.filter(student=student).count()
+        pending_applications = Aplicacion.objects.filter(student=student, status='pending').count()
+        accepted_applications = Aplicacion.objects.filter(student=student, status='accepted').count()
+        
+        return JsonResponse({
+            'total_applications': total_applications,
+            'pending_applications': pending_applications,
+            'accepted_applications': accepted_applications,
+            'recent_activity': []  # Placeholder para actividad reciente
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_dashboard_admin_stats(request):
+    """API endpoint para estadísticas del dashboard de administrador."""
+    try:
+        # Verificar token de autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({
+                'error': 'Token de autenticación requerido'
+            }, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user:
+            return JsonResponse({
+                'error': 'Token inválido'
+            }, status=401)
+        
+        if user.role != 'admin':
+            return JsonResponse({
+                'error': 'Acceso denegado. Solo administradores pueden acceder a este endpoint.'
+            }, status=403)
+        
+        # Importar modelos necesarios
+        from users.models import User
+        from projects.models import Proyecto
+        from companies.models import Empresa
+        from students.models import Estudiante
+        
+        # Obtener estadísticas básicas
+        total_users = User.objects.count()
+        total_companies = Empresa.objects.count()
+        total_students = Estudiante.objects.count()
+        total_projects = Proyecto.objects.count()
+        
+        return JsonResponse({
+            'total_users': total_users,
+            'total_companies': total_companies,
+            'total_students': total_students,
+            'total_projects': total_projects,
+            'recent_activity': []  # Placeholder para actividad reciente
+        })
+        
     except Exception as e:
         return JsonResponse({
             'error': str(e)

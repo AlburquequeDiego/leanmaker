@@ -3,6 +3,8 @@ from users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 import json
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Estudiante(models.Model):
     """
@@ -276,3 +278,10 @@ class PerfilEstudiante(models.Model):
 def student_cv_path(instance, filename):
     # Ruta por defecto para guardar CVs
     return f'students/cvs/{instance.estudiante.user.id}/{filename}'
+
+@receiver(post_save, sender=User)
+def crear_perfil_estudiante(sender, instance, created, **kwargs):
+    if created and instance.role == 'student':
+        from .models import Estudiante
+        if not hasattr(instance, 'estudiante_profile'):
+            Estudiante.objects.create(user=instance)

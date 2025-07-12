@@ -2,505 +2,629 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
+  Paper,
   Button,
-  Chip,
-  Avatar,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
-  FormControl,
-  InputLabel,
   Select,
   MenuItem,
+  FormControl,
+  InputLabel,
+  Chip,
+  IconButton,
   Alert,
-  Tabs,
-  Tab,
-
+  CircularProgress,
+  Card,
+  CardContent,
+  Grid,
 } from '@mui/material';
 import {
-  Warning as WarningIcon,
-  Person as PersonIcon,
   Add as AddIcon,
-  CheckCircle as CheckCircleIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
 
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
+import { useApi } from '../../../hooks/useApi';
+import { adaptStrike } from '../../../utils/adapters';
+import type { Strike } from '../../../types';
 
-interface Strike {
-  id: string;
-  student_id: string;
-  student_name: string;
-  student_email: string;
-  project_id: string;
-  project_title: string;
-  type: 'attendance' | 'quality' | 'deadline' | 'behavior' | 'other';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
-  date: string;
-  status: 'active' | 'resolved' | 'appealed';
-  evidence?: string;
-  resolution?: string;
-  resolved_date?: string;
+
+
+// Interfaz extendida para el formulario
+interface StrikeFormData {
+  student: string;
+  project?: string;
+  reason: string;
+  description?: string;
+  severity: 'low' | 'medium' | 'high';
 }
 
-// Mock de datos para el resumen de 4 indicadores
-const resumen = [
-  { label: 'Total', value: 3, icon: <WarningIcon color="primary" />, color: '#42A5F5' },
-  { label: 'Activos', value: 2, icon: <WarningIcon color="error" />, color: '#EF5350' },
-  { label: 'Resueltos', value: 1, icon: <CheckCircleIcon color="success" />, color: '#66BB6A' },
-  { label: 'Apelados', value: 0, icon: <WarningIcon color="warning" />, color: '#FFA726' },
-];
-
-const cantidadOpciones = [5, 10, 20, 50, 'todas'];
-const tabLabels = ['Todos', 'Activos', 'Resueltos', 'Apelados'];
-
 export const CompanyStrikes: React.FC = () => {
+  const api = useApi();
   const [strikes, setStrikes] = useState<Strike[]>([]);
-
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showResolveDialog, setShowResolveDialog] = useState(false);
-  const [selectedStrike, setSelectedStrike] = useState<Strike | null>(null);
-  const [newStrike, setNewStrike] = useState<Partial<Strike>>({
-    student_name: '',
-    project_title: '',
-    type: 'other',
-    severity: 'medium',
-    description: '',
-    evidence: '',
-  });
-  const [resolutionText, setResolutionText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState(0);
-  // Filtros de cantidad por tab
-  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
+  const [selectedStrike, setSelectedStrike] = useState<Strike | null>(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5, 5]);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [newStrike, setNewStrike] = useState<StrikeFormData>({
+    student: '',
+    project: '',
+    reason: '',
+    description: '',
+    severity: 'medium',
+  });
 
   useEffect(() => {
-    async function fetchStrikes() {
-      try {
-        const data = await apiService.get('/api/strikes/');
-        setStrikes(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching strikes:', error);
-        setStrikes([]);
-      }
-    }
-    fetchStrikes();
+    loadStrikes();
   }, []);
+
+  const loadStrikes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.get('/api/strikes/');
+      const adaptedStrikes = response.data.map(adaptStrike);
+      setStrikes(adaptedStrikes);
+      
+    } catch (err: any) {
+      console.error('Error cargando strikes:', err);
+      setError(err.response?.data?.error || 'Error al cargar strikes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+  const getStatusFilter = (tabIdx: number) => {
+    switch (tabIdx) {
+      case 0: return undefined; // Todas
+      case 1: return true; // Activas
+      case 2: return false; // Resueltas
+      case 3: return undefined; // Apeladas (no implementado)
+      case 4: return undefined; // Expiradas
+      default: return undefined;
+    }
+  };
+
+  const filteredStrikes = strikes.filter(strike => {
+    const status = getStatusFilter(selectedTab);
+    if (status !== undefined) {
+      return strike.is_active === status;
+    }
+    return true;
+  });
+
+  const cantidadActual = cantidadPorTab[selectedTab];
+  const strikesMostrados = cantidadActual === 'todas' ? filteredStrikes : filteredStrikes.slice(0, Number(cantidadActual));
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'low':
-        return 'warning';
-      case 'medium':
-        return 'info';
       case 'high':
         return 'error';
-      case 'critical':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'attendance':
-        return 'Asistencia';
-      case 'quality':
-        return 'Calidad';
-      case 'deadline':
-        return 'Deadline';
-      case 'behavior':
-        return 'Comportamiento';
-      case 'other':
-        return 'Otro';
-      default:
-        return type;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'error';
-      case 'resolved':
-        return 'success';
-      case 'appealed':
+      case 'medium':
         return 'warning';
+      case 'low':
+        return 'info';
       default:
         return 'default';
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'Activo';
-      case 'resolved':
-        return 'Resuelto';
-      case 'appealed':
-        return 'Apelado';
+  const getSeverityLabel = (severity: string) => {
+    switch (severity) {
+      case 'high':
+        return 'Alto';
+      case 'medium':
+        return 'Medio';
+      case 'low':
+        return 'Bajo';
       default:
-        return status;
+        return severity;
     }
   };
 
-  const handleAddStrike = async () => {
+  const getStatusLabel = (isActive: boolean) => {
+    return isActive ? 'Activo' : 'Resuelto';
+  };
+
+  const getStatusColor = (isActive: boolean) => {
+    return isActive ? 'error' : 'success';
+  };
+
+  const handleCreateStrike = async () => {
     try {
-      const strikeData = {
-        student_name: newStrike.student_name,
-        project_title: newStrike.project_title,
-        type: newStrike.type,
+      setUpdatingStatus('creating');
+      
+      const response = await api.post('/api/strikes/', {
+        student: newStrike.student,
+        project: newStrike.project || null,
+        reason: newStrike.reason,
+        description: newStrike.description || '',
         severity: newStrike.severity,
-        description: newStrike.description,
-        evidence: newStrike.evidence,
-        date: new Date().toISOString().split('T')[0],
-        status: 'active',
-      };
-
-      const createdStrike = await apiService.post('/api/strikes/', strikeData);
-      setStrikes(prev => [createdStrike as Strike, ...prev]);
-      setShowAddDialog(false);
-      setNewStrike({
-        student_name: '',
-        project_title: '',
-        type: 'other',
-        severity: 'medium',
-        description: '',
-        evidence: '',
       });
-    } catch (error) {
-      console.error('Error creating strike:', error);
+
+      const createdStrike = adaptStrike(response.data);
+      setStrikes(prev => [createdStrike, ...prev]);
+      setShowCreateDialog(false);
+      setNewStrike({
+        student: '',
+        project: '',
+        reason: '',
+        description: '',
+        severity: 'medium',
+      });
+    } catch (error: any) {
+      console.error('Error creando strike:', error);
+      setError(error.response?.data?.error || 'Error al crear strike');
+    } finally {
+      setUpdatingStatus(null);
     }
   };
 
-  const handleResolveStrike = async () => {
-    if (selectedStrike) {
-      try {
-        const updatedStrike = await apiService.patch(`/api/strikes/${selectedStrike.id}/`, {
-          status: 'resolved',
-          resolution: resolutionText,
-          resolved_date: new Date().toISOString().split('T')[0],
-        });
+  const handleUpdateStrike = async () => {
+    if (!selectedStrike) return;
+    
+    try {
+      setUpdatingStatus(selectedStrike.id);
+      
+      const response = await api.patch(`/api/strikes/${selectedStrike.id}/`, {
+        reason: newStrike.reason,
+        description: newStrike.description || '',
+        severity: newStrike.severity,
+      });
 
-        setStrikes(prev =>
-          prev.map(strike =>
-            strike.id === selectedStrike.id ? (updatedStrike as Strike) : strike
-          )
-        );
-        setShowResolveDialog(false);
-        setSelectedStrike(null);
-        setResolutionText('');
-      } catch (error) {
-        console.error('Error resolving strike:', error);
-      }
+      const updatedStrike = adaptStrike(response.data);
+      setStrikes(prev =>
+        prev.map(strike =>
+          strike.id === selectedStrike.id ? updatedStrike : strike
+        )
+      );
+      setShowEditDialog(false);
+      setSelectedStrike(null);
+    } catch (error: any) {
+      console.error('Error actualizando strike:', error);
+      setError(error.response?.data?.error || 'Error al actualizar strike');
+    } finally {
+      setUpdatingStatus(null);
     }
   };
 
   const handleDeleteStrike = async (strikeId: string) => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar este strike?')) return;
+    
     try {
-      await apiService.delete(`/api/strikes/${strikeId}/`);
+      setUpdatingStatus(strikeId);
+      await api.delete(`/api/strikes/${strikeId}/`);
       setStrikes(prev => prev.filter(strike => strike.id !== strikeId));
-    } catch (error) {
-      console.error('Error deleting strike:', error);
+    } catch (error: any) {
+      console.error('Error eliminando strike:', error);
+      setError(error.response?.data?.error || 'Error al eliminar strike');
+    } finally {
+      setUpdatingStatus(null);
     }
   };
 
-
-
-  const handleCantidadChange = (tabIdx: number, value: number | string) => {
-    setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
+  const handleViewDetails = (strike: Strike) => {
+    setSelectedStrike(strike);
+    setShowDetailDialog(true);
   };
 
-  const filteredStrikes = strikes.filter(strike => {
-    switch (selectedTab) {
-      case 0: return true; // Todos
-      case 1: return strike.status === 'active';
-      case 2: return strike.status === 'resolved';
-      case 3: return strike.status === 'appealed';
-      default: return true;
-    }
-  });
-  const cantidadActual = cantidadPorTab[selectedTab];
-  const strikesMostrados = cantidadActual === 'todas' ? filteredStrikes : filteredStrikes.slice(0, Number(cantidadActual));
+  const handleEditStrike = (strike: Strike) => {
+    setSelectedStrike(strike);
+    setNewStrike({
+      student: strike.student,
+      project: strike.project || '',
+      reason: strike.reason,
+      description: strike.description || '',
+      severity: strike.severity,
+    });
+    setShowEditDialog(true);
+  };
+
+  const stats = {
+    total: strikes.length,
+    active: strikes.filter(strike => strike.is_active).length,
+    resolved: strikes.filter(strike => !strike.is_active).length,
+    appealed: 0, // No implementado
+    expired: 0, // No implementado
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadStrikes} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Gestión de Strikes
+      {/* Header */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Gestión de Amonestaciones (Strikes)
         </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Administra las amonestaciones de los estudiantes en tus proyectos
+        </Typography>
+      </Box>
+
+      {/* Estadísticas */}
+      <Box sx={{ mb: 3 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Total
+                </Typography>
+                <Typography variant="h4">
+                  {stats.total}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Activas
+                </Typography>
+                <Typography variant="h4" color="error">
+                  {stats.active}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Resueltas
+                </Typography>
+                <Typography variant="h4" color="success.main">
+                  {stats.resolved}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Apeladas
+                </Typography>
+                <Typography variant="h4" color="warning.main">
+                  {stats.appealed}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Controles */}
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Button
           variant="contained"
-          color="error"
           startIcon={<AddIcon />}
-          onClick={() => setShowAddDialog(true)}
+          onClick={() => setShowCreateDialog(true)}
         >
-          Nuevo Strike
+          Crear Amonestación
         </Button>
       </Box>
 
-      {/* Resumen superior: 4 cards en una sola fila */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
-        {resumen.map((item, idx) => (
-          <Box key={idx} sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-            <Card sx={{ bgcolor: item.color, color: '#fff', borderRadius: 3, boxShadow: 1, minHeight: 100 }}>
-              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>{item.value}</Typography>
-                <Typography variant="body2" sx={{ mb: 1 }}>{item.label}</Typography>
-                <Box>{item.icon}</Box>
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
-      </Box>
-
-      {/* Tabs de subsecciones */}
-      <Box sx={{ mb: 2 }}>
-        <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
-          {tabLabels.map((label) => (
-            <Tab key={label} label={label} />
+      {/* Tabs */}
+      <Box sx={{ mb: 3 }}>
+        <Grid container spacing={1}>
+          {['Todas', 'Activas', 'Resueltas', 'Apeladas', 'Expiradas'].map((tab, index) => (
+            <Grid item key={index}>
+              <Button
+                variant={selectedTab === index ? 'contained' : 'outlined'}
+                onClick={() => setSelectedTab(index)}
+                sx={{ minWidth: 100 }}
+              >
+                {tab}
+              </Button>
+            </Grid>
           ))}
-        </Tabs>
-      </Box>
-
-      {/* Filtro de cantidad por tab */}
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-        <FormControl size="small" sx={{ minWidth: 120 }}>
-          <InputLabel id="cantidad-label">Mostrar</InputLabel>
-          <Select
-            labelId="cantidad-label"
-            value={cantidadActual}
-            label="Mostrar"
-            onChange={e => handleCantidadChange(selectedTab, e.target.value)}
-          >
-            {cantidadOpciones.map(opt => (
-              <MenuItem key={opt} value={opt}>{opt === 'todas' ? 'Todas' : opt}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        </Grid>
       </Box>
 
       {/* Lista de Strikes */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+      <Box>
         {strikesMostrados.map((strike) => (
-          <Box key={strike.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ mr: 2, bgcolor: 'error.main' }}>
-                    <PersonIcon />
-                  </Avatar>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" gutterBottom>
-                      {strike.student_name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {strike.student_email}
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Chip
-                      label={getStatusLabel(strike.status)}
-                      color={getStatusColor(strike.status) as any}
-                      size="small"
-                    />
-                  </Box>
-                </Box>
-
-                <Typography variant="body1" gutterBottom>
-                  <strong>Proyecto:</strong> {strike.project_title}
-                </Typography>
-
-                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+          <Paper key={strike.id} sx={{ p: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="h6" sx={{ mr: 2 }}>
+                    Estudiante ID: {strike.student}
+                  </Typography>
                   <Chip
-                    label={getTypeLabel(strike.type)}
-                    color="primary"
+                    label={getStatusLabel(strike.is_active)}
+                    color={getStatusColor(strike.is_active) as any}
                     size="small"
-                    variant="outlined"
+                    sx={{ mr: 1 }}
                   />
                   <Chip
-                    label={strike.severity}
+                    label={getSeverityLabel(strike.severity)}
                     color={getSeverityColor(strike.severity) as any}
                     size="small"
                   />
                 </Box>
-
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {strike.description}
+                
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Motivo:</strong> {strike.reason}
                 </Typography>
-
-                <Typography variant="body2" color="text.secondary">
-                  <strong>Fecha:</strong> {new Date(strike.date).toLocaleDateString()}
-                </Typography>
-
-                {strike.evidence && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                    <strong>Evidencia:</strong> {strike.evidence}
+                
+                {strike.project && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    <strong>Proyecto ID:</strong> {strike.project}
                   </Typography>
                 )}
-
-                {strike.resolution && (
-                  <Alert severity="success" sx={{ mt: 2 }}>
-                    <Typography variant="body2">
-                      <strong>Resolución:</strong> {strike.resolution}
-                    </Typography>
-                    <Typography variant="caption">
-                      Resuelto el {new Date(strike.resolved_date!).toLocaleDateString()}
-                    </Typography>
-                  </Alert>
+                
+                {strike.description && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    <strong>Descripción:</strong> {strike.description}
+                  </Typography>
                 )}
-              </CardContent>
-              <Box sx={{ p: 2, pt: 0 }}>
-                {strike.status === 'active' && (
-                  <Button
-                    size="small"
-                    color="success"
-                    onClick={() => {
-                      setSelectedStrike(strike);
-                      setShowResolveDialog(true);
-                    }}
-                    sx={{ mr: 1 }}
-                  >
-                    Resolver
-                  </Button>
-                )}
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={() => handleDeleteStrike(strike.id)}
-                >
-                  Eliminar
-                </Button>
+                
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Fecha:</strong> {new Date(strike.issued_at).toLocaleDateString()}
+                </Typography>
               </Box>
-            </Card>
-          </Box>
+              
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton
+                  size="small"
+                  onClick={() => handleViewDetails(strike)}
+                  color="primary"
+                >
+                  <VisibilityIcon />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={() => handleEditStrike(strike)}
+                  color="primary"
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={() => handleDeleteStrike(strike.id)}
+                  color="error"
+                  disabled={updatingStatus === strike.id}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            </Box>
+          </Paper>
         ))}
+        
+        {strikesMostrados.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography variant="h6" color="text.secondary">
+              No hay amonestaciones en esta categoría
+            </Typography>
+          </Box>
+        )}
       </Box>
 
-      {/* Dialog para agregar strike */}
-      <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Nuevo Strike</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Nombre del Estudiante"
-                value={newStrike.student_name}
-                onChange={(e) => setNewStrike(prev => ({ ...prev, student_name: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <TextField
-                fullWidth
-                label="Proyecto"
-                value={newStrike.project_title}
-                onChange={(e) => setNewStrike(prev => ({ ...prev, project_title: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Tipo</InputLabel>
-                <Select
-                  value={newStrike.type}
-                  label="Tipo"
-                  onChange={(e) => setNewStrike(prev => ({ ...prev, type: e.target.value as Strike['type'] }))}
-                >
-                  <MenuItem value="attendance">Asistencia</MenuItem>
-                  <MenuItem value="quality">Calidad</MenuItem>
-                  <MenuItem value="deadline">Deadline</MenuItem>
-                  <MenuItem value="behavior">Comportamiento</MenuItem>
-                  <MenuItem value="other">Otro</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Severidad</InputLabel>
-                <Select
-                  value={newStrike.severity}
-                  label="Severidad"
-                  onChange={(e) => setNewStrike(prev => ({ ...prev, severity: e.target.value as Strike['severity'] }))}
-                >
-                  <MenuItem value="low">Baja</MenuItem>
-                  <MenuItem value="medium">Media</MenuItem>
-                  <MenuItem value="high">Alta</MenuItem>
-                  <MenuItem value="critical">Crítica</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Descripción"
-                value={newStrike.description}
-                onChange={(e) => setNewStrike(prev => ({ ...prev, description: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <TextField
-                fullWidth
-                multiline
-                rows={2}
-                label="Evidencia"
-                value={newStrike.evidence}
-                onChange={(e) => setNewStrike(prev => ({ ...prev, evidence: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowAddDialog(false)}>Cancelar</Button>
-          <Button onClick={handleAddStrike} variant="contained" color="error">
-            Crear Strike
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog para resolver strike */}
-      <Dialog open={showResolveDialog} onClose={() => setShowResolveDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Resolver Strike</DialogTitle>
+      {/* Dialog de Detalles */}
+      <Dialog
+        open={showDetailDialog}
+        onClose={() => setShowDetailDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Detalles de la Amonestación</DialogTitle>
         <DialogContent>
           {selectedStrike && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body1" gutterBottom>
-                <strong>Estudiante:</strong> {selectedStrike.student_name}
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Estudiante ID: {selectedStrike.student}
               </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Proyecto:</strong> {selectedStrike.project_title}
+              
+              {selectedStrike.project && (
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  <strong>Proyecto ID:</strong> {selectedStrike.project}
+                </Typography>
+              )}
+              
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                <strong>Motivo:</strong> {selectedStrike.reason}
               </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Descripción:</strong> {selectedStrike.description}
-              </Typography>
-              <Box sx={{ mt: 3 }}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Resolución"
-                  value={resolutionText}
-                  onChange={(e) => setResolutionText(e.target.value)}
-                  margin="normal"
-                  placeholder="Describe cómo se resolvió el strike..."
+              
+              {selectedStrike.description && (
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  <strong>Descripción:</strong> {selectedStrike.description}
+                </Typography>
+              )}
+              
+              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <Chip
+                  label={getStatusLabel(selectedStrike.is_active)}
+                  color={getStatusColor(selectedStrike.is_active) as any}
+                />
+                <Chip
+                  label={getSeverityLabel(selectedStrike.severity)}
+                  color={getSeverityColor(selectedStrike.severity) as any}
                 />
               </Box>
+              
+              <Typography variant="body2" color="text.secondary">
+                <strong>Fecha de emisión:</strong> {new Date(selectedStrike.issued_at).toLocaleString()}
+              </Typography>
+              
+              {selectedStrike.expires_at && (
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Fecha de expiración:</strong> {new Date(selectedStrike.expires_at).toLocaleString()}
+                </Typography>
+              )}
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowResolveDialog(false)}>Cancelar</Button>
-          <Button onClick={handleResolveStrike} variant="contained" color="success">
-            Resolver Strike
+          <Button onClick={() => setShowDetailDialog(false)}>
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog de Crear */}
+      <Dialog
+        open={showCreateDialog}
+        onClose={() => setShowCreateDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Crear Nueva Amonestación</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            <TextField
+              fullWidth
+              label="ID del Estudiante"
+              value={newStrike.student}
+              onChange={(e) => setNewStrike(prev => ({ ...prev, student: e.target.value }))}
+              sx={{ mb: 2 }}
+            />
+            
+            <TextField
+              fullWidth
+              label="ID del Proyecto (opcional)"
+              value={newStrike.project}
+              onChange={(e) => setNewStrike(prev => ({ ...prev, project: e.target.value }))}
+              sx={{ mb: 2 }}
+            />
+            
+            <TextField
+              fullWidth
+              label="Motivo"
+              value={newStrike.reason}
+              onChange={(e) => setNewStrike(prev => ({ ...prev, reason: e.target.value }))}
+              multiline
+              rows={3}
+              sx={{ mb: 2 }}
+            />
+            
+            <TextField
+              fullWidth
+              label="Descripción (opcional)"
+              value={newStrike.description}
+              onChange={(e) => setNewStrike(prev => ({ ...prev, description: e.target.value }))}
+              multiline
+              rows={3}
+              sx={{ mb: 2 }}
+            />
+            
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Severidad</InputLabel>
+              <Select
+                value={newStrike.severity}
+                label="Severidad"
+                onChange={(e) => setNewStrike(prev => ({ ...prev, severity: e.target.value as 'low' | 'medium' | 'high' }))}
+              >
+                <MenuItem value="low">Baja</MenuItem>
+                <MenuItem value="medium">Media</MenuItem>
+                <MenuItem value="high">Alta</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowCreateDialog(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleCreateStrike}
+            variant="contained"
+            disabled={updatingStatus === 'creating' || !newStrike.student || !newStrike.reason}
+          >
+            {updatingStatus === 'creating' ? <CircularProgress size={20} /> : 'Crear'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog de Editar */}
+      <Dialog
+        open={showEditDialog}
+        onClose={() => setShowEditDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Editar Amonestación</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            <TextField
+              fullWidth
+              label="Motivo"
+              value={newStrike.reason}
+              onChange={(e) => setNewStrike(prev => ({ ...prev, reason: e.target.value }))}
+              multiline
+              rows={3}
+              sx={{ mb: 2 }}
+            />
+            
+            <TextField
+              fullWidth
+              label="Descripción (opcional)"
+              value={newStrike.description}
+              onChange={(e) => setNewStrike(prev => ({ ...prev, description: e.target.value }))}
+              multiline
+              rows={3}
+              sx={{ mb: 2 }}
+            />
+            
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Severidad</InputLabel>
+              <Select
+                value={newStrike.severity}
+                label="Severidad"
+                onChange={(e) => setNewStrike(prev => ({ ...prev, severity: e.target.value as 'low' | 'medium' | 'high' }))}
+              >
+                <MenuItem value="low">Baja</MenuItem>
+                <MenuItem value="medium">Media</MenuItem>
+                <MenuItem value="high">Alta</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowEditDialog(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleUpdateStrike}
+            variant="contained"
+            disabled={updatingStatus === selectedStrike?.id || !newStrike.reason}
+          >
+            {updatingStatus === selectedStrike?.id ? <CircularProgress size={20} /> : 'Actualizar'}
           </Button>
         </DialogActions>
       </Dialog>

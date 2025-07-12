@@ -21,7 +21,7 @@ class ProyectoSerializer:
         return {
             'id': str(proyecto.id),
             'company_id': str(proyecto.company.id) if proyecto.company else None,
-            'company_name': proyecto.company.name if proyecto.company else None,
+            'company_name': proyecto.company.company_name if proyecto.company else None,
             'status_id': proyecto.status.id if proyecto.status else None,
             'status_name': proyecto.status.name if proyecto.status else None,
             'area_id': proyecto.area.id if proyecto.area else None,

@@ -83,6 +83,36 @@ const typeConfig = {
   },
 };
 
+// Adaptador para asegurar que evaluation.technologies siempre sea un array
+function adaptEvaluation(raw: any): Evaluation {
+  return {
+    id: raw.id || '',
+    projectTitle: raw.project_title || raw.projectTitle || 'Sin título',
+    company: raw.project?.company?.company_name || 'Sin empresa',
+    evaluator: raw.evaluator_name || raw.evaluator || 'Sin evaluador',
+    evaluatorRole: raw.evaluator_role || raw.evaluatorRole || 'Sin rol',
+    date: raw.evaluation_date || raw.date || raw.created_at || '',
+    status: raw.status || 'completed',
+    type: raw.type || 'final',
+    overallRating: typeof raw.score === 'number' ? raw.score : (typeof raw.overall_rating === 'number' ? raw.overall_rating : null),
+    categories: Array.isArray(raw.category_scores) ? raw.category_scores.map((cat: any) => ({
+      name: cat.category_name || 'Sin categoría',
+      rating: cat.rating || null,
+      icon: <StarIcon />
+    })) : [],
+    comments: raw.comments || null,
+    strengths: typeof raw.strengths === 'string' ? raw.strengths.split(',').map(s => s.trim()).filter(s => s) : [],
+    areasForImprovement: typeof raw.areas_for_improvement === 'string' ? raw.areas_for_improvement.split(',').map(a => a.trim()).filter(a => a) : [],
+    projectDuration: raw.project_duration || raw.projectDuration || '',
+    technologies: Array.isArray(raw.technologies)
+      ? raw.technologies
+      : (typeof raw.technologies === 'string' && raw.technologies)
+        ? raw.technologies.split(',').map(t => t.trim()).filter(t => t)
+        : [],
+    deliverables: typeof raw.deliverables === 'string' ? raw.deliverables.split(',').map(d => d.trim()).filter(d => d) : [],
+  };
+}
+
 export const Evaluations = () => {
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [companyRatings, setCompanyRatings] = useState<CompanyRating[]>([]);
@@ -114,8 +144,16 @@ export const Evaluations = () => {
   const fetchEvaluations = async () => {
     setLoading(true);
     try {
-      const data = await apiService.get('/api/evaluations/');
-      setEvaluations(Array.isArray(data) ? data : []);
+      const response = await apiService.get('/api/evaluations/');
+      console.log('[Evaluations] Response:', response);
+      // El backend puede devolver {success: true, data: Array, ...} o un array directo
+      let evaluationsData = response.data || response;
+      if (!Array.isArray(evaluationsData)) {
+        // Si viene paginado o con otra estructura
+        evaluationsData = evaluationsData.results || evaluationsData.data || [];
+      }
+      // Adaptar cada evaluación
+      setEvaluations(evaluationsData.map(adaptEvaluation));
     } catch (error) {
       console.error('Error fetching evaluations:', error);
       setEvaluations([]);
@@ -125,8 +163,9 @@ export const Evaluations = () => {
 
   const fetchCompanyRatings = async () => {
     try {
-      const data = await apiService.get('/api/company-ratings/');
-      setCompanyRatings(Array.isArray(data) ? data : []);
+      // Este endpoint no existe en el backend, por ahora lo deshabilitamos
+      console.log('[Evaluations] Company ratings endpoint not available');
+      setCompanyRatings([]);
     } catch (error) {
       console.error('Error fetching company ratings:', error);
       setCompanyRatings([]);
@@ -135,9 +174,12 @@ export const Evaluations = () => {
 
   const fetchAvailableCompanies = async () => {
     try {
-      const data = await apiService.get('/api/companies/');
-      const companies = Array.isArray(data) ? data.map((company: any) => company.name) : [];
-      setAvailableCompanies(companies);
+      const response = await apiService.get('/api/companies/');
+      console.log('[Evaluations] Companies response:', response);
+      
+      // El backend devuelve {message: 'companies_list placeholder'}
+      // Por ahora usamos un array vacío hasta que se implemente el endpoint
+      setAvailableCompanies([]);
     } catch (error) {
       console.error('Error fetching companies:', error);
       setAvailableCompanies([]);
@@ -206,6 +248,14 @@ export const Evaluations = () => {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!Array.isArray(evaluations)) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">La estructura de los datos de evaluaciones no es válida.</Alert>
       </Box>
     );
   }

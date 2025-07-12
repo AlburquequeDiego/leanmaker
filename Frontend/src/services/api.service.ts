@@ -1,5 +1,6 @@
 import { authService } from './auth.service';
 import { API_BASE_URL } from '../config/api.config';
+import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats } from '../utils/adapters';
 
 class ApiService {
   private async request<T>(
@@ -66,7 +67,9 @@ class ApiService {
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
         console.log(`[apiService] Response data:`, data);
-        return data;
+        
+        // Aplicar adaptadores según el endpoint
+        return this.applyAdapter(data, endpoint) as T;
       }
       
       console.warn(`[apiService] No JSON content type, returning empty object`);
@@ -104,6 +107,128 @@ class ApiService {
 
   async delete<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: 'DELETE' });
+  }
+
+  /**
+   * Aplica adaptadores según el endpoint para convertir campos del backend
+   */
+  private applyAdapter(data: any, endpoint: string): any {
+    // Si es una respuesta de error, no aplicar adaptador
+    if (data.error) {
+      return data;
+    }
+
+    // Aplicar adaptadores según el endpoint
+    if (endpoint.includes('/api/users/profile/')) {
+      return adaptUser(data);
+    }
+    
+    if (endpoint.includes('/api/projects/')) {
+      if (Array.isArray(data)) {
+        return data.map(adaptProject);
+      }
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptProject)
+        };
+      }
+      if (data.data && Array.isArray(data.data)) {
+        return {
+          ...data,
+          data: data.data.map(adaptProject)
+        };
+      }
+      return adaptProject(data);
+    }
+    
+    if (endpoint.includes('/api/project-applications/')) {
+      if (Array.isArray(data)) {
+        return data.map(adaptApplication);
+      }
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptApplication)
+        };
+      }
+      if (data.data && Array.isArray(data.data)) {
+        return {
+          ...data,
+          data: data.data.map(adaptApplication)
+        };
+      }
+      return adaptApplication(data);
+    }
+    
+    if (endpoint.includes('/api/students/')) {
+      if (Array.isArray(data)) {
+        return data.map(adaptStudent);
+      }
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptStudent)
+        };
+      }
+      if (data.data && Array.isArray(data.data)) {
+        return {
+          ...data,
+          data: data.data.map(adaptStudent)
+        };
+      }
+      return adaptStudent(data);
+    }
+    
+    if (endpoint.includes('/api/companies/')) {
+      if (Array.isArray(data)) {
+        return data.map(adaptCompany);
+      }
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptCompany)
+        };
+      }
+      if (data.data && Array.isArray(data.data)) {
+        return {
+          ...data,
+          data: data.data.map(adaptCompany)
+        };
+      }
+      return adaptCompany(data);
+    }
+    
+    if (endpoint.includes('/api/notifications/')) {
+      if (Array.isArray(data)) {
+        return data.map(adaptNotification);
+      }
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptNotification)
+        };
+      }
+      if (data.data && Array.isArray(data.data)) {
+        return {
+          ...data,
+          data: data.data.map(adaptNotification)
+        };
+      }
+      return adaptNotification(data);
+    }
+    
+    if (endpoint.includes('/api/dashboard/')) {
+      // Solo aplicar adaptador si es el dashboard de admin
+      if (endpoint.includes('/admin_stats/')) {
+        return adaptDashboardStats(data);
+      }
+      // Para otros dashboards (company, student), devolver datos tal como están
+      return data;
+    }
+    
+    // Si no hay adaptador específico, devolver los datos tal como están
+    return data;
   }
 
   // Upload file method

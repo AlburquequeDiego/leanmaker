@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { apiService } from '../services/api.service';
 import { API_ENDPOINTS } from '../config/api.config';
 
@@ -12,7 +12,7 @@ interface UseRealTimeDataOptions {
 
 export const useRealTimeData = <T = any>({
   endpoint,
-  interval = 30000, // 30 segundos por defecto
+  interval = 300000, // 5 minutos por defecto
   enabled = true,
   onDataUpdate,
   onError
@@ -37,8 +37,11 @@ export const useRealTimeData = <T = any>({
       console.log(`[useRealTimeData] Response received:`, response);
       
       if (isMountedRef.current) {
+        // Log de depuración detallado
+        console.log('[useRealTimeData] DEBUG: response:', response, 'typeof:', typeof response, 'keys:', response && typeof response === 'object' ? Object.keys(response) : 'not an object');
         // Verificar que la respuesta no esté vacía
         if (response && (typeof response === 'object' ? Object.keys(response).length > 0 : true)) {
+          console.log(`[useRealTimeData] Setting data for ${endpoint}:`, response);
         setData(response);
         setError(null);
         setLastUpdate(new Date());
@@ -75,17 +78,17 @@ export const useRealTimeData = <T = any>({
     }
   }, [endpoint, enabled, onDataUpdate, onError]);
 
-  // Inicializar datos solo una vez
+  // Inicializar datos cuando el endpoint cambie o se habilite
   useEffect(() => {
-    if (!hasInitializedRef.current && enabled) {
+    if (enabled) {
       console.log(`[useRealTimeData] Initializing data fetch for: ${endpoint}`);
     fetchData();
     }
-  }, [fetchData, enabled]);
+  }, [endpoint, enabled, fetchData]);
 
-  // Configurar polling solo después de la inicialización
+  // Configurar polling
   useEffect(() => {
-    if (!enabled || !hasInitializedRef.current) {
+    if (!enabled) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -110,6 +113,7 @@ export const useRealTimeData = <T = any>({
 
   // Cleanup al desmontar
   useEffect(() => {
+    isMountedRef.current = true; // <-- Esto es CLAVE para evitar el bucle infinito
     return () => {
       console.log(`[useRealTimeData] Component unmounting, cleaning up: ${endpoint}`);
       isMountedRef.current = false;
@@ -118,7 +122,7 @@ export const useRealTimeData = <T = any>({
         intervalRef.current = null;
       }
     };
-  }, []);
+  }, [endpoint]);
 
   const refresh = useCallback(() => {
     console.log(`[useRealTimeData] Manual refresh triggered for: ${endpoint}`);
@@ -155,27 +159,26 @@ export const useRealTimeData = <T = any>({
 // Hook específico para estadísticas del dashboard
 export const useDashboardStats = (userRole: 'student' | 'company' | 'admin') => {
   let endpoint = '';
-  if (userRole === 'student') endpoint = `${API_ENDPOINTS.DASHBOARD}student_stats/`;
-  else if (userRole === 'company') endpoint = `${API_ENDPOINTS.DASHBOARD}company_stats/`;
-  else if (userRole === 'admin') endpoint = `${API_ENDPOINTS.DASHBOARD}admin_stats/`;
+  if (userRole === 'student') endpoint = API_ENDPOINTS.DASHBOARD_STUDENT_STATS;
+  else if (userRole === 'company') endpoint = API_ENDPOINTS.DASHBOARD_COMPANY_STATS;
+  else if (userRole === 'admin') endpoint = API_ENDPOINTS.DASHBOARD_ADMIN_STATS;
   
-  console.log(`[useDashboardStats] Initializing for role: ${userRole}, endpoint: ${endpoint}`);
-  console.log(`[useDashboardStats] API_ENDPOINTS.DASHBOARD: ${API_ENDPOINTS.DASHBOARD}`);
-  
-  return useRealTimeData({
+  const options = useMemo(() => ({
     endpoint,
-    interval: 30000, // Actualizar cada 30 segundos
+    interval: 300000, // 5 minutos
     enabled: true,
-    onError: (error) => {
+    onError: (error: any) => {
       console.error(`[useDashboardStats] Error for ${userRole}:`, error);
     }
-  });
+  }), [endpoint, userRole]);
+
+  return useRealTimeData(options);
 };
 
 // Hook específico para proyectos
 export const useProjects = () => {
   return useRealTimeData({
-    endpoint: `${API_ENDPOINTS.PROJECTS}my-projects/`,
+    endpoint: API_ENDPOINTS.PROJECT_MY_PROJECTS,
     interval: 45000, // Actualizar cada 45 segundos
     enabled: true
   });
@@ -184,7 +187,7 @@ export const useProjects = () => {
 // Hook específico para aplicaciones
 export const useApplications = () => {
   return useRealTimeData({
-    endpoint: `${API_ENDPOINTS.PROJECT_APPLICATIONS}my-applications/`,
+    endpoint: API_ENDPOINTS.PROJECT_APPLICATIONS_MY_APPLICATIONS,
     interval: 30000, // Actualizar cada 30 segundos
     enabled: true
   });
@@ -192,7 +195,9 @@ export const useApplications = () => {
 
 // Hook específico para eventos del calendario
 export const useCalendarEvents = (userRole: 'student' | 'company') => {
-  const endpoint = `${API_ENDPOINTS.CALENDAR_EVENTS}${userRole}-events/`;
+  const endpoint = userRole === 'student' 
+    ? API_ENDPOINTS.CALENDAR_STUDENT_EVENTS 
+    : API_ENDPOINTS.CALENDAR_COMPANY_EVENTS;
   
   return useRealTimeData({
     endpoint,

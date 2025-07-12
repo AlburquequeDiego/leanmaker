@@ -14,25 +14,32 @@ def get_user_from_token(request):
     Retorna el usuario si el token es válido, None en caso contrario
     """
     auth_header = request.headers.get('Authorization')
+    print("Authorization header:", auth_header)
     
     if not auth_header or not auth_header.startswith('Bearer '):
+        print("No Authorization header o formato incorrecto")
         return None
     
     token = auth_header.split(' ')[1]
     
     try:
         # Decodificar el token
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        print("Payload JWT:", payload)
         user_id = payload.get('user_id')
+        print("user_id extraído:", user_id)
         
         if not user_id:
+            print("No user_id en el payload")
             return None
         
         # Obtener el usuario
         user = User.objects.get(id=user_id)
+        print("Usuario encontrado:", user)
         return user
         
-    except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, User.DoesNotExist):
+    except Exception as e:
+        print("Error decodificando token:", e)
         return None
 
 def require_auth(view_func):

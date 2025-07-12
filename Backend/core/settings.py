@@ -64,7 +64,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Para archivos estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',  # Comentado para APIs
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -253,6 +253,22 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = False  # True en producción con HTTPS
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'
+
+# CSRF Exempt URLs for API endpoints
+CSRF_EXEMPT_URLS = [
+    '/api/token/',
+    '/api/token/refresh/',
+    '/api/token/verify/',
+    '/api/auth/register/',
+    '/api/auth/logout/',
+    '/api/users/profile/',
+    '/api/students/',
+    '/api/companies/',
+    '/api/projects/',
+    '/api/project-applications/',
+    '/api/notifications/',
+    '/api/dashboard/',
+]
 
 # Login URLs
 LOGIN_URL = '/login/'

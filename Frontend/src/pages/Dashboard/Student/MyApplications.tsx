@@ -191,6 +191,24 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
   );
 };
 
+// Función para adaptar los datos del backend al formato del frontend
+const adaptApplicationData = (backendData: any): Application => {
+  return {
+    id: backendData.id,
+    projectTitle: backendData.project?.title || 'Sin título',
+    company: backendData.project?.company?.name || 'Sin empresa',
+    status: backendData.status || 'pending',
+    appliedDate: backendData.applied_at || '',
+    responseDate: backendData.responded_at || undefined,
+    requiredSkills: [], // El backend no devuelve skills en este endpoint
+    projectDuration: '3 meses', // Valor por defecto
+    location: 'Remoto', // Valor por defecto
+    description: backendData.project?.description || 'Sin descripción',
+    compatibility: backendData.compatibility_score || 0,
+    notes: backendData.student_notes || undefined,
+  };
+};
+
 // Componente principal de aplicaciones
 export const MyApplications: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -204,11 +222,25 @@ export const MyApplications: React.FC = () => {
     async function fetchApplications() {
       try {
         // Obtener aplicaciones específicas del estudiante
-        const data = await apiService.get('/api/projects/applications/my_applications/');
-        setApplications(Array.isArray(data) ? data : []);
+        const data = await apiService.get('/api/project-applications/my_applications/');
+        console.log('Applications data received:', data);
+        
+        // El backend devuelve {results: Array, total: number}
+        const applicationsArray = data.results || data;
+        
+        if (Array.isArray(applicationsArray)) {
+          // Adaptar cada aplicación al formato del frontend
+          const adaptedApplications = applicationsArray.map(adaptApplicationData);
+          setApplications(adaptedApplications);
+          setFilteredApplications(adaptedApplications);
+        } else {
+          setApplications([]);
+          setFilteredApplications([]);
+        }
       } catch (error) {
         console.error('Error fetching applications:', error);
         setApplications([]);
+        setFilteredApplications([]);
       }
     }
     fetchApplications();

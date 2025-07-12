@@ -21,6 +21,7 @@ import {
   DialogActions,
   Button,
   CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -30,53 +31,50 @@ import {
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
   MarkEmailRead as MarkEmailReadIcon,
-
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  read: boolean;
-  created_at: string;
-  category: 'project' | 'application' | 'interview' | 'evaluation' | 'system';
-}
+import { useApi } from '../../../hooks/useApi';
+import { adaptNotificationList } from '../../../utils/adapters';
+import type { Notification } from '../../../types';
 
 export const CompanyNotifications: React.FC = () => {
+  const api = useApi();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState<number>(10);
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
-    async function fetchNotifications() {
-      setLoading(true);
-      try {
-        const data = await apiService.get('/api/notifications/');
-        setNotifications(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-        setNotifications([]);
-      }
-      setLoading(false);
-    }
-    fetchNotifications();
+    loadNotifications();
   }, []);
 
-  const getNotificationIcon = (category: string) => {
-    switch (category) {
-      case 'project':
-        return <AssignmentIcon />;
-      case 'application':
-        return <PeopleIcon />;
-      case 'interview':
-        return <EventIcon />;
-      case 'evaluation':
+  const loadNotifications = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.get('/api/notifications/');
+      console.log("Respuesta notificaciones:", response.data);
+      const adaptedNotifications = adaptNotificationList(response.data.data || response.data);
+      setNotifications(adaptedNotifications);
+      
+    } catch (err: any) {
+      console.error('Error cargando notificaciones:', err);
+      setError(err.response?.data?.error || 'Error al cargar notificaciones');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success':
         return <CheckCircleIcon />;
-      case 'system':
+      case 'warning':
+        return <EventIcon />;
+      case 'error':
         return <InfoIcon />;
+      case 'info':
       default:
         return <NotificationsIcon />;
     }
@@ -110,23 +108,6 @@ export const CompanyNotifications: React.FC = () => {
     }
   };
 
-  const getNotificationCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'project':
-        return 'Proyecto';
-      case 'application':
-        return 'Postulación';
-      case 'interview':
-        return 'Entrevista';
-      case 'evaluation':
-        return 'Evaluación';
-      case 'system':
-        return 'Sistema';
-      default:
-        return category;
-    }
-  };
-
   const handleNotificationClick = (notification: Notification) => {
     setSelectedNotification(notification);
     if (!notification.read) {
@@ -140,14 +121,15 @@ export const CompanyNotifications: React.FC = () => {
 
   const markAsRead = async (id: string) => {
     try {
-      await apiService.patch(`/api/notifications/${id}/`, { read: true });
+      await api.patch(`/api/notifications/${id}/`, { read: true });
       setNotifications(prev =>
         prev.map(notification =>
           notification.id === id ? { ...notification, read: true } : notification
         )
       );
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
+    } catch (error: any) {
+      console.error('Error marcando notificación como leída:', error);
+      setError(error.response?.data?.error || 'Error al marcar como leída');
     }
   };
 
@@ -156,6 +138,27 @@ export const CompanyNotifications: React.FC = () => {
   }, [notifications, displayCount]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={loadNotifications} variant="contained">
+          Reintentar
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -188,8 +191,16 @@ export const CompanyNotifications: React.FC = () => {
 
       <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
         <List>
-          {loading ? (
-            <CircularProgress />
+          {displayedNotifications.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <NotificationsIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                No hay notificaciones
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Cuando recibas notificaciones, aparecerán aquí
+              </Typography>
+            </Box>
           ) : (
             displayedNotifications.map((notification, index) => (
               <React.Fragment key={notification.id}>
@@ -231,7 +242,7 @@ export const CompanyNotifications: React.FC = () => {
                       width: 48,
                       height: 48,
                     }}>
-                      {getNotificationIcon(notification.category)}
+                      {getNotificationIcon(notification.type)}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
@@ -296,7 +307,7 @@ export const CompanyNotifications: React.FC = () => {
                   width: 40,
                   height: 40,
                 }}>
-                  {getNotificationIcon(selectedNotification.category)}
+                  {getNotificationIcon(selectedNotification.type)}
                 </Avatar>
                 <Typography variant="h6">
                   {selectedNotification.title}
@@ -311,11 +322,6 @@ export const CompanyNotifications: React.FC = () => {
                     color={getNotificationColor(selectedNotification.type) as any}
                     size="small"
                   />
-                  <Chip
-                    label={getNotificationCategoryLabel(selectedNotification.category)}
-                    variant="outlined"
-                    size="small"
-                  />
                 </Box>
                 <Typography variant="body1" paragraph>
                   {selectedNotification.message}
@@ -326,6 +332,11 @@ export const CompanyNotifications: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Fecha: {new Date(selectedNotification.created_at).toLocaleString()}
                 </Typography>
+                {selectedNotification.related_url && (
+                  <Typography variant="body2" color="text.secondary">
+                    URL relacionada: {selectedNotification.related_url}
+                  </Typography>
+                )}
               </Box>
             </DialogContent>
             <DialogActions>

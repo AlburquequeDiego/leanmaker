@@ -61,8 +61,12 @@ export const MyProjects = () => {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const data = await apiService.get('/api/projects/my_projects/');
-        setProjects(Array.isArray(data) ? data : []);
+        const response = await apiService.get('/api/projects/my_projects/');
+        console.log('[MyProjects] Response:', response);
+        
+        // El backend devuelve {success: true, data: Array, total: number}
+        const projectsData = response.data || response;
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
       } catch (error) {
         console.error('Error fetching projects:', error);
         setProjects([]);
@@ -132,7 +136,7 @@ export const MyProjects = () => {
         <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e8f5e9' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="success.main">
-              {activeProjects.length}
+              {typeof activeProjects.length === 'number' && !isNaN(activeProjects.length) ? activeProjects.length : 0}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Proyectos Activos
@@ -143,7 +147,7 @@ export const MyProjects = () => {
         <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e3f2fd' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="info.main">
-              {completedProjects.length}
+              {typeof completedProjects.length === 'number' && !isNaN(completedProjects.length) ? completedProjects.length : 0}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Proyectos Completados
@@ -154,7 +158,7 @@ export const MyProjects = () => {
         <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#fff3e0' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="warning.main">
-              {pausedProjects.length}
+              {typeof pausedProjects.length === 'number' && !isNaN(pausedProjects.length) ? pausedProjects.length : 0}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Proyectos Pausados
@@ -165,7 +169,7 @@ export const MyProjects = () => {
         <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e3f2fd' }}>
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="primary.main">
-              {totalHoursWorked}
+              {typeof totalHoursWorked === 'number' && !isNaN(totalHoursWorked) ? totalHoursWorked : 0}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Horas Acumuladas
@@ -236,7 +240,7 @@ export const MyProjects = () => {
                       </Box>
                       <LinearProgress
                         variant="determinate"
-                        value={project.progress}
+                        value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
                         sx={{ height: 8, borderRadius: 4 }}
                       />
                     </Box>
@@ -252,7 +256,8 @@ export const MyProjects = () => {
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="caption" color="text.secondary">
-                        {project.hoursWorked}/{project.totalHours} horas • {project.location}
+                        {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
+                        {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                       </Typography>
                       <IconButton size="small" color="primary">
                         <VisibilityIcon />
@@ -335,7 +340,7 @@ export const MyProjects = () => {
                       </Box>
                       <LinearProgress
                         variant="determinate"
-                        value={project.progress}
+                        value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
                         sx={{ height: 8, borderRadius: 4 }}
                       />
                     </Box>
@@ -351,7 +356,8 @@ export const MyProjects = () => {
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="caption" color="text.secondary">
-                        {project.hoursWorked}/{project.totalHours} horas • {project.location}
+                        {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
+                        {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                       </Typography>
                       <IconButton size="small" color="primary">
                         <VisibilityIcon />
@@ -434,7 +440,7 @@ export const MyProjects = () => {
                       </Box>
                       <LinearProgress
                         variant="determinate"
-                        value={project.progress}
+                        value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
                         sx={{ height: 8, borderRadius: 4 }}
                       />
                     </Box>
@@ -450,7 +456,8 @@ export const MyProjects = () => {
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="caption" color="text.secondary">
-                        {project.hoursWorked}/{project.totalHours} horas • {project.location}
+                        {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
+                        {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                       </Typography>
                       <IconButton size="small" color="primary">
                         <VisibilityIcon />
@@ -549,7 +556,7 @@ export const MyProjects = () => {
                             </Box>
                             <LinearProgress
                               variant="determinate"
-                              value={selectedProject.progress}
+                              value={typeof selectedProject.progress === 'number' && !isNaN(selectedProject.progress) ? Math.max(0, Math.min(100, selectedProject.progress)) : 0}
                               sx={{ height: 10, borderRadius: 5 }}
                             />
                           </Box>

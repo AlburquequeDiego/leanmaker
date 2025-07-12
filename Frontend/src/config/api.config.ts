@@ -22,6 +22,9 @@ export const API_ENDPOINTS = {
   
   // Dashboard
   DASHBOARD: '/api/dashboard/',
+  DASHBOARD_COMPANY_STATS: '/api/dashboard/company_stats/',
+  DASHBOARD_STUDENT_STATS: '/api/dashboard/student_stats/',
+  DASHBOARD_ADMIN_STATS: '/api/dashboard/admin_stats/',
   
   // Students
   STUDENTS: '/api/students/',
@@ -33,7 +36,10 @@ export const API_ENDPOINTS = {
   
   // Projects
   PROJECTS: '/api/projects/',
+  PROJECT_MY_PROJECTS: '/api/projects/my_projects/',
   PROJECT_APPLICATIONS: '/api/project-applications/',
+  PROJECT_APPLICATIONS_RECEIVED: '/api/project-applications/received_applications/',
+  PROJECT_APPLICATIONS_MY_APPLICATIONS: '/api/project-applications/my_applications/',
   PROJECT_MEMBERS: '/api/project-members/',
   
   // Areas
@@ -64,6 +70,8 @@ export const API_ENDPOINTS = {
   
   // Calendar
   CALENDAR_EVENTS: '/api/calendar-events/',
+  CALENDAR_COMPANY_EVENTS: '/api/calendar-events/company_events/',
+  CALENDAR_STUDENT_EVENTS: '/api/calendar-events/student_events/',
   EVENT_REMINDERS: '/api/event-reminders/',
   CALENDAR_SETTINGS: '/api/calendar-settings/',
   

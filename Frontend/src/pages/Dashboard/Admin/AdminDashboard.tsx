@@ -1,23 +1,22 @@
 import { Box, Typography, CircularProgress, Paper } from '@mui/material';
-import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, HowToReg as HowToRegIcon, Work as WorkIcon, PlayArrow as PlayArrowIcon, CheckCircle as CheckCircleIcon, AccessTime as AccessTimeIcon, Star as StarIcon, PersonAdd as PersonAddIcon, CalendarMonth as CalendarMonthIcon, Pending as PendingIcon } from '@mui/icons-material';
+import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, PlayArrow as PlayArrowIcon, CheckCircle as CheckCircleIcon, AccessTime as AccessTimeIcon, Star as StarIcon, PersonAdd as PersonAddIcon, CalendarMonth as CalendarMonthIcon, Pending as PendingIcon } from '@mui/icons-material';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [showTutorial, setShowTutorial] = useState(true);
-  const [previousStats, setPreviousStats] = useState<any>(null);
+
   
   // Usar hook de tiempo real para estadísticas
-  const { data: stats, loading, error, lastUpdate, refresh, isPolling } = useDashboardStats('admin');
+  const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('admin');
 
   // Detectar cambios en las estadísticas
   useEffect(() => {
     if (stats) {
       console.log('[AdminDashboard] Stats received:', stats);
-      setPreviousStats(stats);
+
     }
   }, [stats]);
 
