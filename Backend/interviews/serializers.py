@@ -40,10 +40,10 @@ class InterviewSerializer:
         # Validar application_id
         if 'application_id' in data and data['application_id']:
             try:
-                from applications.models import AplicacionProyecto
-                application = AplicacionProyecto.objects.get(id=data['application_id'])
+                from applications.models import Aplicacion
+                application = Aplicacion.objects.get(id=data['application_id'])
                 data['application'] = application
-            except AplicacionProyecto.DoesNotExist:
+            except Aplicacion.DoesNotExist:
                 errors['application_id'] = 'La aplicación especificada no existe'
             except Exception as e:
                 errors['application_id'] = f'Error al validar la aplicación: {str(e)}'
@@ -187,10 +187,10 @@ class InterviewScheduleSerializer:
             errors['application_id'] = 'El ID de la aplicación es requerido'
         else:
             try:
-                from applications.models import AplicacionProyecto
-                application = AplicacionProyecto.objects.get(id=data['application_id'])
+                from applications.models import Aplicacion
+                application = Aplicacion.objects.get(id=data['application_id'])
                 data['application'] = application
-            except AplicacionProyecto.DoesNotExist:
+            except Aplicacion.DoesNotExist:
                 errors['application_id'] = 'La aplicación especificada no existe'
             except Exception as e:
                 errors['application_id'] = f'Error al validar la aplicación: {str(e)}'

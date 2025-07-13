@@ -13,7 +13,7 @@ from core.views import verify_token
 @csrf_exempt
 @require_http_methods(["GET"])
 def student_list(request):
-    """Lista de estudiantes."""
+    """Lista de estudiantes con perfiles completos."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -29,27 +29,72 @@ def student_list(request):
         if current_user.role not in ['admin', 'company']:
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        students = User.objects.filter(role='student')
+        from .models import Estudiante
+        
+        # Obtener estudiantes con sus perfiles
+        students = User.objects.filter(role='student').select_related('estudiante_profile')
         students_data = []
         
         for student in students:
+            try:
+                estudiante = student.estudiante_profile
+            except Estudiante.DoesNotExist:
+                # Si no tiene perfil de estudiante, crear uno básico
+                estudiante = Estudiante.objects.create(user=student)
+            
+            # Obtener habilidades
+            skills_list = estudiante.get_skills_list() if hasattr(estudiante, 'get_skills_list') else []
+            skills = [skill['nombre'] if isinstance(skill, dict) else skill for skill in skills_list]
+            
+            # Obtener idiomas
+            languages_list = estudiante.get_languages_list() if hasattr(estudiante, 'get_languages_list') else []
+            languages = [lang['nombre'] if isinstance(lang, dict) else lang for lang in languages_list]
+            
             students_data.append({
-                'id': str(student.id),
-                'email': student.email,
-                'first_name': student.first_name,
-                'last_name': student.last_name,
-                'username': student.username,
-                'phone': student.phone,
-                'avatar': student.avatar,
-                'bio': student.bio,
-                'is_active': student.is_active,
-                'is_verified': student.is_verified,
-                'date_joined': student.date_joined.isoformat(),
-                'last_login': student.last_login.isoformat() if student.last_login else None,
-                'full_name': student.full_name
+                'id': str(estudiante.id),
+                'user': str(student.id),
+                'career': estudiante.career or '',
+                'semester': estudiante.semester,
+                'graduation_year': estudiante.graduation_year,
+                'status': estudiante.status,
+                'api_level': estudiante.api_level,
+                'strikes': estudiante.strikes,
+                'gpa': float(estudiante.gpa),
+                'completed_projects': estudiante.completed_projects,
+                'total_hours': estudiante.total_hours,
+                'experience_years': estudiante.experience_years,
+                'portfolio_url': estudiante.portfolio_url,
+                'github_url': estudiante.github_url,
+                'linkedin_url': estudiante.linkedin_url,
+                'availability': estudiante.availability,
+                'location': estudiante.location,
+                'rating': float(estudiante.rating),
+                'skills': skills,
+                'languages': languages,
+                'created_at': estudiante.created_at.isoformat(),
+                'updated_at': estudiante.updated_at.isoformat(),
+                # Datos del usuario
+                'user_data': {
+                    'id': str(student.id),
+                    'email': student.email,
+                    'first_name': student.first_name,
+                    'last_name': student.last_name,
+                    'username': student.username,
+                    'phone': student.phone,
+                    'avatar': student.avatar,
+                    'bio': student.bio,
+                    'is_active': student.is_active,
+                    'is_verified': student.is_verified,
+                    'date_joined': student.date_joined.isoformat(),
+                    'last_login': student.last_login.isoformat() if student.last_login else None,
+                    'full_name': student.full_name
+                }
             })
         
-        return JsonResponse(students_data, safe=False)
+        return JsonResponse({
+            'results': students_data,
+            'total': len(students_data)
+        })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

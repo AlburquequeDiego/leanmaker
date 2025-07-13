@@ -95,13 +95,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       setError(null);
       
       // Obtener eventos de calendario
-      const eventsResponse = await api.get('/api/calendar/events/');
-      const adaptedEvents = (eventsResponse.data.results || eventsResponse.data).map(adaptCalendarEvent);
+      const eventsResponse = await api.get('/api/calendar-events/');
+      const adaptedEvents = (eventsResponse.results || eventsResponse).map(adaptCalendarEvent);
       setEvents(adaptedEvents);
 
       // Obtener usuarios para invitar a eventos
       const usersResponse = await api.get('/api/users/');
-      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
+      const studentUsers = usersResponse.filter((user: any) => user.role === 'student');
       setUsers(studentUsers);
       
     } catch (err: any) {
@@ -175,8 +175,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         priority: newEvent.priority,
       };
 
-      const createdEventResponse = await api.post('/api/calendar/events/', eventData);
-      const createdEvent = createdEventResponse.data;
+      const createdEventResponse = await api.post('/api/calendar-events/', eventData);
+      const createdEvent = createdEventResponse;
       
       // Adaptar el evento creado
       const adaptedEvent = {

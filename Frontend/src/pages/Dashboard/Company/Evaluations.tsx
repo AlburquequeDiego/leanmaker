@@ -77,36 +77,50 @@ export const CompanyEvaluations: React.FC = () => {
 
   const loadData = async () => {
     try {
+      console.log('[Evaluations] Loading data...');
       setLoading(true);
       setError(null);
       
       // Obtener proyectos
       const projectsResponse = await api.get('/api/projects/');
-      const adaptedProjects = adaptProjectList(projectsResponse.data.results || projectsResponse.data);
+      const adaptedProjects = adaptProjectList(projectsResponse.data || projectsResponse.results || projectsResponse);
+      console.log(`[Evaluations] Loaded ${adaptedProjects.length} projects`);
       setProjects(adaptedProjects);
 
       // Obtener evaluaciones
       const evaluationsResponse = await api.get('/api/evaluations/');
-      const adaptedEvaluations = (evaluationsResponse.data.results || evaluationsResponse.data).map(adaptEvaluation);
+      const evaluationsData = evaluationsResponse.data || evaluationsResponse.results || evaluationsResponse;
+      const adaptedEvaluations = Array.isArray(evaluationsData) ? evaluationsData.map(adaptEvaluation) : [];
+      console.log(`[Evaluations] Loaded ${adaptedEvaluations.length} evaluations`);
       setEvaluations(adaptedEvaluations);
 
-      // Obtener usuarios
-      const usersResponse = await api.get('/api/users/');
-      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
-      setUsers(studentUsers);
+      // Obtener usuarios (solo estudiantes)
+      try {
+        const usersResponse = await api.get('/api/users/');
+        const usersData = usersResponse.data || usersResponse.results || usersResponse;
+        const studentUsers = Array.isArray(usersData) ? usersData.filter((user: any) => user.role === 'student') : [];
+        console.log(`[Evaluations] Loaded ${studentUsers.length} students`);
+        setUsers(studentUsers);
+      } catch (error) {
+        console.warn('[Evaluations] Could not load users, using empty list');
+        setUsers([]);
+      }
       
     } catch (err: any) {
-      console.error('Error cargando datos:', err);
+      console.error('[Evaluations] Error loading data:', err);
       setError(err.response?.data?.error || 'Error al cargar datos');
     } finally {
+      console.log('[Evaluations] Data loading completed');
       setLoading(false);
     }
   };
 
   // Filtrar proyectos por estado
-  const activos = projects.filter(project => project.status === 'active');
-  const completados = projects.filter(project => project.status === 'completed');
-  const cancelados = projects.filter(project => project.status === 'cancelled');
+  const activos = projects.filter(project => ['active', 'open', 'published', 'en progreso', 'abierto', 'publicado', 'draft'].includes(project.status.toLowerCase()));
+  const completados = projects.filter(project => ['completed', 'completado'].includes(project.status.toLowerCase()));
+  const cancelados = projects.filter(project => ['cancelled', 'cancelado'].includes(project.status.toLowerCase()));
+  
+
 
   // Verificar si un estudiante ya fue evaluado en un proyecto
   const isStudentEvaluated = (studentId: string, projectId: string) => {
@@ -157,6 +171,7 @@ export const CompanyEvaluations: React.FC = () => {
     if (!selectedStudent || !selectedProject) return;
 
     try {
+      console.log('[Evaluations] Saving evaluation for student:', selectedStudent.id, 'project:', selectedProject.id);
       const evaluationData = {
         project: selectedProject.id,
         student: selectedStudent.id,
@@ -170,17 +185,18 @@ export const CompanyEvaluations: React.FC = () => {
       if (existingEvaluation) {
         // Actualizar evaluación existente
         const response = await api.patch(`/api/evaluations/${existingEvaluation.id}/`, evaluationData);
-        const updatedEvaluation = adaptEvaluation(response.data);
+        const updatedEvaluation = adaptEvaluation(response);
                  setEvaluations(prev =>
            prev.map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
          );
       } else {
         // Crear nueva evaluación
         const response = await api.post('/api/evaluations/', evaluationData);
-        const newEvaluation = adaptEvaluation(response.data);
+        const newEvaluation = adaptEvaluation(response);
         setEvaluations(prev => [...prev, newEvaluation]);
       }
 
+      console.log('[Evaluations] Evaluation saved successfully');
       setModalOpen(false);
       setSelectedStudent(null);
       setSelectedProject(null);
@@ -191,7 +207,7 @@ export const CompanyEvaluations: React.FC = () => {
         improvement_areas: [],
       });
     } catch (error: any) {
-      console.error('Error guardando evaluación:', error);
+      console.error('[Evaluations] Error saving evaluation:', error);
       setError(error.response?.data?.error || 'Error al guardar evaluación');
     }
   };
@@ -210,7 +226,25 @@ export const CompanyEvaluations: React.FC = () => {
 
   const getProjectStudents = (projectId: string) => {
     // En un caso real, esto vendría del backend
-    // Por ahora, simulamos estudiantes
+    // Por ahora, simulamos estudiantes si no hay usuarios cargados
+    if (users.length === 0) {
+      return [
+        {
+          id: '1',
+          first_name: 'Estudiante',
+          last_name: 'Ejemplo 1',
+          email: 'estudiante1@example.com',
+          role: 'student'
+        },
+        {
+          id: '2',
+          first_name: 'Estudiante',
+          last_name: 'Ejemplo 2',
+          email: 'estudiante2@example.com',
+          role: 'student'
+        }
+      ];
+    }
     return users.filter(user => user.role === 'student').slice(0, 3);
   };
 
@@ -218,10 +252,16 @@ export const CompanyEvaluations: React.FC = () => {
     switch (status) {
       case 'active':
         return 'success';
+      case 'open':
+        return 'primary';
+      case 'published':
+        return 'info';
       case 'completed':
         return 'info';
       case 'cancelled':
         return 'error';
+      case 'draft':
+        return 'default';
       default:
         return 'default';
     }
@@ -230,11 +270,17 @@ export const CompanyEvaluations: React.FC = () => {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'active':
-        return 'Activo';
+        return 'En Progreso';
+      case 'open':
+        return 'Abierto';
+      case 'published':
+        return 'Publicado';
       case 'completed':
         return 'Completado';
       case 'cancelled':
         return 'Cancelado';
+      case 'draft':
+        return 'Borrador';
       default:
         return status;
     }
@@ -274,26 +320,23 @@ export const CompanyEvaluations: React.FC = () => {
       </Box>
 
       {/* Tabs */}
-      <Box sx={{ mb: 3 }}>
-        <Grid container spacing={1}>
-          {['Activos', 'Completados', 'Cancelados'].map((tab, index) => (
-            <Grid item key={index}>
-              <Button
-                variant={selectedTab === index ? 'contained' : 'outlined'}
-                onClick={() => setSelectedTab(index)}
-                sx={{ minWidth: 120 }}
-              >
-                {tab}
-              </Button>
-            </Grid>
-          ))}
-        </Grid>
+      <Box sx={{ mb: 3, display: 'flex', gap: 1 }}>
+        {['Activos', 'Completados', 'Cancelados', 'Borradores'].map((tab, index) => (
+          <Button
+            key={index}
+            variant={selectedTab === index ? 'contained' : 'outlined'}
+            onClick={() => setSelectedTab(index)}
+            sx={{ minWidth: 120 }}
+          >
+            {tab}
+          </Button>
+        ))}
       </Box>
 
       {/* Lista de Proyectos */}
       <Box>
         {(() => {
-          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
+          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : selectedTab === 2 ? cancelados : projects.filter(project => project.status === 'draft');
           
           return currentProjects.map((project) => (
             <Paper key={project.id} sx={{ p: 3, mb: 3 }}>

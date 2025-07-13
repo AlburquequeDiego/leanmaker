@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import User
-from projects.models import AplicacionProyecto
+from applications.models import Aplicacion
 import uuid
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -16,9 +16,17 @@ class Interview(models.Model):
         ('no-show', 'No se presentó'),
     )
     
+    INTERVIEW_TYPE_CHOICES = (
+        ('technical', 'Técnica'),
+        ('behavioral', 'Comportamental'),
+        ('video', 'Video'),
+        ('phone', 'Teléfono'),
+        ('onsite', 'Presencial'),
+    )
+    
     # Campos básicos - coinciden con frontend
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, related_name='interviews')  # Campo renombrado para coincidir con frontend
+    application = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, related_name='interviews')  # Campo renombrado para coincidir con frontend
     interviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='interviews_conducted')
     
     # Información de la entrevista - coinciden con frontend
@@ -32,7 +40,7 @@ class Interview(models.Model):
     rating = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)])
     
     # Campos adicionales para compatibilidad
-    interview_type = models.CharField(max_length=20, default='video')
+    interview_type = models.CharField(max_length=20, choices=INTERVIEW_TYPE_CHOICES, default='video')
     
     # Campos de fechas - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)
@@ -63,10 +71,12 @@ class Interview(models.Model):
             self.notes = motivo
         self.save(update_fields=['status', 'notes'])
     
-    def marcar_no_show(self):
+    def marcar_no_show(self, motivo=None):
         """Marca la entrevista como no-show"""
         self.status = 'no-show'
-        self.save(update_fields=['status'])
+        if motivo:
+            self.notes = motivo
+        self.save(update_fields=['status', 'notes'])
     
     @property
     def esta_programada(self):

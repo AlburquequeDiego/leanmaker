@@ -43,7 +43,7 @@ def interview_list(request):
             interviews = Interview.objects.all()
         elif user.role == 'company':
             # Empresa ve entrevistas de sus proyectos
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             interviews = Interview.objects.filter(application__in=company_applications)
         elif user.role == 'student':
@@ -146,7 +146,7 @@ def interview_retrieve(request, interview_id):
         if user.role == 'admin':
             interview = get_object_or_404(Interview, id=interview_id)
         elif user.role == 'company':
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             interview = get_object_or_404(Interview, id=interview_id, application__in=company_applications)
         elif user.role == 'student':
@@ -184,7 +184,7 @@ def interview_update(request, interview_id):
         if user.role == 'admin':
             interview = get_object_or_404(Interview, id=interview_id)
         elif user.role == 'company':
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             interview = get_object_or_404(Interview, id=interview_id, application__in=company_applications)
         else:
@@ -245,7 +245,7 @@ def interview_delete(request, interview_id):
         if user.role == 'admin':
             interview = get_object_or_404(Interview, id=interview_id)
         elif user.role == 'company':
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             interview = get_object_or_404(Interview, id=interview_id, application__in=company_applications)
         else:
@@ -299,7 +299,7 @@ def complete_interview(request, interview_id):
         if user.role == 'admin':
             interview = get_object_or_404(Interview, id=interview_id)
         else:
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             interview = get_object_or_404(Interview, id=interview_id, application__in=company_applications)
         
@@ -364,7 +364,7 @@ def cancel_interview(request, interview_id):
         if user.role == 'admin':
             interview = get_object_or_404(Interview, id=interview_id)
         else:
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             interview = get_object_or_404(Interview, id=interview_id, application__in=company_applications)
         
@@ -421,7 +421,7 @@ def mark_no_show(request, interview_id):
         if user.role == 'admin':
             interview = get_object_or_404(Interview, id=interview_id)
         else:
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             interview = get_object_or_404(Interview, id=interview_id, application__in=company_applications)
         
@@ -481,7 +481,7 @@ def interview_stats(request):
             
         elif user.role == 'company':
             # Empresa ve estadísticas de sus proyectos
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             company_interviews = Interview.objects.filter(application__in=company_applications)
             
@@ -554,7 +554,7 @@ def upcoming_interviews(request):
             
         elif user.role == 'company':
             # Empresa ve próximas entrevistas de sus proyectos
-            company_projects = Proyecto.objects.filter(company=user.company)
+            company_projects = Proyecto.objects.filter(company=user.empresa_profile)
             company_applications = Aplicacion.objects.filter(project__in=company_projects)
             upcoming = Interview.objects.filter(
                 application__in=company_applications,

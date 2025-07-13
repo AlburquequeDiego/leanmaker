@@ -73,7 +73,7 @@ export const CompanyStrikes: React.FC = () => {
       setError(null);
       
       const response = await api.get('/api/strikes/');
-      const adaptedStrikes = response.data.map(adaptStrike);
+      const adaptedStrikes = response.map(adaptStrike);
       setStrikes(adaptedStrikes);
       
     } catch (err: any) {

@@ -50,6 +50,22 @@ export interface Student {
   languages?: string[]; // JSON array
   created_at: string;
   updated_at: string;
+  // Campo adicional para datos del usuario (nueva estructura del backend)
+  user_data?: {
+    id: string;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
+    phone?: string;
+    avatar?: string;
+    bio?: string;
+    is_active: boolean;
+    is_verified: boolean;
+    date_joined: string;
+    last_login?: string;
+    full_name?: string;
+  };
 }
 
 // Tipos de empresa - Coinciden con el modelo Empresa del backend
@@ -128,6 +144,12 @@ export interface Application {
   responded_at?: string;
   created_at: string;
   updated_at: string;
+  // Campos adicionales para información anidada del backend
+  project_title?: string;
+  project_description?: string;
+  student_name?: string;
+  student_email?: string;
+  company_name?: string;
 }
 
 // Tipos de evaluación - Coinciden con el modelo Evaluacion del backend

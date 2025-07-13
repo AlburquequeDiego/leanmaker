@@ -55,7 +55,7 @@ export const CompanyNotifications: React.FC = () => {
       
       const response = await api.get('/api/notifications/');
       console.log("Respuesta notificaciones:", response.data);
-      const adaptedNotifications = adaptNotificationList(response.data.data || response.data);
+      const adaptedNotifications = adaptNotificationList(response.data || response);
       setNotifications(adaptedNotifications);
       
     } catch (err: any) {

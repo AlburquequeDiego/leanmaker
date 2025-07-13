@@ -39,7 +39,7 @@ import {
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptInterviewList } from '../../../utils/adapters';
-import type { Interview, Application } from '../../../types';
+import type { Interview, Application, User } from '../../../types';
 
 const cantidadOpciones = [5, 10, 20, 50, 'todas'];
 
@@ -74,16 +74,16 @@ export const CompanyInterviews: React.FC = () => {
       
       // Obtener entrevistas
       const interviewsResponse = await api.get('/api/interviews/');
-      const adaptedInterviews = adaptInterviewList(interviewsResponse.data.results || interviewsResponse.data);
+      const adaptedInterviews = adaptInterviewList(interviewsResponse.interviews || interviewsResponse);
       setInterviews(adaptedInterviews);
 
       // Obtener aplicaciones para contexto
-      const applicationsResponse = await api.get('/api/applications/');
-      setApplications(applicationsResponse.data.results || applicationsResponse.data);
+      const applicationsResponse = await api.get('/api/project-applications/');
+      setApplications(applicationsResponse);
 
       // Obtener usuarios
       const usersResponse = await api.get('/api/users/');
-      setUsers(usersResponse.data);
+      setUsers(usersResponse);
       
     } catch (err: any) {
       console.error('Error cargando entrevistas:', err);
@@ -136,7 +136,7 @@ export const CompanyInterviews: React.FC = () => {
           status: 'completed',
         });
 
-        const updatedInterview = updatedInterviewResponse.data;
+        const updatedInterview = updatedInterviewResponse;
 
         setInterviews(prev =>
           prev.map(interview =>
@@ -161,7 +161,7 @@ export const CompanyInterviews: React.FC = () => {
   const handleCompleteInterview = async (interviewId: string) => {
     try {
       const response = await api.post(`/api/interviews/${interviewId}/complete/`);
-      const updatedInterview = response.data;
+      const updatedInterview = response;
       
       setInterviews(prev =>
         prev.map(interview =>
@@ -181,7 +181,7 @@ export const CompanyInterviews: React.FC = () => {
   const handleCancelInterview = async (interviewId: string) => {
     try {
       const response = await api.post(`/api/interviews/${interviewId}/cancel/`);
-      const updatedInterview = response.data;
+      const updatedInterview = response;
       
       setInterviews(prev =>
         prev.map(interview =>

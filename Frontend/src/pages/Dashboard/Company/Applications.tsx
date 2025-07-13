@@ -61,8 +61,12 @@ export const CompanyApplications: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      const response = await api.get('/api/applications/received_applications/');
-      const adaptedApplications = adaptApplicationList(response.data.results || response.data);
+      const response = await api.get('/api/project-applications/received_applications/');
+      console.log('Response from API:', response);
+      
+      // El API service ya aplica el adaptador, así que response ya contiene los datos adaptados
+      const applicationsData = response.results || response;
+      const adaptedApplications = Array.isArray(applicationsData) ? applicationsData : [];
       setApplications(adaptedApplications);
       
     } catch (err: any) {
@@ -136,11 +140,11 @@ export const CompanyApplications: React.FC = () => {
     try {
       setUpdatingStatus(applicationId);
       
-      const response = await api.patch(`/api/applications/${applicationId}/`, {
+      const response = await api.patch(`/api/project-applications/${applicationId}/`, {
         status: newStatus,
       });
 
-      const updatedApplication = response.data;
+      const updatedApplication = response;
       
       setApplications(prev =>
         prev.map(app =>
@@ -172,12 +176,12 @@ export const CompanyApplications: React.FC = () => {
   const handleSaveInterview = async () => {
     if (selectedApplication) {
       try {
-        const response = await api.patch(`/api/applications/${selectedApplication.id}/`, {
+        const response = await api.patch(`/api/project-applications/${selectedApplication.id}/`, {
           status: 'interviewed',
           company_notes: interviewData.notes,
         });
 
-        const updatedApplication = response.data;
+        const updatedApplication = response;
         
         setApplications(prev =>
           prev.map(app =>
@@ -329,10 +333,10 @@ export const CompanyApplications: React.FC = () => {
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6">
-                      {application.student ? 'Estudiante' : 'Estudiante no encontrado'}
+                      {application.student_name || 'Estudiante no encontrado'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {application.project || 'Proyecto no encontrado'}
+                      {application.project_title || 'Proyecto no encontrado'}
                     </Typography>
                   </Box>
                   <Chip
@@ -416,10 +420,10 @@ export const CompanyApplications: React.FC = () => {
                 </Avatar>
                 <Box>
                   <Typography variant="h5">
-                    {selectedApplication.student ? 'Estudiante' : 'Estudiante no encontrado'}
+                    {selectedApplication.student_name || 'Estudiante no encontrado'}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                    {selectedApplication.project || 'Proyecto no encontrado'}
+                    {selectedApplication.project_title || 'Proyecto no encontrado'}
                   </Typography>
                   {selectedApplication.compatibility_score && (
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>

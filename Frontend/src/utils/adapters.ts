@@ -75,6 +75,8 @@ export const adaptStudent = (backendStudent: any): Student => ({
   languages: parseJsonArray(backendStudent.languages),
   created_at: backendStudent.created_at,
   updated_at: backendStudent.updated_at,
+  // Campo adicional para datos del usuario (nueva estructura del backend)
+  user_data: backendStudent.user_data,
 });
 
 /**
@@ -162,8 +164,8 @@ export const adaptProject = (backendProject: any): Project => {
  */
 export const adaptApplication = (backendApplication: any): Application => ({
   id: String(backendApplication.id),
-  project: String(backendApplication.project),
-  student: String(backendApplication.student),
+  project: String(backendApplication.project?.id || backendApplication.project),
+  student: String(backendApplication.student?.id || backendApplication.student),
   status: backendApplication.status,
   compatibility_score: backendApplication.compatibility_score,
   cover_letter: backendApplication.cover_letter,
@@ -177,6 +179,12 @@ export const adaptApplication = (backendApplication: any): Application => ({
   responded_at: backendApplication.responded_at,
   created_at: backendApplication.created_at,
   updated_at: backendApplication.updated_at,
+  // Campos adicionales para información anidada
+  project_title: backendApplication.project?.title,
+  project_description: backendApplication.project?.description,
+  student_name: backendApplication.student?.full_name,
+  student_email: backendApplication.student?.email,
+  company_name: backendApplication.project?.company?.name,
 });
 
 /**

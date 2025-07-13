@@ -87,7 +87,7 @@ export const PublishProjects: React.FC = () => {
       setError(null);
       
       const response = await api.get('/api/projects/my_projects/');
-      const adaptedProjects = adaptProjectList(response.data.data || response.data);
+      const adaptedProjects = adaptProjectList(response.data || response);
       setProjects(adaptedProjects);
       
     } catch (err: any) {

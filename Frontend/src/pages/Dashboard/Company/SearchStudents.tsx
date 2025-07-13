@@ -57,7 +57,6 @@ const AREAS = [
 export const SearchStudents: React.FC = () => {
   const api = useApi();
   const [students, setStudents] = useState<Student[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -79,14 +78,10 @@ export const SearchStudents: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      // Obtener usuarios con rol student
-      const usersResponse = await api.get('/api/users/');
-      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
-      setUsers(studentUsers);
-
-      // Obtener perfiles de estudiantes
+      // Obtener estudiantes con perfiles completos
       const studentsResponse = await api.get('/api/students/');
-      const adaptedStudents = adaptStudentList(studentsResponse.data);
+      console.log('Students response:', studentsResponse);
+      const adaptedStudents = adaptStudentList(studentsResponse.results || studentsResponse);
       setStudents(adaptedStudents);
       
     } catch (err: any) {
@@ -99,8 +94,12 @@ export const SearchStudents: React.FC = () => {
 
   // Combinar datos de usuario y perfil de estudiante
   const getStudentWithUser = (student: Student): Student & { userData?: any } => {
-    const userData = users.find(user => user.id === student.user);
-    return { ...student, userData };
+    // El estudiante ya tiene user_data (nueva estructura del backend)
+    if (student.user_data) {
+      return { ...student, userData: student.user_data };
+    }
+    // Fallback por si no hay user_data
+    return { ...student, userData: null };
   };
 
   // Obtener todas las habilidades únicas de los estudiantes
@@ -119,19 +118,18 @@ export const SearchStudents: React.FC = () => {
 
       const matchesSearch = 
         userData.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.university?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.career?.toLowerCase().includes(searchTerm.toLowerCase());
       
-    const matchesSkills = selectedSkills.length === 0 || 
+      const matchesSkills = selectedSkills.length === 0 || 
         selectedSkills.some(skill => student.skills?.includes(skill));
       
-    const matchesAvailability = !availabilityFilter || student.availability === availabilityFilter;
+      const matchesAvailability = !availabilityFilter || student.availability === availabilityFilter;
       
       const matchesArea = areaFilter === 'Todas' || 
         student.career?.toLowerCase().includes(areaFilter.toLowerCase());
       
-    return matchesSearch && matchesSkills && matchesAvailability && matchesArea;
-  });
+      return matchesSearch && matchesSkills && matchesAvailability && matchesArea;
+    });
 
   const handleSkillToggle = (skill: string) => {
     setSelectedSkills(prev => 
@@ -157,7 +155,6 @@ export const SearchStudents: React.FC = () => {
 He revisado tu perfil en LeanMaker y me interesa mucho la posibilidad de trabajar contigo.
 
 Información de tu perfil:
-- Universidad: ${student.university || 'No especificada'}
 - Carrera: ${student.career || 'No especificada'}
 - Semestre: ${student.semester ? `${student.semester}°` : 'No especificado'}
 - Habilidades: ${student.skills?.join(', ') || 'No especificadas'}
@@ -296,7 +293,7 @@ Saludos cordiales,
 
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   <SchoolIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
-                    {student.university || 'Universidad no especificada'}
+                    {student.career || 'Carrera no especificada'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   <WorkIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
@@ -414,8 +411,8 @@ Saludos cordiales,
                   <List dense>
                     <ListItem>
                       <ListItemText
-                        primary="Universidad"
-                        secondary={selectedStudent.university || 'No especificada'}
+                        primary="Carrera"
+                        secondary={selectedStudent.career || 'No especificada'}
                       />
                     </ListItem>
                     <ListItem>

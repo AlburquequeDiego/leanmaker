@@ -37,15 +37,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        console.log('[useAuth] Initializing authentication...');
         // Check if user is already authenticated
         if (authService.isAuthenticated()) {
-          console.log('[useAuth] User is authenticated, fetching current user...');
           const currentUser = await authService.getCurrentUser();
-          console.log('[useAuth] Current user fetched:', currentUser);
           setUser(currentUser);
-        } else {
-          console.log('[useAuth] No authentication found');
         }
       } catch (error) {
         console.error('[useAuth] Error initializing auth:', error);

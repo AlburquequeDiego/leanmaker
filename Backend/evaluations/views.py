@@ -40,8 +40,14 @@ def evaluations_list(request):
         
         # Filtrar por rol
         if user.role == 'company':
-            company_projects = Proyecto.objects.filter(company=user.company)
-            queryset = queryset.filter(project__in=company_projects)
+            try:
+                company = user.empresa_profile
+                if company:
+                    company_projects = Proyecto.objects.filter(company=company)
+                    queryset = queryset.filter(project__in=company_projects)
+            except:
+                # Si no tiene perfil de empresa, no mostrar evaluaciones
+                queryset = queryset.none()
         elif user.role == 'student':
             queryset = queryset.filter(student=user)
         
@@ -107,7 +113,11 @@ def evaluations_detail(request, evaluation_id):
         
         # Verificar permisos
         if user.role == 'company':
-            if evaluation.project.company != user.company:
+            try:
+                company = user.empresa_profile
+                if not company or evaluation.project.company != company:
+                    return JsonResponse({'error': 'No tienes permisos para ver esta evaluación'}, status=403)
+            except:
                 return JsonResponse({'error': 'No tienes permisos para ver esta evaluación'}, status=403)
         elif user.role == 'student':
             if evaluation.student != user:

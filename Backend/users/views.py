@@ -26,11 +26,16 @@ def user_list(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Solo admins pueden ver todos los usuarios
-        if current_user.role != 'admin':
+        # Solo admins y empresas pueden ver usuarios
+        if current_user.role not in ['admin', 'company']:
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        users = User.objects.all()
+        # Filtrar usuarios según el rol del usuario actual
+        if current_user.role == 'admin':
+            users = User.objects.all()
+        else:  # company
+            users = User.objects.filter(role='student')
+        
         users_data = []
         
         for user in users:
@@ -48,7 +53,15 @@ def user_list(request):
                 'full_name': user.full_name
             })
         
-        return JsonResponse(users_data, safe=False)
+        return JsonResponse({
+            'success': True,
+            'data': users_data,
+            'pagination': {
+                'total': len(users_data),
+                'page': 1,
+                'limit': len(users_data)
+            }
+        })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
