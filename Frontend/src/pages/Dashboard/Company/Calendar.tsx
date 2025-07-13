@@ -96,12 +96,14 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       
       // Obtener eventos de calendario
       const eventsResponse = await api.get('/api/calendar-events/');
+      console.log('Events response:', eventsResponse);
       const adaptedEvents = (eventsResponse.results || eventsResponse).map(adaptCalendarEvent);
       setEvents(adaptedEvents);
 
       // Obtener usuarios para invitar a eventos
       const usersResponse = await api.get('/api/users/');
-      const studentUsers = usersResponse.filter((user: any) => user.role === 'student');
+      console.log('Users response:', usersResponse);
+      const studentUsers = (usersResponse.data || usersResponse).filter((user: any) => user.role === 'student');
       setUsers(studentUsers);
       
     } catch (err: any) {

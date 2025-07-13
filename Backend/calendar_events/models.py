@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-from projects.models import Proyecto, AplicacionProyecto
+from projects.models import Proyecto
+from applications.models import Aplicacion
 from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import User
 import uuid
@@ -62,7 +63,7 @@ class CalendarEvent(models.Model):
     
     # Relaciones opcionales
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
-    related_application = models.ForeignKey(AplicacionProyecto, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
+    related_application = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
     
     # Configuración
     is_public = models.BooleanField(default=False)

@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from django.db import models
 
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def calendar_events_list(request):
     try:
         auth_header = request.headers.get('Authorization')
@@ -24,6 +24,9 @@ def calendar_events_list(request):
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        if request.method == 'POST':
+            return calendar_events_create(request)
         
         # Filtros y paginación
         page = request.GET.get('page', 1)
@@ -45,7 +48,7 @@ def calendar_events_list(request):
             ).distinct()
         elif current_user.role == 'company':
             queryset = queryset.filter(
-                models.Q(project__company__user=current_user) | 
+                models.Q(project__company=current_user.empresa_profile) | 
                 models.Q(created_by=current_user) | 
                 models.Q(attendees=current_user) | 
                 models.Q(is_public=True)

@@ -1,6 +1,6 @@
 import { authService } from './auth.service';
 import { API_BASE_URL } from '../config/api.config';
-import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats } from '../utils/adapters';
+import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats, adaptStrike } from '../utils/adapters';
 
 class ApiService {
   private async request<T>(
@@ -222,6 +222,25 @@ class ApiService {
         };
       }
       return adaptNotification(data);
+    }
+    
+    if (endpoint.includes('/api/strikes/')) {
+      if (Array.isArray(data)) {
+        return data.map(adaptStrike);
+      }
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptStrike)
+        };
+      }
+      if (data.data && Array.isArray(data.data)) {
+        return {
+          ...data,
+          data: data.data.map(adaptStrike)
+        };
+      }
+      return adaptStrike(data);
     }
     
     if (endpoint.includes('/api/dashboard/')) {

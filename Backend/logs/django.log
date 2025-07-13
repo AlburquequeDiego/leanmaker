@@ -6723,3 +6723,261 @@ INFO 2025-07-13 01:12:23,494 basehttp 19880 13640 "GET /api/users/profile/ HTTP/
 INFO 2025-07-13 01:12:24,361 basehttp 19880 17180 "GET /api/interviews/ HTTP/1.1" 200 47
 INFO 2025-07-13 01:12:24,599 autoreload 19880 20028 C:\Users\albur\Desktop\leanmaker\Backend\interviews\models.py changed, reloading.
 INFO 2025-07-13 01:12:25,828 autoreload 17272 10164 Watching for file changes with StatReloader
+INFO 2025-07-13 01:13:14,393 basehttp 17272 6620 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:14,409 basehttp 17272 10008 "OPTIONS /api/project-applications/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:13:14,902 basehttp 17272 6620 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:15,502 basehttp 17272 10008 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:15,956 basehttp 17272 6620 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:13:16,435 basehttp 17272 10008 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:16,948 basehttp 17272 10008 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:13:20,587 basehttp 17272 7388 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:21,277 basehttp 17272 7388 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:21,677 basehttp 17272 11280 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:21,933 basehttp 17272 7388 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:13:22,415 basehttp 17272 11280 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:23,060 basehttp 17272 11280 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:13:27,018 basehttp 17272 11280 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:27,633 basehttp 17272 11280 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:28,393 basehttp 17272 7388 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:28,530 basehttp 17272 11280 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:13:29,106 basehttp 17272 7388 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:29,609 basehttp 17272 7388 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:13:51,875 basehttp 17272 2208 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:13:52,272 basehttp 17272 2208 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:13:52,613 basehttp 17272 752 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:53,270 basehttp 17272 2208 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:53,873 basehttp 17272 752 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:13:53,967 basehttp 17272 2208 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:13:54,500 basehttp 17272 752 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:13:55,253 basehttp 17272 752 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:14:42,809 basehttp 17272 18828 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:14:43,448 basehttp 17272 704 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:14:43,912 basehttp 17272 18828 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:14:44,035 basehttp 17272 704 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:14:44,764 basehttp 17272 1096 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:14:45,277 basehttp 17272 704 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:14:45,437 basehttp 17272 1096 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:14:46,115 basehttp 17272 1096 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:14:51,261 basehttp 17272 1096 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:14:51,800 basehttp 17272 1096 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:14:52,093 basehttp 17272 704 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:14:52,718 basehttp 17272 704 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:21:23,632 basehttp 17272 12760 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:21:23,952 basehttp 17272 12760 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:21:24,473 basehttp 17272 1876 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:21:24,871 basehttp 17272 1876 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:21:27,857 basehttp 17272 12760 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:21:28,298 basehttp 17272 12760 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:21:29,401 basehttp 17272 12760 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:21:29,933 basehttp 17272 12760 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:21:30,029 basehttp 17272 1876 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:21:30,692 basehttp 17272 12760 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:21:30,799 basehttp 17272 1876 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:21:31,498 basehttp 17272 1876 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:21:35,258 basehttp 17272 1876 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:21:35,702 basehttp 17272 1876 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:21:35,936 basehttp 17272 12760 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:21:36,377 basehttp 17272 12760 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:22:41,400 autoreload 17272 10164 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\models.py changed, reloading.
+INFO 2025-07-13 01:22:43,267 autoreload 15860 19412 Watching for file changes with StatReloader
+INFO 2025-07-13 01:22:44,740 autoreload 15860 19412 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\models.py changed, reloading.
+INFO 2025-07-13 01:22:45,617 autoreload 760 17504 Watching for file changes with StatReloader
+INFO 2025-07-13 01:22:53,193 autoreload 760 17504 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\models.py changed, reloading.
+INFO 2025-07-13 01:22:54,184 autoreload 3504 11612 Watching for file changes with StatReloader
+INFO 2025-07-13 01:23:02,309 autoreload 3504 11612 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-13 01:23:03,565 autoreload 16988 12232 Watching for file changes with StatReloader
+INFO 2025-07-13 01:23:18,671 autoreload 16988 12232 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-13 01:23:19,941 autoreload 11328 12172 Watching for file changes with StatReloader
+INFO 2025-07-13 01:23:28,666 autoreload 11328 12172 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-13 01:23:29,803 autoreload 12628 8852 Watching for file changes with StatReloader
+INFO 2025-07-13 01:26:35,284 basehttp 12628 21384 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:26:35,746 basehttp 12628 21384 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:26:37,066 basehttp 12628 16228 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:26:38,051 basehttp 12628 21384 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:26:38,296 basehttp 12628 16228 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:26:39,444 basehttp 12628 16228 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:28:12,839 basehttp 12628 18236 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:28:13,485 basehttp 12628 18236 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:28:13,876 basehttp 12628 16500 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:28:14,296 basehttp 12628 16500 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:28:41,776 basehttp 12628 20280 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:28:42,180 basehttp 12628 20280 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:28:42,556 basehttp 12628 5604 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:28:42,953 basehttp 12628 5604 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:28:50,470 basehttp 12628 5604 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:28:50,873 basehttp 12628 5604 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:28:55,844 basehttp 12628 5604 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:28:56,304 basehttp 12628 5604 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:30:02,344 basehttp 12628 14976 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:30:02,649 basehttp 12628 14976 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:30:03,421 basehttp 12628 18076 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:30:04,205 basehttp 12628 18076 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:30:04,340 basehttp 12628 14976 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:30:04,733 basehttp 12628 14976 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:33:45,083 basehttp 12628 5296 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 262
+INFO 2025-07-13 01:33:48,534 basehttp 12628 5296 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 262
+INFO 2025-07-13 01:33:49,719 basehttp 12628 5296 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 262
+INFO 2025-07-13 01:33:50,596 basehttp 12628 12668 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-07-13 01:33:51,149 basehttp 12628 12668 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-07-13 01:33:53,236 basehttp 12628 9700 "GET /api/projects/my_projects/ HTTP/1.1" 200 2445
+INFO 2025-07-13 01:33:54,197 basehttp 12628 9700 "GET /api/projects/my_projects/ HTTP/1.1" 200 2445
+INFO 2025-07-13 01:33:55,739 basehttp 12628 9700 "GET /api/project-applications/received_applications/ HTTP/1.1" 200 860
+INFO 2025-07-13 01:33:56,264 basehttp 12628 9700 "GET /api/project-applications/received_applications/ HTTP/1.1" 200 860
+INFO 2025-07-13 01:33:57,978 basehttp 12628 9700 "GET /api/students/ HTTP/1.1" 200 43753
+INFO 2025-07-13 01:33:58,440 basehttp 12628 9700 "GET /api/students/ HTTP/1.1" 200 43753
+INFO 2025-07-13 01:34:03,774 basehttp 12628 15032 "GET /api/projects/ HTTP/1.1" 200 2497
+INFO 2025-07-13 01:34:04,640 basehttp 12628 19788 "GET /api/evaluations/ HTTP/1.1" 200 93
+INFO 2025-07-13 01:34:04,713 basehttp 12628 15032 "GET /api/projects/ HTTP/1.1" 200 2497
+INFO 2025-07-13 01:34:05,068 basehttp 12628 19788 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:05,358 basehttp 12628 15032 "GET /api/evaluations/ HTTP/1.1" 200 93
+INFO 2025-07-13 01:34:05,778 basehttp 12628 15032 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:07,483 basehttp 12628 15032 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:34:07,954 basehttp 12628 15032 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:34:08,137 basehttp 12628 19788 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:34:08,566 basehttp 12628 15032 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:09,029 basehttp 12628 19788 "GET /api/project-applications/ HTTP/1.1" 200 861
+INFO 2025-07-13 01:34:09,464 basehttp 12628 19788 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:10,673 basehttp 12628 19788 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:34:11,111 basehttp 12628 19788 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:11,363 basehttp 12628 15032 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:34:11,781 basehttp 12628 15032 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:16,136 basehttp 12628 15032 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:34:16,896 basehttp 12628 15032 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:34:24,002 basehttp 12628 15032 "GET /api/projects/my_projects/ HTTP/1.1" 200 2445
+INFO 2025-07-13 01:34:24,664 basehttp 12628 15032 "GET /api/projects/my_projects/ HTTP/1.1" 200 2445
+INFO 2025-07-13 01:34:27,586 basehttp 12628 15032 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:34:28,315 basehttp 12628 15032 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:34:37,061 basehttp 12628 11432 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:34:37,559 basehttp 12628 14000 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:37,770 basehttp 12628 11432 "GET /api/calendar-events/ HTTP/1.1" 200 13399
+INFO 2025-07-13 01:34:38,154 basehttp 12628 11432 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 01:34:40,383 basehttp 12628 11432 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:34:41,099 basehttp 12628 11432 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:36:37,321 basehttp 12628 2900 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:36:37,633 basehttp 12628 2900 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:36:38,338 basehttp 12628 15692 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:36:38,986 basehttp 12628 15692 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:38:30,484 basehttp 12628 16904 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:38:30,900 basehttp 12628 16904 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:38:31,701 basehttp 12628 15056 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:38:32,512 basehttp 12628 15056 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:14,334 basehttp 12628 14624 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:14,697 basehttp 12628 14624 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:15,551 basehttp 12628 15344 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:17,038 basehttp 12628 15344 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:30,380 basehttp 12628 10752 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:30,858 basehttp 12628 10752 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:31,845 basehttp 12628 10752 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:32,827 basehttp 12628 10752 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:37,696 basehttp 12628 10752 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:38,569 basehttp 12628 10752 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:47,982 basehttp 12628 18040 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:48,470 basehttp 12628 18040 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:49,033 basehttp 12628 2100 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:49,809 basehttp 12628 2100 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:56,821 basehttp 12628 2100 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:57,159 basehttp 12628 2100 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:39:57,821 basehttp 12628 2100 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:58,885 basehttp 12628 2100 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:39:59,946 basehttp 12628 2100 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:40:08,049 basehttp 12628 2100 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:40:08,476 basehttp 12628 2100 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:40:09,484 basehttp 12628 17292 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:40:10,258 basehttp 12628 17292 "GET /api/strikes/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:40:11,705 autoreload 12628 8852 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 01:40:13,785 autoreload 20124 19708 Watching for file changes with StatReloader
+INFO 2025-07-13 01:40:21,158 autoreload 20124 19708 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 01:40:22,357 autoreload 9432 4668 Watching for file changes with StatReloader
+INFO 2025-07-13 01:40:31,261 autoreload 9432 4668 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 01:40:32,626 autoreload 14980 13840 Watching for file changes with StatReloader
+INFO 2025-07-13 01:40:39,906 autoreload 14980 13840 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 01:40:40,828 autoreload 18836 5504 Watching for file changes with StatReloader
+INFO 2025-07-13 01:40:47,350 autoreload 18836 5504 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 01:40:48,612 autoreload 14072 18064 Watching for file changes with StatReloader
+INFO 2025-07-13 01:40:56,282 autoreload 14072 18064 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 01:40:57,320 autoreload 1132 18668 Watching for file changes with StatReloader
+INFO 2025-07-13 01:41:03,473 autoreload 1132 18668 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 01:41:04,921 autoreload 16256 10292 Watching for file changes with StatReloader
+INFO 2025-07-13 01:41:43,820 basehttp 16256 6164 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:41:43,820 basehttp 16256 17124 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:41:44,870 basehttp 16256 6164 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:41:45,277 basehttp 16256 14516 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:41:45,277 basehttp 16256 7652 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:41:45,409 basehttp 16256 6164 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:41:46,447 basehttp 16256 7652 "GET /api/strikes/ HTTP/1.1" 200 992
+INFO 2025-07-13 01:41:47,272 basehttp 16256 7652 "GET /api/strikes/ HTTP/1.1" 200 992
+INFO 2025-07-13 01:41:48,098 basehttp 16256 7652 "GET /api/strikes/ HTTP/1.1" 200 992
+INFO 2025-07-13 01:42:50,980 basehttp 16256 17828 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:42:51,699 basehttp 16256 17828 "GET /api/users/profile/ HTTP/1.1" 200 1726
+INFO 2025-07-13 01:42:52,321 basehttp 16256 6844 "GET /api/strikes/ HTTP/1.1" 200 992
+INFO 2025-07-13 01:42:53,136 basehttp 16256 6844 "GET /api/strikes/ HTTP/1.1" 200 992
+INFO 2025-07-13 01:45:42,710 basehttp 16256 20124 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:45:44,374 basehttp 16256 20124 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 262
+INFO 2025-07-13 01:45:49,152 basehttp 16256 20124 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-13 01:45:51,549 basehttp 16256 20124 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:45:54,443 basehttp 16256 20124 "POST /api/token/ HTTP/1.1" 200 1018
+INFO 2025-07-13 01:45:54,741 basehttp 16256 20124 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:45:54,807 basehttp 16256 20124 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:45:55,417 basehttp 16256 20124 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 111
+INFO 2025-07-13 01:45:57,141 basehttp 16256 20124 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:45:57,432 basehttp 16256 20124 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-13 01:45:58,142 basehttp 16256 20124 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:45:58,142 basehttp 16256 19540 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:45:58,724 basehttp 16256 19540 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-07-13 01:45:59,493 basehttp 16256 20124 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:45:59,495 basehttp 16256 20124 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:45:59,542 basehttp 16256 19540 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-07-13 01:46:01,040 basehttp 16256 20124 "GET /api/users/ HTTP/1.1" 200 33857
+INFO 2025-07-13 01:46:01,571 basehttp 16256 20124 "GET /api/users/ HTTP/1.1" 200 33857
+INFO 2025-07-13 01:46:01,618 basehttp 16256 19540 "OPTIONS /api/work-hours/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:01,619 basehttp 16256 20124 "OPTIONS /api/work-hours/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:01,667 basehttp 16256 19540 "GET /api/work-hours/ HTTP/1.1" 200 42
+INFO 2025-07-13 01:46:01,701 basehttp 16256 19540 "GET /api/work-hours/ HTTP/1.1" 200 42
+INFO 2025-07-13 01:46:04,881 basehttp 16256 19540 "OPTIONS /api/admin/companies/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:04,883 basehttp 16256 20124 "OPTIONS /api/admin/projects/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:04,886 basehttp 16256 12012 "OPTIONS /api/admin/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:04,886 basehttp 16256 18724 "OPTIONS /api/admin/companies/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:04,892 basehttp 16256 19540 "OPTIONS /api/admin/projects/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:04,896 basehttp 16256 20124 "OPTIONS /api/admin/evaluations/ HTTP/1.1" 200 0
+WARNING 2025-07-13 01:46:05,377 log 16256 20124 Not Found: /api/admin/evaluations/
+WARNING 2025-07-13 01:46:05,384 log 16256 12012 Not Found: /api/admin/projects/
+WARNING 2025-07-13 01:46:05,386 basehttp 16256 20124 "GET /api/admin/evaluations/ HTTP/1.1" 404 16994
+WARNING 2025-07-13 01:46:05,386 basehttp 16256 12012 "GET /api/admin/projects/ HTTP/1.1" 404 16982
+WARNING 2025-07-13 01:46:05,396 log 16256 18724 Not Found: /api/admin/companies/
+WARNING 2025-07-13 01:46:05,410 basehttp 16256 18724 "GET /api/admin/companies/ HTTP/1.1" 404 16986
+WARNING 2025-07-13 01:46:05,666 log 16256 12012 Not Found: /api/admin/projects/
+WARNING 2025-07-13 01:46:05,685 log 16256 20124 Not Found: /api/admin/evaluations/
+WARNING 2025-07-13 01:46:05,689 basehttp 16256 12012 "GET /api/admin/projects/ HTTP/1.1" 404 16982
+WARNING 2025-07-13 01:46:05,691 basehttp 16256 20124 "GET /api/admin/evaluations/ HTTP/1.1" 404 16994
+WARNING 2025-07-13 01:46:05,700 log 16256 19540 Not Found: /api/admin/companies/
+WARNING 2025-07-13 01:46:05,702 basehttp 16256 19540 "GET /api/admin/companies/ HTTP/1.1" 404 16986
+INFO 2025-07-13 01:46:06,053 basehttp 16256 19540 "OPTIONS /api/admin/students/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:06,053 basehttp 16256 20124 "OPTIONS /api/admin/students/ HTTP/1.1" 200 0
+WARNING 2025-07-13 01:46:06,153 log 16256 20124 Not Found: /api/admin/students/
+WARNING 2025-07-13 01:46:06,153 basehttp 16256 20124 "GET /api/admin/students/ HTTP/1.1" 404 16981
+WARNING 2025-07-13 01:46:06,221 log 16256 20124 Not Found: /api/admin/students/
+WARNING 2025-07-13 01:46:06,224 basehttp 16256 20124 "GET /api/admin/students/ HTTP/1.1" 404 16981
+INFO 2025-07-13 01:46:06,842 basehttp 16256 19540 "OPTIONS /api/admin/applications/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:06,842 basehttp 16256 20124 "OPTIONS /api/admin/applications/ HTTP/1.1" 200 0
+WARNING 2025-07-13 01:46:06,986 log 16256 19540 Not Found: /api/admin/applications/
+WARNING 2025-07-13 01:46:06,997 log 16256 12012 Not Found: /api/admin/projects/
+WARNING 2025-07-13 01:46:06,997 basehttp 16256 19540 "GET /api/admin/applications/ HTTP/1.1" 404 16998
+WARNING 2025-07-13 01:46:06,997 basehttp 16256 12012 "GET /api/admin/projects/ HTTP/1.1" 404 16982
+WARNING 2025-07-13 01:46:07,142 log 16256 19540 Not Found: /api/admin/applications/
+WARNING 2025-07-13 01:46:07,147 basehttp 16256 19540 "GET /api/admin/applications/ HTTP/1.1" 404 16998
+WARNING 2025-07-13 01:46:07,158 log 16256 12012 Not Found: /api/admin/projects/
+WARNING 2025-07-13 01:46:07,161 basehttp 16256 12012 "GET /api/admin/projects/ HTTP/1.1" 404 16982
+INFO 2025-07-13 01:46:07,540 basehttp 16256 19540 "OPTIONS /api/evaluation-criteria/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:07,540 basehttp 16256 12012 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:07,545 basehttp 16256 20124 "OPTIONS /api/evaluation-criteria/ HTTP/1.1" 200 0
+INFO 2025-07-13 01:46:07,553 basehttp 16256 12012 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+WARNING 2025-07-13 01:46:07,640 log 16256 19540 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-13 01:46:07,641 basehttp 16256 19540 "GET /api/evaluation-criteria/ HTTP/1.1" 404 17001
+WARNING 2025-07-13 01:46:07,737 log 16256 19540 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-13 01:46:07,737 basehttp 16256 19540 "GET /api/evaluation-criteria/ HTTP/1.1" 404 17001
+INFO 2025-07-13 01:46:08,289 basehttp 16256 18724 "GET /api/evaluations/ HTTP/1.1" 200 93
+INFO 2025-07-13 01:46:08,782 basehttp 16256 18724 "GET /api/evaluations/ HTTP/1.1" 200 93
+WARNING 2025-07-13 01:46:14,162 log 16256 18724 Not Found: /api/admin/students/
+WARNING 2025-07-13 01:46:14,165 basehttp 16256 18724 "GET /api/admin/students/ HTTP/1.1" 404 16981
+WARNING 2025-07-13 01:46:14,268 log 16256 18724 Not Found: /api/admin/students/
+WARNING 2025-07-13 01:46:14,270 basehttp 16256 18724 "GET /api/admin/students/ HTTP/1.1" 404 16981
