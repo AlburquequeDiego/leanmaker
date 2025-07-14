@@ -3,7 +3,7 @@
 ## ⚡ Configuración en 5 minutos
 
 ### 1. Prerrequisitos
-- ✅ Python 3.11+ instalado
+- ✅ Python 3.12+ instalado
 - ✅ SQL Server configurado
 - ✅ Git instalado
 

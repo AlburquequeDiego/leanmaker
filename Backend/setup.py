@@ -18,8 +18,8 @@ def print_header():
 def check_python_version():
     """Verificar versión de Python"""
     print("📋 Verificando versión de Python...")
-    if sys.version_info < (3, 11):
-        print("❌ Error: Se requiere Python 3.11 o superior")
+    if sys.version_info < (3, 12):
+        print("❌ Error: Se requiere Python 3.12 o superior")
         print(f"   Versión actual: {sys.version}")
         return False
     print(f"✅ Python {sys.version.split()[0]} - OK")

@@ -1,7 +1,7 @@
 # ========================================
 # LEANMAKER BACKEND - DJANGO PURO + TYPESCRIPT
 # ========================================
-# Python 3.11+ | Django 4.2+ | Sin APIs REST
+# Python 3.12+ | Django 4.2+ | Sin APIs REST
 # ========================================
 
 # Core Django
