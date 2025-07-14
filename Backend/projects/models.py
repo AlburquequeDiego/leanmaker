@@ -73,12 +73,7 @@ class Proyecto(models.Model):
     technologies = models.TextField(null=True, blank=True)  # JSON array - campo agregado para coincidir con frontend
     benefits = models.TextField(null=True, blank=True)  # JSON array - campo agregado para coincidir con frontend
     
-    # Campos de pago - coinciden con frontend
-    is_paid = models.BooleanField(default=False)
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    payment_currency = models.CharField(max_length=3, default='USD')
-    stipend_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Campo agregado para coincidir con frontend
-    stipend_currency = models.CharField(max_length=3, default='USD')  # Campo agregado para coincidir con frontend
+
     
     # Campos de métricas
     applications_count = models.IntegerField(default=0)

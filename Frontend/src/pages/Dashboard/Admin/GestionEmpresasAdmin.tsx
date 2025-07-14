@@ -5,14 +5,6 @@ import {
   Paper,
   Tabs,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  IconButton,
   Button,
   Dialog,
   DialogTitle,
@@ -30,6 +22,8 @@ import {
   MenuItem,
   Stack,
   CircularProgress,
+  Alert,
+  Chip,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -39,61 +33,46 @@ import {
   Visibility as VisibilityIcon,
   Search as SearchIcon,
   FilterList as FilterListIcon,
+  People as PeopleIcon,
+  Work as WorkIcon,
+  Star as StarIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { DataTable } from '../../../components/common/DataTable';
 
 interface Company {
   id: string;
   name: string;
   email: string;
   status: 'active' | 'suspended' | 'blocked';
-  projectsCount: number;
+  projects_count: number;
   rating: number;
-  joinDate: string;
-  lastActivity: string;
+  join_date: string;
+  last_activity: string;
+  description?: string;
+  phone?: string;
+  address?: string;
 }
 
 interface Project {
   id: string;
   title: string;
+  company_name: string;
   status: 'active' | 'completed' | 'cancelled';
-  studentsCount: number;
-  startDate: string;
-  endDate: string;
+  students_count: number;
+  start_date: string;
+  end_date: string;
   rating: number;
-  companyName: string;
 }
 
 interface Evaluation {
   id: string;
-  projectTitle: string;
-  studentName: string;
-  rating: number;
-  comment: string;
-  date: string;
-  companyName: string;
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`company-tabpanel-${index}`}
-      aria-labelledby={`company-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
+  project_title: string;
+  company_name: string;
+  student_name: string;
+  score: number;
+  comments: string;
+  evaluation_date: string;
 }
 
 export const GestionEmpresasAdmin = () => {
@@ -105,15 +84,12 @@ export const GestionEmpresasAdmin = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   
-  // Nuevos estados para filtros
-  const [search, setSearch] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedRating, setSelectedRating] = useState('');
+  // Estados para paginación y filtros
+  const [pageSize, setPageSize] = useState<number | 'ultimos'>(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [filters, setFilters] = useState<any>({});
 
-  // Nuevos estados para limitar la cantidad de registros mostrados
-  const [empresasLimit, setEmpresasLimit] = useState<number | 'all'>(10);
-  const [proyectosLimit, setProyectosLimit] = useState<number | 'all'>(10);
-  const [evaluacionesLimit, setEvaluacionesLimit] = useState<number | 'all'>(10);
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -121,42 +97,38 @@ export const GestionEmpresasAdmin = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pageSize, currentPage, filters]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [companiesData, projectsData, evaluationsData] = await Promise.all([
-        apiService.get('/api/admin/companies/'),
-        apiService.get('/api/admin/projects/'),
-        apiService.get('/api/admin/evaluations/')
-      ]);
+      // Construir parámetros de consulta
+      const params = new URLSearchParams();
       
-      setCompanies(Array.isArray(companiesData) ? companiesData : []);
-      setProjects(Array.isArray(projectsData) ? projectsData : []);
-      setEvaluations(Array.isArray(evaluationsData) ? evaluationsData : []);
+      if (pageSize === 'ultimos') {
+        params.append('limit', '20');
+        params.append('ultimos', 'true');
+      } else {
+        params.append('limit', pageSize.toString());
+        params.append('offset', ((currentPage - 1) * pageSize).toString());
+      }
+
+      // Agregar filtros
+      if (filters.search) params.append('search', filters.search);
+      if (filters.status) params.append('status', filters.status);
+      if (filters.rating) params.append('rating', filters.rating);
+
+      const response = await apiService.get(`/api/admin/companies/?${params.toString()}`);
+      
+      setCompanies(response.results || []);
+      setTotalCount(response.count || 0);
     } catch (error) {
       console.error('Error fetching data:', error);
       setCompanies([]);
-      setProjects([]);
-      setEvaluations([]);
+      setTotalCount(0);
     }
     setLoading(false);
   };
-
-  // Filtrado de empresas
-  const filteredCompanies = companies.filter(company =>
-    (company.name.toLowerCase().includes(search.toLowerCase()) || 
-     company.email.toLowerCase().includes(search.toLowerCase())) &&
-    (selectedStatus ? company.status === selectedStatus : true) &&
-    (selectedRating ? 
-      (selectedRating === 'high' && company.rating >= 4.5) ||
-      (selectedRating === 'medium' && company.rating >= 3.5 && company.rating < 4.5) ||
-      (selectedRating === 'low' && company.rating < 3.5)
-      : true)
-  );
-
-
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -169,515 +141,309 @@ export const GestionEmpresasAdmin = () => {
     setActionReason('');
   };
 
-  const handleActionConfirm = async () => {
-    if (!selectedCompany) return;
+  const handleConfirmAction = async () => {
+    if (!selectedCompany || !actionType) return;
 
     try {
-      let endpoint = '';
-      let payload: any = {};
+      await apiService.post(`/api/admin/companies/${selectedCompany.id}/${actionType}/`, {
+        reason: actionReason
+      });
 
-      switch (actionType) {
-        case 'block':
-          endpoint = `/api/admin/companies/${selectedCompany.id}/block/`;
-          payload = { reason: actionReason };
-          break;
-        case 'suspend':
-          endpoint = `/api/admin/companies/${selectedCompany.id}/suspend/`;
-          payload = { reason: actionReason };
-          break;
-        case 'activate':
-          endpoint = `/api/admin/companies/${selectedCompany.id}/activate/`;
-          break;
-      }
-
-      await apiService.patch(endpoint, payload);
-      
-      // Recargar los datos
-      await fetchData();
-
-      let message = '';
-      switch (actionType) {
-        case 'block':
-          message = `Empresa ${selectedCompany.name} bloqueada exitosamente`;
-          break;
-        case 'suspend':
-          message = `Empresa ${selectedCompany.name} suspendida`;
-          break;
-        case 'activate':
-          message = `Empresa ${selectedCompany.name} activada`;
-          break;
-      }
-      setSuccessMessage(message);
+      setSuccessMessage(`Empresa ${actionType === 'activate' ? 'activada' : actionType === 'suspend' ? 'suspendida' : 'bloqueada'} correctamente`);
       setShowSuccess(true);
       setActionDialog(false);
-      setActionReason('');
+      fetchData(); // Recargar datos
     } catch (error) {
       console.error('Error performing action:', error);
-      setSuccessMessage('Error al realizar la acción');
-      setShowSuccess(true);
     }
-  };
-
-  const getDialogTitle = () => {
-    switch (actionType) {
-      case 'block': return 'Bloquear Empresa';
-      case 'suspend': return 'Suspender Empresa';
-      case 'activate': return 'Activar Empresa';
-      default: return '';
-    }
-  };
-
-  const getDialogContent = () => {
-    if (!selectedCompany) return null;
-
-    return (
-      <Box>
-        <Typography variant="h6" gutterBottom>Empresa: {selectedCompany.name}</Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          {selectedCompany.email}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          Estado actual: <strong>{selectedCompany.status === 'active' ? 'Activa' : 
-                                  selectedCompany.status === 'suspended' ? 'Suspendida' : 'Bloqueada'}</strong>
-        </Typography>
-        
-        {(actionType === 'block' || actionType === 'suspend') && (
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label="Razón de la acción"
-            value={actionReason}
-            onChange={(e) => setActionReason(e.target.value)}
-            sx={{ mt: 2, borderRadius: 2 }}
-            required
-          />
-        )}
-        
-        {actionType === 'activate' && (
-          <Typography variant="body1" sx={{ mt: 2, p: 2, bgcolor: 'success.light', borderRadius: 2, color: 'success.contrastText' }}>
-            ¿Estás seguro de que deseas reactivar esta empresa? Esto permitirá que vuelva a publicar proyectos y gestionar estudiantes.
-          </Typography>
-        )}
-      </Box>
-    );
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'success';
-      case 'suspended':
-        return 'warning';
-      case 'blocked':
-        return 'error';
-      default:
-        return 'default';
+      case 'active': return 'success';
+      case 'suspended': return 'warning';
+      case 'blocked': return 'error';
+      default: return 'default';
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'Activa';
-      case 'suspended':
-        return 'Suspendida';
-      case 'blocked':
-        return 'Bloqueada';
-      default:
-        return status;
+      case 'active': return 'Activa';
+      case 'suspended': return 'Suspendida';
+      case 'blocked': return 'Bloqueada';
+      default: return status;
     }
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-          <CircularProgress />
-        </Box>
-      </Box>
-    );
-  }
+  const getRatingText = (rating: number) => {
+    if (rating >= 4.5) return 'Alto';
+    if (rating >= 3.5) return 'Medio';
+    return 'Bajo';
+  };
 
-  return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <BusinessIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-        <Typography variant="h4">Gestión de Empresas</Typography>
-      </Box>
-
-      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Tab label="Empresas" />
-          <Tab label="Proyectos" />
-          <Tab label="Evaluaciones" />
-        </Tabs>
-
-        <TabPanel value={tabValue} index={0}>
-          {/* Sección de filtros mejorada y responsiva */}
-          <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 3, boxShadow: 2, bgcolor: 'grey.50' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <FilterListIcon color="primary" />
-              <Typography variant="h6" color="primary">
-                Filtros de Búsqueda
-              </Typography>
-            </Box>
-            
-            <Stack 
-              direction={{ xs: 'column', lg: 'row' }} 
-              spacing={{ xs: 2, sm: 2 }} 
-              alignItems={{ xs: 'stretch', lg: 'center' }}
-              flexWrap="wrap"
-              sx={{ mb: 2 }}
-            >
-              <TextField
-                label="Buscar por nombre o email"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{ 
-                  minWidth: { xs: '100%', sm: 250 },
-                  borderRadius: 2 
-                }}
-                InputProps={{
-                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                }}
-              />
-              
-              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-                <InputLabel>Estado</InputLabel>
-                <Select
-                  value={selectedStatus}
-                  label="Estado"
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <MenuItem value="">Todos los estados</MenuItem>
-                  <MenuItem value="active">Activas</MenuItem>
-                  <MenuItem value="suspended">Suspendidas</MenuItem>
-                  <MenuItem value="blocked">Bloqueadas</MenuItem>
-                </Select>
-              </FormControl>
-              
-              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-                <InputLabel>Calificación</InputLabel>
-                <Select
-                  value={selectedRating}
-                  label="Calificación"
-                  onChange={(e) => setSelectedRating(e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <MenuItem value="">Todas las calificaciones</MenuItem>
-                  <MenuItem value="high">Alta (4.5+)</MenuItem>
-                  <MenuItem value="medium">Media (3.5-4.4)</MenuItem>
-                  <MenuItem value="low">Baja (menos de 3.5)</MenuItem>
-                </Select>
-              </FormControl>
-              
-              <Button 
-                variant="outlined" 
-                onClick={() => {
-                  setSearch('');
-                  setSelectedStatus('');
-                  setSelectedRating('');
-                }}
-                sx={{ 
-                  borderRadius: 2,
-                  minWidth: { xs: '100%', sm: 'auto' }
-                }}
-              >
-                Limpiar Filtros
-              </Button>
-            </Stack>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <TextField
-                select
-                size="small"
-                label="Mostrar"
-                value={empresasLimit}
-                onChange={e => setEmpresasLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                sx={{ minWidth: 110 }}
-              >
-                {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                  <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-                ))}
-                <MenuItem value="all">Todas</MenuItem>
-              </TextField>
-            </Box>
-            
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Mostrando {filteredCompanies.length} de {companies.length} empresas
-              </Typography>
-            </Box>
-          </Paper>
-
-          {/* Tabla responsiva */}
-          <Box sx={{ overflowX: 'auto' }}>
-            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 900 }}>
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ bgcolor: 'primary.main' }}>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 180, whiteSpace: 'nowrap' }}>Empresa</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 150, whiteSpace: 'nowrap' }}>Email</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Estado</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Proyectos</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80, whiteSpace: 'nowrap' }}>Rating</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 100, whiteSpace: 'nowrap' }}>Fecha Registro</TableCell>
-                    <TableCell align="center" sx={{ color: 'white', fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Acciones</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(empresasLimit === 'all' ? filteredCompanies : filteredCompanies.slice(0, empresasLimit)).map(company => (
-                    <TableRow key={company.id} hover>
-                      <TableCell>
+  const columns = [
+    {
+      key: 'name',
+      label: 'Empresa',
+      render: (value: string, row: Company) => (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main' }}>
+          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
                             <BusinessIcon fontSize="small" />
                           </Avatar>
                           <Box sx={{ minWidth: 0, flex: 1 }}>
                             <Typography variant="body2" fontWeight={600} noWrap>
-                              {company.name}
+              {value}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" noWrap>
-                              Última actividad: {new Date(company.lastActivity).toLocaleDateString()}
+              Última actividad: {new Date(row.last_activity).toLocaleDateString()}
                             </Typography>
                           </Box>
                         </Box>
-                      </TableCell>
-                      <TableCell>
+      ),
+      width: '250px'
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      render: (value: string) => (
                         <Typography variant="body2" noWrap>
-                          {company.email}
+          {value}
                         </Typography>
-                      </TableCell>
-                      <TableCell>
+      ),
+      width: '200px'
+    },
+    {
+      key: 'status',
+      label: 'Estado',
+      render: (value: string) => (
                         <Chip 
-                          label={getStatusText(company.status)} 
-                          color={getStatusColor(company.status) as any}
+          label={getStatusText(value)} 
+          color={getStatusColor(value) as any}
                           variant="filled"
                           size="small"
                           sx={{ fontWeight: 600 }}
                         />
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={company.projectsCount} 
-                          color="primary" 
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell>
+      ),
+      width: '120px',
+      align: 'center' as const
+    },
+    {
+      key: 'projects_count',
+      label: 'Proyectos',
+      render: (value: number) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <WorkIcon fontSize="small" color="primary" />
+          <Typography variant="body2" fontWeight={600}>
+            {value}
+          </Typography>
+        </Box>
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'rating',
+      label: 'Rating',
+      render: (value: number) => (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Rating value={company.rating} readOnly size="small" />
-                          <Typography variant="body2" fontWeight={600}>
-                            {company.rating}
+          <Rating value={value} readOnly size="small" />
+          <Typography variant="caption" color="text.secondary">
+            ({value.toFixed(1)})
                           </Typography>
                         </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" noWrap>
-                          {new Date(company.joinDate).toLocaleDateString()}
+      ),
+      width: '150px',
+      align: 'center' as const
+    },
+    {
+      key: 'join_date',
+      label: 'Fecha Registro',
+      render: (value: string) => (
+        <Typography variant="body2">
+          {new Date(value).toLocaleDateString()}
                         </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-                          <IconButton 
-                            color="info" 
-                            title="Ver detalles"
-                            onClick={() => handleAction(company, 'activate')}
-                            size="small"
-                          >
-                            <VisibilityIcon fontSize="small" />
-                          </IconButton>
-                          {company.status === 'active' && (
-                            <>
-                              <IconButton 
-                                color="warning" 
-                                title="Suspender empresa"
-                                onClick={() => handleAction(company, 'suspend')}
-                                size="small"
-                              >
-                                <WarningIcon fontSize="small" />
-                              </IconButton>
-                              <IconButton 
-                                color="error" 
-                                title="Bloquear empresa"
-                                onClick={() => handleAction(company, 'block')}
-                                size="small"
-                              >
-                                <BlockIcon fontSize="small" />
-                              </IconButton>
-                            </>
-                          )}
-                          {company.status !== 'active' && (
-                            <IconButton 
-                              color="success" 
-                              title="Activar empresa"
-                              onClick={() => handleAction(company, 'activate')}
-                              size="small"
-                            >
-                              <CheckCircleIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </TabPanel>
+      ),
+      width: '120px',
+      align: 'center' as const
+    }
+  ];
 
-        {/* Tab: Historial de Proyectos */}
-        <TabPanel value={tabValue} index={1}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={proyectosLimit}
-              onChange={e => setProyectosLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              sx={{ minWidth: 110 }}
-            >
-              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-              ))}
-              <MenuItem value="all">Todos</MenuItem>
-            </TextField>
+  const tableFilters = [
+    {
+      key: 'search',
+      label: 'Buscar por nombre o email',
+      type: 'text' as const
+    },
+    {
+      key: 'status',
+      label: 'Estado',
+      type: 'select' as const,
+      options: [
+        { value: 'active', label: 'Activa' },
+        { value: 'suspended', label: 'Suspendida' },
+        { value: 'blocked', label: 'Bloqueada' }
+      ]
+    },
+    {
+      key: 'rating',
+      label: 'Rating',
+      type: 'select' as const,
+      options: [
+        { value: 'high', label: 'Alto (4.5+)' },
+        { value: 'medium', label: 'Medio (3.5-4.4)' },
+        { value: 'low', label: 'Bajo (<3.5)' }
+      ]
+    }
+  ];
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Resetear a la primera página
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize: number | 'ultimos') => {
+    setPageSize(newPageSize);
+    setCurrentPage(1); // Resetear a la primera página
+  };
+
+  const actions = (row: Company) => (
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <Button
+        variant="outlined"
+                            size="small"
+        onClick={() => handleAction(row, 'activate')}
+        disabled={row.status === 'active'}
+        startIcon={<CheckCircleIcon />}
+      >
+        Activar
+      </Button>
+      <Button
+        variant="outlined"
+                                size="small"
+        onClick={() => handleAction(row, 'suspend')}
+        disabled={row.status === 'suspended'}
+        startIcon={<WarningIcon />}
+      >
+        Suspender
+      </Button>
+      <Button
+        variant="outlined"
+                                size="small"
+        onClick={() => handleAction(row, 'block')}
+        disabled={row.status === 'blocked'}
+        startIcon={<BlockIcon />}
+      >
+        Bloquear
+      </Button>
+                        </Box>
+  );
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom fontWeight={700}>
+        Gestión de Empresas
+      </Typography>
+
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={tabValue} onChange={handleTabChange}>
+          <Tab label="Empresas" />
+          <Tab label="Proyectos" />
+          <Tab label="Evaluaciones" />
+        </Tabs>
           </Box>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Proyecto</TableCell>
-                  <TableCell>Empresa</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Estudiantes</TableCell>
-                  <TableCell>Fecha Inicio</TableCell>
-                  <TableCell>Fecha Fin</TableCell>
-                  <TableCell>Calificación</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(proyectosLimit === 'all' ? projects : projects.slice(0, proyectosLimit)).map((project) => (
-                  <TableRow key={project.id}>
-                    <TableCell>{project.title}</TableCell>
-                    <TableCell>{project.companyName}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={project.status === 'active' ? 'Activo' : 'Completado'}
-                        color={project.status === 'active' ? 'success' : 'default'}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>{project.studentsCount}</TableCell>
-                    <TableCell>{project.startDate}</TableCell>
-                    <TableCell>{project.endDate}</TableCell>
-                    <TableCell>
-                      <Rating value={project.rating} readOnly size="small" />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton size="small" color="primary">
-                        <VisibilityIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </TabPanel>
+
+      {/* Tab: Empresas */}
+      <div role="tabpanel" hidden={tabValue !== 0}>
+        {tabValue === 0 && (
+          <DataTable
+            title="Lista de Empresas"
+            data={companies}
+            columns={columns}
+            loading={loading}
+            error={null}
+            filters={tableFilters}
+            onFilterChange={handleFilterChange}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            showPagination={pageSize !== 'ultimos'}
+            actions={actions}
+            emptyMessage="No hay empresas registradas"
+          />
+        )}
+      </div>
+
+      {/* Tab: Proyectos */}
+      <div role="tabpanel" hidden={tabValue !== 1}>
+        {tabValue === 1 && (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Proyectos de Empresas
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Aquí puedes ver todos los proyectos creados por las empresas.
+            </Typography>
+            {/* Aquí iría la tabla de proyectos usando DataTable */}
+          </Box>
+        )}
+      </div>
 
         {/* Tab: Evaluaciones */}
-        <TabPanel value={tabValue} index={2}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={evaluacionesLimit}
-              onChange={e => setEvaluacionesLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              sx={{ minWidth: 110 }}
-            >
-              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-              ))}
-              <MenuItem value="all">Todas</MenuItem>
-            </TextField>
-          </Box>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
-            {(evaluacionesLimit === 'all' ? evaluations : evaluations.slice(0, evaluacionesLimit)).map((evaluation) => (
-              <Card key={evaluation.id}>
-                <CardContent>
+      <div role="tabpanel" hidden={tabValue !== 2}>
+        {tabValue === 2 && (
+          <Box>
                   <Typography variant="h6" gutterBottom>
-                    {evaluation.projectTitle}
+              Evaluaciones de Empresas
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Estudiante: {evaluation.studentName}
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Aquí puedes ver las evaluaciones que las empresas han realizado.
                   </Typography>
-                  <Typography variant="body2" color="primary.main" gutterBottom>
-                    Empresa: {evaluation.companyName}
-                  </Typography>
-                  <Rating value={evaluation.rating} readOnly size="small" />
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    {evaluation.comment}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {evaluation.date}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
+            {/* Aquí iría la tabla de evaluaciones usando DataTable */}
           </Box>
-        </TabPanel>
-      </Paper>
+        )}
+      </div>
 
-      {/* Diálogo de acción */}
-      <Dialog 
-        open={actionDialog} 
-        onClose={() => setActionDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {actionType === 'block' && <BlockIcon color="error" />}
-          {actionType === 'suspend' && <WarningIcon color="warning" />}
-          {actionType === 'activate' && <CheckCircleIcon color="success" />}
-          {getDialogTitle()}
+      {/* Modal de acción */}
+      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {actionType === 'activate' && 'Activar Empresa'}
+          {actionType === 'suspend' && 'Suspender Empresa'}
+          {actionType === 'block' && 'Bloquear Empresa'}
         </DialogTitle>
         <DialogContent>
-          {getDialogContent()}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body1" gutterBottom>
+              ¿Estás seguro de que quieres {actionType === 'activate' ? 'activar' : actionType === 'suspend' ? 'suspender' : 'bloquear'} la empresa{' '}
+              <strong>{selectedCompany?.name}</strong>?
+            </Typography>
+            <TextField
+              label="Razón (opcional)"
+              value={actionReason}
+              onChange={(e) => setActionReason(e.target.value)}
+              fullWidth
+              multiline
+              minRows={2}
+              sx={{ mt: 2 }}
+            />
+          </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={() => setActionDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2 }}
-          >
+        <DialogActions>
+          <Button onClick={() => setActionDialog(false)}>
             Cancelar
           </Button>
           <Button 
-            onClick={handleActionConfirm}
             variant="contained"
-            color={
-              actionType === 'block' ? 'error' : 
-              actionType === 'suspend' ? 'warning' : 'success'
-            }
-            sx={{ borderRadius: 2 }}
-            disabled={
-              (actionType === 'block' || actionType === 'suspend') && !actionReason.trim()
-            }
+            color={actionType === 'activate' ? 'success' : actionType === 'suspend' ? 'warning' : 'error'}
+            onClick={handleConfirmAction}
           >
-            {actionType === 'block' ? 'Bloquear' : 
-             actionType === 'suspend' ? 'Suspender' : 'Activar'}
+            Confirmar
           </Button>
         </DialogActions>
       </Dialog>
@@ -685,16 +451,12 @@ export const GestionEmpresasAdmin = () => {
       {/* Snackbar de éxito */}
       <Snackbar
         open={showSuccess}
-        autoHideDuration={4000}
+        autoHideDuration={6000}
         onClose={() => setShowSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CheckCircleIcon color="success" />
-          <Typography color="success.main" fontWeight={600}>
+        <Alert onClose={() => setShowSuccess(false)} severity="success">
             {successMessage}
-          </Typography>
-        </Paper>
+        </Alert>
       </Snackbar>
     </Box>
   );

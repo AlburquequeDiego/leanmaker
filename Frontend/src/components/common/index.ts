@@ -1,2 +1,4 @@
 // Exportar componentes comunes aquí
-export { default as LoadingButton } from './LoadingButton'; 
+export { ConnectionStatus } from './ConnectionStatus';
+export { LoadingButton } from './LoadingButton';
+export { DataTable } from './DataTable'; 

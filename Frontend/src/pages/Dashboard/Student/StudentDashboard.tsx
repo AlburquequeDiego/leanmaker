@@ -1,15 +1,43 @@
-import { useEffect } from 'react';
-import { Box, Paper, Typography, CircularProgress } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Box, Paper, Typography, CircularProgress, LinearProgress } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PendingIcon from '@mui/icons-material/Pending';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
+import { apiService } from '../../../services/api.service';
 
 export default function StudentDashboard() {
   const { user } = useAuth();
+  const [hoursData, setHoursData] = useState<any>(null);
+  const [hoursLoading, setHoursLoading] = useState(true);
+  const [hoursError, setHoursError] = useState<string | null>(null);
   
   // Usar hook de tiempo real para estadísticas
   const { data: stats, loading, error, lastUpdate } = useDashboardStats('student');
+
+  // Cargar datos de horas del estudiante
+  useEffect(() => {
+    const loadHoursData = async () => {
+      try {
+        setHoursLoading(true);
+        setHoursError(null);
+        const response = await apiService.get('/api/work-hours/student-summary/');
+        if (response.success) {
+          setHoursData(response.data);
+        }
+      } catch (err) {
+        console.error('Error loading hours data:', err);
+        setHoursError('Error al cargar datos de horas');
+      } finally {
+        setHoursLoading(false);
+      }
+    };
+
+    loadHoursData();
+  }, []);
 
   // Detectar cambios en las estadísticas
   useEffect(() => {
@@ -113,6 +141,70 @@ export default function StudentDashboard() {
           </Box>
         </Box>
       )}
+
+      {/* Horas Acumuladas */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" gutterBottom>
+          Horas Acumuladas
+        </Typography>
+        {hoursLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <CircularProgress />
+          </Box>
+        ) : hoursError ? (
+          <Paper sx={{ p: 2, bgcolor: 'error.light' }}>
+            <Typography color="error">{hoursError}</Typography>
+          </Paper>
+        ) : hoursData ? (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            <Paper sx={{ p: 2, minWidth: 200, flex: 1, bgcolor: 'primary.light', color: 'white' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <AccessTimeIcon sx={{ mr: 1, fontSize: 32 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="bold">
+                    {hoursData.total_hours || 0}h
+                  </Typography>
+                  <Typography variant="body2">
+                    Horas Totales
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+            
+            <Paper sx={{ p: 2, minWidth: 200, flex: 1, bgcolor: 'success.light', color: 'white' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <CheckCircleIcon sx={{ mr: 1, fontSize: 32 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="bold">
+                    {hoursData.approved_hours || 0}h
+                  </Typography>
+                  <Typography variant="body2">
+                    Horas Aprobadas
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+            
+            <Paper sx={{ p: 2, minWidth: 200, flex: 1, bgcolor: 'warning.light', color: 'white' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <PendingIcon sx={{ mr: 1, fontSize: 32 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="bold">
+                    {hoursData.pending_hours || 0}h
+                  </Typography>
+                  <Typography variant="body2">
+                    Horas Pendientes
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+        ) : (
+          <Paper sx={{ p: 2, bgcolor: 'grey.100' }}>
+            <Typography color="text.secondary">No hay datos de horas disponibles</Typography>
+          </Paper>
+        )}
+      </Box>
 
       {/* Información adicional */}
       <Paper sx={{ p: 3 }}>

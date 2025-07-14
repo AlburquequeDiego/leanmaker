@@ -5,14 +5,6 @@ import {
   Paper,
   Tabs,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  IconButton,
   Button,
   Dialog,
   DialogTitle,
@@ -28,6 +20,8 @@ import {
   MenuItem,
   Stack,
   CircularProgress,
+  Alert,
+  Chip,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -40,59 +34,42 @@ import {
   Work as WorkIcon,
   Search as SearchIcon,
   FilterList as FilterListIcon,
+  Business as BusinessIcon,
+  Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { DataTable } from '../../../components/common/DataTable';
 
 interface Project {
   id: string;
   title: string;
-  company: string;
+  company_name: string;
+  company_id: string;
   description: string;
   status: 'active' | 'suspended' | 'completed' | 'cancelled';
-  requiredApiLevel: number;
-  studentsNeeded: number;
-  studentsAssigned: number;
-  applicationsCount: number;
-  startDate: string;
-  endDate: string;
+  required_api_level: number;
+  required_trl_level: number;
+  students_needed: number;
+  students_assigned: number;
+  applications_count: number;
+  start_date: string;
+  end_date: string;
   location: string;
   rating: number;
+  hours_offered: number;
+  created_at: string;
 }
 
 interface Application {
   id: string;
-  studentName: string;
-  studentEmail: string;
-  apiLevel: number;
+  student_name: string;
+  student_email: string;
+  project_title: string;
+  api_level: number;
   gpa: number;
+  compatibility_score: number;
   status: 'pending' | 'accepted' | 'rejected';
-  date: string;
-  compatibility: number;
-  skills: string[];
-}
-
-
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`project-tabpanel-${index}`}
-      aria-labelledby={`project-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
+  application_date: string;
 }
 
 export const GestionProyectosAdmin = () => {
@@ -103,57 +80,53 @@ export const GestionProyectosAdmin = () => {
   const [actionReason, setActionReason] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  
-  // Nuevos estados para filtros
-  const [search, setSearch] = useState('');
-  const [selectedCompany, setSelectedCompany] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedApiLevel, setSelectedApiLevel] = useState('');
 
-  // Estados para límite de registros por sección
-  const [projectsLimit, setProjectsLimit] = useState<number | 'all'>(10);
-  const [applicationsLimit, setApplicationsLimit] = useState<number | 'all'>(10);
+  // Estados para paginación y filtros
+  const [pageSize, setPageSize] = useState<number | 'ultimos'>(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [filters, setFilters] = useState<any>({});
+
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
 
-
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pageSize, currentPage, filters]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [projectsData, applicationsData] = await Promise.all([
-        apiService.get('/api/admin/projects/'),
-        apiService.get('/api/admin/applications/')
-      ]);
+      // Construir parámetros de consulta
+      const params = new URLSearchParams();
       
-      setProjects(Array.isArray(projectsData) ? projectsData : []);
-      setApplications(Array.isArray(applicationsData) ? applicationsData : []);
+      if (pageSize === 'ultimos') {
+        params.append('limit', '20');
+        params.append('ultimos', 'true');
+      } else {
+        params.append('limit', pageSize.toString());
+        params.append('offset', ((currentPage - 1) * pageSize).toString());
+      }
+
+      // Agregar filtros
+      if (filters.search) params.append('search', filters.search);
+      if (filters.company) params.append('company', filters.company);
+      if (filters.status) params.append('status', filters.status);
+      if (filters.api_level) params.append('api_level', filters.api_level);
+      if (filters.trl_level) params.append('trl_level', filters.trl_level);
+
+      const response = await apiService.get(`/api/admin/projects/?${params.toString()}`);
+      
+      setProjects(response.results || []);
+      setTotalCount(response.count || 0);
     } catch (error) {
       console.error('Error fetching data:', error);
       setProjects([]);
-      setApplications([]);
+      setTotalCount(0);
     }
     setLoading(false);
   };
-
-  // Filtrado de proyectos
-  const filteredProjects = projects.filter(project =>
-    (project.title.toLowerCase().includes(search.toLowerCase()) || 
-     project.company.toLowerCase().includes(search.toLowerCase()) ||
-     project.description.toLowerCase().includes(search.toLowerCase())) &&
-    (selectedCompany ? project.company === selectedCompany : true) &&
-    (selectedStatus ? project.status === selectedStatus : true) &&
-    (selectedApiLevel ? project.requiredApiLevel.toString() === selectedApiLevel : true)
-  );
-
-  // Obtener valores únicos para los filtros
-  const companies = Array.from(new Set(projects.map(p => p.company)));
-
-
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -166,579 +139,390 @@ export const GestionProyectosAdmin = () => {
     setActionReason('');
   };
 
-  const handleActionConfirm = async () => {
-    if (!selectedProject) return;
+  const handleConfirmAction = async () => {
+    if (!selectedProject || !actionType) return;
 
     try {
       let endpoint = '';
       let payload: any = {};
 
       switch (actionType) {
-        case 'edit':
-          endpoint = `/api/admin/projects/${selectedProject.id}/`;
-          payload = { reason: actionReason };
-          break;
         case 'suspend':
           endpoint = `/api/admin/projects/${selectedProject.id}/suspend/`;
           payload = { reason: actionReason };
           break;
         case 'delete':
-          endpoint = `/api/admin/projects/${selectedProject.id}/`;
-          await apiService.delete(endpoint);
+          endpoint = `/api/admin/projects/${selectedProject.id}/delete/`;
+          payload = { reason: actionReason };
           break;
-        case 'view_candidates':
-          // Solo mostrar candidatos, no requiere acción
-          setSuccessMessage(`Viendo candidatos para ${selectedProject.title}`);
-          setShowSuccess(true);
-          setActionDialog(false);
-          setActionReason('');
+        default:
           return;
       }
 
-      if (actionType !== 'delete') {
-        await apiService.patch(endpoint, payload);
-      }
-      
-      // Recargar los datos
-      await fetchData();
+      await apiService.post(endpoint, payload);
 
-      let message = '';
-      switch (actionType) {
-        case 'edit':
-          message = `Proyecto ${selectedProject.title} actualizado exitosamente`;
-          break;
-        case 'suspend':
-          message = `Proyecto ${selectedProject.title} suspendido`;
-          break;
-        case 'delete':
-          message = `Proyecto ${selectedProject.title} eliminado`;
-          break;
-      }
-      setSuccessMessage(message);
+      setSuccessMessage(`Proyecto ${actionType === 'suspend' ? 'suspendido' : 'eliminado'} correctamente`);
       setShowSuccess(true);
       setActionDialog(false);
-      setActionReason('');
+      fetchData(); // Recargar datos
     } catch (error) {
       console.error('Error performing action:', error);
-      setSuccessMessage('Error al realizar la acción');
-      setShowSuccess(true);
     }
-  };
-
-  const getDialogTitle = () => {
-    switch (actionType) {
-      case 'edit': return 'Editar Proyecto';
-      case 'suspend': return 'Suspender Proyecto';
-      case 'delete': return 'Eliminar Proyecto';
-      case 'view_candidates': return 'Candidatos del Proyecto';
-      default: return '';
-    }
-  };
-
-  const getDialogContent = () => {
-    if (!selectedProject) return null;
-
-    if (actionType === 'view_candidates') {
-      return (
-        <Box>
-          <Typography variant="h6" gutterBottom>Proyecto: {selectedProject.title}</Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Empresa: {selectedProject.company}
-          </Typography>
-          <Typography variant="body2" gutterBottom>
-            Candidatos: {selectedProject.applicationsCount} postulaciones
-          </Typography>
-          
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>Candidatos en Proceso:</Typography>
-            {applications.filter(app => app.status === 'pending').length === 0 ? (
-              <Typography variant="body2" color="text.secondary">No hay candidatos en proceso.</Typography>
-            ) : (
-              applications.filter(app => app.status === 'pending').map(app => (
-                <Box key={app.id} sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 2, mb: 1 }}>
-                  <Typography variant="body2" fontWeight={600}>{app.studentName}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    GPA: {app.gpa} | API: {app.apiLevel} | Compatibilidad: {app.compatibility}%
-                  </Typography>
-                </Box>
-              ))
-            )}
-          </Box>
-        </Box>
-      );
-    }
-
-    return (
-      <Box>
-        <Typography variant="h6" gutterBottom>Proyecto: {selectedProject.title}</Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          Empresa: {selectedProject.company}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          Estado actual: <strong>{selectedProject.status === 'active' ? 'Activo' : 
-                                  selectedProject.status === 'suspended' ? 'Suspendido' : 
-                                  selectedProject.status === 'completed' ? 'Completado' : 'Cancelado'}</strong>
-        </Typography>
-        
-        {(actionType === 'suspend' || actionType === 'delete') && (
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label="Razón de la acción"
-            value={actionReason}
-            onChange={(e) => setActionReason(e.target.value)}
-            sx={{ mt: 2, borderRadius: 2 }}
-            required
-          />
-        )}
-        
-        {actionType === 'delete' && (
-          <Typography variant="body1" sx={{ mt: 2, p: 2, bgcolor: 'error.light', borderRadius: 2, color: 'error.contrastText' }}>
-            ⚠️ Esta acción es irreversible. El proyecto y todas sus postulaciones serán eliminadas permanentemente.
-          </Typography>
-        )}
-      </Box>
-    );
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'success';
-      case 'suspended':
-        return 'warning';
-      case 'completed':
-        return 'info';
-      case 'cancelled':
-        return 'error';
-      default:
-        return 'default';
+      case 'active': return 'success';
+      case 'suspended': return 'warning';
+      case 'completed': return 'info';
+      case 'cancelled': return 'error';
+      default: return 'default';
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'Activo';
-      case 'suspended':
-        return 'Suspendido';
-      case 'completed':
-        return 'Completado';
-      case 'cancelled':
-        return 'Cancelado';
-      default:
-        return status;
+      case 'active': return 'Activo';
+      case 'suspended': return 'Suspendido';
+      case 'completed': return 'Completado';
+      case 'cancelled': return 'Cancelado';
+      default: return status;
     }
   };
 
-  const getCompatibilityColor = (compatibility: number) => {
-    if (compatibility >= 90) return 'success';
-    if (compatibility >= 80) return 'warning';
-    return 'error';
+  const columns = [
+    {
+      key: 'title',
+      label: 'Proyecto',
+      render: (value: string, row: Project) => (
+        <Box>
+          <Typography variant="body2" fontWeight={600} noWrap>
+            {value}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {row.location}
+          </Typography>
+        </Box>
+      ),
+      width: '250px'
+    },
+    {
+      key: 'company_name',
+      label: 'Empresa',
+      render: (value: string) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <BusinessIcon fontSize="small" color="primary" />
+          <Typography variant="body2" noWrap>
+            {value}
+          </Typography>
+        </Box>
+      ),
+      width: '150px'
+    },
+    {
+      key: 'status',
+      label: 'Estado',
+      render: (value: string) => (
+        <Chip 
+          label={getStatusText(value)} 
+          color={getStatusColor(value) as any}
+          variant="filled"
+          size="small"
+          sx={{ fontWeight: 600 }}
+        />
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'students_assigned',
+      label: 'Estudiantes',
+      render: (value: number, row: Project) => (
+        <Chip 
+          label={`${value}/${row.students_needed}`} 
+          color="primary" 
+          variant="filled"
+          size="small"
+          sx={{ fontWeight: 600 }}
+        />
+      ),
+      width: '120px',
+      align: 'center' as const
+    },
+    {
+      key: 'applications_count',
+      label: 'Postulaciones',
+      render: (value: number) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <PeopleIcon fontSize="small" color="primary" />
+          <Typography variant="body2" fontWeight={600}>
+            {value}
+          </Typography>
+        </Box>
+      ),
+      width: '120px',
+      align: 'center' as const
+    },
+    {
+      key: 'required_api_level',
+      label: 'Nivel API',
+      render: (value: number) => (
+        <Chip 
+          label={`API ${value}`} 
+          color="primary" 
+          size="small"
+          variant="outlined"
+        />
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'required_trl_level',
+      label: 'Nivel TRL',
+      render: (value: number) => (
+        <Chip 
+          label={`TRL ${value}`} 
+          color="secondary" 
+          size="small"
+          variant="outlined"
+        />
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'hours_offered',
+      label: 'Horas',
+      render: (value: number) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <ScheduleIcon fontSize="small" color="primary" />
+          <Typography variant="body2" fontWeight={600}>
+            {value} hrs
+          </Typography>
+        </Box>
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'rating',
+      label: 'Rating',
+      render: (value: number) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Rating value={value} readOnly size="small" />
+          <Typography variant="caption" color="text.secondary">
+            ({value.toFixed(1)})
+          </Typography>
+        </Box>
+      ),
+      width: '120px',
+      align: 'center' as const
+    },
+    {
+      key: 'created_at',
+      label: 'Creado',
+      render: (value: string) => (
+        <Typography variant="caption" color="text.secondary">
+          {new Date(value).toLocaleDateString()}
+        </Typography>
+      ),
+      width: '100px',
+      align: 'center' as const
+    }
+  ];
+
+  const tableFilters = [
+    {
+      key: 'search',
+      label: 'Buscar por título o empresa',
+      type: 'text' as const
+    },
+    {
+      key: 'company',
+      label: 'Empresa',
+      type: 'select' as const,
+      options: [
+        { value: '1', label: 'Empresa A' },
+        { value: '2', label: 'Empresa B' },
+        { value: '3', label: 'Empresa C' }
+      ]
+    },
+    {
+      key: 'status',
+      label: 'Estado',
+      type: 'select' as const,
+      options: [
+        { value: 'active', label: 'Activo' },
+        { value: 'suspended', label: 'Suspendido' },
+        { value: 'completed', label: 'Completado' },
+        { value: 'cancelled', label: 'Cancelado' }
+      ]
+    },
+    {
+      key: 'api_level',
+      label: 'Nivel API',
+      type: 'select' as const,
+      options: [
+        { value: '1', label: 'API 1' },
+        { value: '2', label: 'API 2' },
+        { value: '3', label: 'API 3' },
+        { value: '4', label: 'API 4' },
+        { value: '5', label: 'API 5' }
+      ]
+    },
+    {
+      key: 'trl_level',
+      label: 'Nivel TRL',
+      type: 'select' as const,
+      options: [
+        { value: '1', label: 'TRL 1' },
+        { value: '2', label: 'TRL 2' },
+        { value: '3', label: 'TRL 3' },
+        { value: '4', label: 'TRL 4' },
+        { value: '5', label: 'TRL 5' },
+        { value: '6', label: 'TRL 6' },
+        { value: '7', label: 'TRL 7' },
+        { value: '8', label: 'TRL 8' },
+        { value: '9', label: 'TRL 9' }
+      ]
+    }
+  ];
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Resetear a la primera página
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-          <CircularProgress />
-        </Box>
-      </Box>
-    );
-  }
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize: number | 'ultimos') => {
+    setPageSize(newPageSize);
+    setCurrentPage(1); // Resetear a la primera página
+  };
+
+  const actions = (row: Project) => (
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => handleAction(row, 'view_candidates')}
+        startIcon={<PeopleIcon />}
+      >
+        Ver Postulantes
+      </Button>
+      {row.status === 'active' && (
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => handleAction(row, 'suspend')}
+          startIcon={<BlockIcon />}
+        >
+          Suspender
+        </Button>
+      )}
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => handleAction(row, 'delete')}
+        startIcon={<DeleteIcon />}
+        color="error"
+      >
+        Eliminar
+      </Button>
+    </Box>
+  );
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <WorkIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-        <Typography variant="h4">Gestión de Proyectos</Typography>
-      </Box>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom fontWeight={700}>
+        Gestión de Proyectos
+      </Typography>
 
-      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={tabValue} onChange={handleTabChange}>
           <Tab label="Proyectos" />
           <Tab label="Postulaciones" />
         </Tabs>
+      </Box>
 
-        <TabPanel value={tabValue} index={0}>
-          {/* Sección de filtros mejorada y responsiva */}
-          <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 3, boxShadow: 2, bgcolor: 'grey.50' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <FilterListIcon color="primary" />
-              <Typography variant="h6" color="primary">
-                Filtros de Búsqueda
-              </Typography>
-            </Box>
-            
-            <Stack 
-              direction={{ xs: 'column', lg: 'row' }} 
-              spacing={{ xs: 2, sm: 2 }} 
-              alignItems={{ xs: 'stretch', lg: 'center' }}
-              flexWrap="wrap"
-              sx={{ mb: 2 }}
-            >
-              <TextField
-                label="Buscar por título, empresa o descripción"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{ 
-                  minWidth: { xs: '100%', sm: 300 },
-                  borderRadius: 2 
-                }}
-                InputProps={{
-                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                }}
-              />
-              
-              <FormControl sx={{ minWidth: { xs: '100%', sm: 180 } }}>
-                <InputLabel>Empresa</InputLabel>
-                <Select
-                  value={selectedCompany}
-                  label="Empresa"
-                  onChange={(e) => setSelectedCompany(e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <MenuItem value="">Todas las empresas</MenuItem>
-                  {companies.map((company) => (
-                    <MenuItem key={company} value={company}>{company}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              
-              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-                <InputLabel>Estado</InputLabel>
-                <Select
-                  value={selectedStatus}
-                  label="Estado"
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <MenuItem value="">Todos los estados</MenuItem>
-                  <MenuItem value="active">Activo</MenuItem>
-                  <MenuItem value="suspended">Suspendido</MenuItem>
-                  <MenuItem value="completed">Completado</MenuItem>
-                  <MenuItem value="cancelled">Cancelado</MenuItem>
-                </Select>
-              </FormControl>
-              
-              <FormControl sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-                <InputLabel>Nivel API</InputLabel>
-                <Select
-                  value={selectedApiLevel}
-                  label="Nivel API"
-                  onChange={(e) => setSelectedApiLevel(e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <MenuItem value="">Todos los niveles</MenuItem>
-                  <MenuItem value="1">Nivel 1 - Básico</MenuItem>
-                  <MenuItem value="2">Nivel 2 - Intermedio</MenuItem>
-                  <MenuItem value="3">Nivel 3 - Avanzado</MenuItem>
-                  <MenuItem value="4">Nivel 4 - Experto</MenuItem>
-                </Select>
-              </FormControl>
-              
-              <Button 
-                variant="outlined" 
-                onClick={() => {
-                  setSearch('');
-                  setSelectedCompany('');
-                  setSelectedStatus('');
-                  setSelectedApiLevel('');
-                }}
-                sx={{ 
-                  borderRadius: 2,
-                  minWidth: { xs: '100%', sm: 'auto' }
-                }}
-              >
-                Limpiar Filtros
-              </Button>
-            </Stack>
-            
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Mostrando {filteredProjects.length} de {projects.length} proyectos
-              </Typography>
-            </Box>
-          </Paper>
+      {/* Tab: Proyectos */}
+      <div role="tabpanel" hidden={tabValue !== 0}>
+        {tabValue === 0 && (
+          <DataTable
+            title="Lista de Proyectos"
+            data={projects}
+            columns={columns}
+            loading={loading}
+            error={null}
+            filters={tableFilters}
+            onFilterChange={handleFilterChange}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            showPagination={pageSize !== 'ultimos'}
+            actions={actions}
+            emptyMessage="No hay proyectos registrados"
+          />
+        )}
+      </div>
 
-          {/* Selector de cantidad de registros para proyectos */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={projectsLimit}
-              onChange={e => setProjectsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              sx={{ minWidth: 110 }}
-            >
-              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-              ))}
-              <MenuItem value="all">Todas</MenuItem>
-            </TextField>
+      {/* Tab: Postulaciones */}
+      <div role="tabpanel" hidden={tabValue !== 1}>
+        {tabValue === 1 && (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Postulaciones de Estudiantes
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Aquí puedes ver todas las postulaciones de estudiantes a proyectos.
+            </Typography>
+            {/* Aquí iría la tabla de postulaciones usando DataTable */}
           </Box>
+        )}
+      </div>
 
-          {/* Tabla responsiva */}
-          <Box sx={{ overflowX: 'auto' }}>
-            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, minWidth: 1000 }}>
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ bgcolor: 'primary.main' }}>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 200, whiteSpace: 'nowrap' }}>Proyecto</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Empresa</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Estado</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Estudiantes</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Postulaciones</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 90, whiteSpace: 'nowrap' }}>Nivel API</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 80, whiteSpace: 'nowrap' }}>Rating</TableCell>
-                    <TableCell align="center" sx={{ color: 'white', fontWeight: 600, minWidth: 150, whiteSpace: 'nowrap' }}>Acciones</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(projectsLimit === 'all' ? filteredProjects : filteredProjects.slice(0, projectsLimit)).map(project => (
-                    <TableRow key={project.id} hover>
-                      <TableCell>
-                        <Box>
-                          <Typography variant="body2" fontWeight={600} noWrap>
-                            {project.title}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" noWrap>
-                            {project.location}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" noWrap>
-                          {project.company}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={getStatusText(project.status)} 
-                          color={getStatusColor(project.status) as any}
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={`${project.studentsAssigned}/${project.studentsNeeded}`} 
-                          color="primary" 
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={project.applicationsCount} 
-                          color="secondary" 
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={`API ${project.requiredApiLevel}`} 
-                          color="warning" 
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Rating value={project.rating} readOnly size="small" />
-                          <Typography variant="body2" fontWeight={600}>
-                            {project.rating}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-                          <IconButton 
-                            color="info" 
-                            title="Ver candidatos"
-                            onClick={() => handleAction(project, 'view_candidates')}
-                            size="small"
-                          >
-                            <PeopleIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton 
-                            color="primary" 
-                            title="Editar proyecto"
-                            onClick={() => handleAction(project, 'edit')}
-                            size="small"
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                          {project.status === 'active' && (
-                            <IconButton 
-                              color="warning" 
-                              title="Suspender proyecto"
-                              onClick={() => handleAction(project, 'suspend')}
-                              size="small"
-                            >
-                              <BlockIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                          <IconButton 
-                            color="error" 
-                            title="Eliminar proyecto"
-                            onClick={() => handleAction(project, 'delete')}
-                            size="small"
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </TabPanel>
-
-        {/* Tab: Postulaciones */}
-        <TabPanel value={tabValue} index={1}>
-          {/* Selector de cantidad de registros para postulaciones */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={applicationsLimit}
-              onChange={e => setApplicationsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              sx={{ minWidth: 110 }}
-            >
-              {[5, 10, 15, 20, 30, 40, 100, 150].map(val => (
-                <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-              ))}
-              <MenuItem value="all">Todas</MenuItem>
-            </TextField>
-          </Box>
-          
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Estudiante</TableCell>
-                  <TableCell>Proyecto</TableCell>
-                  <TableCell>Nivel API</TableCell>
-                  <TableCell>GPA</TableCell>
-                  <TableCell>Compatibilidad</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Fecha</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(applicationsLimit === 'all' ? applications : applications.slice(0, applicationsLimit)).map((application) => (
-                  <TableRow key={application.id}>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                          <PersonIcon />
-                        </Avatar>
-                        <Box>
-                          <Typography variant="body1">{application.studentName}</Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {application.studentEmail}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>Sistema de Gestión de Inventarios</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={`Nivel ${application.apiLevel}`}
-                        color="primary"
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>{application.gpa}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={`${application.compatibility}%`}
-                        color={getCompatibilityColor(application.compatibility) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={application.status === 'pending' ? 'Pendiente' : 'Aceptado'}
-                        color={application.status === 'pending' ? 'warning' : 'success'}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>{application.date}</TableCell>
-                    <TableCell>
-                      <IconButton size="small" color="primary">
-                        <VisibilityIcon />
-                      </IconButton>
-                      <IconButton size="small" color="success">
-                        <CheckCircleIcon />
-                      </IconButton>
-                      <IconButton size="small" color="error">
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </TabPanel>
-      </Paper>
-
-      {/* Diálogo de acción */}
-      <Dialog 
-        open={actionDialog} 
-        onClose={() => setActionDialog(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {actionType === 'edit' && <EditIcon color="primary" />}
-          {actionType === 'suspend' && <BlockIcon color="warning" />}
-          {actionType === 'delete' && <DeleteIcon color="error" />}
-          {actionType === 'view_candidates' && <PeopleIcon color="info" />}
-          {getDialogTitle()}
+      {/* Modal de acción */}
+      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {actionType === 'suspend' && 'Suspender Proyecto'}
+          {actionType === 'delete' && 'Eliminar Proyecto'}
+          {actionType === 'view_candidates' && 'Ver Postulantes'}
         </DialogTitle>
         <DialogContent>
-          {getDialogContent()}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body1" gutterBottom>
+              ¿Estás seguro de que quieres {actionType === 'suspend' ? 'suspender' : actionType === 'delete' ? 'eliminar' : 'ver los postulantes del'} proyecto{' '}
+              <strong>{selectedProject?.title}</strong>?
+            </Typography>
+            {(actionType === 'suspend' || actionType === 'delete') && (
+              <TextField
+                label="Razón (opcional)"
+                value={actionReason}
+                onChange={(e) => setActionReason(e.target.value)}
+                fullWidth
+                multiline
+                minRows={2}
+                sx={{ mt: 2 }}
+              />
+            )}
+          </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={() => setActionDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2 }}
-          >
+        <DialogActions>
+          <Button onClick={() => setActionDialog(false)}>
             Cancelar
           </Button>
-          {actionType !== 'view_candidates' && (
-            <Button 
-              onClick={handleActionConfirm}
+          {(actionType === 'suspend' || actionType === 'delete') && (
+            <Button
               variant="contained"
-              color={
-                actionType === 'edit' ? 'primary' : 
-                actionType === 'suspend' ? 'warning' : 'error'
-              }
-              sx={{ borderRadius: 2 }}
-              disabled={
-                (actionType === 'suspend' || actionType === 'delete') && !actionReason.trim()
-              }
+              color={actionType === 'suspend' ? 'warning' : 'error'}
+              onClick={handleConfirmAction}
             >
-              {actionType === 'edit' ? 'Actualizar' : 
-               actionType === 'suspend' ? 'Suspender' : 'Eliminar'}
+              Confirmar
             </Button>
           )}
         </DialogActions>
@@ -747,16 +531,12 @@ export const GestionProyectosAdmin = () => {
       {/* Snackbar de éxito */}
       <Snackbar
         open={showSuccess}
-        autoHideDuration={4000}
+        autoHideDuration={6000}
         onClose={() => setShowSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Paper elevation={3} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CheckCircleIcon color="success" />
-          <Typography color="success.main" fontWeight={600}>
-            {successMessage}
-          </Typography>
-        </Paper>
+        <Alert onClose={() => setShowSuccess(false)} severity="success">
+          {successMessage}
+        </Alert>
       </Snackbar>
     </Box>
   );

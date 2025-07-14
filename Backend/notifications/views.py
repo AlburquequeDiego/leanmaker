@@ -23,7 +23,9 @@ from core.auth_utils import get_user_from_token, require_auth, require_admin
 def notifications_list(request):
     """Lista notificaciones del usuario con filtros y paginación"""
     try:
+        print("🔍 [notifications_list] Iniciando endpoint")
         user = get_user_from_token(request)
+        print(f"🔍 [notifications_list] Usuario: {user.email if user else 'None'}")
         
         # Filtros
         type_filter = request.GET.get('type')
@@ -35,6 +37,7 @@ def notifications_list(request):
         
         # Construir query base
         queryset = Notification.objects.filter(user=user)
+        print(f"🔍 [notifications_list] Query base creada para usuario {user.id}")
         
         # Aplicar filtros
         if type_filter:
@@ -48,13 +51,15 @@ def notifications_list(request):
         
         # Paginación
         total = queryset.count()
+        print(f"🔍 [notifications_list] Total de notificaciones: {total}")
         offset = (page - 1) * limit
         queryset = queryset.order_by('-created_at')[offset:offset + limit]
         
         # Serializar resultados
         data = [NotificationSerializer.to_dict(notification) for notification in queryset]
+        print(f"🔍 [notifications_list] Notificaciones serializadas: {len(data)}")
         
-        return JsonResponse({
+        response_data = {
             'success': True,
             'data': data,
             'pagination': {
@@ -63,9 +68,14 @@ def notifications_list(request):
                 'total': total,
                 'pages': (total + limit - 1) // limit
             }
-        })
+        }
+        print(f"🔍 [notifications_list] Respuesta preparada: {response_data}")
+        return JsonResponse(response_data)
         
     except Exception as e:
+        import traceback
+        print(f"❌ [notifications_list] Error: {str(e)}")
+        print(f"❌ [notifications_list] Traceback: {traceback.format_exc()}")
         return JsonResponse({'error': f'Error al listar notificaciones: {str(e)}'}, status=500)
 
 @csrf_exempt
@@ -238,6 +248,61 @@ def mark_notifications_read(request):
         
     except Exception as e:
         return JsonResponse({'error': f'Error al marcar notificaciones: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def notifications_unread_count(request):
+    """Obtiene el conteo de notificaciones no leídas del usuario"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Contar notificaciones no leídas
+        unread_count = Notification.objects.filter(user=user, read=False).count()
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'unread_count': unread_count
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al obtener conteo: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def mark_single_notification_read(request, notification_id):
+    """Marca una notificación específica como leída"""
+    try:
+        user = get_user_from_token(request)
+        
+        # Validar UUID
+        try:
+            notification_uuid = uuid.UUID(notification_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
+        
+        # Buscar notificación
+        try:
+            notification = Notification.objects.get(id=notification_uuid, user=user)
+        except Notification.DoesNotExist:
+            return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
+        
+        # Marcar como leída
+        notification.read = True
+        notification.read_at = timezone.now()
+        notification.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación marcada como leída',
+            'data': NotificationSerializer.to_dict(notification)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al marcar notificación: {str(e)}'}, status=500)
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -459,3 +524,120 @@ def notification_preferences_create(request):
         
     except Exception as e:
         return JsonResponse({'error': f'Error al crear preferencias: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def notifications_test(request):
+    """Endpoint de prueba para diagnosticar problemas"""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({
+                'error': 'Token de autenticación requerido'
+            }, status=401)
+        
+        token = auth_header.split(' ')[1]
+        from core.auth_utils import get_user_from_token
+        user = get_user_from_token(request)
+        
+        if not user:
+            return JsonResponse({
+                'error': 'Token inválido'
+            }, status=401)
+        
+        # Probar consulta simple
+        from .models import Notification
+        total_notifications = Notification.objects.count()
+        user_notifications = Notification.objects.filter(user=user).count()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Endpoint de prueba funcionando',
+            'data': {
+                'user_id': str(user.id),
+                'user_email': user.email,
+                'user_role': user.role,
+                'total_notifications': total_notifications,
+                'user_notifications': user_notifications
+            }
+        })
+        
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_test_notifications(request):
+    """Crea notificaciones de prueba para el usuario"""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({
+                'error': 'Token de autenticación requerido'
+            }, status=401)
+        
+        token = auth_header.split(' ')[1]
+        from core.auth_utils import get_user_from_token
+        user = get_user_from_token(request)
+        
+        if not user:
+            return JsonResponse({
+                'error': 'Token inválido'
+            }, status=401)
+        
+        # Crear notificaciones de prueba
+        from .models import Notification
+        from django.utils import timezone
+        
+        test_notifications = [
+            {
+                'title': 'Bienvenido a LeanMaker',
+                'message': '¡Gracias por unirte a nuestra plataforma!',
+                'type': 'info',
+                'priority': 'normal'
+            },
+            {
+                'title': 'Proyecto asignado',
+                'message': 'Has sido asignado al proyecto "Desarrollo de API"',
+                'type': 'success',
+                'priority': 'medium'
+            },
+            {
+                'title': 'Recordatorio importante',
+                'message': 'No olvides completar tu perfil de estudiante',
+                'type': 'warning',
+                'priority': 'high'
+            }
+        ]
+        
+        created_count = 0
+        for notif_data in test_notifications:
+            notification = Notification.objects.create(
+                user=user,
+                title=notif_data['title'],
+                message=notif_data['message'],
+                type=notif_data['type'],
+                priority=notif_data['priority'],
+                read=False,
+                created_at=timezone.now()
+            )
+            created_count += 1
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{created_count} notificaciones de prueba creadas',
+            'created_count': created_count
+        })
+        
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=500)

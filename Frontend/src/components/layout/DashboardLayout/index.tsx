@@ -47,6 +47,7 @@ import {
   HelpOutline as HelpOutlineIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
+import { NotificationCenter } from '../../notifications/NotificationCenter';
 
 const drawerWidth = 280;
 

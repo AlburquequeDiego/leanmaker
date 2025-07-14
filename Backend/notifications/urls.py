@@ -15,6 +15,8 @@ urlpatterns = [
     
     # Endpoints de acciones masivas
     path('mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
+    path('unread-count/', views.notifications_unread_count, name='notifications_unread_count'),
+    path('<str:notification_id>/mark-read/', views.mark_single_notification_read, name='mark_single_notification_read'),
     path('bulk-action/', views.bulk_notification_action, name='bulk_notification_action'),
     
     # Endpoints de plantillas
@@ -24,4 +26,10 @@ urlpatterns = [
     # Endpoints de preferencias
     path('preferences/', views.notification_preferences_list, name='notification_preferences_list'),
     path('preferences/create/', views.notification_preferences_create, name='notification_preferences_create'),
+    
+    # Endpoint de prueba
+    path('test/', views.notifications_test, name='notifications_test'),
+    
+    # Endpoint para crear notificaciones de prueba
+    path('create-test/', views.create_test_notifications, name='create_test_notifications'),
 ] 

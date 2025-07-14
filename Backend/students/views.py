@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from users.models import User
 from core.views import verify_token
+from django.utils import timezone
 
 
 @csrf_exempt
@@ -503,5 +504,89 @@ def student_applications(request, student_id):
         
         return JsonResponse(applications_data, safe=False)
         
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def student_api_questionnaire(request, student_id):
+    """Devuelve el cuestionario API y si puede subir de nivel"""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        # Solo admin o el propio estudiante
+        if current_user.role != 'admin' and str(current_user.id) != student_id:
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        from .models import Estudiante
+        try:
+            estudiante = Estudiante.objects.get(id=student_id)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        # Simulación de cuestionario y lógica de validación
+        # En tu modelo real, deberías tener las respuestas guardadas
+        questions = [
+            {'question': '¿Por qué quieres subir de nivel API?', 'answer': 'Respuesta ejemplo'},
+            {'question': '¿Qué logros has tenido en tu nivel actual?', 'answer': 'Respuesta ejemplo'}
+        ]
+        can_upgrade = estudiante.api_level < 4 and all(q['answer'] for q in questions)
+        return JsonResponse({'questions': questions, 'can_upgrade': can_upgrade})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def student_api_history(request, student_id):
+    """Devuelve el historial de cambios de API del estudiante"""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        if current_user.role != 'admin' and str(current_user.id) != student_id:
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Simulación de historial (en tu modelo real, deberías tener un modelo de historial)
+        history = [
+            {'date': '2024-05-01', 'old_level': 1, 'new_level': 2, 'admin': 'Admin1', 'comment': 'Buen desempeño'},
+            {'date': '2024-06-01', 'old_level': 2, 'new_level': 3, 'admin': 'Admin2', 'comment': 'Cumplió requisitos'}
+        ]
+        return JsonResponse({'data': history})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def student_upgrade_api(request, student_id):
+    """Sube de nivel de API al estudiante si cumple requisitos y registra el cambio"""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Solo administradores pueden realizar esta acción'}, status=403)
+        from .models import Estudiante
+        try:
+            estudiante = Estudiante.objects.get(id=student_id)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        # Simulación de validación (en tu modelo real, valida el cuestionario y requisitos)
+        if estudiante.api_level >= 4:
+            return JsonResponse({'error': 'El estudiante ya está en el nivel máximo'}, status=400)
+        # Aquí deberías validar el cuestionario real
+        estudiante.api_level += 1
+        estudiante.save()
+        # Registrar el cambio (en tu modelo real, guarda en historial)
+        # ...
+        return JsonResponse({'success': True, 'message': f'Nivel de API actualizado a {estudiante.api_level}'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

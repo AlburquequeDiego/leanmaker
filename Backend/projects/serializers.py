@@ -75,6 +75,36 @@ class ProyectoSerializer:
             if field not in data or not data[field]:
                 errors[field] = f'El campo {field} es requerido'
         
+        # Validación TRL/API/horas ofrecidas y preguntas TRL
+        API_MIN_HOURS = {1: 20, 2: 40, 3: 80, 4: 160}
+        def get_api_from_trl(trl):
+            trl = int(trl)
+            if trl <= 2:
+                return 1
+            elif trl <= 4:
+                return 2
+            elif trl <= 6:
+                return 3
+            else:
+                return 4
+        # TRL y preguntas TRL
+        trl = int(data.get('trl', 0) or data.get('trl_id', 0) or 0)
+        trl_answers = data.get('trlAnswers')
+        if trl:
+            api_min = get_api_from_trl(trl)
+            # Validar API mínimo
+            if int(data.get('apiMin', api_min)) != api_min:
+                errors['apiMin'] = f'El TRL seleccionado requiere API mínimo {api_min}.'
+            # Validar horas ofrecidas
+            min_hours = API_MIN_HOURS[api_min]
+            horas = int(data.get('hours', 0) or data.get('required_hours', 0) or 0)
+            if horas < min_hours:
+                errors['hours'] = f'Las horas ofrecidas deben ser al menos {min_hours} para API {api_min}.'
+            # Validar preguntas TRL
+            trl_questions_count = 2
+            if not isinstance(trl_answers, list) or len(trl_answers) != trl_questions_count or any(not ans for ans in trl_answers):
+                errors['trlAnswers'] = 'Debes responder todas las preguntas TRL para el nivel seleccionado.'
+        
         # Validar company_id
         if 'company_id' in data and data['company_id']:
             try:
