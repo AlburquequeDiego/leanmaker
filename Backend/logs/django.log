@@ -7301,3 +7301,49 @@ INFO 2025-07-13 21:34:24,061 basehttp 8736 21340 "GET /api/dashboard/student_sta
 INFO 2025-07-13 21:34:24,597 basehttp 8736 2032 "GET /api/work-hours/student-summary/ HTTP/1.1" 200 171
 INFO 2025-07-13 21:34:25,419 basehttp 8736 2032 "GET /api/work-hours/student-summary/ HTTP/1.1" 200 171
 INFO 2025-07-13 21:34:29,190 basehttp 8736 2032 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-13 21:34:34,513 basehttp 8736 2032 "POST /api/token/ HTTP/1.1" 200 1021
+INFO 2025-07-13 21:34:34,954 basehttp 8736 2032 "GET /api/users/profile/ HTTP/1.1" 200 1968
+INFO 2025-07-13 21:34:35,014 basehttp 8736 2032 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:34:36,384 basehttp 8736 2032 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-13 21:34:50,245 basehttp 8736 2032 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-13 21:34:51,725 basehttp 8736 2032 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-13 21:34:54,861 basehttp 8736 2032 "GET /api/notifications/ HTTP/1.1" 200 8440
+INFO 2025-07-13 21:34:56,986 basehttp 8736 2032 "GET /api/notifications/ HTTP/1.1" 200 8440
+INFO 2025-07-13 21:35:09,571 basehttp 8736 2032 "OPTIONS /api/notifications/c85ec443-a9fc-425d-8cb0-7d202301c615/ HTTP/1.1" 200 0
+WARNING 2025-07-13 21:35:09,573 log 8736 2032 Method Not Allowed (PATCH): /api/notifications/c85ec443-a9fc-425d-8cb0-7d202301c615/
+WARNING 2025-07-13 21:35:09,585 basehttp 8736 2032 "PATCH /api/notifications/c85ec443-a9fc-425d-8cb0-7d202301c615/ HTTP/1.1" 405 0
+INFO 2025-07-13 21:35:15,086 basehttp 8736 2032 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+ERROR 2025-07-13 21:35:15,840 log 8736 21340 Internal Server Error: /api/projects/my_projects/
+ERROR 2025-07-13 21:35:15,840 basehttp 8736 21340 "GET /api/projects/my_projects/ HTTP/1.1" 500 89
+INFO 2025-07-13 21:35:16,371 basehttp 8736 2032 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+ERROR 2025-07-13 21:35:17,369 log 8736 21340 Internal Server Error: /api/projects/my_projects/
+ERROR 2025-07-13 21:35:17,369 basehttp 8736 21340 "GET /api/projects/my_projects/ HTTP/1.1" 500 89
+INFO 2025-07-13 21:35:17,817 basehttp 8736 2032 "OPTIONS /api/project-applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:35:17,817 basehttp 8736 21340 "OPTIONS /api/project-applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:35:22,090 basehttp 8736 21340 "GET /api/project-applications/received_applications/ HTTP/1.1" 200 30690
+INFO 2025-07-13 21:35:26,977 basehttp 8736 2032 "GET /api/project-applications/received_applications/ HTTP/1.1" 200 30690
+INFO 2025-07-13 21:35:28,969 basehttp 8736 2032 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:35:28,969 basehttp 8736 21340 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:35:29,471 basehttp 8736 21340 "GET /api/students/ HTTP/1.1" 200 44601
+INFO 2025-07-13 21:35:29,952 basehttp 8736 2032 "GET /api/students/ HTTP/1.1" 200 44601
+ERROR 2025-07-13 21:35:44,196 log 8736 2032 Internal Server Error: /api/projects/
+ERROR 2025-07-13 21:35:44,204 basehttp 8736 2032 "GET /api/projects/ HTTP/1.1" 500 84
+INFO 2025-07-13 21:35:45,746 basehttp 8736 21340 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:35:45,746 basehttp 8736 20276 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+ERROR 2025-07-13 21:35:45,842 log 8736 2032 Internal Server Error: /api/projects/
+ERROR 2025-07-13 21:35:45,842 basehttp 8736 2032 "GET /api/projects/ HTTP/1.1" 500 84
+INFO 2025-07-13 21:35:47,338 basehttp 8736 20276 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 21:35:47,349 basehttp 8736 2032 "OPTIONS /api/project-applications/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:35:48,406 basehttp 8736 20276 "GET /api/interviews/ HTTP/1.1" 200 47
+INFO 2025-07-13 21:35:51,231 basehttp 8736 2032 "GET /api/project-applications/ HTTP/1.1" 200 15785
+INFO 2025-07-13 21:35:51,760 basehttp 8736 20276 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 21:35:54,010 basehttp 8736 2032 "GET /api/project-applications/ HTTP/1.1" 200 15785
+INFO 2025-07-13 21:35:54,480 basehttp 8736 2032 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 21:37:04,222 basehttp 8736 2032 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:37:05,446 basehttp 8736 2032 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 21:37:05,497 basehttp 8736 20276 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:37:06,369 basehttp 8736 20276 "GET /api/users/ HTTP/1.1" 200 16592
+INFO 2025-07-13 21:37:09,004 basehttp 8736 20276 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:37:09,004 basehttp 8736 2032 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:37:10,416 basehttp 8736 2032 "GET /api/strikes/ HTTP/1.1" 200 992
+INFO 2025-07-13 21:37:11,434 basehttp 8736 2032 "GET /api/strikes/ HTTP/1.1" 200 992

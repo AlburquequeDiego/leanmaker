@@ -1,326 +1,220 @@
-# 🚀 LeanMaker Backend - Django Puro + TypeScript
+# LEANMAKER BACKEND
 
-## 📋 Descripción
+## Descripción
+Backend de Django para la plataforma LEANMAKER. Sistema de gestión para empresas, estudiantes y administradores.
 
-Backend completamente reescrito para la plataforma LeanMaker con **Django 4.2+ puro** y **integración TypeScript**, sin APIs REST complejas.
+## Requisitos Previos
 
-## 🎯 Características
+### Python
+- Python 3.12 o superior
+- pip (gestor de paquetes de Python)
 
-- ✅ **Django 4.2+ Puro** - Sin DRF, sin APIs REST complejas
-- ✅ **TypeScript Integration** - Integración directa con frontend TypeScript
-- ✅ **Autenticación por Sesiones** - Sistema tradicional de Django
-- ✅ **SQL Server** - Base de datos empresarial
-- ✅ **Templates Django** - Renderizado del lado del servidor
-- ✅ **Formularios Django** - Validación y procesamiento nativo
-- ✅ **Archivos Estáticos** - WhiteNoise para producción
-- ✅ **CORS Configurado** - Compatible con frontend React
-- ✅ **Arquitectura Simple** - Fácil de mantener y extender
-
-## 🏗️ Arquitectura
-
-```
-Backend-NEW/
-├── core/                 # Configuración principal
-│   ├── settings.py      # Configuración Django
-│   ├── urls.py          # URLs principales
-│   └── views.py         # Vistas core
-├── users/               # App de usuarios
-│   ├── models.py        # Modelo User personalizado
-│   ├── forms.py         # Formularios Django
-│   ├── views.py         # Vistas Django
-│   └── urls.py          # URLs de usuarios
-├── templates/           # Templates Django
-│   ├── base.html        # Template base
-│   └── home.html        # Página de inicio
-├── static/              # Archivos estáticos
-│   └── js/
-│       └── typescript-integration.ts
-├── requirements.txt     # Dependencias Python
-├── manage.py           # Comando Django
-└── setup.py            # Script de configuración
-```
-
-## 🚀 Instalación Rápida
-
-### 1. Prerrequisitos
-- Python 3.11+
+### Base de Datos
 - SQL Server (Azure o local)
-- Git
+- ODBC Driver para SQL Server
 
-### 2. Clonar y configurar
+### Otros
+- Redis (para tareas en segundo plano)
+- Node.js (para el frontend)
+
+## Instalación
+
+### 1. Clonar el repositorio
 ```bash
-# Navegar al directorio
-cd Backend-NEW
-
-# Ejecutar script de configuración
-python setup.py
+git clone <url-del-repositorio>
+cd leanmaker/Backend
 ```
 
-### 3. Configuración manual (alternativa)
+### 2. Crear entorno virtual
 ```bash
-# Crear entorno virtual
+# Windows
 python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate
 
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Crear archivo .env
-cp .env.example .env
-# Editar .env con tus configuraciones
-
-# Migraciones
-python manage.py makemigrations
-python manage.py migrate
-
-# Crear superusuario
-python manage.py createsuperuser
-
-# Ejecutar servidor
-python manage.py runserver
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-## 🌐 Endpoints Principales
+### 3. Instalar dependencias
+```bash
+pip install -r requirements.txt
+```
 
-### Páginas Web
-- `/` - Página de inicio
-- `/login/` - Página de login
-- `/register/` - Página de registro
-- `/dashboard/` - Dashboard principal
-- `/users/profile/` - Perfil de usuario
-
-### Endpoints JSON (para TypeScript)
-- `GET /users/api/data/` - Datos del usuario actual
-- `POST /users/api/login/` - Login via JSON
-- `POST /users/api/register/` - Registro via JSON
-- `GET /api-data/` - Datos generales del sistema
-
-### Admin
-- `/admin/` - Panel de administración Django
-
-## 🔧 Configuración
-
-### Variables de Entorno (.env)
+### 4. Configurar variables de entorno
+Crear archivo `.env` en la carpeta `Backend/`:
 ```env
-# Django
-SECRET_KEY=tu-secret-key
+# Configuración de Django
+SECRET_KEY=tu-clave-secreta-aqui
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-# Database
+# Base de datos SQL Server
 DB_NAME=leanmaker_db
 DB_USER=tu_usuario
 DB_PASSWORD=tu_password
-DB_HOST=tu_host
+DB_HOST=tu_servidor_sql
 DB_PORT=1433
 
-# CORS
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+# Redis (para Celery)
+REDIS_URL=redis://localhost:6379/0
+
+# Configuración de email
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=tu_email@gmail.com
+EMAIL_HOST_PASSWORD=tu_password_app
+
+# Configuración de archivos
+MEDIA_URL=/media/
+STATIC_URL=/static/
 ```
 
-### Base de Datos
-El proyecto está configurado para SQL Server Azure por defecto. Para cambiar:
-
-1. Edita `core/settings.py`
-2. Modifica la configuración `DATABASES`
-3. Ejecuta las migraciones
-
-## 📊 Modelos Principales
-
-### User (Usuario)
-```python
-class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    role = models.CharField(choices=ROLES)  # admin, student, company
-    phone = models.CharField()
-    avatar = models.URLField()
-    bio = models.TextField()
-    is_verified = models.BooleanField()
-```
-
-## 🔐 Autenticación
-
-### Sistema de Sesiones
-- **Sesiones Django** - Autenticación tradicional
-- **CSRF Protection** - Protección contra ataques CSRF
-- **Login/Logout** - Sistema nativo de Django
-
-### Roles de Usuario
-- **admin**: Administradores del sistema
-- **student**: Estudiantes
-- **company**: Empresas
-
-## 💻 Integración TypeScript
-
-### Configuración Global
-```typescript
-window.LEANMAKER_CONFIG = {
-    apiBaseUrl: 'http://localhost:8000',
-    csrfToken: 'token-csrf',
-    user: { /* datos del usuario */ },
-    debug: true
-};
-```
-
-### Clases TypeScript
-```typescript
-// API Client
-const api = new LeanMakerAPI();
-
-// Form Handler
-const formHandler = new FormHandler();
-
-// Dashboard Utils
-const dashboardUtils = new DashboardUtils();
-```
-
-### Ejemplo de Uso
-```typescript
-// Login
-const response = await api.login({
-    email: 'user@example.com',
-    password: 'password123'
-});
-
-// Obtener datos del usuario
-const userData = await api.getUserData();
-
-// Actualizar perfil
-const updateResponse = await api.updateUser({
-    firstName: 'Nuevo Nombre'
-});
-```
-
-## 🛠️ Desarrollo
-
-### Comandos útiles
+### 5. Configurar base de datos
+1. Crear base de datos en SQL Server
+2. Ejecutar migraciones:
 ```bash
-# Ejecutar servidor
-python manage.py runserver
+python manage.py makemigrations
+python manage.py migrate
+```
 
+### 6. Crear superusuario
+```bash
+python manage.py createsuperuser
+```
+
+### 7. Poblar base de datos (opcional)
+```bash
+python manage.py shell
+```
+```python
+exec(open('populate_all_tables_simple.py').read())
+```
+
+## Ejecución
+
+### Servidor de desarrollo
+```bash
+python manage.py runserver
+```
+El servidor estará disponible en: http://127.0.0.1:8000/
+
+### Panel de administración
+Acceder a: http://127.0.0.1:8000/admin/
+
+### Celery (tareas en segundo plano)
+```bash
+# Terminal 1: Worker de Celery
+celery -A core worker --loglevel=info
+
+# Terminal 2: Beat scheduler (si es necesario)
+celery -A core beat --loglevel=info
+```
+
+## Estructura del Proyecto
+
+```
+Backend/
+├── core/                   # Configuración principal de Django
+├── users/                  # Gestión de usuarios
+├── companies/              # Gestión de empresas
+├── students/               # Gestión de estudiantes
+├── projects/               # Gestión de proyectos
+├── applications/           # Gestión de aplicaciones
+├── evaluations/            # Sistema de evaluaciones
+├── notifications/          # Sistema de notificaciones
+├── documents/              # Gestión de documentos
+├── reports/                # Generación de reportes
+├── activity_logs/          # Registro de actividades
+├── templates/              # Plantillas HTML
+├── static/                 # Archivos estáticos
+├── media/                  # Archivos subidos por usuarios
+└── logs/                   # Archivos de log
+```
+
+## Comandos Útiles
+
+### Desarrollo
+```bash
+# Ejecutar tests
+python manage.py test
+
+# Verificar código
+black .
+flake8 .
+isort .
+
+# Generar documentación
+sphinx-build -b html docs/ docs/_build/html
+```
+
+### Base de datos
+```bash
 # Crear migraciones
 python manage.py makemigrations
 
-# Ejecutar migraciones
+# Aplicar migraciones
 python manage.py migrate
 
-# Shell de Django
-python manage.py shell
+# Ver estado de migraciones
+python manage.py showmigrations
 
-# Tests
-python manage.py test
+# Crear backup
+python manage.py dumpdata > backup.json
 
-# Collect static
-python manage.py collectstatic
+# Restaurar backup
+python manage.py loaddata backup.json
 ```
 
-### Estructura de Apps
-Cada app sigue la estructura Django estándar:
-```
-app_name/
-├── __init__.py
-├── admin.py
-├── apps.py
-├── models.py
-├── forms.py
-├── views.py
-├── urls.py
-└── migrations/
-```
-
-## 📝 Templates Django
-
-### Template Base
-```html
-{% extends 'base.html' %}
-
-{% block title %}Mi Página{% endblock %}
-
-{% block content %}
-    <h1>Contenido de la página</h1>
-{% endblock %}
-```
-
-### Integración TypeScript
-```html
-<script>
-    window.LEANMAKER_CONFIG = {
-        apiBaseUrl: '{{ request.scheme }}://{{ request.get_host }}',
-        csrfToken: '{{ csrf_token }}',
-        user: {% if user.is_authenticated %}{/* datos del usuario */}{% else %}null{% endif %},
-        debug: {% if debug %}true{% else %}false{% endif %}
-    };
-</script>
-<script src="{% static 'js/typescript-integration.js' %}"></script>
-```
-
-## 🔍 Testing
-
+### Shell de Django
 ```bash
-# Ejecutar todos los tests
-python manage.py test
-
-# Tests específicos
-python manage.py test users
-python manage.py test companies
+python manage.py shell
 ```
 
-## 📦 Deployment
+## Roles de Usuario
 
-### Producción
-1. Cambiar `DEBUG = False`
-2. Configurar `SECRET_KEY` segura
-3. Configurar base de datos de producción
-4. Configurar `ALLOWED_HOSTS`
-5. Configurar `CORS_ALLOWED_ORIGINS`
-6. Ejecutar `python manage.py collectstatic`
+1. **Admin**: Acceso completo al sistema
+2. **Company**: Gestión de proyectos y aplicaciones
+3. **Student**: Participación en proyectos y evaluaciones
 
-### Docker (opcional)
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-```
+## API Endpoints
 
-## 🐛 Troubleshooting
+El sistema utiliza Django puro sin APIs REST. Las vistas están organizadas por roles:
 
-### Error de conexión a base de datos
-1. Verificar credenciales en `.env`
-2. Verificar que SQL Server esté ejecutándose
-3. Verificar firewall y puertos
+- `/admin/` - Panel de administración
+- `/company/` - Dashboard de empresas
+- `/student/` - Dashboard de estudiantes
+- `/` - Página principal
+
+## Troubleshooting
+
+### Error de conexión a SQL Server
+1. Verificar que el ODBC Driver esté instalado
+2. Comprobar credenciales en `.env`
+3. Verificar que el servidor SQL esté ejecutándose
+
+### Error de Redis
+1. Verificar que Redis esté instalado y ejecutándose
+2. Comprobar la URL de Redis en `.env`
 
 ### Error de migraciones
 ```bash
-# Resetear migraciones
 python manage.py migrate --fake-initial
 ```
 
-### Error de CORS
-1. Verificar `CORS_ALLOWED_ORIGINS` en `.env`
-2. Verificar que el frontend esté en los orígenes permitidos
+### Limpiar cache
+```bash
+python manage.py clearcache
+```
 
-### Error de TypeScript
-1. Verificar que el archivo JS esté compilado
-2. Verificar la configuración global en el template
-3. Revisar la consola del navegador
+## Contribución
 
-## 📞 Soporte
+1. Crear rama para nueva funcionalidad
+2. Seguir estándares de código (Black, Flake8)
+3. Agregar tests para nuevas funcionalidades
+4. Crear pull request
 
-Para problemas o preguntas:
-1. Revisar logs en `logs/django.log`
-2. Verificar configuración en `.env`
-3. Ejecutar `python manage.py check`
-4. Revisar la consola del navegador para errores TypeScript
+## Contacto
 
-## 🎉 ¡Listo!
-
-Tu backend está configurado y listo para usar. El sistema funciona con Django puro y tiene integración TypeScript para el frontend.
-
----
-
-**LeanMaker Backend - Versión 2.0 (Django Puro + TypeScript)** 🚀 
+Para dudas o problemas, contactar al equipo de desarrollo. 
