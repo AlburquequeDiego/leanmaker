@@ -10,12 +10,13 @@ from django.db.models import Q
 from users.models import User
 from .models import Proyecto
 from core.views import verify_token
+from django.db.models import F
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def projects_list(request):
-    """Lista de proyectos."""
+    """Lista de proyectos disponibles para estudiantes."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -32,33 +33,32 @@ def projects_list(request):
         limit = int(request.GET.get('limit', 10))
         offset = (page - 1) * limit
         search = request.GET.get('search', '')
-        company = request.GET.get('company', '')
         status = request.GET.get('status', '')
-        api_level = request.GET.get('api_level', '')
-        trl_level = request.GET.get('trl_level', '')
         
-        # Query base
-        queryset = Proyecto.objects.select_related('company', 'status', 'area', 'trl').all()
+        # Query base con serialización segura
+        queryset = Proyecto.objects.select_related('status', 'company', 'area', 'trl').annotate(
+            status_name=F('status__name'),
+            company_name=F('company__company_name'),
+            area_name=F('area__name'),
+            trl_level=F('trl__level')
+        ).values(
+            'id', 'title', 'description', 'requirements', 'max_students', 'current_students',
+            'applications_count', 'start_date', 'estimated_end_date', 'location', 'modality',
+            'difficulty', 'duration_weeks', 'hours_per_week', 'required_hours',
+            'created_at', 'updated_at', 'status_id', 'status_name', 'company_name', 
+            'area_name', 'trl_level', 'api_level', 'is_featured', 'is_urgent'
+        )
         
         # Aplicar filtros
         if search:
             queryset = queryset.filter(
                 Q(title__icontains=search) |
                 Q(description__icontains=search) |
-                Q(company__company_name__icontains=search)
+                Q(company_name__icontains=search)
             )
         
-        if company:
-            queryset = queryset.filter(company_id=company)
-        
         if status:
-            queryset = queryset.filter(status__name=status)
-        
-        if api_level:
-            queryset = queryset.filter(api_level=api_level)
-        
-        if trl_level:
-            queryset = queryset.filter(trl_id=trl_level)
+            queryset = queryset.filter(status_name=status)
         
         # Contar total
         total_count = queryset.count()
@@ -66,33 +66,35 @@ def projects_list(request):
         # Paginar
         projects = queryset[offset:offset + limit]
         
-        # Serializar datos
+        # Serializar datos de forma segura
         projects_data = []
         for project in projects:
             projects_data.append({
-                'id': str(project.id),
-                'title': project.title,
-                'description': project.description,
-                'company': str(project.company.id) if project.company else None,
-                'company_name': project.company.company_name if project.company else 'Sin empresa',
-                'status': project.status.name if project.status else 'Sin estado',
-                'area': project.area.name if project.area else 'Sin área',
-                'trl_level': project.trl.level if project.trl else 1,
-                'api_level': project.api_level or 1,
-                'max_students': project.max_students,
-                'current_students': project.current_students,
-                'applications_count': project.applications_count,
-                'start_date': project.start_date.isoformat() if project.start_date else None,
-                'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
-                'location': project.location or 'Remoto',
-                'modality': project.modality,
-                'difficulty': project.difficulty,
-                'duration_weeks': project.duration_weeks,
-                'hours_per_week': project.hours_per_week,
-                'required_hours': project.required_hours,
-                'budget': project.budget,
-                'created_at': project.created_at.isoformat(),
-                'updated_at': project.updated_at.isoformat(),
+                'id': str(project['id']),
+                'title': project['title'],
+                'description': project['description'],
+                'requirements': project['requirements'],
+                'company_name': project['company_name'] or 'Sin empresa',
+                'status': project['status_name'] or 'Sin estado',
+                'status_id': project['status_id'],
+                'area': project['area_name'] or 'Sin área',
+                'trl_level': project['trl_level'] or 1,
+                'api_level': project['api_level'] or 1,
+                'max_students': project['max_students'],
+                'current_students': project['current_students'],
+                'applications_count': project['applications_count'],
+                'start_date': project['start_date'].isoformat() if project['start_date'] else None,
+                'estimated_end_date': project['estimated_end_date'].isoformat() if project['estimated_end_date'] else None,
+                'location': project['location'] or 'Remoto',
+                'modality': project['modality'],
+                'difficulty': project['difficulty'],
+                'duration_weeks': project['duration_weeks'],
+                'hours_per_week': project['hours_per_week'],
+                'required_hours': project['required_hours'],
+                'is_featured': project['is_featured'],
+                'is_urgent': project['is_urgent'],
+                'created_at': project['created_at'].isoformat() if project['created_at'] else None,
+                'updated_at': project['updated_at'].isoformat() if project['updated_at'] else None,
             })
         
         return JsonResponse({
@@ -104,6 +106,7 @@ def projects_list(request):
         })
         
     except Exception as e:
+        print(f"Error en projects_list: {e}")
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -136,6 +139,7 @@ def projects_detail(request, projects_id):
             'company': str(project.company.id) if project.company else None,
             'company_name': project.company.company_name if project.company else 'Sin empresa',
             'status': project.status.name if project.status else 'Sin estado',
+            'status_id': project.status.id if project.status else None,
             'area': project.area.name if project.area else 'Sin área',
             'trl_level': project.trl.level if project.trl else 1,
             'api_level': project.api_level or 1,
@@ -302,5 +306,128 @@ def projects_delete(request, projects_id):
             'message': 'Proyecto eliminado correctamente'
         })
         
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def project_list(request):
+    """Lista de proyectos."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        projects = Proyecto.objects.all()
+        projects_data = []
+        
+        for project in projects:
+            projects_data.append({
+                'id': str(project.id),
+                'title': project.title,
+                'description': project.description,
+                'status': project.status,
+                'created_at': project.created_at.isoformat(),
+                'updated_at': project.updated_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'data': projects_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def project_detail(request, project_id):
+    """Detalle de un proyecto."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        try:
+            project = Proyecto.objects.get(id=project_id)
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        
+        project_data = {
+            'id': str(project.id),
+            'title': project.title,
+            'description': project.description,
+            'status': project.status,
+            'created_at': project.created_at.isoformat(),
+            'updated_at': project.updated_at.isoformat(),
+        }
+        
+        return JsonResponse(project_data)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def my_projects(request):
+    """Devuelve los proyectos en los que participa el estudiante autenticado, con detalles y horas acumuladas."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        # Solo estudiantes pueden ver sus proyectos
+        if current_user.role != 'student':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Obtener el perfil de estudiante
+        try:
+            student = current_user.estudiante_profile
+        except Exception:
+            return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+        # Obtener aplicaciones aceptadas o completadas
+        from applications.models import Aplicacion
+        accepted_statuses = ['accepted', 'completed', 'active']
+        applications = Aplicacion.objects.filter(student=student, status__in=accepted_statuses).select_related('project', 'project__company')
+        projects_data = []
+        for app in applications:
+            project = app.project
+            if not project:
+                continue
+            projects_data.append({
+                'id': str(project.id),
+                'title': project.title,
+                'company': project.company.company_name if project.company else 'Sin empresa',
+                'status': app.status if app.status in ['active', 'completed', 'paused'] else 'active',
+                'startDate': project.start_date.isoformat() if project.start_date else '',
+                'endDate': project.estimated_end_date.isoformat() if project.estimated_end_date else '',
+                'progress': 100 if app.status == 'completed' else 50,  # Puedes mejorar este cálculo
+                'hoursWorked': getattr(app, 'hours_worked', 0),  # Si tienes este campo en Aplicacion
+                'totalHours': getattr(project, 'required_hours', 0),
+                'location': project.location or '',
+                'description': project.description or '',
+                'technologies': getattr(project, 'technologies', []),
+                'teamMembers': getattr(project, 'current_students', 1),
+                'mentor': '',
+                'deliverables': [],
+                'nextMilestone': '',
+                'nextMilestoneDate': '',
+            })
+        return JsonResponse({'success': True, 'data': projects_data, 'total': len(projects_data)})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

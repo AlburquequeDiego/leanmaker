@@ -8,8 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
 from users.models import User
-from .models import Estudiante
+from .models import Estudiante, ApiLevelRequest
 from core.views import verify_token
+from django.utils import timezone
 
 
 @csrf_exempt
@@ -487,5 +488,134 @@ def student_applications(request, student_id):
         
         return JsonResponse(applications_data, safe=False)
         
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_level_request_create(request):
+    """Crea una petición de subida de nivel API por parte del estudiante."""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'student':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        student = Estudiante.objects.get(user=current_user)
+        data = json.loads(request.body)
+        requested_level = int(data.get('requested_level'))
+        current_level = int(data.get('current_level', student.api_level))
+        # Solo permitir si el nivel solicitado es mayor al actual
+        if requested_level <= current_level:
+            return JsonResponse({'error': 'El nivel solicitado debe ser mayor al actual.'}, status=400)
+        # Solo una petición pendiente por estudiante
+        if ApiLevelRequest.objects.filter(student=student, status='pending').exists():
+            return JsonResponse({'error': 'Ya tienes una petición pendiente.'}, status=400)
+        req = ApiLevelRequest.objects.create(
+            student=student,
+            requested_level=requested_level,
+            current_level=current_level,
+            status='pending',
+        )
+        return JsonResponse({'success': True, 'request_id': req.id, 'status': req.status})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_level_request_list(request):
+    """Lista las peticiones de subida de nivel API del estudiante autenticado."""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'student':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        student = Estudiante.objects.get(user=current_user)
+        requests = ApiLevelRequest.objects.filter(student=student).order_by('-submitted_at')
+        data = [
+            {
+                'id': r.id,
+                'requested_level': r.requested_level,
+                'current_level': r.current_level,
+                'status': r.status,
+                'feedback': r.feedback,
+                'submitted_at': r.submitted_at,
+                'reviewed_at': r.reviewed_at,
+            } for r in requests
+        ]
+        return JsonResponse({'results': data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_level_request_admin_list(request):
+    """Lista todas las peticiones de subida de nivel API para el admin."""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        requests = ApiLevelRequest.objects.select_related('student__user').order_by('-submitted_at')
+        data = [
+            {
+                'id': r.id,
+                'student_id': r.student.id,
+                'student_name': r.student.user.full_name,
+                'requested_level': r.requested_level,
+                'current_level': r.current_level,
+                'status': r.status,
+                'feedback': r.feedback,
+                'submitted_at': r.submitted_at,
+                'reviewed_at': r.reviewed_at,
+            } for r in requests
+        ]
+        return JsonResponse({'results': data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_level_request_admin_action(request, request_id):
+    """Permite al admin aprobar o rechazar una petición de subida de nivel API."""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        req = ApiLevelRequest.objects.select_related('student').get(id=request_id)
+        data = json.loads(request.body)
+        action = data.get('action')  # 'approve' o 'reject'
+        feedback = data.get('feedback', '')
+        if req.status != 'pending':
+            return JsonResponse({'error': 'La petición ya fue revisada.'}, status=400)
+        if action == 'approve':
+            req.status = 'approved'
+            req.reviewed_at = timezone.now()
+            req.feedback = feedback
+            req.save()
+            # Subir el nivel del estudiante
+            student = req.student
+            student.api_level = req.requested_level
+            student.save(update_fields=['api_level'])
+        elif action == 'reject':
+            req.status = 'rejected'
+            req.reviewed_at = timezone.now()
+            req.feedback = feedback
+            req.save()
+        else:
+            return JsonResponse({'error': 'Acción inválida.'}, status=400)
+        return JsonResponse({'success': True, 'status': req.status})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

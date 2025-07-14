@@ -370,3 +370,158 @@ def calendar_events_delete(request, calendar_events_id):
         return JsonResponse({'message': 'Evento eliminado exitosamente'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+"""
+Views para la app calendar_events.
+"""
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from .models import CalendarEvent
+from core.views import verify_token
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def calendar_event_list(request):
+    """Lista de eventos del calendario."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        events = CalendarEvent.objects.all()
+        events_data = []
+        
+        for event in events:
+            events_data.append({
+                'id': str(event.id),
+                'title': event.title,
+                'start_date': event.start_date.isoformat(),
+                'end_date': event.end_date.isoformat(),
+                'created_at': event.created_at.isoformat(),
+                'updated_at': event.updated_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'data': events_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def calendar_event_detail(request, event_id):
+    """Detalle de un evento del calendario."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        try:
+            event = CalendarEvent.objects.get(id=event_id)
+        except CalendarEvent.DoesNotExist:
+            return JsonResponse({'error': 'Evento no encontrado'}, status=404)
+        
+        event_data = {
+            'id': str(event.id),
+            'title': event.title,
+            'start_date': event.start_date.isoformat(),
+            'end_date': event.end_date.isoformat(),
+            'created_at': event.created_at.isoformat(),
+            'updated_at': event.updated_at.isoformat(),
+        }
+        
+        return JsonResponse(event_data)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def student_events(request):
+    """Endpoint específico para eventos de estudiantes"""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo estudiantes pueden acceder a este endpoint
+        if current_user.role != 'student':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Obtener eventos del estudiante
+        queryset = CalendarEvent.objects.select_related('created_by', 'project').prefetch_related('attendees').filter(
+            models.Q(created_by=current_user) | 
+            models.Q(attendees=current_user) | 
+            models.Q(is_public=True)
+        ).distinct()
+        
+        # Filtros adicionales
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        event_type = request.GET.get('event_type')
+        status = request.GET.get('status')
+        
+        if start_date:
+            queryset = queryset.filter(start_date__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(end_date__lte=end_date)
+        if event_type:
+            queryset = queryset.filter(event_type=event_type)
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        events_data = []
+        for event in queryset:
+            events_data.append({
+                'id': str(event.id),
+                'title': event.title,
+                'description': event.description,
+                'event_type': event.event_type,
+                'start_date': event.start_date.isoformat(),
+                'end_date': event.end_date.isoformat(),
+                'all_day': event.all_day,
+                'location': event.location,
+                'priority': event.priority,
+                'status': event.status,
+                'is_online': event.is_online,
+                'meeting_url': event.meeting_url,
+                'is_public': event.is_public,
+                'color': event.color,
+                'icon': event.icon,
+                'created_by': event.created_by.get_full_name() if event.created_by else None,
+                'attendees': [attendee.get_full_name() for attendee in event.attendees.all()],
+                'project': {
+                    'id': str(event.project.id),
+                    'title': event.project.title,
+                    'empresa': {
+                        'nombre': event.project.company.company_name if event.project.company else 'Sin empresa'
+                    }
+                } if event.project else None,
+                'created_at': event.created_at.isoformat(),
+                'updated_at': event.updated_at.isoformat(),
+            })
+        
+        return JsonResponse(events_data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

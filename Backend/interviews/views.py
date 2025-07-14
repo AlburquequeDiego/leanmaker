@@ -20,6 +20,74 @@ from users.models import User
 from applications.models import Aplicacion
 from projects.models import Proyecto
 from core.auth_utils import require_auth, require_admin, require_company, require_student
+from core.views import verify_token
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def interview_list(request):
+    """Lista de entrevistas."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        interviews = Interview.objects.all()
+        interviews_data = []
+        
+        for interview in interviews:
+            interviews_data.append({
+                'id': str(interview.id),
+                'status': interview.status,
+                'created_at': interview.created_at.isoformat(),
+                'updated_at': interview.updated_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'data': interviews_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def interview_detail(request, interview_id):
+    """Detalle de una entrevista."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        try:
+            interview = Interview.objects.get(id=interview_id)
+        except Interview.DoesNotExist:
+            return JsonResponse({'error': 'Entrevista no encontrada'}, status=404)
+        
+        interview_data = {
+            'id': str(interview.id),
+            'status': interview.status,
+            'created_at': interview.created_at.isoformat(),
+            'updated_at': interview.updated_at.isoformat(),
+        }
+        
+        return JsonResponse(interview_data)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @csrf_exempt

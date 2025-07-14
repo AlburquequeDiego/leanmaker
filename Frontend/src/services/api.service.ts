@@ -110,6 +110,16 @@ class ApiService {
   }
 
   /**
+   * Envía una petición de subida de nivel API del estudiante
+   */
+  async requestApiLevelUpgrade(requestedLevel: number, currentLevel: number) {
+    return this.post('/api/students/api-level-request/', {
+      requested_level: requestedLevel,
+      current_level: currentLevel,
+    });
+  }
+
+  /**
    * Aplica adaptadores según el endpoint para convertir campos del backend
    */
   private applyAdapter(data: any, endpoint: string): any {

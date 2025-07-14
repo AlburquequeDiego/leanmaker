@@ -32,19 +32,25 @@ import { apiService } from '../../../../services/api.service';
 interface Project {
   id: string;
   title: string;
-  company: string;
+  company_name: string;
   description: string;
-  requirements: string[];
-  duration: string;
-  publishedAt: string;
+  requirements: string;
+  area: string;
   status: string;
+  status_id: number;
+  trl_level?: number;
+  api_level?: number;
   max_students?: number;
   current_students?: number;
   difficulty?: string;
-  api_level?: number;
-  location?: string;
   modality?: string;
-  skills?: string[];
+  location?: string;
+  duration_weeks?: number;
+  hours_per_week?: number;
+  is_featured?: boolean;
+  is_urgent?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 const areas = ['Tecnología', 'Marketing', 'Diseño', 'Administración'];
@@ -82,9 +88,7 @@ export default function AvailableProjects() {
     try {
       setLoading(true);
       const data = await apiService.get('/api/projects/');
-      const availableProjects = Array.isArray(data) ? data.filter((project: any) => 
-        project.status === 'published' || project.status === 'active'
-      ) : [];
+      const availableProjects = Array.isArray(data.results) ? data.results : [];
       setProjects(availableProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -136,14 +140,13 @@ export default function AvailableProjects() {
   // Filtrado de proyectos
   let filteredProjects = projects.filter(project =>
     project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (project.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
     project.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (area) {
     filteredProjects = filteredProjects.filter(project =>
-      project.requirements?.some((req: string) => req.toLowerCase().includes(area.toLowerCase())) ||
-      project.skills?.some((skill: string) => skill.toLowerCase().includes(area.toLowerCase()))
+      project.area.toLowerCase().includes(area.toLowerCase())
     );
   }
   
@@ -154,33 +157,34 @@ export default function AvailableProjects() {
   }
   
   if (duracion) {
-    filteredProjects = filteredProjects.filter(project => project.duration === duracion);
+    const duracionValue = duracion.replace(' meses', '');
+    const semanas = parseInt(duracionValue) * 4; // Convertir meses a semanas aproximadas
+    filteredProjects = filteredProjects.filter(project => project.duration_weeks === semanas);
   }
   
   if (tecs.length > 0) {
     filteredProjects = filteredProjects.filter(project =>
       tecs.every(tec => 
-        (project.requirements?.map((r: string) => r.toLowerCase()).includes(tec.toLowerCase())) ||
-        (project.skills?.map((s: string) => s.toLowerCase()).includes(tec.toLowerCase()))
+        project.requirements.toLowerCase().includes(tec.toLowerCase())
       )
     );
   }
   
   if (empresa) {
-    filteredProjects = filteredProjects.filter(project => project.company === empresa);
+    filteredProjects = filteredProjects.filter(project => project.company_name === empresa);
   }
   
   if (ordenFecha === 'recientes') {
     filteredProjects = filteredProjects.sort((a, b) => 
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      new Date(b.created_at || b.updated_at || '').getTime() - new Date(a.created_at || a.updated_at || '').getTime()
     );
   } else {
     filteredProjects = filteredProjects.sort((a, b) => 
-      new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime()
+      new Date(a.created_at || a.updated_at || '').getTime() - new Date(b.created_at || b.updated_at || '').getTime()
     );
   }
 
-  const empresas = [...new Set(projects.map(p => p.company))];
+  const empresas = [...new Set(projects.map(p => p.company_name).filter(Boolean))];
 
   if (loading) {
     return (
@@ -190,18 +194,59 @@ export default function AvailableProjects() {
     );
   }
 
+  // Renderizado de detalles del proyecto
+  const renderProjectDetail = (project: Project) => (
+    <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="md" fullWidth>
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h5" gutterBottom>{project.title}</Typography>
+        <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+          Empresa: {project.company_name} | Área: {project.area} | Estado: {project.status}
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          <b>Descripción:</b> {project.description}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <b>Requisitos:</b> {project.requirements}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <b>Modalidad:</b> {project.modality} | <b>Ubicación:</b> {project.location}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <b>Dificultad:</b> {project.difficulty} | <b>Duración (semanas):</b> {project.duration_weeks}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <b>Estudiantes máximos:</b> {project.max_students} | <b>Actualmente:</b> {project.current_students}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <b>TRL:</b> {project.trl_level} | <b>API Level:</b> {project.api_level}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <b>Creado:</b> {project.created_at ? new Date(project.created_at).toLocaleString() : '-'}
+        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Button onClick={handleCloseDetail} color="secondary" variant="outlined">Cerrar</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={applied.includes(project.id)}
+            onClick={() => handleApply(project.id)}
+          >
+            {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
+          </Button>
+        </Box>
+      </Box>
+    </Dialog>
+  );
+
+  // Renderizado de tarjetas de proyectos
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Proyectos Disponibles
       </Typography>
-
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
+        <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
       )}
-
       {/* Filtros avanzados y barra de búsqueda */}
       <Paper sx={{ p: 3, mb: 4 }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
@@ -227,8 +272,8 @@ export default function AvailableProjects() {
             sx={{ minWidth: 140 }}
             size="small"
           >
-            <MenuItem value="">Todas</MenuItem>
-            {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+            <MenuItem key="todas-areas" value="">Todas</MenuItem>
+            {areas.map((a, index) => <MenuItem key={`area-${index}-${a}`} value={a}>{a}</MenuItem>)}
           </TextField>
           <TextField
             select
@@ -238,8 +283,8 @@ export default function AvailableProjects() {
             sx={{ minWidth: 140 }}
             size="small"
           >
-            <MenuItem value="">Todas</MenuItem>
-            {modalidades.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+            <MenuItem key="todas-modalidades" value="">Todas</MenuItem>
+            {modalidades.map((m, index) => <MenuItem key={`modalidad-${index}-${m}`} value={m}>{m}</MenuItem>)}
           </TextField>
           <TextField
             select
@@ -249,8 +294,8 @@ export default function AvailableProjects() {
             sx={{ minWidth: 120 }}
             size="small"
           >
-            <MenuItem value="">Todas</MenuItem>
-            {duraciones.map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
+            <MenuItem key="todas-duraciones" value="">Todas</MenuItem>
+            {duraciones.map((d, index) => <MenuItem key={`duracion-${index}-${d}`} value={d}>{d}</MenuItem>)}
           </TextField>
           <Autocomplete
             multiple
@@ -259,6 +304,8 @@ export default function AvailableProjects() {
             onChange={(_, value) => setTecs(value)}
             renderInput={(params) => <TextField {...params} label="Tecnologías" size="small" />}
             sx={{ minWidth: 180 }}
+            getOptionLabel={(option) => option}
+            isOptionEqualToValue={(option, value) => option === value}
           />
           <TextField
             select
@@ -268,8 +315,8 @@ export default function AvailableProjects() {
             sx={{ minWidth: 140 }}
             size="small"
           >
-            <MenuItem value="">Todas</MenuItem>
-            {empresas.map(emp => <MenuItem key={emp} value={emp}>{emp}</MenuItem>)}
+            <MenuItem key="todas-empresas" value="">Todas</MenuItem>
+            {empresas.map((e, index) => <MenuItem key={`empresa-${index}-${e}`} value={e}>{e}</MenuItem>)}
           </TextField>
           <FormControl size="small" sx={{ minWidth: 140 }}>
             <InputLabel>Ordenar por</InputLabel>
@@ -278,8 +325,8 @@ export default function AvailableProjects() {
               label="Ordenar por"
               onChange={e => setOrdenFecha(e.target.value)}
             >
-              <MenuItem value="recientes">Más recientes</MenuItem>
-              <MenuItem value="antiguos">Más antiguos</MenuItem>
+              <MenuItem key="recientes" value="recientes">Más recientes</MenuItem>
+              <MenuItem key="antiguos" value="antiguos">Más antiguos</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -291,62 +338,34 @@ export default function AvailableProjects() {
       </Typography>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}>
-        {filteredProjects.map((project) => (
-          <Box key={project.id} sx={{ width: { xs: '100%', sm: '48%', md: '32%' }, mb: 3, display: 'flex' }}>
-            <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="h6" gutterBottom>
-                    {project.title}
-                  </Typography>
-                  <IconButton color="primary" onClick={e => { e.stopPropagation(); handleOpenDetail(project); }}>
-                    <VisibilityIcon />
-                  </IconButton>
-                </Box>
-                <Typography color="textSecondary" gutterBottom>
-                  {project.company}
-                </Typography>
-                <Typography variant="body2" paragraph>
-                  {project.description}
-                </Typography>
-                <Box sx={{ mb: 2 }}>
-                  {(project.requirements || project.skills || []).slice(0, 3).map((req, index) => (
-                    <Chip
-                      key={index}
-                      label={req}
-                      size="small"
-                      sx={{ mr: 1, mb: 1 }}
-                    />
-                  ))}
-                  {(project.requirements || project.skills || []).length > 3 && (
-                    <Chip
-                      label={`+${(project.requirements || project.skills || []).length - 3}`}
-                      size="small"
-                      sx={{ mr: 1, mb: 1 }}
-                    />
-                  )}
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  Duración: {project.duration}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Publicado: {new Date(project.publishedAt).toLocaleDateString('es-ES')}
-                </Typography>
-              </CardContent>
-              <CardActions sx={{ mt: 'auto', p: 2 }}>
-                <Button
-                  size="small"
-                  color="primary"
-                  variant="contained"
-                  fullWidth
-                  disabled={applied.includes(project.id)}
-                  onClick={() => handleApply(project.id)}
-                >
-                  {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
-                </Button>
-              </CardActions>
-            </Card>
-          </Box>
+        {filteredProjects.map(project => (
+          <Card key={project.id} sx={{ minWidth: 320, maxWidth: 400, flex: 1 }}>
+            <CardContent>
+              <Typography variant="h6">{project.title}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Empresa: {project.company_name} | Área: {project.area}
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                {project.description.slice(0, 120)}...
+              </Typography>
+              <Chip label={project.status} color={project.status === 'Activo' ? 'success' : 'default'} size="small" sx={{ mr: 1 }} />
+              <Chip label={`Dificultad: ${project.difficulty}`} size="small" />
+            </CardContent>
+            <CardActions>
+              <Button size="small" onClick={() => handleOpenDetail(project)}>
+                Ver Detalles
+              </Button>
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                disabled={applied.includes(project.id)}
+                onClick={() => handleApply(project.id)}
+              >
+                {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
+              </Button>
+            </CardActions>
+          </Card>
         ))}
       </Box>
 
@@ -356,98 +375,11 @@ export default function AvailableProjects() {
         </Alert>
       )}
 
-      {/* Dialog de detalles */}
-      <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="md" fullWidth>
-        {selectedProject && (
-          <Box sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5">{selectedProject.title}</Typography>
-              <IconButton onClick={handleCloseDetail}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Box>
-                <Typography variant="subtitle1" fontWeight="bold">Empresa</Typography>
-                <Typography variant="body1">{selectedProject.company}</Typography>
-              </Box>
-
-              <Box>
-                <Typography variant="subtitle1" fontWeight="bold">Descripción</Typography>
-                <Typography variant="body1">{selectedProject.description}</Typography>
-              </Box>
-
-              <Box>
-                <Typography variant="subtitle1" fontWeight="bold">Requerimientos</Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {(selectedProject.requirements || selectedProject.skills || []).map((req, index) => (
-                    <Chip key={index} label={req} color="primary" />
-                  ))}
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', gap: 4 }}>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">Duración</Typography>
-                  <Typography variant="body1">{selectedProject.duration}</Typography>
-                </Box>
-                {selectedProject.location && (
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">Ubicación</Typography>
-                    <Typography variant="body1">{selectedProject.location}</Typography>
-                  </Box>
-                )}
-                {selectedProject.modality && (
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">Modalidad</Typography>
-                    <Typography variant="body1">{selectedProject.modality}</Typography>
-                  </Box>
-                )}
-              </Box>
-
-              {selectedProject.difficulty && (
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">Dificultad</Typography>
-                  <Typography variant="body1">{selectedProject.difficulty}</Typography>
-                </Box>
-              )}
-
-              {selectedProject.api_level && (
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">Nivel API Requerido</Typography>
-                  <Typography variant="body1">Nivel {selectedProject.api_level}</Typography>
-                </Box>
-              )}
-
-              {selectedProject.max_students && (
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">Estudiantes</Typography>
-                  <Typography variant="body1">
-                    {selectedProject.current_students || 0} de {selectedProject.max_students} estudiantes
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
-              <Button onClick={handleCloseDetail}>Cerrar</Button>
-              <Button
-                variant="contained"
-                disabled={applied.includes(selectedProject.id)}
-                onClick={() => {
-                  handleApply(selectedProject.id);
-                  handleCloseDetail();
-                }}
-              >
-                {applied.includes(selectedProject.id) ? 'Ya Postulado' : 'Postularse'}
-              </Button>
-            </Box>
-          </Box>
-        )}
-      </Dialog>
+      {selectedProject && renderProjectDetail(selectedProject)}
 
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={6000}
+        autoHideDuration={4000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >

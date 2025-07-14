@@ -481,26 +481,24 @@ export default function NotificacionesAdmin() {
         <DialogTitle>Crear Nueva Notificación</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <Box>
-              <TextField
-                label="Título"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                fullWidth
-                required
-              />
-            </Box>
-            <Box>
-              <TextField
-                label="Mensaje"
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                multiline
-                rows={4}
-                fullWidth
-                required
-              />
-            </Box>
+            <TextField
+              label="Título"
+              value={formData.title}
+              onChange={e => setFormData({ ...formData, title: e.target.value })}
+              fullWidth
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Descripción"
+              value={formData.message}
+              onChange={e => setFormData({ ...formData, message: e.target.value })}
+              fullWidth
+              required
+              multiline
+              minRows={3}
+              sx={{ mb: 2 }}
+            />
             <Box sx={{ display: 'flex', gap: 2 }}>
               <FormControl fullWidth>
                 <InputLabel>Tipo</InputLabel>

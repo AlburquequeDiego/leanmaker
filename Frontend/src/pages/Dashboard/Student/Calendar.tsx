@@ -28,155 +28,6 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { apiService } from '../../../services/api.service';
 
-// Estilos personalizados para el calendario
-const calendarStyles = `
-  .rbc-calendar {
-    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .rbc-header {
-    background-color: #f5f5f5;
-    border-bottom: 2px solid #e0e0e0;
-    font-weight: 600;
-    color: #333;
-    padding: 12px 8px;
-  }
-
-  .rbc-toolbar {
-    background-color: #fafafa;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 16px;
-    margin-bottom: 0;
-  }
-
-  .rbc-toolbar button {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    color: #666;
-    border-radius: 4px;
-    padding: 8px 16px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
-
-  .rbc-toolbar button:hover {
-    background-color: #f5f5f5;
-    border-color: #1976d2;
-    color: #1976d2;
-  }
-
-  .rbc-toolbar button.rbc-active {
-    background-color: #1976d2;
-    border-color: #1976d2;
-    color: white;
-  }
-
-  .rbc-month-view {
-    border: 1px solid #e0e0e0;
-  }
-
-  .rbc-month-row {
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  .rbc-date-cell {
-    padding: 8px;
-    border-right: 1px solid #e0e0e0;
-  }
-
-  .rbc-off-range-bg {
-    background-color: #fafafa;
-  }
-
-  .rbc-today {
-    background-color: rgba(25, 118, 210, 0.08);
-  }
-
-  .rbc-event {
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 12px;
-    padding: 2px 6px;
-    margin: 1px;
-    border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  }
-
-  .rbc-event:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    transform: translateY(-1px);
-    transition: all 0.2s ease;
-  }
-
-  .rbc-event-content {
-    font-weight: 600;
-  }
-
-  .rbc-time-view {
-    border: 1px solid #e0e0e0;
-  }
-
-  .rbc-time-header {
-    border-bottom: 2px solid #e0e0e0;
-  }
-
-  .rbc-time-content {
-    border-top: 1px solid #e0e0e0;
-  }
-
-  .rbc-time-slot {
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  .rbc-current-time-indicator {
-    background-color: #1976d2;
-    height: 2px;
-  }
-
-  .rbc-agenda-view {
-    border: 1px solid #e0e0e0;
-  }
-
-  .rbc-agenda-date-cell {
-    background-color: #f5f5f5;
-    font-weight: 600;
-    padding: 8px;
-    color: #000 !important;
-  }
-
-  .rbc-agenda-event-cell {
-    padding: 8px;
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  .rbc-agenda-time-cell {
-    background-color: #fafafa;
-    font-weight: 500;
-    padding: 8px;
-    color: #000 !important;
-  }
-
-  .rbc-agenda-view .rbc-agenda-date-cell,
-  .rbc-agenda-view .rbc-agenda-time-cell {
-    color: #000 !important;
-  }
-
-  .rbc-agenda-view .rbc-agenda-date-cell *,
-  .rbc-agenda-view .rbc-agenda-time-cell * {
-    color: #000 !important;
-  }
-`;
-
-// Agregar estilos al head del documento
-if (typeof document !== 'undefined') {
-  const styleElement = document.createElement('style');
-  styleElement.textContent = calendarStyles;
-  document.head.appendChild(styleElement);
-}
-
 const locales = {
   'es': es,
 };
@@ -207,6 +58,7 @@ export const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [view, setView] = useState('month');
   const [date, setDate] = useState(new Date());
@@ -217,9 +69,11 @@ export const Calendar = () => {
 
   const fetchEvents = async () => {
     setLoading(true);
+    setError(null);
     try {
       // Obtener eventos específicos del estudiante
-              const eventsData = await apiService.get('/api/calendar/events/student_events/');
+      const eventsData = await apiService.get('/api/calendar/events/student_events/');
+      
       const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
         id: event.id,
         title: event.title,
@@ -232,9 +86,12 @@ export const Calendar = () => {
         company: event.project?.empresa?.nombre || 'Sin empresa',
         status: event.status || 'upcoming',
       })) : [];
+      
+      console.log('Calendar - Events loaded successfully:', formattedEvents.length);
       setEvents(formattedEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
+      setError('Error al cargar los eventos del calendario');
       setEvents([]);
     } finally {
       setLoading(false);
@@ -352,7 +209,7 @@ export const Calendar = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
+    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
         <EventIcon sx={{ mr: 2, color: 'primary.main' }} />
         Calendario de Actividades
@@ -363,6 +220,8 @@ export const Calendar = () => {
           {error}
         </Alert>
       )}
+
+
 
       {/* Resumen de eventos */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
@@ -401,34 +260,36 @@ export const Calendar = () => {
       </Box>
 
       {/* Calendario principal */}
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <BigCalendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 600 }}
-          eventPropGetter={eventStyleGetter}
-          onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          selectable
-          views={['month', 'week', 'day', 'agenda']}
-          defaultView="month"
-          view={view as any}
-          onView={(newView) => setView(newView)}
-          date={date}
-          onNavigate={(newDate) => setDate(newDate)}
-          messages={{
-            next: "Siguiente",
-            previous: "Anterior",
-            today: "Hoy",
-            month: "Mes",
-            week: "Semana",
-            day: "Día",
-            agenda: "Agenda",
-            noEventsInRange: "No hay eventos en este rango de fechas.",
-          }}
-        />
+      <Paper sx={{ p: 3, mb: 4, backgroundColor: 'white' }}>
+        <Box sx={{ border: '1px solid #ddd', borderRadius: 1, overflow: 'hidden' }}>
+          <BigCalendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 600, backgroundColor: 'white' }}
+            eventPropGetter={eventStyleGetter}
+            onSelectEvent={handleSelectEvent}
+            onSelectSlot={handleSelectSlot}
+            selectable
+            views={['month', 'week', 'day', 'agenda']}
+            defaultView="month"
+            view={view as any}
+            onView={(newView) => setView(newView)}
+            date={date}
+            onNavigate={(newDate) => setDate(newDate)}
+            messages={{
+              next: "Siguiente",
+              previous: "Anterior",
+              today: "Hoy",
+              month: "Mes",
+              week: "Semana",
+              day: "Día",
+              agenda: "Agenda",
+              noEventsInRange: "No hay eventos en este rango de fechas.",
+            }}
+          />
+        </Box>
       </Paper>
 
       {/* Próximos eventos */}

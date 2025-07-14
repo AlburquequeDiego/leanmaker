@@ -5,10 +5,10 @@ URLs para la app calendar_events.
 from django.urls import path
 from . import views
 
+app_name = 'calendar_events'
+
 urlpatterns = [
-    path('', views.calendar_events_list, name='calendar_events_list'),
-    path('<str:calendar_events_id>/', views.calendar_events_detail, name='calendar_events_detail'),
-    path('create/', views.calendar_events_create, name='calendar_events_create'),
-    path('<str:calendar_events_id>/update/', views.calendar_events_update, name='calendar_events_update'),
-    path('<str:calendar_events_id>/delete/', views.calendar_events_delete, name='calendar_events_delete'),
+    path('', views.calendar_event_list, name='calendar_event_list'),
+    path('<int:event_id>/', views.calendar_event_detail, name='calendar_event_detail'),
+    path('student_events/', views.student_events, name='student_events'),
 ]

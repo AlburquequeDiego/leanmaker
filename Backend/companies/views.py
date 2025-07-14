@@ -27,8 +27,8 @@ def companies_list(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Solo admins pueden ver la lista de empresas
-        if current_user.role != 'admin':
+        # Permitir acceso a admin y student
+        if current_user.role not in ['admin', 'student']:
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
         # Parámetros de paginación y filtros
@@ -351,6 +351,18 @@ def companies_create(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def company_list(request):
+    """Lista de empresas (alias para companies_list)."""
+    return companies_list(request)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def company_detail(request, company_id):
+    """Detalle de una empresa (alias para companies_detail)."""
+    return companies_detail(request, company_id)
 
 @csrf_exempt
 @require_http_methods(["DELETE"])

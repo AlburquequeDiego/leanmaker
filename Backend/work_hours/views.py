@@ -260,6 +260,18 @@ def work_hours_update(request, work_hours_id):
 
 
 @csrf_exempt
+@require_http_methods(["GET"])
+def work_hour_list(request):
+    """Lista de horas trabajadas (alias para work_hours_list)."""
+    return work_hours_list(request)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def work_hour_detail(request, work_hour_id):
+    """Detalle de horas trabajadas (alias para work_hours_detail)."""
+    return work_hours_detail(request, work_hour_id)
+
+@csrf_exempt
 @require_http_methods(["DELETE"])
 def work_hours_delete(request, work_hours_id):
     """Eliminar horas trabajadas."""

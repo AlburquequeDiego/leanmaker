@@ -9,6 +9,73 @@ from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError
 from .models import Strike
 from core.auth_utils import get_user_from_token, require_auth
+from core.views import verify_token
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def strike_list(request):
+    """Lista de strikes."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        strikes = Strike.objects.all()
+        strikes_data = []
+        
+        for strike in strikes:
+            strikes_data.append({
+                'id': str(strike.id),
+                'reason': strike.reason,
+                'created_at': strike.created_at.isoformat(),
+                'updated_at': strike.updated_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'data': strikes_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def strike_detail(request, strike_id):
+    """Detalle de un strike."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        try:
+            strike = Strike.objects.get(id=strike_id)
+        except Strike.DoesNotExist:
+            return JsonResponse({'error': 'Strike no encontrado'}, status=404)
+        
+        strike_data = {
+            'id': str(strike.id),
+            'reason': strike.reason,
+            'created_at': strike.created_at.isoformat(),
+            'updated_at': strike.updated_at.isoformat(),
+        }
+        
+        return JsonResponse(strike_data)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
 @require_http_methods(["GET"])

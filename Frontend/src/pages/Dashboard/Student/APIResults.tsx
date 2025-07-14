@@ -44,6 +44,16 @@ interface APIResult {
   feedback?: string;
 }
 
+interface ApiLevelRequest {
+  id: number;
+  requested_level: number;
+  current_level: number;
+  status: 'pending' | 'approved' | 'rejected';
+  feedback?: string;
+  submitted_at: string;
+  reviewed_at?: string;
+}
+
 const apiLevelDescriptions = {
   1: {
     title: 'Nivel API 1: Asesoría',
@@ -96,51 +106,25 @@ const apiLevelDescriptions = {
 };
 
 export const APIResults = () => {
-  const [results, setResults] = useState<APIResult[]>([]);
+  const [apiRequests, setApiRequests] = useState<ApiLevelRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentLevel, setCurrentLevel] = useState<number>(0);
-  const [currentResult, setCurrentResult] = useState<APIResult | null>(null);
-  const [requestDialogOpen, setRequestDialogOpen] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [requestSent, setRequestSent] = useState(false);
-  const navigate = useNavigate();
+
+  // Calcular el nivel actual según la última petición aprobada
+  const currentLevel = apiRequests.find(r => r.status === 'approved')?.requested_level || 1;
 
   useEffect(() => {
-    fetchResults();
+    fetchApiRequests();
   }, []);
 
-  const fetchResults = async () => {
+  const fetchApiRequests = async () => {
     try {
       setLoading(true);
-      const data = await apiService.get('/api/questionnaires/');
-      const formattedResults = Array.isArray(data) ? data.map((result: any) => ({
-        id: result.id,
-        date: result.submitted_at ? new Date(result.submitted_at).toLocaleDateString() : 'N/A',
-        score: result.average_score || 0,
-        level: result.calculated_level || 0,
-        questionsAnswered: 4, // Siempre 4 preguntas en el cuestionario
-        timeSpent: '5 minutos', // Mock time
-        status: result.status || 'pending',
-        feedback: result.feedback,
-      })) : [];
-      
-      setResults(formattedResults);
-      
-      // Establecer el nivel actual (el más reciente aprobado o el más reciente si no hay aprobados)
-      if (formattedResults.length > 0) {
-        const approvedResults = formattedResults.filter(r => r.status === 'approved');
-        if (approvedResults.length > 0) {
-          setCurrentLevel(approvedResults[0].level);
-          setCurrentResult(approvedResults[0]);
-        } else {
-          setCurrentLevel(formattedResults[0].level);
-          setCurrentResult(formattedResults[0]);
-        }
-      }
+      const data = await apiService.get('/api/students/api-level-requests/');
+      setApiRequests(data.results || []);
     } catch (error) {
-      console.error('Error fetching API results:', error);
-      setError('Error al cargar los resultados del cuestionario API');
+      console.error('Error fetching API level requests:', error);
+      setError('Error al cargar las peticiones de subida de nivel API');
     } finally {
       setLoading(false);
     }
@@ -154,15 +138,6 @@ export const APIResults = () => {
       case 4: return 'warning';
       default: return 'default';
     }
-  };
-
-  const getProgressToNextLevel = (currentScore: number) => {
-    const levelThresholds = { 1: 1.5, 2: 2.5, 3: 3.5, 4: 4.0 };
-    const currentThreshold = levelThresholds[currentLevel as keyof typeof levelThresholds];
-    const nextThreshold = currentLevel < 4 ? levelThresholds[(currentLevel + 1) as keyof typeof levelThresholds] : 4.0;
-    
-    const progress = ((currentScore - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
-    return Math.max(0, Math.min(100, progress));
   };
 
   const getStatusColor = (status: string) => {
@@ -180,18 +155,6 @@ export const APIResults = () => {
       case 'rejected': return 'Rechazado';
       case 'pending': return 'Pendiente';
       default: return status;
-    }
-  };
-
-  const handleRequestNewLevel = async () => {
-    try {
-      setRequestSent(true);
-      // Aquí se podría enviar una solicitud para un nuevo cuestionario
-      setShowSuccess(true);
-      setRequestDialogOpen(false);
-    } catch (error) {
-      console.error('Error requesting new level:', error);
-      setError('Error al solicitar nuevo nivel');
     }
   };
 
@@ -217,84 +180,22 @@ export const APIResults = () => {
       )}
 
       {/* Nivel API Actual */}
-      {currentLevel > 0 && (
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].icon}
-              <Box sx={{ ml: 2 }}>
-                <Typography variant="h5">
-                  {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].title}
-                </Typography>
-                <Chip 
-                  label={`Nivel API ${currentLevel}`} 
-                  color={apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].color}
-                  size="small"
-                />
-              </Box>
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<QuizIcon />}
-              onClick={() => navigate('/dashboard/student/api-questionnaire')}
-            >
-              Hacer cuestionario
-            </Button>
-          </Box>
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <TrendingUpIcon sx={{ mr: 1, color: 'primary.main' }} />
+          Nivel API Actual: <Chip label={`Nivel ${currentLevel}`} color={getLevelColor(currentLevel) as any} size="small" sx={{ ml: 2 }} />
+        </Typography>
+      </Paper>
 
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].description}
-          </Typography>
-
-          {/* Progreso hacia el siguiente nivel */}
-          {currentLevel < 4 && currentResult && (
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Progreso hacia Nivel {currentLevel + 1}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {getProgressToNextLevel(currentResult.score).toFixed(1)}%
-                </Typography>
-              </Box>
-              <LinearProgress 
-                variant="determinate" 
-                value={getProgressToNextLevel(currentResult.score)} 
-                sx={{ height: 8, borderRadius: 4 }}
-              />
-            </Box>
-          )}
-
-          {/* Capacidades del nivel actual */}
-          <Typography variant="h6" gutterBottom>
-            Capacidades de tu nivel:
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-            {apiLevelDescriptions[currentLevel as keyof typeof apiLevelDescriptions].capabilities.map((capability, index) => (
-              <Chip
-                key={index}
-                label={capability}
-                color="success"
-                variant="outlined"
-                size="small"
-              />
-            ))}
-          </Box>
-        </Paper>
-      )}
-
-      {/* Historial de Resultados */}
-      <Paper sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-            <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-            Historial de Cuestionarios
-          </Typography>
-        </Box>
-
-        {results.length === 0 ? (
+      {/* Historial de Peticiones de Subida de Nivel API */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+          Historial de Peticiones de Subida de Nivel API
+        </Typography>
+        {apiRequests.length === 0 ? (
           <Alert severity="info">
-            No tienes cuestionarios realizados. Haz tu primer cuestionario para obtener tu nivel API.
+            No tienes peticiones de subida de nivel API.
           </Alert>
         ) : (
           <TableContainer>
@@ -302,51 +203,27 @@ export const APIResults = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Fecha</TableCell>
-                  <TableCell>Puntuación</TableCell>
-                  <TableCell>Nivel Calculado</TableCell>
+                  <TableCell>Nivel Actual</TableCell>
+                  <TableCell>Nivel Solicitado</TableCell>
                   <TableCell>Estado</TableCell>
-                  <TableCell>Acciones</TableCell>
+                  <TableCell>Feedback</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {results.map((result) => (
-                  <TableRow key={result.id}>
-                    <TableCell>{result.date}</TableCell>
+                {apiRequests.map((req) => (
+                  <TableRow key={req.id}>
+                    <TableCell>{new Date(req.submitted_at).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2">{result.score.toFixed(1)}</Typography>
-                        <Chip 
-                          label={`Nivel ${result.level}`} 
-                          color={getLevelColor(result.level) as any}
-                          size="small"
-                        />
-                      </Box>
+                      <Chip label={`Nivel ${req.current_level}`} color={getLevelColor(req.current_level) as any} size="small" />
                     </TableCell>
                     <TableCell>
-                      <Chip 
-                        label={`Nivel API ${result.level}`} 
-                        color={getLevelColor(result.level) as any}
-                        size="small"
-                      />
+                      <Chip label={`Nivel ${req.requested_level}`} color={getLevelColor(req.requested_level) as any} size="small" />
                     </TableCell>
                     <TableCell>
-                      <Chip 
-                        label={getStatusText(result.status)} 
-                        color={getStatusColor(result.status) as any}
-                        size="small"
-                      />
+                      <Chip label={getStatusText(req.status)} color={getStatusColor(req.status) as any} size="small" />
                     </TableCell>
                     <TableCell>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() => {
-                          setCurrentResult(result);
-                          setRequestDialogOpen(true);
-                        }}
-                      >
-                        Ver Detalles
-                      </Button>
+                      {req.feedback || '-'}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -355,59 +232,6 @@ export const APIResults = () => {
           </TableContainer>
         )}
       </Paper>
-
-      {/* Dialog para detalles del resultado */}
-      <Dialog open={requestDialogOpen} onClose={() => setRequestDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          <Typography variant="h6">
-            Detalles del Cuestionario
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          {currentResult && (
-            <Box>
-              <Typography variant="body1" gutterBottom>
-                <strong>Fecha:</strong> {currentResult.date}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Puntuación:</strong> {currentResult.score.toFixed(1)} / 4.0
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Nivel Calculado:</strong> API {currentResult.level}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Estado:</strong> {getStatusText(currentResult.status)}
-              </Typography>
-              {currentResult.feedback && (
-                <Typography variant="body1" gutterBottom>
-                  <strong>Comentarios:</strong> {currentResult.feedback}
-                </Typography>
-              )}
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRequestDialogOpen(false)}>
-            Cerrar
-          </Button>
-          {currentResult?.status === 'rejected' && (
-            <Button
-              variant="contained"
-              onClick={handleRequestNewLevel}
-              disabled={requestSent}
-            >
-              Solicitar Nuevo Nivel
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={6000}
-        onClose={() => setShowSuccess(false)}
-        message="Solicitud enviada exitosamente"
-      />
     </Box>
   );
 };

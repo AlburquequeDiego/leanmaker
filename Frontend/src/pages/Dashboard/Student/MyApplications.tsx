@@ -197,15 +197,15 @@ const adaptApplicationData = (backendData: any): Application => {
     id: backendData.id,
     projectTitle: backendData.project?.title || 'Sin título',
     company: backendData.project?.company?.name || 'Sin empresa',
-    status: backendData.status || 'pending',
+    status: backendData.status || backendData.status || 'pending',
     appliedDate: backendData.applied_at || '',
     responseDate: backendData.responded_at || undefined,
     requiredSkills: [], // El backend no devuelve skills en este endpoint
-    projectDuration: '3 meses', // Valor por defecto
-    location: 'Remoto', // Valor por defecto
+    projectDuration: backendData.project?.duration_weeks ? `${backendData.project.duration_weeks} semanas` : 'No especificado',
+    location: backendData.project?.location || 'No especificada',
     description: backendData.project?.description || 'Sin descripción',
     compatibility: backendData.compatibility_score || 0,
-    notes: backendData.student_notes || undefined,
+    notes: backendData.student_notes || backendData.cover_letter || undefined,
   };
 };
 
@@ -222,7 +222,7 @@ export const MyApplications: React.FC = () => {
     async function fetchApplications() {
       try {
         // Obtener aplicaciones específicas del estudiante
-        const data = await apiService.get('/api/project-applications/my_applications/');
+        const data = await apiService.get('/api/applications/my_applications/');
         console.log('Applications data received:', data);
         
         // El backend devuelve {results: Array, total: number}

@@ -121,35 +121,37 @@ export const Profile = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const data = await apiService.get('/api/students/me/');
-      console.log('Profile data received:', data);
-      
-      // Asegurar que todos los campos tengan valores por defecto
+      // 1. Obtener datos académicos
+      const studentData = await apiService.get('/api/students/me/');
+      // 2. Obtener datos personales
+      const userData = await apiService.get('/api/users/profile/');
+
+      // 3. Mapear y unir los datos
       const safeData: ProfileData = {
-        nombre: data.nombre || '',
-        apellido: data.apellido || '',
-        email: data.email || '',
-        telefono: data.telefono || '',
-        fechaNacimiento: data.fechaNacimiento || '',
-        genero: data.genero || '',
-        institucion: data.institucion || '',
-        carrera: data.carrera || '',
-        nivel: data.nivel || '1',
-        habilidades: Array.isArray(data.habilidades) ? data.habilidades : [],
-        biografia: data.biografia || '',
-        cv: data.cv || null,
-        certificado: data.certificado || null,
-        area: data.area || '',
-        modalidadesDisponibles: Array.isArray(data.modalidadesDisponibles) ? data.modalidadesDisponibles : [],
-        experienciaPrevia: data.experienciaPrevia || '',
-        linkedin: data.linkedin || '',
-        github: data.github || '',
-        portafolio: data.portafolio || '',
+        nombre: userData.first_name || '',
+        apellido: userData.last_name || '',
+        email: userData.email || '',
+        telefono: userData.phone || '',
+        fechaNacimiento: '', // No disponible
+        genero: '', // No disponible
+        institucion: '', // No disponible
+        carrera: studentData.career || '',
+        nivel: studentData.api_level?.toString() || '1',
+        habilidades: Array.isArray(studentData.skills) ? studentData.skills.map((skill: string) => ({ nombre: skill, nivel: 'Intermedio' })) : [],
+        biografia: userData.bio || '',
+        cv: null,
+        certificado: null,
+        area: '',
+        modalidadesDisponibles: [studentData.availability] || [],
+        experienciaPrevia: studentData.experience_years?.toString() || '',
+        linkedin: studentData.linkedin_url || '',
+        github: studentData.github_url || '',
+        portafolio: studentData.portfolio_url || '',
       };
-      
+
       setProfileData(safeData);
       setEditData(safeData);
-      setUserId(data.id || '');
+      setUserId(studentData.id || '');
     } catch (error) {
       console.error('Error fetching profile:', error);
       setShowError(true);
@@ -226,12 +228,38 @@ export const Profile = () => {
     setIsLoading(true);
     
     try {
-      const updatedProfile = await apiService.put(`/api/students/${userId}/update/`, editData);
-      setProfileData(updatedProfile as ProfileData);
+      // Mapear datos del frontend (español) al formato del backend (inglés)
+      const backendData = {
+        career: editData.carrera,
+        api_level: parseInt(editData.nivel) || 1,
+        skills: editData.habilidades.map(h => h.nombre),
+        languages: [], // Por ahora vacío, se puede expandir después
+        portfolio_url: editData.portafolio,
+        github_url: editData.github,
+        linkedin_url: editData.linkedin,
+        availability: editData.modalidadesDisponibles?.[0] || 'flexible',
+        location: '', // Por ahora vacío
+        experience_years: parseInt(editData.experienciaPrevia) || 0,
+        // También actualizar datos del usuario
+        user_data: {
+          first_name: editData.nombre,
+          last_name: editData.apellido,
+          email: editData.email,
+          phone: editData.telefono,
+          bio: editData.biografia,
+        }
+      };
+
+      const updatedProfile = await apiService.put(`/api/students/${userId}/update/`, backendData);
+      
+      // Recargar el perfil para obtener los datos actualizados
+      await fetchProfile();
+      
       setIsEditing(false);
       setShowSuccess(true);
       setValidationErrors({});
     } catch (error) {
+      console.error('Error saving profile:', error);
       setErrorMessage('Error al guardar los cambios. Intenta nuevamente.');
       setShowError(true);
     } finally {

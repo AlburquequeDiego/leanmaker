@@ -15,6 +15,8 @@ from datetime import datetime, timedelta
 import jwt
 from django.conf import settings
 from companies.serializers import EmpresaSerializer
+from projects.models import Proyecto
+from django.db.models import F
 
 def home(request):
     """Vista principal de la aplicación."""
@@ -29,6 +31,43 @@ def home(request):
             'projects': '/api/projects/',
             'dashboard': '/api/dashboard/'
         }
+    })
+
+def login_view(request):
+    """Vista de login tradicional."""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Credenciales inválidas')
+    return render(request, 'login.html')
+
+def logout_view(request):
+    """Vista de logout."""
+    logout(request)
+    return redirect('home')
+
+def register_view(request):
+    """Vista de registro tradicional."""
+    if request.method == 'POST':
+        # Lógica de registro
+        pass
+    return render(request, 'register.html')
+
+@login_required
+def dashboard(request):
+    """Vista del dashboard principal."""
+    return render(request, 'dashboard.html')
+
+def api_dashboard(request):
+    """API endpoint para dashboard."""
+    return JsonResponse({
+        'message': 'Dashboard API endpoint',
+        'status': 'available'
     })
 
 def health_check(request):
@@ -453,26 +492,53 @@ def api_dashboard_student_stats(request):
         # Obtener el perfil de estudiante del usuario
         try:
             student = user.estudiante_profile
-        except:
+        except Exception as e:
+            print(f"Error obteniendo perfil de estudiante: {e}")
             return JsonResponse({
-                'error': 'Perfil de estudiante no encontrado'
+                'error': 'Perfil de estudiante no encontrado',
+                'details': str(e)
             }, status=404)
         
         # Obtener estadísticas básicas
-        total_applications = Aplicacion.objects.filter(student=student).count()
-        pending_applications = Aplicacion.objects.filter(student=student, status='pending').count()
-        accepted_applications = Aplicacion.objects.filter(student=student, status='accepted').count()
+        try:
+            total_applications = Aplicacion.objects.filter(student=student).count()
+            pending_applications = Aplicacion.objects.filter(student=student, status='pending').count()
+            accepted_applications = Aplicacion.objects.filter(student=student, status='accepted').count()
+            
+            # Obtener proyectos del estudiante a través de aplicaciones aceptadas
+            accepted_applications_objs = Aplicacion.objects.filter(student=student, status='accepted')
+            student_projects = Proyecto.objects.filter(application_project__in=accepted_applications_objs)
+            total_projects = student_projects.count()
+            active_projects = student_projects.filter(status__name='active').count()
+            
+        except Exception as e:
+            print(f"Error calculando estadísticas: {e}")
+            return JsonResponse({
+                'error': 'Error calculando estadísticas',
+                'details': str(e)
+            }, status=500)
         
-        return JsonResponse({
+        # Preparar respuesta
+        response_data = {
             'total_applications': total_applications,
             'pending_applications': pending_applications,
             'accepted_applications': accepted_applications,
+            'total_projects': total_projects,
+            'active_projects': active_projects,
+            'total_hours': student.total_hours,
             'recent_activity': []  # Placeholder para actividad reciente
-        })
+        }
+        
+        print(f"✅ Datos del dashboard de estudiante: {response_data}")
+        return JsonResponse(response_data)
         
     except Exception as e:
+        import traceback
+        print(f"❌ Error general en api_dashboard_student_stats: {e}")
+        traceback.print_exc()
         return JsonResponse({
-            'error': str(e)
+            'error': str(e),
+            'traceback': traceback.format_exc()
         }, status=500)
 
 @csrf_exempt
@@ -524,6 +590,34 @@ def api_dashboard_admin_stats(request):
         return JsonResponse({
             'error': str(e)
         }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_test_projects(request):
+    try:
+        projects = Proyecto.objects.select_related('status').annotate(
+            status_name=F('status__name')
+        ).values(
+            'id', 'title', 'description', 'max_students', 'current_students',
+            'created_at', 'updated_at', 'status_id', 'status_name'
+        )[:10]
+        projects_data = []
+        for project in projects:
+            projects_data.append({
+                'id': str(project['id']),
+                'title': project['title'],
+                'description': project['description'],
+                'max_students': project['max_students'],
+                'current_students': project['current_students'],
+                'created_at': project['created_at'].isoformat() if project['created_at'] else None,
+                'updated_at': project['updated_at'].isoformat() if project['updated_at'] else None,
+                'status_id': project['status_id'],
+                'status': project['status_name'],
+            })
+        return JsonResponse({'results': projects_data, 'count': len(projects_data)})
+    except Exception as e:
+        print(f"Error en api_test_projects: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 # Funciones auxiliares para JWT
 def generate_access_token(user):

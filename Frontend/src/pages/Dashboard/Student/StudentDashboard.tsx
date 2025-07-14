@@ -110,6 +110,18 @@ export default function StudentDashboard() {
                 </Box>
               </Box>
             </Paper>
+
+            <Paper sx={{ p: 2, minWidth: 200, flex: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <SchoolIcon sx={{ mr: 1, color: 'secondary.main' }} />
+                <Box>
+                  <Typography variant="h6">{stats.total_hours || 0}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Horas Acumuladas
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
           </Box>
         </Box>
       )}

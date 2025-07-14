@@ -188,20 +188,12 @@ export const APIQuestionnaire = () => {
 
       try {
         setLoading(true);
-        const questionnaireData = {
-          answers: answers,
-          calculated_level: level,
-          total_score: Object.values(answers).reduce((sum, value) => sum + value, 0),
-          average_score: Object.values(answers).reduce((sum, value) => sum + value, 0) / questions.length,
-          status: 'pending_approval',
-          submitted_at: new Date().toISOString(),
-        };
-
-        await apiService.post('/api/questionnaires/', questionnaireData);
-        setSuccess('Cuestionario enviado exitosamente. Esperando aprobación del administrador.');
+        // Enviar petición de subida de nivel API
+        await apiService.requestApiLevelUpgrade(level, 0); // 0 como currentLevel, puedes obtener el real si lo tienes
+        setSuccess('La petición de tu cuestionario requiere la aprobación del administrador. Por favor, espera un momento.');
       } catch (error) {
-        console.error('Error submitting questionnaire:', error);
-        setError('Error al enviar el cuestionario. Por favor, inténtalo de nuevo.');
+        console.error('Error enviando petición de subida de nivel API:', error);
+        setError('Error al enviar la petición. Por favor, inténtalo de nuevo.');
       } finally {
         setLoading(false);
       }

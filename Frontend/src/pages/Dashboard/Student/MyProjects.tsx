@@ -18,6 +18,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -57,16 +59,38 @@ export const MyProjects = () => {
   const [activeLimit, setActiveLimit] = useState(5);
   const [completedLimit, setCompletedLimit] = useState(5);
   const [pausedLimit, setPausedLimit] = useState(5);
+  const [tab, setTab] = useState(0);
+
+  // Adaptador de datos del backend al frontend
+  const adaptProjectData = (backend: any): Project => ({
+    id: backend.id,
+    title: backend.title,
+    company: backend.company || 'Sin empresa',
+    status: backend.status || 'active',
+    startDate: backend.startDate || '',
+    endDate: backend.endDate || '',
+    progress: typeof backend.progress === 'number' ? backend.progress : (backend.status === 'completed' ? 100 : 50),
+    hoursWorked: backend.hoursWorked ?? backend.hours_worked ?? 0,
+    totalHours: backend.totalHours ?? backend.total_hours ?? 0,
+    location: backend.location || '',
+    description: backend.description || '',
+    technologies: Array.isArray(backend.technologies) ? backend.technologies : [],
+    teamMembers: backend.teamMembers ?? backend.team_members ?? 1,
+    mentor: backend.mentor || '',
+    deliverables: Array.isArray(backend.deliverables) ? backend.deliverables : [],
+    nextMilestone: backend.nextMilestone || '',
+    nextMilestoneDate: backend.nextMilestoneDate || '',
+  });
 
   useEffect(() => {
     async function fetchProjects() {
       try {
         const response = await apiService.get('/api/projects/my_projects/');
         console.log('[MyProjects] Response:', response);
-        
         // El backend devuelve {success: true, data: Array, total: number}
         const projectsData = response.data || response;
-        setProjects(Array.isArray(projectsData) ? projectsData : []);
+        const arr = Array.isArray(projectsData) ? projectsData : projectsData.data;
+        setProjects(Array.isArray(arr) ? arr.map(adaptProjectData) : []);
       } catch (error) {
         console.error('Error fetching projects:', error);
         setProjects([]);
@@ -79,6 +103,8 @@ export const MyProjects = () => {
     setSelectedProject(project);
     setDialogOpen(true);
   };
+
+  const handleTabChange = (_: any, newValue: number) => setTab(newValue);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -131,7 +157,7 @@ export const MyProjects = () => {
         Mis Proyectos
       </Typography>
 
-      {/* Estadísticas */}
+      {/* Dashboard */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
         <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e8f5e9' }}>
           <CardContent sx={{ textAlign: 'center' }}>
@@ -178,304 +204,251 @@ export const MyProjects = () => {
         </Card>
       </Box>
 
-      {/* Proyectos Activos */}
-      {activeProjects.length > 0 && (
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              <TrendingUpIcon sx={{ mr: 1, color: 'success.main' }} />
-              Proyectos Activos ({activeProjects.length})
-            </Typography>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Mostrar</InputLabel>
-              <Select
-                value={activeLimit}
-                label="Mostrar"
-                onChange={e => setActiveLimit(Number(e.target.value))}
-              >
-                <MenuItem value={5}>Últimos 5</MenuItem>
-                <MenuItem value={10}>Últimos 10</MenuItem>
-                <MenuItem value={20}>Últimos 20</MenuItem>
-                <MenuItem value={activeProjects.length}>Todos</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {activeProjects.slice(0, activeLimit).map((project) => (
-              <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
-                <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleViewDetails(project)}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom>
-                          {project.title}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                            <BusinessIcon fontSize="small" />
-                          </Avatar>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.company}
+      {/* Tabs de secciones */}
+      <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 3 }}>
+        <Tab label={`Activos (${activeProjects.length})`} />
+        <Tab label={`Completados (${completedProjects.length})`} />
+        <Tab label={`Pausados (${pausedProjects.length})`} />
+      </Tabs>
+
+      {/* Sección de proyectos activos */}
+      {tab === 0 && (
+        <Box>
+          {activeProjects.length === 0 ? (
+            <Paper sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+              No tienes proyectos activos aún.
+            </Paper>
+          ) : (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              {activeProjects.slice(0, activeLimit).map((project) => (
+                <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+                  <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleViewDetails(project)}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="h6" gutterBottom>
+                            {project.title}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                              <BusinessIcon fontSize="small" />
+                            </Avatar>
+                            <Typography variant="body2" color="text.secondary">
+                              {project.company}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Chip
+                          icon={getStatusIcon(project.status)}
+                          label={getStatusText(project.status)}
+                          color={getStatusColor(project.status) as any}
+                          size="small"
+                        />
+                      </Box>
+                      
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        {project.description.substring(0, 100)}...
+                      </Typography>
+
+                      <Box sx={{ mb: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                          <Typography variant="body2">Progreso</Typography>
+                          <Typography variant="body2" fontWeight="bold">
+                            {project.progress}%
                           </Typography>
                         </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
+                          sx={{ height: 8, borderRadius: 4 }}
+                        />
                       </Box>
-                      <Chip
-                        icon={getStatusIcon(project.status)}
-                        label={getStatusText(project.status)}
-                        color={getStatusColor(project.status) as any}
-                        size="small"
-                      />
-                    </Box>
-                    
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {project.description.substring(0, 100)}...
-                    </Typography>
 
-                    <Box sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2">Progreso</Typography>
-                        <Typography variant="body2" fontWeight="bold">
-                          {project.progress}%
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                        {project.technologies.slice(0, 3).map((tech) => (
+                          <Chip key={tech} label={tech} size="small" variant="outlined" />
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
+                        )}
+                      </Box>
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="caption" color="text.secondary">
+                          {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
+                          {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
+                        <IconButton size="small" color="primary">
+                          <VisibilityIcon />
+                        </IconButton>
                       </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
-                        sx={{ height: 8, borderRadius: 4 }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <Chip key={tech} label={tech} size="small" variant="outlined" />
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
-                      )}
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="caption" color="text.secondary">
-                        {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
-                        {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
-                      </Typography>
-                      <IconButton size="small" color="primary">
-                        <VisibilityIcon />
-                      </IconButton>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Box>
-            ))}
-          </Box>
-          {activeProjects.length > activeLimit && (
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Mostrando {activeLimit} de {activeProjects.length} proyectos activos
-              </Typography>
+                    </CardContent>
+                  </Card>
+                </Box>
+              ))}
             </Box>
           )}
-        </Paper>
+        </Box>
       )}
 
-      {/* Proyectos Completados */}
-      {completedProjects.length > 0 && (
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              <CheckCircleIcon sx={{ mr: 1, color: 'info.main' }} />
-              Proyectos Completados ({completedProjects.length})
-            </Typography>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Mostrar</InputLabel>
-              <Select
-                value={completedLimit}
-                label="Mostrar"
-                onChange={e => setCompletedLimit(Number(e.target.value))}
-              >
-                <MenuItem value={5}>Últimos 5</MenuItem>
-                <MenuItem value={10}>Últimos 10</MenuItem>
-                <MenuItem value={20}>Últimos 20</MenuItem>
-                <MenuItem value={completedProjects.length}>Todos</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {completedProjects.slice(0, completedLimit).map((project) => (
-              <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
-                <Card sx={{ height: '100%', cursor: 'pointer', opacity: 0.8 }} onClick={() => handleViewDetails(project)}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom>
-                          {project.title}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                            <BusinessIcon fontSize="small" />
-                          </Avatar>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.company}
+      {/* Sección de proyectos completados */}
+      {tab === 1 && (
+        <Box>
+          {completedProjects.length === 0 ? (
+            <Paper sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+              No tienes proyectos completados aún.
+            </Paper>
+          ) : (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              {completedProjects.slice(0, completedLimit).map((project) => (
+                <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+                  <Card sx={{ height: '100%', cursor: 'pointer', opacity: 0.8 }} onClick={() => handleViewDetails(project)}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="h6" gutterBottom>
+                            {project.title}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                              <BusinessIcon fontSize="small" />
+                            </Avatar>
+                            <Typography variant="body2" color="text.secondary">
+                              {project.company}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Chip
+                          icon={getStatusIcon(project.status)}
+                          label={getStatusText(project.status)}
+                          color={getStatusColor(project.status) as any}
+                          size="small"
+                        />
+                      </Box>
+                      
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        {project.description.substring(0, 100)}...
+                      </Typography>
+
+                      <Box sx={{ mb: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                          <Typography variant="body2">Progreso</Typography>
+                          <Typography variant="body2" fontWeight="bold">
+                            {project.progress}%
                           </Typography>
                         </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
+                          sx={{ height: 8, borderRadius: 4 }}
+                        />
                       </Box>
-                      <Chip
-                        icon={getStatusIcon(project.status)}
-                        label={getStatusText(project.status)}
-                        color={getStatusColor(project.status) as any}
-                        size="small"
-                      />
-                    </Box>
-                    
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {project.description.substring(0, 100)}...
-                    </Typography>
 
-                    <Box sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2">Progreso</Typography>
-                        <Typography variant="body2" fontWeight="bold">
-                          {project.progress}%
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                        {project.technologies.slice(0, 3).map((tech) => (
+                          <Chip key={tech} label={tech} size="small" variant="outlined" />
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
+                        )}
+                      </Box>
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="caption" color="text.secondary">
+                          {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
+                          {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
+                        <IconButton size="small" color="primary">
+                          <VisibilityIcon />
+                        </IconButton>
                       </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
-                        sx={{ height: 8, borderRadius: 4 }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <Chip key={tech} label={tech} size="small" variant="outlined" />
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
-                      )}
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="caption" color="text.secondary">
-                        {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
-                        {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
-                      </Typography>
-                      <IconButton size="small" color="primary">
-                        <VisibilityIcon />
-                      </IconButton>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Box>
-            ))}
-          </Box>
-          {completedProjects.length > completedLimit && (
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Mostrando {completedLimit} de {completedProjects.length} proyectos completados
-              </Typography>
+                    </CardContent>
+                  </Card>
+                </Box>
+              ))}
             </Box>
           )}
-        </Paper>
+        </Box>
       )}
 
-      {/* Proyectos Pausados */}
-      {pausedProjects.length > 0 && (
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              <ScheduleIcon sx={{ mr: 1, color: 'warning.main' }} />
-              Proyectos Pausados ({pausedProjects.length})
-            </Typography>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Mostrar</InputLabel>
-              <Select
-                value={pausedLimit}
-                label="Mostrar"
-                onChange={e => setPausedLimit(Number(e.target.value))}
-              >
-                <MenuItem value={5}>Últimos 5</MenuItem>
-                <MenuItem value={10}>Últimos 10</MenuItem>
-                <MenuItem value={20}>Últimos 20</MenuItem>
-                <MenuItem value={pausedProjects.length}>Todos</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            {pausedProjects.slice(0, pausedLimit).map((project) => (
-              <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
-                <Card sx={{ height: '100%', cursor: 'pointer', opacity: 0.7 }} onClick={() => handleViewDetails(project)}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom>
-                          {project.title}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                            <BusinessIcon fontSize="small" />
-                          </Avatar>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.company}
+      {/* Sección de proyectos pausados */}
+      {tab === 2 && (
+        <Box>
+          {pausedProjects.length === 0 ? (
+            <Paper sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+              No tienes proyectos pausados aún.
+            </Paper>
+          ) : (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              {pausedProjects.slice(0, pausedLimit).map((project) => (
+                <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+                  <Card sx={{ height: '100%', cursor: 'pointer', opacity: 0.7 }} onClick={() => handleViewDetails(project)}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="h6" gutterBottom>
+                            {project.title}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                              <BusinessIcon fontSize="small" />
+                            </Avatar>
+                            <Typography variant="body2" color="text.secondary">
+                              {project.company}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Chip
+                          icon={getStatusIcon(project.status)}
+                          label={getStatusText(project.status)}
+                          color={getStatusColor(project.status) as any}
+                          size="small"
+                        />
+                      </Box>
+                      
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        {project.description.substring(0, 100)}...
+                      </Typography>
+
+                      <Box sx={{ mb: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                          <Typography variant="body2">Progreso</Typography>
+                          <Typography variant="body2" fontWeight="bold">
+                            {project.progress}%
                           </Typography>
                         </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
+                          sx={{ height: 8, borderRadius: 4 }}
+                        />
                       </Box>
-                      <Chip
-                        icon={getStatusIcon(project.status)}
-                        label={getStatusText(project.status)}
-                        color={getStatusColor(project.status) as any}
-                        size="small"
-                      />
-                    </Box>
-                    
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {project.description.substring(0, 100)}...
-                    </Typography>
 
-                    <Box sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2">Progreso</Typography>
-                        <Typography variant="body2" fontWeight="bold">
-                          {project.progress}%
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                        {project.technologies.slice(0, 3).map((tech) => (
+                          <Chip key={tech} label={tech} size="small" variant="outlined" />
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
+                        )}
+                      </Box>
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="caption" color="text.secondary">
+                          {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
+                          {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
+                        <IconButton size="small" color="primary">
+                          <VisibilityIcon />
+                        </IconButton>
                       </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
-                        sx={{ height: 8, borderRadius: 4 }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <Chip key={tech} label={tech} size="small" variant="outlined" />
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
-                      )}
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="caption" color="text.secondary">
-                        {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
-                        {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
-                      </Typography>
-                      <IconButton size="small" color="primary">
-                        <VisibilityIcon />
-                      </IconButton>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Box>
-            ))}
-          </Box>
-          {pausedProjects.length > pausedLimit && (
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Mostrando {pausedLimit} de {pausedProjects.length} proyectos pausados
-              </Typography>
+                    </CardContent>
+                  </Card>
+                </Box>
+              ))}
             </Box>
           )}
-        </Paper>
+        </Box>
       )}
 
       {/* Dialog para mostrar detalles del proyecto */}

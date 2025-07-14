@@ -252,6 +252,47 @@ def user_update(request, user_id):
 
 
 @csrf_exempt
+@require_http_methods(["GET"])
+def user_profile(request):
+    """Perfil del usuario actual."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        user_data = {
+            'id': str(current_user.id),
+            'email': current_user.email,
+            'first_name': current_user.first_name,
+            'last_name': current_user.last_name,
+            'username': current_user.username,
+            'phone': current_user.phone,
+            'avatar': current_user.avatar,
+            'bio': current_user.bio,
+            'role': current_user.role,
+            'is_active': current_user.is_active,
+            'is_verified': current_user.is_verified,
+            'is_staff': current_user.is_staff,
+            'is_superuser': current_user.is_superuser,
+            'date_joined': current_user.date_joined.isoformat(),
+            'last_login': current_user.last_login.isoformat() if current_user.last_login else None,
+            'created_at': current_user.created_at.isoformat(),
+            'updated_at': current_user.updated_at.isoformat(),
+            'full_name': current_user.full_name
+        }
+        
+        return JsonResponse(user_data)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
 @require_http_methods(["DELETE"])
 def user_delete(request, user_id):
     """Eliminar un usuario."""

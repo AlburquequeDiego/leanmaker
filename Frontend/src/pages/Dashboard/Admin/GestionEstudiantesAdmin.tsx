@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
+import { useNavigate } from 'react-router-dom';
 
 interface Student {
   id: string;
@@ -84,6 +85,8 @@ export default function GestionEstudiantesAdmin() {
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     loadStudents();
   }, [pageSize, currentPage, filters]);
@@ -110,7 +113,7 @@ export default function GestionEstudiantesAdmin() {
       if (filters.api_level) params.append('api_level', filters.api_level);
       if (filters.status) params.append('status', filters.status);
 
-      const response = await apiService.get(`/api/admin/students/?${params.toString()}`);
+      const response = await apiService.get(`/api/students/?${params.toString()}`);
       
       setStudents(response.results || []);
       setTotalCount(response.count || 0);
@@ -361,9 +364,18 @@ export default function GestionEstudiantesAdmin() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom fontWeight={700}>
-        Gestión de Estudiantes
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" gutterBottom fontWeight={700}>
+          Gestión de Estudiantes
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/dashboard/admin/api-requests')}
+        >
+          Ver Peticiones de Subida de Nivel API
+        </Button>
+      </Box>
 
       <DataTable
         title="Lista de Estudiantes"

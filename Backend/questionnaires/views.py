@@ -364,6 +364,18 @@ def answers_create(request):
         return JsonResponse({'error': f'Error al crear respuesta: {str(e)}'}, status=500)
 
 @csrf_exempt
+@require_http_methods(["GET"])
+def questionnaire_list(request):
+    """Lista de cuestionarios (alias para questionnaires_list)."""
+    return questionnaires_list(request)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def questionnaire_detail(request, questionnaire_id):
+    """Detalle de un cuestionario (alias para questionnaires_detail)."""
+    return questionnaires_detail(request, questionnaire_id)
+
+@csrf_exempt
 @require_http_methods(["POST"])
 @require_auth
 def submit_questionnaire_response(request):

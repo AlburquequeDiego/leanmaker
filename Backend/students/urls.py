@@ -5,29 +5,14 @@ URLs para la app students.
 from django.urls import path
 from . import views
 
+app_name = 'students'
+
 urlpatterns = [
-    # Vista de prueba
-    path('test/', views.student_test, name='student_test'),
-    path('me/', views.student_me, name='student_me'),
-    
-    # Lista de estudiantes
     path('', views.student_list, name='student_list'),
-    
-    # Detalle de estudiante
-    path('<str:student_id>/', views.student_detail, name='student_detail'),
-    
-    # Crear estudiante
-    path('create/', views.student_create, name='student_create'),
-    
-    # Actualizar estudiante
-    path('<str:student_id>/update/', views.student_update, name='student_update'),
-    
-    # Eliminar estudiante
-    path('<str:student_id>/delete/', views.student_delete, name='student_delete'),
-    
-    # Proyectos del estudiante
-    path('<str:student_id>/projects/', views.student_projects, name='student_projects'),
-    
-    # Aplicaciones del estudiante
-    path('<str:student_id>/applications/', views.student_applications, name='student_applications'),
+    path('me/', views.student_me, name='student_me'),
+    path('<int:student_id>/', views.student_detail, name='student_detail'),
+    path('api-level-request/', views.api_level_request_create, name='api_level_request_create'),
+    path('api-level-requests/', views.api_level_request_list, name='api_level_request_list'),
+    path('admin/api-level-requests/', views.api_level_request_admin_list, name='api_level_request_admin_list'),
+    path('admin/api-level-request/<int:request_id>/action/', views.api_level_request_admin_action, name='api_level_request_admin_action'),
 ] 

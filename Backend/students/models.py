@@ -275,6 +275,33 @@ class PerfilEstudiante(models.Model):
         else:
             self.tipo_proyectos_preferidos = None
 
+class ApiLevelRequest(models.Model):
+    """
+    Petición de subida de nivel API por parte del estudiante.
+    """
+    STATUS_CHOICES = (
+        ('pending', 'Pendiente'),
+        ('approved', 'Aprobada'),
+        ('rejected', 'Rechazada'),
+    )
+    id = models.AutoField(primary_key=True)
+    student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='api_level_requests')
+    requested_level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(4)])
+    current_level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(4)])
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    feedback = models.TextField(null=True, blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'api_level_requests'
+        verbose_name = 'Petición de Nivel API'
+        verbose_name_plural = 'Peticiones de Nivel API'
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"Petición de {self.student.user.full_name} a nivel {self.requested_level} ({self.status})"
+
 def student_cv_path(instance, filename):
     # Ruta por defecto para guardar CVs
     return f'students/cvs/{instance.estudiante.user.id}/{filename}'

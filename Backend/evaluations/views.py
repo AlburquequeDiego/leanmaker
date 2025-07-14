@@ -36,12 +36,12 @@ def evaluations_list(request):
         status = request.GET.get('status', '')
         
         # Query base
-        queryset = Evaluation.objects.select_related('project', 'student', 'student__user', 'project__company').all()
+        queryset = Evaluation.objects.select_related('project', 'student', 'project__company').all()
         
         # Aplicar filtros según el rol del usuario
         if current_user.role == 'student':
             # Estudiantes solo ven sus propias evaluaciones
-            queryset = queryset.filter(student__user=current_user)
+            queryset = queryset.filter(student=current_user)
         elif current_user.role == 'company':
             # Empresas ven evaluaciones de sus proyectos
             queryset = queryset.filter(project__company__user=current_user)
@@ -71,8 +71,8 @@ def evaluations_list(request):
                 'project': str(evaluation.project.id),
                 'project_title': evaluation.project.title,
                 'student': str(evaluation.student.id),
-                'student_name': evaluation.student.user.full_name,
-                'student_email': evaluation.student.user.email,
+                'student_name': evaluation.student.full_name,
+                'student_email': evaluation.student.email,
                 'company_name': evaluation.project.company.company_name if evaluation.project.company else 'Sin empresa',
                 'score': evaluation.score,
                 'comments': evaluation.comments,
@@ -115,12 +115,12 @@ def evaluations_detail(request, evaluations_id):
         
         # Obtener evaluación
         try:
-            evaluation = Evaluation.objects.select_related('project', 'student', 'student__user', 'project__company').get(id=evaluations_id)
+            evaluation = Evaluation.objects.select_related('project', 'student', 'project__company').get(id=evaluations_id)
         except Evaluation.DoesNotExist:
             return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
         
         # Verificar permisos
-        if current_user.role == 'student' and str(evaluation.student.user.id) != str(current_user.id):
+        if current_user.role == 'student' and str(evaluation.student.id) != str(current_user.id):
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         elif current_user.role == 'company' and str(evaluation.project.company.user.id) != str(current_user.id):
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
@@ -131,8 +131,8 @@ def evaluations_detail(request, evaluations_id):
             'project': str(evaluation.project.id),
             'project_title': evaluation.project.title,
             'student': str(evaluation.student.id),
-            'student_name': evaluation.student.user.full_name,
-            'student_email': evaluation.student.user.email,
+            'student_name': evaluation.student.full_name,
+            'student_email': evaluation.student.email,
             'company_name': evaluation.project.company.company_name if evaluation.project.company else 'Sin empresa',
             'score': evaluation.score,
             'comments': evaluation.comments,
@@ -250,6 +250,18 @@ def evaluations_update(request, evaluations_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def evaluation_list(request):
+    """Lista de evaluaciones (alias para evaluations_list)."""
+    return evaluations_list(request)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def evaluation_detail(request, evaluation_id):
+    """Detalle de una evaluación (alias para evaluations_detail)."""
+    return evaluations_detail(request, evaluation_id)
 
 @csrf_exempt
 @require_http_methods(["DELETE"])

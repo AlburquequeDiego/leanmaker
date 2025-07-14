@@ -34,6 +34,7 @@ import GestionEstudiantesAdmin from '../pages/Dashboard/Admin/GestionEstudiantes
 import GestionProyectosAdmin from '../pages/Dashboard/Admin/GestionProyectosAdmin';
 import GestionEvaluacionesAdmin from '../pages/Dashboard/Admin/GestionEvaluacionesAdmin';
 import ConfiguracionPlataformaAdmin from '../pages/Dashboard/Admin/ConfiguracionPlataformaAdmin';
+import APIRequestsAdmin from '../pages/Dashboard/Admin/APIRequestsAdmin';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -108,6 +109,7 @@ export const AppRoutes = () => {
           <Route path="notificaciones" element={<NotificacionesAdmin />} />
           <Route path="gestion-empresas" element={<GestionEmpresasAdmin />} />
           <Route path="gestion-estudiantes" element={<GestionEstudiantesAdmin />} />
+          <Route path="api-requests" element={<APIRequestsAdmin />} />
           <Route path="gestion-proyectos" element={<GestionProyectosAdmin />} />
           <Route path="gestion-evaluaciones" element={<GestionEvaluacionesAdmin />} />
           <Route path="configuracion-plataforma" element={<ConfiguracionPlataformaAdmin />} />

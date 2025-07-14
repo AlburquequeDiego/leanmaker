@@ -5,12 +5,10 @@ URLs para la app applications.
 from django.urls import path
 from . import views
 
+app_name = 'applications'
+
 urlpatterns = [
-    path('', views.applications_list, name='applications_list'),
-    path('<str:applications_id>/', views.applications_detail, name='applications_detail'),
-    path('create/', views.applications_create, name='applications_create'),
-    path('<str:applications_id>/update/', views.applications_update, name='applications_update'),
-    path('<str:applications_id>/delete/', views.applications_delete, name='applications_delete'),
-    path('received_applications/', views.applications_received_applications, name='applications_received_applications'),
-    path('my_applications/', views.applications_my_applications, name='applications_my_applications'),
+    path('', views.application_list, name='application_list'),
+    path('<int:application_id>/', views.application_detail, name='application_detail'),
+    path('my_applications/', views.my_applications, name='my_applications'),
 ]
