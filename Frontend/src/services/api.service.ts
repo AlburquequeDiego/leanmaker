@@ -59,6 +59,12 @@ class ApiService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error(`[apiService] HTTP error ${response.status}:`, errorData);
+        
+        // Para errores 400, preservar el mensaje específico del backend
+        if (response.status === 400 && errorData.error) {
+          throw new Error(errorData.error);
+        }
+        
         throw new Error(errorData.detail || errorData.message || `HTTP error! status: ${response.status}`);
       }
 

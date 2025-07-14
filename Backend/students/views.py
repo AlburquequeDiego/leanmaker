@@ -503,16 +503,25 @@ def api_level_request_create(request):
         current_user = verify_token(token)
         if not current_user or current_user.role != 'student':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        student = Estudiante.objects.get(user=current_user)
+        
+        # Verificar que el estudiante existe
+        try:
+            student = Estudiante.objects.get(user=current_user)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+        
         data = json.loads(request.body)
         requested_level = int(data.get('requested_level'))
         current_level = int(data.get('current_level', student.api_level))
+        
         # Solo permitir si el nivel solicitado es mayor al actual
         if requested_level <= current_level:
             return JsonResponse({'error': 'El nivel solicitado debe ser mayor al actual.'}, status=400)
+        
         # Solo una petición pendiente por estudiante
         if ApiLevelRequest.objects.filter(student=student, status='pending').exists():
             return JsonResponse({'error': 'Ya tienes una petición pendiente.'}, status=400)
+        
         req = ApiLevelRequest.objects.create(
             student=student,
             requested_level=requested_level,
@@ -520,6 +529,10 @@ def api_level_request_create(request):
             status='pending',
         )
         return JsonResponse({'success': True, 'request_id': req.id, 'status': req.status})
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+    except ValueError as e:
+        return JsonResponse({'error': 'Datos inválidos'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -535,7 +548,13 @@ def api_level_request_list(request):
         current_user = verify_token(token)
         if not current_user or current_user.role != 'student':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        student = Estudiante.objects.get(user=current_user)
+        
+        # Verificar que el estudiante existe
+        try:
+            student = Estudiante.objects.get(user=current_user)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+        
         requests = ApiLevelRequest.objects.filter(student=student).order_by('-submitted_at')
         data = [
             {
@@ -594,12 +613,20 @@ def api_level_request_admin_action(request, request_id):
         current_user = verify_token(token)
         if not current_user or current_user.role != 'admin':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        req = ApiLevelRequest.objects.select_related('student').get(id=request_id)
+        
+        # Verificar que la petición existe
+        try:
+            req = ApiLevelRequest.objects.select_related('student').get(id=request_id)
+        except ApiLevelRequest.DoesNotExist:
+            return JsonResponse({'error': 'Petición no encontrada'}, status=404)
+        
         data = json.loads(request.body)
         action = data.get('action')  # 'approve' o 'reject'
         feedback = data.get('feedback', '')
+        
         if req.status != 'pending':
             return JsonResponse({'error': 'La petición ya fue revisada.'}, status=400)
+        
         if action == 'approve':
             req.status = 'approved'
             req.reviewed_at = timezone.now()
@@ -616,6 +643,9 @@ def api_level_request_admin_action(request, request_id):
             req.save()
         else:
             return JsonResponse({'error': 'Acción inválida.'}, status=400)
+        
         return JsonResponse({'success': True, 'status': req.status})
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

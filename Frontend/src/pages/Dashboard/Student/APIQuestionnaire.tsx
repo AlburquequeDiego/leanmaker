@@ -182,7 +182,7 @@ export const APIQuestionnaire = () => {
     if (level) {
       setCalculatedLevel(level);
       setShowResults(true);
-      setPendingApproval(true);
+      setPendingApproval(false); // Inicialmente no está pendiente hasta confirmar
       setError(null);
       setSuccess(null);
 
@@ -191,9 +191,31 @@ export const APIQuestionnaire = () => {
         // Enviar petición de subida de nivel API
         await apiService.requestApiLevelUpgrade(level, 0); // 0 como currentLevel, puedes obtener el real si lo tienes
         setSuccess('La petición de tu cuestionario requiere la aprobación del administrador. Por favor, espera un momento.');
-      } catch (error) {
+        setPendingApproval(true);
+      } catch (error: any) {
         console.error('Error enviando petición de subida de nivel API:', error);
-        setError('Error al enviar la petición. Por favor, inténtalo de nuevo.');
+        
+        // Verificar si el error es por petición pendiente
+        // El error puede venir en diferentes formatos dependiendo de cómo se lance
+        let errorMessage = '';
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error) {
+          errorMessage = error.error;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+        
+        // Buscar el mensaje específico del backend
+        if (errorMessage.includes('Ya tienes una petición pendiente') || 
+            errorMessage.includes('Ya tienes una petición pendiente.')) {
+          setError('Ya tienes una petición pendiente de aprobación. Por favor, espera a que el administrador la revise antes de enviar otra.');
+        } else {
+          setError('Error al enviar la petición. Por favor, inténtalo de nuevo.');
+        }
+        
+        // No mostrar resultados si hay error
+        setShowResults(false);
       } finally {
         setLoading(false);
       }

@@ -8583,3 +8583,476 @@ INFO 2025-07-14 16:19:53,911 basehttp 11436 17984 "GET /api/students/?limit=10&o
 INFO 2025-07-14 16:20:06,459 basehttp 11436 17984 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 222
 INFO 2025-07-14 16:20:06,752 basehttp 11436 17984 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 222
 INFO 2025-07-14 16:20:13,963 basehttp 11436 17984 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 16:20:21,652 basehttp 11436 17984 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-14 16:20:21,894 basehttp 11436 17984 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:20:22,627 basehttp 11436 17984 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 16:21:52,248 basehttp 11436 14972 "GET /api/students/me/ HTTP/1.1" 200 967
+INFO 2025-07-14 16:21:53,016 basehttp 11436 14972 "GET /api/students/me/ HTTP/1.1" 200 967
+INFO 2025-07-14 16:21:53,092 basehttp 11436 17656 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:21:53,572 basehttp 11436 17656 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:21:54,540 basehttp 11436 17984 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 16:21:56,909 basehttp 11436 17656 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 16:22:01,512 basehttp 11436 17656 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:22:01,745 basehttp 11436 17656 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:22:01,939 basehttp 11436 17984 "GET /api/students/me/ HTTP/1.1" 200 967
+INFO 2025-07-14 16:22:02,223 basehttp 11436 17656 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:22:02,256 basehttp 11436 17984 "GET /api/students/me/ HTTP/1.1" 200 967
+INFO 2025-07-14 16:22:02,572 basehttp 11436 17984 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:22:13,522 basehttp 11436 17656 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-14 16:22:13,974 basehttp 11436 17984 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 16:22:14,489 basehttp 11436 14972 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-14 16:22:16,167 basehttp 11436 17656 "GET /api/notifications/ HTTP/1.1" 200 511474
+WARNING 2025-07-14 16:22:21,550 log 11436 17656 Bad Request: /api/students/api-level-request/
+WARNING 2025-07-14 16:22:21,550 basehttp 11436 17656 "POST /api/students/api-level-request/ HTTP/1.1" 400 51
+INFO 2025-07-14 16:22:27,062 basehttp 11436 17656 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:22:27,342 basehttp 11436 17656 "GET /api/users/profile/ HTTP/1.1" 200 592
+WARNING 2025-07-14 16:22:50,735 log 11436 11432 Bad Request: /api/students/api-level-request/
+WARNING 2025-07-14 16:22:50,744 basehttp 11436 11432 "POST /api/students/api-level-request/ HTTP/1.1" 400 51
+INFO 2025-07-14 16:25:39,849 basehttp 11436 18436 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-14 16:25:40,616 basehttp 11436 18436 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-14 16:25:47,798 basehttp 11436 18436 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:25:48,124 basehttp 11436 18436 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:26:31,687 basehttp 11436 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-14 16:26:32,053 basehttp 11436 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-14 16:26:52,543 basehttp 11436 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-14 16:26:53,013 basehttp 11436 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-14 16:27:47,564 basehttp 11436 1448 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:27:47,792 basehttp 11436 1448 "GET /api/users/profile/ HTTP/1.1" 200 592
+WARNING 2025-07-14 16:27:53,693 log 11436 20716 Bad Request: /api/students/api-level-request/
+WARNING 2025-07-14 16:27:53,693 basehttp 11436 20716 "POST /api/students/api-level-request/ HTTP/1.1" 400 51
+INFO 2025-07-14 16:28:30,431 basehttp 11436 1096 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:28:30,663 basehttp 11436 1096 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:28:43,339 basehttp 11436 17496 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:28:43,594 basehttp 11436 17496 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:30:41,296 basehttp 11436 20844 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:30:41,546 basehttp 11436 20844 "GET /api/users/profile/ HTTP/1.1" 200 592
+WARNING 2025-07-14 16:30:46,735 log 11436 15924 Bad Request: /api/students/api-level-request/
+WARNING 2025-07-14 16:30:46,748 basehttp 11436 15924 "POST /api/students/api-level-request/ HTTP/1.1" 400 51
+INFO 2025-07-14 16:31:56,601 basehttp 11436 15924 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:31:56,861 basehttp 11436 15924 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:32:05,686 basehttp 11436 15924 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-14 16:32:06,080 basehttp 11436 15924 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-14 16:32:08,409 basehttp 11436 15924 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 16:32:12,633 basehttp 11436 15924 "POST /api/token/ HTTP/1.1" 200 1018
+INFO 2025-07-14 16:32:12,871 basehttp 11436 15924 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 16:32:13,311 basehttp 11436 15924 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 111
+INFO 2025-07-14 16:32:16,053 basehttp 11436 15924 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 16:32:16,361 basehttp 11436 15924 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 16:32:16,692 basehttp 11436 15924 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 16:32:17,332 basehttp 11436 15924 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 222
+INFO 2025-07-14 16:32:17,611 basehttp 11436 15924 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 222
+INFO 2025-07-14 16:32:19,372 basehttp 11436 15924 "OPTIONS /api/students/admin/api-level-request/1/action/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:32:19,900 basehttp 11436 15924 "POST /api/students/admin/api-level-request/1/action/ HTTP/1.1" 200 39
+INFO 2025-07-14 16:32:20,166 basehttp 11436 15924 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 243
+INFO 2025-07-14 16:32:22,457 basehttp 11436 15924 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 16:32:26,741 basehttp 11436 15924 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-14 16:32:26,982 basehttp 11436 15924 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:32:27,641 basehttp 11436 15924 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 16:32:29,802 basehttp 11436 15924 "GET /api/students/api-level-requests/ HTTP/1.1" 200 191
+INFO 2025-07-14 16:32:30,154 basehttp 11436 15924 "GET /api/students/api-level-requests/ HTTP/1.1" 200 191
+ERROR 2025-07-14 16:32:47,911 log 11436 7752 Internal Server Error: /api/students/api-level-request/
+ERROR 2025-07-14 16:32:47,916 basehttp 11436 7752 "POST /api/students/api-level-request/ HTTP/1.1" 500 439
+INFO 2025-07-14 16:34:19,773 autoreload 11436 3336 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-14 16:34:21,406 autoreload 18844 10596 Watching for file changes with StatReloader
+INFO 2025-07-14 16:34:30,721 autoreload 18844 10596 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-14 16:34:32,501 autoreload 12848 20920 Watching for file changes with StatReloader
+INFO 2025-07-14 16:34:35,157 autoreload 12848 20920 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-14 16:34:36,578 autoreload 12212 1908 Watching for file changes with StatReloader
+INFO 2025-07-14 16:34:46,895 autoreload 12212 1908 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-14 16:34:47,933 autoreload 2172 15164 Watching for file changes with StatReloader
+INFO 2025-07-14 16:38:08,400 autoreload 12856 17632 Watching for file changes with StatReloader
+INFO 2025-07-14 16:40:28,575 autoreload 10052 19428 Watching for file changes with StatReloader
+INFO 2025-07-14 16:41:32,028 basehttp 10052 12004 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:41:32,029 basehttp 10052 12004 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:41:33,721 basehttp 10052 1448 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:41:33,942 basehttp 10052 1448 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:41:35,806 basehttp 10052 1448 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:41:38,220 basehttp 10052 1448 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-14 16:41:38,404 basehttp 10052 1448 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:41:38,479 basehttp 10052 1448 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:41:44,011 basehttp 10052 1448 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 16:42:04,582 basehttp 10052 1448 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:04,586 basehttp 10052 12004 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:05,239 basehttp 10052 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 191
+INFO 2025-07-14 16:42:05,589 basehttp 10052 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 191
+INFO 2025-07-14 16:42:20,923 basehttp 10052 1448 "OPTIONS /api/students/api-level-request/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:21,789 basehttp 10052 1448 "POST /api/students/api-level-request/ HTTP/1.1" 200 55
+INFO 2025-07-14 16:42:29,486 basehttp 10052 1448 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:29,505 basehttp 10052 1448 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 16:42:34,179 basehttp 10052 1448 "POST /api/token/ HTTP/1.1" 200 1018
+INFO 2025-07-14 16:42:34,420 basehttp 10052 1448 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 16:42:34,469 basehttp 10052 1448 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:35,119 basehttp 10052 1448 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 111
+INFO 2025-07-14 16:42:38,796 basehttp 10052 1448 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:38,796 basehttp 10052 12004 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:39,731 basehttp 10052 12004 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 16:42:40,403 basehttp 10052 1448 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 16:42:40,422 basehttp 10052 1448 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:40,424 basehttp 10052 1448 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:41,132 basehttp 10052 12004 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 16:42:41,749 basehttp 10052 1448 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 452
+INFO 2025-07-14 16:42:42,219 basehttp 10052 1448 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 452
+INFO 2025-07-14 16:42:46,696 basehttp 10052 1448 "OPTIONS /api/students/admin/api-level-request/2/action/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:42:47,775 basehttp 10052 1448 "POST /api/students/admin/api-level-request/2/action/ HTTP/1.1" 200 39
+INFO 2025-07-14 16:42:48,326 basehttp 10052 1448 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 473
+INFO 2025-07-14 16:42:50,403 basehttp 10052 1448 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 16:42:55,387 basehttp 10052 1448 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-14 16:42:56,279 basehttp 10052 1448 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:42:58,530 basehttp 10052 1448 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 16:42:59,810 basehttp 10052 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 369
+INFO 2025-07-14 16:43:00,559 basehttp 10052 1448 "GET /api/students/api-level-requests/ HTTP/1.1" 200 369
+INFO 2025-07-14 16:44:20,340 basehttp 10052 15148 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 16:48:59,107 basehttp 10052 8788 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:49:02,169 basehttp 10052 8788 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-14 16:49:02,172 basehttp 10052 8788 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:49:02,448 basehttp 10052 8788 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 16:49:02,524 basehttp 10052 8788 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-14 16:49:03,262 basehttp 10052 8788 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 16:52:43,586 autoreload 2040 21172 Watching for file changes with StatReloader
+INFO 2025-07-14 16:54:05,529 basehttp 2040 13476 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+ERROR 2025-07-14 16:55:52,039 exception 2040 19520 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:55:52,340 log 2040 19520 Bad Request: /
+WARNING 2025-07-14 16:55:52,340 basehttp 2040 19520 "GET / HTTP/1.1" 400 76016
+ERROR 2025-07-14 16:55:52,636 exception 2040 21500 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:55:52,716 log 2040 21500 Bad Request: /favicon.ico
+WARNING 2025-07-14 16:55:52,716 basehttp 2040 21500 "GET /favicon.ico HTTP/1.1" 400 76097
+ERROR 2025-07-14 16:56:04,041 exception 2040 7536 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:56:04,076 log 2040 7536 Bad Request: /
+WARNING 2025-07-14 16:56:04,076 basehttp 2040 7536 "GET / HTTP/1.1" 400 76016
+ERROR 2025-07-14 16:56:04,726 exception 2040 10992 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:56:04,746 log 2040 10992 Bad Request: /favicon.ico
+WARNING 2025-07-14 16:56:04,755 basehttp 2040 10992 "GET /favicon.ico HTTP/1.1" 400 76097
+ERROR 2025-07-14 16:56:12,056 exception 2040 1052 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:56:12,119 log 2040 1052 Bad Request: /
+WARNING 2025-07-14 16:56:12,119 basehttp 2040 1052 "GET / HTTP/1.1" 400 76016
+ERROR 2025-07-14 16:56:12,381 exception 2040 20556 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:56:12,406 log 2040 20556 Bad Request: /favicon.ico
+WARNING 2025-07-14 16:56:12,415 basehttp 2040 20556 "GET /favicon.ico HTTP/1.1" 400 76097
+ERROR 2025-07-14 16:56:48,434 exception 2040 18220 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:56:48,476 log 2040 18220 Bad Request: /
+WARNING 2025-07-14 16:56:48,476 basehttp 2040 18220 "GET / HTTP/1.1" 400 76016
+ERROR 2025-07-14 16:56:48,750 exception 2040 348 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 16:56:48,793 log 2040 348 Bad Request: /favicon.ico
+WARNING 2025-07-14 16:56:48,799 basehttp 2040 348 "GET /favicon.ico HTTP/1.1" 400 76097
+INFO 2025-07-14 16:58:00,365 autoreload 9044 17928 Watching for file changes with StatReloader
+INFO 2025-07-14 16:59:11,286 basehttp 9044 9784 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 17:03:27,579 basehttp 9044 9236 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 17:03:28,504 basehttp 9044 9236 "GET /api/users/profile/ HTTP/1.1" 200 592
+ERROR 2025-07-14 17:05:09,753 exception 9044 15836 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 17:05:09,795 log 9044 15836 Bad Request: /
+WARNING 2025-07-14 17:05:09,795 basehttp 9044 15836 "GET / HTTP/1.1" 400 76016
+ERROR 2025-07-14 17:05:10,046 exception 9044 15480 Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\utils\deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\http\request.py", line 150, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '10.157.122.178:8000'. You may need to add '10.157.122.178' to ALLOWED_HOSTS.
+WARNING 2025-07-14 17:05:10,076 log 9044 15480 Bad Request: /favicon.ico
+WARNING 2025-07-14 17:05:10,076 basehttp 9044 15480 "GET /favicon.ico HTTP/1.1" 400 76097
+INFO 2025-07-14 17:09:12,004 autoreload 9044 17928 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-14 17:09:13,033 autoreload 14168 13896 Watching for file changes with StatReloader
+INFO 2025-07-14 17:09:22,167 autoreload 14168 13896 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-14 17:09:23,213 autoreload 20204 19692 Watching for file changes with StatReloader
+INFO 2025-07-14 17:09:25,484 autoreload 20204 19692 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-14 17:09:26,587 autoreload 9456 12500 Watching for file changes with StatReloader
+INFO 2025-07-14 17:10:07,602 autoreload 21436 4076 Watching for file changes with StatReloader
+INFO 2025-07-14 17:11:57,472 autoreload 21436 4076 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-14 17:11:58,653 autoreload 19352 8908 Watching for file changes with StatReloader
+INFO 2025-07-14 17:13:02,811 basehttp 19352 20020 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-14 17:13:03,422 basehttp 19352 20020 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-14 17:13:07,175 basehttp 19352 19004 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:07,178 basehttp 19352 19004 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:08,137 basehttp 19352 19844 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:08,137 basehttp 19352 6196 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:08,459 basehttp 19352 19844 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:08,462 basehttp 19352 19844 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:08,465 basehttp 19352 19844 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:08,467 basehttp 19352 19844 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:13:13,792 basehttp 19352 20020 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 17:13:14,852 basehttp 19352 19844 "GET /api/evaluations/ HTTP/1.1" 200 2869
+INFO 2025-07-14 17:13:15,092 basehttp 19352 19004 "GET /api/students/api-level-requests/ HTTP/1.1" 200 369
+INFO 2025-07-14 17:13:15,113 basehttp 19352 8816 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-14 17:13:18,442 basehttp 19352 6196 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-14 17:13:18,502 basehttp 19352 8816 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-14 17:13:18,802 basehttp 19352 19004 "GET /api/students/api-level-requests/ HTTP/1.1" 200 369
+INFO 2025-07-14 17:13:19,072 basehttp 19352 19844 "GET /api/evaluations/ HTTP/1.1" 200 2869
+INFO 2025-07-14 17:13:19,680 basehttp 19352 19004 "GET /api/students/api-level-requests/ HTTP/1.1" 200 369
+INFO 2025-07-14 17:13:20,592 basehttp 19352 20020 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-14 17:13:20,772 basehttp 19352 19004 "GET /api/students/api-level-requests/ HTTP/1.1" 200 369
+ERROR 2025-07-14 17:14:00,665 log 19352 20020 Internal Server Error: /api/companies/
+ERROR 2025-07-14 17:14:00,665 basehttp 19352 20020 "GET /api/companies/ HTTP/1.1" 500 893
+ERROR 2025-07-14 17:14:00,872 log 19352 19004 Internal Server Error: /api/evaluations/
+ERROR 2025-07-14 17:14:00,872 basehttp 19352 19004 "GET /api/evaluations/ HTTP/1.1" 500 893
+INFO 2025-07-14 17:14:01,229 basehttp 19352 20020 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-14 17:14:02,472 basehttp 19352 19004 "GET /api/evaluations/ HTTP/1.1" 200 2869
+INFO 2025-07-14 17:14:48,481 basehttp 19352 19004 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 166
+INFO 2025-07-14 17:14:52,922 basehttp 19352 19004 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:14:52,958 basehttp 19352 19004 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 17:14:58,303 basehttp 19352 19004 "POST /api/token/ HTTP/1.1" 200 1021
+INFO 2025-07-14 17:15:00,161 basehttp 19352 19004 "GET /api/users/profile/ HTTP/1.1" 200 1968
+INFO 2025-07-14 17:15:00,226 basehttp 19352 19004 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:15:02,481 basehttp 19352 19004 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-14 17:15:31,260 basehttp 19352 19004 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-14 17:15:32,992 basehttp 19352 19004 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-14 17:15:46,351 basehttp 19352 19004 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:15:46,351 basehttp 19352 20020 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:16,017 basehttp 19352 20020 - Broken pipe from ('127.0.0.1', 62818)
+INFO 2025-07-14 17:16:18,632 basehttp 19352 19844 "GET /api/users/profile/ HTTP/1.1" 200 1968
+INFO 2025-07-14 17:16:19,341 basehttp 19352 19844 "GET /api/users/profile/ HTTP/1.1" 200 1968
+INFO 2025-07-14 17:16:20,473 basehttp 19352 19004 - Broken pipe from ('127.0.0.1', 62819)
+INFO 2025-07-14 17:16:23,435 basehttp 19352 11372 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 17:16:25,792 basehttp 19352 19844 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 17:16:30,399 basehttp 19352 19844 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:30,399 basehttp 19352 11372 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+WARNING 2025-07-14 17:16:30,653 log 19352 11372 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-14 17:16:30,653 basehttp 19352 11372 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-14 17:16:31,048 log 19352 11372 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-14 17:16:31,048 basehttp 19352 11372 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+INFO 2025-07-14 17:16:31,852 basehttp 19352 11372 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:31,852 basehttp 19352 19844 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+WARNING 2025-07-14 17:16:31,954 log 19352 19844 Not Found: /api/applications/received_applications/
+WARNING 2025-07-14 17:16:31,955 basehttp 19352 19844 "GET /api/applications/received_applications/ HTTP/1.1" 404 18306
+WARNING 2025-07-14 17:16:32,042 log 19352 19844 Not Found: /api/applications/received_applications/
+WARNING 2025-07-14 17:16:32,042 basehttp 19352 19844 "GET /api/applications/received_applications/ HTTP/1.1" 404 18306
+INFO 2025-07-14 17:16:32,804 basehttp 19352 19844 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:32,804 basehttp 19352 11372 "OPTIONS /api/users/ HTTP/1.1" 200 0
+WARNING 2025-07-14 17:16:32,891 log 19352 11372 Not Found: /api/users/
+WARNING 2025-07-14 17:16:32,891 basehttp 19352 11372 "GET /api/users/ HTTP/1.1" 404 17696
+WARNING 2025-07-14 17:16:32,967 log 19352 11372 Not Found: /api/users/
+WARNING 2025-07-14 17:16:32,969 basehttp 19352 11372 "GET /api/users/ HTTP/1.1" 404 17696
+WARNING 2025-07-14 17:16:35,441 log 19352 11372 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-14 17:16:35,441 basehttp 19352 11372 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-14 17:16:35,923 log 19352 11372 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-14 17:16:35,926 basehttp 19352 11372 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-14 17:16:36,371 log 19352 11372 Not Found: /api/applications/received_applications/
+WARNING 2025-07-14 17:16:36,371 basehttp 19352 11372 "GET /api/applications/received_applications/ HTTP/1.1" 404 18306
+WARNING 2025-07-14 17:16:36,455 log 19352 19844 Not Found: /api/applications/received_applications/
+WARNING 2025-07-14 17:16:36,455 basehttp 19352 19844 "GET /api/applications/received_applications/ HTTP/1.1" 404 18306
+WARNING 2025-07-14 17:16:37,003 log 19352 19844 Not Found: /api/users/
+WARNING 2025-07-14 17:16:37,003 basehttp 19352 19844 "GET /api/users/ HTTP/1.1" 404 17696
+WARNING 2025-07-14 17:16:37,081 log 19352 19844 Not Found: /api/users/
+WARNING 2025-07-14 17:16:37,081 basehttp 19352 19844 "GET /api/users/ HTTP/1.1" 404 17696
+INFO 2025-07-14 17:16:38,258 basehttp 19352 19844 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:38,258 basehttp 19352 11372 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:38,682 basehttp 19352 11372 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-14 17:16:39,268 basehttp 19352 11372 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-14 17:16:39,301 basehttp 19352 11372 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:39,301 basehttp 19352 19844 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+WARNING 2025-07-14 17:16:39,373 log 19352 19844 Not Found: /api/interviews/
+WARNING 2025-07-14 17:16:39,373 basehttp 19352 19844 "GET /api/interviews/ HTTP/1.1" 404 17716
+WARNING 2025-07-14 17:16:39,443 log 19352 19844 Not Found: /api/interviews/
+WARNING 2025-07-14 17:16:39,451 basehttp 19352 19844 "GET /api/interviews/ HTTP/1.1" 404 17716
+INFO 2025-07-14 17:16:40,131 basehttp 19352 19844 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:40,131 basehttp 19352 11372 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:44,571 basehttp 19352 11372 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+WARNING 2025-07-14 17:16:44,685 log 19352 11372 Not Found: /api/users/
+WARNING 2025-07-14 17:16:44,693 basehttp 19352 11372 "GET /api/users/ HTTP/1.1" 404 17696
+INFO 2025-07-14 17:16:45,336 basehttp 19352 11372 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:16:45,340 basehttp 19352 11372 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+WARNING 2025-07-14 17:16:45,507 log 19352 11372 Not Found: /api/strikes/
+WARNING 2025-07-14 17:16:45,507 basehttp 19352 11372 "GET /api/strikes/ HTTP/1.1" 404 17705
+WARNING 2025-07-14 17:16:45,611 log 19352 11372 Not Found: /api/strikes/
+WARNING 2025-07-14 17:16:45,611 basehttp 19352 11372 "GET /api/strikes/ HTTP/1.1" 404 17704
+INFO 2025-07-14 17:16:48,082 basehttp 19352 19844 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+WARNING 2025-07-14 17:16:48,262 log 19352 19844 Not Found: /api/users/
+WARNING 2025-07-14 17:16:48,262 basehttp 19352 19844 "GET /api/users/ HTTP/1.1" 404 17697
+INFO 2025-07-14 17:16:50,723 basehttp 19352 19844 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 17:16:59,984 basehttp 19352 19844 "POST /api/token/ HTTP/1.1" 200 1018
+INFO 2025-07-14 17:17:00,477 basehttp 19352 19844 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 17:17:00,541 basehttp 19352 19844 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:17:08,141 basehttp 19352 19844 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 111
+INFO 2025-07-14 17:17:40,216 basehttp 19352 19844 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-14 17:19:20,395 basehttp 19352 19844 "POST /api/token/ HTTP/1.1" 200 1018
+INFO 2025-07-14 17:19:22,090 basehttp 19352 19844 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 17:19:23,580 basehttp 19352 19844 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 111
+INFO 2025-07-14 17:19:26,977 basehttp 19352 19844 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 17:19:28,044 basehttp 19352 19844 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 17:19:38,509 basehttp 19352 19844 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 17:19:43,598 basehttp 19352 11372 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 17:19:45,230 basehttp 19352 11372 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 17:19:45,571 basehttp 19352 11372 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-14 17:19:47,635 basehttp 19352 19844 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-14 17:19:49,957 basehttp 19352 11372 "GET /api/notifications/ HTTP/1.1" 200 511474
+WARNING 2025-07-14 17:20:12,426 log 19352 11372 Not Found: /api/users/
+WARNING 2025-07-14 17:20:12,426 basehttp 19352 11372 "GET /api/users/ HTTP/1.1" 404 17696
+WARNING 2025-07-14 17:20:12,502 log 19352 11372 Not Found: /api/users/
+WARNING 2025-07-14 17:20:12,502 basehttp 19352 11372 "GET /api/users/ HTTP/1.1" 404 17696
+INFO 2025-07-14 17:20:18,111 basehttp 19352 11372 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-14 17:20:18,115 basehttp 19352 19844 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-14 17:20:18,192 log 19352 19844 Not Found: /api/admin/work-hours/
+WARNING 2025-07-14 17:20:18,201 basehttp 19352 19844 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 17784
+WARNING 2025-07-14 17:20:18,278 log 19352 19844 Not Found: /api/admin/work-hours/
+WARNING 2025-07-14 17:20:18,280 basehttp 19352 19844 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 17784
+WARNING 2025-07-14 17:20:18,352 log 19352 11372 Not Found: /api/admin/work-hours/
+WARNING 2025-07-14 17:20:18,360 basehttp 19352 11372 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 17784
+INFO 2025-07-14 17:20:19,765 basehttp 19352 19844 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-14 17:20:19,765 basehttp 19352 11372 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-14 17:20:19,840 log 19352 19844 Not Found: /api/admin/companies/
+WARNING 2025-07-14 17:20:19,843 basehttp 19352 19844 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 17780
+WARNING 2025-07-14 17:20:19,917 log 19352 19844 Not Found: /api/admin/companies/
+WARNING 2025-07-14 17:20:19,920 basehttp 19352 19844 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 17780
+WARNING 2025-07-14 17:20:19,997 log 19352 19844 Not Found: /api/admin/companies/
+WARNING 2025-07-14 17:20:19,997 basehttp 19352 19844 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 17780
+WARNING 2025-07-14 17:20:23,840 log 19352 19844 Not Found: /api/admin/companies/
+WARNING 2025-07-14 17:20:23,848 basehttp 19352 19844 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 17780
+WARNING 2025-07-14 17:20:28,790 log 19352 19844 Not Found: /api/users/
+WARNING 2025-07-14 17:20:28,790 basehttp 19352 19844 "GET /api/users/ HTTP/1.1" 404 17696
+WARNING 2025-07-14 17:20:28,871 log 19352 11372 Not Found: /api/users/
+WARNING 2025-07-14 17:20:28,874 basehttp 19352 11372 "GET /api/users/ HTTP/1.1" 404 17696
+WARNING 2025-07-14 17:20:29,910 log 19352 11372 Not Found: /api/admin/companies/
+WARNING 2025-07-14 17:20:29,913 basehttp 19352 11372 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 17780
+WARNING 2025-07-14 17:20:30,002 log 19352 11372 Not Found: /api/admin/companies/
+WARNING 2025-07-14 17:20:30,002 basehttp 19352 11372 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 17780
+WARNING 2025-07-14 17:20:30,090 log 19352 19844 Not Found: /api/admin/companies/
+WARNING 2025-07-14 17:20:30,092 basehttp 19352 19844 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 17780
+INFO 2025-07-14 17:20:36,711 basehttp 19352 19844 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-14 17:20:36,711 basehttp 19352 11372 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-14 17:20:37,102 basehttp 19352 11372 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 17:20:37,444 basehttp 19352 19844 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 17:20:37,814 basehttp 19352 11372 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8891
+INFO 2025-07-14 17:20:48,967 basehttp 19352 11372 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:20:48,967 basehttp 19352 19844 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:20:49,451 basehttp 19352 19844 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 473
+INFO 2025-07-14 17:20:49,810 basehttp 19352 19844 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 473
+INFO 2025-07-14 17:20:58,771 basehttp 19352 19844 "OPTIONS /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-14 17:20:58,771 basehttp 19352 11372 "OPTIONS /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-14 17:20:58,850 log 19352 11372 Not Found: /api/admin/projects/
+WARNING 2025-07-14 17:20:58,850 basehttp 19352 11372 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 404 17776
+WARNING 2025-07-14 17:20:58,931 log 19352 11372 Not Found: /api/admin/projects/
+WARNING 2025-07-14 17:20:58,931 basehttp 19352 11372 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 404 17776
+WARNING 2025-07-14 17:20:59,091 log 19352 19844 Not Found: /api/admin/projects/
+WARNING 2025-07-14 17:20:59,091 basehttp 19352 19844 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 404 17777
+INFO 2025-07-14 17:21:02,807 basehttp 19352 19844 "OPTIONS /api/evaluation-criteria/ HTTP/1.1" 200 0
+INFO 2025-07-14 17:21:02,810 basehttp 19352 19844 "OPTIONS /api/evaluation-criteria/ HTTP/1.1" 200 0
+WARNING 2025-07-14 17:21:02,953 log 19352 19844 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-14 17:21:02,956 basehttp 19352 19844 "GET /api/evaluation-criteria/ HTTP/1.1" 404 17753
+WARNING 2025-07-14 17:21:03,099 log 19352 19844 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-14 17:21:03,101 basehttp 19352 19844 "GET /api/evaluation-criteria/ HTTP/1.1" 404 17753
+INFO 2025-07-14 17:21:03,580 basehttp 19352 11372 "GET /api/evaluations/ HTTP/1.1" 200 7169
+INFO 2025-07-14 17:21:04,074 basehttp 19352 11372 "GET /api/evaluations/ HTTP/1.1" 200 7169
+INFO 2025-07-14 17:21:11,007 basehttp 19352 11372 "POST /api/auth/logout/ HTTP/1.1" 200 47
