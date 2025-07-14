@@ -207,7 +207,6 @@ export const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [view, setView] = useState('month');
   const [date, setDate] = useState(new Date());
@@ -218,13 +217,9 @@ export const Calendar = () => {
 
   const fetchEvents = async () => {
     setLoading(true);
-    setError(null);
     try {
       // Obtener eventos específicos del estudiante
-      const response = await apiService.get('/api/calendar-events/');
-      console.log('[Calendar] Response:', response);
-      
-      const eventsData = response.results || response;
+              const eventsData = await apiService.get('/api/calendar/events/student_events/');
       const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
         id: event.id,
         title: event.title,
@@ -234,14 +229,12 @@ export const Calendar = () => {
         priority: event.priority || 'medium',
         location: event.location,
         description: event.description,
-        project: event.project,
         company: event.project?.empresa?.nombre || 'Sin empresa',
         status: event.status || 'upcoming',
       })) : [];
       setEvents(formattedEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
-      setError('Error al cargar los eventos del calendario');
       setEvents([]);
     } finally {
       setLoading(false);

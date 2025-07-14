@@ -1,6 +1,6 @@
 import { authService } from './auth.service';
 import { API_BASE_URL } from '../config/api.config';
-import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats, adaptStrike } from '../utils/adapters';
+import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats } from '../utils/adapters';
 
 class ApiService {
   private async request<T>(
@@ -9,11 +9,9 @@ class ApiService {
   ): Promise<T> {
     // Construir URL completa - usar proxy en desarrollo
     const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-    
-    // Log solo en desarrollo y para endpoints importantes
-    if (import.meta.env.DEV && (endpoint.includes('/api/') || endpoint.includes('/auth/'))) {
-      console.log(`[API] ${options.method || 'GET'} ${endpoint}`);
-    }
+    console.log(`[apiService] Making request to: ${url}`);
+    console.log(`[apiService] API_BASE_URL: ${API_BASE_URL}`);
+    console.log(`[apiService] Endpoint: ${endpoint}`);
     
     // Get access token
     const token = authService.getAccessToken();
@@ -60,7 +58,7 @@ class ApiService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error(`[API Error] ${response.status} ${endpoint}:`, errorData);
+        console.error(`[apiService] HTTP error ${response.status}:`, errorData);
         throw new Error(errorData.detail || errorData.message || `HTTP error! status: ${response.status}`);
       }
 
@@ -68,17 +66,13 @@ class ApiService {
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
-        
-        // Log respuestas importantes en desarrollo
-        if (import.meta.env.DEV && (endpoint.includes('/api/projects/') || endpoint.includes('/api/students/') || endpoint.includes('/api/evaluations/'))) {
-          const itemCount = data.data?.length || data.results?.length || (Array.isArray(data) ? data.length : 0);
-          console.log(`[API Success] ${endpoint} - ${itemCount} items`);
-        }
+        console.log(`[apiService] Response data:`, data);
         
         // Aplicar adaptadores según el endpoint
         return this.applyAdapter(data, endpoint) as T;
       }
       
+      console.warn(`[apiService] No JSON content type, returning empty object`);
       return {} as T;
     } catch (error) {
       console.error('API request failed:', error);
@@ -222,25 +216,6 @@ class ApiService {
         };
       }
       return adaptNotification(data);
-    }
-    
-    if (endpoint.includes('/api/strikes/')) {
-      if (Array.isArray(data)) {
-        return data.map(adaptStrike);
-      }
-      if (data.results && Array.isArray(data.results)) {
-        return {
-          ...data,
-          results: data.results.map(adaptStrike)
-        };
-      }
-      if (data.data && Array.isArray(data.data)) {
-        return {
-          ...data,
-          data: data.data.map(adaptStrike)
-        };
-      }
-      return adaptStrike(data);
     }
     
     if (endpoint.includes('/api/dashboard/')) {

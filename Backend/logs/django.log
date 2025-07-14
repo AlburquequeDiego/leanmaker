@@ -7347,3 +7347,84 @@ INFO 2025-07-13 21:37:09,004 basehttp 8736 20276 "OPTIONS /api/strikes/ HTTP/1.1
 INFO 2025-07-13 21:37:09,004 basehttp 8736 2032 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
 INFO 2025-07-13 21:37:10,416 basehttp 8736 2032 "GET /api/strikes/ HTTP/1.1" 200 992
 INFO 2025-07-13 21:37:11,434 basehttp 8736 2032 "GET /api/strikes/ HTTP/1.1" 200 992
+INFO 2025-07-13 21:50:39,595 basehttp 8736 26760 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:50:39,598 basehttp 8736 26212 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:50:40,842 basehttp 8736 26760 "GET /api/users/profile/ HTTP/1.1" 200 1968
+INFO 2025-07-13 21:50:41,568 basehttp 8736 26760 "GET /api/users/profile/ HTTP/1.1" 200 1968
+INFO 2025-07-13 21:50:43,729 basehttp 8736 26760 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:50:46,132 basehttp 8736 26760 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-13 21:50:46,814 basehttp 8736 26760 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:50:46,893 basehttp 8736 26760 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:50:46,893 basehttp 8736 26212 "OPTIONS /api/work-hours/student-summary/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:50:46,893 basehttp 8736 26724 "OPTIONS /api/work-hours/student-summary/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:50:49,153 basehttp 8736 26724 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 105
+INFO 2025-07-13 21:50:49,486 basehttp 8736 26212 "GET /api/work-hours/student-summary/ HTTP/1.1" 200 171
+INFO 2025-07-13 21:50:50,170 basehttp 8736 26212 "GET /api/work-hours/student-summary/ HTTP/1.1" 200 171
+INFO 2025-07-13 21:52:09,024 basehttp 8736 21820 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:52:09,037 basehttp 8736 22308 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:52:10,001 basehttp 8736 21820 "GET /api/projects/my_projects/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:10,478 basehttp 8736 21820 "GET /api/projects/my_projects/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:14,965 basehttp 8736 21820 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:52:14,973 basehttp 8736 21820 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:52:14,973 basehttp 8736 22028 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:52:14,973 basehttp 8736 22308 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:52:15,001 basehttp 8736 21820 "GET /api/companies/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:15,014 basehttp 8736 21820 "GET /api/companies/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:15,598 basehttp 8736 22028 "GET /api/evaluations/ HTTP/1.1" 200 3587
+INFO 2025-07-13 21:52:16,265 basehttp 8736 21820 "GET /api/evaluations/ HTTP/1.1" 200 3587
+INFO 2025-07-13 21:52:20,034 basehttp 8736 21820 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:52:20,138 basehttp 8736 22308 "GET /api/companies/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:20,162 basehttp 8736 22308 "GET /api/companies/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:20,327 basehttp 8736 21820 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:52:21,162 basehttp 8736 22028 "GET /api/evaluations/ HTTP/1.1" 200 3587
+INFO 2025-07-13 21:52:22,009 basehttp 8736 22028 "GET /api/evaluations/ HTTP/1.1" 200 3587
+INFO 2025-07-13 21:52:57,083 basehttp 8736 23140 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:52:57,491 basehttp 8736 22800 "GET /api/companies/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:57,516 basehttp 8736 22800 "GET /api/companies/ HTTP/1.1" 200 41
+INFO 2025-07-13 21:52:57,537 basehttp 8736 23140 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:52:58,134 basehttp 8736 22888 "GET /api/evaluations/ HTTP/1.1" 200 3587
+INFO 2025-07-13 21:52:58,712 basehttp 8736 22888 "GET /api/evaluations/ HTTP/1.1" 200 3587
+INFO 2025-07-13 21:53:15,225 basehttp 8736 24164 "OPTIONS /api/questionnaires/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:53:15,233 basehttp 8736 23900 "OPTIONS /api/questionnaires/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:53:16,413 basehttp 8736 24164 "GET /api/questionnaires/ HTTP/1.1" 200 1981
+INFO 2025-07-13 21:53:17,575 basehttp 8736 24164 "GET /api/questionnaires/ HTTP/1.1" 200 1981
+INFO 2025-07-13 21:53:19,152 basehttp 8736 24164 "OPTIONS /api/calendar-events/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:53:19,152 basehttp 8736 23900 "OPTIONS /api/calendar-events/ HTTP/1.1" 200 0
+INFO 2025-07-13 21:53:20,618 basehttp 8736 23900 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:53:21,758 basehttp 8736 24164 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:53:38,438 basehttp 8736 24164 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:53:38,708 basehttp 8736 24164 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:53:39,489 basehttp 8736 23900 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:53:40,106 basehttp 8736 23900 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:58:14,267 autoreload 8736 20440 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-13 21:58:16,130 autoreload 17084 11476 Watching for file changes with StatReloader
+INFO 2025-07-13 21:58:21,596 basehttp 17084 20916 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:58:21,916 basehttp 17084 20916 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 21:58:22,680 basehttp 17084 15516 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:58:23,488 basehttp 17084 20916 "GET /api/calendar-events/ HTTP/1.1" 200 13400
+INFO 2025-07-13 21:58:31,743 autoreload 17084 11476 C:\Users\albur\Desktop\leanmaker\Backend\strikes\views.py changed, reloading.
+INFO 2025-07-13 21:58:33,483 autoreload 24464 23932 Watching for file changes with StatReloader
+INFO 2025-07-13 21:58:37,400 autoreload 24464 23932 C:\Users\albur\Desktop\leanmaker\Backend\projects\serializers.py changed, reloading.
+INFO 2025-07-13 21:58:39,286 autoreload 16584 17660 Watching for file changes with StatReloader
+INFO 2025-07-13 22:04:06,492 basehttp 16584 8976 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 22:04:06,804 basehttp 16584 8976 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 22:25:41,541 basehttp 16584 1064 - Broken pipe from ('127.0.0.1', 55431)
+INFO 2025-07-13 22:25:45,780 basehttp 16584 26136 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-13 22:25:45,782 basehttp 16584 25652 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-13 22:25:56,484 basehttp 16584 26136 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 22:25:58,969 basehttp 16584 26136 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-13 22:27:04,407 autoreload 16584 17660 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-13 22:27:06,115 autoreload 14828 25448 Watching for file changes with StatReloader
+INFO 2025-07-13 22:27:30,255 autoreload 14828 25448 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-13 22:27:31,410 autoreload 27116 26792 Watching for file changes with StatReloader
+INFO 2025-07-13 22:29:46,467 autoreload 27116 26792 C:\Users\albur\Desktop\leanmaker\Backend\admin\views.py changed, reloading.
+INFO 2025-07-13 22:29:47,778 autoreload 18608 12680 Watching for file changes with StatReloader
+INFO 2025-07-13 22:29:59,678 autoreload 18608 12680 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-13 22:30:00,717 autoreload 10896 16948 Watching for file changes with StatReloader
+INFO 2025-07-13 22:45:56,172 autoreload 23352 5040 Watching for file changes with StatReloader
+INFO 2025-07-13 22:53:30,620 autoreload 23352 5040 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-13 22:53:32,629 autoreload 8100 12976 Watching for file changes with StatReloader
+INFO 2025-07-13 22:53:36,484 autoreload 8100 12976 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-13 22:53:38,661 autoreload 15968 20848 Watching for file changes with StatReloader
+INFO 2025-07-13 22:56:33,847 autoreload 22892 1304 Watching for file changes with StatReloader
+INFO 2025-07-13 22:58:36,736 autoreload 27640 3580 Watching for file changes with StatReloader

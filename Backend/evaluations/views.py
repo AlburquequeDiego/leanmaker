@@ -3,432 +3,284 @@ Views para la app evaluations.
 """
 
 import json
-import uuid
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.core.exceptions import ValidationError
-from django.db.models import Q, Avg, Count
-from .models import Evaluation, EvaluationTemplate, StudentSkill, StudentPortfolio, StudentAchievement
-from .serializers import EvaluationSerializer, EvaluationTemplateSerializer, StudentSkillSerializer
+from django.db.models import Q
 from users.models import User
-from projects.models import Proyecto
-from core.auth_utils import get_user_from_token, require_auth
+from .models import Evaluation
+from core.views import verify_token
 
-# --- EVALUACIONES ---
 
 @csrf_exempt
 @require_http_methods(["GET"])
-@require_auth
 def evaluations_list(request):
-    """Lista evaluaciones con filtros y paginación"""
+    """Lista de evaluaciones."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
-        # Filtros
-        status = request.GET.get('status')
-        type_filter = request.GET.get('type')
-        category_id = request.GET.get('category_id')
-        project_id = request.GET.get('project_id')
-        student_id = request.GET.get('student_id')
-        search = request.GET.get('search')
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Parámetros de paginación y filtros
         page = int(request.GET.get('page', 1))
-        limit = min(int(request.GET.get('limit', 20)), 100)
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        student = request.GET.get('student', '')
+        project = request.GET.get('project', '')
+        status = request.GET.get('status', '')
         
-        # Construir query base
-        queryset = Evaluation.objects.select_related('project', 'student', 'evaluator', 'category')
+        # Query base
+        queryset = Evaluation.objects.select_related('project', 'student', 'student__user', 'project__company').all()
         
-        # Filtrar por rol
-        if user.role == 'company':
-            try:
-                company = user.empresa_profile
-                if company:
-                    company_projects = Proyecto.objects.filter(company=company)
-                    queryset = queryset.filter(project__in=company_projects)
-            except:
-                # Si no tiene perfil de empresa, no mostrar evaluaciones
-                queryset = queryset.none()
-        elif user.role == 'student':
-            queryset = queryset.filter(student=user)
+        # Aplicar filtros según el rol del usuario
+        if current_user.role == 'student':
+            # Estudiantes solo ven sus propias evaluaciones
+            queryset = queryset.filter(student__user=current_user)
+        elif current_user.role == 'company':
+            # Empresas ven evaluaciones de sus proyectos
+            queryset = queryset.filter(project__company__user=current_user)
+        # Admins ven todas las evaluaciones
         
-        # Aplicar filtros
+        # Filtros adicionales
+        if student:
+            queryset = queryset.filter(student_id=student)
+        
+        if project:
+            queryset = queryset.filter(project_id=project)
+        
         if status:
             queryset = queryset.filter(status=status)
-        if type_filter:
-            queryset = queryset.filter(type=type_filter)
-        if category_id:
-            queryset = queryset.filter(category_id=category_id)
-        if project_id:
-            queryset = queryset.filter(project_id=project_id)
-        if student_id:
-            queryset = queryset.filter(student_id=student_id)
-        if search:
-            queryset = queryset.filter(
-                Q(comments__icontains=search) | 
-                Q(strengths__icontains=search) | 
-                Q(areas_for_improvement__icontains=search)
-            )
         
-        # Paginación
-        total = queryset.count()
-        offset = (page - 1) * limit
-        queryset = queryset.order_by('-evaluation_date')[offset:offset + limit]
+        # Contar total
+        total_count = queryset.count()
         
-        # Serializar resultados
-        data = [EvaluationSerializer.to_dict(evaluation) for evaluation in queryset]
+        # Paginar
+        evaluations = queryset[offset:offset + limit]
+        
+        # Serializar datos
+        evaluations_data = []
+        for evaluation in evaluations:
+            evaluations_data.append({
+                'id': str(evaluation.id),
+                'project': str(evaluation.project.id),
+                'project_title': evaluation.project.title,
+                'student': str(evaluation.student.id),
+                'student_name': evaluation.student.user.full_name,
+                'student_email': evaluation.student.user.email,
+                'company_name': evaluation.project.company.company_name if evaluation.project.company else 'Sin empresa',
+                'score': evaluation.score,
+                'comments': evaluation.comments,
+                'evaluation_date': evaluation.evaluation_date.isoformat(),
+                'status': evaluation.status,
+                'evaluator_role': evaluation.evaluator_role,
+                'overall_rating': evaluation.overall_rating,
+                'strengths': evaluation.strengths,
+                'areas_for_improvement': evaluation.areas_for_improvement,
+                'created_at': evaluation.created_at.isoformat(),
+                'updated_at': evaluation.updated_at.isoformat(),
+            })
         
         return JsonResponse({
-            'success': True,
-            'data': data,
-            'pagination': {
-                'page': page,
-                'limit': limit,
-                'total': total,
-                'pages': (total + limit - 1) // limit
-            }
+            'results': evaluations_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
         })
         
     except Exception as e:
-        return JsonResponse({'error': f'Error al listar evaluaciones: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["GET"])
-@require_auth
-def evaluations_detail(request, evaluation_id):
-    """Obtiene los detalles de una evaluación específica"""
+def evaluations_detail(request, evaluations_id):
+    """Detalle de una evaluación."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
-        # Validar UUID
-        try:
-            evaluation_uuid = uuid.UUID(evaluation_id)
-        except ValueError:
-            return JsonResponse({'error': 'ID de evaluación inválido'}, status=400)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Buscar evaluación
+        # Obtener evaluación
         try:
-            evaluation = Evaluation.objects.select_related('project', 'student', 'evaluator', 'category').get(id=evaluation_uuid)
+            evaluation = Evaluation.objects.select_related('project', 'student', 'student__user', 'project__company').get(id=evaluations_id)
         except Evaluation.DoesNotExist:
             return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
         
         # Verificar permisos
-        if user.role == 'company':
-            try:
-                company = user.empresa_profile
-                if not company or evaluation.project.company != company:
-                    return JsonResponse({'error': 'No tienes permisos para ver esta evaluación'}, status=403)
-            except:
-                return JsonResponse({'error': 'No tienes permisos para ver esta evaluación'}, status=403)
-        elif user.role == 'student':
-            if evaluation.student != user:
-                return JsonResponse({'error': 'No tienes permisos para ver esta evaluación'}, status=403)
+        if current_user.role == 'student' and str(evaluation.student.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        elif current_user.role == 'company' and str(evaluation.project.company.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        return JsonResponse({
-            'success': True,
-            'data': EvaluationSerializer.to_dict(evaluation)
-        })
+        # Serializar datos
+        evaluation_data = {
+            'id': str(evaluation.id),
+            'project': str(evaluation.project.id),
+            'project_title': evaluation.project.title,
+            'student': str(evaluation.student.id),
+            'student_name': evaluation.student.user.full_name,
+            'student_email': evaluation.student.user.email,
+            'company_name': evaluation.project.company.company_name if evaluation.project.company else 'Sin empresa',
+            'score': evaluation.score,
+            'comments': evaluation.comments,
+            'evaluation_date': evaluation.evaluation_date.isoformat(),
+            'status': evaluation.status,
+            'evaluator_role': evaluation.evaluator_role,
+            'overall_rating': evaluation.overall_rating,
+            'strengths': evaluation.strengths,
+            'areas_for_improvement': evaluation.areas_for_improvement,
+            'created_at': evaluation.created_at.isoformat(),
+            'updated_at': evaluation.updated_at.isoformat(),
+        }
+        
+        return JsonResponse(evaluation_data)
         
     except Exception as e:
-        return JsonResponse({'error': f'Error al obtener evaluación: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@require_auth
 def evaluations_create(request):
-    """Crea una nueva evaluación"""
+    """Crear nueva evaluación."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
-        # Verificar permisos
-        if user.role not in ['admin', 'company']:
-            return JsonResponse({'error': 'No tienes permisos para crear evaluaciones'}, status=403)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Parsear datos
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        # Solo empresas y admins pueden crear evaluaciones
+        if current_user.role not in ['company', 'admin']:
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        # Validar datos
-        errors = EvaluationSerializer.validate_data(data)
-        if errors:
-            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        # Procesar datos
+        data = json.loads(request.body)
         
         # Crear evaluación
-        try:
-            evaluation = EvaluationSerializer.create(data, user)
-        except ValidationError as e:
-            return JsonResponse({'error': str(e)}, status=400)
+        evaluation = Evaluation.objects.create(
+            project_id=data.get('project_id'),
+            student_id=data.get('student_id'),
+            score=data.get('score'),
+            comments=data.get('comments', ''),
+            evaluation_date=data.get('evaluation_date'),
+            status=data.get('status', 'completed'),
+            evaluator_role=data.get('evaluator_role', 'company'),
+            overall_rating=data.get('overall_rating'),
+            strengths=data.get('strengths', ''),
+            areas_for_improvement=data.get('areas_for_improvement', ''),
+        )
         
         return JsonResponse({
-            'success': True,
-            'message': 'Evaluación creada exitosamente',
-            'data': EvaluationSerializer.to_dict(evaluation)
+            'message': 'Evaluación creada correctamente',
+            'id': str(evaluation.id)
         }, status=201)
         
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Error al crear evaluación: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
-@require_http_methods(["PUT"])
-@require_auth
-def evaluations_update(request, evaluation_id):
-    """Actualiza una evaluación existente"""
+@require_http_methods(["PUT", "PATCH"])
+def evaluations_update(request, evaluations_id):
+    """Actualizar evaluación."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
-        # Validar UUID
-        try:
-            evaluation_uuid = uuid.UUID(evaluation_id)
-        except ValueError:
-            return JsonResponse({'error': 'ID de evaluación inválido'}, status=400)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Buscar evaluación
+        # Obtener evaluación
         try:
-            evaluation = Evaluation.objects.get(id=evaluation_uuid)
+            evaluation = Evaluation.objects.get(id=evaluations_id)
         except Evaluation.DoesNotExist:
             return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
         
         # Verificar permisos
-        if user.role != 'admin' and evaluation.evaluator != user:
-            return JsonResponse({'error': 'No tienes permisos para actualizar esta evaluación'}, status=403)
+        if current_user.role == 'company' and str(evaluation.project.company.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        # Parsear datos
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        # Procesar datos
+        data = json.loads(request.body)
         
-        # Validar datos
-        errors = EvaluationSerializer.validate_data(data)
-        if errors:
-            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
+        # Actualizar campos de la evaluación
+        fields_to_update = [
+            'score', 'comments', 'evaluation_date', 'status', 'evaluator_role',
+            'overall_rating', 'strengths', 'areas_for_improvement'
+        ]
         
-        # Actualizar evaluación
-        evaluation = EvaluationSerializer.update(evaluation, data)
+        for field in fields_to_update:
+            if field in data:
+                setattr(evaluation, field, data[field])
         
+        evaluation.save()
+        
+        # Retornar datos actualizados
         return JsonResponse({
-            'success': True,
-            'message': 'Evaluación actualizada exitosamente',
-            'data': EvaluationSerializer.to_dict(evaluation)
+            'message': 'Evaluación actualizada correctamente',
+            'id': str(evaluation.id)
         })
         
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Error al actualizar evaluación: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["DELETE"])
-@require_auth
-def evaluations_delete(request, evaluation_id):
-    """Elimina una evaluación"""
+def evaluations_delete(request, evaluations_id):
+    """Eliminar evaluación."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
-        # Validar UUID
-        try:
-            evaluation_uuid = uuid.UUID(evaluation_id)
-        except ValueError:
-            return JsonResponse({'error': 'ID de evaluación inválido'}, status=400)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Buscar evaluación
+        # Obtener evaluación
         try:
-            evaluation = Evaluation.objects.get(id=evaluation_uuid)
+            evaluation = Evaluation.objects.get(id=evaluations_id)
         except Evaluation.DoesNotExist:
             return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
         
         # Verificar permisos
-        if user.role != 'admin' and evaluation.evaluator != user:
-            return JsonResponse({'error': 'No tienes permisos para eliminar esta evaluación'}, status=403)
+        if current_user.role == 'company' and str(evaluation.project.company.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        # Eliminar evaluación
         evaluation.delete()
         
         return JsonResponse({
-            'success': True,
-            'message': 'Evaluación eliminada exitosamente'
+            'message': 'Evaluación eliminada correctamente'
         })
         
     except Exception as e:
-        return JsonResponse({'error': f'Error al eliminar evaluación: {str(e)}'}, status=500)
-
-# --- PLANTILLAS DE EVALUACIÓN ---
-
-@csrf_exempt
-@require_http_methods(["GET"])
-@require_auth
-def evaluation_templates_list(request):
-    """Lista plantillas de evaluación"""
-    try:
-        user = get_user_from_token(request)
-        
-        # Filtros
-        is_active = request.GET.get('is_active')
-        search = request.GET.get('search')
-        page = int(request.GET.get('page', 1))
-        limit = min(int(request.GET.get('limit', 20)), 100)
-        
-        # Construir query
-        queryset = EvaluationTemplate.objects.all()
-        
-        # Filtrar por rol
-        if user.role != 'admin':
-            queryset = queryset.filter(is_active=True)
-        
-        # Aplicar filtros
-        if is_active is not None:
-            queryset = queryset.filter(is_active=(is_active.lower() == 'true'))
-        if search:
-            queryset = queryset.filter(Q(name__icontains=search) | Q(description__icontains=search))
-        
-        # Paginación
-        total = queryset.count()
-        offset = (page - 1) * limit
-        queryset = queryset.order_by('name')[offset:offset + limit]
-        
-        # Serializar resultados
-        data = [EvaluationTemplateSerializer.to_dict(template) for template in queryset]
-        
-        return JsonResponse({
-            'success': True,
-            'data': data,
-            'pagination': {
-                'page': page,
-                'limit': limit,
-                'total': total,
-                'pages': (total + limit - 1) // limit
-            }
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': f'Error al listar plantillas: {str(e)}'}, status=500)
-
-@csrf_exempt
-@require_http_methods(["POST"])
-@require_auth
-def evaluation_templates_create(request):
-    """Crea una nueva plantilla de evaluación"""
-    try:
-        user = get_user_from_token(request)
-        
-        # Solo admin puede crear plantillas
-        if user.role != 'admin':
-            return JsonResponse({'error': 'Solo los administradores pueden crear plantillas'}, status=403)
-        
-        # Parsear datos
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
-        
-        # Validar datos
-        errors = EvaluationTemplateSerializer.validate_data(data)
-        if errors:
-            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
-        
-        # Crear plantilla
-        template = EvaluationTemplateSerializer.create(data)
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Plantilla creada exitosamente',
-            'data': EvaluationTemplateSerializer.to_dict(template)
-        }, status=201)
-        
-    except Exception as e:
-        return JsonResponse({'error': f'Error al crear plantilla: {str(e)}'}, status=500)
-
-# --- HABILIDADES DE ESTUDIANTES ---
-
-@csrf_exempt
-@require_http_methods(["GET"])
-@require_auth
-def student_skills_list(request):
-    """Lista habilidades de estudiantes"""
-    try:
-        user = get_user_from_token(request)
-        
-        # Filtros
-        level = request.GET.get('level')
-        is_verified = request.GET.get('is_verified')
-        student_id = request.GET.get('student_id')
-        search = request.GET.get('search')
-        page = int(request.GET.get('page', 1))
-        limit = min(int(request.GET.get('limit', 20)), 100)
-        
-        # Construir query
-        queryset = StudentSkill.objects.select_related('student')
-        
-        # Filtrar por rol
-        if user.role == 'company':
-            company_projects = Proyecto.objects.filter(company=user.company)
-            project_students = User.objects.filter(role='student', projects__in=company_projects)
-            queryset = queryset.filter(student__in=project_students)
-        elif user.role == 'student':
-            queryset = queryset.filter(student=user)
-        
-        # Aplicar filtros
-        if level:
-            queryset = queryset.filter(level=level)
-        if is_verified is not None:
-            queryset = queryset.filter(is_verified=(is_verified.lower() == 'true'))
-        if student_id:
-            queryset = queryset.filter(student_id=student_id)
-        if search:
-            queryset = queryset.filter(skill_name__icontains=search)
-        
-        # Paginación
-        total = queryset.count()
-        offset = (page - 1) * limit
-        queryset = queryset.order_by('skill_name')[offset:offset + limit]
-        
-        # Serializar resultados
-        data = [StudentSkillSerializer.to_dict(skill) for skill in queryset]
-        
-        return JsonResponse({
-            'success': True,
-            'data': data,
-            'pagination': {
-                'page': page,
-                'limit': limit,
-                'total': total,
-                'pages': (total + limit - 1) // limit
-            }
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': f'Error al listar habilidades: {str(e)}'}, status=500)
-
-@csrf_exempt
-@require_http_methods(["POST"])
-@require_auth
-def student_skills_create(request):
-    """Crea una nueva habilidad de estudiante"""
-    try:
-        user = get_user_from_token(request)
-        
-        # Verificar permisos
-        if user.role not in ['admin', 'student']:
-            return JsonResponse({'error': 'No tienes permisos para crear habilidades'}, status=403)
-        
-        # Parsear datos
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
-        
-        # Validar datos
-        errors = StudentSkillSerializer.validate_data(data)
-        if errors:
-            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
-        
-        # Crear habilidad
-        skill = StudentSkillSerializer.create(data, user)
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Habilidad creada exitosamente',
-            'data': StudentSkillSerializer.to_dict(skill)
-        }, status=201)
-        
-    except Exception as e:
-        return JsonResponse({'error': f'Error al crear habilidad: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)

@@ -20,9 +20,6 @@ import {
   Alert,
   Grid,
   Paper,
-  Stepper,
-  Step,
-  StepLabel,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import {
@@ -43,230 +40,6 @@ import { projectService } from '../../../services/project.service';
 
 const COUNT_OPTIONS = [5, 10, 15, 20, 30, 40, -1];
 
-function getApiFromTrl(trl: number) {
-  if (trl <= 2) return 1;
-  if (trl <= 4) return 2;
-  if (trl <= 6) return 3;
-  return 4;
-}
-
-const CreateProjectModal = ({ open, onClose, onProjectCreated }: any) => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [form, setForm] = useState({
-    title: '',
-    objective: '',
-    activityType: '',
-    howFound: '',
-    comment: '',
-    manager: '',
-    team: [],
-    participants: 1,
-    trl: 1,
-    trlAnswers: ['',''],
-    hours: '',
-    entryDate: '',
-    exitDate: '',
-    closeStatus: 'borrador',
-  });
-  const [errors, setErrors] = useState<any>({});
-
-  // Actualizar preguntas TRL según nivel
-  useEffect(() => {
-    const trlQuestions = {
-      1: [
-        '¿Existe una idea clara del proyecto?',
-        '¿Se ha identificado una necesidad o problema a resolver?'
-      ],
-      2: [
-        '¿Se ha definido claramente el objetivo del proyecto?',
-        '¿Existen antecedentes o referencias previas?'
-      ],
-      3: [
-        '¿Se han realizado pruebas de concepto?',
-        '¿Se han evaluado componentes por separado?'
-      ],
-      4: [
-        '¿Existe un prototipo mínimo viable?',
-        '¿Se ha probado el prototipo en condiciones controladas?'
-      ],
-      5: [
-        '¿El prototipo ha sido probado en condiciones similares al entorno real?',
-        '¿Se han documentado los resultados de estas pruebas?'
-      ],
-      6: [
-        '¿Se ha realizado un piloto en condiciones reales?',
-        '¿El prototipo ha sido validado por usuarios reales?'
-      ],
-      7: [
-        '¿El desarrollo ha sido probado en condiciones reales por un periodo prolongado?',
-        '¿Se han identificado mejoras tras el uso prolongado?'
-      ],
-      8: [
-        '¿El producto está validado técnica y comercialmente?',
-        '¿Existen clientes o usuarios que lo utilicen?'
-      ],
-      9: [
-        '¿El producto está completamente desarrollado?',
-        '¿Está disponible para la sociedad?'
-      ],
-    };
-    setForm(f => ({ ...f, trlAnswers: Array(trlQuestions[form.trl].length).fill('') }));
-    // eslint-disable-next-line
-  }, [form.trl]);
-
-  const handleChange = (field: string, value: any) => {
-    setForm(f => ({ ...f, [field]: value }));
-    setErrors(e => ({ ...e, [field]: undefined }));
-  };
-
-  const validateStep = () => {
-    const newErrors: any = {};
-    if (activeStep === 0) {
-      if (!form.title) newErrors.title = 'Requerido';
-      if (!form.objective) newErrors.objective = 'Requerido';
-      if (!form.activityType) newErrors.activityType = 'Requerido';
-    }
-    if (activeStep === 1) {
-      if (!form.manager) newErrors.manager = 'Requerido';
-      if (!form.participants || form.participants < 1) newErrors.participants = 'Mínimo 1';
-    }
-    if (activeStep === 2) {
-      if (!form.trl) newErrors.trl = 'Requerido';
-      if (!form.hours) newErrors.hours = 'Requerido';
-      if (form.trlAnswers.some((a: string) => !a)) newErrors.trlAnswers = 'Responde todas las preguntas TRL';
-    }
-    if (activeStep === 3) {
-      if (!form.entryDate) newErrors.entryDate = 'Requerido';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (validateStep()) setActiveStep(s => s + 1);
-  };
-  const handleBack = () => setActiveStep(s => s - 1);
-
-  const handlePublish = () => {
-    if (!validateStep()) return;
-    // Aquí iría la llamada a la API para crear el proyecto
-    onProjectCreated({ ...form, apiMin: getApiFromTrl(form.trl) });
-    onClose();
-  };
-
-  // Preguntas TRL
-  const trlQuestions = {
-    1: [
-      '¿Existe una idea clara del proyecto?',
-      '¿Se ha identificado una necesidad o problema a resolver?'
-    ],
-    2: [
-      '¿Se ha definido claramente el objetivo del proyecto?',
-      '¿Existen antecedentes o referencias previas?'
-    ],
-    3: [
-      '¿Se han realizado pruebas de concepto?',
-      '¿Se han evaluado componentes por separado?'
-    ],
-    4: [
-      '¿Existe un prototipo mínimo viable?',
-      '¿Se ha probado el prototipo en condiciones controladas?'
-    ],
-    5: [
-      '¿El prototipo ha sido probado en condiciones similares al entorno real?',
-      '¿Se han documentado los resultados de estas pruebas?'
-    ],
-    6: [
-      '¿Se ha realizado un piloto en condiciones reales?',
-      '¿El prototipo ha sido validado por usuarios reales?'
-    ],
-    7: [
-      '¿El desarrollo ha sido probado en condiciones reales por un periodo prolongado?',
-      '¿Se han identificado mejoras tras el uso prolongado?'
-    ],
-    8: [
-      '¿El producto está validado técnica y comercialmente?',
-      '¿Existen clientes o usuarios que lo utilicen?'
-    ],
-    9: [
-      '¿El producto está completamente desarrollado?',
-      '¿Está disponible para la sociedad?'
-    ],
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Crear Nuevo Proyecto</DialogTitle>
-      <DialogContent>
-        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
-          {steps.map(label => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-        {activeStep === 0 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="Nombre del Proyecto" value={form.title} onChange={e => handleChange('title', e.target.value)} error={!!errors.title} helperText={errors.title} fullWidth />
-            <TextField label="Objetivo del Proyecto" value={form.objective} onChange={e => handleChange('objective', e.target.value)} error={!!errors.objective} helperText={errors.objective} fullWidth />
-            <TextField label="Tipo de Actividad" value={form.activityType} onChange={e => handleChange('activityType', e.target.value)} error={!!errors.activityType} helperText={errors.activityType} fullWidth />
-            <TextField label="¿Cómo llegaron a FAB INACAP?" value={form.howFound} onChange={e => handleChange('howFound', e.target.value)} fullWidth />
-            <TextField label="Comentario adicional" value={form.comment} onChange={e => handleChange('comment', e.target.value)} fullWidth />
-          </Box>
-        )}
-        {activeStep === 1 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="Encargado de Proyecto" value={form.manager} onChange={e => handleChange('manager', e.target.value)} error={!!errors.manager} helperText={errors.manager} fullWidth />
-            <TextField label="Equipo de Proyecto (IDs separados por coma)" value={form.team.join(',')} onChange={e => handleChange('team', e.target.value.split(','))} fullWidth />
-            <TextField label="Número de Participantes" type="number" value={form.participants} onChange={e => handleChange('participants', Number(e.target.value))} error={!!errors.participants} helperText={errors.participants} fullWidth />
-          </Box>
-        )}
-        {activeStep === 2 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="TRL de Entrada" type="number" inputProps={{ min: 1, max: 9 }} value={form.trl} onChange={e => handleChange('trl', Number(e.target.value))} error={!!errors.trl} helperText={errors.trl} fullWidth />
-            <TextField label="API mínimo requerido" value={getApiFromTrl(form.trl)} InputProps={{ readOnly: true }} fullWidth />
-            <TextField label="Horas ofrecidas" type="number" value={form.hours} onChange={e => handleChange('hours', e.target.value)} error={!!errors.hours} helperText={errors.hours} fullWidth />
-            {trlQuestions[form.trl].map((q, i) => (
-              <TextField key={i} label={q} value={form.trlAnswers[i] || ''} onChange={e => {
-                const arr = [...form.trlAnswers];
-                arr[i] = e.target.value;
-                handleChange('trlAnswers', arr);
-              }} error={!!errors.trlAnswers && !form.trlAnswers[i]} helperText={!!errors.trlAnswers && !form.trlAnswers[i] ? 'Obligatorio' : ''} fullWidth />
-            ))}
-          </Box>
-        )}
-        {activeStep === 3 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="Fecha de Ingreso" type="date" value={form.entryDate} onChange={e => handleChange('entryDate', e.target.value)} error={!!errors.entryDate} helperText={errors.entryDate} fullWidth InputLabelProps={{ shrink: true }} />
-            <TextField label="Fecha de Egreso" type="date" value={form.exitDate} onChange={e => handleChange('exitDate', e.target.value)} fullWidth InputLabelProps={{ shrink: true }} />
-            <TextField label="Estado de Cierre" value={form.closeStatus} onChange={e => handleChange('closeStatus', e.target.value)} fullWidth />
-          </Box>
-        )}
-        {activeStep === 4 && (
-          <Box>
-            <Typography variant="h6">Resumen</Typography>
-            <pre style={{ background: '#f5f5f5', padding: 16, borderRadius: 8 }}>{JSON.stringify({ ...form, apiMin: getApiFromTrl(form.trl) }, null, 2)}</pre>
-          </Box>
-        )}
-      </DialogContent>
-      <DialogActions>
-        {activeStep > 0 && <Button onClick={handleBack}>Atrás</Button>}
-        {activeStep < steps.length - 1 && <Button onClick={handleNext}>Siguiente</Button>}
-        {activeStep === steps.length - 1 && <Button variant="contained" onClick={handlePublish}>Publicar</Button>}
-        <Button onClick={onClose}>Cancelar</Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-const steps = [
-  'Datos Básicos',
-  'Equipo y Participantes',
-  'TRL y API',
-  'Fechas y Estado',
-  'Resumen'
-];
-
 const Projects: React.FC = () => {
   const api = useApi();
   const [tab, setTab] = useState(0);
@@ -284,7 +57,6 @@ const Projects: React.FC = () => {
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [updatingProject, setUpdatingProject] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     loadProjects();
@@ -571,12 +343,6 @@ const Projects: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', p: { xs: 1, md: 3 } }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Proyectos</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setModalOpen(true)}>
-          Crear nuevo proyecto
-        </Button>
-      </Box>
       <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 3 }}>
         <Tab label="Proyectos" />
         <Tab label="Crear Proyecto" icon={<AddIcon />} iconPosition="start" />
@@ -593,12 +359,14 @@ const Projects: React.FC = () => {
       )}
       
       {tab === 1 && (
-        <CreateProjectForm 
-          onProjectCreated={(newProject) => {
-            setProjects(prev => [newProject, ...prev]);
-            setTab(0); // Volver a la pestaña de proyectos
-          }}
-        />
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Funcionalidad de Creación de Proyectos
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Esta funcionalidad está en desarrollo. Por favor, contacta al administrador para crear nuevos proyectos.
+          </Typography>
+        </Paper>
       )}
 
       {/* Diálogo de eliminar */}
@@ -711,9 +479,6 @@ const Projects: React.FC = () => {
           <Button onClick={handleViewClose}>Cerrar</Button>
         </DialogActions>
       </Dialog>
-      <CreateProjectModal open={modalOpen} onClose={() => setModalOpen(false)} onProjectCreated={(newProject: any) => {
-        setProjects(prev => [newProject, ...prev]);
-      }} />
     </Box>
   );
 };

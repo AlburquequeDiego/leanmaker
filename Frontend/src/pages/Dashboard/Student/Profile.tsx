@@ -121,20 +121,7 @@ export const Profile = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      // Hacer la petición directamente sin usar el adaptador
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch('http://localhost:8000/api/students/me/', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await apiService.get('/api/students/me/');
       console.log('Profile data received:', data);
       
       // Asegurar que todos los campos tengan valores por defecto
@@ -239,22 +226,7 @@ export const Profile = () => {
     setIsLoading(true);
     
     try {
-      // Hacer la petición directamente sin usar el adaptador
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:8000/api/students/${userId}/update/`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editData),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const updatedProfile = await response.json();
+      const updatedProfile = await apiService.put(`/api/students/${userId}/update/`, editData);
       setProfileData(updatedProfile as ProfileData);
       setIsEditing(false);
       setShowSuccess(true);
@@ -480,23 +452,11 @@ export const Profile = () => {
           />
           <TextField
             label="Nivel Educativo"
-            select
             value={isEditing ? (editData.nivel || '') : (profileData.nivel || '')}
             onChange={e => handleInputChange('nivel', e.target.value)}
             disabled={!isEditing}
             fullWidth
-          >
-            <MenuItem value="1">Primer año</MenuItem>
-            <MenuItem value="2">Segundo año</MenuItem>
-            <MenuItem value="3">Tercer año</MenuItem>
-            <MenuItem value="4">Cuarto año</MenuItem>
-            <MenuItem value="5">Quinto año</MenuItem>
-            <MenuItem value="6">Sexto año</MenuItem>
-            <MenuItem value="7">Séptimo año</MenuItem>
-            <MenuItem value="8">Octavo año</MenuItem>
-            <MenuItem value="9">Noveno año</MenuItem>
-            <MenuItem value="10">Décimo año</MenuItem>
-          </TextField>
+          />
 
           {/* Habilidades */}
           <Divider sx={{ my: 2 }} />

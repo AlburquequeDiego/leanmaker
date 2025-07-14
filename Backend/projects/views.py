@@ -3,187 +3,304 @@ Views para la app projects.
 """
 
 import json
-import uuid
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.core.exceptions import ValidationError
-from django.db.models import Q, Count, Avg
-from .models import Proyecto, AplicacionProyecto, MiembroProyecto
-from .serializers import ProyectoSerializer, AplicacionProyectoSerializer
+from django.db.models import Q
 from users.models import User
-from core.auth_utils import get_user_from_token, require_auth
+from .models import Proyecto
+from core.views import verify_token
 
-# --- PROYECTOS ---
 
 @csrf_exempt
 @require_http_methods(["GET"])
-@require_auth
 def projects_list(request):
-    """Lista proyectos con filtros y paginación"""
+    """Lista de proyectos."""
     try:
-        user = get_user_from_token(request)
-        # Filtros
-        status = request.GET.get('status')
-        area = request.GET.get('area')
-        modality = request.GET.get('modality')
-        difficulty = request.GET.get('difficulty')
-        is_paid = request.GET.get('is_paid')
-        is_featured = request.GET.get('is_featured')
-        is_urgent = request.GET.get('is_urgent')
-        search = request.GET.get('search')
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Parámetros de paginación y filtros
         page = int(request.GET.get('page', 1))
-        limit = min(int(request.GET.get('limit', 20)), 100)
-        queryset = Proyecto.objects.all()
-        if user.role == 'company':
-            queryset = queryset.filter(company=user.empresa_profile)
-        elif user.role == 'student':
-            queryset = queryset.filter(status__is_active=True)
-        # Aplicar filtros
-        if status:
-            queryset = queryset.filter(status_id=status)
-        if area:
-            queryset = queryset.filter(area_id=area)
-        if modality:
-            queryset = queryset.filter(modality=modality)
-        if difficulty:
-            queryset = queryset.filter(difficulty=difficulty)
-        if is_paid is not None:
-            queryset = queryset.filter(is_paid=(is_paid.lower() == 'true'))
-        if is_featured is not None:
-            queryset = queryset.filter(is_featured=(is_featured.lower() == 'true'))
-        if is_urgent is not None:
-            queryset = queryset.filter(is_urgent=(is_urgent.lower() == 'true'))
-        if search:
-            queryset = queryset.filter(Q(title__icontains=search) | Q(description__icontains=search) | Q(requirements__icontains=search))
-        total = queryset.count()
+        limit = int(request.GET.get('limit', 10))
         offset = (page - 1) * limit
-        queryset = queryset.order_by('-created_at')[offset:offset+limit]
-        data = [ProyectoSerializer.to_dict(p) for p in queryset]
+        search = request.GET.get('search', '')
+        company = request.GET.get('company', '')
+        status = request.GET.get('status', '')
+        api_level = request.GET.get('api_level', '')
+        trl_level = request.GET.get('trl_level', '')
+        
+        # Query base
+        queryset = Proyecto.objects.select_related('company', 'status', 'area', 'trl').all()
+        
+        # Aplicar filtros
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(company__company_name__icontains=search)
+            )
+        
+        if company:
+            queryset = queryset.filter(company_id=company)
+        
+        if status:
+            queryset = queryset.filter(status__name=status)
+        
+        if api_level:
+            queryset = queryset.filter(api_level=api_level)
+        
+        if trl_level:
+            queryset = queryset.filter(trl_id=trl_level)
+        
+        # Contar total
+        total_count = queryset.count()
+        
+        # Paginar
+        projects = queryset[offset:offset + limit]
+        
+        # Serializar datos
+        projects_data = []
+        for project in projects:
+            projects_data.append({
+                'id': str(project.id),
+                'title': project.title,
+                'description': project.description,
+                'company': str(project.company.id) if project.company else None,
+                'company_name': project.company.company_name if project.company else 'Sin empresa',
+                'status': project.status.name if project.status else 'Sin estado',
+                'area': project.area.name if project.area else 'Sin área',
+                'trl_level': project.trl.level if project.trl else 1,
+                'api_level': project.api_level or 1,
+                'max_students': project.max_students,
+                'current_students': project.current_students,
+                'applications_count': project.applications_count,
+                'start_date': project.start_date.isoformat() if project.start_date else None,
+                'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
+                'location': project.location or 'Remoto',
+                'modality': project.modality,
+                'difficulty': project.difficulty,
+                'duration_weeks': project.duration_weeks,
+                'hours_per_week': project.hours_per_week,
+                'required_hours': project.required_hours,
+                'budget': project.budget,
+                'created_at': project.created_at.isoformat(),
+                'updated_at': project.updated_at.isoformat(),
+            })
+        
         return JsonResponse({
-            'success': True,
-            'data': data,
-            'pagination': {
-                'page': page,
-                'limit': limit,
-                'total': total,
-                'pages': (total + limit - 1) // limit
-            }
+            'results': projects_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
         })
+        
     except Exception as e:
-        return JsonResponse({'error': f'Error al listar proyectos: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["GET"])
-@require_auth
-def projects_detail(request, project_id):
+def projects_detail(request, projects_id):
+    """Detalle de un proyecto."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Obtener proyecto
         try:
-            proyecto = Proyecto.objects.get(id=project_id)
+            project = Proyecto.objects.select_related('company', 'status', 'area', 'trl').get(id=projects_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
-        # Permisos: admin, empresa dueña, o estudiante si es activo
-        if user.role == 'company' and proyecto.company != user.empresa_profile:
-            return JsonResponse({'error': 'No tienes permisos para ver este proyecto'}, status=403)
-        if user.role == 'student' and not proyecto.status.is_active:
-            return JsonResponse({'error': 'No tienes permisos para ver este proyecto'}, status=403)
-        return JsonResponse({'success': True, 'data': ProyectoSerializer.to_dict(proyecto)})
+        
+        # Serializar datos
+        project_data = {
+            'id': str(project.id),
+            'title': project.title,
+            'description': project.description,
+            'company': str(project.company.id) if project.company else None,
+            'company_name': project.company.company_name if project.company else 'Sin empresa',
+            'status': project.status.name if project.status else 'Sin estado',
+            'area': project.area.name if project.area else 'Sin área',
+            'trl_level': project.trl.level if project.trl else 1,
+            'api_level': project.api_level or 1,
+            'max_students': project.max_students,
+            'current_students': project.current_students,
+            'applications_count': project.applications_count,
+            'start_date': project.start_date.isoformat() if project.start_date else None,
+            'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
+            'location': project.location or 'Remoto',
+            'modality': project.modality,
+            'difficulty': project.difficulty,
+            'duration_weeks': project.duration_weeks,
+            'hours_per_week': project.hours_per_week,
+            'required_hours': project.required_hours,
+            'budget': project.budget,
+            'created_at': project.created_at.isoformat(),
+            'updated_at': project.updated_at.isoformat(),
+        }
+        
+        return JsonResponse(project_data)
+        
     except Exception as e:
-        return JsonResponse({'error': f'Error al obtener proyecto: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@require_auth
 def projects_create(request):
+    """Crear nuevo proyecto."""
     try:
-        user = get_user_from_token(request)
-        if user.role not in ['admin', 'company']:
-            return JsonResponse({'error': 'No tienes permisos para crear proyectos'}, status=403)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo empresas pueden crear proyectos
+        if current_user.role != 'company':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Procesar datos
         data = json.loads(request.body)
-        errors = ProyectoSerializer.validate_data(data)
-        if errors:
-            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
-        proyecto = ProyectoSerializer.create(data, user)
-        return JsonResponse({'success': True, 'message': 'Proyecto creado exitosamente', 'data': ProyectoSerializer.to_dict(proyecto)}, status=201)
+        
+        # Crear proyecto
+        project = Proyecto.objects.create(
+            title=data.get('title'),
+            description=data.get('description', ''),
+            company_id=data.get('company_id'),
+            status_id=data.get('status_id'),
+            area_id=data.get('area_id'),
+            trl_id=data.get('trl_id'),
+            api_level=data.get('api_level', 1),
+            max_students=data.get('max_students', 1),
+            current_students=data.get('current_students', 0),
+            applications_count=data.get('applications_count', 0),
+            start_date=data.get('start_date'),
+            estimated_end_date=data.get('estimated_end_date'),
+            location=data.get('location', 'Remoto'),
+            modality=data.get('modality', 'remoto'),
+            difficulty=data.get('difficulty', 'intermedio'),
+            duration_weeks=data.get('duration_weeks', 12),
+            hours_per_week=data.get('hours_per_week', 10),
+            required_hours=data.get('required_hours', 120),
+            budget=data.get('budget', 0),
+        )
+        
+        return JsonResponse({
+            'message': 'Proyecto creado correctamente',
+            'id': str(project.id)
+        }, status=201)
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Error al crear proyecto: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
-@require_http_methods(["PUT"])
-@require_auth
-def projects_update(request, project_id):
+@require_http_methods(["PUT", "PATCH"])
+def projects_update(request, projects_id):
+    """Actualizar proyecto."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Obtener proyecto
         try:
-            proyecto = Proyecto.objects.get(id=project_id)
+            project = Proyecto.objects.get(id=projects_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
-        if user.role == 'company' and proyecto.company != user.empresa_profile:
-            return JsonResponse({'error': 'No tienes permisos para actualizar este proyecto'}, status=403)
+        
+        # Verificar permisos
+        if current_user.role == 'company' and str(project.company.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Procesar datos
         data = json.loads(request.body)
-        errors = ProyectoSerializer.validate_data(data)
-        if errors:
-            return JsonResponse({'error': 'Datos inválidos', 'details': errors}, status=400)
-        proyecto = ProyectoSerializer.update(proyecto, data)
-        return JsonResponse({'success': True, 'message': 'Proyecto actualizado exitosamente', 'data': ProyectoSerializer.to_dict(proyecto)})
+        
+        # Actualizar campos del proyecto
+        fields_to_update = [
+            'title', 'description', 'company_id', 'status_id', 'area_id', 'trl_id',
+            'api_level', 'max_students', 'current_students', 'applications_count',
+            'start_date', 'estimated_end_date', 'location', 'modality', 'difficulty',
+            'duration_weeks', 'hours_per_week', 'required_hours', 'budget'
+        ]
+        
+        for field in fields_to_update:
+            if field in data:
+                setattr(project, field, data[field])
+        
+        project.save()
+        
+        # Retornar datos actualizados
+        return JsonResponse({
+            'message': 'Proyecto actualizado correctamente',
+            'id': str(project.id)
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Error al actualizar proyecto: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["DELETE"])
-@require_auth
-def projects_delete(request, project_id):
+def projects_delete(request, projects_id):
+    """Eliminar proyecto."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Obtener proyecto
         try:
-            proyecto = Proyecto.objects.get(id=project_id)
+            project = Proyecto.objects.get(id=projects_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
-        if user.role == 'company' and proyecto.company != user.empresa_profile:
-            return JsonResponse({'error': 'No tienes permisos para eliminar este proyecto'}, status=403)
-        proyecto.delete()
-        return JsonResponse({'success': True, 'message': 'Proyecto eliminado exitosamente'})
-    except Exception as e:
-        return JsonResponse({'error': f'Error al eliminar proyecto: {str(e)}'}, status=500)
-
-# Puedes agregar endpoints adicionales para estadísticas, destacados, urgentes, etc. siguiendo este patrón.
-
-@csrf_exempt
-@require_http_methods(["GET"])
-@require_auth
-def projects_my_projects(request):
-    """Obtener proyectos del usuario actual (empresa o estudiante)"""
-    try:
-        user = get_user_from_token(request)
         
-        if user.role == 'company':
-            # Para empresas: obtener sus proyectos
-            queryset = Proyecto.objects.filter(company=user.empresa_profile)
-        elif user.role == 'student':
-            # Para estudiantes: obtener proyectos donde han aplicado
-            queryset = Proyecto.objects.filter(
-                project_applications__estudiante=user
-            ).distinct()
-        else:
-            return JsonResponse({'error': 'Rol no válido para esta operación'}, status=403)
+        # Verificar permisos
+        if current_user.role == 'company' and str(project.company.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        # Aplicar filtros opcionales
-        status = request.GET.get('status')
-        if status:
-            queryset = queryset.filter(status_id=status)
-        
-        # Ordenar por fecha de creación (más recientes primero)
-        queryset = queryset.order_by('-created_at')
-        
-        # Serializar datos
-        data = [ProyectoSerializer.to_dict(p) for p in queryset]
+        project.delete()
         
         return JsonResponse({
-            'success': True,
-            'data': data,
-            'total': len(data)
+            'message': 'Proyecto eliminado correctamente'
         })
         
     except Exception as e:
-        return JsonResponse({'error': f'Error al obtener mis proyectos: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)

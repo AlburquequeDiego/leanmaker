@@ -29,6 +29,7 @@ import {
 
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
+import { adaptStrike } from '../../../utils/adapters';
 import type { Strike } from '../../../types';
 
 
@@ -72,7 +73,8 @@ export const CompanyStrikes: React.FC = () => {
       setError(null);
       
       const response = await api.get('/api/strikes/');
-      setStrikes(response);
+      const adaptedStrikes = response.data.map(adaptStrike);
+      setStrikes(adaptedStrikes);
       
     } catch (err: any) {
       console.error('Error cargando strikes:', err);
@@ -152,7 +154,8 @@ export const CompanyStrikes: React.FC = () => {
         severity: newStrike.severity,
       });
 
-      setStrikes(prev => [response, ...prev]);
+      const createdStrike = adaptStrike(response.data);
+      setStrikes(prev => [createdStrike, ...prev]);
       setShowCreateDialog(false);
       setNewStrike({
         student: '',
@@ -181,9 +184,10 @@ export const CompanyStrikes: React.FC = () => {
         severity: newStrike.severity,
       });
 
+      const updatedStrike = adaptStrike(response.data);
       setStrikes(prev =>
         prev.map(strike =>
-          strike.id === selectedStrike.id ? response : strike
+          strike.id === selectedStrike.id ? updatedStrike : strike
         )
       );
       setShowEditDialog(false);

@@ -1,0 +1,466 @@
+"""
+Views para la app admin - Endpoints de administración
+"""
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.db.models import Q, Count, Avg, Sum
+from django.utils import timezone
+from datetime import datetime, timedelta
+from core.views import verify_token
+from users.models import User
+from students.models import Estudiante
+from companies.models import Empresa
+from projects.models import Proyecto
+from applications.models import Aplicacion
+from work_hours.models import WorkHour
+from evaluations.models import Evaluation
+from notifications.models import Notification
+from platform_settings.models import PlatformSetting
+
+def require_admin_auth(view_func):
+    """Decorator para verificar autenticación de admin"""
+    def wrapper(request, *args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        return view_func(request, current_user, *args, **kwargs)
+    return wrapper
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_students_list(request, current_user):
+    """Lista de estudiantes para administrador"""
+    try:
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        search = request.GET.get('search', '')
+        api_level = request.GET.get('api_level', '')
+        status = request.GET.get('status', '')
+        
+        queryset = Estudiante.objects.select_related('user').all()
+        
+        if search:
+            queryset = queryset.filter(
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(career__icontains=search)
+            )
+        
+        if api_level:
+            queryset = queryset.filter(api_level=api_level)
+        
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        total_count = queryset.count()
+        students = queryset[offset:offset + limit]
+        
+        students_data = []
+        for student in students:
+            students_data.append({
+                'id': str(student.id),
+                'name': student.user.full_name,
+                'email': student.user.email,
+                'api_level': student.api_level,
+                'trl_level': 1,
+                'total_hours': student.total_hours,
+                'company_name': None,
+                'status': student.status,
+                'strikes': student.strikes,
+                'created_at': student.created_at.isoformat(),
+                'last_activity': student.updated_at.isoformat(),
+                'career': student.career,
+                'semester': student.semester,
+                'gpa': float(student.gpa),
+                'completed_projects': student.completed_projects,
+                'experience_years': student.experience_years,
+                'rating': float(student.rating),
+                'skills': student.get_skills_list(),
+                'languages': student.get_languages_list(),
+            })
+        
+        return JsonResponse({
+            'results': students_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_projects_list(request, current_user):
+    """Lista de proyectos para administrador"""
+    try:
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        search = request.GET.get('search', '')
+        company = request.GET.get('company', '')
+        status = request.GET.get('status', '')
+        
+        queryset = Proyecto.objects.select_related('company', 'status', 'area', 'trl').all()
+        
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(company__company_name__icontains=search)
+            )
+        
+        if company:
+            queryset = queryset.filter(company_id=company)
+        
+        if status:
+            queryset = queryset.filter(status__name=status)
+        
+        total_count = queryset.count()
+        projects = queryset[offset:offset + limit]
+        
+        projects_data = []
+        for project in projects:
+            projects_data.append({
+                'id': str(project.id),
+                'title': project.title,
+                'company_name': project.company.company_name if project.company else 'Sin empresa',
+                'company_id': str(project.company.id) if project.company else None,
+                'description': project.description,
+                'status': project.status.name if project.status else 'Sin estado',
+                'required_api_level': project.api_level or 1,
+                'required_trl_level': project.trl.level if project.trl else 1,
+                'students_needed': project.max_students,
+                'students_assigned': project.current_students,
+                'applications_count': project.applications_count,
+                'start_date': project.start_date.isoformat() if project.start_date else None,
+                'end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
+                'location': project.location or 'Remoto',
+                'rating': 0,
+                'hours_offered': project.required_hours or 0,
+                'created_at': project.created_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'results': projects_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_companies_list(request, current_user):
+    """Lista de empresas para administrador"""
+    try:
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        search = request.GET.get('search', '')
+        status = request.GET.get('status', '')
+        
+        queryset = Empresa.objects.select_related('user').all()
+        
+        if search:
+            queryset = queryset.filter(
+                Q(company_name__icontains=search) |
+                Q(description__icontains=search) |
+                Q(user__email__icontains=search)
+            )
+        
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        total_count = queryset.count()
+        companies = queryset[offset:offset + limit]
+        
+        companies_data = []
+        for company in companies:
+            companies_data.append({
+                'id': str(company.id),
+                'name': company.company_name,
+                'email': company.user.email,
+                'status': company.status,
+                'projects_count': company.proyectos.count(),
+                'rating': float(company.rating),
+                'join_date': company.created_at.isoformat(),
+                'last_activity': company.updated_at.isoformat(),
+                'description': company.description,
+                'phone': company.contact_phone,
+                'address': company.address,
+                'website': company.website,
+                'industry': company.industry,
+                'size': company.size,
+                'verified': company.verified,
+            })
+        
+        return JsonResponse({
+            'results': companies_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_users_list(request, current_user):
+    """Lista de usuarios para administrador"""
+    try:
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        search = request.GET.get('search', '')
+        role = request.GET.get('role', '')
+        
+        queryset = User.objects.all()
+        
+        if search:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(username__icontains=search)
+            )
+        
+        if role:
+            queryset = queryset.filter(role=role)
+        
+        total_count = queryset.count()
+        users = queryset[offset:offset + limit]
+        
+        users_data = []
+        for user in users:
+            users_data.append({
+                'id': str(user.id),
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'user_type': user.role,
+                'is_active': user.is_active,
+                'date_joined': user.date_joined.isoformat(),
+                'last_login': user.last_login.isoformat() if user.last_login else None,
+                'phone': user.phone,
+                'avatar': user.avatar,
+                'is_verified': user.is_verified,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
+            })
+        
+        return JsonResponse({
+            'results': users_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_work_hours_list(request, current_user):
+    """Lista de horas trabajadas para administrador"""
+    try:
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        
+        queryset = WorkHour.objects.select_related('student', 'project', 'company', 'student__user', 'project__company').all()
+        total_count = queryset.count()
+        work_hours = queryset[offset:offset + limit]
+        
+        work_hours_data = []
+        for work_hour in work_hours:
+            work_hours_data.append({
+                'id': str(work_hour.id),
+                'student_name': work_hour.student.user.full_name,
+                'student_email': work_hour.student.user.email,
+                'project_title': work_hour.project.title,
+                'company_name': work_hour.company.company_name,
+                'date': work_hour.date.isoformat(),
+                'hours_worked': work_hour.hours_worked,
+                'description': work_hour.description,
+                'approved': work_hour.approved,
+                'approved_by': work_hour.approved_by.full_name if work_hour.approved_by else None,
+                'approved_at': work_hour.approved_at.isoformat() if work_hour.approved_at else None,
+                'created_at': work_hour.created_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'results': work_hours_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_evaluations_list(request, current_user):
+    """Lista de evaluaciones para administrador"""
+    try:
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        
+        queryset = Evaluation.objects.select_related('project', 'student', 'student__user', 'project__company').all()
+        total_count = queryset.count()
+        evaluations = queryset[offset:offset + limit]
+        
+        evaluations_data = []
+        for evaluation in evaluations:
+            evaluations_data.append({
+                'id': str(evaluation.id),
+                'student_name': evaluation.student.user.full_name,
+                'student_id': str(evaluation.student.id),
+                'company_name': evaluation.project.company.company_name if evaluation.project.company else 'Sin empresa',
+                'company_id': str(evaluation.project.company.id) if evaluation.project.company else None,
+                'project_title': evaluation.project.title,
+                'project_id': str(evaluation.project.id),
+                'score': evaluation.score,
+                'comments': evaluation.comments,
+                'evaluation_date': evaluation.evaluation_date.isoformat(),
+                'status': evaluation.status,
+                'evaluator_name': evaluation.evaluator_role or 'Sistema',
+                'evaluator_type': 'admin',
+                'overall_rating': evaluation.overall_rating,
+                'created_at': evaluation.created_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'results': evaluations_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_notifications_list(request, current_user):
+    """Lista de notificaciones para administrador"""
+    try:
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        
+        queryset = Notification.objects.select_related('user').all()
+        total_count = queryset.count()
+        notifications = queryset[offset:offset + limit]
+        
+        notifications_data = []
+        for notification in notifications:
+            notifications_data.append({
+                'id': str(notification.id),
+                'user_name': notification.user.full_name,
+                'user_email': notification.user.email,
+                'title': notification.title,
+                'message': notification.message,
+                'type': notification.type,
+                'read': notification.read,
+                'related_url': notification.related_url,
+                'created_at': notification.created_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'results': notifications_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_settings_list(request, current_user):
+    """Lista de configuraciones de plataforma"""
+    try:
+        settings = PlatformSetting.objects.all()
+        settings_data = []
+        for setting in settings:
+            settings_data.append({
+                'id': str(setting.id),
+                'key': setting.key,
+                'value': setting.value,
+                'setting_type': setting.setting_type,
+                'description': setting.description,
+                'created_at': setting.created_at.isoformat(),
+                'updated_at': setting.updated_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'results': settings_data,
+            'count': len(settings_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_admin_auth
+def admin_profile(request, current_user):
+    """Perfil del administrador"""
+    try:
+        admin_data = {
+            'id': str(current_user.id),
+            'email': current_user.email,
+            'first_name': current_user.first_name,
+            'last_name': current_user.last_name,
+            'username': current_user.username,
+            'phone': current_user.phone,
+            'avatar': current_user.avatar,
+            'bio': current_user.bio,
+            'role': current_user.role,
+            'is_active': current_user.is_active,
+            'is_verified': current_user.is_verified,
+            'is_staff': current_user.is_staff,
+            'is_superuser': current_user.is_superuser,
+            'date_joined': current_user.date_joined.isoformat(),
+            'last_login': current_user.last_login.isoformat() if current_user.last_login else None,
+            'full_name': current_user.full_name,
+        }
+        
+        return JsonResponse(admin_data)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 

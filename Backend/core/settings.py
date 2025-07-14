@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'activity_logs',
     'reports',
     'data_backups',
+    'custom_admin',  # Nueva app de administración
 ]
 
 MIDDLEWARE = [
