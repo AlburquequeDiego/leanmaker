@@ -19,6 +19,7 @@ class Assignment(models.Model):
         max_length=20, 
         choices=[
             ('low', 'Baja'),
+            ('normal', 'Normal'),
             ('medium', 'Media'),
             ('high', 'Alta'),
             ('urgent', 'Urgente')

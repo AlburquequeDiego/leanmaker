@@ -26,7 +26,6 @@ import {
   Switch,
 } from '@mui/material';
 import {
-
   Search as SearchIcon,
   Send as SendIcon,
   Delete as DeleteIcon,
@@ -35,38 +34,42 @@ import {
   Warning as WarningIcon,
   Error as ErrorIcon,
   CheckCircle as CheckCircleIcon,
+  History as HistoryIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
-interface Notification {
+interface MassNotification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'warning' | 'error' | 'success';
-  target_type: 'all' | 'students' | 'companies' | 'admins' | 'specific';
-  target_ids?: string[];
-  status: 'draft' | 'sent' | 'scheduled';
-  created_at: string;
-  sent_at?: string;
+  notification_type: 'announcement' | 'reminder' | 'alert' | 'update' | 'event' | 'deadline';
+  priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
+  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed';
+  target_all_students: boolean;
+  target_all_companies: boolean;
+  target_students: Array<{ id: string; name: string }>;
+  target_companies: Array<{ id: string; name: string }>;
   scheduled_at?: string;
-  created_by: string;
-  read_count: number;
+  sent_at?: string;
+  created_at: string;
+  created_by_name: string;
   total_recipients: number;
+  sent_count: number;
+  failed_count: number;
+  read_count: number;
 }
 
-
-
 export default function NotificacionesAdmin() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
+  const [notifications, setNotifications] = useState<MassNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [targetFilter, setTargetFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  const [limit, setLimit] = useState(5);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [selectedNotification, setSelectedNotification] = useState<MassNotification | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
     open: false, 
     message: '', 
@@ -77,83 +80,135 @@ export default function NotificacionesAdmin() {
   const [formData, setFormData] = useState({
     title: '',
     message: '',
-    type: 'info' as 'info' | 'warning' | 'error' | 'success',
-    target_type: 'all' as 'all' | 'students' | 'companies' | 'admins' | 'specific',
-    target_ids: [] as string[],
+    notification_type: 'announcement' as 'announcement' | 'reminder' | 'alert' | 'update' | 'event' | 'deadline',
+    priority: 'normal' as 'low' | 'normal' | 'medium' | 'high' | 'urgent',
+    target_all_students: false,
+    target_all_companies: false,
+    target_student_ids: [] as string[],
+    target_company_ids: [] as string[],
     scheduled_at: '',
-    save_as_template: false,
-    template_name: '',
   });
+
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     fetchNotifications();
   }, []);
 
+  const validateForm = () => {
+    const errors: {[key: string]: string} = {};
+    
+    if (!formData.title.trim()) {
+      errors.title = 'El título es requerido';
+    } else if (formData.title.trim().length < 5) {
+      errors.title = 'El título debe tener al menos 5 caracteres';
+    }
+    
+    if (!formData.message.trim()) {
+      errors.message = 'El mensaje es requerido';
+    } else if (formData.message.trim().length < 10) {
+      errors.message = 'El mensaje debe tener al menos 10 caracteres';
+    }
+    
+    if (!formData.target_all_students && !formData.target_all_companies && 
+        formData.target_student_ids.length === 0 && formData.target_company_ids.length === 0) {
+      errors.recipients = 'Debe seleccionar al menos un destinatario';
+    }
+    
+    if (formData.scheduled_at) {
+      const scheduledDate = new Date(formData.scheduled_at);
+      if (scheduledDate <= new Date()) {
+        errors.scheduled_at = 'La fecha programada debe ser futura';
+      }
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const data = await apiService.get('/api/notifications/');
+      setError(null);
+      
+      const response = await apiService.get('/api/mass-notifications/');
+      console.log('Respuesta notificaciones masivas:', response);
+      
+      const data = response.data ? response.data : response;
       const formattedNotifications = Array.isArray(data) ? data.map((notification: any) => ({
-        id: notification.id,
+        id: String(notification.id),
         title: notification.title,
         message: notification.message,
-        type: notification.type || 'info',
-        target_type: notification.target_type || 'all',
-        target_ids: notification.target_ids || [],
+        notification_type: notification.notification_type || 'announcement',
+        priority: notification.priority || 'normal',
         status: notification.status || 'draft',
-        created_at: notification.created_at,
-        sent_at: notification.sent_at,
+        target_all_students: notification.target_all_students || false,
+        target_all_companies: notification.target_all_companies || false,
+        target_students: notification.target_students || [],
+        target_companies: notification.target_companies || [],
         scheduled_at: notification.scheduled_at,
-        created_by: notification.created_by || 'Admin',
-        read_count: notification.read_count || 0,
+        sent_at: notification.sent_at,
+        created_at: notification.created_at,
+        created_by_name: notification.created_by_name || 'Admin',
         total_recipients: notification.total_recipients || 0,
+        sent_count: notification.sent_count || 0,
+        failed_count: notification.failed_count || 0,
+        read_count: notification.read_count || 0,
       })) : [];
       
       setNotifications(formattedNotifications);
+      console.log('Notificaciones masivas adaptadas:', formattedNotifications);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
-      setError('Error al cargar las notificaciones');
+      console.error('Error fetching mass notifications:', error);
+      setError('Error al cargar las notificaciones masivas');
     } finally {
       setLoading(false);
     }
   };
 
-
-
   const handleCreateNotification = async () => {
+    if (!validateForm()) {
+      setSnackbar({ 
+        open: true, 
+        message: 'Por favor corrija los errores en el formulario', 
+        severity: 'error' 
+      });
+      return;
+    }
+
     try {
       const notificationData = {
         ...formData,
         status: formData.scheduled_at ? 'scheduled' : 'draft',
       };
 
-      await apiService.post('/api/notifications/', notificationData);
-      
-      if (formData.save_as_template && formData.template_name) {
-        const templateData = {
-          name: formData.template_name,
-          title: formData.title,
-          message: formData.message,
-          type: formData.type,
-          target_type: formData.target_type,
-        };
-        await apiService.post('/api/notification-templates/', templateData);
-      }
+      console.log('Enviando datos de notificación:', notificationData);
+      await apiService.post('/api/mass-notifications/create/', notificationData);
 
       setSnackbar({ 
         open: true, 
-        message: 'Notificación creada exitosamente', 
+        message: 'Notificación masiva creada exitosamente', 
         severity: 'success' 
       });
       
       setShowCreateDialog(false);
       resetForm();
       await fetchNotifications();
-    } catch (error) {
-      console.error('Error creating notification:', error);
+    } catch (error: any) {
+      console.error('Error creating mass notification:', error);
+      let errorMessage = 'Error al crear la notificación masiva';
+      
+      if (error.response?.data?.details) {
+        const details = error.response.data.details;
+        const detailMessages = Object.entries(details).map(([field, message]) => `${field}: ${message}`).join(', ');
+        errorMessage = `Errores de validación: ${detailMessages}`;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
+      
       setSnackbar({ 
         open: true, 
-        message: 'Error al crear la notificación', 
+        message: errorMessage, 
         severity: 'error' 
       });
     }
@@ -161,23 +216,20 @@ export default function NotificacionesAdmin() {
 
   const handleSendNotification = async (notificationId: string) => {
     try {
-      await apiService.patch(`/api/notifications/${notificationId}/`, {
-        status: 'sent',
-        sent_at: new Date().toISOString(),
-      });
+      await apiService.post(`/api/mass-notifications/${notificationId}/send/`);
       
       setSnackbar({ 
         open: true, 
-        message: 'Notificación enviada exitosamente', 
+        message: 'Notificación masiva enviada exitosamente', 
         severity: 'success' 
       });
       
       await fetchNotifications();
     } catch (error) {
-      console.error('Error sending notification:', error);
+      console.error('Error sending mass notification:', error);
       setSnackbar({ 
         open: true, 
-        message: 'Error al enviar la notificación', 
+        message: 'Error al enviar la notificación masiva', 
         severity: 'error' 
       });
     }
@@ -185,54 +237,60 @@ export default function NotificacionesAdmin() {
 
   const handleDeleteNotification = async (notificationId: string) => {
     try {
-      await apiService.delete(`/api/notifications/${notificationId}/`);
+      await apiService.delete(`/api/mass-notifications/${notificationId}/delete/`);
       
       setSnackbar({ 
         open: true, 
-        message: 'Notificación eliminada exitosamente', 
+        message: 'Notificación masiva eliminada exitosamente', 
         severity: 'success' 
       });
       
       await fetchNotifications();
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      console.error('Error deleting mass notification:', error);
       setSnackbar({ 
         open: true, 
-        message: 'Error al eliminar la notificación', 
+        message: 'Error al eliminar la notificación masiva', 
         severity: 'error' 
       });
     }
   };
 
-
-
   const resetForm = () => {
     setFormData({
       title: '',
       message: '',
-      type: 'info',
-      target_type: 'all',
-      target_ids: [],
+      notification_type: 'announcement',
+      priority: 'normal',
+      target_all_students: false,
+      target_all_companies: false,
+      target_student_ids: [],
+      target_company_ids: [],
       scheduled_at: '',
-      save_as_template: false,
-      template_name: '',
     });
+    setFormErrors({});
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'success': return <CheckCircleIcon color="success" />;
-      case 'warning': return <WarningIcon color="warning" />;
-      case 'error': return <ErrorIcon color="error" />;
+      case 'announcement': return <InfoIcon color="info" />;
+      case 'reminder': return <WarningIcon color="warning" />;
+      case 'alert': return <ErrorIcon color="error" />;
+      case 'update': return <CheckCircleIcon color="success" />;
+      case 'event': return <InfoIcon color="primary" />;
+      case 'deadline': return <WarningIcon color="error" />;
       default: return <InfoIcon color="info" />;
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'success': return 'success';
-      case 'warning': return 'warning';
-      case 'error': return 'error';
+      case 'announcement': return 'info';
+      case 'reminder': return 'warning';
+      case 'alert': return 'error';
+      case 'update': return 'success';
+      case 'event': return 'primary';
+      case 'deadline': return 'error';
       default: return 'info';
     }
   };
@@ -241,7 +299,10 @@ export default function NotificacionesAdmin() {
     switch (status) {
       case 'sent': return 'success';
       case 'scheduled': return 'warning';
+      case 'sending': return 'info';
       case 'draft': return 'default';
+      case 'cancelled': return 'error';
+      case 'failed': return 'error';
       default: return 'default';
     }
   };
@@ -250,28 +311,72 @@ export default function NotificacionesAdmin() {
     switch (status) {
       case 'sent': return 'Enviada';
       case 'scheduled': return 'Programada';
+      case 'sending': return 'Enviando';
       case 'draft': return 'Borrador';
+      case 'cancelled': return 'Cancelada';
+      case 'failed': return 'Fallida';
       default: return status;
     }
   };
 
-  const getTargetText = (target: string) => {
-    switch (target) {
-      case 'all': return 'Todos';
-      case 'students': return 'Estudiantes';
-      case 'companies': return 'Empresas';
-      case 'admins': return 'Administradores';
-      case 'specific': return 'Específicos';
-      default: return target;
+  const getTypeText = (type: string) => {
+    switch (type) {
+      case 'announcement': return 'Anuncio';
+      case 'reminder': return 'Recordatorio';
+      case 'alert': return 'Alerta';
+      case 'update': return 'Actualización';
+      case 'event': return 'Evento';
+      case 'deadline': return 'Fecha límite';
+      default: return type;
+    }
+  };
+
+  const getPriorityText = (priority: string) => {
+    switch (priority) {
+      case 'low': return 'Baja';
+      case 'normal': return 'Normal';
+      case 'medium': return 'Media';
+      case 'high': return 'Alta';
+      case 'urgent': return 'Urgente';
+      default: return priority;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'error';
+      case 'high': return 'warning';
+      case 'medium': return 'secondary';
+      case 'low': return 'default';
+      default: return 'default';
+    }
+  };
+
+  const getTargetText = (notification: MassNotification) => {
+    if (notification.target_all_students && notification.target_all_companies) {
+      return 'Todos los usuarios';
+    } else if (notification.target_all_students) {
+      return 'Todos los estudiantes';
+    } else if (notification.target_all_companies) {
+      return 'Todas las empresas';
+    } else {
+      const targets = [];
+      if (notification.target_students.length > 0) {
+        targets.push(`${notification.target_students.length} estudiantes`);
+      }
+      if (notification.target_companies.length > 0) {
+        targets.push(`${notification.target_companies.length} empresas`);
+      }
+      return targets.length > 0 ? targets.join(', ') : 'Sin destinatarios';
     }
   };
 
   const filteredNotifications = notifications.filter(notification =>
-    notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    notification.message.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (typeFilter ? notification.type === typeFilter : true) &&
+    (notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     notification.message.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (typeFilter ? notification.notification_type === typeFilter : true) &&
     (statusFilter ? notification.status === statusFilter : true) &&
-    (targetFilter ? notification.target_type === targetFilter : true)
+    (priorityFilter ? notification.priority === priorityFilter : true)
   );
 
   if (loading) {
@@ -286,7 +391,7 @@ export default function NotificacionesAdmin() {
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
         <InfoIcon sx={{ mr: 2, color: 'primary.main' }} />
-        Gestión de Notificaciones
+        Gestión de Notificaciones Masivas
       </Typography>
 
       {error && (
@@ -322,11 +427,13 @@ export default function NotificacionesAdmin() {
                 label="Tipo"
                 onChange={(e) => setTypeFilter(e.target.value)}
               >
-                <MenuItem value="all">Todos</MenuItem>
-                <MenuItem value="info">Información</MenuItem>
-                <MenuItem value="warning">Advertencia</MenuItem>
-                <MenuItem value="error">Error</MenuItem>
-                <MenuItem value="success">Éxito</MenuItem>
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="announcement">Anuncio</MenuItem>
+                <MenuItem value="reminder">Recordatorio</MenuItem>
+                <MenuItem value="alert">Alerta</MenuItem>
+                <MenuItem value="update">Actualización</MenuItem>
+                <MenuItem value="event">Evento</MenuItem>
+                <MenuItem value="deadline">Fecha límite</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -338,26 +445,47 @@ export default function NotificacionesAdmin() {
                 label="Estado"
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <MenuItem value="all">Todos</MenuItem>
+                <MenuItem value="">Todos</MenuItem>
                 <MenuItem value="draft">Borrador</MenuItem>
-                <MenuItem value="sent">Enviada</MenuItem>
                 <MenuItem value="scheduled">Programada</MenuItem>
+                <MenuItem value="sending">Enviando</MenuItem>
+                <MenuItem value="sent">Enviada</MenuItem>
+                <MenuItem value="cancelled">Cancelada</MenuItem>
+                <MenuItem value="failed">Fallida</MenuItem>
               </Select>
             </FormControl>
           </Box>
           <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
             <FormControl fullWidth>
-              <InputLabel>Destinatario</InputLabel>
+              <InputLabel>Prioridad</InputLabel>
               <Select
-                value={targetFilter}
-                label="Destinatario"
-                onChange={(e) => setTargetFilter(e.target.value)}
+                value={priorityFilter}
+                label="Prioridad"
+                onChange={(e) => setPriorityFilter(e.target.value)}
               >
-                <MenuItem value="all">Todos</MenuItem>
-                <MenuItem value="all">Todos los usuarios</MenuItem>
-                <MenuItem value="students">Estudiantes</MenuItem>
-                <MenuItem value="companies">Empresas</MenuItem>
-                <MenuItem value="admins">Administradores</MenuItem>
+                <MenuItem value="">Todas</MenuItem>
+                <MenuItem value="low">Baja</MenuItem>
+                <MenuItem value="normal">Normal</MenuItem>
+                <MenuItem value="medium">Media</MenuItem>
+                <MenuItem value="high">Alta</MenuItem>
+                <MenuItem value="urgent">Urgente</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
+            <FormControl fullWidth>
+              <InputLabel>Mostrar</InputLabel>
+              <Select
+                value={limit}
+                label="Mostrar"
+                onChange={(e) => setLimit(Number(e.target.value))}
+              >
+                <MenuItem value={5}>5 últimas</MenuItem>
+                <MenuItem value={10}>10 últimas</MenuItem>
+                <MenuItem value={20}>20 últimas</MenuItem>
+                <MenuItem value={50}>50 últimas</MenuItem>
+                <MenuItem value={100}>100 últimas</MenuItem>
+                <MenuItem value={-1}>Todas</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -375,13 +503,18 @@ export default function NotificacionesAdmin() {
       </Paper>
 
       {/* Lista de notificaciones */}
+      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, display: 'flex', alignItems: 'center' }}>
+        <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+        Historial de Notificaciones
+      </Typography>
+      
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 3 }}>
-        {filteredNotifications.map((notification) => (
+        {(limit === -1 ? filteredNotifications : filteredNotifications.slice(0, limit)).map((notification) => (
           <Box key={notification.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  {getTypeIcon(notification.type)}
+                  {getTypeIcon(notification.notification_type)}
                   <Typography variant="h6" sx={{ flexGrow: 1 }}>
                     {notification.title}
                   </Typography>
@@ -391,8 +524,8 @@ export default function NotificacionesAdmin() {
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                   <Chip 
-                    label={getTypeText(notification.type)} 
-                    color={getTypeColor(notification.type) as any}
+                    label={getTypeText(notification.notification_type)} 
+                    color={getTypeColor(notification.notification_type) as any}
                     size="small"
                   />
                   <Chip 
@@ -401,13 +534,19 @@ export default function NotificacionesAdmin() {
                     size="small"
                   />
                   <Chip 
-                    label={getTargetText(notification.target_type)} 
-                    variant="outlined"
+                    label={getPriorityText(notification.priority)} 
+                    color={getPriorityColor(notification.priority) as any}
                     size="small"
                   />
                 </Box>
-                <Typography variant="caption" color="text.secondary">
-                  {new Date(notification.created_at).toLocaleString()}
+                <Typography variant="caption" color="text.secondary" component="div">
+                  <strong>Destinatarios:</strong> {getTargetText(notification)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" component="div">
+                  <strong>Enviadas:</strong> {notification.sent_count}/{notification.total_recipients}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" component="div">
+                  <strong>Creada:</strong> {new Date(notification.created_at).toLocaleString()}
                 </Typography>
               </CardContent>
               <CardActions sx={{ justifyContent: 'space-between', p: 2 }}>
@@ -422,7 +561,7 @@ export default function NotificacionesAdmin() {
                     size="small" 
                     color="primary"
                     onClick={() => handleSendNotification(notification.id)}
-                    disabled={notification.status === 'sent'}
+                    disabled={notification.status === 'sent' || notification.status === 'sending'}
                   >
                     <SendIcon />
                   </IconButton>
@@ -434,36 +573,13 @@ export default function NotificacionesAdmin() {
                     <DeleteIcon />
                   </IconButton>
                 </Box>
-                {notification.status === 'draft' && (
                   <Button
                     variant="outlined"
                     size="small"
-                    fullWidth
                     disabled
                   >
-                    Borrador
+                  {getStatusText(notification.status)}
                   </Button>
-                )}
-                {notification.status === 'scheduled' && (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    fullWidth
-                    disabled
-                  >
-                    Programada
-                  </Button>
-                )}
-                {notification.status === 'sent' && (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    fullWidth
-                    disabled
-                  >
-                    Enviada
-                  </Button>
-                )}
               </CardActions>
             </Card>
           </Box>
@@ -472,13 +588,13 @@ export default function NotificacionesAdmin() {
 
       {filteredNotifications.length === 0 && !loading && (
         <Alert severity="info" sx={{ mt: 3 }}>
-          No se encontraron notificaciones que coincidan con los filtros aplicados.
+          No se encontraron notificaciones masivas que coincidan con los filtros aplicados.
         </Alert>
       )}
 
       {/* Dialog para crear notificación */}
       <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Crear Nueva Notificación</DialogTitle>
+        <DialogTitle>Crear Nueva Notificación Masiva</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
@@ -488,9 +604,11 @@ export default function NotificacionesAdmin() {
               fullWidth
               required
               sx={{ mb: 2 }}
+              error={!!formErrors.title}
+              helperText={formErrors.title}
             />
             <TextField
-              label="Descripción"
+              label="Mensaje"
               value={formData.message}
               onChange={e => setFormData({ ...formData, message: e.target.value })}
               fullWidth
@@ -498,35 +616,73 @@ export default function NotificacionesAdmin() {
               multiline
               minRows={3}
               sx={{ mb: 2 }}
+              error={!!formErrors.message}
+              helperText={formErrors.message}
             />
             <Box sx={{ display: 'flex', gap: 2 }}>
               <FormControl fullWidth>
                 <InputLabel>Tipo</InputLabel>
                 <Select
-                  value={formData.type}
+                  value={formData.notification_type}
                   label="Tipo"
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                  onChange={(e) => setFormData({ ...formData, notification_type: e.target.value as any })}
                 >
-                  <MenuItem value="info">Información</MenuItem>
-                  <MenuItem value="warning">Advertencia</MenuItem>
-                  <MenuItem value="error">Error</MenuItem>
-                  <MenuItem value="success">Éxito</MenuItem>
+                  <MenuItem value="announcement">Anuncio</MenuItem>
+                  <MenuItem value="reminder">Recordatorio</MenuItem>
+                  <MenuItem value="alert">Alerta</MenuItem>
+                  <MenuItem value="update">Actualización</MenuItem>
+                  <MenuItem value="event">Evento</MenuItem>
+                  <MenuItem value="deadline">Fecha límite</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel>Destinatarios</InputLabel>
+                <InputLabel>Prioridad</InputLabel>
                 <Select
-                  value={formData.target_type}
-                  label="Destinatarios"
-                  onChange={(e) => setFormData({ ...formData, target_type: e.target.value as any })}
+                  value={formData.priority}
+                  label="Prioridad"
+                  onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
                 >
-                  <MenuItem value="all">Todos los usuarios</MenuItem>
-                  <MenuItem value="students">Solo estudiantes</MenuItem>
-                  <MenuItem value="companies">Solo empresas</MenuItem>
-                  <MenuItem value="admins">Solo administradores</MenuItem>
-                  <MenuItem value="specific">Usuarios específicos</MenuItem>
+                  <MenuItem value="low">Baja</MenuItem>
+                  <MenuItem value="normal">Normal</MenuItem>
+                  <MenuItem value="medium">Media</MenuItem>
+                  <MenuItem value="high">Alta</MenuItem>
+                  <MenuItem value="urgent">Urgente</MenuItem>
                 </Select>
               </FormControl>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Destinatarios
+              </Typography>
+              
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.target_all_students}
+                    onChange={(e) => setFormData({ ...formData, target_all_students: e.target.checked })}
+                  />
+                }
+                label="Enviar a todos los estudiantes"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.target_all_companies}
+                    onChange={(e) => setFormData({ ...formData, target_all_companies: e.target.checked })}
+                  />
+                }
+                label="Enviar a todas las empresas"
+              />
+              
+              {formErrors.recipients && (
+                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                  {formErrors.recipients}
+                </Typography>
+              )}
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Seleccione al menos una opción de destinatarios. Si no selecciona ninguna, la notificación no se podrá crear.
+              </Typography>
             </Box>
             <Box>
               <TextField
@@ -536,30 +692,10 @@ export default function NotificacionesAdmin() {
                 onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
                 fullWidth
                 InputLabelProps={{ shrink: true }}
+                error={!!formErrors.scheduled_at}
+                helperText={formErrors.scheduled_at}
               />
             </Box>
-            <Box>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.save_as_template}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, save_as_template: e.target.checked })}
-                  />
-                }
-                label="Guardar como plantilla"
-              />
-            </Box>
-            {formData.save_as_template && (
-              <Box>
-                <TextField
-                  label="Nombre de la plantilla"
-                  value={formData.template_name}
-                  onChange={(e) => setFormData({ ...formData, template_name: e.target.value })}
-                  fullWidth
-                  required
-                />
-              </Box>
-            )}
           </Box>
         </DialogContent>
         <DialogActions>
@@ -567,7 +703,8 @@ export default function NotificacionesAdmin() {
           <Button
             variant="contained"
             onClick={handleCreateNotification}
-            disabled={!formData.title || !formData.message}
+            disabled={!formData.title.trim() || !formData.message.trim() || 
+                     (!formData.target_all_students && !formData.target_all_companies)}
           >
             Crear Notificación
           </Button>
@@ -580,7 +717,7 @@ export default function NotificacionesAdmin() {
           <>
             <DialogTitle>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                {getTypeIcon(selectedNotification.type)}
+                {getTypeIcon(selectedNotification.notification_type)}
                 {selectedNotification.title}
               </Box>
             </DialogTitle>
@@ -590,28 +727,32 @@ export default function NotificacionesAdmin() {
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                 <Chip 
-                  label={getTypeText(selectedNotification.type)} 
-                  color={getTypeColor(selectedNotification.type) as any}
+                  label={getTypeText(selectedNotification.notification_type)} 
+                  color={getTypeColor(selectedNotification.notification_type) as any}
                 />
                 <Chip 
                   label={getStatusText(selectedNotification.status)} 
                   color={getStatusColor(selectedNotification.status) as any}
                 />
                 <Chip 
-                  label={getTargetText(selectedNotification.target_type)} 
+                  label={getPriorityText(selectedNotification.priority)} 
                   variant="outlined"
+                  color={getPriorityColor(selectedNotification.priority) as any}
                 />
               </Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" component="div">
+                <strong>Destinatarios:</strong> {getTargetText(selectedNotification)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" component="div">
                 <strong>Creada:</strong> {new Date(selectedNotification.created_at).toLocaleString()}
               </Typography>
               {selectedNotification.sent_at && (
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" component="div">
                   <strong>Enviada:</strong> {new Date(selectedNotification.sent_at).toLocaleString()}
                 </Typography>
               )}
-              <Typography variant="body2" color="text.secondary">
-                <strong>Leída:</strong> {selectedNotification.read_count} de {selectedNotification.total_recipients} destinatarios
+              <Typography variant="body2" color="text.secondary" component="div">
+                <strong>Estadísticas:</strong> {selectedNotification.sent_count} enviadas, {selectedNotification.read_count} leídas de {selectedNotification.total_recipients} destinatarios
               </Typography>
             </DialogContent>
             <DialogActions>
@@ -633,13 +774,4 @@ export default function NotificacionesAdmin() {
       </Snackbar>
     </Box>
   );
-}
-
-function getTypeText(type: string): string {
-  switch (type) {
-    case 'success': return 'Éxito';
-    case 'warning': return 'Advertencia';
-    case 'error': return 'Error';
-    default: return 'Información';
-  }
 } 

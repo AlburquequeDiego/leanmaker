@@ -252,7 +252,7 @@ def user_update(request, user_id):
 
 
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "PATCH"])
 def user_profile(request):
     """Perfil del usuario actual."""
     try:
@@ -266,29 +266,77 @@ def user_profile(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        user_data = {
-            'id': str(current_user.id),
-            'email': current_user.email,
-            'first_name': current_user.first_name,
-            'last_name': current_user.last_name,
-            'username': current_user.username,
-            'phone': current_user.phone,
-            'avatar': current_user.avatar,
-            'bio': current_user.bio,
-            'role': current_user.role,
-            'is_active': current_user.is_active,
-            'is_verified': current_user.is_verified,
-            'is_staff': current_user.is_staff,
-            'is_superuser': current_user.is_superuser,
-            'date_joined': current_user.date_joined.isoformat(),
-            'last_login': current_user.last_login.isoformat() if current_user.last_login else None,
-            'created_at': current_user.created_at.isoformat(),
-            'updated_at': current_user.updated_at.isoformat(),
-            'full_name': current_user.full_name
-        }
+        if request.method == "GET":
+            user_data = {
+                'id': str(current_user.id),
+                'email': current_user.email,
+                'first_name': current_user.first_name,
+                'last_name': current_user.last_name,
+                'username': current_user.username,
+                'phone': current_user.phone,
+                'avatar': current_user.avatar,
+                'bio': current_user.bio,
+                'role': current_user.role,
+                'is_active': current_user.is_active,
+                'is_verified': current_user.is_verified,
+                'is_staff': current_user.is_staff,
+                'is_superuser': current_user.is_superuser,
+                'date_joined': current_user.date_joined.isoformat(),
+                'last_login': current_user.last_login.isoformat() if current_user.last_login else None,
+                'created_at': current_user.created_at.isoformat(),
+                'updated_at': current_user.updated_at.isoformat(),
+                'full_name': current_user.full_name
+            }
+            
+            return JsonResponse(user_data)
         
-        return JsonResponse(user_data)
+        elif request.method == "PATCH":
+            data = json.loads(request.body)
+            
+            # Actualizar campos permitidos
+            if 'first_name' in data:
+                current_user.first_name = data['first_name']
+            if 'last_name' in data:
+                current_user.last_name = data['last_name']
+            if 'phone' in data:
+                current_user.phone = data['phone']
+            if 'bio' in data:
+                current_user.bio = data['bio']
+            if 'position' in data:
+                current_user.position = data['position']
+            if 'department' in data:
+                current_user.department = data['department']
+            
+            current_user.save()
+            
+            # Retornar datos actualizados
+            user_data = {
+                'id': str(current_user.id),
+                'email': current_user.email,
+                'first_name': current_user.first_name,
+                'last_name': current_user.last_name,
+                'username': current_user.username,
+                'phone': current_user.phone,
+                'avatar': current_user.avatar,
+                'bio': current_user.bio,
+                'position': current_user.position,
+                'department': current_user.department,
+                'role': current_user.role,
+                'is_active': current_user.is_active,
+                'is_verified': current_user.is_verified,
+                'is_staff': current_user.is_staff,
+                'is_superuser': current_user.is_superuser,
+                'date_joined': current_user.date_joined.isoformat(),
+                'last_login': current_user.last_login.isoformat() if current_user.last_login else None,
+                'created_at': current_user.created_at.isoformat(),
+                'updated_at': current_user.updated_at.isoformat(),
+                'full_name': current_user.full_name
+            }
+            
+            return JsonResponse(user_data)
         
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 

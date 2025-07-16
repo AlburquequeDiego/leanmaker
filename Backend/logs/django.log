@@ -10401,3 +10401,945 @@ INFO 2025-07-15 20:14:06,414 basehttp 14620 1732 "POST /api/auth/logout/ HTTP/1.
 INFO 2025-07-15 20:14:11,021 basehttp 14620 1732 "POST /api/token/ HTTP/1.1" 200 1018
 INFO 2025-07-15 20:14:11,215 basehttp 14620 1732 "GET /api/users/profile/ HTTP/1.1" 200 531
 INFO 2025-07-15 20:14:11,812 basehttp 14620 1732 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 20:20:25,232 autoreload 14620 16768 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-15 20:20:27,583 autoreload 15696 20196 Watching for file changes with StatReloader
+INFO 2025-07-15 20:20:38,068 autoreload 15696 20196 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-15 20:20:39,946 autoreload 13104 23436 Watching for file changes with StatReloader
+INFO 2025-07-15 20:20:46,983 autoreload 13104 23436 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-15 20:20:48,046 autoreload 10500 22896 Watching for file changes with StatReloader
+INFO 2025-07-15 20:21:05,232 basehttp 10500 19832 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-15 20:25:59,926 basehttp 10500 6852 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:26:00,171 basehttp 10500 6852 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:26:02,023 basehttp 10500 8984 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 20:26:18,929 basehttp 10500 14268 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-15 20:26:18,929 basehttp 10500 19136 "OPTIONS /api/users/ HTTP/1.1" 200 0
+WARNING 2025-07-15 20:26:19,076 log 10500 19136 Not Found: /api/users/
+WARNING 2025-07-15 20:26:19,077 basehttp 10500 19136 "GET /api/users/ HTTP/1.1" 404 18007
+WARNING 2025-07-15 20:26:19,162 log 10500 19136 Not Found: /api/users/
+WARNING 2025-07-15 20:26:19,162 basehttp 10500 19136 "GET /api/users/ HTTP/1.1" 404 18006
+INFO 2025-07-15 20:26:19,276 basehttp 10500 19136 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-15 20:26:19,280 basehttp 10500 14268 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-15 20:26:19,356 log 10500 14268 Not Found: /api/admin/work-hours/
+WARNING 2025-07-15 20:26:19,357 basehttp 10500 14268 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18094
+WARNING 2025-07-15 20:26:19,446 log 10500 14268 Not Found: /api/admin/work-hours/
+WARNING 2025-07-15 20:26:19,598 basehttp 10500 14268 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18094
+INFO 2025-07-15 20:26:19,653 basehttp 10500 14268 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-15 20:26:19,667 basehttp 10500 14268 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-15 20:26:19,673 basehttp 10500 14268 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-15 20:26:19,750 log 10500 19136 Not Found: /api/admin/work-hours/
+WARNING 2025-07-15 20:26:19,763 basehttp 10500 19136 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18095
+WARNING 2025-07-15 20:26:19,792 log 10500 14268 Not Found: /api/admin/companies/
+WARNING 2025-07-15 20:26:19,798 basehttp 10500 14268 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18091
+WARNING 2025-07-15 20:26:19,927 log 10500 14268 Not Found: /api/admin/companies/
+WARNING 2025-07-15 20:26:19,931 basehttp 10500 14268 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18091
+WARNING 2025-07-15 20:26:20,030 log 10500 14268 Not Found: /api/admin/companies/
+WARNING 2025-07-15 20:26:20,032 basehttp 10500 14268 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18090
+INFO 2025-07-15 20:26:21,091 basehttp 10500 11008 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 20:26:22,005 basehttp 10500 11328 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-15 20:26:22,005 basehttp 10500 14256 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-15 20:26:22,007 basehttp 10500 11328 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-15 20:26:23,068 basehttp 10500 14256 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+INFO 2025-07-15 20:26:23,439 basehttp 10500 14256 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+INFO 2025-07-15 20:26:23,741 basehttp 10500 11328 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 20:26:23,806 basehttp 10500 24448 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+INFO 2025-07-15 20:26:23,963 basehttp 10500 14268 "GET /api/notifications/ HTTP/1.1" 200 511474
+ERROR 2025-07-15 20:26:30,084 log 10500 8984 Internal Server Error: /api/users/profile/
+ERROR 2025-07-15 20:26:30,085 basehttp 10500 8984 "GET /api/users/profile/ HTTP/1.1" 500 893
+INFO 2025-07-15 20:26:30,306 basehttp 10500 8984 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:33:51,014 basehttp 10500 2252 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 20:33:54,950 basehttp 10500 2252 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-15 20:33:55,167 basehttp 10500 2252 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-15 20:33:55,910 basehttp 10500 2252 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 20:33:59,053 basehttp 10500 19048 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-15 20:33:59,182 basehttp 10500 11024 "GET /api/students/api-level-requests/ HTTP/1.1" 200 553
+INFO 2025-07-15 20:33:59,435 basehttp 10500 19048 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-15 20:33:59,677 basehttp 10500 11024 "GET /api/students/api-level-requests/ HTTP/1.1" 200 553
+INFO 2025-07-15 20:34:03,981 basehttp 10500 11024 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-15 20:34:04,774 basehttp 10500 19048 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-15 20:34:09,602 basehttp 10500 9212 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-15 20:34:09,945 basehttp 10500 18880 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 20:34:10,024 basehttp 10500 23008 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-15 20:34:10,028 basehttp 10500 9212 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-15 20:34:10,387 basehttp 10500 18880 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-15 20:34:11,295 basehttp 10500 18880 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-15 20:34:12,078 basehttp 10500 9212 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-15 20:34:12,385 basehttp 10500 18880 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-15 20:34:12,850 basehttp 10500 18880 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 20:34:13,022 basehttp 10500 9212 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-15 20:34:13,154 basehttp 10500 18880 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 20:34:14,885 basehttp 10500 9212 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 20:34:14,994 basehttp 10500 18880 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 20:34:15,377 basehttp 10500 23008 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 20:34:16,950 basehttp 10500 9212 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 20:34:26,601 basehttp 10500 21664 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 20:34:26,928 basehttp 10500 23268 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-15 20:34:27,253 basehttp 10500 23268 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-15 20:34:27,660 basehttp 10500 1116 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-15 20:34:27,920 basehttp 10500 1116 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-15 20:34:28,275 basehttp 10500 21664 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 20:34:29,451 basehttp 10500 21664 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 20:34:34,437 basehttp 10500 21664 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 20:34:37,790 basehttp 10500 21664 "POST /api/token/ HTTP/1.1" 200 1018
+INFO 2025-07-15 20:34:37,992 basehttp 10500 21664 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:34:38,878 basehttp 10500 21664 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 20:34:41,778 basehttp 10500 21664 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:34:41,983 basehttp 10500 21664 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:34:59,729 basehttp 10500 13092 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:34:59,972 basehttp 10500 13092 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:35:00,215 basehttp 10500 13092 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:35:00,450 basehttp 10500 13092 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:35:45,278 basehttp 10500 16288 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:35:45,511 basehttp 10500 16288 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:35:45,771 basehttp 10500 16288 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:35:46,072 basehttp 10500 16288 "GET /api/users/profile/ HTTP/1.1" 200 531
+WARNING 2025-07-15 20:39:27,447 log 10500 16108 Method Not Allowed (PATCH): /api/users/profile/
+WARNING 2025-07-15 20:39:27,511 basehttp 10500 16108 "PATCH /api/users/profile/ HTTP/1.1" 405 0
+INFO 2025-07-15 20:40:28,423 autoreload 10500 22896 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-15 20:40:30,018 autoreload 20308 24572 Watching for file changes with StatReloader
+INFO 2025-07-15 20:40:39,443 autoreload 20308 24572 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-07-15 20:40:40,402 autoreload 4520 24132 Watching for file changes with StatReloader
+INFO 2025-07-15 20:41:32,849 basehttp 4520 5924 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:41:33,109 basehttp 4520 5924 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:41:33,428 basehttp 4520 5924 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:41:33,688 basehttp 4520 5924 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:43:25,154 basehttp 4520 22212 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:43:25,719 basehttp 4520 22212 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:43:25,960 basehttp 4520 22212 "GET /api/users/profile/ HTTP/1.1" 200 531
+INFO 2025-07-15 20:43:26,526 basehttp 4520 22212 "GET /api/users/profile/ HTTP/1.1" 200 531
+WARNING 2025-07-15 20:43:49,117 log 4520 13288 Method Not Allowed (PATCH): /api/users/profile/
+WARNING 2025-07-15 20:43:49,156 basehttp 4520 13288 "PATCH /api/users/profile/ HTTP/1.1" 405 0
+INFO 2025-07-15 20:44:52,853 autoreload 4520 24132 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-15 20:44:54,704 autoreload 5664 21792 Watching for file changes with StatReloader
+INFO 2025-07-15 20:45:33,375 autoreload 22128 19480 Watching for file changes with StatReloader
+INFO 2025-07-15 20:45:41,876 basehttp 22128 23388 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-15 20:45:53,612 basehttp 22128 10508 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-15 20:45:53,841 basehttp 22128 10508 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-15 20:46:58,198 basehttp 22128 2492 "POST /api/token/ HTTP/1.1" 200 1018
+INFO 2025-07-15 20:46:58,751 basehttp 22128 2492 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-15 20:46:59,638 basehttp 22128 2492 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 20:47:02,282 basehttp 22128 2492 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-15 20:47:03,443 basehttp 22128 2492 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-15 20:47:27,286 basehttp 22128 18244 "PATCH /api/users/profile/ HTTP/1.1" 200 589
+INFO 2025-07-15 20:47:27,537 basehttp 22128 18244 "GET /api/users/profile/ HTTP/1.1" 200 589
+INFO 2025-07-15 20:48:01,630 basehttp 22128 10060 "PATCH /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:48:01,876 basehttp 22128 10060 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:49:25,216 basehttp 22128 10632 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:50:02,640 basehttp 22128 13644 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:50:02,970 basehttp 22128 13644 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:50:03,195 basehttp 22128 13644 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:50:03,446 basehttp 22128 13644 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:50:32,534 basehttp 22128 14700 "PATCH /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:50:32,827 basehttp 22128 14700 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:51:24,323 basehttp 22128 14132 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:51:25,112 basehttp 22128 14132 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:51:42,063 basehttp 22128 9608 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:51:42,329 basehttp 22128 9608 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:51:42,546 basehttp 22128 9608 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:51:42,777 basehttp 22128 9608 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:51:49,727 basehttp 22128 7744 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:52:13,757 basehttp 22128 11396 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:52:13,980 basehttp 22128 11396 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:52:14,208 basehttp 22128 11396 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:52:14,404 basehttp 22128 11396 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:57:48,137 autoreload 10024 10900 Watching for file changes with StatReloader
+INFO 2025-07-15 20:57:57,157 basehttp 10024 21816 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:57:57,443 basehttp 10024 21816 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:58:02,029 basehttp 10024 20536 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 20:58:02,255 basehttp 10024 20536 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:58:04,553 basehttp 10024 20536 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 20:58:08,150 basehttp 10024 20536 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:58:08,409 basehttp 10024 20536 "GET /api/users/profile/ HTTP/1.1" 200 605
+INFO 2025-07-15 20:58:21,527 basehttp 10024 11408 "PATCH /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 20:58:21,754 basehttp 10024 11408 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 21:00:25,961 autoreload 10024 10900 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-15 21:00:27,954 autoreload 9696 748 Watching for file changes with StatReloader
+INFO 2025-07-15 21:00:49,412 basehttp 9696 3044 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-15 21:01:01,038 basehttp 9696 20536 "GET /api/users/profile/ HTTP/1.1" 200 661
+INFO 2025-07-15 21:01:36,177 basehttp 9696 19504 "GET /api/users/profile/ HTTP/1.1" 200 661
+INFO 2025-07-15 21:01:36,731 basehttp 9696 19504 "GET /api/users/profile/ HTTP/1.1" 200 661
+INFO 2025-07-15 21:01:37,042 basehttp 9696 19504 "GET /api/users/profile/ HTTP/1.1" 200 661
+INFO 2025-07-15 21:01:37,311 basehttp 9696 19504 "GET /api/users/profile/ HTTP/1.1" 200 661
+INFO 2025-07-15 21:01:39,033 autoreload 9696 748 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-15 21:01:40,696 autoreload 16452 22500 Watching for file changes with StatReloader
+INFO 2025-07-15 21:01:55,171 basehttp 16452 13636 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 21:01:55,436 basehttp 16452 13636 "GET /api/users/profile/ HTTP/1.1" 200 613
+INFO 2025-07-15 21:02:33,325 basehttp 16452 10660 "PATCH /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:02:33,561 basehttp 16452 10660 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:03:05,953 basehttp 16452 21952 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:03:06,477 basehttp 16452 21952 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:03:07,608 basehttp 16452 21952 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:03:09,023 basehttp 16452 21952 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:03:39,183 basehttp 16452 18944 "OPTIONS /api/users/change-password/ HTTP/1.1" 200 0
+WARNING 2025-07-15 21:03:39,232 log 16452 18944 Not Found: /api/users/change-password/
+WARNING 2025-07-15 21:03:39,233 basehttp 16452 18944 "POST /api/users/change-password/ HTTP/1.1" 404 18071
+WARNING 2025-07-15 21:03:49,466 log 16452 4120 Not Found: /api/users/change-password/
+WARNING 2025-07-15 21:03:49,467 basehttp 16452 4120 "POST /api/users/change-password/ HTTP/1.1" 404 18071
+INFO 2025-07-15 21:04:33,776 autoreload 16452 22500 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-15 21:04:36,053 autoreload 16400 22864 Watching for file changes with StatReloader
+INFO 2025-07-15 21:05:11,628 basehttp 16400 4644 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:05:11,857 basehttp 16400 4644 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:05:12,094 basehttp 16400 4644 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:05:12,312 basehttp 16400 4644 "GET /api/users/profile/ HTTP/1.1" 200 609
+WARNING 2025-07-15 21:06:02,014 log 16400 14444 Not Found: /api/users/change-password/
+WARNING 2025-07-15 21:06:02,020 basehttp 16400 14444 "POST /api/users/change-password/ HTTP/1.1" 404 18071
+INFO 2025-07-15 21:06:22,812 basehttp 16400 24116 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:06:23,058 basehttp 16400 24116 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:06:23,257 basehttp 16400 24116 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:06:23,476 basehttp 16400 24116 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:06:29,445 basehttp 16400 23928 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:06:30,147 basehttp 16400 23928 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:06:31,077 basehttp 16400 23928 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:06:56,072 basehttp 16400 16176 "OPTIONS /users/change-password/ HTTP/1.1" 200 0
+WARNING 2025-07-15 21:06:56,855 log 16400 16176 Bad Request: /users/change-password/
+WARNING 2025-07-15 21:06:56,856 basehttp 16400 16176 "POST /users/change-password/ HTTP/1.1" 400 47
+INFO 2025-07-15 21:07:16,792 basehttp 16400 14464 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:07:17,416 basehttp 16400 14464 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:07:32,862 basehttp 16400 13668 "POST /users/change-password/ HTTP/1.1" 200 52
+INFO 2025-07-15 21:08:39,792 basehttp 16400 20984 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:08:40,335 basehttp 16400 20984 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:08:40,536 basehttp 16400 20984 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:08:40,751 basehttp 16400 20984 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:08:52,511 basehttp 16400 9020 "POST /api/auth/logout/ HTTP/1.1" 200 47
+WARNING 2025-07-15 21:08:54,789 log 16400 9020 Bad Request: /api/token/
+WARNING 2025-07-15 21:08:54,790 basehttp 16400 9020 "POST /api/token/ HTTP/1.1" 400 40
+WARNING 2025-07-15 21:09:06,486 log 16400 9020 Bad Request: /api/token/
+WARNING 2025-07-15 21:09:06,486 basehttp 16400 9020 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-15 21:09:16,417 basehttp 16400 9020 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 21:09:16,621 basehttp 16400 9020 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:09:17,285 basehttp 16400 9020 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:09:21,998 basehttp 16400 9020 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:09:22,204 basehttp 16400 9020 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:11:10,954 basehttp 16400 7856 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:11:11,177 basehttp 16400 7856 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:11:20,154 basehttp 16400 7856 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:11:21,444 basehttp 16400 15696 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:13:03,492 basehttp 16400 13380 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:13:03,750 basehttp 16400 13380 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:13:04,095 basehttp 16400 13380 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:13:04,370 basehttp 16400 13380 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:13:46,484 basehttp 16400 21540 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:13:47,138 basehttp 16400 21540 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:13:58,484 basehttp 16400 1592 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:00,093 basehttp 16400 1592 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:00,779 basehttp 16400 1592 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:02,060 basehttp 16400 1592 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:14,984 basehttp 16400 24012 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:15,190 basehttp 16400 24012 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:15,408 basehttp 16400 24012 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:15,615 basehttp 16400 24012 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:41,160 basehttp 16400 23964 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:41,398 basehttp 16400 23964 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:41,614 basehttp 16400 23964 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:14:41,808 basehttp 16400 23964 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:16:41,303 basehttp 16400 22768 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:16:49,173 basehttp 16400 22768 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:16:54,487 basehttp 16400 5100 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:17:02,443 basehttp 16400 11988 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:17:09,588 basehttp 16400 11988 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:17:22,469 basehttp 16400 22752 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:17:38,585 basehttp 16400 2500 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:17:38,813 basehttp 16400 2500 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:17:39,049 basehttp 16400 2500 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:17:39,294 basehttp 16400 2500 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:18:02,483 basehttp 16400 21352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:18:06,840 basehttp 16400 21352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:18:07,099 basehttp 16400 21352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:18:07,314 basehttp 16400 21352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:18:07,519 basehttp 16400 21352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:18:44,464 basehttp 16400 21588 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:18:57,498 basehttp 16400 10500 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:05,911 basehttp 16400 17728 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:11,088 basehttp 16400 17728 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:11,350 basehttp 16400 17728 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:12,175 basehttp 16400 17728 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:17,106 basehttp 16400 17728 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:22,419 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:27,459 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:30,535 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:30,769 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:31,014 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:31,302 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:32,960 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:33,507 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:38,157 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:38,600 basehttp 16400 22616 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:42,451 basehttp 16400 12100 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:46,071 basehttp 16400 12100 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:56,243 basehttp 16400 23016 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:19:56,448 basehttp 16400 23016 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:02,413 basehttp 16400 13840 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:02,671 basehttp 16400 13840 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:04,076 basehttp 16400 13840 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:12,509 basehttp 16400 11608 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:12,721 basehttp 16400 11608 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:26,653 basehttp 16400 21152 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:26,880 basehttp 16400 21152 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:40,457 basehttp 16400 18876 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:41,099 basehttp 16400 18876 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:20:50,401 basehttp 16400 23180 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:02,468 basehttp 16400 22972 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:02,784 basehttp 16400 22972 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:08,245 basehttp 16400 22972 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:08,588 basehttp 16400 22972 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:08,798 basehttp 16400 22972 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:16,673 basehttp 16400 23504 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:17,604 basehttp 16400 23504 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:20,173 basehttp 16400 23504 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:27,670 basehttp 16400 14712 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:27,870 basehttp 16400 14712 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:28,103 basehttp 16400 14712 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:21:28,805 basehttp 16400 21952 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:22:54,751 autoreload 19832 19188 Watching for file changes with StatReloader
+INFO 2025-07-15 21:23:23,177 basehttp 19832 9832 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:23:23,377 basehttp 19832 9832 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:23:27,267 basehttp 19832 13440 "GET / HTTP/1.1" 200 15334
+WARNING 2025-07-15 21:23:52,992 log 19832 20352 Bad Request: /api/token/
+WARNING 2025-07-15 21:23:52,993 basehttp 19832 20352 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-15 21:24:02,682 basehttp 19832 20352 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 21:24:02,966 basehttp 19832 20352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:24:03,687 basehttp 19832 20352 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:24:07,041 basehttp 19832 20352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:24:07,280 basehttp 19832 20352 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:28:24,431 basehttp 19832 10128 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:28:24,663 basehttp 19832 10128 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:28:24,902 basehttp 19832 10128 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:28:25,102 basehttp 19832 10128 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:29:14,875 basehttp 19832 16976 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:29:22,503 basehttp 19832 24456 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:29:29,505 basehttp 19832 23040 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:29:36,202 basehttp 19832 23040 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:29:42,470 basehttp 19832 12128 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:29:51,507 basehttp 19832 17756 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:31:09,332 basehttp 19832 23460 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:31:23,836 basehttp 19832 18564 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:31:24,110 basehttp 19832 18564 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:31:24,336 basehttp 19832 18564 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:31:24,578 basehttp 19832 18564 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:32:11,448 basehttp 19832 8864 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-15 21:32:11,452 basehttp 19832 18244 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-15 21:32:12,882 basehttp 19832 18244 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:32:13,144 basehttp 19832 18244 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:32:14,607 basehttp 19832 18244 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:32:14,898 basehttp 19832 18244 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:28,453 basehttp 19832 16108 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:31,107 basehttp 19832 16108 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:32,150 basehttp 19832 16108 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:32,367 basehttp 19832 16108 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:34,641 basehttp 19832 24208 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:36,111 basehttp 19832 24208 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:40,400 basehttp 19832 24208 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:40,745 basehttp 19832 24208 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:41,071 basehttp 19832 24208 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:41,281 basehttp 19832 24208 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:41,958 basehttp 19832 24208 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:50,351 basehttp 19832 16712 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:50,602 basehttp 19832 16712 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:33:58,537 basehttp 19832 24336 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:34:04,612 basehttp 19832 10900 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:34:05,293 basehttp 19832 10900 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:36:31,681 basehttp 19832 24076 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:37:04,783 basehttp 19832 4540 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 21:37:06,462 basehttp 19832 4540 "OPTIONS /api/token/ HTTP/1.1" 200 0
+WARNING 2025-07-15 21:37:08,003 log 19832 4540 Bad Request: /api/token/
+WARNING 2025-07-15 21:37:08,006 basehttp 19832 4540 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-15 21:37:17,204 basehttp 19832 4540 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 21:37:17,443 basehttp 19832 4540 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:37:17,514 basehttp 19832 4540 "OPTIONS /api/test-admin-stats/ HTTP/1.1" 200 0
+INFO 2025-07-15 21:37:18,133 basehttp 19832 4540 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:37:22,193 basehttp 19832 4540 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:37:22,735 basehttp 19832 4540 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:23,401 basehttp 19832 23160 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:28,423 basehttp 19832 22664 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:28,660 basehttp 19832 22664 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:30,295 basehttp 19832 22664 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:30,508 basehttp 19832 22664 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:30,707 basehttp 19832 22664 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:30,900 basehttp 19832 22664 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:38:36,125 basehttp 19832 22664 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:25,488 basehttp 19832 18784 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:25,770 basehttp 19832 18784 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:26,061 basehttp 19832 18784 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:26,346 basehttp 19832 18784 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:34,386 basehttp 19832 9780 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:34,604 basehttp 19832 9780 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:34,818 basehttp 19832 9780 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:35,046 basehttp 19832 9780 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:42,402 basehttp 19832 21744 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:42,610 basehttp 19832 21744 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:42,830 basehttp 19832 21744 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:43,050 basehttp 19832 21744 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:58,634 basehttp 19832 11640 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:59,198 basehttp 19832 11640 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:59,471 basehttp 19832 11640 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:39:59,722 basehttp 19832 11640 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:40:46,233 basehttp 19832 20164 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:40:46,472 basehttp 19832 20164 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:31,930 basehttp 19832 9020 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:32,142 basehttp 19832 9020 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:32,374 basehttp 19832 9020 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:32,909 basehttp 19832 9020 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:50,090 basehttp 19832 8364 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:50,436 basehttp 19832 8364 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:50,679 basehttp 19832 8364 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:41:50,909 basehttp 19832 8364 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:43:12,309 basehttp 19832 20508 "POST /users/change-password/ HTTP/1.1" 200 52
+WARNING 2025-07-15 21:43:13,456 log 19832 13956 Bad Request: /users/change-password/
+WARNING 2025-07-15 21:43:13,458 basehttp 19832 13956 "POST /users/change-password/ HTTP/1.1" 400 46
+INFO 2025-07-15 21:44:21,329 basehttp 19832 7872 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:44:21,668 basehttp 19832 7872 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:44:26,062 basehttp 19832 22580 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-15 21:44:26,116 basehttp 19832 22580 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 21:44:31,679 basehttp 19832 22580 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 21:44:31,939 basehttp 19832 22580 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:44:32,719 basehttp 19832 22580 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:44:35,733 basehttp 19832 988 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:44:36,261 basehttp 19832 988 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:44:39,936 autoreload 19832 19188 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-15 21:44:42,970 autoreload 8752 8596 Watching for file changes with StatReloader
+INFO 2025-07-15 21:45:10,194 autoreload 8752 8596 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-15 21:45:11,578 autoreload 23900 21720 Watching for file changes with StatReloader
+INFO 2025-07-15 21:45:28,760 basehttp 23900 12932 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-15 21:45:47,251 basehttp 23900 24168 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:45:49,099 basehttp 23900 24168 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:45:49,338 basehttp 23900 24168 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:45:49,886 basehttp 23900 24168 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:45:53,958 basehttp 23900 24168 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:45:56,858 basehttp 23900 24168 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:45:57,115 basehttp 23900 24168 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:45:57,987 basehttp 23900 24168 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:46:59,131 basehttp 23900 21736 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:46:59,404 basehttp 23900 21736 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:47:01,005 basehttp 23900 22928 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:47:04,109 basehttp 23900 22928 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:47:04,365 basehttp 23900 22928 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:49:01,502 basehttp 23900 15916 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:49:01,749 basehttp 23900 15916 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:49:01,961 basehttp 23900 15916 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:49:02,216 basehttp 23900 15916 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:49:09,068 basehttp 23900 22232 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 21:49:09,980 basehttp 23900 22232 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-15 21:49:09,980 basehttp 23900 18908 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-15 21:49:12,432 basehttp 23900 18908 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 21:49:16,215 basehttp 23900 22232 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 21:50:58,796 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:50:59,000 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:01,328 basehttp 23900 16940 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 21:51:02,977 basehttp 23900 22740 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 21:51:04,050 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:04,299 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:05,820 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:06,105 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:06,443 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:06,719 basehttp 23900 22740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:22,670 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:23,240 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:23,491 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:23,719 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:23,935 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:24,173 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:27,527 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:27,795 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:28,385 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:28,650 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:31,223 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:32,243 basehttp 23900 7844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:40,802 basehttp 23900 23460 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:51:44,516 basehttp 23900 23680 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:52:02,276 basehttp 23900 18380 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:52:31,506 basehttp 23900 3692 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:52:33,387 basehttp 23900 3692 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:52:41,971 basehttp 23900 7632 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:52:46,674 basehttp 23900 23744 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:52:55,779 basehttp 23900 740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:52:56,188 basehttp 23900 740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:03,812 basehttp 23900 740 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:05,210 basehttp 23900 4844 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:30,444 basehttp 23900 11368 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:31,084 basehttp 23900 11368 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:52,311 basehttp 23900 5896 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:52,519 basehttp 23900 5896 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:52,754 basehttp 23900 5896 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:53,049 basehttp 23900 5896 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:55,945 basehttp 23900 16648 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:56,175 basehttp 23900 16648 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:57,079 basehttp 23900 16648 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:57,310 basehttp 23900 16648 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:57,564 basehttp 23900 16648 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:53:57,811 basehttp 23900 16648 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:06,636 basehttp 23900 13192 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:06,840 basehttp 23900 13192 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:07,054 basehttp 23900 13192 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:07,242 basehttp 23900 13192 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:11,961 basehttp 23900 23584 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:12,197 basehttp 23900 23584 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:21,583 basehttp 23900 20872 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:23,081 basehttp 23900 20872 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:32,469 basehttp 23900 20672 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:33,413 basehttp 23900 20672 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:47,464 basehttp 23900 5508 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:48,365 basehttp 23900 5508 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:56,648 basehttp 23900 9832 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:54:58,112 basehttp 23900 9832 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:06,501 basehttp 23900 3528 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:07,134 basehttp 23900 3528 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:15,462 basehttp 23900 8508 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:16,145 basehttp 23900 8508 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:23,516 basehttp 23900 12720 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:24,113 basehttp 23900 12720 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:35,421 basehttp 23900 11900 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 21:55:37,220 basehttp 23900 11900 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:14,935 basehttp 23900 7004 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:15,240 basehttp 23900 7004 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:15,554 basehttp 23900 7004 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:16,234 basehttp 23900 24080 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:23,169 basehttp 23900 10212 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:23,394 basehttp 23900 10212 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:23,629 basehttp 23900 10212 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:36:23,901 basehttp 23900 10212 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:37:53,045 autoreload 19504 19808 Watching for file changes with StatReloader
+INFO 2025-07-15 22:38:01,085 basehttp 19504 4540 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-15 22:38:01,357 basehttp 19504 4540 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-15 22:38:01,414 basehttp 19504 4540 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-15 22:38:31,725 basehttp 19504 18548 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:38:34,116 basehttp 19504 18548 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 22:38:34,131 basehttp 19504 18548 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:38:34,426 basehttp 19504 18548 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:38:34,641 basehttp 19504 18548 "OPTIONS /api/test-admin-stats/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:38:35,277 basehttp 19504 18548 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 22:38:44,644 basehttp 19504 11328 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:38:44,915 basehttp 19504 11328 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:38:46,208 basehttp 19504 15364 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 22:38:51,190 basehttp 19504 15364 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:38:51,233 basehttp 19504 15364 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 22:41:42,628 basehttp 19504 11324 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 22:41:42,870 basehttp 19504 11324 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:41:43,624 basehttp 19504 11324 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 22:41:49,510 basehttp 19504 22008 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:41:49,771 basehttp 19504 22008 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:45:46,324 basehttp 19504 19780 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:45:46,327 basehttp 19504 18548 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:45:49,089 basehttp 19504 19780 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 22:45:50,831 basehttp 19504 18548 "GET /api/notifications/ HTTP/1.1" 200 511474
+INFO 2025-07-15 22:49:08,254 autoreload 19504 19808 C:\Users\albur\Desktop\leanmaker\Backend\notifications\urls.py changed, reloading.
+INFO 2025-07-15 22:49:10,249 autoreload 15700 3860 Watching for file changes with StatReloader
+INFO 2025-07-15 22:49:45,899 autoreload 15700 3860 C:\Users\albur\Desktop\leanmaker\Backend\notifications\views.py changed, reloading.
+INFO 2025-07-15 22:49:46,894 autoreload 15664 20308 Watching for file changes with StatReloader
+INFO 2025-07-15 22:49:59,266 autoreload 15664 20308 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\urls.py changed, reloading.
+INFO 2025-07-15 22:50:00,336 autoreload 21684 15900 Watching for file changes with StatReloader
+INFO 2025-07-15 22:50:59,625 autoreload 21684 15900 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-07-15 22:51:02,314 autoreload 12436 16644 Watching for file changes with StatReloader
+INFO 2025-07-15 22:54:41,366 basehttp 12436 8856 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:54:41,607 basehttp 12436 8856 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 22:54:42,102 basehttp 12436 8856 "GET /api/notifications/ HTTP/1.1" 200 5618
+INFO 2025-07-15 22:54:42,583 basehttp 12436 8856 "GET /api/notifications/ HTTP/1.1" 200 5618
+INFO 2025-07-15 22:54:52,678 basehttp 12436 23000 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 22:54:57,068 basehttp 12436 23000 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-15 22:54:57,308 basehttp 12436 23000 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 22:54:57,388 basehttp 12436 23000 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:54:58,119 basehttp 12436 23000 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 22:55:02,303 basehttp 12436 23000 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 22:55:02,745 basehttp 12436 23000 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 22:56:52,185 basehttp 12436 22572 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 22:56:52,405 basehttp 12436 22572 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 22:56:53,045 basehttp 12436 13528 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 22:56:53,661 basehttp 12436 22572 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 22:57:56,797 basehttp 12436 5764 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:57:56,797 basehttp 12436 22024 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-15 22:57:57,264 basehttp 12436 22024 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 22:57:57,617 basehttp 12436 22024 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 22:58:01,967 basehttp 12436 22024 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 22:58:02,405 basehttp 12436 22024 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 22:59:29,996 basehttp 12436 21632 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 22:59:30,394 basehttp 12436 13072 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:00:25,580 basehttp 12436 12776 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:00:25,810 basehttp 12436 12776 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:00:26,801 basehttp 12436 22064 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:00:27,231 basehttp 12436 22064 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:01:17,702 basehttp 12436 17092 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:01:18,323 basehttp 12436 17092 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:01:27,226 basehttp 12436 23020 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:01:27,474 basehttp 12436 23020 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:01:28,268 basehttp 12436 5236 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:01:28,676 basehttp 12436 5236 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:03:00,341 basehttp 12436 18208 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:03:00,535 basehttp 12436 18208 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:03:01,062 basehttp 12436 16408 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:03:01,475 basehttp 12436 18208 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:03:04,483 basehttp 12436 18208 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 23:03:04,772 basehttp 12436 18208 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-15 23:03:05,738 basehttp 12436 18208 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:03:06,130 basehttp 12436 16408 "GET /api/notifications/ HTTP/1.1" 200 5950
+INFO 2025-07-15 23:03:08,444 basehttp 12436 16408 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 23:03:11,804 basehttp 12436 16408 "POST /api/token/ HTTP/1.1" 200 1025
+INFO 2025-07-15 23:03:12,015 basehttp 12436 16408 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:03:12,627 basehttp 12436 16408 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 23:03:14,525 basehttp 12436 16408 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:03:14,725 basehttp 12436 16408 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:03:15,495 basehttp 12436 16408 "GET /api/notifications/ HTTP/1.1" 200 5618
+INFO 2025-07-15 23:03:15,875 basehttp 12436 18208 "GET /api/notifications/ HTTP/1.1" 200 5618
+WARNING 2025-07-15 23:06:59,485 log 12436 20424 Method Not Allowed (POST): /api/notifications/
+WARNING 2025-07-15 23:06:59,568 basehttp 12436 20424 "POST /api/notifications/ HTTP/1.1" 405 0
+WARNING 2025-07-15 23:07:02,677 log 12436 23732 Method Not Allowed (POST): /api/notifications/
+WARNING 2025-07-15 23:07:02,727 basehttp 12436 23732 "POST /api/notifications/ HTTP/1.1" 405 0
+INFO 2025-07-15 23:08:45,198 basehttp 12436 24224 "OPTIONS /mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:08:45,200 basehttp 12436 22644 "OPTIONS /mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:08:46,707 basehttp 12436 24224 "GET /mass-notifications/ HTTP/1.1" 200 1445
+INFO 2025-07-15 23:08:47,332 basehttp 12436 24224 "GET /mass-notifications/ HTTP/1.1" 200 1445
+INFO 2025-07-15 23:09:09,032 basehttp 12436 2792 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:09:09,267 basehttp 12436 2792 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:09:10,232 basehttp 12436 8932 "GET /mass-notifications/ HTTP/1.1" 200 1445
+INFO 2025-07-15 23:09:10,855 basehttp 12436 8932 "GET /mass-notifications/ HTTP/1.1" 200 1445
+INFO 2025-07-15 23:09:48,551 basehttp 12436 9256 "OPTIONS /mass-notifications/2/delete/ HTTP/1.1" 200 0
+WARNING 2025-07-15 23:09:49,037 log 12436 9256 Bad Request: /mass-notifications/2/delete/
+WARNING 2025-07-15 23:09:49,039 basehttp 12436 9256 "DELETE /mass-notifications/2/delete/ HTTP/1.1" 400 50
+INFO 2025-07-15 23:09:52,067 basehttp 12436 9256 "OPTIONS /mass-notifications/1/delete/ HTTP/1.1" 200 0
+WARNING 2025-07-15 23:09:52,400 log 12436 9256 Bad Request: /mass-notifications/1/delete/
+WARNING 2025-07-15 23:09:52,401 basehttp 12436 9256 "DELETE /mass-notifications/1/delete/ HTTP/1.1" 400 50
+INFO 2025-07-15 23:10:20,732 basehttp 12436 9256 "OPTIONS /mass-notifications/create/ HTTP/1.1" 200 0
+WARNING 2025-07-15 23:10:20,735 log 12436 9256 Method Not Allowed (POST): /mass-notifications/create/
+WARNING 2025-07-15 23:10:20,777 basehttp 12436 9256 "POST /mass-notifications/create/ HTTP/1.1" 405 0
+INFO 2025-07-15 23:11:16,087 basehttp 12436 2816 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:11:16,328 basehttp 12436 2816 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:11:17,060 basehttp 12436 2816 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 23:11:20,358 basehttp 12436 2816 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:11:20,547 basehttp 12436 2816 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:11:24,542 basehttp 12436 21608 "GET /mass-notifications/ HTTP/1.1" 200 1445
+INFO 2025-07-15 23:11:25,827 basehttp 12436 21608 "GET /mass-notifications/ HTTP/1.1" 200 1445
+INFO 2025-07-15 23:11:35,697 autoreload 12436 16644 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-15 23:11:37,607 autoreload 22020 21804 Watching for file changes with StatReloader
+INFO 2025-07-15 23:11:45,923 autoreload 22020 21804 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-15 23:11:47,547 autoreload 15876 23936 Watching for file changes with StatReloader
+INFO 2025-07-15 23:12:21,443 basehttp 15876 12128 "GET /api/users/profile/ HTTP/1.1" 200 609
+WARNING 2025-07-15 23:12:21,661 log 15876 15808 Not Found: /mass-notifications/
+WARNING 2025-07-15 23:12:21,677 basehttp 15876 15808 "GET /mass-notifications/ HTTP/1.1" 404 16040
+INFO 2025-07-15 23:12:21,683 basehttp 15876 12128 "GET /api/users/profile/ HTTP/1.1" 200 609
+WARNING 2025-07-15 23:12:21,720 log 15876 15808 Not Found: /mass-notifications/
+WARNING 2025-07-15 23:12:21,720 basehttp 15876 15808 "GET /mass-notifications/ HTTP/1.1" 404 16039
+INFO 2025-07-15 23:12:21,744 autoreload 15876 23936 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\urls.py changed, reloading.
+INFO 2025-07-15 23:12:23,021 autoreload 13292 23844 Watching for file changes with StatReloader
+INFO 2025-07-15 23:12:26,324 basehttp 13292 24568 "GET /api/users/profile/ HTTP/1.1" 200 609
+WARNING 2025-07-15 23:12:26,439 log 13292 17676 Not Found: /mass-notifications/
+WARNING 2025-07-15 23:12:26,440 basehttp 13292 17676 "GET /mass-notifications/ HTTP/1.1" 404 16039
+WARNING 2025-07-15 23:12:26,497 log 13292 17676 Not Found: /mass-notifications/
+WARNING 2025-07-15 23:12:26,500 basehttp 13292 17676 "GET /mass-notifications/ HTTP/1.1" 404 16039
+INFO 2025-07-15 23:12:26,592 basehttp 13292 24568 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:12:39,877 basehttp 13292 18360 "GET /api/users/profile/ HTTP/1.1" 200 609
+WARNING 2025-07-15 23:12:40,000 log 13292 9204 Not Found: /mass-notifications/
+WARNING 2025-07-15 23:12:40,007 basehttp 13292 9204 "GET /mass-notifications/ HTTP/1.1" 404 16039
+WARNING 2025-07-15 23:12:40,067 log 13292 9204 Not Found: /mass-notifications/
+WARNING 2025-07-15 23:12:40,117 basehttp 13292 9204 "GET /mass-notifications/ HTTP/1.1" 404 16039
+INFO 2025-07-15 23:12:40,129 basehttp 13292 18360 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:14:18,481 basehttp 13292 7020 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:14:19,523 basehttp 13292 7020 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:14:53,004 basehttp 13292 22348 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:14:53,243 basehttp 13292 22348 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:14:53,475 basehttp 13292 1732 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:14:53,827 basehttp 13292 1732 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:15:19,406 basehttp 13292 11040 "OPTIONS /api/mass-notifications/create/ HTTP/1.1" 200 0
+WARNING 2025-07-15 23:15:19,746 log 13292 11040 Bad Request: /api/mass-notifications/create/
+WARNING 2025-07-15 23:15:19,752 basehttp 13292 11040 "POST /api/mass-notifications/create/ HTTP/1.1" 400 165
+INFO 2025-07-15 23:18:59,275 autoreload 13292 23844 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-07-15 23:19:01,498 autoreload 24292 17812 Watching for file changes with StatReloader
+INFO 2025-07-15 23:19:14,227 autoreload 24292 17812 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-07-15 23:19:15,334 autoreload 16940 14124 Watching for file changes with StatReloader
+INFO 2025-07-15 23:19:17,405 autoreload 16940 14124 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-07-15 23:19:18,419 autoreload 5096 20020 Watching for file changes with StatReloader
+INFO 2025-07-15 23:19:24,876 autoreload 5096 20020 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-07-15 23:19:25,965 autoreload 21728 18420 Watching for file changes with StatReloader
+INFO 2025-07-15 23:19:42,656 autoreload 21728 18420 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-07-15 23:19:43,755 autoreload 22876 22976 Watching for file changes with StatReloader
+INFO 2025-07-15 23:19:53,903 autoreload 22876 22976 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-07-15 23:19:56,070 autoreload 9968 17272 Watching for file changes with StatReloader
+INFO 2025-07-15 23:20:10,931 autoreload 9968 17272 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\serializers.py changed, reloading.
+INFO 2025-07-15 23:20:11,836 autoreload 23828 7368 Watching for file changes with StatReloader
+INFO 2025-07-15 23:20:36,435 basehttp 23828 4312 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:20:36,746 basehttp 23828 4312 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:01,006 basehttp 23828 15888 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:01,196 basehttp 23828 15888 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:01,666 basehttp 23828 12568 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:01,975 basehttp 23828 12568 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:02,030 basehttp 23828 15888 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:02,231 basehttp 23828 15888 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:02,441 basehttp 23828 12568 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:02,754 basehttp 23828 12568 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:16,855 basehttp 23828 13760 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:17,076 basehttp 23828 13760 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:17,535 basehttp 23828 8632 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:17,892 basehttp 23828 8632 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:18,190 basehttp 23828 8632 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:18,394 basehttp 23828 8632 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:18,724 basehttp 23828 8632 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:19,056 basehttp 23828 8632 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:37,415 basehttp 23828 19316 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:37,629 basehttp 23828 19316 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:22:37,845 basehttp 23828 23136 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:38,175 basehttp 23828 23136 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:22:38,525 basehttp 23828 23136 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:24:07,927 basehttp 23828 19008 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:24:08,170 basehttp 23828 19008 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:24:08,553 basehttp 23828 19008 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:24:08,908 basehttp 23828 19008 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+ERROR 2025-07-15 23:24:43,480 log 23828 19008 Internal Server Error: /api/mass-notifications/create/
+ERROR 2025-07-15 23:24:43,481 basehttp 23828 19008 "POST /api/mass-notifications/create/ HTTP/1.1" 500 174
+INFO 2025-07-15 23:25:21,077 autoreload 23828 7368 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\serializers.py changed, reloading.
+INFO 2025-07-15 23:25:22,301 autoreload 18608 3828 Watching for file changes with StatReloader
+INFO 2025-07-15 23:25:38,144 autoreload 17096 23336 Watching for file changes with StatReloader
+INFO 2025-07-15 23:26:17,922 basehttp 18608 10052 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:18,162 basehttp 18608 10052 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:18,608 basehttp 18608 7764 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:26:18,954 basehttp 18608 7764 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:26:21,523 basehttp 18608 7764 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:21,724 basehttp 18608 7764 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:25,069 basehttp 18608 24016 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 23:26:28,872 basehttp 18608 24016 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:29,071 basehttp 18608 24016 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:30,419 basehttp 18608 24016 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:26:30,769 basehttp 18608 24016 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:26:33,701 basehttp 18608 17392 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:33,959 basehttp 18608 17392 "GET /api/users/profile/ HTTP/1.1" 200 609
+INFO 2025-07-15 23:26:34,182 basehttp 18608 23208 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:26:34,513 basehttp 18608 23208 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+ERROR 2025-07-15 23:33:46,140 log 18608 5508 Internal Server Error: /api/mass-notifications/create/
+ERROR 2025-07-15 23:33:46,142 basehttp 18608 5508 "POST /api/mass-notifications/create/ HTTP/1.1" 500 174
+ERROR 2025-07-15 23:34:06,910 log 18608 17800 Internal Server Error: /api/mass-notifications/create/
+ERROR 2025-07-15 23:34:06,911 basehttp 18608 17800 "POST /api/mass-notifications/create/ HTTP/1.1" 500 174
+INFO 2025-07-15 23:34:38,962 autoreload 18608 3828 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\serializers.py changed, reloading.
+INFO 2025-07-15 23:34:40,033 autoreload 22812 15788 Watching for file changes with StatReloader
+INFO 2025-07-15 23:34:45,703 basehttp 22812 16176 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 23:34:48,685 autoreload 22812 15788 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\serializers.py changed, reloading.
+INFO 2025-07-15 23:34:49,645 autoreload 19728 14912 Watching for file changes with StatReloader
+INFO 2025-07-15 23:34:53,130 basehttp 19728 24300 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-15 23:34:53,350 basehttp 19728 24300 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:34:54,110 basehttp 19728 24300 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 23:34:59,323 basehttp 19728 24300 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:34:59,325 basehttp 19728 24300 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:34:59,457 autoreload 19728 14912 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\serializers.py changed, reloading.
+INFO 2025-07-15 23:35:00,501 autoreload 3468 7764 Watching for file changes with StatReloader
+INFO 2025-07-15 23:35:03,154 basehttp 3468 11396 "GET /api/notifications/ HTTP/1.1" 200 5634
+INFO 2025-07-15 23:35:03,231 basehttp 3468 19484 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-15 23:35:03,641 basehttp 3468 22644 "GET /api/notifications/ HTTP/1.1" 200 5634
+INFO 2025-07-15 23:35:10,236 basehttp 3468 7536 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 23:35:15,937 basehttp 3468 20664 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-15 23:35:16,169 basehttp 3468 20664 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:35:16,867 basehttp 3468 20664 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 23:35:18,984 basehttp 3468 20664 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:35:19,362 basehttp 3468 20664 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:35:46,022 basehttp 3468 18608 "POST /api/mass-notifications/create/ HTTP/1.1" 201 650
+INFO 2025-07-15 23:35:46,488 basehttp 3468 18608 "GET /api/mass-notifications/ HTTP/1.1" 200 657
+INFO 2025-07-15 23:35:57,917 basehttp 3468 18588 "OPTIONS /api/mass-notifications/3/send/ HTTP/1.1" 200 0
+WARNING 2025-07-15 23:36:00,130 log 3468 18776 Bad Request: /api/mass-notifications/3/send/
+WARNING 2025-07-15 23:36:00,131 basehttp 3468 18776 "POST /api/mass-notifications/3/send/ HTTP/1.1" 400 74
+WARNING 2025-07-15 23:36:05,802 log 3468 17236 Bad Request: /api/mass-notifications/3/send/
+WARNING 2025-07-15 23:36:05,803 basehttp 3468 17236 "POST /api/mass-notifications/3/send/ HTTP/1.1" 400 74
+INFO 2025-07-15 23:36:17,248 basehttp 3468 18588 "POST /api/mass-notifications/3/send/ HTTP/1.1" 200 150
+INFO 2025-07-15 23:36:17,833 basehttp 3468 18588 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:37:20,487 basehttp 3468 10888 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:37:20,757 basehttp 3468 10888 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:37:21,293 basehttp 3468 13808 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:37:21,760 basehttp 3468 13808 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:38:08,965 basehttp 3468 19916 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 23:38:12,663 basehttp 3468 22824 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-15 23:38:12,885 basehttp 3468 22824 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:38:13,634 basehttp 3468 22824 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 23:38:15,296 basehttp 3468 22824 "GET /api/notifications/ HTTP/1.1" 200 5640
+INFO 2025-07-15 23:38:15,978 basehttp 3468 9560 "GET /api/notifications/ HTTP/1.1" 200 5640
+INFO 2025-07-15 23:38:16,586 basehttp 3468 9560 "OPTIONS /api/notifications/ef80b8f1-1632-415a-a948-5b8fe8f57d1e/mark-read/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:38:17,701 basehttp 3468 9560 "POST /api/notifications/ef80b8f1-1632-415a-a948-5b8fe8f57d1e/mark-read/ HTTP/1.1" 200 73
+INFO 2025-07-15 23:41:27,265 basehttp 3468 6952 "GET /api/notifications/ HTTP/1.1" 200 5639
+INFO 2025-07-15 23:41:39,215 basehttp 3468 912 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:41:39,413 basehttp 3468 912 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:41:40,190 basehttp 3468 19484 "GET /api/notifications/ HTTP/1.1" 200 5639
+INFO 2025-07-15 23:41:40,582 basehttp 3468 19484 "GET /api/notifications/ HTTP/1.1" 200 5639
+INFO 2025-07-15 23:41:44,425 basehttp 3468 19484 "OPTIONS /api/notifications/b46440d9-fab2-4129-9227-ff23c871502f/mark-read/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:41:44,850 basehttp 3468 19484 "POST /api/notifications/b46440d9-fab2-4129-9227-ff23c871502f/mark-read/ HTTP/1.1" 200 73
+INFO 2025-07-15 23:43:31,221 basehttp 3468 1212 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:43:31,441 basehttp 3468 1212 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:43:31,937 basehttp 3468 13112 "GET /api/notifications/ HTTP/1.1" 200 5638
+INFO 2025-07-15 23:43:32,533 basehttp 3468 13112 "GET /api/notifications/ HTTP/1.1" 200 5638
+INFO 2025-07-15 23:44:27,528 basehttp 3468 2972 "OPTIONS /api/notifications/25256513-218d-4b0c-8d20-f79b1740dc38/mark-read/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:44:28,475 basehttp 3468 2972 "POST /api/notifications/25256513-218d-4b0c-8d20-f79b1740dc38/mark-read/ HTTP/1.1" 200 73
+INFO 2025-07-15 23:44:28,929 basehttp 3468 2972 "OPTIONS /api/notifications/b2968eff-00db-4448-a39d-72059af23701/mark-read/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:44:29,335 basehttp 3468 2972 "POST /api/notifications/b2968eff-00db-4448-a39d-72059af23701/mark-read/ HTTP/1.1" 200 73
+INFO 2025-07-15 23:45:51,379 basehttp 3468 22584 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-15 23:45:51,893 basehttp 3468 22584 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-15 23:46:12,610 basehttp 3468 23804 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 23:46:58,858 basehttp 3468 12512 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:46:58,861 basehttp 3468 20424 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:46:59,230 basehttp 3468 20424 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-15 23:46:59,471 basehttp 3468 20424 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-15 23:46:59,870 basehttp 3468 12512 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:47:00,056 basehttp 3468 12512 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:47:00,976 basehttp 3468 12512 "GET /api/notifications/ HTTP/1.1" 200 5636
+INFO 2025-07-15 23:47:01,375 basehttp 3468 12512 "GET /api/notifications/ HTTP/1.1" 200 5636
+INFO 2025-07-15 23:48:23,727 basehttp 3468 3444 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 23:48:28,667 basehttp 3468 23492 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-15 23:48:28,895 basehttp 3468 23492 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:48:29,657 basehttp 3468 23492 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-15 23:48:30,888 basehttp 3468 23492 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:48:31,104 basehttp 3468 23492 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:48:32,108 basehttp 3468 23492 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:48:32,638 basehttp 3468 23492 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:50:10,344 basehttp 3468 24100 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:51:14,527 basehttp 3468 20804 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:51:15,013 basehttp 3468 20804 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:51:15,462 basehttp 3468 20804 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:52:06,570 basehttp 3468 23004 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:52:07,060 basehttp 3468 23004 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:52:26,382 basehttp 3468 22748 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:52:26,584 basehttp 3468 22748 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-15 23:52:28,255 basehttp 3468 22748 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:52:28,841 basehttp 3468 22748 "GET /api/mass-notifications/ HTTP/1.1" 200 688
+INFO 2025-07-15 23:52:33,108 basehttp 3468 22748 "OPTIONS /api/mass-notifications/3/delete/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:52:33,795 basehttp 3468 22748 "DELETE /api/mass-notifications/3/delete/ HTTP/1.1" 200 72
+INFO 2025-07-15 23:52:34,138 basehttp 3468 22748 "GET /api/mass-notifications/ HTTP/1.1" 200 93
+INFO 2025-07-15 23:53:22,905 basehttp 3468 21392 "POST /api/mass-notifications/create/ HTTP/1.1" 201 680
+INFO 2025-07-15 23:53:23,376 basehttp 3468 21392 "GET /api/mass-notifications/ HTTP/1.1" 200 687
+INFO 2025-07-15 23:53:33,428 basehttp 3468 8776 "OPTIONS /api/mass-notifications/4/send/ HTTP/1.1" 200 0
+WARNING 2025-07-15 23:53:40,088 log 3468 2972 Bad Request: /api/mass-notifications/4/send/
+WARNING 2025-07-15 23:53:40,088 basehttp 3468 2972 "POST /api/mass-notifications/4/send/ HTTP/1.1" 400 74
+WARNING 2025-07-15 23:53:44,704 log 3468 2972 Bad Request: /api/mass-notifications/4/send/
+WARNING 2025-07-15 23:53:44,705 basehttp 3468 2972 "POST /api/mass-notifications/4/send/ HTTP/1.1" 400 74
+WARNING 2025-07-15 23:53:45,072 log 3468 2972 Bad Request: /api/mass-notifications/4/send/
+WARNING 2025-07-15 23:53:45,073 basehttp 3468 2972 "POST /api/mass-notifications/4/send/ HTTP/1.1" 400 74
+INFO 2025-07-15 23:53:51,989 basehttp 3468 8776 "POST /api/mass-notifications/4/send/ HTTP/1.1" 200 150
+INFO 2025-07-15 23:53:52,552 basehttp 3468 8776 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-15 23:55:03,068 basehttp 3468 18588 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-15 23:55:03,651 autoreload 3468 7764 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\models.py changed, reloading.
+INFO 2025-07-15 23:55:05,566 autoreload 7232 23188 Watching for file changes with StatReloader
+INFO 2025-07-15 23:55:09,539 basehttp 7232 11276 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-15 23:55:09,744 basehttp 7232 11276 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:55:10,477 basehttp 7232 11276 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 23:55:12,695 basehttp 7232 11276 "GET /api/notifications/ HTTP/1.1" 200 5668
+INFO 2025-07-15 23:55:13,118 basehttp 7232 11276 "GET /api/notifications/ HTTP/1.1" 200 5668
+INFO 2025-07-15 23:55:19,765 basehttp 7232 11900 "OPTIONS /api/notifications/e8f8974c-d527-4e34-9546-fcaf48ca6d4e/mark-read/ HTTP/1.1" 200 0
+INFO 2025-07-15 23:55:20,261 basehttp 7232 2964 "GET /api/notifications/ HTTP/1.1" 200 5668
+INFO 2025-07-15 23:55:20,816 basehttp 7232 11900 "POST /api/notifications/e8f8974c-d527-4e34-9546-fcaf48ca6d4e/mark-read/ HTTP/1.1" 200 73
+INFO 2025-07-15 23:55:20,879 basehttp 7232 2964 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-15 23:56:58,776 autoreload 7232 23188 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\models.py changed, reloading.
+INFO 2025-07-15 23:56:59,593 autoreload 24512 14328 Watching for file changes with StatReloader
+INFO 2025-07-15 23:57:06,884 autoreload 24512 14328 C:\Users\albur\Desktop\leanmaker\Backend\assignments\models.py changed, reloading.
+INFO 2025-07-15 23:57:07,688 autoreload 13044 23496 Watching for file changes with StatReloader
+INFO 2025-07-15 23:57:18,281 autoreload 13044 23496 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\models.py changed, reloading.
+INFO 2025-07-15 23:57:19,243 autoreload 21392 14588 Watching for file changes with StatReloader
+INFO 2025-07-15 23:57:21,614 basehttp 21392 15792 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:58:38,044 basehttp 21392 7964 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-15 23:58:38,319 basehttp 21392 7964 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-15 23:58:39,287 basehttp 21392 7964 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-15 23:58:40,540 basehttp 21392 7964 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-15 23:58:41,279 basehttp 21392 7964 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:00:48,415 basehttp 21392 10508 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:00:48,641 basehttp 21392 10508 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:00:49,232 basehttp 21392 16472 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:00:49,683 basehttp 21392 16472 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:01:06,112 basehttp 21392 23428 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:01:06,324 basehttp 21392 23428 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:01:06,723 basehttp 21392 23428 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:01:07,156 basehttp 21392 13104 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:01:33,632 basehttp 21392 5984 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:01:33,850 basehttp 21392 5984 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:01:34,532 basehttp 21392 24168 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:01:34,926 basehttp 21392 5984 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:02:10,987 basehttp 21392 1212 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:02:11,214 basehttp 21392 1212 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:02:11,494 basehttp 21392 17912 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:02:11,953 basehttp 21392 17912 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:02:13,474 autoreload 21392 14588 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-16 00:02:14,584 autoreload 8312 22300 Watching for file changes with StatReloader
+INFO 2025-07-16 00:04:21,997 autoreload 22904 14000 Watching for file changes with StatReloader
+INFO 2025-07-16 00:07:13,708 autoreload 23968 18772 Watching for file changes with StatReloader
+INFO 2025-07-16 00:07:41,598 autoreload 23968 18772 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-16 00:07:43,029 autoreload 13884 23688 Watching for file changes with StatReloader
+INFO 2025-07-16 00:08:31,707 autoreload 13884 23688 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-16 00:08:34,728 autoreload 24316 21656 Watching for file changes with StatReloader
+INFO 2025-07-16 00:08:50,882 autoreload 24316 21656 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-16 00:08:52,500 autoreload 1280 23316 Watching for file changes with StatReloader
+INFO 2025-07-16 00:09:03,456 autoreload 1820 19644 Watching for file changes with StatReloader
+INFO 2025-07-16 00:09:31,010 autoreload 1820 19644 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 00:09:32,395 autoreload 11900 11908 Watching for file changes with StatReloader
+INFO 2025-07-16 00:09:48,417 basehttp 11900 14676 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-16 00:09:56,208 basehttp 11900 1900 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 00:09:56,471 basehttp 11900 1900 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:09:57,201 basehttp 11900 1900 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-16 00:09:59,782 basehttp 11900 1900 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:10:00,025 basehttp 11900 1900 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:10:01,308 basehttp 11900 1900 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 00:10:01,818 basehttp 11900 1900 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 00:10:06,356 basehttp 11900 24096 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 00:10:09,809 basehttp 11900 24096 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 00:10:10,048 basehttp 11900 24096 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:10:10,673 basehttp 11900 24096 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-16 00:10:16,667 basehttp 11900 24080 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:10:16,945 basehttp 11900 24080 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:10:17,986 basehttp 11900 17720 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-16 00:10:21,002 basehttp 11900 17720 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:10:21,238 basehttp 11900 17720 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:10:23,484 basehttp 11900 1048 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 00:10:23,978 basehttp 11900 1048 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 00:10:31,678 basehttp 11900 1048 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 00:10:35,870 basehttp 11900 1048 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-16 00:10:36,136 basehttp 11900 1048 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:10:36,968 basehttp 11900 1048 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 00:10:44,092 basehttp 11900 9044 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-16 00:10:44,395 basehttp 11900 17336 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:10:44,435 basehttp 11900 9044 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-16 00:10:44,777 basehttp 11900 9044 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:10:48,208 basehttp 11900 9044 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:10:48,613 basehttp 11900 9044 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:10:54,420 basehttp 11900 19340 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-16 00:10:54,776 basehttp 11900 18856 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-16 00:10:58,858 basehttp 11900 18856 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-16 00:10:59,368 basehttp 11900 18856 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-16 00:11:03,443 basehttp 11900 19340 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:03,445 basehttp 11900 18856 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:04,032 basehttp 11900 19340 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-16 00:11:04,438 basehttp 11900 18856 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-16 00:11:09,448 basehttp 11900 18856 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:09,454 basehttp 11900 18856 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:09,457 basehttp 11900 18856 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:09,460 basehttp 11900 18856 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:09,958 basehttp 11900 18856 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 00:11:10,221 basehttp 11900 19340 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 00:11:10,781 basehttp 11900 18856 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 00:11:10,862 basehttp 11900 17056 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-16 00:11:11,203 basehttp 11900 17056 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-16 00:11:13,482 basehttp 11900 18856 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:13,482 basehttp 11900 17056 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:14,319 basehttp 11900 18856 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-16 00:11:14,960 basehttp 11900 17056 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-16 00:11:24,861 basehttp 11900 17056 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:24,861 basehttp 11900 18856 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:11:25,161 basehttp 11900 19340 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-16 00:11:25,220 basehttp 11900 18856 "GET /api/students/api-level-requests/ HTTP/1.1" 200 553
+INFO 2025-07-16 00:11:25,476 basehttp 11900 19340 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-16 00:11:25,590 basehttp 11900 18856 "GET /api/students/api-level-requests/ HTTP/1.1" 200 553
+INFO 2025-07-16 00:12:21,728 basehttp 11900 22520 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-16 00:12:22,321 basehttp 11900 20640 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-16 00:13:00,531 basehttp 11900 22284 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 00:13:00,616 basehttp 11900 24488 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-16 00:13:00,661 basehttp 11900 19792 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 00:13:01,048 basehttp 11900 19792 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 00:13:01,203 basehttp 11900 24488 "GET /api/companies/ HTTP/1.1" 200 10624
+INFO 2025-07-16 00:13:03,711 basehttp 11900 24488 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-16 00:13:04,148 basehttp 11900 19792 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-16 00:13:05,237 basehttp 11900 19792 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-16 00:13:05,778 basehttp 11900 19792 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-16 00:13:09,272 basehttp 11900 19792 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-16 00:13:09,583 basehttp 11900 19792 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-16 00:13:10,982 basehttp 11900 19792 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:13:11,411 basehttp 11900 19792 "GET /api/notifications/ HTTP/1.1" 200 5667
+INFO 2025-07-16 00:15:26,389 autoreload 11900 11908 C:\Users\albur\Desktop\leanmaker\Backend\notifications\views.py changed, reloading.
+INFO 2025-07-16 00:15:27,786 autoreload 21168 19820 Watching for file changes with StatReloader
+INFO 2025-07-16 00:15:37,095 autoreload 21168 19820 C:\Users\albur\Desktop\leanmaker\Backend\notifications\views.py changed, reloading.
+INFO 2025-07-16 00:15:38,385 autoreload 7964 18096 Watching for file changes with StatReloader
+INFO 2025-07-16 00:15:58,167 basehttp 7964 15848 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:15:58,385 basehttp 7964 15848 "GET /api/users/profile/ HTTP/1.1" 200 630
+INFO 2025-07-16 00:15:58,771 basehttp 7964 15848 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:15:59,195 basehttp 7964 7624 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:18:06,244 basehttp 7964 6028 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:18:06,694 basehttp 7964 11288 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:18:13,620 basehttp 7964 21636 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:18:16,277 basehttp 7964 21636 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:18:21,579 basehttp 7964 22176 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:18:21,973 basehttp 7964 12664 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:19:33,446 basehttp 7964 1116 "GET /api/notifications/ HTTP/1.1" 200 6107
+INFO 2025-07-16 00:21:00,789 basehttp 7964 11060 "GET /api/notifications/ HTTP/1.1" 200 6107

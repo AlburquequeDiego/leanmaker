@@ -48,7 +48,7 @@ interface CalendarEvent {
   start: Date;
   end: Date;
   type: 'interview' | 'deadline' | 'meeting' | 'presentation' | 'review' | 'other';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   location?: string;
   description?: string;
   project?: string;
@@ -130,9 +130,21 @@ export const Calendar = () => {
     switch (priority) {
       case 'urgent': return 'error';
       case 'high': return 'warning';
-      case 'medium': return 'info';
-      case 'low': return 'success';
+      case 'medium': return 'secondary';
+      case 'normal': return 'default';
+      case 'low': return 'default';
       default: return 'default';
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'Urgente';
+      case 'high': return 'Alta';
+      case 'medium': return 'Media';
+      case 'normal': return 'Normal';
+      case 'low': return 'Baja';
+      default: return priority;
     }
   };
 
@@ -337,7 +349,7 @@ export const Calendar = () => {
                       color="primary" 
                     />
                     <Chip 
-                      label={event.priority} 
+                      label={getPriorityLabel(event.priority)} 
                       size="small" 
                       color={getPriorityColor(event.priority) as any}
                     />
@@ -375,7 +387,7 @@ export const Calendar = () => {
               <Typography variant="body1">{selectedEvent.company || 'Sin empresa'}</Typography>
               <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                 <Chip label={getEventTypeText(selectedEvent.type)} color="primary" />
-                <Chip label={selectedEvent.priority} color={getPriorityColor(selectedEvent.priority)} />
+                <Chip label={getPriorityLabel(selectedEvent.priority)} color={getPriorityColor(selectedEvent.priority)} />
                 <Chip label={selectedEvent.status} color="default" />
               </Box>
             </Box>

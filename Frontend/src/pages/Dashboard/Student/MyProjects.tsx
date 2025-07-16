@@ -208,10 +208,10 @@ export const MyProjects = () => {
       {/* Tabs de secciones */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Tabs value={tab} onChange={handleTabChange}>
-          <Tab label={`Activos (${activeProjects.length})`} />
-          <Tab label={`Completados (${completedProjects.length})`} />
-          <Tab label={`Pausados (${pausedProjects.length})`} />
-        </Tabs>
+        <Tab label={`Activos (${activeProjects.length})`} />
+        <Tab label={`Completados (${completedProjects.length})`} />
+        <Tab label={`Pausados (${pausedProjects.length})`} />
+      </Tabs>
         <ShowLatestFilter
           value={tab === 0 ? activeLimit : tab === 1 ? completedLimit : pausedLimit}
           onChange={(value) => {

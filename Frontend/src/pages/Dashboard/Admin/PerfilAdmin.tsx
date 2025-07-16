@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -52,25 +52,18 @@ interface ChangePasswordData {
   confirm_password: string;
 }
 
-export default function PerfilAdmin() {
-  const [profile, setProfile] = useState<AdminProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
-  
-  // Form states
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    position: '',
-    department: '',
-  });
-
+// Componente separado para el formulario de contraseña
+const PasswordForm = ({ 
+  onSubmit, 
+  onCancel, 
+  error, 
+  success 
+}: { 
+  onSubmit: (data: ChangePasswordData) => void;
+  onCancel: () => void;
+  error: string | null;
+  success: string | null;
+}) => {
   const [passwordData, setPasswordData] = useState<ChangePasswordData>({
     current_password: '',
     new_password: '',
@@ -83,6 +76,147 @@ export default function PerfilAdmin() {
     confirm: false,
   });
 
+  // Ref para forzar la limpieza del campo
+  const currentPasswordRef = useRef<HTMLInputElement>(null);
+
+  // Efecto para limpiar el campo cuando se monta el componente
+  useEffect(() => {
+    // Limpiar el estado inmediatamente
+    setPasswordData({
+      current_password: '',
+      new_password: '',
+      confirm_password: '',
+    });
+    
+    // Esperar a que el DOM esté listo
+    const timer = setTimeout(() => {
+      if (currentPasswordRef.current) {
+        // Forzar la limpieza del campo usando JavaScript directo
+        currentPasswordRef.current.value = '';
+        
+        // Forzar el foco y luego quitar el foco para asegurar la limpieza
+        currentPasswordRef.current.focus();
+        setTimeout(() => {
+          if (currentPasswordRef.current) {
+            currentPasswordRef.current.blur();
+          }
+        }, 50);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSubmit = () => {
+    onSubmit(passwordData);
+  };
+
+  return (
+    <>
+      <DialogTitle>Cambiar Contraseña</DialogTitle>
+      <DialogContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+          <Box sx={{ position: 'relative' }}>
+            <input
+              ref={currentPasswordRef}
+              type={showPasswords.current ? 'text' : 'password'}
+              value={passwordData.current_password}
+              onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
+              required
+              autoComplete="off"
+              style={{
+                width: '100%',
+                padding: '16.5px 14px',
+                border: '1px solid rgba(0, 0, 0, 0.23)',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontFamily: 'inherit',
+                backgroundColor: 'transparent',
+              }}
+              placeholder="Contraseña actual *"
+            />
+            <IconButton
+              onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+              }}
+            >
+              {showPasswords.current ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
+          </Box>
+          <TextField
+            label="Nueva contraseña"
+            type={showPasswords.new ? 'text' : 'password'}
+            value={passwordData.new_password}
+            onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
+            required
+            autoComplete="off"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                >
+                  {showPasswords.new ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
+          />
+          <TextField
+            label="Confirmar nueva contraseña"
+            type={showPasswords.confirm ? 'text' : 'password'}
+            value={passwordData.confirm_password}
+            onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+            required
+            autoComplete="off"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                >
+                  {showPasswords.confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel}>Cancelar</Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_password}
+        >
+          Cambiar Contraseña
+        </Button>
+      </DialogActions>
+    </>
+  );
+};
+
+export default function PerfilAdmin() {
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [dialogKey, setDialogKey] = useState(Date.now());
+  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
+  
+  // Form states
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    position: '',
+    department: '',
+  });
+
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
 
@@ -90,10 +224,13 @@ export default function PerfilAdmin() {
     fetchProfile();
   }, []);
 
+
+
   const fetchProfile = async () => {
     try {
       setLoading(true);
       const data = await apiService.get('/api/users/profile/') as any;
+      
       const adminProfile = {
         id: data.id,
         username: data.username,
@@ -118,8 +255,9 @@ export default function PerfilAdmin() {
         position: adminProfile.position,
         department: adminProfile.department,
       });
+      
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('❌ [PerfilAdmin] Error al cargar perfil:', error);
       setError('Error al cargar el perfil');
     } finally {
       setLoading(false);
@@ -143,39 +281,52 @@ export default function PerfilAdmin() {
       setIsEditing(false);
       await fetchProfile();
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('❌ [PerfilAdmin] Error al actualizar perfil:', error);
       setError('Error al actualizar el perfil');
     }
   };
 
-  const handleChangePassword = async () => {
-    if (passwordData.new_password !== passwordData.confirm_password) {
+  const handleChangePassword = async (formData: ChangePasswordData) => {
+    if (formData.new_password !== formData.confirm_password) {
       setError('Las contraseñas nuevas no coinciden');
       return;
     }
 
-    if (passwordData.new_password.length < 8) {
+    if (formData.new_password.length < 8) {
       setError('La nueva contraseña debe tener al menos 8 caracteres');
       return;
     }
 
     try {
-      await apiService.post('/api/users/change-password/', {
-        current_password: passwordData.current_password,
-        new_password: passwordData.new_password,
-      });
+      const passwordData = {
+        old_password: formData.current_password,
+        new_password: formData.new_password,
+        new_password_confirm: formData.confirm_password,
+      };
+      
+      await apiService.post('/api/users/change-password/', passwordData);
       
       setSuccess('Contraseña cambiada exitosamente');
       setShowPasswordDialog(false);
-      setPasswordData({
-        current_password: '',
-        new_password: '',
-        confirm_password: '',
-      });
     } catch (error) {
-      console.error('Error changing password:', error);
+      console.error('❌ [PerfilAdmin] Error al cambiar contraseña:', error);
       setError('Error al cambiar la contraseña. Verifica tu contraseña actual.');
     }
+  };
+
+  const handleOpenPasswordDialog = () => {
+    // Limpiar errores y mensajes
+    setError(null);
+    setSuccess(null);
+    
+    // Cerrar el diálogo primero para destruir el componente
+    setShowPasswordDialog(false);
+    
+    // Generar una nueva key única y abrir el diálogo después de un delay
+    setTimeout(() => {
+      setDialogKey(Date.now());
+      setShowPasswordDialog(true);
+    }, 100);
   };
 
   const handleAvatarUpload = async () => {
@@ -193,7 +344,7 @@ export default function PerfilAdmin() {
       setAvatarPreview('');
       await fetchProfile();
     } catch (error) {
-      console.error('Error uploading avatar:', error);
+      console.error('❌ [PerfilAdmin] Error al subir avatar:', error);
       setError('Error al subir el avatar');
     }
   };
@@ -378,7 +529,7 @@ export default function PerfilAdmin() {
             <Button
               variant="outlined"
               startIcon={<LockIcon />}
-              onClick={() => setShowPasswordDialog(true)}
+              onClick={handleOpenPasswordDialog}
               fullWidth
             >
               Cambiar Contraseña
@@ -437,71 +588,23 @@ export default function PerfilAdmin() {
       </Box>
 
       {/* Dialog para cambiar contraseña */}
-      <Dialog open={showPasswordDialog} onClose={() => setShowPasswordDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Cambiar Contraseña</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField
-              label="Contraseña actual"
-              type={showPasswords.current ? 'text' : 'password'}
-              value={passwordData.current_password}
-              onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
-              required
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
-                  >
-                    {showPasswords.current ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                ),
-              }}
-            />
-            <TextField
-              label="Nueva contraseña"
-              type={showPasswords.new ? 'text' : 'password'}
-              value={passwordData.new_password}
-              onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
-              required
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
-                  >
-                    {showPasswords.new ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                ),
-              }}
-            />
-            <TextField
-              label="Confirmar nueva contraseña"
-              type={showPasswords.confirm ? 'text' : 'password'}
-              value={passwordData.confirm_password}
-              onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
-              required
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
-                  >
-                    {showPasswords.confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                ),
-              }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowPasswordDialog(false)}>Cancelar</Button>
-          <Button
-            variant="contained"
-            onClick={handleChangePassword}
-            disabled={!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_password}
-          >
-            Cambiar Contraseña
-          </Button>
-        </DialogActions>
+      {showPasswordDialog && (
+        <Dialog 
+          key={`password-dialog-${dialogKey}`}
+          open={showPasswordDialog} 
+          onClose={() => setShowPasswordDialog(false)} 
+          maxWidth="sm" 
+          fullWidth
+        >
+          <PasswordForm 
+            key={`password-form-${dialogKey}`}
+            onSubmit={handleChangePassword} 
+            onCancel={() => setShowPasswordDialog(false)} 
+            error={error} 
+            success={success} 
+          />
       </Dialog>
+      )}
 
       {/* Dialog para cambiar avatar */}
       <Dialog open={showAvatarDialog} onClose={() => setShowAvatarDialog(false)} maxWidth="sm" fullWidth>

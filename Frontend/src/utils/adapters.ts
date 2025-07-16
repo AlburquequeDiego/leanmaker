@@ -34,6 +34,8 @@ export const adaptUser = (backendUser: any): User => ({
   phone: backendUser.phone,
   avatar: backendUser.avatar,
   bio: backendUser.bio,
+  position: backendUser.position,         // <--- INCLUIDO
+  department: backendUser.department,     // <--- INCLUIDO
   role: backendUser.role,
   is_active: backendUser.is_active,
   is_verified: backendUser.is_verified,
@@ -204,6 +206,7 @@ export const adaptNotification = (backendNotification: any): Notification => ({
   title: backendNotification.title,
   message: backendNotification.message,
   type: backendNotification.type,
+  priority: backendNotification.priority || 'normal',
   read: backendNotification.read,
   related_url: backendNotification.related_url,
   created_at: backendNotification.created_at,
@@ -270,6 +273,7 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => ({
   title: backendEvent.title,
   description: backendEvent.description,
   event_type: backendEvent.event_type,
+  priority: backendEvent.priority || 'normal',
   start_date: backendEvent.start_date,
   end_date: backendEvent.end_date,
   all_day: backendEvent.all_day,

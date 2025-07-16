@@ -9,9 +9,8 @@ class ApiService {
   ): Promise<T> {
     // Construir URL completa - usar proxy en desarrollo
     const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-    console.log(`[apiService] Making request to: ${url}`);
-    console.log(`[apiService] API_BASE_URL: ${API_BASE_URL}`);
-    console.log(`[apiService] Endpoint: ${endpoint}`);
+    
+
     
     // Get access token
     const token = authService.getAccessToken();
@@ -58,7 +57,7 @@ class ApiService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error(`[apiService] HTTP error ${response.status}:`, errorData);
+        console.error(`❌ [API] HTTP error ${response.status} en ${endpoint}:`, errorData);
         
         // Para errores 400, preservar el mensaje específico del backend
         if (response.status === 400 && errorData.error) {
@@ -72,16 +71,14 @@ class ApiService {
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
-        console.log(`[apiService] Response data:`, data);
         
         // Aplicar adaptadores según el endpoint
         return this.applyAdapter(data, endpoint) as T;
       }
       
-      console.warn(`[apiService] No JSON content type, returning empty object`);
       return {} as T;
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error(`💥 [API] Request failed for ${endpoint}:`, error);
       throw error;
     }
   }
@@ -176,7 +173,7 @@ class ApiService {
       }
       return adaptApplication(data);
     }
-
+    
     // EXCLUIR los endpoints de peticiones de nivel API
     if (
       endpoint.includes('/api/students/') &&

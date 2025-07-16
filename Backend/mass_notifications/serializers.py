@@ -161,6 +161,9 @@ class MassNotificationSerializer:
                 data['scheduled_at'] = scheduled_at
             except (ValueError, TypeError):
                 errors['scheduled_at'] = 'Formato de fecha inválido'
+        else:
+            # Si no hay fecha programada, establecer como None
+            data['scheduled_at'] = None
         
         # Validar que se especifique al menos un destinatario
         target_student_ids = data.get('target_student_ids', [])
@@ -169,7 +172,7 @@ class MassNotificationSerializer:
         target_all_companies = data.get('target_all_companies', False)
         
         if not any([target_student_ids, target_company_ids, target_all_students, target_all_companies]):
-            errors['recipients'] = 'Debe especificar al menos un destinatario'
+            errors['recipients'] = 'Debe especificar al menos un destinatario (todos los estudiantes, todas las empresas, o seleccionar específicos)'
         
         # Si está programada, debe tener fecha programada
         if data.get('status') == 'scheduled' and not data.get('scheduled_at'):
@@ -189,12 +192,12 @@ class MassNotificationSerializer:
             notification = MassNotification.objects.create(
                 title=data['title'],
                 message=data['message'],
-                notification_type=data.get('notification_type', 'general'),
+                notification_type=data.get('notification_type', 'announcement'),
                 priority=data.get('priority', 'normal'),
                 status=data.get('status', 'draft'),
                 target_all_students=data.get('target_all_students', False),
                 target_all_companies=data.get('target_all_companies', False),
-                scheduled_at=data.get('scheduled_at'),
+                scheduled_at=data.get('scheduled_at', None),
                 created_by=user
             )
             

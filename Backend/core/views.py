@@ -34,9 +34,23 @@ def home(request):
     try:
         total_users = User.objects.count()
         total_projects = Proyecto.objects.count()
+        
+        # Obtener empresas registradas
+        from companies.models import Empresa
+        total_companies = Empresa.objects.count()
+        
+        # Obtener estudiantes activos (usuarios con rol 'student')
+        active_students = User.objects.filter(role='student', is_active=True).count()
+        
+        # Combinar empresas y estudiantes en una métrica
+        ecosystem_total = total_companies + active_students
+        
     except:
         total_users = 0
         total_projects = 0
+        total_companies = 0
+        active_students = 0
+        ecosystem_total = 0
     
     html_content = f"""
     <!DOCTYPE html>
@@ -114,6 +128,13 @@ def home(request):
                 color: #667eea;
             }}
             
+            .status-subtitle {{
+                font-size: 0.8rem;
+                color: #666;
+                margin-top: 5px;
+                font-style: italic;
+            }}
+            
             .endpoints {{
                 background: #f8f9fa;
                 padding: 25px;
@@ -180,8 +201,17 @@ def home(request):
                     <div class="status-value">{total_users}</div>
                 </div>
                 <div class="status-card">
+                    <div class="status-title">Ecosistema Activo</div>
+                    <div class="status-value">{ecosystem_total}</div>
+                    <div class="status-subtitle">Empresas + Estudiantes</div>
+                </div>
+                <div class="status-card">
                     <div class="status-title">Proyectos Activos</div>
                     <div class="status-value">{total_projects}</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-title">Estudiantes Activos</div>
+                    <div class="status-value">{active_students}</div>
                 </div>
             </div>
             
@@ -408,9 +438,9 @@ def api_logout(request):
         }, status=500)
 
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "PATCH"])
 def api_user_profile(request):
-    """API endpoint para obtener perfil de usuario."""
+    """API endpoint para obtener y actualizar perfil de usuario."""
     try:
         # Verificar token de autenticación
         auth_header = request.headers.get('Authorization')
@@ -427,34 +457,77 @@ def api_user_profile(request):
                 'error': 'Token inválido'
             }, status=401)
         
-        user_data = {
-            'id': str(user.id),
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'username': user.username,
-            'phone': user.phone,
-            'avatar': user.avatar,
-            'bio': user.bio,
-            'role': user.role,
-            'is_active': user.is_active,
-            'is_verified': user.is_verified,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser,
-            'date_joined': user.date_joined.isoformat(),
-            'last_login': user.last_login.isoformat() if user.last_login else None,
-            'created_at': user.created_at.isoformat(),
-            'updated_at': user.updated_at.isoformat(),
-            'full_name': user.full_name
-        }
-        # Si es empresa, agregar perfil de empresa
-        if user.role == 'company':
-            try:
-                empresa = user.empresa_profile
-                user_data['company_profile'] = EmpresaSerializer.to_dict(empresa)
-            except Exception:
-                user_data['company_profile'] = None
-        return JsonResponse(user_data)
+        if request.method == "GET":
+            user_data = {
+                'id': str(user.id),
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'username': user.username,
+                'phone': user.phone,
+                'avatar': user.avatar,
+                'bio': user.bio,
+                'position': user.position,         # <--- INCLUIDO
+                'department': user.department,     # <--- INCLUIDO
+                'role': user.role,
+                'is_active': user.is_active,
+                'is_verified': user.is_verified,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
+                'date_joined': user.date_joined.isoformat(),
+                'last_login': user.last_login.isoformat() if user.last_login else None,
+                'created_at': user.created_at.isoformat(),
+                'updated_at': user.updated_at.isoformat(),
+                'full_name': user.full_name
+            }
+            return JsonResponse(user_data)
+        
+        elif request.method == "PATCH":
+            data = json.loads(request.body)
+            
+            # Actualizar campos permitidos
+            if 'first_name' in data:
+                user.first_name = data['first_name']
+            if 'last_name' in data:
+                user.last_name = data['last_name']
+            if 'phone' in data:
+                user.phone = data['phone']
+            if 'bio' in data:
+                user.bio = data['bio']
+            if 'position' in data:
+                user.position = data['position']
+            if 'department' in data:
+                user.department = data['department']
+            
+            user.save()
+            
+            # Retornar datos actualizados
+            user_data = {
+                'id': str(user.id),
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'username': user.username,
+                'phone': user.phone,
+                'avatar': user.avatar,
+                'bio': user.bio,
+                'position': user.position,
+                'department': user.department,
+                'role': user.role,
+                'is_active': user.is_active,
+                'is_verified': user.is_verified,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
+                'date_joined': user.date_joined.isoformat(),
+                'last_login': user.last_login.isoformat() if user.last_login else None,
+                'created_at': user.created_at.isoformat(),
+                'updated_at': user.updated_at.isoformat(),
+                'full_name': user.full_name
+            }
+            return JsonResponse(user_data)
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
@@ -1019,3 +1092,46 @@ def verify_refresh_token(token):
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, User.DoesNotExist):
         pass
     return None 
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_change_password(request):
+    """API para cambiar contraseña de usuario."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        data = json.loads(request.body)
+        
+        # Validar campos requeridos
+        required_fields = ['old_password', 'new_password', 'new_password_confirm']
+        for field in required_fields:
+            if not data.get(field):
+                return JsonResponse({'error': f'El campo {field} es requerido'}, status=400)
+        
+        # Verificar que las contraseñas coincidan
+        if data['new_password'] != data['new_password_confirm']:
+            return JsonResponse({'error': 'Las contraseñas no coinciden'}, status=400)
+        
+        # Verificar contraseña actual
+        if not current_user.check_password(data['old_password']):
+            return JsonResponse({'error': 'Contraseña actual incorrecta'}, status=400)
+        
+        # Cambiar contraseña
+        current_user.set_password(data['new_password'])
+        current_user.save()
+        
+        return JsonResponse({'message': 'Contraseña cambiada exitosamente'})
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 

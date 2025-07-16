@@ -29,21 +29,17 @@ export const useRealTimeData = <T = any>({
     if (!enabled || !isMountedRef.current) return;
 
     try {
-      console.log(`[useRealTimeData] Fetching data from: ${endpoint}`);
       setLoading(true);
       setError(null);
       
       const response = await apiService.get<T>(endpoint);
-      console.log(`[useRealTimeData] Response received:`, response);
       
       if (isMountedRef.current) {
         if (response && (typeof response === 'object' ? Object.keys(response).length > 0 : true)) {
-          console.log(`[useRealTimeData] Setting data for ${endpoint}:`, response);
           setData(response);
           setError(null);
           setLastUpdate(new Date());
         } else {
-          console.warn(`[useRealTimeData] Empty response received from: ${endpoint}`);
           setData(null);
           setError('No hay datos disponibles');
         }
@@ -67,7 +63,6 @@ export const useRealTimeData = <T = any>({
   // Inicializar datos cuando el componente se monta
   useEffect(() => {
     if (enabled) {
-      console.log(`[useRealTimeData] Initializing data fetch for: ${endpoint}`);
       fetchData();
     }
   }, [endpoint, enabled, fetchData]);
@@ -85,7 +80,6 @@ export const useRealTimeData = <T = any>({
   useEffect(() => {
     isMountedRef.current = true; // <-- Esto es CLAVE para evitar el bucle infinito
     return () => {
-      console.log(`[useRealTimeData] Component unmounting, cleaning up: ${endpoint}`);
       isMountedRef.current = false;
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -95,12 +89,10 @@ export const useRealTimeData = <T = any>({
   }, [endpoint]);
 
   const refresh = useCallback(() => {
-    console.log(`[useRealTimeData] Manual refresh triggered for: ${endpoint}`);
     fetchData();
   }, [fetchData]);
 
   const stopPolling = useCallback(() => {
-    console.log(`[useRealTimeData] Manual stop polling for: ${endpoint}`);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -109,7 +101,6 @@ export const useRealTimeData = <T = any>({
 
   const startPolling = useCallback(() => {
     // No hacer nada - polling deshabilitado
-    console.log(`[useRealTimeData] Polling disabled for: ${endpoint}`);
   }, [endpoint]);
 
   return {

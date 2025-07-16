@@ -10,6 +10,8 @@ export interface User {
   phone?: string;
   avatar?: string;
   bio?: string;
+  position?: string;         // <--- INCLUIDO
+  department?: string;       // <--- INCLUIDO
   role: UserRole;
   is_active: boolean;
   is_verified: boolean;
@@ -173,6 +175,7 @@ export interface Notification {
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
+  priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   read: boolean;
   related_url?: string;
   created_at: string;
@@ -231,6 +234,7 @@ export interface CalendarEvent {
   title: string;
   description?: string;
   event_type: 'meeting' | 'deadline' | 'reminder' | 'interview' | 'other';
+  priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   start_date: string;
   end_date: string;
   all_day: boolean;
@@ -319,7 +323,7 @@ export interface Assignment {
   description?: string;
   due_date?: string;
   status: 'pending' | 'in-progress' | 'completed' | 'overdue';
-  priority: 'low' | 'medium' | 'high';
+  priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   assigned_by: string; // UUID del asignador
   created_at: string;
   updated_at: string;

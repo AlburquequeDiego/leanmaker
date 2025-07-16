@@ -22,6 +22,7 @@ class CalendarEvent(models.Model):
     
     PRIORITY_CHOICES = (
         ('low', 'Baja'),
+        ('normal', 'Normal'),
         ('medium', 'Media'),
         ('high', 'Alta'),
         ('urgent', 'Urgente'),

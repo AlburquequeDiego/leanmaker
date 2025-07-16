@@ -1,11 +1,4 @@
-// Debug: Log all environment variables
-console.log('[API Config] All env variables:', import.meta.env);
-console.log('[API Config] VITE_API_URL:', import.meta.env.VITE_API_URL);
-console.log('[API Config] VITE_APP_NAME:', import.meta.env.VITE_APP_NAME);
-
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-console.log('[API Config] Final API_BASE_URL:', API_BASE_URL);
 
 export const API_ENDPOINTS = {
   // Auth endpoints

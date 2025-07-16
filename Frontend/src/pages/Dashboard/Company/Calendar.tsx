@@ -377,6 +377,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 onChange={(e) => setNewEvent((prev: any) => ({ ...prev, priority: e.target.value }))}
               >
                 <MenuItem value="low">Baja</MenuItem>
+                <MenuItem value="normal">Normal</MenuItem>
                 <MenuItem value="medium">Media</MenuItem>
                 <MenuItem value="high">Alta</MenuItem>
                 <MenuItem value="urgent">Urgente</MenuItem>

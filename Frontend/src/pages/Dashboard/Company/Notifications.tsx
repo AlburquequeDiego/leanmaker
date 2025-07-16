@@ -43,6 +43,8 @@ export const CompanyNotifications: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState<number>(10);
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
 
   useEffect(() => {
     loadNotifications();
@@ -108,6 +110,46 @@ export const CompanyNotifications: React.FC = () => {
     }
   };
 
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'error';
+      case 'high': return 'warning';
+      case 'medium': return 'secondary';
+      case 'normal': return 'default';
+      case 'low': return 'default';
+      default: return 'default';
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'Urgente';
+      case 'high': return 'Alta';
+      case 'medium': return 'Media';
+      case 'normal': return 'Normal';
+      case 'low': return 'Baja';
+      default: return priority;
+    }
+  };
+
+  const filteredNotifications = useMemo(() => {
+    let filtered = notifications;
+    
+    if (priorityFilter !== 'all') {
+      filtered = filtered.filter(n => n.priority === priorityFilter);
+    }
+    
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(n => n.type === typeFilter);
+    }
+    
+    return filtered;
+  }, [notifications, priorityFilter, typeFilter]);
+
+  const displayedNotifications = useMemo(() => {
+    return displayCount === -1 ? filteredNotifications : filteredNotifications.slice(0, displayCount);
+  }, [filteredNotifications, displayCount]);
+
   const handleNotificationClick = (notification: Notification) => {
     setSelectedNotification(notification);
     if (!notification.read) {
@@ -121,7 +163,7 @@ export const CompanyNotifications: React.FC = () => {
 
   const markAsRead = async (id: string) => {
     try {
-      await api.patch(`/api/notifications/${id}/`, { read: true });
+      await api.post(`/api/notifications/${id}/mark-read/`);
       setNotifications(prev =>
         prev.map(notification =>
           notification.id === id ? { ...notification, read: true } : notification
@@ -132,10 +174,6 @@ export const CompanyNotifications: React.FC = () => {
       setError(error.response?.data?.error || 'Error al marcar como leída');
     }
   };
-
-  const displayedNotifications = useMemo(() => {
-    return displayCount === -1 ? notifications : notifications.slice(0, displayCount);
-  }, [notifications, displayCount]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -167,6 +205,35 @@ export const CompanyNotifications: React.FC = () => {
           Notificaciones
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Prioridad</InputLabel>
+            <Select
+              value={priorityFilter}
+              label="Prioridad"
+              onChange={(e) => setPriorityFilter(e.target.value)}
+            >
+              <MenuItem value="all">Todas</MenuItem>
+              <MenuItem value="urgent">Urgente</MenuItem>
+              <MenuItem value="high">Alta</MenuItem>
+              <MenuItem value="medium">Media</MenuItem>
+              <MenuItem value="normal">Normal</MenuItem>
+              <MenuItem value="low">Baja</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Tipo</InputLabel>
+            <Select
+              value={typeFilter}
+              label="Tipo"
+              onChange={(e) => setTypeFilter(e.target.value)}
+            >
+              <MenuItem value="all">Todos</MenuItem>
+              <MenuItem value="info">Información</MenuItem>
+              <MenuItem value="success">Éxito</MenuItem>
+              <MenuItem value="warning">Advertencia</MenuItem>
+              <MenuItem value="error">Error</MenuItem>
+            </Select>
+          </FormControl>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>Mostrar</InputLabel>
             <Select
@@ -253,9 +320,14 @@ export const CompanyNotifications: React.FC = () => {
                         </Typography>
                         <Chip
                           label={getNotificationTypeLabel(notification.type)}
-                          color={getNotificationColor(notification.type) as any}
                           size="small"
-                          sx={{ height: 24 }}
+                          color={getNotificationColor(notification.type) as any}
+                          sx={{ mr: 1 }}
+                        />
+                        <Chip
+                          label={getPriorityLabel(notification.priority)}
+                          size="small"
+                          color={getPriorityColor(notification.priority) as any}
                         />
                       </Box>
                     }
@@ -320,6 +392,11 @@ export const CompanyNotifications: React.FC = () => {
                   <Chip
                     label={getNotificationTypeLabel(selectedNotification.type)}
                     color={getNotificationColor(selectedNotification.type) as any}
+                    size="small"
+                  />
+                  <Chip
+                    label={getPriorityLabel(selectedNotification.priority)}
+                    color={getPriorityColor(selectedNotification.priority) as any}
                     size="small"
                   />
                 </Box>

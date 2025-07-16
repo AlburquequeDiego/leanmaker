@@ -41,6 +41,7 @@ class MassNotification(models.Model):
     PRIORITY_CHOICES = [
         ('low', 'Baja'),
         ('normal', 'Normal'),
+        ('medium', 'Media'),
         ('high', 'Alta'),
         ('urgent', 'Urgente'),
     ]
@@ -172,21 +173,26 @@ class MassNotification(models.Model):
         return 0
 
     def calculate_recipients(self):
-        """Calcula el total de destinatarios"""
+        """Calcula el total de destinatarios de forma optimizada"""
         count = 0
         
         if self.target_all_students:
-            count += Estudiante.objects.count()
+            # Usar count() directamente sin cargar objetos
+            count += Estudiante.objects.only('id').count()
         else:
-            count += self.target_students.count()
+            # Usar count() en la relación many-to-many
+            count += self.target_students.only('id').count()
             
         if self.target_all_companies:
-            count += Empresa.objects.count()
+            # Usar count() directamente sin cargar objetos
+            count += Empresa.objects.only('id').count()
         else:
-            count += self.target_companies.count()
+            # Usar count() en la relación many-to-many
+            count += self.target_companies.only('id').count()
             
         self.total_recipients = count
-        self.save(update_fields=['total_recipients'])
+        # Usar update() en lugar de save() para evitar triggers adicionales
+        MassNotification.objects.filter(id=self.id).update(total_recipients=count)
         return count
 
     def mark_as_sent(self):

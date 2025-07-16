@@ -115,7 +115,7 @@ export default function StudentDashboard() {
             error={error}
           />
         </Box>
-      </Box>
+                </Box>
       {/* Tarjetas principales */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
         {/* Horas Acumuladas */}
@@ -123,46 +123,46 @@ export default function StudentDashboard() {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <TrendingUpIcon sx={{ mr: 1, fontSize: 28 }} />
             <Typography variant="subtitle1" fontWeight={700}>Horas Acumuladas</Typography>
-          </Box>
+              </Box>
           <Typography variant="h4" fontWeight={700}>{totalHours}</Typography>
           <Typography variant="body2">Horas de experiencia en proyectos</Typography>
-        </Paper>
+            </Paper>
         {/* GPA Actual */}
         <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#ffc107', color: 'white', p: 2, borderRadius: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <TrendingUpIcon sx={{ mr: 1, fontSize: 28, color: 'white' }} />
             <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white' }}>GPA Actual</Typography>
-          </Box>
+                </Box>
           <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{gpa}</Typography>
           <Typography variant="body2" sx={{ color: 'white' }}>Promedio académico actual</Typography>
-        </Paper>
+            </Paper>
         {/* Proyectos Disponibles */}
         <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#2196f3', color: 'white', p: 2, borderRadius: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <AssignmentIcon sx={{ mr: 1, fontSize: 28 }} />
             <Typography variant="subtitle1" fontWeight={700}>Proyectos Disponibles</Typography>
-          </Box>
+                </Box>
           <Typography variant="h4" fontWeight={700}>{availableProjects}</Typography>
           <Typography variant="body2">Nuevas oportunidades para ti</Typography>
-        </Paper>
+            </Paper>
         {/* Mis Aplicaciones */}
         <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#9c27b0', color: 'white', p: 2, borderRadius: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <AssignmentIcon sx={{ mr: 1, fontSize: 28 }} />
             <Typography variant="subtitle1" fontWeight={700}>Mis Aplicaciones</Typography>
-          </Box>
+                </Box>
           <Typography variant="h4" fontWeight={700}>{totalApplications}</Typography>
           <Typography variant="body2">Aplicaciones en proceso</Typography>
-        </Paper>
+            </Paper>
         {/* Strikes */}
         <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#ff9800', color: 'white', p: 2, borderRadius: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <WarningAmberIcon sx={{ mr: 1, fontSize: 28, color: '#d32f2f' }} />
             <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white' }}>Strikes</Typography>
-          </Box>
+                </Box>
           <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{strikes} / {maxStrikes}</Typography>
           <Typography variant="body2" sx={{ color: 'white' }}>Tienes {strikes} de {maxStrikes} strikes asignados por no entregar proyectos.</Typography>
-        </Paper>
+            </Paper>
         {/* Proyectos Activos */}
         <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#4caf50', color: 'white', p: 2, borderRadius: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -172,7 +172,7 @@ export default function StudentDashboard() {
           <Typography variant="h4" fontWeight={700}>{activeProjects}</Typography>
           <Typography variant="body2">Proyectos en curso</Typography>
         </Paper>
-      </Box>
+        </Box>
     </Box>
   );
 } 

@@ -30,18 +30,19 @@ import {
   Search as SearchIcon,
   FilterList as FilterIcon,
   Clear as ClearIcon,
+  History as HistoryIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
 interface Notification {
-  id: number;
-  type: 'application' | 'project' | 'evaluation' | 'reminder' | 'system';
+  id: string;
+  type: string;
   title: string;
   message: string;
   company?: string;
   date: string;
   read: boolean;
-  priority: 'high' | 'medium' | 'low';
+  priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   action_url?: string;
   metadata?: {
     project_id?: string;
@@ -73,8 +74,28 @@ export const Notifications = () => {
   useEffect(() => {
     async function fetchNotifications() {
       try {
-        const data = await apiService.get('/api/notifications/');
-        setNotifications(Array.isArray(data) ? data : []);
+        const response = await apiService.get('/api/notifications/');
+        // Si la respuesta es { success, data }
+        const backendNotifications = response.data ? response.data : response;
+        const data = Array.isArray(backendNotifications.data)
+          ? backendNotifications.data
+          : Array.isArray(backendNotifications)
+            ? backendNotifications
+            : [];
+        const adapted = data.map((n: any) => ({
+          id: String(n.id),
+          type: n.type || 'system',
+          title: n.title,
+          message: n.message,
+          company: n.company || '',
+          date: n.created_at || n.date || '',
+          read: n.read,
+          priority: n.priority || 'medium',
+          action_url: n.action_url,
+          metadata: n.metadata,
+        }));
+        setNotifications(adapted);
+        console.log('Notificaciones adaptadas:', adapted);
       } catch (error) {
         console.error('Error fetching notifications:', error);
         setNotifications([]);
@@ -109,7 +130,7 @@ export const Notifications = () => {
     // Marcar como leída si no lo está
     if (!notification.read) {
       try {
-        await apiService.patch(`/api/notifications/${notification.id}/`, { read: true });
+        await apiService.post(`/api/notifications/${notification.id}/mark-read/`);
         setNotifications(prev =>
           prev.map(n =>
             n.id === notification.id ? { ...n, read: true } : n
@@ -153,14 +174,29 @@ export const Notifications = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
+      case 'urgent':
+        return 'error'; // Rojo fuerte
       case 'high':
-        return 'error';
+        return 'warning'; // Naranja
       case 'medium':
-        return 'warning';
+        return 'secondary'; // Amarillo (puedes personalizar si quieres otro tono)
+      case 'normal':
+        return 'default'; // Gris
       case 'low':
         return 'default';
       default:
         return 'default';
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'Urgente';
+      case 'high': return 'Alta';
+      case 'medium': return 'Media';
+      case 'normal': return 'Normal';
+      case 'low': return 'Baja';
+      default: return priority;
     }
   };
 
@@ -250,22 +286,6 @@ export const Notifications = () => {
           />
           
           <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Tipo</InputLabel>
-            <Select
-              value={filters.type}
-              label="Tipo"
-              onChange={e => handleFilterChange('type', e.target.value)}
-            >
-              <MenuItem value="all">Todos</MenuItem>
-              <MenuItem value="application">Aplicaciones</MenuItem>
-              <MenuItem value="project">Proyectos</MenuItem>
-              <MenuItem value="evaluation">Evaluaciones</MenuItem>
-              <MenuItem value="reminder">Recordatorios</MenuItem>
-              <MenuItem value="system">Sistema</MenuItem>
-            </Select>
-          </FormControl>
-          
-          <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>Prioridad</InputLabel>
             <Select
               value={filters.priority}
@@ -273,8 +293,10 @@ export const Notifications = () => {
               onChange={e => handleFilterChange('priority', e.target.value)}
             >
               <MenuItem value="all">Todas</MenuItem>
+              <MenuItem value="urgent">Urgente</MenuItem>
               <MenuItem value="high">Alta</MenuItem>
               <MenuItem value="medium">Media</MenuItem>
+              <MenuItem value="normal">Normal</MenuItem>
               <MenuItem value="low">Baja</MenuItem>
             </Select>
           </FormControl>
@@ -295,6 +317,11 @@ export const Notifications = () => {
       </Paper>
 
       {/* Lista de notificaciones */}
+      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, display: 'flex', alignItems: 'center' }}>
+        <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+        Historial de Notificaciones
+      </Typography>
+      
       <Paper sx={{ maxHeight: 600, overflow: 'auto' }}>
         {filteredNotifications.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -344,6 +371,7 @@ export const Notifications = () => {
                           variant="subtitle1" 
                           fontWeight={notification.read ? 'normal' : 'bold'}
                           sx={{ flex: 1, minWidth: 0 }}
+                          component="span"
                         >
                           {notification.title}
                         </Typography>
@@ -354,18 +382,18 @@ export const Notifications = () => {
                           sx={{ fontSize: '0.7rem' }}
                         />
                         <Chip
-                          label={notification.priority === 'high' ? 'Alta' : notification.priority === 'medium' ? 'Media' : 'Baja'}
+                          label={getPriorityLabel(notification.priority)}
                           size="small"
                           color={getPriorityColor(notification.priority) as any}
                         />
                       </Box>
                     }
                     secondary={
-                      <Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                      <>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }} component="span">
                           {notification.message}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" component="span">
                           {notification.company && `${notification.company} • `}
                           {new Date(notification.date).toLocaleDateString('es-ES', {
                             year: 'numeric',
@@ -375,7 +403,7 @@ export const Notifications = () => {
                             minute: '2-digit',
                           })}
                         </Typography>
-                      </Box>
+                      </>
                     }
                   />
                 </ListItem>
@@ -411,7 +439,7 @@ export const Notifications = () => {
                     variant="outlined"
                   />
                   <Chip
-                    label={selectedNotification.priority === 'high' ? 'Alta' : selectedNotification.priority === 'medium' ? 'Media' : 'Baja'}
+                    label={getPriorityLabel(selectedNotification.priority)}
                     size="small"
                     color={getPriorityColor(selectedNotification.priority) as any}
                   />
@@ -419,7 +447,7 @@ export const Notifications = () => {
               </Box>
             </Box>
             
-            <Typography variant="body1" sx={{ mb: 2, color: 'text.primary', lineHeight: 1.6 }}>
+            <Typography variant="body1" sx={{ mb: 2, color: 'text.primary', lineHeight: 1.6 }} component="div">
               {selectedNotification.message}
             </Typography>
             
@@ -459,7 +487,7 @@ export const Notifications = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <WarningIcon fontSize="small" color={getPriorityColor(selectedNotification.priority) as any} />
                 <Typography variant="body2" color="text.secondary">
-                  Prioridad: {selectedNotification.priority === 'high' ? 'Alta' : selectedNotification.priority === 'medium' ? 'Media' : 'Baja'}
+                  Prioridad: {getPriorityLabel(selectedNotification.priority)}
                 </Typography>
               </Box>
             </Box>

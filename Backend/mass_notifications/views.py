@@ -10,9 +10,13 @@ from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError
 from django.db.models import Q, Count, Sum
 from django.utils import timezone
+from django.db import transaction
 from .models import MassNotification, NotificationTemplate
 from .serializers import MassNotificationSerializer, NotificationTemplateSerializer
 from users.models import User
+from students.models import Estudiante
+from companies.models import Empresa
+from notifications.models import Notification
 from core.auth_utils import get_user_from_token, require_auth, require_admin
 
 # --- NOTIFICACIONES MASIVAS ---
@@ -76,15 +80,15 @@ def mass_notifications_detail(request, notification_id):
     try:
         user = get_user_from_token(request)
         
-        # Validar UUID
+        # Validar ID (AutoField, no UUID)
         try:
-            notification_uuid = uuid.UUID(notification_id)
+            notification_id_int = int(notification_id)
         except ValueError:
             return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
         
         # Buscar notificación
         try:
-            notification = MassNotification.objects.select_related('created_by').get(id=notification_uuid)
+            notification = MassNotification.objects.select_related('created_by').get(id=notification_id_int)
         except MassNotification.DoesNotExist:
             return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
         
@@ -135,15 +139,15 @@ def mass_notifications_update(request, notification_id):
     try:
         user = get_user_from_token(request)
         
-        # Validar UUID
+        # Validar ID (AutoField, no UUID)
         try:
-            notification_uuid = uuid.UUID(notification_id)
+            notification_id_int = int(notification_id)
         except ValueError:
             return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
         
         # Buscar notificación
         try:
-            notification = MassNotification.objects.get(id=notification_uuid)
+            notification = MassNotification.objects.get(id=notification_id_int)
         except MassNotification.DoesNotExist:
             return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
         
@@ -178,15 +182,15 @@ def mass_notifications_delete(request, notification_id):
     try:
         user = get_user_from_token(request)
         
-        # Validar UUID
+        # Validar ID (AutoField, no UUID)
         try:
-            notification_uuid = uuid.UUID(notification_id)
+            notification_id_int = int(notification_id)
         except ValueError:
             return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
         
         # Buscar notificación
         try:
-            notification = MassNotification.objects.get(id=notification_uuid)
+            notification = MassNotification.objects.get(id=notification_id_int)
         except MassNotification.DoesNotExist:
             return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
         
@@ -205,19 +209,19 @@ def mass_notifications_delete(request, notification_id):
 @require_http_methods(["POST"])
 @require_admin
 def send_notification(request, notification_id):
-    """Envía una notificación masiva"""
+    """Envía una notificación masiva creando notificaciones individuales"""
     try:
         user = get_user_from_token(request)
         
-        # Validar UUID
+        # Validar ID (AutoField, no UUID)
         try:
-            notification_uuid = uuid.UUID(notification_id)
+            notification_id_int = int(notification_id)
         except ValueError:
             return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
         
         # Buscar notificación
         try:
-            notification = MassNotification.objects.get(id=notification_uuid)
+            notification = MassNotification.objects.get(id=notification_id_int)
         except MassNotification.DoesNotExist:
             return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
         
@@ -231,16 +235,60 @@ def send_notification(request, notification_id):
         notification.status = 'sending'
         notification.save(update_fields=['status'])
         
-        # Aquí se implementaría la lógica real de envío
-        # Por ahora, simulamos el envío
+        # Obtener destinatarios
+        recipients = []
+        
+        # Estudiantes
+        if notification.target_all_students:
+            students = Estudiante.objects.all()
+        else:
+            students = notification.target_students.all()
+        
+        for student in students:
+            if student.user:
+                recipients.append(student.user)
+        
+        # Empresas
+        if notification.target_all_companies:
+            companies = Empresa.objects.all()
+        else:
+            companies = notification.target_companies.all()
+        
+        for company in companies:
+            if company.user:
+                recipients.append(company.user)
+        
+        # Crear notificaciones individuales
+        with transaction.atomic():
+            notifications_created = []
+            for recipient in recipients:
+                try:
+                    individual_notification = Notification.objects.create(
+                        user=recipient,
+                        title=notification.title,
+                        message=notification.message,
+                        type=notification.notification_type,
+                        priority=notification.priority,
+                        related_url=f"/mass-notifications/{notification.id}/"
+                    )
+                    notifications_created.append(individual_notification)
+                except Exception as e:
+                    print(f"Error creando notificación para {recipient.email}: {e}")
+                    notification.increment_failed_count()
+            
+            # Actualizar estadísticas
+            notification.sent_count = len(notifications_created)
         notification.mark_as_sent()
-        notification.sent_count = notification.total_recipients
         notification.save(update_fields=['sent_count'])
         
         return JsonResponse({
             'success': True,
-            'message': 'Notificación enviada exitosamente',
-            'data': MassNotificationSerializer.to_dict(notification)
+            'message': f'Notificación enviada a {len(notifications_created)} destinatarios',
+            'data': {
+                'sent_count': len(notifications_created),
+                'total_recipients': len(recipients),
+                'failed_count': notification.failed_count
+            }
         })
         
     except Exception as e:
@@ -254,15 +302,15 @@ def schedule_notification(request, notification_id):
     try:
         user = get_user_from_token(request)
         
-        # Validar UUID
+        # Validar ID (AutoField, no UUID)
         try:
-            notification_uuid = uuid.UUID(notification_id)
+            notification_id_int = int(notification_id)
         except ValueError:
             return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
         
         # Buscar notificación
         try:
-            notification = MassNotification.objects.get(id=notification_uuid)
+            notification = MassNotification.objects.get(id=notification_id_int)
         except MassNotification.DoesNotExist:
             return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
         

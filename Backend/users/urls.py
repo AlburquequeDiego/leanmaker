@@ -10,5 +10,6 @@ app_name = 'users'
 urlpatterns = [
     path('', views.user_list, name='user_list'),
     path('profile/', views.user_profile, name='user_profile'),
+    path('change-password/', views.change_password, name='change_password'),
     path('<int:user_id>/', views.user_detail, name='user_detail'),
 ] 
