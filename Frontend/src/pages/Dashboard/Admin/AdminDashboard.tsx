@@ -1,8 +1,7 @@
 import { Box, Typography, CircularProgress, Paper } from '@mui/material';
-import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, PlayArrow as PlayArrowIcon, CheckCircle as CheckCircleIcon, AccessTime as AccessTimeIcon, Star as StarIcon, PersonAdd as PersonAddIcon, CalendarMonth as CalendarMonthIcon, Pending as PendingIcon } from '@mui/icons-material';
+import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, Pending as PendingIcon } from '@mui/icons-material';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
-import { useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function AdminDashboard() {
@@ -12,37 +11,13 @@ export default function AdminDashboard() {
   // Usar hook de tiempo real para estadísticas
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('admin');
 
-  // Detectar cambios en las estadísticas
-  useEffect(() => {
-    if (stats) {
-      console.log('[AdminDashboard] Stats received:', stats);
-
-    }
-  }, [stats]);
-
-  // Log para debugging
-  useEffect(() => {
-    console.log('[AdminDashboard] Component state:', {
-      loading,
-      error,
-      hasStats: !!stats,
-      stats,
-      user: user?.email
-    });
-  }, [loading, error, stats, user]);
-
   // Cálculos de KPIs usando datos reales
   const totalUsers = stats?.total_users || 0;
   const totalStudents = stats?.total_students || 0;
   const totalCompanies = stats?.total_companies || 0;
   const totalProjects = stats?.total_projects || 0;
-  const activeProjects = stats?.active_projects || 0;
-  const completedProjects = stats?.completed_projects || 0;
   const pendingApplications = stats?.pending_applications || 0;
-  const totalHours = stats?.total_hours || 0;
-  const averageRating = stats?.average_rating || 0;
-  const newUsersThisMonth = stats?.new_users_this_month || 0;
-  const projectsThisMonth = stats?.projects_this_month || 0;
+  const strikesAlerts = stats?.strikes_alerts || 0;
 
   return (
     <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
@@ -58,11 +33,6 @@ export default function AdminDashboard() {
             lastUpdate={lastUpdate}
             error={error}
           />
-          {lastUpdate && (
-            <Typography variant="caption" color="text.secondary">
-              Última actualización: {lastUpdate.toLocaleTimeString()}
-            </Typography>
-          )}
         </Box>
       </Box>
       
@@ -91,93 +61,64 @@ export default function AdminDashboard() {
             mb: 4,
             justifyContent: { xs: 'center', md: 'flex-start' }
           }}>
+            {/* Usuarios - Azul */}
             <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#42a5f5', color: 'white', boxShadow: 2, borderRadius: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <PeopleIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Total de Usuarios</Typography>
+                <Typography variant="h6" fontWeight={700}>Usuarios</Typography>
               </Box>
               <Typography variant="h4" fontWeight={700}>{totalUsers}</Typography>
-              <Typography variant="body2">Usuarios registrados en el sistema</Typography>
+              <Typography variant="body2">Usuarios registrados</Typography>
             </Paper>
+            
+            {/* Empresas - Morado */}
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#9c27b0', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <BusinessIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Empresas</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight={700}>{totalCompanies}</Typography>
+              <Typography variant="body2">Empresas activas</Typography>
+            </Paper>
+            
+            {/* Estudiantes - Verde */}
             <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#43a047', color: 'white', boxShadow: 2, borderRadius: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <SchoolIcon sx={{ fontSize: 32, mr: 1 }} />
                 <Typography variant="h6" fontWeight={700}>Estudiantes</Typography>
               </Box>
               <Typography variant="h4" fontWeight={700}>{totalStudents}</Typography>
-              <Typography variant="body2">Estudiantes registrados</Typography>
+              <Typography variant="body2">Estudiantes activos</Typography>
             </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#8bc34a', color: 'white', boxShadow: 2, borderRadius: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <BusinessIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Empresas</Typography>
-              </Box>
-              <Typography variant="h4" fontWeight={700}>{totalCompanies}</Typography>
-              <Typography variant="body2">Empresas registradas</Typography>
-            </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ff9800', color: 'white', boxShadow: 2, borderRadius: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <WorkIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Total de Proyectos</Typography>
-              </Box>
-              <Typography variant="h4" fontWeight={700}>{totalProjects}</Typography>
-              <Typography variant="body2">Proyectos creados en total</Typography>
-            </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#9c27b0', color: 'white', boxShadow: 2, borderRadius: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <PlayArrowIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Proyectos Activos</Typography>
-              </Box>
-              <Typography variant="h4" fontWeight={700}>{activeProjects}</Typography>
-              <Typography variant="body2">Proyectos en curso actualmente</Typography>
-            </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#4caf50', color: 'white', boxShadow: 2, borderRadius: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <CheckCircleIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Proyectos Completados</Typography>
-              </Box>
-              <Typography variant="h4" fontWeight={700}>{completedProjects}</Typography>
-              <Typography variant="body2">Proyectos finalizados exitosamente</Typography>
-            </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ffb300', color: 'white', boxShadow: 2, borderRadius: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <PendingIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Aplicaciones Pendientes</Typography>
-              </Box>
-              <Typography variant="h4" fontWeight={700}>{pendingApplications}</Typography>
-              <Typography variant="body2">Aplicaciones esperando revisión</Typography>
-            </Paper>
+            
+            {/* Proyectos - Azul */}
             <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#42a5f5', color: 'white', boxShadow: 2, borderRadius: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <AccessTimeIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Horas Totales</Typography>
+                <WorkIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Proyectos</Typography>
               </Box>
-              <Typography variant="h4" fontWeight={700}>{totalHours}</Typography>
-              <Typography variant="body2">Horas acumuladas en proyectos</Typography>
+              <Typography variant="h4" fontWeight={700}>{totalProjects}</Typography>
+              <Typography variant="body2">Proyectos activos</Typography>
             </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ab47bc', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+            
+            {/* Postulaciones - Blanco */}
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ffffff', color: '#333333', boxShadow: 2, borderRadius: 3, border: '1px solid #e0e0e0' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <StarIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Rating Promedio</Typography>
+                <PendingIcon sx={{ fontSize: 32, mr: 1, color: '#666666' }} />
+                <Typography variant="h6" fontWeight={700} color="#333333">Postulaciones</Typography>
               </Box>
-              <Typography variant="h4" fontWeight={700}>{averageRating.toFixed(1)}</Typography>
-              <Typography variant="body2">Calificación promedio del sistema</Typography>
+              <Typography variant="h4" fontWeight={700} color="#333333">{pendingApplications}</Typography>
+              <Typography variant="body2" color="#666666">Postulaciones realizadas</Typography>
             </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ffa726', color: 'white', boxShadow: 2, borderRadius: 3 }}>
+            
+            {/* Alertas - Naranja */}
+            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ff9800', color: 'white', boxShadow: 2, borderRadius: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <PersonAddIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Nuevos Usuarios</Typography>
+                <PendingIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography variant="h6" fontWeight={700}>Alertas</Typography>
               </Box>
-              <Typography variant="h4" fontWeight={700}>{newUsersThisMonth}</Typography>
-              <Typography variant="body2">Usuarios registrados este mes</Typography>
-            </Paper>
-            <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#26a69a', color: 'white', boxShadow: 2, borderRadius: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <CalendarMonthIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Proyectos Este Mes</Typography>
-              </Box>
-              <Typography variant="h4" fontWeight={700}>{projectsThisMonth}</Typography>
-              <Typography variant="body2">Nuevos proyectos este mes</Typography>
+              <Typography variant="h4" fontWeight={700}>{strikesAlerts}</Typography>
+              <Typography variant="body2">Alertas pendientes</Typography>
             </Paper>
           </Box>
         </>

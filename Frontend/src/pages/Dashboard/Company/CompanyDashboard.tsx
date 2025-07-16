@@ -12,13 +12,14 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
+import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 
 export default function CompanyDashboard() {
   const { user } = useAuth();
 
   
   // Usar hook de tiempo real para estadísticas
-  const { data: stats, loading, error, lastUpdate } = useDashboardStats('company');
+  const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('company');
 
   // Detectar cambios en las estadísticas
   useEffect(() => {
@@ -53,30 +54,18 @@ export default function CompanyDashboard() {
 
   return (
     <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
-      {/* Header con título */}
+      {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>
           Dashboard de Empresa
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        {lastUpdate && (
-          <Typography variant="caption" color="text.secondary">
-            Última actualización: {lastUpdate.toLocaleTimeString()}
-          </Typography>
-        )}
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              marginLeft: 8
-            }}
-            title="Actualizar"
-          >
-            <RefreshIcon style={{ color: '#1976d2', fontSize: 28 }} />
-          </button>
+          <ConnectionStatus
+            isConnected={!error}
+            isPolling={isPolling}
+            lastUpdate={lastUpdate}
+            error={error}
+          />
         </Box>
       </Box>
       

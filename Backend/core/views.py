@@ -20,18 +20,194 @@ from django.db.models import F
 
 def home(request):
     """Vista principal de la aplicación."""
-    return JsonResponse({
-        'message': 'LeanMaker Backend API',
-        'version': '1.0.0',
-        'status': 'running',
-        'endpoints': {
-            'health': '/api/health-simple/',
-            'auth': '/api/token/',
-            'users': '/api/users/',
-            'projects': '/api/projects/',
-            'dashboard': '/api/dashboard/'
-        }
-    })
+    from django.db import connection
+    from django.db.utils import OperationalError
+    
+    # Verificar estado de la base de datos
+    db_status = "✅ Conectado"
+    try:
+        connection.ensure_connection()
+    except OperationalError:
+        db_status = "❌ Error de conexión"
+    
+    # Obtener estadísticas básicas
+    try:
+        total_users = User.objects.count()
+        total_projects = Proyecto.objects.count()
+    except:
+        total_users = 0
+        total_projects = 0
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LeanMaker Backend - Estado del Sistema</title>
+        <style>
+            * {{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }}
+            
+            body {{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }}
+            
+            .container {{
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                padding: 40px;
+                max-width: 800px;
+                width: 100%;
+                text-align: center;
+            }}
+            
+            .header {{
+                margin-bottom: 30px;
+            }}
+            
+            .logo {{
+                font-size: 2.5rem;
+                font-weight: bold;
+                color: #667eea;
+                margin-bottom: 10px;
+            }}
+            
+            .subtitle {{
+                color: #666;
+                font-size: 1.1rem;
+                margin-bottom: 20px;
+            }}
+            
+            .status-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }}
+            
+            .status-card {{
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 15px;
+                border-left: 4px solid #667eea;
+            }}
+            
+            .status-title {{
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 10px;
+            }}
+            
+            .status-value {{
+                font-size: 1.2rem;
+                color: #667eea;
+            }}
+            
+            .endpoints {{
+                background: #f8f9fa;
+                padding: 25px;
+                border-radius: 15px;
+                margin-bottom: 20px;
+            }}
+            
+            .endpoints h3 {{
+                color: #333;
+                margin-bottom: 15px;
+            }}
+            
+            .endpoint-list {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 10px;
+            }}
+            
+            .endpoint {{
+                background: white;
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid #e9ecef;
+                font-family: 'Courier New', monospace;
+                font-size: 0.9rem;
+                color: #495057;
+            }}
+            
+            .footer {{
+                color: #666;
+                font-size: 0.9rem;
+                margin-top: 20px;
+            }}
+            
+            .pulse {{
+                animation: pulse 2s infinite;
+            }}
+            
+            @keyframes pulse {{
+                0% {{ opacity: 1; }}
+                50% {{ opacity: 0.7; }}
+                100% {{ opacity: 1; }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="logo">🚀 LeanMaker</div>
+                <div class="subtitle">Backend API - Sistema de Vinculación Estudiantil</div>
+            </div>
+            
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="status-title">Estado del Servidor</div>
+                    <div class="status-value pulse">✅ Funcionando</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-title">Base de Datos</div>
+                    <div class="status-value">{db_status}</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-title">Usuarios Registrados</div>
+                    <div class="status-value">{total_users}</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-title">Proyectos Activos</div>
+                    <div class="status-value">{total_projects}</div>
+                </div>
+            </div>
+            
+            <div class="endpoints">
+                <h3>📡 Endpoints Disponibles</h3>
+                <div class="endpoint-list">
+                    <div class="endpoint">GET /api/health-simple/</div>
+                    <div class="endpoint">POST /api/token/</div>
+                    <div class="endpoint">GET /api/users/</div>
+                    <div class="endpoint">GET /api/projects/</div>
+                    <div class="endpoint">GET /api/dashboard/</div>
+                    <div class="endpoint">POST /api/login/</div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Versión 1.0.0 | Desarrollado con Django y Python</p>
+                <p>🕐 Última verificación: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    from django.http import HttpResponse
+    return HttpResponse(html_content, content_type='text/html')
 
 def login_view(request):
     """Vista de login tradicional."""
@@ -511,6 +687,12 @@ def api_dashboard_student_stats(request):
             total_projects = student_projects.count()
             active_projects = student_projects.filter(status__name='active').count()
             
+            # Calcular proyectos disponibles (proyectos abiertos, no postulados, cumple nivel API)
+            open_projects = Proyecto.objects.filter(status__name='open')
+            applied_project_ids = Aplicacion.objects.filter(student=student).values_list('project_id', flat=True)
+            available_projects = open_projects.exclude(id__in=applied_project_ids).filter(
+                min_api_level__lte=student.api_level
+            ).count()
         except Exception as e:
             print(f"Error calculando estadísticas: {e}")
             return JsonResponse({
@@ -526,6 +708,9 @@ def api_dashboard_student_stats(request):
             'total_projects': total_projects,
             'active_projects': active_projects,
             'total_hours': student.total_hours,
+            'strikes': student.strikes,
+            'gpa': float(student.gpa),
+            'available_projects': available_projects,
             'recent_activity': []  # Placeholder para actividad reciente
         }
         
@@ -545,10 +730,14 @@ def api_dashboard_student_stats(request):
 @require_http_methods(["GET"])
 def api_dashboard_admin_stats(request):
     """API endpoint para estadísticas del dashboard de administrador."""
+    import traceback
     try:
+        print("🔍 [ADMIN DASHBOARD] Iniciando consulta de estadísticas...")
+        
         # Verificar token de autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
+            print("❌ [ADMIN DASHBOARD] Token de autenticación requerido")
             return JsonResponse({
                 'error': 'Token de autenticación requerido'
             }, status=401)
@@ -557,13 +746,165 @@ def api_dashboard_admin_stats(request):
         user = verify_token(token)
         
         if not user:
+            print("❌ [ADMIN DASHBOARD] Token inválido")
             return JsonResponse({
                 'error': 'Token inválido'
             }, status=401)
         
         if user.role != 'admin':
+            print(f"❌ [ADMIN DASHBOARD] Acceso denegado para rol: {user.role}")
             return JsonResponse({
                 'error': 'Acceso denegado. Solo administradores pueden acceder a este endpoint.'
+            }, status=403)
+        
+        print(f"✅ [ADMIN DASHBOARD] Usuario autenticado: {user.email} (rol: {user.role})")
+        
+        # Importar modelos necesarios
+        from users.models import User
+        from projects.models import Proyecto
+        from companies.models import Empresa
+        from students.models import Estudiante
+        from applications.models import Aplicacion
+        from strikes.models import Strike
+        
+        # Obtener estadísticas básicas con logs detallados
+        print("📊 [ADMIN DASHBOARD] Consultando estadísticas...")
+        
+        total_users = User.objects.count()
+        print(f"👥 [ADMIN DASHBOARD] Total usuarios: {total_users}")
+        
+        total_companies = Empresa.objects.count()
+        print(f"🏢 [ADMIN DASHBOARD] Total empresas: {total_companies}")
+        
+        total_students = Estudiante.objects.count()
+        print(f"🎓 [ADMIN DASHBOARD] Total estudiantes: {total_students}")
+        
+        total_projects = Proyecto.objects.count()
+        print(f"💼 [ADMIN DASHBOARD] Total proyectos: {total_projects}")
+        
+        # Obtener aplicaciones pendientes
+        pending_applications = Aplicacion.objects.filter(status='pending').count()
+        print(f"📝 [ADMIN DASHBOARD] Aplicaciones pendientes: {pending_applications}")
+        
+        # Obtener alertas de strikes (strikes activos)
+        strikes_alerts = Strike.objects.filter(is_active=True).count()
+        print(f"⚠️ [ADMIN DASHBOARD] Alertas de strikes: {strikes_alerts}")
+        
+        # Preparar respuesta
+        response_data = {
+            'total_users': total_users,
+            'total_companies': total_companies,
+            'total_students': total_students,
+            'total_projects': total_projects,
+            'pending_applications': pending_applications,
+            'strikes_alerts': strikes_alerts,
+            'recent_activity': []  # Placeholder para actividad reciente
+        }
+        
+        print(f"✅ [ADMIN DASHBOARD] Datos preparados: {response_data}")
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        print(f"❌ [ADMIN DASHBOARD] Error: {str(e)}")
+        print(f"❌ [ADMIN DASHBOARD] Traceback: {traceback.format_exc()}")
+        return JsonResponse({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_test_admin_stats(request):
+    """Endpoint de prueba para verificar estadísticas del admin sin autenticación."""
+    try:
+        print("🔍 [TEST ADMIN STATS] Verificando datos reales de la base de datos...")
+        
+        # Importar modelos necesarios
+        from users.models import User
+        from projects.models import Proyecto
+        from companies.models import Empresa
+        from students.models import Estudiante
+        from applications.models import Aplicacion
+        from strikes.models import Strike
+        
+        # Obtener estadísticas básicas
+        total_users = User.objects.count()
+        total_companies = Empresa.objects.count()
+        total_students = Estudiante.objects.count()
+        total_projects = Proyecto.objects.count()
+        pending_applications = Aplicacion.objects.filter(status='pending').count()
+        strikes_alerts = Strike.objects.filter(is_active=True).count()
+        
+        # Obtener algunos ejemplos de datos
+        sample_users = list(User.objects.values('id', 'email', 'role')[:5])
+        sample_companies = list(Empresa.objects.values('id', 'company_name')[:5])
+        sample_students = list(Estudiante.objects.values('id', 'user__email')[:5])
+        sample_projects = list(Proyecto.objects.values('id', 'title')[:5])
+        
+        response_data = {
+            'total_users': total_users,
+            'total_companies': total_companies,
+            'total_students': total_students,
+            'total_projects': total_projects,
+            'pending_applications': pending_applications,
+            'strikes_alerts': strikes_alerts,
+            'sample_data': {
+                'users': sample_users,
+                'companies': sample_companies,
+                'students': sample_students,
+                'projects': sample_projects
+            }
+        }
+        
+        print(f"✅ [TEST ADMIN STATS] Datos reales encontrados: {response_data}")
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        import traceback
+        print(f"❌ [TEST ADMIN STATS] Error: {str(e)}")
+        print(f"❌ [TEST ADMIN STATS] Traceback: {traceback.format_exc()}")
+        return JsonResponse({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_test_auth_admin_stats(request):
+    """Endpoint de prueba para verificar estadísticas del admin CON autenticación."""
+    try:
+        print("🔍 [TEST AUTH ADMIN STATS] Verificando autenticación y datos...")
+        
+        # Verificar token de autenticación
+        auth_header = request.headers.get('Authorization')
+        print(f"🔍 [TEST AUTH ADMIN STATS] Auth header: {auth_header}")
+        
+        if not auth_header or not auth_header.startswith('Bearer '):
+            print("❌ [TEST AUTH ADMIN STATS] Token de autenticación requerido")
+            return JsonResponse({
+                'error': 'Token de autenticación requerido',
+                'auth_header': auth_header
+            }, status=401)
+        
+        token = auth_header.split(' ')[1]
+        print(f"🔍 [TEST AUTH ADMIN STATS] Token: {token[:20]}...")
+        
+        user = verify_token(token)
+        print(f"🔍 [TEST AUTH ADMIN STATS] User: {user}")
+        
+        if not user:
+            print("❌ [TEST AUTH ADMIN STATS] Token inválido")
+            return JsonResponse({
+                'error': 'Token inválido'
+            }, status=401)
+        
+        print(f"✅ [TEST AUTH ADMIN STATS] Usuario autenticado: {user.email} (rol: {user.role})")
+        
+        if user.role != 'admin':
+            print(f"❌ [TEST AUTH ADMIN STATS] Acceso denegado para rol: {user.role}")
+            return JsonResponse({
+                'error': 'Acceso denegado. Solo administradores pueden acceder a este endpoint.',
+                'user_role': user.role
             }, status=403)
         
         # Importar modelos necesarios
@@ -571,24 +912,41 @@ def api_dashboard_admin_stats(request):
         from projects.models import Proyecto
         from companies.models import Empresa
         from students.models import Estudiante
+        from applications.models import Aplicacion
+        from strikes.models import Strike
         
         # Obtener estadísticas básicas
         total_users = User.objects.count()
         total_companies = Empresa.objects.count()
         total_students = Estudiante.objects.count()
         total_projects = Proyecto.objects.count()
+        pending_applications = Aplicacion.objects.filter(status='pending').count()
+        strikes_alerts = Strike.objects.filter(is_active=True).count()
         
-        return JsonResponse({
+        response_data = {
             'total_users': total_users,
             'total_companies': total_companies,
             'total_students': total_students,
             'total_projects': total_projects,
-            'recent_activity': []  # Placeholder para actividad reciente
-        })
+            'pending_applications': pending_applications,
+            'strikes_alerts': strikes_alerts,
+            'user_info': {
+                'email': user.email,
+                'role': user.role,
+                'id': str(user.id)
+            }
+        }
+        
+        print(f"✅ [TEST AUTH ADMIN STATS] Datos autenticados: {response_data}")
+        return JsonResponse(response_data)
         
     except Exception as e:
+        import traceback
+        print(f"❌ [TEST AUTH ADMIN STATS] Error: {str(e)}")
+        print(f"❌ [TEST AUTH ADMIN STATS] Traceback: {traceback.format_exc()}")
         return JsonResponse({
-            'error': str(e)
+            'error': str(e),
+            'traceback': traceback.format_exc()
         }, status=500)
 
 @csrf_exempt

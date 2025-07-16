@@ -18,11 +18,6 @@ import {
   MenuItem,
   Divider,
   Tooltip,
-  Modal,
-  Fade,
-  Backdrop,
-  Button,
-  TextField,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -44,7 +39,6 @@ import {
   Warning as WarningIcon,
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
-  HelpOutline as HelpOutlineIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 import { NotificationCenter } from '../../notifications/NotificationCenter';
@@ -65,8 +59,6 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const location = useLocation();
   const { logout } = useAuth();
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
-  const [openSupport, setOpenSupport] = useState(false);
-  const [supportForm, setSupportForm] = useState({ nombre: '', correo: '', mensaje: '' });
 
   // Simulación de notificaciones nuevas
 
@@ -91,9 +83,6 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const handleThemeToggle = () => {
     setThemeMode((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
-
-  const handleOpenSupport = () => setOpenSupport(true);
-  const handleCloseSupport = () => setOpenSupport(false);
 
   const getMenuItems = () => {
     const commonItems = {
@@ -150,11 +139,20 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const drawer = (
     <Box>
       <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
-        <Typography variant="h6" noWrap component="div" sx={{ color: '#e3eafc', fontWeight: 700, letterSpacing: 1 }}>
+        <Typography 
+          variant="h6" 
+          noWrap 
+          component="div" 
+          sx={{ 
+            color: themeMode === 'light' ? '#1976d2' : '#e3eafc', 
+            fontWeight: 700, 
+            letterSpacing: 1 
+          }}
+        >
           LeanMaker
         </Typography>
       </Toolbar>
-      <Divider sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+      <Divider sx={{ bgcolor: themeMode === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }} />
       <List>
         {getMenuItems().map((item) => {
           const selected = location.pathname === item.path || (item.path !== '/dashboard/student' && location.pathname.startsWith(item.path));
@@ -165,21 +163,44 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
                 onClick={() => navigate(item.path)}
                 sx={{
                   borderRadius: 3,
-                  background: selected ? '#22345a' : 'transparent',
-                  color: '#e3eafc',
+                  background: selected 
+                    ? (themeMode === 'light' ? '#1976d2' : '#22345a') 
+                    : 'transparent',
+                  color: selected 
+                    ? '#fff' 
+                    : (themeMode === 'light' ? '#22345a' : '#e3eafc'),
                   my: 0.5,
                   mx: 1,
                   height: 56,
-                  transition: 'background 0.2s',
+                  transition: 'background 0.2s, color 0.2s',
                   '&:hover': {
-                    background: '#22345a',
+                    background: themeMode === 'light' ? '#1976d2' : '#22345a',
                     color: '#fff',
                   },
                   fontWeight: selected ? 700 : 500,
                 }}
               >
-                <ListItemIcon sx={{ color: '#b6c6e3', minWidth: 40, fontSize: 28 }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: 600, fontSize: 18 }} />
+                <ListItemIcon 
+                  sx={{ 
+                    color: selected 
+                      ? '#fff' 
+                      : (themeMode === 'light' ? '#1976d2' : '#b6c6e3'), 
+                    minWidth: 40, 
+                    fontSize: 28 
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.text} 
+                  primaryTypographyProps={{ 
+                    fontWeight: 600, 
+                    fontSize: 18,
+                    color: selected 
+                      ? '#fff' 
+                      : (themeMode === 'light' ? '#22345a' : '#e3eafc')
+                  }} 
+                />
               </ListItemButton>
             </ListItem>
           );
@@ -239,14 +260,6 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
                 {themeMode === 'light' ? <DarkModeIcon sx={{ color: '#22345a' }} /> : <LightModeIcon />}
               </IconButton>
             </Tooltip>
-            {/* Soporte - Solo para empresas y estudiantes */}
-            {userRole !== 'admin' && (
-              <Tooltip title="Soporte / Ayuda">
-                <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleOpenSupport}>
-                  <HelpOutlineIcon sx={{ color: themeMode === 'light' ? '#22345a' : '#e3eafc' }} />
-                </IconButton>
-              </Tooltip>
-            )}
           </Box>
           <IconButton
             size="large"
@@ -280,89 +293,6 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           </Menu>
         </Toolbar>
       </AppBar>
-      {/* Modal de soporte */}
-      <Modal
-        open={openSupport}
-        onClose={handleCloseSupport}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{ backdrop: { timeout: 300 } }}
-      >
-        <Fade in={openSupport}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: '#f4f8ff',
-            borderRadius: 3,
-            boxShadow: 24,
-            p: 4,
-            minWidth: 320,
-            maxWidth: '90vw',
-          }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#22345a' }}>
-              ¿Necesitas ayuda? Envíanos tu consulta
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 3, color: '#666' }}>
-              Tu mensaje será enviado a nuestro equipo de soporte y te responderemos a la brevedad posible.
-            </Typography>
-            <TextField
-              label="Nombre completo"
-              variant="outlined"
-              fullWidth
-              sx={{ mb: 2, background: '#eaf2fb', borderRadius: 1 }}
-              value={supportForm.nombre}
-              onChange={e => setSupportForm(f => ({ ...f, nombre: e.target.value }))}
-            />
-            <TextField
-              label="Correo electrónico"
-              variant="outlined"
-              fullWidth
-              sx={{ mb: 2, background: '#eaf2fb', borderRadius: 1 }}
-              value={supportForm.correo}
-              onChange={e => setSupportForm(f => ({ ...f, correo: e.target.value }))}
-            />
-            <TextField
-              label="Describe tu consulta o problema"
-              variant="outlined"
-              fullWidth
-              multiline
-              minRows={4}
-              placeholder="Por favor, describe detalladamente tu consulta para poder ayudarte mejor..."
-              sx={{ mb: 3, background: '#eaf2fb', borderRadius: 1 }}
-              value={supportForm.mensaje}
-              onChange={e => setSupportForm(f => ({ ...f, mensaje: e.target.value }))}
-            />
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button 
-                variant="outlined" 
-                fullWidth 
-                sx={{ borderRadius: 2, fontWeight: 600 }} 
-                onClick={handleCloseSupport}
-              >
-                Cancelar
-              </Button>
-              <Button 
-                variant="contained" 
-                color="primary" 
-                fullWidth 
-                sx={{ borderRadius: 2, fontWeight: 600 }}
-                onClick={() => {
-                  // Aquí se enviaría el mensaje al correo del sistema
-                  // Por ahora solo cerramos el modal
-                  alert('Mensaje enviado. Te responderemos pronto.');
-                  setSupportForm({ nombre: '', correo: '', mensaje: '' });
-                  handleCloseSupport();
-                }}
-              >
-                Enviar consulta
-              </Button>
-            </Box>
-          </Box>
-        </Fade>
-      </Modal>
-      {/* Fin modal soporte */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}

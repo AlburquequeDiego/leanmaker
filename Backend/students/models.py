@@ -40,7 +40,7 @@ class Estudiante(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     api_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
     strikes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    gpa = models.DecimalField(max_digits=3, decimal_places=2, default=0, validators=[MinValueValidator(0), MaxValueValidator(7)])
+    gpa = models.DecimalField(max_digits=3, decimal_places=2, default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     completed_projects = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     total_hours = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     experience_years = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(20)])

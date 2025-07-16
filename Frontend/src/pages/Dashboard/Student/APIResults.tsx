@@ -32,6 +32,7 @@ import Snackbar from '@mui/material/Snackbar';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../../services/api.service';
+import { ShowLatestFilter } from '../../../components/common/ShowLatestFilter';
 
 interface APIResult {
   id: string;
@@ -109,12 +110,12 @@ export const APIResults = () => {
   const [apiRequests, setApiRequests] = useState<ApiLevelRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Calcular el nivel actual según la última petición aprobada
-  const currentLevel = apiRequests.find(r => r.status === 'approved')?.requested_level || 1;
+  const [currentApiLevel, setCurrentApiLevel] = useState<number>(1);
+  const [showLatest, setShowLatest] = useState(5);
 
   useEffect(() => {
     fetchApiRequests();
+    fetchStudentLevel();
   }, []);
 
   const fetchApiRequests = async () => {
@@ -127,6 +128,16 @@ export const APIResults = () => {
       setError('Error al cargar las peticiones de subida de nivel API');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStudentLevel = async () => {
+    try {
+      const data = await apiService.get('/api/students/me/');
+      setCurrentApiLevel(Number(data.api_level) || 1);
+    } catch (error) {
+      console.error('Error fetching student level:', error);
+      setCurrentApiLevel(1);
     }
   };
 
@@ -183,16 +194,22 @@ export const APIResults = () => {
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <TrendingUpIcon sx={{ mr: 1, color: 'primary.main' }} />
-          Nivel API Actual: <Chip label={`Nivel ${currentLevel}`} color={getLevelColor(currentLevel) as any} size="small" sx={{ ml: 2 }} />
+          Nivel API Actual: <Chip label={`Nivel ${currentApiLevel}`} color={getLevelColor(currentApiLevel) as any} size="small" sx={{ ml: 2 }} />
         </Typography>
       </Paper>
 
       {/* Historial de Peticiones de Subida de Nivel API */}
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-          Historial de Peticiones de Subida de Nivel API
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+            <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+            Solicitudes API
+          </Typography>
+          <ShowLatestFilter
+            value={showLatest}
+            onChange={setShowLatest}
+          />
+        </Box>
         {apiRequests.length === 0 ? (
           <Alert severity="info">
             No tienes peticiones de subida de nivel API.
@@ -210,23 +227,43 @@ export const APIResults = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {apiRequests.map((req) => (
-                  <TableRow key={req.id}>
-                    <TableCell>{new Date(req.submitted_at).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Chip label={`Nivel ${req.current_level}`} color={getLevelColor(req.current_level) as any} size="small" />
-                    </TableCell>
-                    <TableCell>
-                      <Chip label={`Nivel ${req.requested_level}`} color={getLevelColor(req.requested_level) as any} size="small" />
-                    </TableCell>
-                    <TableCell>
-                      <Chip label={getStatusText(req.status)} color={getStatusColor(req.status) as any} size="small" />
-                    </TableCell>
-                    <TableCell>
-                      {req.feedback || '-'}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {/* Ordenar historial por fecha descendente (más reciente primero) */}
+                {apiRequests
+                  .slice()
+                  .sort((a, b) => new Date(b.submitted_at || 0).getTime() - new Date(a.submitted_at || 0).getTime())
+                  .slice(0, showLatest)
+                  .map((req) => {
+                    // Si current_level es 0, mostrar currentApiLevel o '-'
+                    const nivelActual = req.current_level && req.current_level > 0 && !isNaN(Number(req.current_level)) ? req.current_level : currentApiLevel;
+                    const nivelSolicitado = req.requested_level && req.requested_level > 0 && !isNaN(Number(req.requested_level)) ? req.requested_level : '-';
+                    let fecha = '-';
+                    if (req.submitted_at) {
+                      const d = new Date(req.submitted_at);
+                      fecha = isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
+                    }
+                    // Mensaje de avance si fue aprobado
+                    let avance = '';
+                    if (req.status === 'approved' && nivelActual !== '-' && nivelSolicitado !== '-' && nivelActual !== nivelSolicitado) {
+                      avance = `¡Felicidades! Subiste de nivel ${nivelActual} a nivel ${nivelSolicitado}.`;
+                    }
+                    return (
+                      <TableRow key={req.id}>
+                        <TableCell>{fecha}</TableCell>
+                        <TableCell>
+                          <Chip label={`Nivel ${nivelActual}`} color={getLevelColor(Number(nivelActual)) as any} size="small" />
+                        </TableCell>
+                        <TableCell>
+                          <Chip label={`Nivel ${nivelSolicitado}`} color={getLevelColor(Number(nivelSolicitado)) as any} size="small" />
+                        </TableCell>
+                        <TableCell>
+                          <Chip label={getStatusText(req.status)} color={getStatusColor(req.status) as any} size="small" />
+                        </TableCell>
+                        <TableCell>
+                          {req.feedback || avance || '-'}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -234,6 +271,4 @@ export const APIResults = () => {
       </Paper>
     </Box>
   );
-};
-
-export default APIResults; 
+}; 

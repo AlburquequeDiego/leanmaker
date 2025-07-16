@@ -12,7 +12,7 @@ import MyProjects from '../pages/Dashboard/Student/MyProjects';
 import Evaluations from '../pages/Dashboard/Student/Evaluations';
 import Calendar from '../pages/Dashboard/Student/Calendar';
 import APIQuestionnaire from '../pages/Dashboard/Student/APIQuestionnaire';
-import APIResults from '../pages/Dashboard/Student/APIResults';
+import { APIResults } from '../pages/Dashboard/Student/APIResults';
 import { AvailableProjects } from '../pages/Dashboard/Student/Projects';
 import CompanyDashboard from '../pages/Dashboard/Company/CompanyDashboard';
 import CompanyProfile from '../pages/Dashboard/Company/Profile';

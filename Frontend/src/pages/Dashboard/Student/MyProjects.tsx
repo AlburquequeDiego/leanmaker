@@ -30,6 +30,7 @@ import {
   TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { ShowLatestFilter } from '../../../components/common/ShowLatestFilter';
 
 interface Project {
   id: string;
@@ -205,11 +206,21 @@ export const MyProjects = () => {
       </Box>
 
       {/* Tabs de secciones */}
-      <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 3 }}>
-        <Tab label={`Activos (${activeProjects.length})`} />
-        <Tab label={`Completados (${completedProjects.length})`} />
-        <Tab label={`Pausados (${pausedProjects.length})`} />
-      </Tabs>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Tabs value={tab} onChange={handleTabChange}>
+          <Tab label={`Activos (${activeProjects.length})`} />
+          <Tab label={`Completados (${completedProjects.length})`} />
+          <Tab label={`Pausados (${pausedProjects.length})`} />
+        </Tabs>
+        <ShowLatestFilter
+          value={tab === 0 ? activeLimit : tab === 1 ? completedLimit : pausedLimit}
+          onChange={(value) => {
+            if (tab === 0) setActiveLimit(value);
+            else if (tab === 1) setCompletedLimit(value);
+            else setPausedLimit(value);
+          }}
+        />
+      </Box>
 
       {/* Sección de proyectos activos */}
       {tab === 0 && (

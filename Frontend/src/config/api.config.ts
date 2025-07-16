@@ -24,7 +24,7 @@ export const API_ENDPOINTS = {
   DASHBOARD: '/api/dashboard/',
   DASHBOARD_COMPANY_STATS: '/api/dashboard/company_stats/',
   DASHBOARD_STUDENT_STATS: '/api/dashboard/student_stats/',
-  DASHBOARD_ADMIN_STATS: '/api/dashboard/admin_stats/',
+  DASHBOARD_ADMIN_STATS: '/api/test-admin-stats/', // Temporalmente usando endpoint de prueba
   
   // Students
   STUDENTS: '/api/students/',

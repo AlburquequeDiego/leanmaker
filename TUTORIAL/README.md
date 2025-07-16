@@ -2,7 +2,12 @@
 
 Este tutorial te guiará paso a paso para hacer funcionar el proyecto Leanmaker en tu entorno local. **La base de datos ya está configurada y accesible desde tu IP pública.**
 
----
+
+
+
+-
+
+
 
 ## 📋 Requisitos Previos
 
@@ -119,10 +124,10 @@ source venv312/bin/activate  # Linux/Mac
 ### Puerto ocupado
 ```bash
 # Si el puerto 8000 está ocupado:
-python manage.py runserver 8001
+python manage.py runserver 8000
 
 # Si el puerto 3000 está ocupado:
-npm run dev -- --port 3001
+npm run dev -- --port 3000
 ```
 
 ---

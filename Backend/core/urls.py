@@ -68,6 +68,8 @@ urlpatterns = [
         path('auth/logout/', views.api_logout, name='api_logout'),
     ])),
     path('api/test-projects/', views.api_test_projects, name='api_test_projects'),
+    path('api/test-admin-stats/', views.api_test_admin_stats, name='api_test_admin_stats'),
+    path('api/test-auth-admin-stats/', views.api_test_auth_admin_stats, name='api_test_auth_admin_stats'),
     
     # Redirección por defecto
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),

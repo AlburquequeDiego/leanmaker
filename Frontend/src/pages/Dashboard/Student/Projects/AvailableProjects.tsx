@@ -28,6 +28,7 @@ import {
 
 } from '@mui/icons-material';
 import { apiService } from '../../../../services/api.service';
+import { ShowLatestFilter } from '../../../../components/common/ShowLatestFilter';
 
 interface Project {
   id: string;
@@ -79,6 +80,7 @@ export default function AvailableProjects() {
   const [tecs, setTecs] = useState<string[]>([]);
   const [empresa, setEmpresa] = useState('');
   const [ordenFecha, setOrdenFecha] = useState('recientes');
+  const [showLatest, setShowLatest] = useState(5);
 
   useEffect(() => {
     fetchProjects();
@@ -183,6 +185,9 @@ export default function AvailableProjects() {
       new Date(a.created_at || a.updated_at || '').getTime() - new Date(b.created_at || b.updated_at || '').getTime()
     );
   }
+
+  // Aplicar límite de "mostrar X últimas"
+  filteredProjects = filteredProjects.slice(0, showLatest);
 
   const empresas = [...new Set(projects.map(p => p.company_name).filter(Boolean))];
 
@@ -329,6 +334,10 @@ export default function AvailableProjects() {
               <MenuItem key="antiguos" value="antiguos">Más antiguos</MenuItem>
             </Select>
           </FormControl>
+          <ShowLatestFilter
+            value={showLatest}
+            onChange={setShowLatest}
+          />
         </Box>
       </Paper>
 

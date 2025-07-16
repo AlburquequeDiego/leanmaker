@@ -40,6 +40,7 @@ import {
   Star as StarIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { useDashboardStats } from '../../../hooks/useRealTimeData';
 
 interface Evaluation {
   id: string;
@@ -135,6 +136,8 @@ export const Evaluations = () => {
     severity: 'success' 
   });
 
+  const { data: stats } = useDashboardStats('student');
+
   useEffect(() => {
     fetchEvaluations();
     fetchCompanyRatings();
@@ -196,6 +199,9 @@ export const Evaluations = () => {
   const averageRating = completedEvaluations.length > 0 
     ? (completedEvaluations.reduce((acc, e) => acc + (e.overallRating ?? 0), 0) / completedEvaluations.length).toFixed(1)
     : '0';
+
+  // Usar el GPA real del backend si está disponible
+  const gpa = stats?.gpa !== undefined ? Number(stats.gpa).toFixed(2) : '0.00';
 
   const handleCalificarEmpresa = async () => {
     if (!empresaSeleccionada || !calificacion || !comentario.trim()) {
@@ -296,7 +302,7 @@ export const Evaluations = () => {
           <Card sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
-                {averageRating}
+                {gpa}
               </Typography>
               <Typography variant="body2">
                 Promedio General

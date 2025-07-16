@@ -176,8 +176,12 @@ class ApiService {
       }
       return adaptApplication(data);
     }
-    
-    if (endpoint.includes('/api/students/')) {
+
+    // EXCLUIR los endpoints de peticiones de nivel API
+    if (
+      endpoint.includes('/api/students/') &&
+      !endpoint.includes('api-level-request')
+    ) {
       if (Array.isArray(data)) {
         return data.map(adaptStudent);
       }

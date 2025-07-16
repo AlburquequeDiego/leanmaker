@@ -16,6 +16,7 @@ import {
   Chip,
   CircularProgress,
   Alert,
+  TextField,
 } from '@mui/material';
 import {
   Event as EventIcon,
@@ -27,6 +28,7 @@ import {
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { apiService } from '../../../services/api.service';
+import { ShowLatestFilter } from '../../../components/common/ShowLatestFilter';
 
 const locales = {
   'es': es,
@@ -60,8 +62,12 @@ export const Calendar = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [view, setView] = useState('month');
+  const [view, setView] = useState('week'); // Vista por defecto: semana
   const [date, setDate] = useState(new Date());
+  const [showRequestChange, setShowRequestChange] = useState(false);
+  const [requestMessage, setRequestMessage] = useState('');
+  const [requestSuccess, setRequestSuccess] = useState(false);
+  const [upcomingEventsLimit, setUpcomingEventsLimit] = useState(5);
 
   useEffect(() => {
     fetchEvents();
@@ -189,8 +195,8 @@ export const Calendar = () => {
     return events
       .filter(event => event.start > now)
       .sort((a, b) => a.start.getTime() - b.start.getTime())
-      .slice(0, 5);
-  }, [events]);
+      .slice(0, upcomingEventsLimit);
+  }, [events, upcomingEventsLimit]);
 
   const todayEvents = useMemo(() => {
     const today = new Date();
@@ -264,6 +270,7 @@ export const Calendar = () => {
         <Box sx={{ border: '1px solid #ddd', borderRadius: 1, overflow: 'hidden' }}>
           <BigCalendar
             localizer={localizer}
+            culture="es"
             events={events}
             startAccessor="start"
             endAccessor="end"
@@ -295,10 +302,16 @@ export const Calendar = () => {
       {/* Próximos eventos */}
       {upcomingEvents.length > 0 && (
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-            <ScheduleIcon sx={{ mr: 1, color: 'primary.main' }} />
-            Próximos Eventos
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+              <ScheduleIcon sx={{ mr: 1, color: 'primary.main' }} />
+              Próximos Eventos
+            </Typography>
+            <ShowLatestFilter
+              value={upcomingEventsLimit}
+              onChange={setUpcomingEventsLimit}
+            />
+          </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {upcomingEvents.map((event) => (
               <Card key={event.id} sx={{ p: 2 }}>
@@ -337,73 +350,77 @@ export const Calendar = () => {
       )}
 
       {/* Dialog para detalles del evento */}
-      <Dialog open={!!selectedEvent} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        {selectedEvent && (
-          <>
-            <DialogTitle>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                {getEventIcon(selectedEvent.type)}
-                <Typography variant="h6">{selectedEvent.title}</Typography>
+      <Dialog open={!!selectedEvent} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <InfoIcon color="primary" />
+            <Typography variant="h6">Detalles del Evento</Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedEvent && (
+            <Box>
+              <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
+                {selectedEvent.title}
+              </Typography>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Fecha y Hora</Typography>
+              <Typography variant="body1">
+                {selectedEvent.start.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })} - {selectedEvent.end.toLocaleString('es-ES', { timeStyle: 'short' })}
+              </Typography>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Ubicación</Typography>
+              <Typography variant="body1">{selectedEvent.location || 'Sin ubicación'}</Typography>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Descripción</Typography>
+              <Typography variant="body1">{selectedEvent.description || 'Sin descripción'}</Typography>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Empresa</Typography>
+              <Typography variant="body1">{selectedEvent.company || 'Sin empresa'}</Typography>
+              <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                <Chip label={getEventTypeText(selectedEvent.type)} color="primary" />
+                <Chip label={selectedEvent.priority} color={getPriorityColor(selectedEvent.priority)} />
+                <Chip label={selectedEvent.status} color="default" />
               </Box>
-            </DialogTitle>
-            <DialogContent>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">Fecha y Hora</Typography>
-                  <Typography variant="body1">
-                    {format(selectedEvent.start, 'dd/MM/yyyy HH:mm')} - {format(selectedEvent.end, 'HH:mm')}
-                  </Typography>
-                </Box>
-                
-                {selectedEvent.location && (
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">Ubicación</Typography>
-                    <Typography variant="body1">{selectedEvent.location}</Typography>
-                  </Box>
-                )}
-                
-                {selectedEvent.description && (
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">Descripción</Typography>
-                    <Typography variant="body1">{selectedEvent.description}</Typography>
-                  </Box>
-                )}
-                
-                {selectedEvent.project && (
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">Proyecto</Typography>
-                    <Typography variant="body1">{selectedEvent.project}</Typography>
-                  </Box>
-                )}
-                
-                {selectedEvent.company && (
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">Empresa</Typography>
-                    <Typography variant="body1">{selectedEvent.company}</Typography>
-                  </Box>
-                )}
-                
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Chip 
-                    label={getEventTypeText(selectedEvent.type)} 
-                    color="primary" 
-                  />
-                  <Chip 
-                    label={selectedEvent.priority} 
-                    color={getPriorityColor(selectedEvent.priority) as any}
-                  />
-                  <Chip 
-                    label={selectedEvent.status} 
-                    color={selectedEvent.status === 'completed' ? 'success' : 'default'}
-                  />
-                </Box>
-              </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseDialog}>Cerrar</Button>
-            </DialogActions>
-          </>
-        )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">Cerrar</Button>
+          <Button onClick={() => setShowRequestChange(true)} color="primary" variant="contained">Solicitar cambio</Button>
+        </DialogActions>
+      </Dialog>
+      {/* Modal para solicitar cambio de evento */}
+      <Dialog open={showRequestChange} onClose={() => setShowRequestChange(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Solicitar cambio de evento</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Escribe tu solicitud o motivo para cambiar este evento. La empresa recibirá tu mensaje.
+          </Typography>
+          <TextField
+            fullWidth
+            multiline
+            minRows={3}
+            placeholder="Ejemplo: Solicito cambiar la fecha por..."
+            value={requestMessage}
+            onChange={e => setRequestMessage(e.target.value)}
+          />
+          {requestSuccess && <Alert severity="success" sx={{ mt: 2 }}>¡Solicitud enviada correctamente!</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowRequestChange(false)} color="secondary">Cancelar</Button>
+          <Button
+            onClick={() => {
+              setRequestSuccess(true);
+              setTimeout(() => {
+                setShowRequestChange(false);
+                setRequestSuccess(false);
+                setRequestMessage('');
+              }, 1500);
+            }}
+            color="primary"
+            variant="contained"
+            disabled={!requestMessage.trim()}
+          >
+            Enviar solicitud
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

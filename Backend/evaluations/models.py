@@ -32,7 +32,7 @@ class Evaluation(models.Model):
     category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE, related_name='evaluations')  # Campo agregado para coincidir con frontend
     
     # Campos de evaluación - coinciden con frontend
-    score = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(100)])  # Campo renombrado para coincidir con frontend
+    score = models.FloatField(validators=[MinValueValidator(1), MaxValueValidator(5)])  # Ahora solo de 1 a 5
     comments = models.TextField(blank=True, null=True)
     evaluation_date = models.DateField(auto_now_add=True)  # Campo agregado para coincidir con frontend
     
@@ -42,7 +42,7 @@ class Evaluation(models.Model):
     date = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='final')
-    overall_rating = models.FloatField(null=True, blank=True)
+    overall_rating = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)])  # Ahora solo de 1 a 5
     strengths = models.TextField(blank=True, null=True, help_text='Fortalezas (separadas por coma)')
     areas_for_improvement = models.TextField(blank=True, null=True, help_text='Áreas de mejora (separadas por coma)')
     project_duration = models.CharField(max_length=50, blank=True, null=True)

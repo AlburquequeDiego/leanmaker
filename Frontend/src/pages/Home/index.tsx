@@ -446,7 +446,7 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* Bloque circular de contacto */}
+      {/* Bloque de filosofía de Leanmaker */}
       <Box sx={{ 
         bgcolor: '#eaf1fb', 
         py: { xs: 4, md: 8 }, 
@@ -454,56 +454,95 @@ export default function Home() {
         justifyContent: 'center',
         width: '100%'
       }} id="contacto">
-        <Container maxWidth="sm" sx={{ px: { xs: 2, md: 3 } }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: { xs: 3, md: 4 }, 
-            flexDirection: { xs: 'column', md: 'row' }
+            gap: { xs: 3, md: 6 }, 
+            flexDirection: { xs: 'column', lg: 'row' }
           }}>
-            <Avatar sx={{ 
-              width: { xs: 80, md: 120 }, 
-              height: { xs: 80, md: 120 }, 
-              bgcolor: 'primary.main', 
-              fontSize: { xs: 40, md: 60 }
-            }}>✉️</Avatar>
+            <Box sx={{ flex: 1, width: '100%', textAlign: 'center' }}>
+              <img 
+                src="/imagenes/filosofia.png" 
+                alt="Filosofía de Leanmaker" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '400px',
+                  height: 'auto',
+                  borderRadius: 12, 
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
             <Box sx={{ flex: 1, width: '100%' }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                ¿Tienes dudas? Contáctanos y te responderemos a la brevedad
+              <Typography variant="h4" fontWeight={700} gutterBottom sx={{ 
+                fontSize: { xs: '1.8rem', md: '2.2rem' },
+                color: '#0a2342',
+                mb: 3
+              }}>
+                Nuestra Filosofía
               </Typography>
-              <Box component="form" sx={{ mt: 2 }}>
-                <TextField 
-                  label="Nombre" 
-                  fullWidth 
-                  size="medium" 
-                  sx={{ mb: 2 }}
-                  InputProps={{ style: { fontSize: '1rem' } }}
-                />
-                <TextField 
-                  label="Correo electrónico" 
-                  fullWidth 
-                  size="medium" 
-                  sx={{ mb: 2 }}
-                  InputProps={{ style: { fontSize: '1rem' } }}
-                />
-                <TextField 
-                  label="Mensaje" 
-                  fullWidth 
-                  size="medium" 
-                  multiline 
-                  rows={3} 
-                  sx={{ mb: 2 }}
-                  InputProps={{ style: { fontSize: '1rem' } }}
-                />
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  fullWidth 
-                  size="large"
-                  sx={{ py: 1.5, fontSize: '1rem' }}
-                >
-                  Enviar mensaje
-                </Button>
+              
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box>
+                  <Typography variant="h6" fontWeight={600} sx={{ 
+                    color: '#1976d2',
+                    mb: 1,
+                    fontSize: { xs: '1.1rem', md: '1.25rem' }
+                  }}>
+                    Misión
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    lineHeight: 1.6,
+                    color: '#333',
+                    fontSize: { xs: '0.95rem', md: '1rem' }
+                  }}>
+                    Conectar el talento universitario con las necesidades reales del mercado laboral, 
+                    facilitando la inserción profesional de estudiantes a través de proyectos prácticos 
+                    y experiencias significativas con empresas.
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography variant="h6" fontWeight={600} sx={{ 
+                    color: '#1976d2',
+                    mb: 1,
+                    fontSize: { xs: '1.1rem', md: '1.25rem' }
+                  }}>
+                    Visión
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    lineHeight: 1.6,
+                    color: '#333',
+                    fontSize: { xs: '0.95rem', md: '1rem' }
+                  }}>
+                    Ser la plataforma líder en CHILE que transforme la educación superior 
+                    mediante la vinculación efectiva entre universidades, estudiantes y empresas, 
+                    creando un ecosistema de aprendizaje y crecimiento profesional sostenible.
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography variant="h6" fontWeight={600} sx={{ 
+                    color: '#1976d2',
+                    mb: 1,
+                    fontSize: { xs: '1.1rem', md: '1.25rem' }
+                  }}>
+                    Valores Fundamentales
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    lineHeight: 1.6,
+                    color: '#333',
+                    fontSize: { xs: '0.95rem', md: '1rem' }
+                  }}>
+                    <strong>Excelencia:</strong> Buscamos la calidad en cada proyecto y experiencia.<br/>
+                    <strong>Innovación:</strong> Fomentamos la creatividad y el pensamiento disruptivo.<br/>
+                    <strong>Colaboración:</strong> Creemos en el poder del trabajo en equipo.<br/>
+                    <strong>Impacto Social:</strong> Contribuimos al desarrollo de nuestra comunidad.
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Box>
@@ -528,7 +567,7 @@ export default function Home() {
           </Typography>
           <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.1)' }} />
           <Typography variant="body2" color="rgba(255,255,255,0.5)" sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>
-            © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados.
+            © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados por DIEGO JOAQUIN ALEXANDER ALBURQUEQUE AMAYA.
           </Typography>
         </Container>
       </Box>
