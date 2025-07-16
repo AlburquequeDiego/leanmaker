@@ -32,7 +32,6 @@ import {
   Search as SearchIcon,
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
   Block as BlockIcon,
   CheckCircle as CheckCircleIcon,
   Person as PersonIcon,
@@ -67,10 +66,11 @@ export default function UsuariosAdmin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [limit, setLimit] = useState(20);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
 
   // Form states
   const [formData, setFormData] = useState({
@@ -94,14 +94,19 @@ export default function UsuariosAdmin() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data = await apiService.get('/api/users/');
-      const formattedUsers = Array.isArray(data) ? data.map((user: any) => ({
+      const response = await apiService.get('/api/users/');
+      console.log('Respuesta del backend:', response);
+      
+      // El backend envía {success: true, data: [...]}
+      const usersData = response.data || response;
+      
+      const formattedUsers = Array.isArray(usersData) ? usersData.map((user: any) => ({
         id: user.id,
-        username: user.username,
+        username: user.username || '',
         email: user.email,
         first_name: user.first_name || '',
         last_name: user.last_name || '',
-        user_type: user.user_type || 'student',
+        user_type: user.role || 'student', // El backend envía 'role', no 'user_type'
         is_active: user.is_active,
         date_joined: user.date_joined,
         last_login: user.last_login,
@@ -112,6 +117,7 @@ export default function UsuariosAdmin() {
         position: user.position || '',
       })) : [];
       
+      console.log('Usuarios formateados:', formattedUsers);
       setUsers(formattedUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -138,7 +144,7 @@ export default function UsuariosAdmin() {
         email: formData.email,
         first_name: formData.first_name,
         last_name: formData.last_name,
-        user_type: formData.user_type,
+        role: formData.user_type, // Cambiado de user_type a role
         phone: formData.phone,
         company_name: formData.company_name,
         career: formData.career,
@@ -146,7 +152,8 @@ export default function UsuariosAdmin() {
         password: formData.password,
       };
 
-      await apiService.post('/api/users/', userData);
+      const response = await apiService.post('/api/users/create/', userData);
+      console.log('Respuesta al crear usuario:', response);
       
       setSuccess('Usuario creado exitosamente');
       setShowCreateDialog(false);
@@ -154,6 +161,14 @@ export default function UsuariosAdmin() {
       await fetchUsers();
     } catch (error) {
       console.error('Error creating user:', error);
+      // Si el error tiene response y status 201, considerar éxito
+      if (error?.response?.status === 201) {
+        setSuccess('Usuario creado exitosamente');
+        setShowCreateDialog(false);
+        resetForm();
+        await fetchUsers();
+        return;
+      }
       setError('Error al crear el usuario');
     }
   };
@@ -184,28 +199,20 @@ export default function UsuariosAdmin() {
     }
   };
 
-  const handleDeleteUser = async () => {
-    if (!selectedUser) return;
 
-    try {
-      await apiService.delete(`/api/users/${selectedUser.id}/`);
-      
-      setSuccess('Usuario eliminado exitosamente');
-      setShowDeleteDialog(false);
-      await fetchUsers();
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      setError('Error al eliminar el usuario');
-    }
-  };
 
   const handleToggleUserStatus = async (userId: string, currentStatus: boolean) => {
     try {
-      await apiService.patch(`/api/users/${userId}/`, {
-        is_active: !currentStatus,
-      });
+      if (currentStatus) {
+        // Usuario está activo, lo suspendemos
+        await apiService.post(`/api/users/${userId}/suspend/`);
+        setSuccess('Usuario suspendido exitosamente');
+      } else {
+        // Usuario está inactivo, lo activamos
+        await apiService.post(`/api/users/${userId}/activate/`);
+        setSuccess('Usuario activado exitosamente');
+      }
       
-      setSuccess(`Usuario ${currentStatus ? 'desactivado' : 'activado'} exitosamente`);
       await fetchUsers();
     } catch (error) {
       console.error('Error toggling user status:', error);
@@ -280,8 +287,9 @@ export default function UsuariosAdmin() {
      user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
      user.last_name.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (typeFilter ? user.user_type === typeFilter : true) &&
-    (statusFilter ? user.is_active === (statusFilter === 'active') : true)
-  );
+    (statusFilter === 'active' ? user.is_active === true : 
+     statusFilter === 'inactive' ? user.is_active === false : true)
+  ).slice(0, limit);
 
   if (loading) {
     return (
@@ -343,6 +351,20 @@ export default function UsuariosAdmin() {
               <MenuItem value="">Todos</MenuItem>
               <MenuItem value="active">Activos</MenuItem>
               <MenuItem value="inactive">Inactivos</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel>Mostrar</InputLabel>
+            <Select
+              value={limit}
+              label="Mostrar"
+              onChange={(e) => setLimit(Number(e.target.value))}
+            >
+              <MenuItem value={20}>20 últimos</MenuItem>
+              <MenuItem value={50}>50 últimos</MenuItem>
+              <MenuItem value={100}>100 últimos</MenuItem>
+              <MenuItem value={150}>150 últimos</MenuItem>
+              <MenuItem value={200}>200 últimos</MenuItem>
             </Select>
           </FormControl>
           <Button
@@ -423,16 +445,6 @@ export default function UsuariosAdmin() {
                         onClick={() => handleToggleUserStatus(user.id, user.is_active)}
                       >
                         {user.is_active ? <BlockIcon /> : <CheckCircleIcon />}
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setShowDeleteDialog(true);
-                        }}
-                      >
-                        <DeleteIcon />
                       </IconButton>
                     </Box>
                   </TableCell>
@@ -618,27 +630,6 @@ export default function UsuariosAdmin() {
             disabled={!formData.first_name || !formData.last_name || !formData.email}
           >
             Actualizar Usuario
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog para confirmar eliminación */}
-      <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
-        <DialogContent>
-          <Typography>
-            ¿Estás seguro de que deseas eliminar al usuario "{selectedUser?.first_name} {selectedUser?.last_name}"?
-            Esta acción no se puede deshacer.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowDeleteDialog(false)}>Cancelar</Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteUser}
-          >
-            Eliminar
           </Button>
         </DialogActions>
       </Dialog>

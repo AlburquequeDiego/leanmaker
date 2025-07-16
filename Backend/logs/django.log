@@ -11361,3 +11361,406 @@ INFO 2025-07-16 00:22:49,403 basehttp 7964 21840 "GET /api/calendar/events/stude
 INFO 2025-07-16 00:22:49,976 basehttp 7964 5692 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
 INFO 2025-07-16 00:23:07,840 basehttp 7964 10836 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
 INFO 2025-07-16 00:23:16,411 basehttp 7964 9588 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 00:26:14,153 basehttp 7964 20308 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 00:26:19,167 basehttp 7964 20308 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 00:26:19,453 basehttp 7964 20308 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:26:20,226 basehttp 7964 20308 "GET /api/test-admin-stats/ HTTP/1.1" 200 1974
+INFO 2025-07-16 00:26:23,010 basehttp 7964 20308 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:26:23,390 basehttp 7964 20308 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:26:25,974 basehttp 7964 18052 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 00:26:26,480 basehttp 7964 18052 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 00:26:27,921 basehttp 7964 2724 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:26:27,921 basehttp 7964 18052 "OPTIONS /api/users/ HTTP/1.1" 200 0
+WARNING 2025-07-16 00:26:28,043 log 7964 18052 Not Found: /api/users/
+WARNING 2025-07-16 00:26:28,047 basehttp 7964 18052 "GET /api/users/ HTTP/1.1" 404 18212
+WARNING 2025-07-16 00:26:28,115 log 7964 18052 Not Found: /api/users/
+WARNING 2025-07-16 00:26:28,115 basehttp 7964 18052 "GET /api/users/ HTTP/1.1" 404 18211
+INFO 2025-07-16 00:26:31,510 basehttp 7964 18052 "GET /api/users/profile/ HTTP/1.1" 200 607
+WARNING 2025-07-16 00:26:31,710 log 7964 2724 Not Found: /api/users/
+WARNING 2025-07-16 00:26:31,713 basehttp 7964 2724 "GET /api/users/ HTTP/1.1" 404 18211
+INFO 2025-07-16 00:26:31,823 basehttp 7964 18052 "GET /api/users/profile/ HTTP/1.1" 200 607
+WARNING 2025-07-16 00:26:31,830 log 7964 2724 Not Found: /api/users/
+WARNING 2025-07-16 00:26:31,836 basehttp 7964 2724 "GET /api/users/ HTTP/1.1" 404 18212
+INFO 2025-07-16 00:26:44,452 basehttp 7964 16348 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 00:26:44,452 basehttp 7964 23016 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 00:26:44,463 basehttp 7964 16348 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-16 00:26:44,560 log 7964 23016 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 00:26:44,562 basehttp 7964 23016 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18299
+WARNING 2025-07-16 00:26:44,650 log 7964 23016 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 00:26:44,653 basehttp 7964 23016 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18299
+WARNING 2025-07-16 00:26:44,744 log 7964 23016 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 00:26:44,744 basehttp 7964 23016 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18299
+INFO 2025-07-16 00:26:45,612 basehttp 7964 16348 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 00:26:45,612 basehttp 7964 23016 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-16 00:26:45,693 log 7964 16348 Not Found: /api/admin/companies/
+WARNING 2025-07-16 00:26:45,695 basehttp 7964 16348 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18295
+WARNING 2025-07-16 00:26:45,770 log 7964 16348 Not Found: /api/admin/companies/
+WARNING 2025-07-16 00:26:45,770 basehttp 7964 16348 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18295
+WARNING 2025-07-16 00:26:45,860 log 7964 23016 Not Found: /api/admin/companies/
+WARNING 2025-07-16 00:26:45,866 basehttp 7964 23016 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18295
+INFO 2025-07-16 00:26:47,020 basehttp 7964 16348 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 00:26:47,020 basehttp 7964 23016 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 00:26:47,401 basehttp 7964 23016 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+INFO 2025-07-16 00:26:47,707 basehttp 7964 23016 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+INFO 2025-07-16 00:26:47,995 basehttp 7964 23016 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+INFO 2025-07-16 00:26:52,766 basehttp 7964 23016 "OPTIONS /api/students/?limit=10&offset=40 HTTP/1.1" 200 0
+INFO 2025-07-16 00:26:53,273 basehttp 7964 23016 "GET /api/students/?limit=10&offset=40 HTTP/1.1" 200 8883
+INFO 2025-07-16 00:26:53,707 basehttp 7964 16348 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+INFO 2025-07-16 00:27:00,023 basehttp 7964 16348 "OPTIONS /api/admin/students/10/api-questionnaire/ HTTP/1.1" 200 0
+WARNING 2025-07-16 00:27:00,113 log 7964 16348 Not Found: /api/admin/students/10/api-questionnaire/
+WARNING 2025-07-16 00:27:00,113 basehttp 7964 16348 "GET /api/admin/students/10/api-questionnaire/ HTTP/1.1" 404 18331
+INFO 2025-07-16 00:27:00,118 basehttp 7964 16348 "OPTIONS /api/admin/students/10/api-history/ HTTP/1.1" 200 0
+WARNING 2025-07-16 00:27:00,199 log 7964 16348 Not Found: /api/admin/students/10/api-history/
+WARNING 2025-07-16 00:27:00,199 basehttp 7964 16348 "GET /api/admin/students/10/api-history/ HTTP/1.1" 404 18307
+INFO 2025-07-16 00:27:07,726 basehttp 7964 19648 "OPTIONS /api/admin/students/1/api-questionnaire/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:27:07,743 basehttp 7964 22652 "OPTIONS /api/admin/students/1/api-history/ HTTP/1.1" 200 0
+WARNING 2025-07-16 00:27:07,986 log 7964 22652 Not Found: /api/admin/students/1/api-history/
+WARNING 2025-07-16 00:27:08,002 log 7964 19648 Not Found: /api/admin/students/1/api-questionnaire/
+WARNING 2025-07-16 00:27:08,006 basehttp 7964 19648 "GET /api/admin/students/1/api-questionnaire/ HTTP/1.1" 404 18328
+WARNING 2025-07-16 00:27:08,006 basehttp 7964 22652 "GET /api/admin/students/1/api-history/ HTTP/1.1" 404 18304
+INFO 2025-07-16 00:27:25,897 basehttp 7964 16376 "OPTIONS /api/students/?limit=10&offset=10 HTTP/1.1" 200 0
+INFO 2025-07-16 00:27:26,440 basehttp 7964 13888 "GET /api/students/?limit=10&offset=10 HTTP/1.1" 200 8883
+INFO 2025-07-16 00:27:26,440 basehttp 7964 16376 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8883
+WARNING 2025-07-16 00:27:42,609 log 7964 15284 Not Found: /api/users/
+WARNING 2025-07-16 00:27:42,613 basehttp 7964 15284 "GET /api/users/ HTTP/1.1" 404 18211
+WARNING 2025-07-16 00:27:42,707 log 7964 15284 Not Found: /api/users/
+WARNING 2025-07-16 00:27:42,707 basehttp 7964 15284 "GET /api/users/ HTTP/1.1" 404 18211
+INFO 2025-07-16 00:27:43,396 basehttp 7964 15284 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 00:27:43,937 basehttp 7964 15284 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+WARNING 2025-07-16 00:27:52,514 log 7964 15284 Not Found: /api/users/
+WARNING 2025-07-16 00:27:52,516 basehttp 7964 15284 "GET /api/users/ HTTP/1.1" 404 18211
+WARNING 2025-07-16 00:27:52,604 log 7964 15284 Not Found: /api/users/
+WARNING 2025-07-16 00:27:52,606 basehttp 7964 15284 "GET /api/users/ HTTP/1.1" 404 18211
+INFO 2025-07-16 00:27:55,767 basehttp 7964 19724 "GET /api/users/profile/ HTTP/1.1" 200 607
+WARNING 2025-07-16 00:27:55,914 log 7964 1088 Not Found: /api/users/
+WARNING 2025-07-16 00:27:55,916 basehttp 7964 1088 "GET /api/users/ HTTP/1.1" 404 18211
+WARNING 2025-07-16 00:27:56,012 log 7964 1088 Not Found: /api/users/
+WARNING 2025-07-16 00:27:56,022 basehttp 7964 1088 "GET /api/users/ HTTP/1.1" 404 18211
+INFO 2025-07-16 00:27:56,064 basehttp 7964 19724 "GET /api/users/profile/ HTTP/1.1" 200 607
+INFO 2025-07-16 00:39:26,465 basehttp 7964 23500 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:39:26,469 basehttp 7964 16544 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 00:39:27,713 basehttp 7964 23500 "GET /api/users/profile/ HTTP/1.1" 200 607
+WARNING 2025-07-16 00:39:27,873 log 7964 16544 Not Found: /api/users/
+WARNING 2025-07-16 00:39:27,873 basehttp 7964 16544 "GET /api/users/ HTTP/1.1" 404 18211
+INFO 2025-07-16 00:39:27,938 basehttp 7964 23500 "GET /api/users/profile/ HTTP/1.1" 200 607
+WARNING 2025-07-16 00:39:27,939 log 7964 16544 Not Found: /api/users/
+WARNING 2025-07-16 00:39:27,939 basehttp 7964 16544 "GET /api/users/ HTTP/1.1" 404 18211
+INFO 2025-07-16 00:40:03,872 autoreload 7964 18096 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-16 00:40:06,132 autoreload 24172 18236 Watching for file changes with StatReloader
+INFO 2025-07-16 00:40:14,559 autoreload 24172 18236 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-16 00:40:15,661 autoreload 17932 22312 Watching for file changes with StatReloader
+INFO 2025-07-16 00:40:49,812 autoreload 17932 22312 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 00:40:52,188 autoreload 12344 16044 Watching for file changes with StatReloader
+INFO 2025-07-16 00:43:03,985 basehttp 12344 16524 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:43:04,253 basehttp 12344 16524 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:43:04,610 basehttp 12344 15916 "GET /api/users/ HTTP/1.1" 200 33857
+INFO 2025-07-16 00:43:04,960 basehttp 12344 15916 "GET /api/users/ HTTP/1.1" 200 33857
+INFO 2025-07-16 00:46:12,219 basehttp 12344 15828 "GET /api/users/ HTTP/1.1" 200 33857
+INFO 2025-07-16 00:46:24,147 autoreload 12344 16044 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 00:46:26,037 autoreload 3172 22284 Watching for file changes with StatReloader
+INFO 2025-07-16 00:47:43,717 basehttp 3172 21156 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:47:43,956 basehttp 3172 21156 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:47:44,427 basehttp 3172 22088 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:47:44,761 basehttp 3172 22088 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:51:05,476 basehttp 3172 17852 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:51:05,891 basehttp 3172 17852 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:51:36,800 basehttp 3172 16176 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:51:48,578 basehttp 3172 12392 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:52:01,569 basehttp 3172 11660 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:52:17,282 basehttp 3172 17944 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:54:02,701 basehttp 3172 13668 "OPTIONS /api/users/01b0e1c7-6528-472b-ab7d-254841607102/ HTTP/1.1" 200 0
+WARNING 2025-07-16 00:54:02,938 log 3172 13668 Not Found: /api/users/01b0e1c7-6528-472b-ab7d-254841607102/
+WARNING 2025-07-16 00:54:02,938 basehttp 3172 13668 "PATCH /api/users/01b0e1c7-6528-472b-ab7d-254841607102/ HTTP/1.1" 404 19833
+INFO 2025-07-16 00:55:06,797 basehttp 3172 22708 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:55:07,038 basehttp 3172 22708 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:55:07,530 basehttp 3172 4908 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:55:07,897 basehttp 3172 4908 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:57:36,364 basehttp 3172 22372 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:57:44,119 basehttp 3172 15312 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:57:45,005 basehttp 3172 15312 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:58:09,551 basehttp 3172 2516 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:58:10,002 basehttp 3172 2516 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:58:10,125 basehttp 3172 20384 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:58:10,534 basehttp 3172 2516 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:58:31,460 basehttp 3172 13244 "OPTIONS /api/users/01b0e1c7-6528-472b-ab7d-254841607102/suspend/ HTTP/1.1" 200 0
+WARNING 2025-07-16 00:58:31,929 log 3172 13244 Not Found: /api/users/01b0e1c7-6528-472b-ab7d-254841607102/suspend/
+WARNING 2025-07-16 00:58:31,931 basehttp 3172 13244 "POST /api/users/01b0e1c7-6528-472b-ab7d-254841607102/suspend/ HTTP/1.1" 404 19864
+INFO 2025-07-16 00:59:13,624 autoreload 3172 22284 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-16 00:59:16,222 autoreload 8256 10248 Watching for file changes with StatReloader
+INFO 2025-07-16 00:59:36,510 basehttp 8256 18448 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:59:36,773 basehttp 8256 18448 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 00:59:37,180 basehttp 8256 20780 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:59:37,530 basehttp 8256 20780 "GET /api/users/ HTTP/1.1" 200 55594
+INFO 2025-07-16 00:59:55,320 basehttp 8256 12740 "POST /api/users/01b0e1c7-6528-472b-ab7d-254841607102/suspend/ HTTP/1.1" 200 86
+INFO 2025-07-16 00:59:55,701 basehttp 8256 12740 "GET /api/users/ HTTP/1.1" 200 55595
+INFO 2025-07-16 01:00:17,290 basehttp 8256 12740 "OPTIONS /api/users/1293ff70-6820-4bb0-ab06-1c3c2bd405e1/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:00:17,780 basehttp 8256 12740 "POST /api/users/1293ff70-6820-4bb0-ab06-1c3c2bd405e1/suspend/ HTTP/1.1" 200 91
+INFO 2025-07-16 01:00:18,143 basehttp 8256 12740 "GET /api/users/ HTTP/1.1" 200 55596
+INFO 2025-07-16 01:02:30,799 basehttp 8256 22164 "OPTIONS /api/users/07d601d4-2b1c-4550-a8ee-f60465300a8f/ HTTP/1.1" 200 0
+WARNING 2025-07-16 01:02:30,809 log 8256 22164 Method Not Allowed (PATCH): /api/users/07d601d4-2b1c-4550-a8ee-f60465300a8f/
+WARNING 2025-07-16 01:02:30,853 basehttp 8256 22164 "PATCH /api/users/07d601d4-2b1c-4550-a8ee-f60465300a8f/ HTTP/1.1" 405 0
+WARNING 2025-07-16 01:02:35,180 log 8256 22164 Method Not Allowed (PATCH): /api/users/07d601d4-2b1c-4550-a8ee-f60465300a8f/
+WARNING 2025-07-16 01:02:35,212 basehttp 8256 22164 "PATCH /api/users/07d601d4-2b1c-4550-a8ee-f60465300a8f/ HTTP/1.1" 405 0
+WARNING 2025-07-16 01:02:54,369 log 8256 12708 Method Not Allowed (PATCH): /api/users/07d601d4-2b1c-4550-a8ee-f60465300a8f/
+WARNING 2025-07-16 01:02:54,413 basehttp 8256 12708 "PATCH /api/users/07d601d4-2b1c-4550-a8ee-f60465300a8f/ HTTP/1.1" 405 0
+INFO 2025-07-16 01:03:41,492 autoreload 8256 10248 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:03:43,155 autoreload 12900 19008 Watching for file changes with StatReloader
+INFO 2025-07-16 01:04:24,248 basehttp 12900 14672 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:04:24,479 basehttp 12900 14672 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:04:24,896 basehttp 12900 19312 "GET /api/users/ HTTP/1.1" 200 55596
+INFO 2025-07-16 01:04:25,184 basehttp 12900 14672 "GET /api/users/ HTTP/1.1" 200 55596
+INFO 2025-07-16 01:04:41,669 basehttp 12900 19780 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:04:41,874 basehttp 12900 19780 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:04:42,259 basehttp 12900 19780 "GET /api/users/ HTTP/1.1" 200 55596
+INFO 2025-07-16 01:04:42,566 basehttp 12900 19780 "GET /api/users/ HTTP/1.1" 200 55596
+INFO 2025-07-16 01:04:43,789 basehttp 12900 1116 "GET / HTTP/1.1" 200 15333
+INFO 2025-07-16 01:05:02,872 basehttp 12900 24356 "OPTIONS /api/users/01b0e1c7-6528-472b-ab7d-254841607102/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:05:03,379 basehttp 12900 24356 "POST /api/users/01b0e1c7-6528-472b-ab7d-254841607102/activate/ HTTP/1.1" 200 84
+INFO 2025-07-16 01:05:03,769 basehttp 12900 24356 "GET /api/users/ HTTP/1.1" 200 55595
+INFO 2025-07-16 01:05:07,239 basehttp 12900 14028 "POST /api/users/01b0e1c7-6528-472b-ab7d-254841607102/suspend/ HTTP/1.1" 200 86
+INFO 2025-07-16 01:05:07,629 basehttp 12900 14028 "GET /api/users/ HTTP/1.1" 200 55596
+INFO 2025-07-16 01:05:21,962 basehttp 12900 15576 "OPTIONS /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:05:22,409 basehttp 12900 15576 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 517
+INFO 2025-07-16 01:05:22,751 basehttp 12900 15576 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:06:02,095 basehttp 12900 21104 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 517
+INFO 2025-07-16 01:06:02,422 basehttp 12900 21104 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:06:38,219 basehttp 12900 15464 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 517
+INFO 2025-07-16 01:06:38,559 basehttp 12900 15464 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:07:22,543 basehttp 12900 1252 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:07:23,544 basehttp 12900 1252 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:07:24,054 basehttp 12900 24248 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:07:24,419 basehttp 12900 24248 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:07:28,639 autoreload 12900 19008 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:07:30,679 autoreload 24288 2156 Watching for file changes with StatReloader
+INFO 2025-07-16 01:07:40,122 autoreload 24288 2156 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:07:42,237 autoreload 13576 1548 Watching for file changes with StatReloader
+INFO 2025-07-16 01:07:53,145 autoreload 13576 1548 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:07:54,506 autoreload 7060 16432 Watching for file changes with StatReloader
+INFO 2025-07-16 01:08:16,277 basehttp 7060 22592 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:08:16,492 basehttp 7060 22592 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:08:16,857 basehttp 7060 23560 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:08:17,323 basehttp 7060 23560 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:08:23,385 basehttp 7060 23560 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 553
+INFO 2025-07-16 01:08:23,729 basehttp 7060 23560 "GET /api/users/ HTTP/1.1" 200 55605
+INFO 2025-07-16 01:08:38,179 basehttp 7060 3648 "OPTIONS /api/users/09ba18c8-edae-4f96-90d3-8fc3eb118ab7/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:08:38,701 basehttp 7060 3648 "PATCH /api/users/09ba18c8-edae-4f96-90d3-8fc3eb118ab7/ HTTP/1.1" 200 528
+INFO 2025-07-16 01:08:39,030 basehttp 7060 3648 "GET /api/users/ HTTP/1.1" 200 55614
+INFO 2025-07-16 01:09:14,540 basehttp 7060 23476 "PATCH /api/users/09ba18c8-edae-4f96-90d3-8fc3eb118ab7/ HTTP/1.1" 200 528
+INFO 2025-07-16 01:09:14,908 basehttp 7060 23476 "GET /api/users/ HTTP/1.1" 200 55614
+INFO 2025-07-16 01:09:38,884 basehttp 7060 16476 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 538
+INFO 2025-07-16 01:09:39,247 basehttp 7060 16476 "GET /api/users/ HTTP/1.1" 200 55614
+INFO 2025-07-16 01:10:36,552 autoreload 7060 16432 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:10:38,102 autoreload 18688 20488 Watching for file changes with StatReloader
+INFO 2025-07-16 01:10:53,292 autoreload 18688 20488 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:10:55,862 autoreload 19784 11292 Watching for file changes with StatReloader
+INFO 2025-07-16 01:11:07,820 basehttp 19784 7920 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:11:08,073 basehttp 19784 7920 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:11:08,464 basehttp 19784 7920 "GET /api/users/ HTTP/1.1" 200 55614
+INFO 2025-07-16 01:11:08,809 basehttp 19784 7920 "GET /api/users/ HTTP/1.1" 200 55614
+INFO 2025-07-16 01:11:16,875 autoreload 19784 11292 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:11:18,258 autoreload 17264 19076 Watching for file changes with StatReloader
+INFO 2025-07-16 01:11:21,295 autoreload 17264 19076 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:11:24,342 autoreload 10456 17088 Watching for file changes with StatReloader
+INFO 2025-07-16 01:11:36,931 basehttp 10456 1248 "POST /api/users/01b0e1c7-6528-472b-ab7d-254841607102/activate/ HTTP/1.1" 200 84
+INFO 2025-07-16 01:11:37,302 basehttp 10456 1248 "GET /api/users/ HTTP/1.1" 200 55613
+INFO 2025-07-16 01:11:39,190 basehttp 10456 1248 "OPTIONS /api/users/1293ff70-6820-4bb0-ab06-1c3c2bd405e1/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:11:39,745 basehttp 10456 1248 "POST /api/users/1293ff70-6820-4bb0-ab06-1c3c2bd405e1/activate/ HTTP/1.1" 200 89
+INFO 2025-07-16 01:11:40,123 basehttp 10456 1248 "GET /api/users/ HTTP/1.1" 200 55612
+INFO 2025-07-16 01:11:43,689 autoreload 10456 17088 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:11:45,827 autoreload 17832 22676 Watching for file changes with StatReloader
+INFO 2025-07-16 01:12:06,022 basehttp 17832 15340 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 558
+INFO 2025-07-16 01:12:06,494 basehttp 17832 15340 "GET /api/users/ HTTP/1.1" 200 55612
+INFO 2025-07-16 01:12:30,088 basehttp 17832 11408 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 558
+INFO 2025-07-16 01:12:30,602 basehttp 17832 11408 "GET /api/users/ HTTP/1.1" 200 55612
+INFO 2025-07-16 01:13:15,054 basehttp 17832 14056 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:13:15,317 basehttp 17832 14056 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:13:15,949 basehttp 17832 2596 "GET /api/users/ HTTP/1.1" 200 55612
+INFO 2025-07-16 01:13:16,416 basehttp 17832 2596 "GET /api/users/ HTTP/1.1" 200 55612
+INFO 2025-07-16 01:13:17,754 basehttp 17832 19616 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-16 01:13:52,507 autoreload 17832 22676 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-07-16 01:13:53,947 autoreload 2300 18688 Watching for file changes with StatReloader
+INFO 2025-07-16 01:14:00,867 autoreload 2300 18688 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-07-16 01:14:01,937 autoreload 18212 17912 Watching for file changes with StatReloader
+INFO 2025-07-16 01:14:04,403 autoreload 18212 17912 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-07-16 01:14:07,972 autoreload 22500 1520 Watching for file changes with StatReloader
+INFO 2025-07-16 01:16:19,737 basehttp 22500 9948 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-16 01:16:19,809 basehttp 22500 18076 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:16:20,093 basehttp 22500 18076 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:16:21,039 basehttp 22500 18076 "GET /api/users/ HTTP/1.1" 200 59080
+INFO 2025-07-16 01:16:21,445 basehttp 22500 18076 "GET /api/users/ HTTP/1.1" 200 59080
+INFO 2025-07-16 01:16:32,707 basehttp 22500 17092 "PATCH /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/ HTTP/1.1" 200 573
+INFO 2025-07-16 01:16:33,017 basehttp 22500 17092 "GET /api/users/ HTTP/1.1" 200 59102
+INFO 2025-07-16 01:16:53,217 basehttp 22500 23968 "PATCH /api/users/09ba18c8-edae-4f96-90d3-8fc3eb118ab7/ HTTP/1.1" 200 555
+INFO 2025-07-16 01:16:53,547 basehttp 22500 23968 "GET /api/users/ HTTP/1.1" 200 59109
+INFO 2025-07-16 01:17:04,396 basehttp 22500 14700 "OPTIONS /api/users/27bfd3b8-7256-452b-b4cb-a981dfd9865f/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:17:04,881 basehttp 22500 14700 "POST /api/users/27bfd3b8-7256-452b-b4cb-a981dfd9865f/suspend/ HTTP/1.1" 200 91
+INFO 2025-07-16 01:17:05,227 basehttp 22500 14700 "GET /api/users/ HTTP/1.1" 200 59110
+INFO 2025-07-16 01:17:11,882 basehttp 22500 2648 "OPTIONS /api/users/3668109c-6e74-4593-b72a-8231403a26f0/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:17:12,349 basehttp 22500 2648 "POST /api/users/3668109c-6e74-4593-b72a-8231403a26f0/suspend/ HTTP/1.1" 200 79
+INFO 2025-07-16 01:17:12,708 basehttp 22500 2648 "GET /api/users/ HTTP/1.1" 200 59111
+INFO 2025-07-16 01:17:27,050 basehttp 22500 16692 "OPTIONS /api/users/281d4f13-1ef3-44c7-861d-541b5274aee6/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:17:28,058 basehttp 22500 16692 "POST /api/users/281d4f13-1ef3-44c7-861d-541b5274aee6/suspend/ HTTP/1.1" 200 91
+INFO 2025-07-16 01:17:28,498 basehttp 22500 16692 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:13,206 basehttp 22500 4824 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:13,432 basehttp 22500 4824 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:13,997 basehttp 22500 6884 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:14,371 basehttp 22500 6884 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:24,668 basehttp 22500 17108 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:24,912 basehttp 22500 17108 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:25,261 basehttp 22500 18132 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:25,671 basehttp 22500 18132 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:36,516 basehttp 22500 22600 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:36,721 basehttp 22500 22600 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:36,904 basehttp 22500 24188 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:37,213 basehttp 22500 24188 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:45,372 basehttp 22500 9788 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:45,576 basehttp 22500 9788 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:19:46,206 basehttp 22500 21644 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:19:46,542 basehttp 22500 21644 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:20:05,521 basehttp 22500 11952 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:20:21,766 basehttp 22500 24544 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:20:43,844 autoreload 22500 1520 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:20:45,780 autoreload 22888 9568 Watching for file changes with StatReloader
+INFO 2025-07-16 01:26:09,896 autoreload 22888 9568 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:26:11,696 autoreload 2988 16948 Watching for file changes with StatReloader
+INFO 2025-07-16 01:26:20,596 autoreload 2988 16948 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 01:26:21,580 autoreload 12012 8968 Watching for file changes with StatReloader
+INFO 2025-07-16 01:27:07,979 autoreload 12012 8968 C:\Users\albur\Desktop\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-07-16 01:27:08,851 autoreload 4612 24440 Watching for file changes with StatReloader
+WARNING 2025-07-16 01:29:31,340 log 4612 7060 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 01:29:31,345 basehttp 4612 7060 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-16 01:29:31,361 log 4612 7060 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 01:29:31,362 basehttp 4612 7060 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-16 01:29:31,365 basehttp 4612 7060 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:29:31,368 basehttp 4612 7060 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:29:32,517 basehttp 4612 20812 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-16 01:29:32,526 basehttp 4612 7060 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-16 01:29:32,741 basehttp 4612 20812 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:29:32,950 basehttp 4612 20812 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:29:33,169 basehttp 4612 7060 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:29:33,475 basehttp 4612 7060 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:30:12,339 basehttp 4612 8200 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 01:30:12,654 basehttp 4612 16136 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 01:30:12,936 basehttp 4612 8200 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 01:30:28,860 basehttp 4612 20508 "OPTIONS /api/students/?limit=5&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 01:30:29,277 basehttp 4612 20508 "GET /api/students/?limit=5&offset=0 HTTP/1.1" 200 4523
+INFO 2025-07-16 01:30:40,159 basehttp 4612 9816 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:30:40,173 basehttp 4612 23416 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 01:30:40,893 basehttp 4612 9816 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 01:30:41,121 basehttp 4612 9816 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 01:30:44,476 basehttp 4612 9816 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 01:30:44,786 basehttp 4612 9816 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 01:30:45,062 basehttp 4612 9816 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 01:30:46,965 basehttp 4612 9816 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:30:47,273 basehttp 4612 9816 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:30:58,899 basehttp 4612 21168 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:30:59,100 basehttp 4612 21168 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:30:59,305 basehttp 4612 20060 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:30:59,589 basehttp 4612 20060 "GET /api/users/ HTTP/1.1" 200 59112
+WARNING 2025-07-16 01:52:43,943 log 4612 22172 Method Not Allowed (POST): /api/users/
+WARNING 2025-07-16 01:52:43,988 basehttp 4612 22172 "POST /api/users/ HTTP/1.1" 405 0
+WARNING 2025-07-16 01:52:47,128 log 4612 7440 Method Not Allowed (POST): /api/users/
+WARNING 2025-07-16 01:52:47,168 basehttp 4612 7440 "POST /api/users/ HTTP/1.1" 405 0
+INFO 2025-07-16 01:53:21,443 basehttp 4612 2596 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:53:22,012 basehttp 4612 2596 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:53:22,710 basehttp 4612 11324 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:53:23,101 basehttp 4612 11324 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:54:45,330 autoreload 4612 24440 C:\Users\albur\Desktop\leanmaker\Backend\users\urls.py changed, reloading.
+INFO 2025-07-16 01:54:48,060 autoreload 17012 12180 Watching for file changes with StatReloader
+INFO 2025-07-16 01:55:08,922 basehttp 17012 23264 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:55:09,172 basehttp 17012 23264 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 01:55:09,682 basehttp 17012 20380 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:55:10,340 basehttp 17012 20380 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:56:22,713 basehttp 17012 11428 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:57:27,450 basehttp 17012 1872 "OPTIONS /api/users/create/ HTTP/1.1" 200 0
+WARNING 2025-07-16 01:57:28,400 log 17012 1872 Bad Request: /api/users/create/
+WARNING 2025-07-16 01:57:28,400 basehttp 17012 1872 "POST /api/users/create/ HTTP/1.1" 400 39
+INFO 2025-07-16 01:58:38,897 basehttp 17012 18092 "GET /api/users/ HTTP/1.1" 200 59112
+INFO 2025-07-16 01:58:58,284 basehttp 17012 8384 "POST /api/users/create/ HTTP/1.1" 201 291
+INFO 2025-07-16 01:58:58,636 basehttp 17012 8384 "GET /api/users/ HTTP/1.1" 200 59689
+INFO 2025-07-16 02:00:12,013 basehttp 17012 23952 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:00:12,168 basehttp 17012 23952 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:00:37,434 basehttp 17012 17324 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:00:40,456 basehttp 17012 17324 "POST /api/token/ HTTP/1.1" 200 1042
+INFO 2025-07-16 02:00:40,726 basehttp 17012 17324 "GET /api/users/profile/ HTTP/1.1" 200 543
+INFO 2025-07-16 02:00:40,969 basehttp 17012 17324 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:00:41,775 basehttp 17012 17324 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 262
+INFO 2025-07-16 02:01:28,019 basehttp 17012 6168 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:01:43,343 basehttp 17012 2252 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 02:01:43,552 basehttp 17012 2252 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:01:43,624 basehttp 17012 2252 "OPTIONS /api/test-admin-stats/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:01:44,250 basehttp 17012 2252 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:01:46,952 basehttp 17012 15760 "GET /api/users/ HTTP/1.1" 200 59719
+INFO 2025-07-16 02:01:47,583 basehttp 17012 15760 "GET /api/users/ HTTP/1.1" 200 59719
+INFO 2025-07-16 02:02:39,541 basehttp 17012 23008 "OPTIONS /api/users/528f7353-57ae-4bfe-98b0-035bd3d46f6a/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:02:40,235 basehttp 17012 23008 "PATCH /api/users/528f7353-57ae-4bfe-98b0-035bd3d46f6a/ HTTP/1.1" 200 584
+INFO 2025-07-16 02:02:40,646 basehttp 17012 23008 "GET /api/users/ HTTP/1.1" 200 59732
+INFO 2025-07-16 02:05:11,494 basehttp 17012 24452 "POST /api/users/create/ HTTP/1.1" 201 292
+INFO 2025-07-16 02:05:11,845 basehttp 17012 24452 "GET /api/users/ HTTP/1.1" 200 60310
+INFO 2025-07-16 02:05:46,238 basehttp 17012 19524 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:06:00,635 basehttp 17012 18324 "POST /api/token/ HTTP/1.1" 200 1044
+INFO 2025-07-16 02:06:00,913 basehttp 17012 18324 "GET /api/users/profile/ HTTP/1.1" 200 544
+INFO 2025-07-16 02:06:00,965 basehttp 17012 18324 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:06:01,721 basehttp 17012 18324 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 215
+INFO 2025-07-16 02:06:04,245 basehttp 17012 18324 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:06:04,247 basehttp 17012 23656 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:06:04,645 basehttp 17012 23656 "GET /api/students/me/ HTTP/1.1" 200 903
+INFO 2025-07-16 02:06:04,949 basehttp 17012 23656 "GET /api/students/me/ HTTP/1.1" 200 903
+INFO 2025-07-16 02:06:05,506 basehttp 17012 18324 "GET /api/users/profile/ HTTP/1.1" 200 544
+INFO 2025-07-16 02:06:05,738 basehttp 17012 18324 "GET /api/users/profile/ HTTP/1.1" 200 544
+INFO 2025-07-16 02:06:12,240 basehttp 17012 15040 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 62489
+INFO 2025-07-16 02:06:12,846 basehttp 17012 15040 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 62489
+INFO 2025-07-16 02:06:21,883 basehttp 17012 21604 "GET /api/students/api-level-requests/ HTTP/1.1" 200 15
+INFO 2025-07-16 02:06:22,217 basehttp 17012 18980 "GET /api/students/me/ HTTP/1.1" 200 903
+INFO 2025-07-16 02:06:22,255 basehttp 17012 21604 "GET /api/students/api-level-requests/ HTTP/1.1" 200 15
+INFO 2025-07-16 02:06:22,750 basehttp 17012 18980 "GET /api/students/me/ HTTP/1.1" 200 903
+INFO 2025-07-16 02:06:27,095 basehttp 17012 18980 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 215
+INFO 2025-07-16 02:06:28,395 basehttp 17012 18980 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:06:32,763 basehttp 17012 18980 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 02:06:33,009 basehttp 17012 18980 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:06:33,833 basehttp 17012 18980 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:06:38,162 basehttp 17012 23408 "GET /api/users/ HTTP/1.1" 200 60340
+INFO 2025-07-16 02:06:38,549 basehttp 17012 23408 "GET /api/users/ HTTP/1.1" 200 60340
+INFO 2025-07-16 02:06:59,434 basehttp 17012 15840 "OPTIONS /api/users/528f7353-57ae-4bfe-98b0-035bd3d46f6a/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:06:59,875 basehttp 17012 15840 "POST /api/users/528f7353-57ae-4bfe-98b0-035bd3d46f6a/suspend/ HTTP/1.1" 200 91
+INFO 2025-07-16 02:07:00,217 basehttp 17012 15840 "GET /api/users/ HTTP/1.1" 200 60341
+INFO 2025-07-16 02:07:08,588 basehttp 17012 1192 "OPTIONS /api/users/e7d1df8d-509f-4afb-9a88-58393ef5da88/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:07:09,052 basehttp 17012 1192 "POST /api/users/e7d1df8d-509f-4afb-9a88-58393ef5da88/suspend/ HTTP/1.1" 200 92
+INFO 2025-07-16 02:07:09,365 basehttp 17012 1192 "GET /api/users/ HTTP/1.1" 200 60342
+INFO 2025-07-16 02:08:30,258 basehttp 17012 22296 "POST /api/users/create/ HTTP/1.1" 201 285
+INFO 2025-07-16 02:08:30,606 basehttp 17012 22296 "GET /api/users/ HTTP/1.1" 200 60913
+INFO 2025-07-16 02:08:50,406 basehttp 17012 8028 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:09:02,128 basehttp 17012 13208 "POST /api/token/ HTTP/1.1" 200 1030
+INFO 2025-07-16 02:09:02,396 basehttp 17012 13208 "GET /api/users/profile/ HTTP/1.1" 200 537
+INFO 2025-07-16 02:09:03,178 basehttp 17012 13208 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:09:16,680 basehttp 17012 13992 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:09:16,681 basehttp 17012 15848 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:09:17,585 basehttp 17012 10672 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 02:09:18,117 basehttp 17012 10672 "GET /api/mass-notifications/ HTTP/1.1" 200 718
+INFO 2025-07-16 02:09:56,918 basehttp 17012 24512 "OPTIONS /api/mass-notifications/create/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:09:57,838 basehttp 17012 24512 "POST /api/mass-notifications/create/ HTTP/1.1" 201 678
+INFO 2025-07-16 02:09:58,481 basehttp 17012 24512 "GET /api/mass-notifications/ HTTP/1.1" 200 1312
+INFO 2025-07-16 02:10:01,754 basehttp 17012 24512 "OPTIONS /api/mass-notifications/5/send/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:10:24,704 basehttp 17012 24512 - Broken pipe from ('127.0.0.1', 52969)
+WARNING 2025-07-16 02:10:24,744 log 17012 23796 Bad Request: /api/mass-notifications/5/send/
+INFO 2025-07-16 02:10:24,744 basehttp 17012 23796 - Broken pipe from ('127.0.0.1', 52981)
+INFO 2025-07-16 02:10:24,996 basehttp 17012 3828 "GET /api/users/profile/ HTTP/1.1" 200 537
+INFO 2025-07-16 02:10:25,224 basehttp 17012 3828 "GET /api/users/profile/ HTTP/1.1" 200 537
+INFO 2025-07-16 02:10:26,080 basehttp 17012 6348 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:10:26,707 basehttp 17012 6348 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:10:38,377 basehttp 17012 9884 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:10:47,381 basehttp 17012 9884 "POST /api/token/ HTTP/1.1" 200 1081
+INFO 2025-07-16 02:10:48,061 basehttp 17012 9884 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-16 02:10:48,854 basehttp 17012 9884 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 02:10:53,925 basehttp 17012 9884 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:10:53,928 basehttp 17012 9884 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:10:54,382 basehttp 17012 9884 "GET /api/notifications/ HTTP/1.1" 200 6138
+INFO 2025-07-16 02:10:54,784 basehttp 17012 9884 "GET /api/notifications/ HTTP/1.1" 200 6138
+INFO 2025-07-16 02:10:57,889 basehttp 17012 596 "OPTIONS /api/notifications/d2e7cfe8-7298-4099-ae72-a631c1dfbdce/mark-read/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:10:58,376 basehttp 17012 596 "POST /api/notifications/d2e7cfe8-7298-4099-ae72-a631c1dfbdce/mark-read/ HTTP/1.1" 200 73
+INFO 2025-07-16 02:11:12,736 basehttp 17012 23668 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-16 02:11:13,655 basehttp 17012 13564 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-16 02:11:13,681 basehttp 17012 23668 "GET /api/students/me/ HTTP/1.1" 200 966
+INFO 2025-07-16 02:11:13,885 basehttp 17012 23668 "GET /api/users/profile/ HTTP/1.1" 200 592
+INFO 2025-07-16 02:11:14,274 basehttp 17012 13564 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 02:11:16,431 basehttp 17012 13564 "POST /api/auth/logout/ HTTP/1.1" 200 47

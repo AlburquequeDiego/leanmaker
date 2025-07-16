@@ -42,15 +42,26 @@ def user_list(request):
             users_data.append({
                 'id': str(user.id),
                 'email': user.email,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'username': user.username,
+                'first_name': user.first_name or '',
+                'last_name': user.last_name or '',
+                'username': user.username or '',
                 'role': user.role,
                 'is_active': user.is_active,
                 'is_verified': user.is_verified,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
                 'date_joined': user.date_joined.isoformat(),
                 'last_login': user.last_login.isoformat() if user.last_login else None,
-                'full_name': user.full_name
+                'created_at': user.created_at.isoformat(),
+                'updated_at': user.updated_at.isoformat(),
+                'full_name': user.full_name or f"{user.first_name or ''} {user.last_name or ''}".strip(),
+                'phone': user.phone or '',
+                'avatar': user.avatar or '',
+                'bio': user.bio or '',
+                'position': user.position or '',
+                'department': user.department or '',
+                'career': user.career or '',
+                'company_name': user.company_name or '',
             })
         
         return JsonResponse({
@@ -68,7 +79,7 @@ def user_list(request):
 
 
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "PATCH"])
 def user_detail(request, user_id):
     """Detalle de un usuario."""
     try:
@@ -91,29 +102,88 @@ def user_detail(request, user_id):
         except User.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
         
-        user_data = {
-            'id': str(user.id),
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'username': user.username,
-            'phone': user.phone,
-            'avatar': user.avatar,
-            'bio': user.bio,
-            'role': user.role,
-            'is_active': user.is_active,
-            'is_verified': user.is_verified,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser,
-            'date_joined': user.date_joined.isoformat(),
-            'last_login': user.last_login.isoformat() if user.last_login else None,
-            'created_at': user.created_at.isoformat(),
-            'updated_at': user.updated_at.isoformat(),
-            'full_name': user.full_name
-        }
+        if request.method == "GET":
+            user_data = {
+                'id': str(user.id),
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'username': user.username,
+                'phone': user.phone,
+                'avatar': user.avatar,
+                'bio': user.bio,
+                'role': user.role,
+                'is_active': user.is_active,
+                'is_verified': user.is_verified,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
+                'date_joined': user.date_joined.isoformat(),
+                'last_login': user.last_login.isoformat() if user.last_login else None,
+                'created_at': user.created_at.isoformat(),
+                'updated_at': user.updated_at.isoformat(),
+                'full_name': user.full_name,
+                'position': user.position,
+                'department': user.department,
+                'career': user.career,
+                'company_name': user.company_name,
+            }
+            
+            return JsonResponse(user_data)
         
-        return JsonResponse(user_data)
+        elif request.method == "PATCH":
+            # Solo admins pueden editar usuarios
+            if current_user.role != 'admin':
+                return JsonResponse({'error': 'Acceso denegado'}, status=403)
+            
+            data = json.loads(request.body)
+            
+            # Actualizar campos permitidos
+            if 'first_name' in data:
+                user.first_name = data['first_name']
+            if 'last_name' in data:
+                user.last_name = data['last_name']
+            if 'email' in data:
+                user.email = data['email']
+            if 'phone' in data:
+                user.phone = data['phone']
+            if 'position' in data:
+                user.position = data['position']
+            if 'department' in data:
+                user.department = data['department']
+            if 'career' in data:
+                user.career = data['career']
+            if 'company_name' in data:
+                user.company_name = data['company_name']
+            
+            user.save()
+            
+            user_data = {
+                'id': str(user.id),
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'username': user.username,
+                'phone': user.phone,
+                'avatar': user.avatar,
+                'bio': user.bio,
+                'role': user.role,
+                'is_active': user.is_active,
+                'is_verified': user.is_verified,
+                'date_joined': user.date_joined.isoformat(),
+                'last_login': user.last_login.isoformat() if user.last_login else None,
+                'created_at': user.created_at.isoformat(),
+                'updated_at': user.updated_at.isoformat(),
+                'full_name': user.full_name,
+                'position': user.position,
+                'department': user.department,
+                'career': user.career,
+                'company_name': user.company_name,
+            }
+            
+            return JsonResponse(user_data)
         
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -160,6 +230,12 @@ def user_create(request):
             bio=data.get('bio')
         )
         
+        # Si el usuario es administrador, asignar permisos de superusuario
+        if data['role'] == 'admin':
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
+        
         user_data = {
             'id': str(user.id),
             'email': user.email,
@@ -169,6 +245,8 @@ def user_create(request):
             'role': user.role,
             'is_active': user.is_active,
             'is_verified': user.is_verified,
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
             'full_name': user.full_name
         }
         
@@ -340,37 +418,6 @@ def user_profile(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-@csrf_exempt
-@require_http_methods(["DELETE"])
-def user_delete(request, user_id):
-    """Eliminar un usuario."""
-    try:
-        # Verificar autenticación
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Token requerido'}, status=401)
-        
-        token = auth_header.split(' ')[1]
-        current_user = verify_token(token)
-        if not current_user:
-            return JsonResponse({'error': 'Token inválido'}, status=401)
-        
-        # Solo admins pueden eliminar usuarios
-        if current_user.role != 'admin':
-            return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
-        
-        user.delete()
-        
-        return JsonResponse({'message': 'Usuario eliminado exitosamente'})
-        
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -411,5 +458,157 @@ def change_password(request):
         
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def suspend_user(request, user_id):
+    """Suspender un usuario."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden suspender usuarios
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+        # No permitir suspender superusuarios
+        if user.is_superuser:
+            return JsonResponse({'error': 'No se puede suspender un superusuario'}, status=400)
+        
+        user.is_active = False
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Usuario {user.email} suspendido exitosamente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def activate_user(request, user_id):
+    """Activar un usuario suspendido."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden activar usuarios
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+        user.is_active = True
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Usuario {user.email} activado exitosamente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def block_user(request, user_id):
+    """Bloquear un usuario (marcar como no verificado)."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden bloquear usuarios
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+        # No permitir bloquear superusuarios
+        if user.is_superuser:
+            return JsonResponse({'error': 'No se puede bloquear un superusuario'}, status=400)
+        
+        user.is_verified = False
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Usuario {user.email} bloqueado exitosamente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def unblock_user(request, user_id):
+    """Desbloquear un usuario (marcar como verificado)."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden desbloquear usuarios
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+        user.is_verified = True
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Usuario {user.email} desbloqueado exitosamente'
+        })
+        
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

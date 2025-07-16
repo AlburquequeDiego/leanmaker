@@ -26,7 +26,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     
     # URLs de las aplicaciones
-    path('users/', include('users.urls')),
+    path('api/users/', include('users.urls')),
     path('api/companies/', include('companies.urls')),
     path('api/students/', include('students.urls')),
     path('api/projects/', include('projects.urls')),

@@ -18,6 +18,12 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
+        
+        # Si el usuario es administrador, asignar permisos de superusuario
+        if extra_fields.get('role') == 'admin':
+            user.is_superuser = True
+            user.is_staff = True
+        
         user.save(using=self._db)
         return user
     
@@ -63,6 +69,8 @@ class User(AbstractUser):
     bio = models.TextField(null=True, blank=True)
     position = models.CharField(max_length=100, null=True, blank=True)
     department = models.CharField(max_length=100, null=True, blank=True)
+    career = models.CharField(max_length=100, null=True, blank=True)
+    company_name = models.CharField(max_length=200, null=True, blank=True)
     
     # Status fields
     is_verified = models.BooleanField(default=False)
