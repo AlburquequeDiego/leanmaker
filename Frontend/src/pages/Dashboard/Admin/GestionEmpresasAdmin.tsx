@@ -24,6 +24,7 @@ import {
   CircularProgress,
   Alert,
   Chip,
+  IconButton,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -37,6 +38,7 @@ import {
   Work as WorkIcon,
   Star as StarIcon,
 } from '@mui/icons-material';
+import Tooltip from '@mui/material/Tooltip';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
 
@@ -44,14 +46,18 @@ interface Company {
   id: string;
   name: string;
   email: string;
-  status: 'active' | 'suspended' | 'blocked';
+  status: 'active' | 'suspended' | 'blocked' | string;
   projects_count: number;
-  rating: number;
+  gpa: number; // Usar rating como gpa
   join_date: string;
   last_activity: string;
   description?: string;
   phone?: string;
   address?: string;
+  website?: string;
+  industry?: string;
+  size?: string;
+  verified?: boolean;
 }
 
 interface Project {
@@ -83,6 +89,8 @@ export const GestionEmpresasAdmin = () => {
   const [actionReason, setActionReason] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   
   // Estados para paginación y filtros
   const [pageSize, setPageSize] = useState<number | 'ultimos'>(10);
@@ -145,16 +153,20 @@ export const GestionEmpresasAdmin = () => {
     if (!selectedCompany || !actionType) return;
 
     try {
-      await apiService.post(`/api/admin/companies/${selectedCompany.id}/${actionType}/`, {
-        reason: actionReason
-      });
+      let endpoint = '';
+      if (actionType === 'activate') endpoint = `/api/admin/companies/${selectedCompany.id}/activate/`;
+      if (actionType === 'suspend') endpoint = `/api/admin/companies/${selectedCompany.id}/suspend/`;
+      if (actionType === 'block') endpoint = `/api/admin/companies/${selectedCompany.id}/block/`;
+
+      await apiService.post(endpoint, {});
 
       setSuccessMessage(`Empresa ${actionType === 'activate' ? 'activada' : actionType === 'suspend' ? 'suspendida' : 'bloqueada'} correctamente`);
       setShowSuccess(true);
       setActionDialog(false);
-      fetchData(); // Recargar datos
+      fetchData();
     } catch (error) {
-      console.error('Error performing action:', error);
+      setErrorMessage('Error al cambiar el estado de la empresa');
+      setShowError(true);
     }
   };
 
@@ -187,19 +199,19 @@ export const GestionEmpresasAdmin = () => {
       key: 'name',
       label: 'Empresa',
       render: (value: string, row: Company) => (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                            <BusinessIcon fontSize="small" />
-                          </Avatar>
-                          <Box sx={{ minWidth: 0, flex: 1 }}>
-                            <Typography variant="body2" fontWeight={600} noWrap>
+            <BusinessIcon fontSize="small" />
+          </Avatar>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
+            <Typography variant="body2" fontWeight={600} noWrap>
               {value}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap>
+            </Typography>
+            <Typography variant="caption" color="text.secondary" noWrap>
               Última actividad: {new Date(row.last_activity).toLocaleDateString()}
-                            </Typography>
-                          </Box>
-                        </Box>
+            </Typography>
+          </Box>
+        </Box>
       ),
       width: '250px'
     },
@@ -207,9 +219,9 @@ export const GestionEmpresasAdmin = () => {
       key: 'email',
       label: 'Email',
       render: (value: string) => (
-                        <Typography variant="body2" noWrap>
+        <Typography variant="body2" noWrap>
           {value}
-                        </Typography>
+        </Typography>
       ),
       width: '200px'
     },
@@ -217,13 +229,13 @@ export const GestionEmpresasAdmin = () => {
       key: 'status',
       label: 'Estado',
       render: (value: string) => (
-                        <Chip 
+        <Chip 
           label={getStatusText(value)} 
           color={getStatusColor(value) as any}
-                          variant="filled"
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
+          variant="filled"
+          size="small"
+          sx={{ fontWeight: 600 }}
+        />
       ),
       width: '120px',
       align: 'center' as const
@@ -243,15 +255,15 @@ export const GestionEmpresasAdmin = () => {
       align: 'center' as const
     },
     {
-      key: 'rating',
-      label: 'Rating',
+      key: 'rating', // El backend entrega 'rating', lo mostramos como GPA
+      label: 'GPA promedio',
       render: (value: number) => (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Rating value={value} readOnly size="small" />
-          <Typography variant="caption" color="text.secondary">
-            ({value.toFixed(1)})
-                          </Typography>
-                        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Rating value={value} readOnly precision={0.1} size="small" />
+          <Typography variant="body2" fontWeight={600}>
+            {value ? value.toFixed(2) : '-'} / 5
+          </Typography>
+        </Box>
       ),
       width: '150px',
       align: 'center' as const
@@ -262,7 +274,7 @@ export const GestionEmpresasAdmin = () => {
       render: (value: string) => (
         <Typography variant="body2">
           {new Date(value).toLocaleDateString()}
-                        </Typography>
+        </Typography>
       ),
       width: '120px',
       align: 'center' as const
@@ -284,16 +296,6 @@ export const GestionEmpresasAdmin = () => {
         { value: 'suspended', label: 'Suspendida' },
         { value: 'blocked', label: 'Bloqueada' }
       ]
-    },
-    {
-      key: 'rating',
-      label: 'Rating',
-      type: 'select' as const,
-      options: [
-        { value: 'high', label: 'Alto (4.5+)' },
-        { value: 'medium', label: 'Medio (3.5-4.4)' },
-        { value: 'low', label: 'Bajo (<3.5)' }
-      ]
     }
   ];
 
@@ -313,34 +315,40 @@ export const GestionEmpresasAdmin = () => {
 
   const actions = (row: Company) => (
     <Box sx={{ display: 'flex', gap: 1 }}>
-      <Button
-        variant="outlined"
-                            size="small"
-        onClick={() => handleAction(row, 'activate')}
-        disabled={row.status === 'active'}
-        startIcon={<CheckCircleIcon />}
-      >
-        Activar
-      </Button>
-      <Button
-        variant="outlined"
-                                size="small"
-        onClick={() => handleAction(row, 'suspend')}
-        disabled={row.status === 'suspended'}
-        startIcon={<WarningIcon />}
-      >
-        Suspender
-      </Button>
-      <Button
-        variant="outlined"
-                                size="small"
-        onClick={() => handleAction(row, 'block')}
-        disabled={row.status === 'blocked'}
-        startIcon={<BlockIcon />}
-      >
-        Bloquear
-      </Button>
-                        </Box>
+      <Tooltip title="Activar">
+        <span>
+          <IconButton
+            color="success"
+            onClick={() => handleAction(row, 'activate')}
+            disabled={row.status === 'active'}
+          >
+            <CheckCircleIcon />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Tooltip title="Suspender">
+        <span>
+          <IconButton
+            color="warning"
+            onClick={() => handleAction(row, 'suspend')}
+            disabled={row.status === 'suspended'}
+          >
+            <WarningIcon />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Tooltip title="Bloquear">
+        <span>
+          <IconButton
+            color="error"
+            onClick={() => handleAction(row, 'block')}
+            disabled={row.status === 'blocked'}
+          >
+            <BlockIcon />
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Box>
   );
 
   return (
@@ -360,23 +368,46 @@ export const GestionEmpresasAdmin = () => {
       {/* Tab: Empresas */}
       <div role="tabpanel" hidden={tabValue !== 0}>
         {tabValue === 0 && (
-          <DataTable
-            title="Lista de Empresas"
-            data={companies}
-            columns={columns}
-            loading={loading}
-            error={null}
-            filters={tableFilters}
-            onFilterChange={handleFilterChange}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-            totalCount={totalCount}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            showPagination={pageSize !== 'ultimos'}
-            actions={actions}
-            emptyMessage="No hay empresas registradas"
-          />
+          <>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <TextField
+                label="Buscar por nombre o email"
+                variant="outlined"
+                size="small"
+                value={filters.search || ''}
+                onChange={e => handleFilterChange({ ...filters, search: e.target.value })}
+                sx={{ minWidth: 220 }}
+              />
+              <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
+                <InputLabel>Estado</InputLabel>
+                <Select
+                  label="Estado"
+                  value={filters.status || ''}
+                  onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
+                >
+                  <MenuItem value="">Todos</MenuItem>
+                  <MenuItem value="active">Activa</MenuItem>
+                  <MenuItem value="suspended">Suspendida</MenuItem>
+                  <MenuItem value="blocked">Bloqueada</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <DataTable
+              title="Lista de Empresas"
+              data={companies}
+              columns={columns}
+              loading={loading}
+              error={null}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              totalCount={totalCount}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              showPagination={pageSize !== 'ultimos'}
+              actions={actions}
+              emptyMessage="No hay empresas registradas"
+            />
+          </>
         )}
       </div>
 
@@ -456,6 +487,17 @@ export const GestionEmpresasAdmin = () => {
       >
         <Alert onClose={() => setShowSuccess(false)} severity="success">
             {successMessage}
+        </Alert>
+      </Snackbar>
+
+      {/* Snackbar de error */}
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={() => setShowError(false)}
+      >
+        <Alert onClose={() => setShowError(false)} severity="error">
+            {errorMessage}
         </Alert>
       </Snackbar>
     </Box>

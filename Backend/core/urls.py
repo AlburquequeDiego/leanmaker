@@ -52,6 +52,7 @@ urlpatterns = [
     path('activity-logs/', include('activity_logs.urls')),
     path('reports/', include('reports.urls')),
     path('data-backups/', include('data_backups.urls')),
+    path('api/admin/', include('custom_admin.urls')),
     
     # API endpoints (para futuras implementaciones)
     path('api/', include([

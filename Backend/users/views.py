@@ -363,9 +363,10 @@ def user_profile(request):
                 'last_login': current_user.last_login.isoformat() if current_user.last_login else None,
                 'created_at': current_user.created_at.isoformat(),
                 'updated_at': current_user.updated_at.isoformat(),
-                'full_name': current_user.full_name
+                'full_name': current_user.full_name,
+                'position': current_user.position,
+                'department': current_user.department,
             }
-            
             return JsonResponse(user_data)
         
         elif request.method == "PATCH":

@@ -56,6 +56,7 @@ interface User {
   company_name?: string;
   career?: string;
   position?: string;
+  status?: string; // Added status field
 }
 
 export default function UsuariosAdmin() {
@@ -115,6 +116,7 @@ export default function UsuariosAdmin() {
         company_name: user.company_name || '',
         career: user.career || '',
         position: user.position || '',
+        status: user.status, // Added status to formatted users
       })) : [];
       
       console.log('Usuarios formateados:', formattedUsers);
@@ -422,8 +424,18 @@ export default function UsuariosAdmin() {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
                     <Chip 
-                      label={user.is_active ? 'Activo' : 'Inactivo'} 
-                      color={user.is_active ? 'success' : 'error'}
+                      label={
+                        user.status === 'suspended' ? 'Suspendido' :
+                        (user.status === 'blocked' || user.status === 'rejected') ? 'Inactivo' :
+                        (user.status === 'active' || user.status === 'approved') ? 'Activo' :
+                        user.is_active ? 'Activo' : 'Inactivo'
+                      }
+                      color={
+                        user.status === 'suspended' ? 'warning' :
+                        (user.status === 'blocked' || user.status === 'rejected') ? 'error' :
+                        (user.status === 'active' || user.status === 'approved') ? 'success' :
+                        user.is_active ? 'success' : 'error'
+                      }
                       size="small"
                     />
                   </TableCell>

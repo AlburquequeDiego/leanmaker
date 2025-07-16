@@ -11764,3 +11764,405 @@ INFO 2025-07-16 02:11:13,681 basehttp 17012 23668 "GET /api/students/me/ HTTP/1.
 INFO 2025-07-16 02:11:13,885 basehttp 17012 23668 "GET /api/users/profile/ HTTP/1.1" 200 592
 INFO 2025-07-16 02:11:14,274 basehttp 17012 13564 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
 INFO 2025-07-16 02:11:16,431 basehttp 17012 13564 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:11:28,698 basehttp 17012 21708 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 02:11:28,904 basehttp 17012 21708 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:11:29,540 basehttp 17012 21708 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:11:35,564 basehttp 17012 24200 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:11:35,765 basehttp 17012 24200 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:11:42,357 basehttp 17012 24200 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:11:42,976 basehttp 17012 24200 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:11:44,246 basehttp 17012 24200 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:11:47,029 basehttp 17012 24200 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:11:47,591 basehttp 17012 24200 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:11:50,313 basehttp 17012 24200 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:11:56,033 basehttp 17012 16268 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:11:56,625 basehttp 17012 16268 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:12:06,368 basehttp 17012 8120 "GET /api/users/ HTTP/1.1" 200 60943
+INFO 2025-07-16 02:12:06,664 basehttp 17012 8120 "GET /api/users/ HTTP/1.1" 200 60943
+INFO 2025-07-16 02:16:09,317 basehttp 17012 23492 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-16 02:16:40,585 basehttp 17012 13496 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-16 02:16:54,451 basehttp 17012 22928 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 02:16:54,770 basehttp 17012 17876 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 02:16:55,073 basehttp 17012 22928 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 02:16:58,057 basehttp 17012 11820 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 02:16:58,332 basehttp 17012 11820 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 02:17:02,701 basehttp 17012 11820 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 02:17:03,076 basehttp 17012 12084 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 02:17:03,402 basehttp 17012 12084 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 02:17:07,349 basehttp 17012 12084 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:17:13,127 basehttp 17012 12084 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:17:13,346 basehttp 17012 12084 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:17:20,758 basehttp 17012 21404 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:17:23,357 basehttp 17012 21404 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:17:24,059 basehttp 17012 21404 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:17:43,317 basehttp 17012 1744 "GET /api/users/ HTTP/1.1" 200 60943
+INFO 2025-07-16 02:17:43,688 basehttp 17012 18500 "GET /api/users/ HTTP/1.1" 200 60943
+INFO 2025-07-16 02:18:20,872 basehttp 17012 15628 "OPTIONS /api/users/149f45c0-d74f-4710-869b-5348ff929948/suspend/ HTTP/1.1" 200 0
+WARNING 2025-07-16 02:18:21,251 log 17012 15628 Bad Request: /api/users/149f45c0-d74f-4710-869b-5348ff929948/suspend/
+WARNING 2025-07-16 02:18:21,256 basehttp 17012 15628 "POST /api/users/149f45c0-d74f-4710-869b-5348ff929948/suspend/ HTTP/1.1" 400 50
+INFO 2025-07-16 02:20:21,874 basehttp 17012 7432 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:20:22,086 basehttp 17012 7432 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:20:22,545 basehttp 17012 19564 "GET /api/users/ HTTP/1.1" 200 60943
+INFO 2025-07-16 02:20:22,908 basehttp 17012 19564 "GET /api/users/ HTTP/1.1" 200 60943
+INFO 2025-07-16 02:21:01,042 basehttp 17012 21104 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:01,291 basehttp 17012 21104 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:08,283 basehttp 17012 14912 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:08,522 basehttp 17012 14912 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:08,743 basehttp 17012 14912 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:08,971 basehttp 17012 14912 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:16,789 basehttp 17012 14912 "PATCH /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:21:17,024 basehttp 17012 14912 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:22,977 basehttp 17012 24292 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:23,237 basehttp 17012 24292 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:23,472 basehttp 17012 24292 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:23,700 basehttp 17012 24292 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:21:29,510 basehttp 17012 15368 "PATCH /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:21:29,766 basehttp 17012 15368 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:23:49,120 basehttp 17012 4492 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:23:49,350 basehttp 17012 4492 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:23:49,678 basehttp 17012 4492 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:23:49,909 basehttp 17012 4492 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:24:38,377 basehttp 17012 8816 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:24:38,665 basehttp 17012 8816 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:24:42,968 basehttp 17012 8816 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:24:43,201 basehttp 17012 8816 "GET /api/users/profile/ HTTP/1.1" 200 536
+INFO 2025-07-16 02:24:53,011 autoreload 17012 12180 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 02:24:59,165 autoreload 18076 23808 Watching for file changes with StatReloader
+INFO 2025-07-16 02:25:25,402 basehttp 18076 1972 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:25:25,703 basehttp 18076 1972 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:25:25,944 basehttp 18076 1972 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:25:26,180 basehttp 18076 1972 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:25:57,249 basehttp 18076 16288 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:25:57,819 basehttp 18076 16288 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:25:59,229 basehttp 18076 16288 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 02:25:59,570 basehttp 18076 16288 "GET /api/users/ HTTP/1.1" 200 60947
+WARNING 2025-07-16 02:26:05,952 log 18076 23776 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:26:05,953 basehttp 18076 23776 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:26:06,085 log 18076 23776 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:26:06,092 basehttp 18076 23776 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:26:06,181 log 18076 23776 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:26:06,181 basehttp 18076 23776 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+INFO 2025-07-16 02:26:18,690 basehttp 18076 15876 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:26:18,910 basehttp 18076 15876 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 02:26:19,195 log 18076 15876 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:26:19,195 basehttp 18076 15876 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:26:19,298 log 18076 17192 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:26:19,300 basehttp 18076 17192 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:26:19,617 log 18076 17192 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:26:19,617 basehttp 18076 17192 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+INFO 2025-07-16 02:28:01,251 basehttp 18076 8088 "OPTIONS /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-16 02:28:01,328 log 18076 8088 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:01,329 basehttp 18076 8088 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:28:03,004 log 18076 8088 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:03,004 basehttp 18076 8088 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:28:05,239 log 18076 21360 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:05,239 basehttp 18076 21360 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:28:14,376 log 18076 7828 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:14,377 basehttp 18076 7828 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18304
+WARNING 2025-07-16 02:28:30,201 log 18076 8924 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:30,201 basehttp 18076 8924 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:28:30,878 log 18076 8924 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:30,880 basehttp 18076 8924 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:28:32,880 log 18076 8924 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:32,882 basehttp 18076 8924 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:28:47,299 log 18076 6656 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:47,325 basehttp 18076 6656 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:28:47,869 log 18076 6656 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:28:47,869 basehttp 18076 6656 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+INFO 2025-07-16 02:29:02,711 basehttp 18076 7964 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:29:02,961 basehttp 18076 7964 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 02:29:02,967 log 18076 8200 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:29:02,967 basehttp 18076 8200 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:29:03,014 log 18076 7964 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:29:03,015 basehttp 18076 7964 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+WARNING 2025-07-16 02:29:03,161 log 18076 7964 Not Found: /api/admin/work-hours/
+WARNING 2025-07-16 02:29:03,162 basehttp 18076 7964 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 404 18303
+INFO 2025-07-16 02:37:25,173 autoreload 18076 23808 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-16 02:37:26,962 autoreload 11988 3764 Watching for file changes with StatReloader
+INFO 2025-07-16 02:37:34,657 autoreload 11988 3764 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-07-16 02:37:36,060 autoreload 18424 11060 Watching for file changes with StatReloader
+INFO 2025-07-16 02:38:50,976 autoreload 20556 20136 Watching for file changes with StatReloader
+INFO 2025-07-16 02:39:45,675 autoreload 20556 20136 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-07-16 02:39:46,820 autoreload 22192 20440 Watching for file changes with StatReloader
+INFO 2025-07-16 02:39:51,248 autoreload 17612 15808 Watching for file changes with StatReloader
+INFO 2025-07-16 02:41:13,831 autoreload 18820 20456 Watching for file changes with StatReloader
+INFO 2025-07-16 02:42:33,522 autoreload 18820 20456 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-07-16 02:42:34,619 autoreload 10412 16084 Watching for file changes with StatReloader
+INFO 2025-07-16 02:42:46,952 autoreload 14916 23328 Watching for file changes with StatReloader
+INFO 2025-07-16 02:45:25,548 autoreload 10412 16084 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-07-16 02:45:26,721 autoreload 8800 24416 Watching for file changes with StatReloader
+INFO 2025-07-16 02:45:37,199 autoreload 8800 24416 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-07-16 02:45:38,230 autoreload 8360 17848 Watching for file changes with StatReloader
+INFO 2025-07-16 02:47:56,840 autoreload 20416 2220 Watching for file changes with StatReloader
+INFO 2025-07-16 02:48:50,323 autoreload 24392 12020 Watching for file changes with StatReloader
+INFO 2025-07-16 02:51:15,251 autoreload 3624 22364 Watching for file changes with StatReloader
+INFO 2025-07-16 02:51:21,411 basehttp 3624 11288 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-16 02:51:34,706 basehttp 3624 12952 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:51:34,758 basehttp 3624 13796 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:51:35,032 basehttp 3624 12952 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:51:35,259 basehttp 3624 12952 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:52:05,208 basehttp 3624 13808 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:52:05,415 basehttp 3624 13808 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:52:19,162 basehttp 3624 18352 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 02:52:19,385 basehttp 3624 18352 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:52:20,137 basehttp 3624 18352 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:52:21,996 basehttp 3624 9632 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 02:52:37,312 basehttp 3624 2488 "POST /api/token/ HTTP/1.1" 200 1023
+INFO 2025-07-16 02:52:37,529 basehttp 3624 2488 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:52:38,153 basehttp 3624 2488 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 02:52:43,475 basehttp 3624 3620 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:52:43,705 basehttp 3624 3620 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 02:52:46,505 basehttp 3624 3620 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:52:47,208 basehttp 3624 3620 "GET /api/mass-notifications/ HTTP/1.1" 200 1343
+INFO 2025-07-16 02:52:49,235 basehttp 3624 15900 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:52:49,235 basehttp 3624 3620 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-16 02:52:49,645 basehttp 3624 15900 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 02:52:50,008 basehttp 3624 15900 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 02:52:53,943 basehttp 3624 22896 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 4662
+INFO 2025-07-16 02:52:54,361 basehttp 3624 22896 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 4662
+INFO 2025-07-16 02:52:54,729 basehttp 3624 22896 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 4662
+INFO 2025-07-16 02:53:07,451 basehttp 3624 5236 "OPTIONS /api/admin/work-hours/?limit=100&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 02:53:08,035 basehttp 3624 5236 "GET /api/admin/work-hours/?limit=100&offset=0 HTTP/1.1" 200 6031
+INFO 2025-07-16 02:53:11,618 basehttp 3624 11120 "OPTIONS /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 02:53:12,318 basehttp 3624 11120 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:25,206 basehttp 3624 23992 "OPTIONS /api/admin/work-hours/?limit=5&offset=10 HTTP/1.1" 200 0
+INFO 2025-07-16 02:53:26,229 basehttp 3624 22064 "GET /api/admin/work-hours/?limit=5&offset=10 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:26,236 basehttp 3624 23992 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:35,154 basehttp 3624 15676 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:35,397 basehttp 3624 7504 "GET /api/admin/work-hours/?limit=5&offset=10 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:36,797 basehttp 3624 7504 "OPTIONS /api/admin/work-hours/?limit=5&offset=5 HTTP/1.1" 200 0
+INFO 2025-07-16 02:53:37,307 basehttp 3624 15676 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:37,322 basehttp 3624 7504 "GET /api/admin/work-hours/?limit=5&offset=5 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:39,866 basehttp 3624 15676 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:39,891 basehttp 3624 7504 "GET /api/admin/work-hours/?limit=5&offset=5 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:43,614 basehttp 3624 17364 "OPTIONS /api/admin/work-hours/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 02:53:44,352 basehttp 3624 17364 "GET /api/admin/work-hours/?limit=50&offset=0 HTTP/1.1" 200 6030
+INFO 2025-07-16 02:53:54,990 basehttp 3624 17364 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:57,542 basehttp 3624 17364 "GET /api/admin/work-hours/?limit=5&offset=5 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:53:57,566 basehttp 3624 5848 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:54:00,304 basehttp 3624 5848 "GET /api/admin/work-hours/?limit=5&offset=10 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:54:00,327 basehttp 3624 17364 "GET /api/admin/work-hours/?limit=5&offset=0 HTTP/1.1" 200 2330
+INFO 2025-07-16 02:54:05,940 basehttp 3624 17364 "GET /api/admin/work-hours/?limit=50&offset=0 HTTP/1.1" 200 6030
+INFO 2025-07-16 03:09:46,412 autoreload 3624 22364 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-07-16 03:09:47,803 autoreload 19316 17900 Watching for file changes with StatReloader
+INFO 2025-07-16 03:10:45,529 basehttp 19316 23844 "GET /api/admin/work-hours/?limit=50&offset=0 HTTP/1.1" 200 9176
+INFO 2025-07-16 03:10:51,406 basehttp 19316 10256 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:10:51,619 basehttp 19316 10256 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:10:52,236 basehttp 19316 9568 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:52,612 basehttp 19316 10256 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:52,977 basehttp 19316 10256 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:54,104 basehttp 19316 10256 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:10:54,339 basehttp 19316 10256 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:10:54,595 basehttp 19316 9568 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:54,956 basehttp 19316 10256 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:55,049 basehttp 19316 9568 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:10:55,315 basehttp 19316 10256 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:55,680 basehttp 19316 10256 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:55,719 basehttp 19316 9568 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:10:56,247 basehttp 19316 10256 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:10:56,659 basehttp 19316 10256 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:11:00,542 basehttp 19316 20164 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:11:00,880 basehttp 19316 20164 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:11:01,142 basehttp 19316 21844 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:11:01,505 basehttp 19316 21844 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:11:01,838 basehttp 19316 21844 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:11:17,514 basehttp 19316 3232 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:11:17,719 basehttp 19316 3232 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:11:17,955 basehttp 19316 13952 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:11:18,308 basehttp 19316 13952 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:11:18,645 basehttp 19316 13952 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:12:25,789 basehttp 19316 20676 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:12:25,983 basehttp 19316 20676 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:12:26,401 basehttp 19316 22284 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:12:26,734 basehttp 19316 22284 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:12:27,142 basehttp 19316 22284 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 03:20:22,175 basehttp 19316 764 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 03:20:22,179 basehttp 19316 24004 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 03:20:22,196 basehttp 19316 22208 "OPTIONS /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-16 03:20:22,273 log 19316 764 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:20:22,274 basehttp 19316 764 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:20:22,314 log 19316 764 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:20:22,315 basehttp 19316 764 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:20:22,349 log 19316 764 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:20:22,350 basehttp 19316 764 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:20:29,625 log 19316 15732 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:20:29,625 basehttp 19316 15732 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:20:33,697 basehttp 19316 15732 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 03:20:39,931 basehttp 19316 8200 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 03:20:39,936 basehttp 19316 18092 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 03:20:39,936 basehttp 19316 13460 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 03:20:40,463 basehttp 19316 8200 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 03:20:40,759 basehttp 19316 8200 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+INFO 2025-07-16 03:20:41,170 basehttp 19316 13460 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8884
+WARNING 2025-07-16 03:20:56,778 log 19316 8676 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:20:56,780 basehttp 19316 8676 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:20:56,830 log 19316 8676 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:20:56,830 basehttp 19316 8676 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:20:56,869 log 19316 8676 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:20:56,870 basehttp 19316 8676 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:21:06,685 basehttp 19316 23148 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:21:06,899 log 19316 15780 Not Found: /api/admin/companies/
+INFO 2025-07-16 03:21:06,980 basehttp 19316 23148 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:21:06,987 basehttp 19316 15780 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:21:07,033 log 19316 23148 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:21:07,036 basehttp 19316 23148 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:21:07,091 log 19316 15780 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:21:07,093 basehttp 19316 15780 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:23:48,345 log 19316 16112 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:23:48,346 basehttp 19316 16112 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:23:50,510 log 19316 16112 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:23:50,511 basehttp 19316 16112 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:27:44,506 log 19316 10292 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:27:44,509 basehttp 19316 10292 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:32:02,115 basehttp 19316 23596 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:32:02,301 log 19316 24248 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:32:02,302 basehttp 19316 24248 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:32:02,341 basehttp 19316 23596 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:32:02,354 log 19316 24248 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:32:02,355 basehttp 19316 24248 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:32:02,399 log 19316 23596 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:32:02,400 basehttp 19316 23596 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:32:05,499 log 19316 23596 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:32:05,500 basehttp 19316 23596 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:33:06,220 log 19316 6536 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:33:06,222 basehttp 19316 6536 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:34:20,756 basehttp 19316 4544 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:34:20,949 log 19316 18876 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:34:20,949 basehttp 19316 18876 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:34:20,997 log 19316 18876 Not Found: /api/admin/companies/
+INFO 2025-07-16 03:34:21,002 basehttp 19316 4544 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:34:21,002 basehttp 19316 18876 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:34:21,046 log 19316 4544 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:34:21,047 basehttp 19316 4544 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:34:40,745 basehttp 19316 11028 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:34:41,016 log 19316 18476 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:34:41,018 basehttp 19316 18476 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+WARNING 2025-07-16 03:34:41,106 log 19316 18476 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:34:41,109 basehttp 19316 18476 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:34:41,169 basehttp 19316 11028 "GET /api/users/profile/ HTTP/1.1" 200 611
+WARNING 2025-07-16 03:34:41,194 log 19316 18476 Not Found: /api/admin/companies/
+WARNING 2025-07-16 03:34:41,198 basehttp 19316 18476 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 404 18725
+INFO 2025-07-16 03:36:03,612 autoreload 19316 17900 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-07-16 03:36:05,202 autoreload 22064 22608 Watching for file changes with StatReloader
+INFO 2025-07-16 03:37:08,756 basehttp 22064 19136 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:37:08,995 basehttp 22064 19136 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:37:10,073 basehttp 22064 14672 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:37:11,006 basehttp 22064 14672 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:37:11,924 basehttp 22064 14672 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:40:11,361 basehttp 22064 20668 "OPTIONS /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/suspend/ HTTP/1.1" 200 0
+WARNING 2025-07-16 03:40:11,425 log 22064 20668 Not Found: /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/suspend/
+WARNING 2025-07-16 03:40:11,426 basehttp 22064 20668 "POST /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/suspend/ HTTP/1.1" 404 19058
+WARNING 2025-07-16 03:40:14,902 log 22064 20668 Not Found: /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/suspend/
+WARNING 2025-07-16 03:40:14,904 basehttp 22064 20668 "POST /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/suspend/ HTTP/1.1" 404 19058
+INFO 2025-07-16 03:43:15,270 basehttp 22064 9608 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:43:15,533 basehttp 22064 9608 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:43:16,486 basehttp 22064 9608 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:43:17,506 basehttp 22064 9608 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:43:18,469 basehttp 22064 9608 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:45:33,399 basehttp 22064 14600 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:46:20,239 basehttp 22064 22544 "OPTIONS /api/admin/companies/?limit=10&offset=50 HTTP/1.1" 200 0
+INFO 2025-07-16 03:46:21,842 basehttp 22064 19012 "GET /api/admin/companies/?limit=10&offset=50 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:46:21,892 basehttp 22064 22544 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:46:25,879 basehttp 22064 12896 "OPTIONS /api/admin/companies/?limit=10&offset=10 HTTP/1.1" 200 0
+INFO 2025-07-16 03:46:27,096 basehttp 22064 22472 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:46:27,235 basehttp 22064 12896 "GET /api/admin/companies/?limit=10&offset=10 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:49:44,167 basehttp 22064 15792 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:50:25,474 basehttp 22064 13672 "OPTIONS /api/admin/companies/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 03:50:29,156 basehttp 22064 13672 "GET /api/admin/companies/?limit=50&offset=0 HTTP/1.1" 200 27883
+INFO 2025-07-16 03:52:15,607 basehttp 22064 24184 "GET /api/admin/companies/?limit=50&offset=0 HTTP/1.1" 200 27883
+WARNING 2025-07-16 03:58:43,049 log 22064 8500 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 03:58:43,053 basehttp 22064 8500 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-16 03:58:43,081 log 22064 8500 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 03:58:43,083 basehttp 22064 8500 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-16 03:58:43,088 basehttp 22064 8500 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-16 03:58:43,095 basehttp 22064 8500 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-16 03:58:44,029 basehttp 22064 8500 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-16 03:58:44,057 basehttp 22064 340 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-16 03:58:44,231 basehttp 22064 8500 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:58:44,452 basehttp 22064 8500 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 03:58:45,306 basehttp 22064 340 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:58:46,220 basehttp 22064 340 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:58:58,972 basehttp 22064 22820 "OPTIONS /api/admin/companies/?limit=10&offset=0&status=suspended HTTP/1.1" 200 0
+INFO 2025-07-16 03:58:59,390 basehttp 22064 22820 "GET /api/admin/companies/?limit=10&offset=0&status=suspended HTTP/1.1" 200 69
+INFO 2025-07-16 03:59:02,582 basehttp 22064 22820 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 03:59:19,930 basehttp 22064 24532 "OPTIONS /api/admin/companies/115f2d92-6f7a-4a12-872a-0847da465aa8/suspend/ HTTP/1.1" 200 0
+WARNING 2025-07-16 03:59:19,970 log 22064 24532 Not Found: /api/admin/companies/115f2d92-6f7a-4a12-872a-0847da465aa8/suspend/
+WARNING 2025-07-16 03:59:19,971 basehttp 22064 24532 "POST /api/admin/companies/115f2d92-6f7a-4a12-872a-0847da465aa8/suspend/ HTTP/1.1" 404 19058
+INFO 2025-07-16 04:01:26,296 basehttp 22064 18084 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:03:13,656 basehttp 22064 18920 "OPTIONS /api/companies/115f2d92-6f7a-4a12-872a-0847da465aa8/ HTTP/1.1" 200 0
+WARNING 2025-07-16 04:03:13,727 log 22064 18920 Not Found: /api/companies/115f2d92-6f7a-4a12-872a-0847da465aa8/
+WARNING 2025-07-16 04:03:13,727 basehttp 22064 18920 "PATCH /api/companies/115f2d92-6f7a-4a12-872a-0847da465aa8/ HTTP/1.1" 404 18766
+INFO 2025-07-16 04:03:20,673 basehttp 22064 18920 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:03:20,903 basehttp 22064 18920 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:03:22,111 basehttp 22064 2312 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:03:23,232 basehttp 22064 2312 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:04:47,923 basehttp 22064 21496 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:04:48,226 basehttp 22064 21496 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:04:49,197 basehttp 22064 7764 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:04:50,280 basehttp 22064 21496 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:05:09,448 basehttp 22064 16304 "OPTIONS /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/ HTTP/1.1" 200 0
+WARNING 2025-07-16 04:05:09,498 log 22064 16304 Not Found: /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/
+WARNING 2025-07-16 04:05:09,499 basehttp 22064 16304 "PATCH /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/ HTTP/1.1" 404 18766
+INFO 2025-07-16 04:06:10,818 basehttp 22064 22708 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:06:11,064 basehttp 22064 22708 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:06:12,193 basehttp 22064 3768 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:06:13,128 basehttp 22064 3768 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:07:04,350 basehttp 22064 13272 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:07:27,974 basehttp 22064 10844 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:07:28,165 basehttp 22064 10844 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:07:29,494 basehttp 22064 9676 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:07:30,400 basehttp 22064 9676 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:09:05,994 autoreload 22064 22608 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-07-16 04:09:07,862 autoreload 24400 22836 Watching for file changes with StatReloader
+INFO 2025-07-16 04:09:23,249 autoreload 24400 22836 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-07-16 04:09:24,099 autoreload 11908 12948 Watching for file changes with StatReloader
+INFO 2025-07-16 04:09:47,818 basehttp 11908 22148 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:09:48,930 basehttp 11908 22148 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:10:07,766 basehttp 11908 13564 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:10:08,141 basehttp 11908 13564 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:10:09,923 basehttp 11908 15368 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:10:11,235 basehttp 11908 13564 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:11:01,333 basehttp 11908 17208 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:11:04,376 basehttp 11908 17208 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:11:45,726 basehttp 11908 19692 "POST /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/suspend/ HTTP/1.1" 200 40
+INFO 2025-07-16 04:11:46,832 basehttp 11908 19692 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:12:03,574 basehttp 11908 23800 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:12:04,035 basehttp 11908 23800 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:12:08,041 basehttp 11908 23800 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:12:09,206 basehttp 11908 9944 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:12:39,163 basehttp 11908 9944 "GET /api/admin/companies/?limit=10&offset=0&status=suspended HTTP/1.1" 200 622
+INFO 2025-07-16 04:12:44,318 basehttp 11908 9944 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:12:44,705 basehttp 11908 9944 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:13:12,995 basehttp 11908 23456 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:13:14,248 basehttp 11908 23456 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:13:18,821 basehttp 11908 21972 "OPTIONS /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 04:13:19,320 basehttp 11908 21972 "POST /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/activate/ HTTP/1.1" 200 37
+INFO 2025-07-16 04:13:20,313 basehttp 11908 21972 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:17:25,877 basehttp 11908 3860 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 04:17:26,251 basehttp 11908 3860 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 04:17:26,659 basehttp 11908 17908 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 04:17:39,468 basehttp 11908 23624 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:17:40,562 basehttp 11908 23624 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:17:41,057 basehttp 11908 14848 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 04:17:41,430 basehttp 11908 23624 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 04:17:41,850 basehttp 11908 23624 "GET /api/admin/work-hours/?limit=10&offset=0 HTTP/1.1" 200 7082
+INFO 2025-07-16 04:17:49,277 basehttp 11908 14056 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:17:50,285 basehttp 11908 14056 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:19:32,374 autoreload 11908 12948 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-07-16 04:19:33,733 autoreload 9316 21508 Watching for file changes with StatReloader
+INFO 2025-07-16 04:21:59,739 basehttp 9316 15124 "GET /api/admin/companies/?limit=10&offset=0&status=suspended HTTP/1.1" 200 69
+INFO 2025-07-16 04:22:03,137 basehttp 9316 15124 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5665
+INFO 2025-07-16 04:22:08,654 basehttp 9316 23248 "POST /api/admin/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/suspend/ HTTP/1.1" 200 40
+INFO 2025-07-16 04:22:09,720 basehttp 9316 23248 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:22:13,681 basehttp 9316 23248 "GET /api/admin/companies/?limit=10&offset=0&status=suspended HTTP/1.1" 200 622
+INFO 2025-07-16 04:22:18,459 basehttp 9316 2288 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:22:18,834 basehttp 9316 2288 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:22:30,764 basehttp 9316 19844 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:22:31,763 basehttp 9316 19844 "GET /api/admin/companies/?limit=10&offset=0 HTTP/1.1" 200 5668
+INFO 2025-07-16 04:22:33,221 basehttp 9316 19844 "GET /api/admin/companies/?limit=10&offset=0&status=suspended HTTP/1.1" 200 622
+INFO 2025-07-16 04:22:36,484 basehttp 9316 23992 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:22:36,805 basehttp 9316 23992 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:22:43,840 basehttp 9316 23992 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:22:44,057 basehttp 9316 23992 "GET /api/users/profile/ HTTP/1.1" 200 611
+INFO 2025-07-16 04:22:44,441 basehttp 9316 23992 "GET /api/users/ HTTP/1.1" 200 60947
+INFO 2025-07-16 04:22:44,877 basehttp 9316 23992 "GET /api/users/ HTTP/1.1" 200 60947

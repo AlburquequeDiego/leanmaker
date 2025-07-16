@@ -40,6 +40,13 @@ interface WorkHour {
   status: 'pending' | 'approved' | 'rejected';
   admin_comment?: string;
   created_at: string;
+  student_api_level?: number;
+  project_api_level?: number;
+  project_hours?: number;
+  max_api_hours?: number;
+  horas_validadas?: number;
+  empresa_gpa?: number;
+  estudiante_gpa?: number;
 }
 
 export default function ValidacionHorasAdmin() {
@@ -110,21 +117,18 @@ export default function ValidacionHorasAdmin() {
     setAdminComment('');
   };
 
-  const handleValidate = async (approved: boolean) => {
+  const handleValidate = async () => {
     if (!selectedHour) return;
-    
     setActionLoading(true);
     try {
-      await apiService.post(`/api/admin/work-hours/${selectedHour.id}/validate/`, {
-        approved,
-        comment: adminComment
+      await apiService.post(`/api/admin/work-hours/${selectedHour.id}/approve/`, {
+        comentario: adminComment
       });
-      
-      setSuccessMsg(approved ? 'Hora aprobada correctamente' : 'Hora rechazada correctamente');
+      setSuccessMsg('Hora aprobada correctamente');
       handleCloseModal();
       loadWorkHours(); // Recargar datos
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al validar la hora');
+      setError(err.response?.data?.message || 'Error al aprobar la hora');
     } finally {
       setActionLoading(false);
     }
@@ -238,7 +242,70 @@ export default function ValidacionHorasAdmin() {
       ),
       width: '100px',
       align: 'center' as const
-    }
+    },
+    {
+      key: 'student_api_level',
+      label: 'Nivel API Est.',
+      render: (value: number) => (
+        <Chip label={`API ${value || '-'}`} color="info" size="small" />
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'project_api_level',
+      label: 'Nivel API Proy.',
+      render: (value: number) => (
+        <Chip label={`API ${value || '-'}`} color="secondary" size="small" />
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'project_hours',
+      label: 'Horas Proyecto',
+      render: (value: number) => (
+        <Typography variant="body2">{value || '-'}</Typography>
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'max_api_hours',
+      label: 'Máx. API',
+      render: (value: number) => (
+        <Typography variant="body2">{value || '-'}</Typography>
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'horas_validadas',
+      label: 'Validadas',
+      render: (value: number) => (
+        <Typography variant="body2">{value || 0}</Typography>
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'empresa_gpa',
+      label: 'GPA Empresa',
+      render: (value: number) => (
+        <Chip label={typeof value === 'number' ? `${value.toFixed(2)} ★` : '-'} color="primary" size="small" />
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'estudiante_gpa',
+      label: 'GPA Estudiante',
+      render: (value: number) => (
+        <Chip label={typeof value === 'number' ? `${value.toFixed(2)} ★` : '-'} color="success" size="small" />
+      ),
+      width: '100px',
+      align: 'center' as const
+    },
   ];
 
   const tableFilters = [
@@ -313,7 +380,7 @@ export default function ValidacionHorasAdmin() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom fontWeight={700}>
-        Validación de Horas Trabajadas
+        VALIDACION DE HORAS
       </Typography>
 
       <DataTable
@@ -407,17 +474,8 @@ export default function ValidacionHorasAdmin() {
           </Button>
           <Button
             variant="contained"
-            color="error"
-            onClick={() => handleValidate(false)}
-            disabled={actionLoading}
-            startIcon={<CancelIcon />}
-          >
-            {actionLoading ? 'Procesando...' : 'Rechazar'}
-          </Button>
-          <Button
-            variant="contained"
             color="success"
-            onClick={() => handleValidate(true)}
+            onClick={handleValidate}
             disabled={actionLoading}
             startIcon={<CheckCircleIcon />}
           >

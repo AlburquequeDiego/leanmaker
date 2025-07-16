@@ -254,6 +254,18 @@ def admin_users_list(request, current_user):
         
         users_data = []
         for user in users:
+            # Obtener status real según tipo de usuario
+            status = None
+            if user.role == 'company':
+                try:
+                    status = user.empresa_profile.status
+                except Exception:
+                    status = None
+            elif user.role == 'student':
+                try:
+                    status = user.estudiante_profile.status
+                except Exception:
+                    status = None
             users_data.append({
                 'id': str(user.id),
                 'username': user.username,
@@ -269,6 +281,7 @@ def admin_users_list(request, current_user):
                 'is_verified': user.is_verified,
                 'is_staff': user.is_staff,
                 'is_superuser': user.is_superuser,
+                'status': status,
             })
         
         return JsonResponse({
@@ -298,6 +311,37 @@ def admin_work_hours_list(request, current_user):
         
         work_hours_data = []
         for work_hour in work_hours:
+            # Calcular nivel API del estudiante y del proyecto (por TRL)
+            student_trl = getattr(work_hour.student, 'trl_level', None)
+            project_trl = getattr(work_hour.project, 'trl_level', None)
+            def trl_to_api(trl):
+                if trl is None:
+                    return None
+                trl = int(trl)
+                if trl <= 2:
+                    return 1
+                elif trl <= 4:
+                    return 2
+                elif trl <= 6:
+                    return 3
+                else:
+                    return 4
+            student_api = trl_to_api(student_trl)
+            project_api = trl_to_api(project_trl)
+            # Horas API mínimas y máximas por nivel
+            api_hours = {1: 20, 2: 40, 3: 80, 4: 160}
+            min_api_hours = api_hours.get(student_api, None)
+            max_api_hours = api_hours.get(student_api, None)
+            # Horas ofrecidas por el proyecto
+            project_hours = getattr(work_hour.project, 'required_hours', None) or getattr(work_hour.project, 'hours_per_week', None)
+            # Horas ya validadas por el estudiante
+            horas_validadas = getattr(work_hour.student, 'horas_validadas', None)
+            # GPA/calificación de la empresa y del estudiante (si existen)
+            empresa_gpa = getattr(work_hour.company, 'gpa', None)
+            estudiante_gpa = getattr(work_hour.student, 'gpa', None)
+            # Calificaciones mutuas (estrellas)
+            empresa_stars = getattr(work_hour.company, 'stars', None)
+            estudiante_stars = getattr(work_hour.student, 'stars', None)
             work_hours_data.append({
                 'id': str(work_hour.id),
                 'student_name': work_hour.student.user.full_name,
@@ -311,6 +355,16 @@ def admin_work_hours_list(request, current_user):
                 'approved_by': work_hour.approved_by.full_name if work_hour.approved_by else None,
                 'approved_at': work_hour.approved_at.isoformat() if work_hour.approved_at else None,
                 'created_at': work_hour.created_at.isoformat(),
+                'student_api_level': student_api,
+                'project_api_level': project_api,
+                'min_api_hours': min_api_hours,
+                'max_api_hours': max_api_hours,
+                'project_hours': project_hours,
+                'horas_validadas': horas_validadas,
+                'empresa_gpa': empresa_gpa,
+                'estudiante_gpa': estudiante_gpa,
+                'empresa_stars': empresa_stars,
+                'estudiante_stars': estudiante_stars,
             })
         
         return JsonResponse({
@@ -462,5 +516,88 @@ def admin_profile(request, current_user):
         
         return JsonResponse(admin_data)
         
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin_auth
+def approve_work_hour(request, current_user, work_hour_id):
+    """Aprobar horas trabajadas desde el panel admin/empresa"""
+    from work_hours.models import WorkHour
+    import json
+    try:
+        # Buscar la hora trabajada
+        try:
+            work_hour = WorkHour.objects.get(id=work_hour_id)
+        except WorkHour.DoesNotExist:
+            return JsonResponse({'error': 'Horas trabajadas no encontradas'}, status=404)
+
+        # Solo admins o empresas pueden aprobar
+        if current_user.role not in ['admin', 'company']:
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+
+        # Leer comentario opcional
+        comentario = None
+        if request.body:
+            try:
+                data = json.loads(request.body)
+                comentario = data.get('comentario')
+            except Exception:
+                pass
+
+        # Aprobar horas
+        work_hour.aprobar_horas(current_user, comentario)
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Horas trabajadas aprobadas correctamente',
+            'id': str(work_hour.id),
+            'approved': work_hour.approved,
+            'approved_by': work_hour.approved_by.full_name if work_hour.approved_by else None,
+            'approved_at': work_hour.approved_at.isoformat() if work_hour.approved_at else None,
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin_auth
+def admin_suspend_company(request, current_user, company_id):
+    try:
+        company = Empresa.objects.get(id=company_id)
+        company.status = 'suspended'
+        company.save(update_fields=['status'])
+        return JsonResponse({'success': True, 'status': 'suspended'})
+    except Empresa.DoesNotExist:
+        return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin_auth
+def admin_block_company(request, current_user, company_id):
+    try:
+        company = Empresa.objects.get(id=company_id)
+        company.status = 'blocked'
+        company.save(update_fields=['status'])
+        return JsonResponse({'success': True, 'status': 'blocked'})
+    except Empresa.DoesNotExist:
+        return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin_auth
+def admin_activate_company(request, current_user, company_id):
+    try:
+        company = Empresa.objects.get(id=company_id)
+        company.status = 'active'
+        company.save(update_fields=['status'])
+        return JsonResponse({'success': True, 'status': 'active'})
+    except Empresa.DoesNotExist:
+        return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 
