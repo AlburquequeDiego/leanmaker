@@ -91,7 +91,7 @@ export default function UsuariosAdmin() {
 
   useEffect(() => {
     fetchUsers();
-    // Registrar función global para refrescar usuarios desde otras vistas
+    // Hacer la función fetchUsers disponible globalmente
     if (typeof window !== 'undefined') {
       (window as any).refreshUsers = fetchUsers;
     }
@@ -100,7 +100,7 @@ export default function UsuariosAdmin() {
         (window as any).refreshUsers = undefined;
       }
     };
-  }, [statusFilter, typeFilter]);
+  }, [statusFilter, typeFilter, limit]);
 
   const fetchUsers = async () => {
     try {

@@ -45,6 +45,7 @@ import { DataTable } from '../../../components/common/DataTable';
 
 interface Company {
   id: string;
+  user: string; // <-- Añadido para asegurar el ID de usuario
   name: string;
   email: string;
   status: 'active' | 'suspended' | 'blocked' | string;
@@ -94,7 +95,7 @@ export const GestionEmpresasAdmin = () => {
   const [errorMessage, setErrorMessage] = useState('');
   
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number | 'ultimos'>(10);
+  const [pageSize, setPageSize] = useState<number>(20); // <-- Cambiado de 10 a 20
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
@@ -113,23 +114,29 @@ export const GestionEmpresasAdmin = () => {
     try {
       // Construir parámetros de consulta
       const params = new URLSearchParams();
+      params.append('limit', pageSize.toString());
+      params.append('offset', ((currentPage - 1) * pageSize).toString());
       
-      if (pageSize === 'ultimos') {
-        params.append('limit', '20');
-        params.append('ultimos', 'true');
-      } else {
-        params.append('limit', pageSize.toString());
-        params.append('offset', ((currentPage - 1) * pageSize).toString());
-      }
-
-      // Agregar filtros
       if (filters.search) params.append('search', filters.search);
       if (filters.status) params.append('status', filters.status);
       if (filters.rating) params.append('rating', filters.rating);
-
-      const response = await apiService.get(`/api/admin/companies/?${params.toString()}`);
       
-      setCompanies(response.results || []);
+      console.log('🔍 Filtros aplicados:', filters);
+      console.log('📡 URL de la petición:', `/api/admin/companies/?${params.toString()}`);
+      
+      const response = await apiService.get(`/api/admin/companies/?${params.toString()}`);
+      console.log('📊 Datos recibidos del backend:', response.results);
+      
+      // Mapear user correctamente si viene como objeto
+      const mappedCompanies = (response.results || []).map((c: any) => ({
+        ...c,
+        user: typeof c.user === 'object' ? c.user.id : c.user
+      }));
+      
+      console.log('🔄 Empresas mapeadas:', mappedCompanies);
+      console.log('📈 Total de empresas:', mappedCompanies.length);
+      
+      setCompanies(mappedCompanies);
       setTotalCount(response.count || 0);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -152,26 +159,48 @@ export const GestionEmpresasAdmin = () => {
 
   const handleConfirmAction = async () => {
     if (!selectedCompany || !actionType) return;
-
+    if (!selectedCompany.user) {
+      setErrorMessage('Esta empresa no tiene usuario asociado. No se puede realizar la acción.');
+      setShowError(true);
+      return;
+    }
     try {
       let endpoint = '';
-      if (actionType === 'activate') endpoint = `/api/users/${selectedCompany.id}/activate/`;
-      if (actionType === 'suspend') endpoint = `/api/users/${selectedCompany.id}/suspend/`;
-      if (actionType === 'block') endpoint = `/api/users/${selectedCompany.id}/block/`;
-
+      const userId = selectedCompany.user;
+      if (actionType === 'activate') endpoint = `/api/users/${userId}/activate/`;
+      if (actionType === 'suspend') endpoint = `/api/users/${userId}/suspend/`;
+      if (actionType === 'block') endpoint = `/api/users/${userId}/block/`;
+      
       await apiService.post(endpoint, {});
-
       setSuccessMessage(`Empresa ${actionType === 'activate' ? 'activada' : actionType === 'suspend' ? 'suspendida' : 'bloqueada'} correctamente`);
       setShowSuccess(true);
       setActionDialog(false);
-      fetchData();
-      // Refrescar usuarios si existe función global (ejemplo: window.refreshUsers)
-      if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
-        (window as any).refreshUsers();
-      }
+      
+      // Forzar refresh completo después de un pequeño delay
+      setTimeout(() => {
+        fetchData();
+        refreshOtherInterfaces();
+      }, 500);
+      
     } catch (error) {
+      console.error('Error en acción:', error);
       setErrorMessage('Error al cambiar el estado de la empresa');
       setShowError(true);
+    }
+  };
+
+  const refreshOtherInterfaces = () => {
+    // Refrescar gestión de usuarios si existe
+    if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
+      (window as any).refreshUsers();
+    }
+    // Refrescar gestión de estudiantes si existe
+    if (typeof window !== 'undefined' && typeof (window as any).refreshStudents === 'function') {
+      (window as any).refreshStudents();
+    }
+    // Disparar evento personalizado para otras interfaces
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('userStateChanged'));
     }
   };
 
@@ -307,7 +336,7 @@ export const GestionEmpresasAdmin = () => {
               <IconButton
                 color="success"
                 onClick={() => handleAction(row, 'activate')}
-                disabled={row.status === 'active'}
+                disabled={row.status === 'active' || !row.user}
               >
                 <CheckCircleIcon />
               </IconButton>
@@ -318,7 +347,7 @@ export const GestionEmpresasAdmin = () => {
               <IconButton
                 color="warning"
                 onClick={() => handleAction(row, 'suspend')}
-                disabled={row.status === 'suspended'}
+                disabled={row.status === 'suspended' || !row.user}
               >
                 <WarningIcon />
               </IconButton>
@@ -329,7 +358,7 @@ export const GestionEmpresasAdmin = () => {
               <IconButton
                 color="error"
                 onClick={() => handleAction(row, 'block')}
-                disabled={row.status === 'blocked'}
+                disabled={row.status === 'blocked' || !row.user}
               >
                 <BlockIcon />
               </IconButton>
@@ -340,11 +369,26 @@ export const GestionEmpresasAdmin = () => {
               <IconButton
                 color="info"
                 onClick={async () => {
-                  await apiService.post(`/api/users/${row.id}/unblock/`);
-                  setSuccessMessage('Empresa desbloqueada exitosamente');
-                  fetchData();
+                  if (!row.user) {
+                    setErrorMessage('Esta empresa no tiene usuario asociado. No se puede desbloquear.');
+                    setShowError(true);
+                    return;
+                  }
+                  try {
+                    await apiService.post(`/api/users/${row.user}/unblock/`);
+                    setSuccessMessage('Empresa desbloqueada exitosamente');
+                    // Forzar refresh completo después de un pequeño delay
+                    setTimeout(() => {
+                      fetchData();
+                      refreshOtherInterfaces();
+                    }, 500);
+                  } catch (error) {
+                    console.error('Error al desbloquear:', error);
+                    setErrorMessage('Error al desbloquear la empresa');
+                    setShowError(true);
+                  }
                 }}
-                disabled={row.status !== 'blocked'}
+                disabled={row.status !== 'blocked' || !row.user}
               >
                 <CheckCircleIcon />
               </IconButton>
@@ -384,7 +428,7 @@ export const GestionEmpresasAdmin = () => {
     setCurrentPage(page);
   };
 
-  const handlePageSizeChange = (newPageSize: number | 'ultimos') => {
+  const handlePageSizeChange = (newPageSize: number) => {
     setPageSize(newPageSize);
     setCurrentPage(1); // Resetear a la primera página
   };
@@ -395,87 +439,44 @@ export const GestionEmpresasAdmin = () => {
         Gestión de Empresas
       </Typography>
 
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab label="Empresas" />
-          <Tab label="Proyectos" />
-          <Tab label="Evaluaciones" />
-        </Tabs>
-          </Box>
-
-      {/* Tab: Empresas */}
-      <div role="tabpanel" hidden={tabValue !== 0}>
-        {tabValue === 0 && (
-          <>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <TextField
-                label="Buscar por nombre o email"
-                variant="outlined"
-                size="small"
-                value={filters.search || ''}
-                onChange={e => handleFilterChange({ ...filters, search: e.target.value })}
-                sx={{ minWidth: 220 }}
-              />
-              <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
-                <InputLabel>Estado</InputLabel>
-                <Select
-                  label="Estado"
-                  value={filters.status || ''}
-                  onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
-                >
-                  <MenuItem value="">Todos</MenuItem>
-                  <MenuItem value="active">Activa</MenuItem>
-                  <MenuItem value="suspended">Suspendida</MenuItem>
-                  <MenuItem value="blocked">Bloqueada</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <DataTable
-              title="Lista de Empresas"
-              data={companies}
-              columns={columns}
-              loading={loading}
-              error={null}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              totalCount={totalCount}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              showPagination={pageSize !== 'ultimos'}
-            />
-          </>
-        )}
-      </div>
-
-      {/* Tab: Proyectos */}
-      <div role="tabpanel" hidden={tabValue !== 1}>
-        {tabValue === 1 && (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Proyectos de Empresas
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Aquí puedes ver todos los proyectos creados por las empresas.
-            </Typography>
-            {/* Aquí iría la tabla de proyectos usando DataTable */}
-          </Box>
-        )}
-      </div>
-
-        {/* Tab: Evaluaciones */}
-      <div role="tabpanel" hidden={tabValue !== 2}>
-        {tabValue === 2 && (
-          <Box>
-                  <Typography variant="h6" gutterBottom>
-              Evaluaciones de Empresas
-                  </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Aquí puedes ver las evaluaciones que las empresas han realizado.
-                  </Typography>
-            {/* Aquí iría la tabla de evaluaciones usando DataTable */}
-          </Box>
-        )}
-      </div>
+      {/* Filtros y tabla de empresas */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <TextField
+          label="Buscar por nombre o email"
+          variant="outlined"
+          size="small"
+          value={filters.search || ''}
+          onChange={e => handleFilterChange({ ...filters, search: e.target.value })}
+          sx={{ minWidth: 220 }}
+        />
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
+          <InputLabel>Estado</InputLabel>
+          <Select
+            label="Estado"
+            value={filters.status || ''}
+            onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
+          >
+            <MenuItem value="">Todos</MenuItem>
+            <MenuItem value="active">Activa</MenuItem>
+            <MenuItem value="suspended">Suspendida</MenuItem>
+            <MenuItem value="blocked">Bloqueada</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      <DataTable
+        title="Lista de Empresas"
+        data={companies}
+        columns={columns}
+        loading={loading}
+        error={null}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        pageSizeOptions={[20, 50, 100, 150, 200]}
+        showPagination={false}
+      />
 
       {/* Modal de acción */}
       <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
@@ -490,15 +491,6 @@ export const GestionEmpresasAdmin = () => {
               ¿Estás seguro de que quieres {actionType === 'activate' ? 'activar' : actionType === 'suspend' ? 'suspender' : 'bloquear'} la empresa{' '}
               <strong>{selectedCompany?.name}</strong>?
             </Typography>
-            <TextField
-              label="Razón (opcional)"
-              value={actionReason}
-              onChange={(e) => setActionReason(e.target.value)}
-              fullWidth
-              multiline
-              minRows={2}
-              sx={{ mt: 2 }}
-            />
           </Box>
         </DialogContent>
         <DialogActions>

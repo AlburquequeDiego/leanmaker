@@ -47,6 +47,8 @@ interface WorkHour {
   horas_validadas?: number;
   empresa_gpa?: number;
   estudiante_gpa?: number;
+  empresa_nombre?: string; // Added for the new line
+  empresa_email?: string; // Added for the new line
 }
 
 export default function ValidacionHorasAdmin() {
@@ -58,9 +60,11 @@ export default function ValidacionHorasAdmin() {
   const [adminComment, setAdminComment] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportHour, setReportHour] = useState<WorkHour | null>(null);
 
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number | 'ultimos'>(10);
+  const [pageSize, setPageSize] = useState<number>(20); // Por defecto 20
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
@@ -162,86 +166,22 @@ export default function ValidacionHorasAdmin() {
             <PersonIcon fontSize="small" />
           </Avatar>
           <Box>
-            <Typography variant="body2" fontWeight={600}>
-              {value}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {row.student_email}
-            </Typography>
+            <Typography variant="body2" fontWeight={600}>{value}</Typography>
+            <Typography variant="caption" color="text.secondary">{row.student_email}</Typography>
           </Box>
         </Box>
       ),
       width: '250px'
     },
     {
-      key: 'project_title',
-      label: 'Proyecto',
-      render: (value: string) => (
+      key: 'empresa_nombre',
+      label: 'Empresa',
+      render: (value: string, row: WorkHour) => (
         <Typography variant="body2" fontWeight={600}>
-          {value}
+          {value && row.empresa_email ? `${value} (${row.empresa_email})` : '-'}
         </Typography>
       ),
-      width: '200px'
-    },
-    {
-      key: 'date',
-      label: 'Fecha',
-      render: (value: string) => (
-        <Typography variant="body2">
-          {new Date(value).toLocaleDateString()}
-        </Typography>
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'hours_worked',
-      label: 'Horas',
-      render: (value: number) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <ScheduleIcon fontSize="small" color="primary" />
-          <Typography variant="body2" fontWeight={600}>
-            {value} hrs
-          </Typography>
-        </Box>
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'description',
-      label: 'Descripción',
-      render: (value: string) => (
-        <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {value}
-        </Typography>
-      ),
-      width: '200px'
-    },
-    {
-      key: 'status',
-      label: 'Estado',
-      render: (value: string) => (
-        <Chip 
-          label={getStatusText(value)} 
-          color={getStatusColor(value) as any}
-          size="small"
-          variant="filled"
-        />
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'created_at',
-      label: 'Registrado',
-      render: (value: string) => (
-        <Typography variant="caption" color="text.secondary">
-          {new Date(value).toLocaleDateString()}
-        </Typography>
-      ),
-      width: '100px',
-      align: 'center' as const
+      width: '250px'
     },
     {
       key: 'student_api_level',
@@ -253,37 +193,13 @@ export default function ValidacionHorasAdmin() {
       align: 'center' as const
     },
     {
-      key: 'project_api_level',
-      label: 'Nivel API Proy.',
+      key: 'hours_worked',
+      label: 'Horas',
       render: (value: number) => (
-        <Chip label={`API ${value || '-'}`} color="secondary" size="small" />
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'project_hours',
-      label: 'Horas Proyecto',
-      render: (value: number) => (
-        <Typography variant="body2">{value || '-'}</Typography>
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'max_api_hours',
-      label: 'Máx. API',
-      render: (value: number) => (
-        <Typography variant="body2">{value || '-'}</Typography>
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'horas_validadas',
-      label: 'Validadas',
-      render: (value: number) => (
-        <Typography variant="body2">{value || 0}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <ScheduleIcon fontSize="small" color="primary" />
+          <Typography variant="body2" fontWeight={600}>{value} hrs</Typography>
+        </Box>
       ),
       width: '100px',
       align: 'center' as const
@@ -304,6 +220,13 @@ export default function ValidacionHorasAdmin() {
         <Chip label={typeof value === 'number' ? `${value.toFixed(2)} ★` : '-'} color="success" size="small" />
       ),
       width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'acciones',
+      label: 'Acciones',
+      render: (_: any, row: WorkHour) => actions(row),
+      width: '120px',
       align: 'center' as const
     },
   ];
@@ -347,8 +270,12 @@ export default function ValidacionHorasAdmin() {
   ];
 
   const handleFilterChange = (newFilters: any) => {
+    if (newFilters.pageSize) {
+      setPageSize(Number(newFilters.pageSize));
+      setCurrentPage(1);
+    }
     setFilters(newFilters);
-    setCurrentPage(1); // Resetear a la primera página
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
@@ -361,20 +288,41 @@ export default function ValidacionHorasAdmin() {
   };
 
   const actions = (row: WorkHour) => (
-    row.status === 'pending' ? (
-      <Button
-        variant="contained"
-        size="small"
-        onClick={() => handleOpenModal(row)}
-        startIcon={<WorkIcon />}
-      >
-        Validar
-      </Button>
-    ) : (
-      <Typography variant="caption" color="text.secondary">
-        Ya validada
-      </Typography>
-    )
+    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+      {row.status === 'pending' ? (
+        <Button
+          variant="contained"
+          size="small"
+          color="success"
+          onClick={() => handleOpenModal(row)}
+          startIcon={<WorkIcon />}
+        >
+          Validar horas
+        </Button>
+      ) : (
+        <>
+          <Button
+            variant="outlined"
+            size="small"
+            color="info"
+            onClick={() => {
+              setReportHour(row);
+              setReportModalOpen(true);
+            }}
+          >
+            Ver reporte
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            color="info"
+            disabled
+          >
+            Ya validada
+          </Button>
+        </>
+      )}
+    </Box>
   );
 
   return (
@@ -383,22 +331,32 @@ export default function ValidacionHorasAdmin() {
         VALIDACION DE HORAS
       </Typography>
 
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel>Mostrar</InputLabel>
+          <Select
+            value={pageSize}
+            label="Mostrar"
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            <MenuItem value={20}>20 últimos</MenuItem>
+            <MenuItem value={50}>50 últimos</MenuItem>
+            <MenuItem value={100}>100 últimos</MenuItem>
+            <MenuItem value={150}>150 últimos</MenuItem>
+            <MenuItem value={200}>200 últimos</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
       <DataTable
-        title="Horas Pendientes de Validación"
-        data={workHours}
+        data={workHours.slice(0, pageSize)}
         columns={columns}
         loading={loading}
         error={error}
         filters={tableFilters}
         onFilterChange={handleFilterChange}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-        totalCount={totalCount}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        showPagination={pageSize !== 'ultimos'}
-        actions={actions}
-        emptyMessage="No hay horas trabajadas pendientes de validación"
+        emptyMessage="No hay horas trabajadas registradas"
+        showPagination={false}
+        showPageSizeSelector={false}
       />
 
       {/* Modal de validación */}
@@ -452,6 +410,15 @@ export default function ValidacionHorasAdmin() {
                       {selectedHour.description}
                     </Typography>
                   </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">Empresa:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedHour.empresa_nombre && selectedHour.empresa_email
+                        ? `${selectedHour.empresa_nombre} (${selectedHour.empresa_email})`
+                        : '-'}
+                    </Typography>
+                  </Box>
                 </Box>
               </Paper>
 
@@ -480,6 +447,62 @@ export default function ValidacionHorasAdmin() {
             startIcon={<CheckCircleIcon />}
           >
             {actionLoading ? 'Procesando...' : 'Aprobar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de reporte de hora validada */}
+      <Dialog
+        open={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Reporte de Hora Validada</DialogTitle>
+        <DialogContent>
+          {reportHour && (
+            <Box sx={{ mt: 2 }}>
+              <Paper sx={{ p: 2, mb: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Detalles de la Hora Validada
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">Estudiante:</Typography>
+                    <Typography variant="body1" fontWeight={600}>{reportHour.student_name}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">Empresa:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {reportHour.empresa_nombre && reportHour.empresa_email
+                        ? `${reportHour.empresa_nombre} (${reportHour.empresa_email})`
+                        : '-'}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">Nivel API Est.:</Typography>
+                    <Typography variant="body1" fontWeight={600}>{reportHour.student_api_level || '-'}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">Horas validadas:</Typography>
+                    <Typography variant="body1" fontWeight={600}>{reportHour.hours_worked} hrs</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">GPA Empresa:</Typography>
+                    <Typography variant="body1" fontWeight={600}>{typeof reportHour.empresa_gpa === 'number' ? `${reportHour.empresa_gpa.toFixed(2)} ★` : '-'}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">GPA Estudiante:</Typography>
+                    <Typography variant="body1" fontWeight={600}>{typeof reportHour.estudiante_gpa === 'number' ? `${reportHour.estudiante_gpa.toFixed(2)} ★` : '-'}</Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setReportModalOpen(false)}>
+            Cerrar
           </Button>
         </DialogActions>
       </Dialog>

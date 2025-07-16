@@ -10,6 +10,7 @@ from django.db.models import Q
 from users.models import User
 from .models import WorkHour
 from core.views import verify_token
+from .serializers import WorkHourSerializer
 
 
 @csrf_exempt
@@ -70,31 +71,11 @@ def work_hours_list(request):
         # Paginar
         work_hours = queryset[offset:offset + limit]
         
-        # Serializar datos
-        work_hours_data = []
-        for work_hour in work_hours:
-            work_hours_data.append({
-                'id': str(work_hour.id),
-                'student': str(work_hour.student.id),
-                'student_name': work_hour.student.user.full_name,
-                'student_email': work_hour.student.user.email,
-                'project': str(work_hour.project.id),
-                'project_title': work_hour.project.title,
-                'company': str(work_hour.company.id) if work_hour.company else None,
-                'company_name': work_hour.company.company_name if work_hour.company else 'Sin empresa',
-                'date': work_hour.date.isoformat(),
-                'hours_worked': work_hour.hours_worked,
-                'description': work_hour.description,
-                'approved': work_hour.approved,
-                'approved_by': str(work_hour.approved_by.id) if work_hour.approved_by else None,
-                'approved_by_name': work_hour.approved_by.full_name if work_hour.approved_by else None,
-                'approved_at': work_hour.approved_at.isoformat() if work_hour.approved_at else None,
-                'created_at': work_hour.created_at.isoformat(),
-                'updated_at': work_hour.updated_at.isoformat(),
-            })
+        # Serializar datos con el serializer
+        serializer = WorkHourSerializer(work_hours, many=True)
         
         return JsonResponse({
-            'results': work_hours_data,
+            'results': serializer.data,
             'count': total_count,
             'page': page,
             'limit': limit,

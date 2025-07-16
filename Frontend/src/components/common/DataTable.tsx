@@ -49,10 +49,11 @@ interface DataTableProps {
   }[];
   onFilterChange?: (filters: any) => void;
   onPageChange?: (page: number) => void;
-  onPageSizeChange?: (pageSize: number | 'ultimos') => void;
+  onPageSizeChange?: (pageSize: number) => void;
   totalCount?: number;
   currentPage?: number;
-  pageSize?: number | 'ultimos';
+  pageSize?: number;
+  pageSizeOptions?: number[];
   showPagination?: boolean;
   showPageSizeSelector?: boolean;
   emptyMessage?: string;
@@ -72,13 +73,14 @@ export const DataTable: React.FC<DataTableProps> = ({
   totalCount = 0,
   currentPage = 1,
   pageSize = 10,
+  pageSizeOptions = [5, 10, 15, 20, 25, 30, 50, 100],
   showPagination = true,
   showPageSizeSelector = true,
   emptyMessage = 'No hay datos disponibles',
   actions,
 }) => {
   const [localFilters, setLocalFilters] = useState<{ [key: string]: any }>({});
-  const [showFilters, setShowFilters] = useState(false);
+  // Elimina el estado showFilters y el botón de filtros. Haz que los filtros se muestren siempre si filters.length > 0.
 
   useEffect(() => {
     if (onFilterChange) {
@@ -100,11 +102,11 @@ export const DataTable: React.FC<DataTableProps> = ({
   const handlePageSizeChange = (event: any) => {
     const value = event.target.value;
     if (onPageSizeChange) {
-      onPageSizeChange(value === 'ultimos' ? 'ultimos' : Number(value));
+      onPageSizeChange(Number(value));
     }
   };
 
-  const totalPages = Math.ceil(totalCount / (typeof pageSize === 'number' ? pageSize : 20));
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <Box>
@@ -115,20 +117,8 @@ export const DataTable: React.FC<DataTableProps> = ({
             {title}
           </Typography>
         )}
-        
+        {/* Elimina el botón de filtros */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* Botón de filtros */}
-          {filters.length > 0 && (
-            <Button
-              variant="outlined"
-              startIcon={<FilterListIcon />}
-              onClick={() => setShowFilters(!showFilters)}
-              size="small"
-            >
-              Filtros
-            </Button>
-          )}
-
           {/* Selector de cantidad de resultados */}
           {showPageSizeSelector && (
             <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -138,23 +128,19 @@ export const DataTable: React.FC<DataTableProps> = ({
                 onChange={handlePageSizeChange}
                 label="Mostrar"
               >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={15}>15</MenuItem>
-                <MenuItem value={20}>20</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={30}>30</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-                <MenuItem value={100}>100</MenuItem>
-                <MenuItem value="ultimos">Últimos</MenuItem>
+                {pageSizeOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           )}
         </Box>
       </Box>
 
-      {/* Filtros */}
-      {showFilters && filters.length > 0 && (
+      {/* Filtros SIEMPRE visibles */}
+      {filters.length > 0 && (
         <Paper sx={{ p: 2, mb: 2 }}>
           <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" gap={2}>
             {filters.map((filter) => (
@@ -181,7 +167,10 @@ export const DataTable: React.FC<DataTableProps> = ({
                       onChange={(e) => handleFilterChange(filter.key, e.target.value)}
                       label={filter.label}
                     >
-                      <MenuItem value="">Todos</MenuItem>
+                      {/* Solo muestra 'Todos' si el filtro NO es pageSize/Mostrar últimas */}
+                      {filter.key !== 'pageSize' && filter.label !== 'Mostrar últimas' && (
+                        <MenuItem value="">Todos</MenuItem>
+                      )}
                       {filter.options?.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                           {option.label}
@@ -192,7 +181,6 @@ export const DataTable: React.FC<DataTableProps> = ({
                 )}
               </Box>
             ))}
-            
             <Button
               variant="outlined"
               startIcon={<ClearIcon />}
@@ -293,11 +281,10 @@ export const DataTable: React.FC<DataTableProps> = ({
         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
           <Typography variant="body2" color="text.secondary">
             Mostrando {data.length} de {totalCount} resultados
-            {pageSize === 'ultimos' && ' (últimos registros)'}
           </Typography>
 
           {/* Paginación */}
-          {showPagination && typeof pageSize === 'number' && totalPages > 1 && (
+          {showPagination && totalPages > 1 && (
             <Pagination
               count={totalPages}
               page={currentPage}

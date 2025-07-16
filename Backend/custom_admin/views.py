@@ -187,19 +187,41 @@ def admin_companies_list(request, current_user):
                 Q(user__email__icontains=search)
             )
         
+        # Aplicar filtro de status basado en el usuario, no en el campo status de la empresa
         if status:
-            queryset = queryset.filter(status=status)
+            if status == 'active':
+                queryset = queryset.filter(user__is_active=True, user__is_verified=True)
+            elif status == 'suspended':
+                queryset = queryset.filter(user__is_active=False, user__is_verified=True)
+            elif status == 'blocked':
+                # Incluir empresas bloqueadas (no verificadas) y empresas sin usuario
+                queryset = queryset.filter(
+                    Q(user__is_verified=False) | Q(user__isnull=True)
+                )
         
         total_count = queryset.count()
         companies = queryset[offset:offset + limit]
         
         companies_data = []
         for company in companies:
+            # Calcular status real basado en el usuario
+            user_status = 'active'
+            if company.user:
+                if not company.user.is_verified:
+                    user_status = 'blocked'
+                elif not company.user.is_active:
+                    user_status = 'suspended'
+                else:
+                    user_status = 'active'
+            else:
+                user_status = 'blocked'  # Sin usuario = bloqueado
+            
             companies_data.append({
                 'id': str(company.id),
+                'user': str(company.user.id) if company.user else None,  # <-- AÑADIDO: ID del usuario
                 'name': company.company_name,
-                'email': company.user.email,
-                'status': company.status,
+                'email': company.user.email if company.user else '',
+                'status': user_status,  # <-- USAR STATUS DEL USUARIO
                 'projects_count': company.proyectos.count(),
                 'rating': float(company.rating),
                 'join_date': company.created_at.isoformat(),
