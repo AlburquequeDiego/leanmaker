@@ -26,7 +26,7 @@ import {
   CircularProgress,
   Snackbar,
   Avatar,
-
+  Tooltip,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -38,6 +38,7 @@ import {
   Business as BusinessIcon,
   School as SchoolIcon,
   AdminPanelSettings as AdminIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
@@ -90,12 +91,27 @@ export default function UsuariosAdmin() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+    // Registrar función global para refrescar usuarios desde otras vistas
+    if (typeof window !== 'undefined') {
+      (window as any).refreshUsers = fetchUsers;
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        (window as any).refreshUsers = undefined;
+      }
+    };
+  }, [statusFilter, typeFilter]);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await apiService.get('/api/users/');
+      let params = [];
+      if (statusFilter === 'active') params.push('is_active=true');
+      if (statusFilter === 'inactive') params.push('is_active=false');
+      if (statusFilter === 'blocked') params.push('is_verified=false');
+      if (typeFilter) params.push(`role=${typeFilter}`);
+      const query = params.length ? `?${params.join('&')}` : '';
+      const response = await apiService.get(`/api/users/${query}`);
       console.log('Respuesta del backend:', response);
       
       // El backend envía {success: true, data: [...]}
@@ -109,6 +125,7 @@ export default function UsuariosAdmin() {
         last_name: user.last_name || '',
         user_type: user.role || 'student', // El backend envía 'role', no 'user_type'
         is_active: user.is_active,
+        is_verified: user.is_verified, // <-- Agregado
         date_joined: user.date_joined,
         last_login: user.last_login,
         phone: user.phone || '',
@@ -290,7 +307,8 @@ export default function UsuariosAdmin() {
      user.last_name.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (typeFilter ? user.user_type === typeFilter : true) &&
     (statusFilter === 'active' ? user.is_active === true : 
-     statusFilter === 'inactive' ? user.is_active === false : true)
+     statusFilter === 'inactive' ? user.is_active === false : true) &&
+    (statusFilter === 'blocked' ? user.is_verified === false : true) // Filtro para usuarios bloqueados
   ).slice(0, limit);
 
   if (loading) {
@@ -353,6 +371,7 @@ export default function UsuariosAdmin() {
               <MenuItem value="">Todos</MenuItem>
               <MenuItem value="active">Activos</MenuItem>
               <MenuItem value="inactive">Inactivos</MenuItem>
+              <MenuItem value="blocked">Bloqueados</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ minWidth: 150 }}>
@@ -425,16 +444,14 @@ export default function UsuariosAdmin() {
                   <TableCell>
                     <Chip 
                       label={
-                        user.status === 'suspended' ? 'Suspendido' :
-                        (user.status === 'blocked' || user.status === 'rejected') ? 'Inactivo' :
-                        (user.status === 'active' || user.status === 'approved') ? 'Activo' :
-                        user.is_active ? 'Activo' : 'Inactivo'
+                        !user.is_verified ? 'Bloqueado' :
+                        !user.is_active ? 'Inactivo' :
+                        'Activo'
                       }
                       color={
-                        user.status === 'suspended' ? 'warning' :
-                        (user.status === 'blocked' || user.status === 'rejected') ? 'error' :
-                        (user.status === 'active' || user.status === 'approved') ? 'success' :
-                        user.is_active ? 'success' : 'error'
+                        !user.is_verified ? 'error' :
+                        !user.is_active ? 'warning' :
+                        'success'
                       }
                       size="small"
                     />
@@ -444,20 +461,87 @@ export default function UsuariosAdmin() {
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleEditUser(user)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color={user.is_active ? 'warning' : 'success'}
-                        onClick={() => handleToggleUserStatus(user.id, user.is_active)}
-                      >
-                        {user.is_active ? <BlockIcon /> : <CheckCircleIcon />}
-                      </IconButton>
+                      <Tooltip title="Editar">
+                        <span>
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => handleEditUser(user)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                      {/* Acciones solo para empresas */}
+                      {(user.user_type === 'company' || user.user_type === 'student') && (
+                        <>
+                          <Tooltip title="Activar">
+                            <span>
+                              <IconButton
+                                size="small"
+                                color="success"
+                                onClick={async () => {
+                                  await apiService.post(`/api/users/${user.id}/activate/`);
+                                  setSuccess('Usuario activado exitosamente');
+                                  fetchUsers();
+                                }}
+                                disabled={user.is_active}
+                              >
+                                <CheckCircleIcon />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <Tooltip title="Suspender">
+                            <span>
+                              <IconButton
+                                size="small"
+                                color="warning"
+                                onClick={async () => {
+                                  await apiService.post(`/api/users/${user.id}/suspend/`);
+                                  setSuccess('Usuario suspendido exitosamente');
+                                  fetchUsers();
+                                }}
+                                disabled={!user.is_active}
+                              >
+                                <WarningIcon />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <Tooltip title="Bloquear">
+                            <span>
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={async () => {
+                                  await apiService.post(`/api/users/${user.id}/block/`);
+                                  setSuccess('Usuario bloqueado exitosamente');
+                                  fetchUsers();
+                                }}
+                                disabled={!user.is_verified}
+                              >
+                                <BlockIcon />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <Tooltip title="Desbloquear">
+                            <span>
+                              <IconButton
+                                size="small"
+                                color="info"
+                                onClick={async () => {
+                                  await apiService.post(`/api/users/${user.id}/unblock/`);
+                                  setSuccess('Usuario desbloqueado exitosamente');
+                                  fetchUsers();
+                                }}
+                                disabled={user.is_verified}
+                              >
+                                <CheckCircleIcon />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </>
+                      )}
+                      {/* Acciones para admin u otros tipos, si aplica, aquí... */}
                     </Box>
                   </TableCell>
                 </TableRow>

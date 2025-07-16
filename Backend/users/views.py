@@ -14,7 +14,7 @@ from core.views import verify_token
 @csrf_exempt
 @require_http_methods(["GET"])
 def user_list(request):
-    """Lista de usuarios."""
+    """Lista de usuarios con soporte de filtros por estado y rol."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -30,11 +30,30 @@ def user_list(request):
         if current_user.role not in ['admin', 'company']:
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
+        # Filtros por parámetros GET
+        is_active = request.GET.get('is_active')
+        is_verified = request.GET.get('is_verified')
+        role = request.GET.get('role')
+        
         # Filtrar usuarios según el rol del usuario actual
         if current_user.role == 'admin':
             users = User.objects.all()
         else:  # company
             users = User.objects.filter(role='student')
+        
+        # Aplicar filtros si están presentes
+        if is_active is not None:
+            if is_active.lower() == 'true':
+                users = users.filter(is_active=True)
+            elif is_active.lower() == 'false':
+                users = users.filter(is_active=False)
+        if is_verified is not None:
+            if is_verified.lower() == 'true':
+                users = users.filter(is_verified=True)
+            elif is_verified.lower() == 'false':
+                users = users.filter(is_verified=False)
+        if role:
+            users = users.filter(role=role)
         
         users_data = []
         
@@ -466,39 +485,26 @@ def change_password(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def suspend_user(request, user_id):
-    """Suspender un usuario."""
+    """Suspender un usuario (de cualquier tipo: estudiante, empresa, admin)."""
     try:
-        # Verificar autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return JsonResponse({'error': 'Token requerido'}, status=401)
-        
         token = auth_header.split(' ')[1]
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
-        
-        # Solo admins pueden suspender usuarios
         if current_user.role != 'admin':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
-        
-        # No permitir suspender superusuarios
         if user.is_superuser:
             return JsonResponse({'error': 'No se puede suspender un superusuario'}, status=400)
-        
         user.is_active = False
         user.save()
-        
-        return JsonResponse({
-            'success': True,
-            'message': f'Usuario {user.email} suspendido exitosamente'
-        })
-        
+        return JsonResponse({'success': True, 'message': f'Usuario {user.email} suspendido exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -506,35 +512,24 @@ def suspend_user(request, user_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def activate_user(request, user_id):
-    """Activar un usuario suspendido."""
+    """Activar un usuario suspendido (de cualquier tipo)."""
     try:
-        # Verificar autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return JsonResponse({'error': 'Token requerido'}, status=401)
-        
         token = auth_header.split(' ')[1]
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
-        
-        # Solo admins pueden activar usuarios
         if current_user.role != 'admin':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
-        
         user.is_active = True
         user.save()
-        
-        return JsonResponse({
-            'success': True,
-            'message': f'Usuario {user.email} activado exitosamente'
-        })
-        
+        return JsonResponse({'success': True, 'message': f'Usuario {user.email} activado exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -542,39 +537,26 @@ def activate_user(request, user_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def block_user(request, user_id):
-    """Bloquear un usuario (marcar como no verificado)."""
+    """Bloquear un usuario (marcar como no verificado, de cualquier tipo)."""
     try:
-        # Verificar autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return JsonResponse({'error': 'Token requerido'}, status=401)
-        
         token = auth_header.split(' ')[1]
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
-        
-        # Solo admins pueden bloquear usuarios
         if current_user.role != 'admin':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
-        
-        # No permitir bloquear superusuarios
         if user.is_superuser:
             return JsonResponse({'error': 'No se puede bloquear un superusuario'}, status=400)
-        
         user.is_verified = False
         user.save()
-        
-        return JsonResponse({
-            'success': True,
-            'message': f'Usuario {user.email} bloqueado exitosamente'
-        })
-        
+        return JsonResponse({'success': True, 'message': f'Usuario {user.email} bloqueado exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -582,34 +564,23 @@ def block_user(request, user_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def unblock_user(request, user_id):
-    """Desbloquear un usuario (marcar como verificado)."""
+    """Desbloquear un usuario (marcar como verificado, de cualquier tipo)."""
     try:
-        # Verificar autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return JsonResponse({'error': 'Token requerido'}, status=401)
-        
         token = auth_header.split(' ')[1]
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
-        
-        # Solo admins pueden desbloquear usuarios
         if current_user.role != 'admin':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
-        
         user.is_verified = True
         user.save()
-        
-        return JsonResponse({
-            'success': True,
-            'message': f'Usuario {user.email} desbloqueado exitosamente'
-        })
-        
+        return JsonResponse({'success': True, 'message': f'Usuario {user.email} desbloqueado exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

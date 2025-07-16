@@ -11,6 +11,7 @@ from users.models import User
 from .models import Estudiante, ApiLevelRequest
 from core.views import verify_token
 from django.utils import timezone
+from core.auth_utils import require_admin
 
 
 @csrf_exempt
@@ -386,7 +387,7 @@ def student_me(request):
         try:
             student = Estudiante.objects.select_related('user').get(user=current_user)
         except Estudiante.DoesNotExist:
-            return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+            return JsonResponse({'error': 'No existe perfil de estudiante asociado a este usuario.'}, status=404)
         
         # Serializar datos
         student_data = {
@@ -647,5 +648,75 @@ def api_level_request_admin_action(request, request_id):
         return JsonResponse({'success': True, 'status': req.status})
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def admin_suspend_student(request, student_id):
+    try:
+        user = User.objects.get(id=student_id)
+        if user.role != 'student':
+            return JsonResponse({'error': 'El usuario no es de tipo estudiante.'}, status=400)
+        try:
+            student = Estudiante.objects.get(user__id=student_id)
+        except Estudiante.DoesNotExist:
+            student = Estudiante.objects.create(user=user)
+        student.status = 'suspended'
+        student.save(update_fields=['status'])
+        if student.user:
+            student.user.is_active = False
+            student.user.save(update_fields=['is_active'])
+        return JsonResponse({'success': True, 'status': 'suspended'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def admin_block_student(request, student_id):
+    try:
+        user = User.objects.get(id=student_id)
+        if user.role != 'student':
+            return JsonResponse({'error': 'El usuario no es de tipo estudiante.'}, status=400)
+        try:
+            student = Estudiante.objects.get(user__id=student_id)
+        except Estudiante.DoesNotExist:
+            student = Estudiante.objects.create(user=user)
+        student.status = 'rejected'
+        student.save(update_fields=['status'])
+        if student.user:
+            student.user.is_verified = False
+            student.user.save(update_fields=['is_verified'])
+        return JsonResponse({'success': True, 'status': 'rejected'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin
+def admin_activate_student(request, student_id):
+    try:
+        user = User.objects.get(id=student_id)
+        if user.role != 'student':
+            return JsonResponse({'error': 'El usuario no es de tipo estudiante.'}, status=400)
+        try:
+            student = Estudiante.objects.get(user__id=student_id)
+        except Estudiante.DoesNotExist:
+            student = Estudiante.objects.create(user=user)
+        student.status = 'approved'
+        student.save(update_fields=['status'])
+        if student.user:
+            student.user.is_active = True
+            student.user.is_verified = True
+            student.user.save(update_fields=['is_active', 'is_verified'])
+        return JsonResponse({'success': True, 'status': 'approved'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

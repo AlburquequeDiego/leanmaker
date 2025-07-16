@@ -37,6 +37,7 @@ import {
   People as PeopleIcon,
   Work as WorkIcon,
   Star as StarIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
 import Tooltip from '@mui/material/Tooltip';
 import { apiService } from '../../../services/api.service';
@@ -154,9 +155,9 @@ export const GestionEmpresasAdmin = () => {
 
     try {
       let endpoint = '';
-      if (actionType === 'activate') endpoint = `/api/admin/companies/${selectedCompany.id}/activate/`;
-      if (actionType === 'suspend') endpoint = `/api/admin/companies/${selectedCompany.id}/suspend/`;
-      if (actionType === 'block') endpoint = `/api/admin/companies/${selectedCompany.id}/block/`;
+      if (actionType === 'activate') endpoint = `/api/users/${selectedCompany.id}/activate/`;
+      if (actionType === 'suspend') endpoint = `/api/users/${selectedCompany.id}/suspend/`;
+      if (actionType === 'block') endpoint = `/api/users/${selectedCompany.id}/block/`;
 
       await apiService.post(endpoint, {});
 
@@ -164,6 +165,10 @@ export const GestionEmpresasAdmin = () => {
       setShowSuccess(true);
       setActionDialog(false);
       fetchData();
+      // Refrescar usuarios si existe función global (ejemplo: window.refreshUsers)
+      if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
+        (window as any).refreshUsers();
+      }
     } catch (error) {
       setErrorMessage('Error al cambiar el estado de la empresa');
       setShowError(true);
@@ -278,7 +283,78 @@ export const GestionEmpresasAdmin = () => {
       ),
       width: '120px',
       align: 'center' as const
-    }
+    },
+    {
+      key: 'acciones',
+      label: 'Acciones',
+      render: (_: any, row: Company) => (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Tooltip title="Editar">
+            <span>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  setSelectedCompany(row);
+                  // setShowEditDialog(true); // Asume que existe un estado y modal para editar
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Activar">
+            <span>
+              <IconButton
+                color="success"
+                onClick={() => handleAction(row, 'activate')}
+                disabled={row.status === 'active'}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Suspender">
+            <span>
+              <IconButton
+                color="warning"
+                onClick={() => handleAction(row, 'suspend')}
+                disabled={row.status === 'suspended'}
+              >
+                <WarningIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Bloquear">
+            <span>
+              <IconButton
+                color="error"
+                onClick={() => handleAction(row, 'block')}
+                disabled={row.status === 'blocked'}
+              >
+                <BlockIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Desbloquear">
+            <span>
+              <IconButton
+                color="info"
+                onClick={async () => {
+                  await apiService.post(`/api/users/${row.id}/unblock/`);
+                  setSuccessMessage('Empresa desbloqueada exitosamente');
+                  fetchData();
+                }}
+                disabled={row.status !== 'blocked'}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Box>
+      ),
+      width: '220px',
+      align: 'center' as const
+    },
   ];
 
   const tableFilters = [
@@ -312,44 +388,6 @@ export const GestionEmpresasAdmin = () => {
     setPageSize(newPageSize);
     setCurrentPage(1); // Resetear a la primera página
   };
-
-  const actions = (row: Company) => (
-    <Box sx={{ display: 'flex', gap: 1 }}>
-      <Tooltip title="Activar">
-        <span>
-          <IconButton
-            color="success"
-            onClick={() => handleAction(row, 'activate')}
-            disabled={row.status === 'active'}
-          >
-            <CheckCircleIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Suspender">
-        <span>
-          <IconButton
-            color="warning"
-            onClick={() => handleAction(row, 'suspend')}
-            disabled={row.status === 'suspended'}
-          >
-            <WarningIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Bloquear">
-        <span>
-          <IconButton
-            color="error"
-            onClick={() => handleAction(row, 'block')}
-            disabled={row.status === 'blocked'}
-          >
-            <BlockIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
-    </Box>
-  );
 
   return (
     <Box sx={{ p: 3 }}>
@@ -404,8 +442,6 @@ export const GestionEmpresasAdmin = () => {
               currentPage={currentPage}
               pageSize={pageSize}
               showPagination={pageSize !== 'ultimos'}
-              actions={actions}
-              emptyMessage="No hay empresas registradas"
             />
           </>
         )}

@@ -188,7 +188,7 @@ def disciplinary_records_create(request):
             if current_user.role == 'company' and company.user != current_user:
                 return JsonResponse({'error': 'Solo puedes crear registros para tu empresa'}, status=403)
         except Empresa.DoesNotExist:
-            return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+            return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
         
         # Validar que el estudiante existe
         from students.models import Estudiante

@@ -18,6 +18,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -26,6 +28,8 @@ import {
   History as HistoryIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
+  Block as BlockIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
@@ -39,7 +43,7 @@ interface Student {
   trl_level: number;
   total_hours: number;
   company_name?: string;
-  status: 'active' | 'inactive' | 'suspended';
+  status: 'active' | 'inactive' | 'suspended' | 'blocked' | 'rejected';
   strikes: number;
   created_at: string;
   last_activity: string;
@@ -78,6 +82,7 @@ export default function GestionEstudiantesAdmin() {
   const [comment, setComment] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [showEditDialog, setShowEditDialog] = useState(false); // Nuevo estado para el modal de edición
 
   // Estados para paginación y filtros
   const [pageSize, setPageSize] = useState<number | 'ultimos'>(10);
@@ -188,6 +193,8 @@ export default function GestionEstudiantesAdmin() {
       case 'active': return 'success';
       case 'inactive': return 'default';
       case 'suspended': return 'error';
+      case 'blocked': return 'error';
+      case 'rejected': return 'error';
       default: return 'default';
     }
   };
@@ -197,7 +204,28 @@ export default function GestionEstudiantesAdmin() {
       case 'active': return 'Activo';
       case 'inactive': return 'Inactivo';
       case 'suspended': return 'Suspendido';
+      case 'blocked': return 'Bloqueado';
+      case 'rejected': return 'Rechazado';
       default: return status;
+    }
+  };
+
+  // Acciones de estado para estudiantes
+  const handleStudentAction = async (student: Student, action: 'suspend' | 'activate' | 'block') => {
+    try {
+      let endpoint = '';
+      if (action === 'activate') endpoint = `/api/students/admin/${student.id}/activate/`;
+      if (action === 'suspend') endpoint = `/api/students/admin/${student.id}/suspend/`;
+      if (action === 'block') endpoint = `/api/students/admin/${student.id}/block/`;
+      await apiService.post(endpoint, {});
+      setSuccessMsg(`Estudiante ${action === 'activate' ? 'activado' : action === 'suspend' ? 'suspendido' : 'bloqueado'} correctamente`);
+      loadStudents();
+      // Refrescar usuarios si existe función global (ejemplo: window.refreshUsers)
+      if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
+        (window as any).refreshUsers();
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error al cambiar el estado del estudiante');
     }
   };
 
@@ -294,7 +322,78 @@ export default function GestionEstudiantesAdmin() {
       ),
       width: '80px',
       align: 'center' as const
-    }
+    },
+    {
+      key: 'acciones',
+      label: 'Acciones',
+      render: (_: any, row: Student) => (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Tooltip title="Editar">
+            <span>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  setSelectedStudent(row);
+                  setShowEditDialog(true); // Asume que existe un modal de edición
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Activar">
+            <span>
+              <IconButton
+                color="success"
+                onClick={() => handleStudentAction(row, 'activate')}
+                disabled={row.status === 'active' || row.status === 'approved'}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Suspender">
+            <span>
+              <IconButton
+                color="warning"
+                onClick={() => handleStudentAction(row, 'suspend')}
+                disabled={row.status === 'suspended'}
+              >
+                <WarningIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Bloquear">
+            <span>
+              <IconButton
+                color="error"
+                onClick={() => handleStudentAction(row, 'block')}
+                disabled={row.status === 'rejected' || row.status === 'blocked'}
+              >
+                <BlockIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Desbloquear">
+            <span>
+              <IconButton
+                color="info"
+                onClick={async () => {
+                  await apiService.post(`/api/users/${row.id}/unblock/`);
+                  setSuccessMsg('Estudiante desbloqueado exitosamente');
+                  loadStudents();
+                }}
+                disabled={row.status !== 'blocked' && row.status !== 'rejected'}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Box>
+      ),
+      width: '220px',
+      align: 'center' as const
+    },
   ];
 
   const tableFilters = [
@@ -351,17 +450,6 @@ export default function GestionEstudiantesAdmin() {
     setCurrentPage(1); // Resetear a la primera página
   };
 
-  const actions = (row: Student) => (
-    <Button
-      variant="contained"
-      size="small"
-      onClick={() => handleOpenModal(row)}
-      startIcon={<SchoolIcon />}
-    >
-      Ver Cuestionario
-    </Button>
-  );
-
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -391,7 +479,6 @@ export default function GestionEstudiantesAdmin() {
         currentPage={currentPage}
         pageSize={pageSize}
         showPagination={pageSize !== 'ultimos'}
-        actions={actions}
         emptyMessage="No hay estudiantes registrados"
       />
 

@@ -10,6 +10,9 @@ from django.db.models import Q
 from users.models import User
 from .models import Empresa
 from core.views import verify_token
+import uuid
+import logging
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -129,7 +132,7 @@ def companies_detail(request, companies_id):
         try:
             company = Empresa.objects.select_related('user').get(id=companies_id)
         except Empresa.DoesNotExist:
-            return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+            return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
         
         # Verificar permisos
         if current_user.role == 'company' and str(company.user.id) != str(current_user.id):
@@ -202,7 +205,7 @@ def company_me(request):
         try:
             company = Empresa.objects.select_related('user').get(user=current_user)
         except Empresa.DoesNotExist:
-            return JsonResponse({'error': 'Perfil de empresa no encontrado'}, status=404)
+            return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
         
         # Serializar datos
         company_data = {
@@ -395,3 +398,74 @@ def companies_delete(request, companies_id):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def admin_suspend_company(request, current_user, company_id):
+    try:
+        user = User.objects.get(id=company_id)
+        logger.info(f"Intentando suspender empresa para usuario {user.id} ({user.email}), role={user.role}")
+        if user.role != 'company':
+            logger.warning(f"El usuario {user.id} no es de tipo empresa")
+            return JsonResponse({'error': 'El usuario no es de tipo empresa.'}, status=400)
+        try:
+            company = Empresa.objects.get(user__id=company_id)
+            logger.info(f"Perfil de empresa ya existe para usuario {user.id}")
+        except Empresa.DoesNotExist:
+            logger.info(f"No existe perfil de empresa para usuario {user.id}, creando uno nuevo...")
+            try:
+                company = Empresa.objects.create(user=user, company_name=user.email)
+                logger.info(f"Perfil de empresa creado para usuario {user.id}")
+            except Exception as e:
+                logger.error(f"Error al crear perfil de empresa para usuario {user.id}: {e}")
+                return JsonResponse({'error': f'Error al crear perfil de empresa: {e}'}, status=500)
+        company.status = 'suspended'
+        company.save(update_fields=['status'])
+        if company.user:
+            company.user.is_active = False
+            company.user.save(update_fields=['is_active'])
+        return JsonResponse({'success': True, 'status': 'suspended'})
+    except User.DoesNotExist:
+        logger.error(f"Usuario no encontrado: {company_id}")
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def admin_block_company(request, current_user, company_id):
+    try:
+        user = User.objects.get(id=company_id)
+        if user.role != 'company':
+            return JsonResponse({'error': 'El usuario no es de tipo empresa.'}, status=400)
+        try:
+            company = Empresa.objects.get(user__id=company_id)
+        except Empresa.DoesNotExist:
+            company = Empresa.objects.create(user=user, company_name=user.email)
+        company.status = 'blocked'
+        company.save(update_fields=['status'])
+        if company.user:
+            company.user.is_verified = False
+            company.user.save(update_fields=['is_verified'])
+        return JsonResponse({'success': True, 'status': 'blocked'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def admin_activate_company(request, current_user, company_id):
+    try:
+        user = User.objects.get(id=company_id)
+        if user.role != 'company':
+            return JsonResponse({'error': 'El usuario no es de tipo empresa.'}, status=400)
+        try:
+            company = Empresa.objects.get(user__id=company_id)
+        except Empresa.DoesNotExist:
+            company = Empresa.objects.create(user=user, company_name=user.email)
+        company.status = 'active'
+        company.save(update_fields=['status'])
+        if company.user:
+            company.user.is_active = True
+            company.user.is_verified = True
+            company.user.save(update_fields=['is_active', 'is_verified'])
+        return JsonResponse({'success': True, 'status': 'active'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404) 

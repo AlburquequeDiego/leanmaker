@@ -713,15 +713,6 @@ export const Evaluations = () => {
         <Typography variant="h6" fontWeight={600}>
           Evaluaciones que diste a la empresa
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => setCalificarModalOpen(true)}
-          sx={{ borderRadius: 2 }}
-        >
-          Calificar Nueva Empresa
-        </Button>
       </Box>
 
       {companyRatings.length === 0 ? (

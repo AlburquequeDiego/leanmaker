@@ -570,7 +570,7 @@ def admin_suspend_company(request, current_user, company_id):
         company.save(update_fields=['status'])
         return JsonResponse({'success': True, 'status': 'suspended'})
     except Empresa.DoesNotExist:
-        return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+        return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -584,7 +584,7 @@ def admin_block_company(request, current_user, company_id):
         company.save(update_fields=['status'])
         return JsonResponse({'success': True, 'status': 'blocked'})
     except Empresa.DoesNotExist:
-        return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+        return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -598,6 +598,6 @@ def admin_activate_company(request, current_user, company_id):
         company.save(update_fields=['status'])
         return JsonResponse({'success': True, 'status': 'active'})
     except Empresa.DoesNotExist:
-        return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+        return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 
