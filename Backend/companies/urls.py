@@ -13,4 +13,5 @@ urlpatterns = [
     path('admin/<uuid:company_id>/suspend/', views.admin_suspend_company, name='admin_suspend_company'),
     path('admin/<uuid:company_id>/activate/', views.admin_activate_company, name='admin_activate_company'),
     path('admin/<uuid:company_id>/block/', views.admin_block_company, name='admin_block_company'),
+    path('company_me/', views.company_me, name='company_me'),
 ] 

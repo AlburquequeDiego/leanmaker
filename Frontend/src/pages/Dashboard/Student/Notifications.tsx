@@ -212,6 +212,16 @@ export const Notifications = () => {
         return 'Recordatorio';
       case 'system':
         return 'Sistema';
+      case 'event':
+        return 'Evento';
+      case 'announcement':
+        return 'Anuncio';
+      case 'alert':
+        return 'Alerta';
+      case 'update':
+        return 'Actualización';
+      case 'warning':
+        return 'Advertencia';
       default:
         return type;
     }

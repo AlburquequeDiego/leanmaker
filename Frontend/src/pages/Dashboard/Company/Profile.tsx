@@ -62,26 +62,26 @@ export const CompanyProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<Company>>({});
   const [saving, setSaving] = useState(false);
+  // 3. Agrego feedback visual de éxito:
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && user) {
-      loadProfile(user);
+      loadProfile();
     }
   }, [authLoading, user]);
 
-  const loadProfile = async (userData: User) => {
+  const loadProfile = async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("userData recibido:", userData);
-      if (!userData || !userData.company_profile) {
-        throw new Error('El usuario no tiene perfil de empresa asociado.');
-      }
-      const companyData = userData.company_profile;
+      // Obtener datos del usuario
+      const userData = await api.get('/api/users/profile/');
+      // Obtener datos de la empresa
+      const companyData = await api.get('/api/companies/company_me/');
       // Obtener estadísticas del dashboard
       const statsResponse = await api.get('/api/dashboard/company_stats/');
       const statsData = statsResponse.data;
-      console.log("statsData recibido:", statsData);
       const totalProjects = statsData?.total_projects ?? 0;
       const activeStudents = statsData?.active_students ?? 0;
       const completedProjects = statsData?.completed_projects ?? 0;
@@ -113,23 +113,37 @@ export const CompanyProfile: React.FC = () => {
 
   const handleSave = async () => {
     if (!profile) return;
-    
+    // Validación básica: nombre de empresa obligatorio
+    if (!editData.company_name || editData.company_name.trim() === "") {
+      setError("El nombre de la empresa es obligatorio.");
+      return;
+    }
     try {
       setSaving(true);
-      
-      // Actualizar perfil de empresa
-      const response = await api.patch(`/api/companies/${profile.company.id}/`, editData);
-      const updatedCompany = response.data;
-      
-      setProfile(prev => prev ? {
-        ...prev,
-        company: updatedCompany
-      } : null);
-      
+      // Solo enviar los campos que existen en el modelo del backend
+      const payload = {
+        company_name: editData.company_name,
+        rut: editData.rut,
+        personality: editData.personality,
+        business_name: editData.business_name,
+        address: editData.address,
+        city: editData.city,
+        country: editData.country,
+        contact_phone: editData.contact_phone,
+        contact_email: editData.contact_email,
+        website: editData.website,
+        industry: editData.industry,
+        size: editData.size,
+        description: editData.description,
+      };
+      const response = await api.patch(`/api/companies/${profile.company.id}/`, payload);
+      // Refrescar datos tras guardar
+      await loadProfile();
       setIsEditing(false);
-      
+      setError(null);
+      // En handleSave, después de guardar correctamente:
+      setSuccess("Perfil actualizado correctamente.");
     } catch (err: any) {
-      console.error('Error guardando perfil:', err);
       setError(err.response?.data?.error || 'Error al guardar perfil');
     } finally {
       setSaving(false);
@@ -206,12 +220,13 @@ export const CompanyProfile: React.FC = () => {
                 <Typography variant="h5" gutterBottom>
                   {profile.company.company_name}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                {/* Eliminar la visualización de la calificación promedio */}
+                {/* <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <StarIcon sx={{ color: 'warning.main', mr: 1 }} />
                   <Typography variant="body1">
                     {profile.averageRating.toFixed(1)} / 5.0
                   </Typography>
-                </Box>
+                </Box> */}
                 <Chip label={profile.company.industry || 'Sin industria'} color="primary" size="small" />
                 {profile.company.verified && (
                   <Chip label="Verificada" color="success" size="small" sx={{ ml: 1 }} />
@@ -341,9 +356,8 @@ export const CompanyProfile: React.FC = () => {
             </Box>
           </Paper>
         </Box>
-
-        {/* Estadísticas */}
-        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 0' } }}>
+        {/* Eliminar la sección de estadísticas */}
+        {/* <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 0' } }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Estadísticas
@@ -397,14 +411,12 @@ export const CompanyProfile: React.FC = () => {
               </CardContent>
             </Card>
           </Paper>
-        </Box>
+        </Box> */}
       </Box>
 
       {/* Dialog para editar perfil */}
       <Dialog open={isEditing} onClose={handleCancel} maxWidth="md" fullWidth>
-        <DialogTitle>
-          <Typography variant="h6">Editar Perfil de Empresa</Typography>
-        </DialogTitle>
+        <DialogTitle>Editar Perfil de Empresa</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
             <TextField
@@ -526,6 +538,12 @@ export const CompanyProfile: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* Muestro el mensaje de éxito si existe: */}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
+          {success}
+        </Alert>
+      )}
     </Box>
   );
 };

@@ -480,6 +480,14 @@ def api_user_profile(request):
                 'updated_at': user.updated_at.isoformat(),
                 'full_name': user.full_name
             }
+            # Si el usuario es empresa, incluir el perfil de empresa
+            if user.role == "company":
+                try:
+                    from companies.serializers import EmpresaSerializer
+                    empresa = user.empresa_profile
+                    user_data["company_profile"] = EmpresaSerializer.to_dict(empresa)
+                except Exception:
+                    user_data["company_profile"] = None
             return JsonResponse(user_data)
         
         elif request.method == "PATCH":

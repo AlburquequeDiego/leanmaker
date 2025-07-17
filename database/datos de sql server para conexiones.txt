@@ -114,3 +114,5 @@ Isabella Morales   isabella.morales@uc.cl              Estudiante123!
 Santiago Vargas    santiago.vargas@udec.cl             Estudiante123!
 Paula Jiménez      paula.jimenez@usm.cl                Estudiante123!
 Alejandro Mendoza  alejandro.mendoza@usach.cl          Estudiante123!
+
+

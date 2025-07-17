@@ -120,14 +120,6 @@ export const ConfiguracionPlataformaAdmin = () => {
       category: 'system',
       description: 'Realizar backup automático de la base de datos',
     },
-    {
-      id: '8',
-      name: 'Modo Mantenimiento',
-      value: false,
-      type: 'boolean',
-      category: 'system',
-      description: 'Activar modo mantenimiento (solo admins pueden acceder)',
-    },
   ]);
 
   const [systemStatus] = useState<SystemStatus[]>([
@@ -161,7 +153,6 @@ export const ConfiguracionPlataformaAdmin = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [manualDialog, setManualDialog] = useState(false);
   const [manualContent, setManualContent] = useState({ title: '', content: [] as string[] });
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -418,42 +409,7 @@ export const ConfiguracionPlataformaAdmin = () => {
           </Box>
 
           <Stack spacing={4}>
-            {/* Modo Mantenimiento */}
-            <Box sx={{ mt: 4 }}>
-              <Typography variant="h6" gutterBottom sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <AutorenewIcon color={maintenanceMode ? 'warning' : 'disabled'} sx={{ animation: maintenanceMode ? 'spin 1s linear infinite' : 'none' }} />
-                Modo Mantenimiento
-                {maintenanceMode ? (
-                  <Chip label="Activo" color="warning" sx={{ ml: 2, fontWeight: 600 }} />
-                ) : (
-                  <Chip label="Desactivado" color="success" sx={{ ml: 2, fontWeight: 600 }} />
-                )}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Cuando el modo mantenimiento está activo, solo los administradores pueden acceder al sistema. El resto de los usuarios verá una pantalla de "En mantenimiento".
-              </Typography>
-              <Button
-                variant={maintenanceMode ? 'contained' : 'outlined'}
-                color={maintenanceMode ? 'warning' : 'primary'}
-                startIcon={<PowerSettingsNewIcon />}
-                sx={{ borderRadius: 2, px: 4, fontWeight: 600 }}
-                onClick={() => setMaintenanceMode((prev) => !prev)}
-              >
-                {maintenanceMode ? 'Desactivar Modo Mantenimiento' : 'Activar Modo Mantenimiento'}
-              </Button>
-            </Box>
-
-            {/* Eliminar el bloque de botones de acción: */}
-            {/* <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <Button 
-                variant="contained" 
-                startIcon={<SaveIcon />} 
-                onClick={handleSaveConfig}
-                sx={{ borderRadius: 2, px: 4 }}
-              >
-                Guardar Cambios
-              </Button>
-            </Box> */}
+            {/* Eliminar el bloque de UI de Modo Mantenimiento */}
           </Stack>
         </TabPanel>
 

@@ -567,7 +567,7 @@ export default function Home() {
           </Typography>
           <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.1)' }} />
           <Typography variant="body2" color="rgba(255,255,255,0.5)" sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>
-            © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados por DIEGO JOAQUIN ALEXANDER ALBURQUEQUE AMAYA.
+            © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados 
           </Typography>
         </Container>
       </Box>
