@@ -183,16 +183,17 @@ export const PublishProjects: React.FC = () => {
       };
       console.log('Datos enviados al backend:', datosAEnviar);
       const response = await projectService.createProject(datosAEnviar);
-      if (response && response.success) {
-        setSuccess(response.data?.message || 'Proyecto publicado exitosamente.');
+      // El servicio ya maneja la respuesta y devuelve directamente los datos
+      if (response && response.id) {
+        setSuccess('Proyecto creado exitosamente.');
         setTimeout(() => {
           setSuccess(null);
-          navigate('/dashboard/company/projects');
+          navigate('/dashboard/company/projects', { state: { initialTab: 0 } });
         }, 1500);
         setForm({ title: '', description: '', publicDescription: '', area: '', tipo: '', objetivo: '', modalidad: '', encargado: '', contacto: '', fechaInicio: '', fechaFin: '', requirements: '', duration: '', studentsNeeded: 1, meses: '', trl: 1, horas: '' });
         setActiveStep(0);
       } else {
-        setError(response?.data?.error || 'Error al crear el proyecto');
+        setError('Error al crear el proyecto: Respuesta inesperada del servidor');
       }
     } catch (e: any) {
       console.error('Error al crear proyecto:', e, e.response, e?.message, e?.stack);

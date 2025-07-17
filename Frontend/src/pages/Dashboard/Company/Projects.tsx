@@ -38,12 +38,14 @@ import { adaptProjectList } from '../../../utils/adapters';
 import type { Project } from '../../../types';
 import { projectService } from '../../../services/project.service';
 import { PublishProjects } from './PublishProjects';
+import { useLocation } from 'react-router-dom';
 
 const COUNT_OPTIONS = [20, 50, 100, 150, 200, 250, -1];
 
-const Projects: React.FC = () => {
+const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
+  const location = useLocation();
   const api = useApi();
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(initialTab);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +60,13 @@ const Projects: React.FC = () => {
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [updatingProject, setUpdatingProject] = useState<string | null>(null);
+
+  // Sincronizar tab con location.state.initialTab si cambia
+  useEffect(() => {
+    if (location.state && typeof location.state.initialTab === 'number') {
+      setTab(location.state.initialTab);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     loadProjects();

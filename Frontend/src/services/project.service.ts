@@ -41,9 +41,9 @@ export interface ProjectMember {
 export class ProjectService {
   // Obtener proyectos de la empresa autenticada
   async getMyProjects(): Promise<any[]> {
-    const response = await apiService.get('/api/projects/company_projects/');
-    // El backend responde { success: true, data: [...] }
-    return adaptProjectList(response.data?.data || response.data);
+    const response = await apiService.get<any>('/api/projects/company_projects/');
+    // El apiService ya maneja la respuesta, devolvemos directamente los datos
+    return adaptProjectList(Array.isArray(response) ? response : (response.data || response));
   }
 
   // Crear un nuevo proyecto (adaptando los campos al backend real)
@@ -76,8 +76,8 @@ export class ProjectService {
       // Agrega otros campos según lo que espera el backend
     };
     const response = await apiService.post('/api/projects/create/', backendData);
-    // Devuelvo la respuesta completa del backend para que el componente maneje el éxito
-    return response.data;
+    // El apiService ya maneja la respuesta y devuelve directamente los datos
+    return response;
   }
 
   async getProject(id: string): Promise<Project> {
@@ -203,9 +203,9 @@ export class ProjectService {
 
   // Obtener lista de áreas
   async getAreas(): Promise<any[]> {
-    const response = await apiService.get('/api/areas/');
-    // El backend responde { results: [...] }
-    return response.results || response.data || response;
+    const response = await apiService.get<any>('/api/areas/');
+    // El apiService ya maneja la respuesta, devolvemos directamente los datos
+    return Array.isArray(response) ? response : (response.results || response.data || []);
   }
 }
 
