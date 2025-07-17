@@ -18,8 +18,12 @@ import {
   TextField,
   CircularProgress,
   Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-import { TrendingUp as TrendingUpIcon, CheckCircle as CheckCircleIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import { TrendingUp as TrendingUpIcon, CheckCircle as CheckCircleIcon, Cancel as CancelIcon, History as HistoryIcon } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { useNavigate } from 'react-router-dom';
 
@@ -43,16 +47,17 @@ export default function APIRequestsAdmin() {
   const [actionLoading, setActionLoading] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [pageSize, setPageSize] = useState<number>(20);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [pageSize]);
 
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const data = await apiService.get('/api/students/admin/api-level-requests/');
+      const data = await apiService.get(`/api/students/admin/api-level-requests/?limit=${pageSize}`) as any;
       setRequests(data.results || []);
     } catch (err) {
       setError('Error al cargar las peticiones');
@@ -65,11 +70,25 @@ export default function APIRequestsAdmin() {
     if (!selectedRequest) return;
     setActionLoading(true);
     try {
-      await apiService.post(`/api/students/admin/api-level-request/${selectedRequest.id}/action/`, {
+      const response = await apiService.post(`/api/students/admin/api-level-request/${selectedRequest.id}/action/`, {
         action,
         feedback: feedback,
       });
-      setSuccessMsg(`Petición ${action === 'approve' ? 'aprobada' : 'rechazada'} correctamente`);
+      
+      if (action === 'approve') {
+        // Calcular los cambios que se aplicarán
+        const apiLevelAnterior = selectedRequest.current_level;
+        const apiLevelNuevo = selectedRequest.requested_level;
+        const trlAnterior = apiLevelAnterior <= 2 ? apiLevelAnterior * 2 : apiLevelAnterior <= 4 ? 4 : apiLevelAnterior <= 6 ? 6 : 9;
+        const trlNuevo = apiLevelNuevo <= 2 ? apiLevelNuevo * 2 : apiLevelNuevo <= 4 ? 4 : apiLevelNuevo <= 6 ? 6 : 9;
+        const horasAnterior = apiLevelAnterior === 1 ? 20 : apiLevelAnterior === 2 ? 40 : apiLevelAnterior === 3 ? 80 : 160;
+        const horasNuevo = apiLevelNuevo === 1 ? 20 : apiLevelNuevo === 2 ? 40 : apiLevelNuevo === 3 ? 80 : 160;
+        
+        setSuccessMsg(`✅ Solicitud aprobada: ${selectedRequest.student_name} - API ${apiLevelAnterior} → ${apiLevelNuevo}, TRL ${trlAnterior} → ${trlNuevo}, Horas ${horasAnterior} → ${horasNuevo} hrs`);
+      } else {
+        setSuccessMsg(`❌ Solicitud rechazada: ${selectedRequest.student_name} - Nivel API ${selectedRequest.requested_level}`);
+      }
+      
       setSelectedRequest(null);
       setFeedback('');
       fetchRequests();
@@ -111,9 +130,12 @@ export default function APIRequestsAdmin() {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" gutterBottom fontWeight={700}>
-          Peticiones de Subida de Nivel API
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <HistoryIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          <Typography variant="h4" gutterBottom fontWeight={700}>
+            Historial de Solicitudes de Nivel API
+          </Typography>
+        </Box>
         <Button variant="outlined" onClick={() => navigate(-1)}>
           Volver a Gestión de Estudiantes
         </Button>
@@ -126,6 +148,31 @@ export default function APIRequestsAdmin() {
         </Box>
       ) : (
         <Paper sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <HistoryIcon color="primary" />
+              <Typography variant="h6" color="primary">
+                Registro de Solicitudes
+              </Typography>
+            </Box>
+            
+            {/* Selector de cantidad a mostrar */}
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Mostrar</InputLabel>
+              <Select
+                value={pageSize}
+                label="Mostrar"
+                onChange={(e) => setPageSize(e.target.value as number)}
+              >
+                <MenuItem value={20}>20</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+                <MenuItem value={150}>150</MenuItem>
+                <MenuItem value={200}>200</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          
           <TableContainer>
             <Table>
               <TableHead>
@@ -134,7 +181,7 @@ export default function APIRequestsAdmin() {
                   <TableCell>Nivel Actual</TableCell>
                   <TableCell>Nivel Solicitado</TableCell>
                   <TableCell>Estado</TableCell>
-                  <TableCell>Fecha</TableCell>
+                  <TableCell>Fecha de Solicitud</TableCell>
                   <TableCell>Feedback</TableCell>
                   <TableCell>Acciones</TableCell>
                 </TableRow>
@@ -152,7 +199,16 @@ export default function APIRequestsAdmin() {
                     <TableCell>
                       <Chip label={getStatusText(req.status)} color={getStatusColor(req.status) as any} size="small" />
                     </TableCell>
-                    <TableCell>{new Date(req.submitted_at).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Typography variant="body2" fontWeight={600}>
+                          {new Date(req.submitted_at).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(req.submitted_at).toLocaleTimeString()}
+                        </Typography>
+                      </Box>
+                    </TableCell>
                     <TableCell>{req.feedback || '-'}</TableCell>
                     <TableCell>
                       {req.status === 'pending' && (
@@ -178,7 +234,14 @@ export default function APIRequestsAdmin() {
 
       {/* Dialogo para aprobar/rechazar */}
       <Dialog open={!!selectedRequest} onClose={() => setSelectedRequest(null)} maxWidth="sm" fullWidth>
-        <DialogTitle>Revisar Petición de Subida de Nivel API</DialogTitle>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TrendingUpIcon color="primary" />
+            <Typography variant="h6">
+              Revisar Solicitud de Nivel API
+            </Typography>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           <Typography gutterBottom>
             <strong>Estudiante:</strong> {selectedRequest?.student_name}

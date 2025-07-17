@@ -502,8 +502,21 @@ def suspend_user(request, user_id):
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
         if user.is_superuser:
             return JsonResponse({'error': 'No se puede suspender un superusuario'}, status=400)
+        
+        # Suspender usuario
         user.is_active = False
-        user.save()
+        user.save(update_fields=['is_active'])
+        
+        # Si es estudiante, sincronizar con modelo Estudiante
+        if user.role == 'student':
+            try:
+                from students.models import Estudiante
+                estudiante = Estudiante.objects.get(user=user)
+                estudiante.status = 'suspended'
+                estudiante.save(update_fields=['status'])
+            except Estudiante.DoesNotExist:
+                pass  # No hay perfil de estudiante, continuar
+        
         return JsonResponse({'success': True, 'message': f'Usuario {user.email} suspendido exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -527,8 +540,22 @@ def activate_user(request, user_id):
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+        # Activar usuario
         user.is_active = True
-        user.save()
+        user.is_verified = True  # Asegurar que también esté verificado
+        user.save(update_fields=['is_active', 'is_verified'])
+        
+        # Si es estudiante, sincronizar con modelo Estudiante
+        if user.role == 'student':
+            try:
+                from students.models import Estudiante
+                estudiante = Estudiante.objects.get(user=user)
+                estudiante.status = 'approved'
+                estudiante.save(update_fields=['status'])
+            except Estudiante.DoesNotExist:
+                pass  # No hay perfil de estudiante, continuar
+        
         return JsonResponse({'success': True, 'message': f'Usuario {user.email} activado exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -554,8 +581,21 @@ def block_user(request, user_id):
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
         if user.is_superuser:
             return JsonResponse({'error': 'No se puede bloquear un superusuario'}, status=400)
+        
+        # Bloquear usuario
         user.is_verified = False
-        user.save()
+        user.save(update_fields=['is_verified'])
+        
+        # Si es estudiante, sincronizar con modelo Estudiante
+        if user.role == 'student':
+            try:
+                from students.models import Estudiante
+                estudiante = Estudiante.objects.get(user=user)
+                estudiante.status = 'rejected'
+                estudiante.save(update_fields=['status'])
+            except Estudiante.DoesNotExist:
+                pass  # No hay perfil de estudiante, continuar
+        
         return JsonResponse({'success': True, 'message': f'Usuario {user.email} bloqueado exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -579,8 +619,25 @@ def unblock_user(request, user_id):
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+        # Desbloquear usuario
         user.is_verified = True
-        user.save()
+        user.save(update_fields=['is_verified'])
+        
+        # Si es estudiante, sincronizar con modelo Estudiante
+        if user.role == 'student':
+            try:
+                from students.models import Estudiante
+                estudiante = Estudiante.objects.get(user=user)
+                # Si el usuario está activo, aprobar el estudiante; si no, mantener como suspended
+                if user.is_active:
+                    estudiante.status = 'approved'
+                else:
+                    estudiante.status = 'suspended'
+                estudiante.save(update_fields=['status'])
+            except Estudiante.DoesNotExist:
+                pass  # No hay perfil de estudiante, continuar
+        
         return JsonResponse({'success': True, 'message': f'Usuario {user.email} desbloqueado exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

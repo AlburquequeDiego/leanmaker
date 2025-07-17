@@ -327,12 +327,12 @@ export default function ValidacionHorasAdmin() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom fontWeight={700}>
-        VALIDACION DE HORAS
-      </Typography>
-
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-        <FormControl sx={{ minWidth: 150 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" fontWeight={700}>
+          VALIDACION DE HORAS
+        </Typography>
+        
+        <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>Mostrar</InputLabel>
           <Select
             value={pageSize}

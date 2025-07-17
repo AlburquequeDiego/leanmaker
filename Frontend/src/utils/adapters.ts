@@ -57,11 +57,14 @@ export const adaptUser = (backendUser: any): User => ({
 export const adaptStudent = (backendStudent: any): Student => ({
   id: String(backendStudent.id),
   user: String(backendStudent.user),
+  name: backendStudent.name || backendStudent.user_data?.full_name || backendStudent.email || 'Sin nombre',
+  email: backendStudent.email || backendStudent.user_data?.email || 'Sin email',
   career: backendStudent.career,
   semester: backendStudent.semester,
   graduation_year: backendStudent.graduation_year,
   status: backendStudent.status,
   api_level: backendStudent.api_level,
+  trl_level: backendStudent.trl_level, // <-- Añadido correctamente
   strikes: backendStudent.strikes,
   gpa: Number(backendStudent.gpa),
   completed_projects: backendStudent.completed_projects,
@@ -77,6 +80,7 @@ export const adaptStudent = (backendStudent: any): Student => ({
   languages: parseJsonArray(backendStudent.languages),
   created_at: backendStudent.created_at,
   updated_at: backendStudent.updated_at,
+  user_data: backendStudent.user_data, // <-- Añadido
 });
 
 /**

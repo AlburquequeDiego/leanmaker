@@ -306,9 +306,9 @@ export default function UsuariosAdmin() {
      user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
      user.last_name.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (typeFilter ? user.user_type === typeFilter : true) &&
-    (statusFilter === 'active' ? user.is_active === true : 
-     statusFilter === 'inactive' ? user.is_active === false : true) &&
-    (statusFilter === 'blocked' ? user.is_verified === false : true) // Filtro para usuarios bloqueados
+    (statusFilter === 'active' ? user.is_active === true && user.is_verified === true : 
+     statusFilter === 'inactive' ? user.is_active === false : 
+     statusFilter === 'blocked' ? user.is_verified === false : true)
   ).slice(0, limit);
 
   if (loading) {

@@ -57,7 +57,11 @@ def student_list(request):
             queryset = queryset.filter(api_level=api_level)
         
         if status:
-            queryset = queryset.filter(status=status)
+            if status == 'approved':
+                queryset = queryset.filter(status='approved')
+            elif status == 'inactive':
+                # Incluir todos los estados que no sean 'approved'
+                queryset = queryset.exclude(status='approved')
         
         # Contar total
         total_count = queryset.count()
@@ -68,14 +72,26 @@ def student_list(request):
         # Serializar datos
         students_data = []
         for student in students:
+            # Determinar el nombre a mostrar
+            full_name = student.user.full_name
+            if not full_name or full_name.strip() == '':
+                full_name = student.user.email  # Usar email si no hay nombre
+            
+            # Debug log
+            print(f"🔍 Estudiante {student.id}: full_name='{student.user.full_name}', email='{student.user.email}', name_to_show='{full_name}'")
+            
             students_data.append({
                 'id': str(student.id),
                 'user': str(student.user.id),
+                'name': full_name,
+                'email': student.user.email,
+                'last_activity': student.user.last_login.isoformat() if student.user.last_login else None,
                 'career': student.career,
                 'semester': student.semester,
                 'graduation_year': student.graduation_year,
                 'status': student.status,
                 'api_level': student.api_level,
+                'trl_level': student.trl_permitido_segun_api,  # <-- Usar TRL calculado
                 'strikes': student.strikes,
                 'gpa': float(student.gpa),
                 'completed_projects': student.completed_projects,
@@ -91,6 +107,9 @@ def student_list(request):
                 'languages': student.get_languages_list(),
                 'created_at': student.created_at.isoformat(),
                 'updated_at': student.updated_at.isoformat(),
+                # Datos adicionales calculados
+                'horas_permitidas': student.horas_permitidas_segun_api,
+                'trl_permitido': student.trl_permitido_segun_api,
                 # Datos del usuario
                 'user_data': {
                     'id': str(student.user.id),
@@ -155,6 +174,7 @@ def student_detail(request, student_id):
             'graduation_year': student.graduation_year,
             'status': student.status,
             'api_level': student.api_level,
+            'trl_level': student.trl_level,
             'strikes': student.strikes,
             'gpa': float(student.gpa),
             'completed_projects': student.completed_projects,
@@ -398,6 +418,7 @@ def student_me(request):
             'graduation_year': student.graduation_year,
             'status': student.status,
             'api_level': student.api_level,
+            'trl_level': student.trl_permitido_segun_api,  # <-- Usar TRL calculado
             'strikes': student.strikes,
             'gpa': float(student.gpa),
             'completed_projects': student.completed_projects,
@@ -413,6 +434,9 @@ def student_me(request):
             'languages': student.get_languages_list(),
             'created_at': student.created_at.isoformat(),
             'updated_at': student.updated_at.isoformat(),
+            # Datos adicionales calculados
+            'horas_permitidas': student.horas_permitidas_segun_api,
+            'trl_permitido': student.trl_permitido_segun_api,
             # Datos del usuario
             'user_data': {
                 'id': str(student.user.id),
@@ -514,6 +538,13 @@ def api_level_request_create(request):
         data = json.loads(request.body)
         requested_level = int(data.get('requested_level'))
         current_level = int(data.get('current_level', student.api_level))
+        
+        # Validar que los niveles sean válidos
+        if current_level < 1 or current_level > 4:
+            current_level = student.api_level  # Usar el nivel actual del estudiante si es inválido
+        
+        if requested_level < 1 or requested_level > 4:
+            return JsonResponse({'error': 'El nivel solicitado debe estar entre 1 y 4.'}, status=400)
         
         # Solo permitir si el nivel solicitado es mayor al actual
         if requested_level <= current_level:
@@ -656,21 +687,18 @@ def api_level_request_admin_action(request, request_id):
 @require_admin
 def admin_suspend_student(request, student_id):
     try:
-        user = User.objects.get(id=student_id)
-        if user.role != 'student':
-            return JsonResponse({'error': 'El usuario no es de tipo estudiante.'}, status=400)
+        # Buscar el estudiante por ID numérico
         try:
-            student = Estudiante.objects.get(user__id=student_id)
+            student = Estudiante.objects.get(id=student_id)
         except Estudiante.DoesNotExist:
-            student = Estudiante.objects.create(user=user)
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        
         student.status = 'suspended'
         student.save(update_fields=['status'])
         if student.user:
             student.user.is_active = False
             student.user.save(update_fields=['is_active'])
         return JsonResponse({'success': True, 'status': 'suspended'})
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -679,21 +707,18 @@ def admin_suspend_student(request, student_id):
 @require_admin
 def admin_block_student(request, student_id):
     try:
-        user = User.objects.get(id=student_id)
-        if user.role != 'student':
-            return JsonResponse({'error': 'El usuario no es de tipo estudiante.'}, status=400)
+        # Buscar el estudiante por ID numérico
         try:
-            student = Estudiante.objects.get(user__id=student_id)
+            student = Estudiante.objects.get(id=student_id)
         except Estudiante.DoesNotExist:
-            student = Estudiante.objects.create(user=user)
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        
         student.status = 'rejected'
         student.save(update_fields=['status'])
         if student.user:
             student.user.is_verified = False
             student.user.save(update_fields=['is_verified'])
         return JsonResponse({'success': True, 'status': 'rejected'})
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -702,13 +727,12 @@ def admin_block_student(request, student_id):
 @require_admin
 def admin_activate_student(request, student_id):
     try:
-        user = User.objects.get(id=student_id)
-        if user.role != 'student':
-            return JsonResponse({'error': 'El usuario no es de tipo estudiante.'}, status=400)
+        # Buscar el estudiante por ID numérico
         try:
-            student = Estudiante.objects.get(user__id=student_id)
+            student = Estudiante.objects.get(id=student_id)
         except Estudiante.DoesNotExist:
-            student = Estudiante.objects.create(user=user)
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        
         student.status = 'approved'
         student.save(update_fields=['status'])
         if student.user:
@@ -716,7 +740,5 @@ def admin_activate_student(request, student_id):
             student.user.is_verified = True
             student.user.save(update_fields=['is_active', 'is_verified'])
         return JsonResponse({'success': True, 'status': 'approved'})
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

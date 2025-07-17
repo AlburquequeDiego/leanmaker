@@ -23,7 +23,9 @@ urlpatterns = [
     # path('companies/<int:company_id>/', views.company_detail, name='company_detail'),
     
     # Gestión de proyectos
-    # path('projects/', views.project_list, name='project_list'),
+    path('projects/', views.admin_projects_list, name='admin_projects_list'),
+    path('projects/<uuid:project_id>/suspend/', views.admin_suspend_project, name='admin_suspend_project'),
+    path('projects/<uuid:project_id>/delete/', views.admin_delete_project, name='admin_delete_project'),
     # path('projects/<int:project_id>/', views.project_detail, name='project_detail'),
     
     # Gestión de usuarios

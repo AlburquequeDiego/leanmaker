@@ -623,3 +623,57 @@ def admin_activate_company(request, current_user, company_id):
         return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin_auth
+def admin_suspend_project(request, current_user, project_id):
+    """Suspender un proyecto"""
+    try:
+        from projects.models import Proyecto
+        
+        try:
+            project = Proyecto.objects.get(id=project_id)
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        
+        # Cambiar estado a suspendido
+        from project_status.models import ProjectStatus
+        suspended_status, _ = ProjectStatus.objects.get_or_create(name='suspended')
+        project.status = suspended_status
+        project.save()
+        
+        return JsonResponse({
+            'message': 'Proyecto suspendido correctamente',
+            'project_id': str(project.id)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_admin_auth
+def admin_delete_project(request, current_user, project_id):
+    """Eliminar un proyecto"""
+    try:
+        from projects.models import Proyecto
+        
+        try:
+            project = Proyecto.objects.get(id=project_id)
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        
+        # Cambiar estado a cancelado en lugar de eliminar
+        from project_status.models import ProjectStatus
+        cancelled_status, _ = ProjectStatus.objects.get_or_create(name='cancelled')
+        project.status = cancelled_status
+        project.save()
+        
+        return JsonResponse({
+            'message': 'Proyecto cancelado correctamente',
+            'project_id': str(project.id)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 

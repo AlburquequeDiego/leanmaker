@@ -435,9 +435,26 @@ export const GestionEmpresasAdmin = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom fontWeight={700}>
-        Gestión de Empresas
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" fontWeight={700}>
+          Gestión de Empresas
+        </Typography>
+        
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel>Mostrar</InputLabel>
+          <Select
+            value={pageSize}
+            label="Mostrar"
+            onChange={(e) => handlePageSizeChange(e.target.value as number)}
+          >
+            <MenuItem value={20}>20</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+            <MenuItem value={100}>100</MenuItem>
+            <MenuItem value={150}>150</MenuItem>
+            <MenuItem value={200}>200</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
       {/* Filtros y tabla de empresas */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -476,6 +493,7 @@ export const GestionEmpresasAdmin = () => {
         pageSize={pageSize}
         pageSizeOptions={[20, 50, 100, 150, 200]}
         showPagination={false}
+        showPageSizeSelector={false}
       />
 
       {/* Modal de acción */}

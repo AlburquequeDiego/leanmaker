@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -145,6 +145,21 @@ export const APIQuestionnaire = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [currentApiLevel, setCurrentApiLevel] = useState<number>(1);
+
+  // Obtener el nivel API actual del estudiante al cargar el componente
+  useEffect(() => {
+    const fetchCurrentApiLevel = async () => {
+      try {
+        const data = await apiService.get('/api/students/me/');
+        setCurrentApiLevel(Number(data.api_level) || 1);
+      } catch (error) {
+        console.error('Error fetching current API level:', error);
+        setCurrentApiLevel(1);
+      }
+    };
+    fetchCurrentApiLevel();
+  }, []);
 
   const handleAnswerChange = (questionId: number, value: number) => {
     setAnswers(prev => ({
@@ -188,8 +203,8 @@ export const APIQuestionnaire = () => {
 
       try {
         setLoading(true);
-        // Enviar petición de subida de nivel API
-        await apiService.requestApiLevelUpgrade(level, 0); // 0 como currentLevel, puedes obtener el real si lo tienes
+        // Enviar petición de subida de nivel API con el nivel actual real
+        await apiService.requestApiLevelUpgrade(level, currentApiLevel);
         setSuccess('La petición de tu cuestionario requiere la aprobación del administrador. Por favor, espera un momento.');
         setPendingApproval(true);
       } catch (error: any) {

@@ -39,6 +39,7 @@ class Estudiante(models.Model):
     # Campos de estado con valores por defecto - coinciden con frontend
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     api_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
+    trl_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(9)], help_text="Nivel TRL del 1 al 9 según el estado del proyecto")
     strikes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
     gpa = models.DecimalField(max_digits=3, decimal_places=2, default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     completed_projects = models.IntegerField(default=0, validators=[MinValueValidator(0)])
@@ -112,6 +113,37 @@ class Estudiante(models.Model):
             self.strikes < 3 and 
             self.user.is_verified
         )
+    
+    @property
+    def trl_permitido_segun_api(self):
+        """Calcula el nivel TRL máximo permitido según el nivel API del estudiante"""
+        api_to_trl = {
+            1: 2,  # API 1: TRL 1-2 (20 horas)
+            2: 4,  # API 2: TRL 1-4 (40 horas)
+            3: 6,  # API 3: TRL 1-6 (80 horas)
+            4: 9   # API 4: TRL 1-9 (160 horas)
+        }
+        return api_to_trl.get(self.api_level, 1)
+    
+    @property
+    def horas_permitidas_segun_api(self):
+        """Calcula las horas permitidas según el nivel API del estudiante"""
+        api_to_hours = {
+            1: 20,   # API 1: 20 horas
+            2: 40,   # API 2: 40 horas
+            3: 80,   # API 3: 80 horas
+            4: 160   # API 4: 160 horas
+        }
+        return api_to_hours.get(self.api_level, 20)
+    
+    def actualizar_trl_segun_api(self):
+        """Actualiza automáticamente el nivel TRL según el nivel API"""
+        self.trl_level = self.trl_permitido_segun_api
+        self.save(update_fields=['trl_level'])
+    
+    def puede_tomar_proyecto_trl(self, trl_proyecto):
+        """Verifica si el estudiante puede tomar un proyecto de cierto nivel TRL"""
+        return trl_proyecto <= self.trl_permitido_segun_api
     
     @property
     def estado_strikes(self):
@@ -311,4 +343,16 @@ def crear_perfil_estudiante(sender, instance, created, **kwargs):
     if created and instance.role == 'student':
         from .models import Estudiante
         if not hasattr(instance, 'estudiante_profile'):
-            Estudiante.objects.create(user=instance)
+            estudiante = Estudiante.objects.create(user=instance)
+            # Calcular TRL automáticamente al crear
+            estudiante.actualizar_trl_segun_api()
+
+@receiver(post_save, sender=Estudiante)
+def actualizar_trl_automaticamente(sender, instance, **kwargs):
+    """Actualiza automáticamente el TRL cuando cambia el nivel API"""
+    # Solo actualizar si el TRL no coincide con el calculado
+    trl_calculado = instance.trl_permitido_segun_api
+    if instance.trl_level != trl_calculado:
+        instance.trl_level = trl_calculado
+        # Evitar recursión infinita
+        Estudiante.objects.filter(id=instance.id).update(trl_level=trl_calculado)

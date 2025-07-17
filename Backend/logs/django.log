@@ -13358,3 +13358,1017 @@ INFO 2025-07-16 15:58:14,021 basehttp 16800 11028 "GET /api/users/profile/ HTTP/
 INFO 2025-07-16 15:58:15,178 basehttp 16800 11028 "GET /api/users/profile/ HTTP/1.1" 200 610
 INFO 2025-07-16 15:58:17,256 basehttp 16800 7760 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
 INFO 2025-07-16 15:58:19,660 basehttp 16800 11028 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:02:01,981 basehttp 16800 14208 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:02:01,989 basehttp 16800 3380 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:02:01,989 basehttp 16800 18992 "OPTIONS /api/students/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:02:03,818 basehttp 16800 14208 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:02:04,979 basehttp 16800 18992 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:02:05,665 basehttp 16800 18992 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:02:13,416 basehttp 16800 14304 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:02:13,641 basehttp 16800 14304 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:02:14,688 basehttp 16800 14688 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:02:15,293 basehttp 16800 14688 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:02:15,594 basehttp 16800 14688 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:03:01,714 basehttp 16800 15996 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-16 16:15:44,076 basehttp 16800 10424 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:15:48,463 basehttp 16800 9772 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:15:52,280 basehttp 16800 9772 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9176
+INFO 2025-07-16 16:15:52,877 basehttp 16800 9772 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9176
+INFO 2025-07-16 16:15:53,363 basehttp 16800 9772 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9176
+INFO 2025-07-16 16:15:56,048 basehttp 16800 7568 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:15:56,379 basehttp 16800 7568 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:15:56,695 basehttp 16800 11464 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:17:01,185 basehttp 16800 4360 "GET /api/students/?limit=10&offset=0 HTTP/1.1" 200 8874
+INFO 2025-07-16 16:17:52,571 basehttp 16800 16564 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:17:52,571 basehttp 16800 9808 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:17:52,580 basehttp 16800 16564 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:17:53,354 basehttp 16800 9808 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:17:53,651 basehttp 16800 9808 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:17:53,990 basehttp 16800 16564 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:17:54,297 basehttp 16800 16564 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:01,383 basehttp 16800 5016 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:04,366 basehttp 16800 5016 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:21,239 basehttp 16800 2928 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:30,180 basehttp 16800 19056 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:31,950 basehttp 16800 19056 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:38,977 basehttp 16800 3552 "OPTIONS /api/users/33/unblock/ HTTP/1.1" 200 0
+WARNING 2025-07-16 16:18:39,266 log 16800 3552 Not Found: /api/users/33/unblock/
+WARNING 2025-07-16 16:18:39,269 basehttp 16800 3552 "POST /api/users/33/unblock/ HTTP/1.1" 404 20027
+INFO 2025-07-16 16:18:40,265 basehttp 16800 3552 "OPTIONS /api/users/26/unblock/ HTTP/1.1" 200 0
+WARNING 2025-07-16 16:18:40,334 log 16800 3552 Not Found: /api/users/26/unblock/
+WARNING 2025-07-16 16:18:40,337 basehttp 16800 3552 "POST /api/users/26/unblock/ HTTP/1.1" 404 20026
+INFO 2025-07-16 16:18:41,548 basehttp 16800 3552 "OPTIONS /api/users/12/unblock/ HTTP/1.1" 200 0
+WARNING 2025-07-16 16:18:41,651 log 16800 3552 Not Found: /api/users/12/unblock/
+WARNING 2025-07-16 16:18:41,653 basehttp 16800 3552 "POST /api/users/12/unblock/ HTTP/1.1" 404 20026
+INFO 2025-07-16 16:18:42,220 basehttp 16800 3552 "OPTIONS /api/users/43/unblock/ HTTP/1.1" 200 0
+WARNING 2025-07-16 16:18:42,317 log 16800 3552 Not Found: /api/users/43/unblock/
+WARNING 2025-07-16 16:18:42,318 basehttp 16800 3552 "POST /api/users/43/unblock/ HTTP/1.1" 404 20026
+INFO 2025-07-16 16:18:42,729 basehttp 16800 3552 "OPTIONS /api/users/49/unblock/ HTTP/1.1" 200 0
+WARNING 2025-07-16 16:18:42,844 log 16800 3552 Not Found: /api/users/49/unblock/
+WARNING 2025-07-16 16:18:42,845 basehttp 16800 3552 "POST /api/users/49/unblock/ HTTP/1.1" 404 20026
+INFO 2025-07-16 16:18:43,591 basehttp 16800 3552 "OPTIONS /api/users/21/unblock/ HTTP/1.1" 200 0
+WARNING 2025-07-16 16:18:43,681 log 16800 3552 Not Found: /api/users/21/unblock/
+WARNING 2025-07-16 16:18:43,683 basehttp 16800 3552 "POST /api/users/21/unblock/ HTTP/1.1" 404 20026
+INFO 2025-07-16 16:18:48,827 basehttp 16800 14900 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:54,112 basehttp 16800 14900 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 16:18:54,112 basehttp 16800 13584 "OPTIONS /api/students/admin/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 16:18:54,522 basehttp 16800 13584 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:18:54,811 basehttp 16800 13584 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:18:57,285 basehttp 16800 13584 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:57,599 basehttp 16800 13584 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:18:57,908 basehttp 16800 13584 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:20:27,569 basehttp 16800 13948 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:20:42,046 basehttp 16800 22688 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:20:45,401 basehttp 16800 22688 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:20:54,579 basehttp 16800 11636 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:21:05,827 basehttp 16800 19588 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 17794
+INFO 2025-07-16 16:22:20,265 autoreload 16800 24132 C:\Users\albur\Desktop\leanmaker\Backend\students\models.py changed, reloading.
+INFO 2025-07-16 16:22:21,713 autoreload 9204 15852 Watching for file changes with StatReloader
+INFO 2025-07-16 16:22:31,589 autoreload 9204 15852 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 16:22:32,642 autoreload 20524 8488 Watching for file changes with StatReloader
+INFO 2025-07-16 16:22:50,256 autoreload 20524 8488 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 16:22:51,843 autoreload 19132 2432 Watching for file changes with StatReloader
+INFO 2025-07-16 16:23:11,405 basehttp 19132 14900 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:23:11,620 basehttp 19132 14900 "GET /api/users/profile/ HTTP/1.1" 200 610
+ERROR 2025-07-16 16:23:12,082 log 19132 9404 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:23:12,083 basehttp 19132 9404 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:23:12,407 log 19132 9404 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:23:12,408 basehttp 19132 9404 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:23:12,700 log 19132 9404 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:23:12,701 basehttp 19132 9404 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+INFO 2025-07-16 16:23:16,381 basehttp 19132 12704 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:23:16,597 basehttp 19132 12704 "GET /api/users/profile/ HTTP/1.1" 200 610
+ERROR 2025-07-16 16:23:16,812 log 19132 9924 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:23:16,813 basehttp 19132 9924 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:23:17,126 log 19132 9924 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:23:17,127 basehttp 19132 9924 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:23:17,421 log 19132 9924 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:23:17,421 basehttp 19132 9924 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:25:46,690 log 19132 756 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:25:46,693 basehttp 19132 756 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+INFO 2025-07-16 16:26:24,533 basehttp 19132 17876 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:26:25,109 basehttp 19132 17876 "GET /api/users/profile/ HTTP/1.1" 200 610
+ERROR 2025-07-16 16:26:25,957 log 19132 21008 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:26:25,960 basehttp 19132 21008 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:26:26,537 log 19132 21008 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:26:26,539 basehttp 19132 21008 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:26:26,863 log 19132 21008 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:26:26,865 basehttp 19132 21008 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+INFO 2025-07-16 16:27:15,503 basehttp 19132 9680 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:27:15,727 basehttp 19132 9680 "GET /api/users/profile/ HTTP/1.1" 200 610
+ERROR 2025-07-16 16:27:16,684 log 19132 10388 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:27:16,686 basehttp 19132 10388 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:27:17,304 log 19132 10388 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:27:17,305 basehttp 19132 10388 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+ERROR 2025-07-16 16:27:17,941 log 19132 10388 Internal Server Error: /api/students/
+ERROR 2025-07-16 16:27:17,943 basehttp 19132 10388 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 145
+INFO 2025-07-16 16:29:13,404 basehttp 19132 7996 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:29:13,676 basehttp 19132 7996 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:29:14,334 basehttp 19132 21512 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:29:14,599 basehttp 19132 7996 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:29:14,886 basehttp 19132 7996 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:29:53,915 basehttp 19132 19876 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:29:54,262 basehttp 19132 19876 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:17,298 basehttp 19132 20780 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:17,574 basehttp 19132 20780 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:25,041 basehttp 19132 20780 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:25,425 basehttp 19132 20780 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:30,974 basehttp 19132 11368 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:31:31,258 basehttp 19132 11368 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:31:31,596 basehttp 19132 11368 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:31:40,773 basehttp 19132 7760 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:42,065 basehttp 19132 7760 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:48,783 basehttp 19132 22032 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:31:51,446 basehttp 19132 22032 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:32:08,765 basehttp 19132 10396 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:32:11,789 basehttp 19132 10396 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:32:13,407 basehttp 19132 10396 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:32:17,276 basehttp 19132 21876 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:32:28,748 basehttp 19132 22768 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:32:29,054 basehttp 19132 22768 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:32:29,361 basehttp 19132 22768 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:32:30,064 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:32:30,517 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:06,120 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:06,407 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:12,381 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:12,633 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:15,091 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/ HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:17,146 basehttp 19132 22768 "OPTIONS /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 0
+INFO 2025-07-16 16:33:19,156 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:20,370 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:22,622 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:22,893 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:30,168 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:30,523 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:35,840 basehttp 19132 22768 "OPTIONS /api/students/admin/api-level-requests/?limit=200 HTTP/1.1" 200 0
+INFO 2025-07-16 16:33:36,133 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=200 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:38,039 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:33:47,485 basehttp 19132 22768 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:35:22,131 basehttp 19132 11120 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:35:22,477 basehttp 19132 11120 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:35:29,092 basehttp 19132 11120 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 16:35:29,471 basehttp 19132 11120 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 16:35:36,053 basehttp 19132 11556 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9085
+INFO 2025-07-16 16:35:36,667 basehttp 19132 11556 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9085
+INFO 2025-07-16 16:35:37,225 basehttp 19132 11556 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9085
+INFO 2025-07-16 16:36:38,620 basehttp 19132 20600 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9085
+INFO 2025-07-16 16:36:39,790 basehttp 19132 20600 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9085
+INFO 2025-07-16 16:36:40,328 basehttp 19132 20600 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9085
+INFO 2025-07-16 16:37:47,787 basehttp 19132 8832 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:37:49,505 basehttp 19132 12712 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:38:48,980 basehttp 19132 17316 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:38:51,038 basehttp 19132 17316 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:39:03,418 basehttp 19132 17756 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:39:03,666 basehttp 19132 17756 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:39:06,492 basehttp 19132 17756 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 16:39:13,301 basehttp 19132 12344 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:39:14,003 basehttp 19132 12344 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:39:14,332 basehttp 19132 14672 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:40:04,752 basehttp 19132 9712 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:40:05,127 basehttp 19132 19064 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:40:10,609 basehttp 19132 19064 "OPTIONS /api/students/?limit=100&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:40:11,117 basehttp 19132 19064 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 47181
+INFO 2025-07-16 16:40:29,805 basehttp 19132 19064 "OPTIONS /api/students/?limit=100&offset=0&status=active HTTP/1.1" 200 0
+INFO 2025-07-16 16:40:30,272 basehttp 19132 19064 "GET /api/students/?limit=100&offset=0&status=active HTTP/1.1" 200 70
+INFO 2025-07-16 16:40:32,398 basehttp 19132 19064 "OPTIONS /api/students/?limit=100&offset=0&status=inactive HTTP/1.1" 200 0
+INFO 2025-07-16 16:40:32,787 basehttp 19132 19064 "GET /api/students/?limit=100&offset=0&status=inactive HTTP/1.1" 200 70
+INFO 2025-07-16 16:40:33,906 basehttp 19132 19064 "OPTIONS /api/students/?limit=100&offset=0&status=suspended HTTP/1.1" 200 0
+INFO 2025-07-16 16:40:34,328 basehttp 19132 19064 "GET /api/students/?limit=100&offset=0&status=suspended HTTP/1.1" 200 70
+INFO 2025-07-16 16:40:36,498 basehttp 19132 19064 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 47181
+INFO 2025-07-16 16:41:01,020 basehttp 19132 19064 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:41:01,332 basehttp 19132 19064 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:41:09,087 basehttp 19132 19064 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:41:10,406 basehttp 19132 19064 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:41:10,777 basehttp 19132 19064 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:41:56,374 basehttp 19132 19064 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:41:59,380 basehttp 19132 19064 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 16:43:00,413 basehttp 19132 1824 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:43:01,517 basehttp 19132 22696 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:43:01,862 basehttp 19132 22696 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:44:25,485 basehttp 19132 7360 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:44:26,395 basehttp 19132 7360 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 18114
+INFO 2025-07-16 16:44:42,290 autoreload 19132 2432 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 16:44:44,216 autoreload 9900 2456 Watching for file changes with StatReloader
+INFO 2025-07-16 16:44:53,858 basehttp 9900 12116 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:44:54,419 basehttp 9900 12116 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:44:54,679 basehttp 9900 24332 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:44:54,995 basehttp 9900 24332 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:44:55,660 basehttp 9900 24332 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:45:59,085 autoreload 9900 2456 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 16:46:00,766 autoreload 24184 11692 Watching for file changes with StatReloader
+INFO 2025-07-16 16:46:12,005 autoreload 24184 11692 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 16:46:14,594 autoreload 9804 9924 Watching for file changes with StatReloader
+INFO 2025-07-16 16:46:37,646 basehttp 9804 2796 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:46:43,749 basehttp 9804 2796 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:46:44,566 basehttp 9804 2796 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:46:45,510 basehttp 9804 9744 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:46:46,511 basehttp 9804 9744 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:46:47,477 basehttp 9804 9744 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:47:21,991 basehttp 9804 12628 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:47:22,291 basehttp 9804 12628 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:47:22,545 basehttp 9804 13004 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:47:22,913 basehttp 9804 13004 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:47:23,256 basehttp 9804 13004 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:47:58,800 basehttp 9804 16248 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:11,407 basehttp 9804 7296 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:11,763 basehttp 9804 7296 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:20,169 basehttp 9804 7296 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:48:20,436 basehttp 9804 7296 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:48:21,180 basehttp 9804 16976 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:21,566 basehttp 9804 16976 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:22,504 basehttp 9804 7296 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:41,845 basehttp 9804 7296 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:48:42,393 basehttp 9804 7296 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:48:47,510 basehttp 9804 7296 "POST /api/token/ HTTP/1.1" 200 1022
+INFO 2025-07-16 16:48:47,748 basehttp 9804 7296 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:48:49,371 basehttp 9804 7296 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 16:48:51,048 basehttp 9804 7296 "OPTIONS /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 16:48:51,049 basehttp 9804 16976 "OPTIONS /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-16 16:48:51,155 log 9804 16976 Not Found: /api/admin/projects/
+WARNING 2025-07-16 16:48:51,157 basehttp 9804 16976 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 404 19602
+WARNING 2025-07-16 16:48:51,249 log 9804 16976 Not Found: /api/admin/projects/
+WARNING 2025-07-16 16:48:51,250 basehttp 9804 16976 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 404 19602
+WARNING 2025-07-16 16:48:51,320 log 9804 16976 Not Found: /api/admin/projects/
+WARNING 2025-07-16 16:48:51,321 basehttp 9804 16976 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 404 19602
+INFO 2025-07-16 16:48:52,067 basehttp 9804 16976 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:52,410 basehttp 9804 7296 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:48:53,090 basehttp 9804 7296 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:53:21,133 basehttp 9804 3808 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:53:35,151 basehttp 9804 9744 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:57:19,323 autoreload 9804 9924 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-07-16 16:57:20,643 autoreload 1044 20536 Watching for file changes with StatReloader
+INFO 2025-07-16 16:57:53,982 autoreload 1044 20536 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-07-16 16:57:54,888 autoreload 17720 11244 Watching for file changes with StatReloader
+INFO 2025-07-16 16:58:10,755 basehttp 17720 12344 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:12,400 basehttp 17720 12344 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:18,408 basehttp 17720 12344 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:20,660 basehttp 17720 12344 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:20,956 basehttp 17720 12344 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:32,304 basehttp 17720 3608 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:34,893 basehttp 17720 3608 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:42,809 basehttp 17720 9300 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:45,725 basehttp 17720 9300 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:53,295 basehttp 17720 14852 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:58:55,766 basehttp 17720 14852 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:59:27,798 basehttp 17720 2728 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 16:59:27,798 basehttp 17720 19192 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 16:59:28,661 basehttp 17720 2728 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:59:29,784 basehttp 17720 2728 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 16:59:29,981 basehttp 17720 7464 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:59:30,530 basehttp 17720 2728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:59:30,941 basehttp 17720 2728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:59:32,840 basehttp 17720 2728 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:59:33,111 basehttp 17720 2728 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 16:59:35,711 basehttp 17720 2728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:59:35,997 basehttp 17720 2728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 16:59:36,359 basehttp 17720 2728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+WARNING 2025-07-16 17:00:06,992 log 17720 21620 Not Found: /api/token/
+WARNING 2025-07-16 17:00:06,993 basehttp 17720 21620 "POST /api/token/ HTTP/1.1" 404 34
+WARNING 2025-07-16 17:00:50,652 log 17720 3140 Bad Request: /api/token/
+WARNING 2025-07-16 17:00:50,653 basehttp 17720 3140 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-16 17:01:13,934 basehttp 17720 15956 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:01:13,940 basehttp 17720 17120 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:01:14,973 basehttp 17720 15956 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:01:15,423 basehttp 17720 17120 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:01:19,165 basehttp 17720 21484 "OPTIONS /api/users/?role=admin HTTP/1.1" 200 0
+INFO 2025-07-16 17:01:19,474 basehttp 17720 21484 "GET /api/users/?role=admin HTTP/1.1" 200 1908
+INFO 2025-07-16 17:01:28,721 basehttp 17720 21484 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 17:01:29,020 basehttp 17720 21484 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 17:01:29,389 basehttp 17720 21484 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 17:11:58,146 basehttp 17720 9036 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:11:58,265 basehttp 17720 15956 "OPTIONS /api/admin/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 17:11:58,268 basehttp 17720 15956 "OPTIONS /api/admin/students/?limit=20&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-16 17:11:58,356 log 17720 15956 Not Found: /api/admin/students/
+WARNING 2025-07-16 17:11:58,358 basehttp 17720 15956 "GET /api/admin/students/?limit=20&offset=0 HTTP/1.1" 404 20250
+INFO 2025-07-16 17:11:58,394 basehttp 17720 9036 "GET /api/users/profile/ HTTP/1.1" 200 610
+WARNING 2025-07-16 17:11:58,403 log 17720 15956 Not Found: /api/admin/students/
+WARNING 2025-07-16 17:11:58,404 basehttp 17720 15956 "GET /api/admin/students/?limit=20&offset=0 HTTP/1.1" 404 20250
+WARNING 2025-07-16 17:11:58,436 log 17720 9036 Not Found: /api/admin/students/
+WARNING 2025-07-16 17:11:58,436 basehttp 17720 9036 "GET /api/admin/students/?limit=20&offset=0 HTTP/1.1" 404 20250
+INFO 2025-07-16 17:12:54,723 basehttp 17720 9704 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 17:12:57,428 basehttp 17720 9704 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20006
+INFO 2025-07-16 17:18:08,369 autoreload 17720 11244 C:\Users\albur\Desktop\leanmaker\Backend\students\models.py changed, reloading.
+INFO 2025-07-16 17:18:09,522 autoreload 18456 7844 Watching for file changes with StatReloader
+INFO 2025-07-16 17:18:19,242 autoreload 18456 7844 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 17:18:20,222 autoreload 20212 10052 Watching for file changes with StatReloader
+INFO 2025-07-16 17:18:28,415 autoreload 20212 10052 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 17:18:29,644 autoreload 2088 23808 Watching for file changes with StatReloader
+INFO 2025-07-16 17:18:43,815 basehttp 2088 18672 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:18:49,813 basehttp 2088 18672 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:18:52,422 basehttp 2088 22948 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:22:33,129 basehttp 2088 22124 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:22:33,453 basehttp 2088 19520 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:22:39,794 basehttp 2088 19520 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:22:40,569 basehttp 2088 19520 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:28:45,110 autoreload 2088 23808 C:\Users\albur\Desktop\leanmaker\Backend\students\models.py changed, reloading.
+INFO 2025-07-16 17:28:46,033 autoreload 7452 3176 Watching for file changes with StatReloader
+INFO 2025-07-16 17:29:05,412 autoreload 7452 3176 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 17:29:06,276 autoreload 5016 24100 Watching for file changes with StatReloader
+INFO 2025-07-16 17:29:15,535 autoreload 5016 24100 C:\Users\albur\Desktop\leanmaker\Backend\students\urls.py changed, reloading.
+INFO 2025-07-16 17:29:16,378 autoreload 20492 24196 Watching for file changes with StatReloader
+INFO 2025-07-16 17:29:20,166 basehttp 20492 13708 "OPTIONS /api/test-admin-stats/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:29:21,715 basehttp 20492 13708 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 17:29:29,078 basehttp 20492 13708 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 17:29:30,623 basehttp 20492 13708 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 17:29:33,653 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:29:33,937 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:29:34,255 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:29:39,847 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:29:41,862 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:29:56,946 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:29:59,028 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:29:59,306 basehttp 20492 22800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:30:06,446 basehttp 20492 4684 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:30:08,460 basehttp 20492 4684 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:30:08,769 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:30:43,822 basehttp 20492 2480 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 17:30:44,085 basehttp 20492 2480 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 17:32:30,845 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:32:31,127 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:32:31,435 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:25,348 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:27,459 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:27,753 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:28,020 basehttp 20492 4684 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:36,371 basehttp 20492 4684 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:34:36,580 basehttp 20492 4684 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:34:37,235 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:37,727 basehttp 20492 4684 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:38,024 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:38,344 basehttp 20492 2480 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:34:38,558 basehttp 20492 2480 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:34:38,888 basehttp 20492 4684 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:39,229 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:39,802 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:49,959 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:52,739 basehttp 20492 2480 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:34:53,089 basehttp 20492 4684 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:35:24,279 autoreload 20492 24196 C:\Users\albur\Desktop\leanmaker\Backend\students\urls.py changed, reloading.
+INFO 2025-07-16 17:35:25,223 autoreload 21628 6896 Watching for file changes with StatReloader
+INFO 2025-07-16 17:35:31,327 autoreload 21628 6896 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 17:35:32,396 autoreload 23780 24248 Watching for file changes with StatReloader
+INFO 2025-07-16 17:42:39,760 basehttp 23780 3380 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:42:40,460 basehttp 23780 3380 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:42:41,601 basehttp 23780 24428 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:42:42,157 basehttp 23780 3380 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:42:42,487 basehttp 23780 3380 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:43:13,256 basehttp 23780 3380 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20892
+INFO 2025-07-16 17:43:18,513 basehttp 23780 3380 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54495
+INFO 2025-07-16 17:43:19,959 basehttp 23780 3380 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54495
+INFO 2025-07-16 17:43:20,342 basehttp 23780 3380 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54495
+INFO 2025-07-16 17:43:27,834 basehttp 23780 3380 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54495
+INFO 2025-07-16 17:43:30,990 basehttp 23780 3380 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54495
+INFO 2025-07-16 17:43:33,675 basehttp 23780 3380 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54495
+INFO 2025-07-16 17:43:38,398 autoreload 23780 24248 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 17:43:39,333 autoreload 22228 14668 Watching for file changes with StatReloader
+INFO 2025-07-16 17:44:03,225 basehttp 22228 21696 "OPTIONS /api/students/?limit=100&offset=0&api_level=4 HTTP/1.1" 200 0
+INFO 2025-07-16 17:44:04,580 basehttp 22228 21696 "GET /api/students/?limit=100&offset=0&api_level=4 HTTP/1.1" 200 13771
+INFO 2025-07-16 17:44:13,463 basehttp 22228 21696 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54510
+INFO 2025-07-16 17:44:14,422 basehttp 22228 21696 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 17:44:14,688 basehttp 22228 21696 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 709
+INFO 2025-07-16 17:44:17,071 basehttp 22228 21696 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:44:17,420 basehttp 22228 21696 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:44:17,758 basehttp 22228 21696 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:46:10,238 basehttp 22228 10628 "OPTIONS /api/students/admin/32/activate/ HTTP/1.1" 200 0
+WARNING 2025-07-16 17:46:10,270 log 22228 10628 Not Found: /api/students/admin/32/activate/
+WARNING 2025-07-16 17:46:10,271 basehttp 22228 10628 "POST /api/students/admin/32/activate/ HTTP/1.1" 404 20444
+INFO 2025-07-16 17:46:14,522 basehttp 22228 10628 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:46:14,918 basehttp 22228 10628 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:46:15,399 basehttp 22228 12776 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:46:15,697 basehttp 22228 10628 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:46:15,978 basehttp 22228 12776 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:46:30,948 basehttp 22228 19792 "OPTIONS /api/students/admin/21/activate/ HTTP/1.1" 200 0
+WARNING 2025-07-16 17:46:30,994 log 22228 19792 Not Found: /api/students/admin/21/activate/
+WARNING 2025-07-16 17:46:30,995 basehttp 22228 19792 "POST /api/students/admin/21/activate/ HTTP/1.1" 404 20444
+INFO 2025-07-16 17:47:07,235 autoreload 22228 14668 C:\Users\albur\Desktop\leanmaker\Backend\students\urls.py changed, reloading.
+INFO 2025-07-16 17:47:08,088 autoreload 13216 9076 Watching for file changes with StatReloader
+INFO 2025-07-16 17:47:21,442 autoreload 13216 9076 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 17:47:22,249 autoreload 19772 13448 Watching for file changes with StatReloader
+INFO 2025-07-16 17:47:34,296 basehttp 19772 12344 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:47:34,562 basehttp 19772 12344 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:47:35,522 basehttp 19772 22708 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:47:36,191 basehttp 19772 22708 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:47:36,495 basehttp 19772 22708 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:47:59,293 basehttp 19772 22492 "POST /api/students/admin/32/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:47:59,627 basehttp 19772 22492 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:48:07,090 basehttp 19772 22492 "POST /api/students/admin/21/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:48:07,376 basehttp 19772 22492 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:48:10,893 basehttp 19772 22492 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:48:11,214 basehttp 19772 12428 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:48:12,937 basehttp 19772 12428 "OPTIONS /api/users/?role=student HTTP/1.1" 200 0
+INFO 2025-07-16 17:48:13,269 basehttp 19772 12428 "GET /api/users/?role=student HTTP/1.1" 200 30142
+INFO 2025-07-16 17:48:19,025 basehttp 19772 12428 "GET /api/users/?role=student HTTP/1.1" 200 30142
+INFO 2025-07-16 17:49:44,491 basehttp 19772 12428 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 17:49:44,491 basehttp 19772 22492 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+WARNING 2025-07-16 17:49:44,507 log 19772 22492 Forbidden: /api/admin/work-hours/
+WARNING 2025-07-16 17:49:44,508 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:44,525 log 19772 22492 Forbidden: /api/admin/work-hours/
+WARNING 2025-07-16 17:49:44,526 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:44,541 log 19772 22492 Forbidden: /api/admin/work-hours/
+WARNING 2025-07-16 17:49:44,542 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:46,316 log 19772 22492 Forbidden: /api/admin/companies/
+WARNING 2025-07-16 17:49:46,317 basehttp 19772 22492 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:46,351 log 19772 22492 Forbidden: /api/admin/companies/
+WARNING 2025-07-16 17:49:46,353 basehttp 19772 22492 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:47,035 log 19772 22492 Forbidden: /api/admin/work-hours/
+WARNING 2025-07-16 17:49:47,036 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:47,058 log 19772 22492 Forbidden: /api/admin/work-hours/
+WARNING 2025-07-16 17:49:47,059 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:47,078 log 19772 22492 Forbidden: /api/admin/work-hours/
+WARNING 2025-07-16 17:49:47,079 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 403 28
+WARNING 2025-07-16 17:49:48,498 log 19772 22492 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 17:49:48,503 basehttp 19772 22492 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-16 17:49:48,540 log 19772 22492 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 17:49:48,543 basehttp 19772 22492 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-16 17:49:49,186 basehttp 19772 12428 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-16 17:49:49,208 basehttp 19772 22492 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-16 17:49:49,433 basehttp 19772 12428 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:49:49,641 basehttp 19772 12428 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:49:50,082 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9095
+INFO 2025-07-16 17:49:50,512 basehttp 19772 22492 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9095
+INFO 2025-07-16 17:49:50,919 basehttp 19772 12428 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9095
+INFO 2025-07-16 17:50:19,758 basehttp 19772 8332 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:50:20,488 basehttp 19772 8332 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:50:26,037 basehttp 19772 8332 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 17:50:27,763 basehttp 19772 8332 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 17:50:30,695 basehttp 19772 11736 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:50:30,994 basehttp 19772 11736 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:50:31,319 basehttp 19772 21096 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:52:32,652 basehttp 19772 10796 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:52:32,910 basehttp 19772 10796 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:52:33,443 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20907
+INFO 2025-07-16 17:52:34,365 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20907
+INFO 2025-07-16 17:52:34,709 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20907
+INFO 2025-07-16 17:52:42,499 basehttp 19772 24288 "OPTIONS /api/students/admin/42/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:52:43,012 basehttp 19772 24288 "POST /api/students/admin/42/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:52:43,357 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20905
+INFO 2025-07-16 17:52:45,948 basehttp 19772 24288 "OPTIONS /api/students/admin/49/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:52:46,722 basehttp 19772 19828 "OPTIONS /api/students/admin/43/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:52:46,772 basehttp 19772 24288 "POST /api/students/admin/49/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:52:47,471 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20903
+INFO 2025-07-16 17:52:47,689 basehttp 19772 19828 "POST /api/students/admin/43/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:52:48,043 basehttp 19772 19828 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20901
+INFO 2025-07-16 17:52:50,262 basehttp 19772 19828 "OPTIONS /api/students/admin/33/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:52:50,806 basehttp 19772 24288 "OPTIONS /api/students/admin/26/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:52:50,869 basehttp 19772 19828 "POST /api/students/admin/33/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:52:51,203 basehttp 19772 19828 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20899
+INFO 2025-07-16 17:52:51,360 basehttp 19772 24288 "POST /api/students/admin/26/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:52:51,833 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20897
+INFO 2025-07-16 17:52:54,364 basehttp 19772 24288 "OPTIONS /api/students/admin/12/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:52:54,885 basehttp 19772 24288 "POST /api/students/admin/12/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:52:55,204 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:52:58,433 basehttp 19772 24288 "OPTIONS /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 0
+INFO 2025-07-16 17:52:58,886 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 8366
+INFO 2025-07-16 17:53:01,301 basehttp 19772 24288 "OPTIONS /api/students/admin/44/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:01,879 basehttp 19772 24288 "POST /api/students/admin/44/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:02,241 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 7314
+INFO 2025-07-16 17:53:03,047 basehttp 19772 24288 "OPTIONS /api/students/admin/14/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:03,545 basehttp 19772 24288 "POST /api/students/admin/14/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:03,913 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 6297
+INFO 2025-07-16 17:53:04,553 basehttp 19772 24288 "OPTIONS /api/students/admin/4/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:05,083 basehttp 19772 24288 "POST /api/students/admin/4/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:05,537 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 5284
+INFO 2025-07-16 17:53:07,626 basehttp 19772 24288 "OPTIONS /api/students/admin/29/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:08,525 basehttp 19772 24288 "POST /api/students/admin/29/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:09,479 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 4220
+INFO 2025-07-16 17:53:09,694 basehttp 19772 24288 "OPTIONS /api/students/admin/24/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:10,192 basehttp 19772 24288 "POST /api/students/admin/24/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:10,297 basehttp 19772 19828 "POST /api/students/admin/24/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:10,577 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 3180
+INFO 2025-07-16 17:53:11,172 basehttp 19772 19828 "OPTIONS /api/students/admin/17/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:11,514 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 3180
+INFO 2025-07-16 17:53:11,521 basehttp 19772 24288 "OPTIONS /api/students/admin/10/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:11,958 basehttp 19772 19828 "POST /api/students/admin/17/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:12,629 basehttp 19772 24288 "POST /api/students/admin/10/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:12,654 basehttp 19772 19828 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 1133
+INFO 2025-07-16 17:53:13,005 basehttp 19772 19828 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 1133
+INFO 2025-07-16 17:53:13,499 basehttp 19772 19828 "OPTIONS /api/students/admin/25/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:14,036 basehttp 19772 19828 "POST /api/students/admin/25/activate/ HTTP/1.1" 200 39
+INFO 2025-07-16 17:53:14,380 basehttp 19772 19828 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 69
+INFO 2025-07-16 17:53:16,535 basehttp 19772 19828 "OPTIONS /api/students/?limit=20&offset=0&status=approved HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:16,985 basehttp 19772 19828 "GET /api/students/?limit=20&offset=0&status=approved HTTP/1.1" 200 20700
+INFO 2025-07-16 17:53:22,185 basehttp 19772 19828 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 17:53:22,528 basehttp 19772 24288 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 17:53:24,977 basehttp 19772 24288 "OPTIONS /api/users/?is_active=false HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:25,271 basehttp 19772 24288 "GET /api/users/?is_active=false HTTP/1.1" 200 80
+INFO 2025-07-16 17:53:29,273 basehttp 19772 24288 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:53:29,495 basehttp 19772 24288 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:53:29,837 basehttp 19772 19828 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 17:53:30,213 basehttp 19772 24288 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 17:53:32,352 basehttp 19772 24288 "OPTIONS /api/users/?is_active=true HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:32,758 basehttp 19772 24288 "GET /api/users/?is_active=true HTTP/1.1" 200 61481
+INFO 2025-07-16 17:53:35,429 basehttp 19772 24288 "GET /api/users/?is_active=false HTTP/1.1" 200 80
+INFO 2025-07-16 17:53:38,061 basehttp 19772 24288 "OPTIONS /api/users/?is_active=false&role=student HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:38,360 basehttp 19772 24288 "GET /api/users/?is_active=false&role=student HTTP/1.1" 200 80
+INFO 2025-07-16 17:53:39,646 basehttp 19772 24288 "OPTIONS /api/users/?is_active=true&role=student HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:40,410 basehttp 19772 24288 "GET /api/users/?is_active=true&role=student HTTP/1.1" 200 30141
+INFO 2025-07-16 17:53:44,554 basehttp 19772 24288 "OPTIONS /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:53:44,949 basehttp 19772 24288 "POST /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/suspend/ HTTP/1.1" 200 201
+INFO 2025-07-16 17:53:45,281 basehttp 19772 24288 "GET /api/users/?is_active=true&role=student HTTP/1.1" 200 29533
+INFO 2025-07-16 17:53:49,741 basehttp 19772 24288 "GET /api/users/?is_active=false&role=student HTTP/1.1" 200 687
+INFO 2025-07-16 17:53:53,501 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:53:53,801 basehttp 19772 19828 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:53:54,097 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:53:58,809 basehttp 19772 24288 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 69
+INFO 2025-07-16 17:54:08,559 basehttp 19772 19988 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:54:08,772 basehttp 19772 19988 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:54:09,867 basehttp 19772 19024 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:54:10,781 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:54:11,182 basehttp 19772 19024 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:54:16,817 basehttp 19772 19024 "GET /api/students/?limit=100&offset=0 HTTP/1.1" 200 54510
+INFO 2025-07-16 17:54:54,676 basehttp 19772 19024 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:54:54,999 basehttp 19772 19988 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:54:56,538 basehttp 19772 19988 "GET /api/users/?is_active=false HTTP/1.1" 200 687
+INFO 2025-07-16 17:55:04,809 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:55:05,800 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:55:07,601 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:55:11,633 basehttp 19772 19988 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:55:11,828 basehttp 19772 19988 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:55:12,497 basehttp 19772 19024 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:55:12,843 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:55:13,134 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20896
+INFO 2025-07-16 17:55:16,135 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0&status=approved HTTP/1.1" 200 20700
+INFO 2025-07-16 17:55:18,330 basehttp 19772 19988 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 69
+INFO 2025-07-16 17:56:47,406 basehttp 19772 19988 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:56:47,778 basehttp 19772 19988 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:56:50,039 basehttp 19772 19988 "GET /api/users/?is_active=false HTTP/1.1" 200 687
+INFO 2025-07-16 17:57:19,898 autoreload 19772 13448 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 17:57:21,652 autoreload 24504 7700 Watching for file changes with StatReloader
+INFO 2025-07-16 17:57:37,505 autoreload 24504 7700 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 17:57:38,586 autoreload 4148 9284 Watching for file changes with StatReloader
+INFO 2025-07-16 17:57:51,823 autoreload 4148 9284 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 17:57:53,053 autoreload 16272 6968 Watching for file changes with StatReloader
+INFO 2025-07-16 17:58:05,004 autoreload 16272 6968 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-16 17:58:06,407 autoreload 21368 16240 Watching for file changes with StatReloader
+INFO 2025-07-16 17:59:19,997 basehttp 21368 24040 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:59:20,261 basehttp 21368 24040 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 17:59:20,794 basehttp 21368 10384 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 17:59:21,260 basehttp 21368 24040 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 17:59:24,316 basehttp 21368 24040 "GET /api/users/?is_active=false HTTP/1.1" 200 80
+INFO 2025-07-16 17:59:28,029 basehttp 21368 24040 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:59:28,405 basehttp 21368 24040 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:59:28,746 basehttp 21368 24040 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:59:31,458 basehttp 21368 18524 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 69
+INFO 2025-07-16 17:59:33,064 basehttp 21368 18524 "GET /api/students/?limit=20&offset=0&status=approved HTTP/1.1" 200 20700
+INFO 2025-07-16 17:59:35,959 basehttp 21368 18524 "OPTIONS /api/students/admin/1/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:59:36,546 basehttp 21368 18524 "POST /api/students/admin/1/suspend/ HTTP/1.1" 200 40
+INFO 2025-07-16 17:59:36,945 basehttp 21368 18524 "GET /api/students/?limit=20&offset=0&status=approved HTTP/1.1" 200 20622
+INFO 2025-07-16 17:59:40,508 basehttp 21368 11200 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 1209
+INFO 2025-07-16 17:59:45,760 basehttp 21368 11200 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:59:46,218 basehttp 21368 11200 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 17:59:48,424 basehttp 21368 11200 "GET /api/users/?is_active=false HTTP/1.1" 200 736
+INFO 2025-07-16 17:59:53,254 basehttp 21368 2912 "OPTIONS /api/users/e0f7b3d7-43d6-4e79-97b4-f55476fe036e/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 17:59:54,078 basehttp 21368 2912 "POST /api/users/e0f7b3d7-43d6-4e79-97b4-f55476fe036e/activate/ HTTP/1.1" 200 185
+INFO 2025-07-16 17:59:54,395 basehttp 21368 2912 "GET /api/users/?is_active=false HTTP/1.1" 200 80
+INFO 2025-07-16 17:59:58,140 basehttp 21368 2912 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:59:58,551 basehttp 21368 2912 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 17:59:59,092 basehttp 21368 2912 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:00:00,988 basehttp 21368 2912 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 69
+INFO 2025-07-16 18:00:56,565 basehttp 21368 3480 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 18:00:56,565 basehttp 21368 6520 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 18:01:01,007 basehttp 21368 6520 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 18:01:04,918 basehttp 21368 6520 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 18:01:10,260 basehttp 21368 6520 "OPTIONS /api/users/80f182c8-cf4a-45c8-9c9b-f4d00f64100d/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:01:10,684 basehttp 21368 6520 "POST /api/users/80f182c8-cf4a-45c8-9c9b-f4d00f64100d/suspend/ HTTP/1.1" 200 191
+INFO 2025-07-16 18:01:13,973 basehttp 21368 6520 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12120
+INFO 2025-07-16 18:01:18,582 basehttp 21368 8980 "OPTIONS /api/admin/companies/?limit=20&offset=0&status=suspended HTTP/1.1" 200 0
+INFO 2025-07-16 18:01:19,183 basehttp 21368 8980 "GET /api/admin/companies/?limit=20&offset=0&status=suspended HTTP/1.1" 200 670
+INFO 2025-07-16 18:01:24,305 basehttp 21368 8980 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 18:01:24,700 basehttp 21368 8980 "GET /api/users/ HTTP/1.1" 200 61482
+INFO 2025-07-16 18:01:26,522 basehttp 21368 8980 "GET /api/users/?is_active=false HTTP/1.1" 200 669
+INFO 2025-07-16 18:01:28,652 basehttp 21368 8980 "OPTIONS /api/users/80f182c8-cf4a-45c8-9c9b-f4d00f64100d/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:01:29,047 basehttp 21368 8980 "POST /api/users/80f182c8-cf4a-45c8-9c9b-f4d00f64100d/activate/ HTTP/1.1" 200 189
+INFO 2025-07-16 18:01:29,355 basehttp 21368 8980 "GET /api/users/?is_active=false HTTP/1.1" 200 80
+INFO 2025-07-16 18:01:34,024 basehttp 21368 8980 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 18:01:35,649 basehttp 21368 8980 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 18:01:38,860 basehttp 21368 8980 "GET /api/admin/companies/?limit=20&offset=0&status=suspended HTTP/1.1" 200 69
+INFO 2025-07-16 18:01:42,499 basehttp 21368 8980 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 18:01:43,289 basehttp 21368 8980 "GET /api/users/ HTTP/1.1" 200 61481
+INFO 2025-07-16 18:01:45,478 basehttp 21368 16852 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:01:45,816 basehttp 21368 16852 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:01:47,081 basehttp 21368 16852 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:01:51,831 basehttp 21368 16852 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:01:51,861 basehttp 21368 16852 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 18:01:55,360 basehttp 21368 3564 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:01:57,364 basehttp 21368 3564 "POST /api/token/ HTTP/1.1" 200 1080
+INFO 2025-07-16 18:01:57,905 basehttp 21368 3564 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-16 18:01:57,976 basehttp 21368 3564 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:01:58,729 basehttp 21368 3564 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 18:02:14,989 basehttp 21368 8256 "OPTIONS /api/students/api-level-request/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:02:15,926 basehttp 21368 8256 "POST /api/students/api-level-request/ HTTP/1.1" 200 55
+INFO 2025-07-16 18:02:19,401 basehttp 21368 8256 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:02:19,405 basehttp 21368 24028 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:02:19,405 basehttp 21368 8256 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:02:19,411 basehttp 21368 24028 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:02:19,829 basehttp 21368 8256 "GET /api/students/api-level-requests/ HTTP/1.1" 200 710
+INFO 2025-07-16 18:02:20,243 basehttp 21368 24028 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:02:20,277 basehttp 21368 8256 "GET /api/students/api-level-requests/ HTTP/1.1" 200 710
+INFO 2025-07-16 18:02:20,569 basehttp 21368 24028 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:02:25,061 basehttp 21368 24028 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 18:02:29,748 basehttp 21368 24028 "POST /api/token/ HTTP/1.1" 200 1022
+INFO 2025-07-16 18:02:30,043 basehttp 21368 24028 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 18:02:30,728 basehttp 21368 24028 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 18:02:39,083 basehttp 21368 24028 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:02:39,442 basehttp 21368 8256 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:02:39,784 basehttp 21368 24028 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:02:40,149 basehttp 21368 24028 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 918
+INFO 2025-07-16 18:02:40,428 basehttp 21368 24028 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 918
+INFO 2025-07-16 18:03:00,312 basehttp 21368 17544 "OPTIONS /api/students/admin/api-level-request/4/action/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:03:01,772 basehttp 21368 17544 "POST /api/students/admin/api-level-request/4/action/ HTTP/1.1" 200 39
+INFO 2025-07-16 18:03:02,118 basehttp 21368 17544 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 952
+INFO 2025-07-16 18:04:16,853 basehttp 21368 17544 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 18:04:21,646 basehttp 21368 17544 "POST /api/token/ HTTP/1.1" 200 1080
+INFO 2025-07-16 18:04:21,880 basehttp 21368 17544 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-16 18:04:23,574 basehttp 21368 17544 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 18:04:26,206 basehttp 21368 17544 "GET /api/students/api-level-requests/ HTTP/1.1" 200 744
+INFO 2025-07-16 18:04:27,594 basehttp 21368 13840 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:04:27,812 basehttp 21368 17544 "GET /api/students/api-level-requests/ HTTP/1.1" 200 744
+INFO 2025-07-16 18:04:27,883 basehttp 21368 13840 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:05:15,805 autoreload 21368 16240 C:\Users\albur\Desktop\leanmaker\Backend\students\views.py changed, reloading.
+INFO 2025-07-16 18:05:16,865 autoreload 1544 23576 Watching for file changes with StatReloader
+INFO 2025-07-16 18:05:30,257 basehttp 1544 23228 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:05:30,627 basehttp 1544 23228 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:05:33,969 basehttp 1544 23228 "POST /api/students/api-level-request/ HTTP/1.1" 200 55
+INFO 2025-07-16 18:05:37,806 basehttp 1544 23228 "GET /api/students/api-level-requests/ HTTP/1.1" 200 901
+INFO 2025-07-16 18:05:38,170 basehttp 1544 23228 "GET /api/students/api-level-requests/ HTTP/1.1" 200 901
+INFO 2025-07-16 18:05:39,383 basehttp 1544 8256 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:05:39,955 basehttp 1544 8256 "GET /api/students/me/ HTTP/1.1" 200 1025
+INFO 2025-07-16 18:05:51,520 basehttp 1544 6276 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 18:05:55,292 basehttp 1544 6276 "POST /api/token/ HTTP/1.1" 200 1022
+INFO 2025-07-16 18:05:55,553 basehttp 1544 6276 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 18:05:56,237 basehttp 1544 6276 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 18:05:59,553 basehttp 1544 6276 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:00,326 basehttp 1544 6276 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:00,736 basehttp 1544 6276 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:04,125 basehttp 1544 6276 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:04,876 basehttp 1544 6276 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:12,434 basehttp 1544 7588 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:12,765 basehttp 1544 7588 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:20,850 basehttp 1544 10748 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:21,846 basehttp 1544 10748 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:06:28,098 basehttp 1544 10748 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1161
+INFO 2025-07-16 18:06:28,489 basehttp 1544 10748 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1161
+INFO 2025-07-16 18:07:06,007 basehttp 1544 15592 "OPTIONS /api/students/admin/api-level-request/5/action/ HTTP/1.1" 200 0
+INFO 2025-07-16 18:07:06,629 basehttp 1544 15592 "POST /api/students/admin/api-level-request/5/action/ HTTP/1.1" 200 39
+INFO 2025-07-16 18:07:07,499 basehttp 1544 15592 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1206
+INFO 2025-07-16 18:07:35,047 basehttp 1544 22928 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:07:35,369 basehttp 1544 22928 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 18:07:35,663 basehttp 1544 22928 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20895
+INFO 2025-07-16 19:24:20,156 basehttp 1544 14208 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 19:24:20,157 basehttp 1544 1080 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-16 19:24:20,250 log 1544 1080 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 19:24:20,251 basehttp 1544 1080 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-16 19:24:20,259 basehttp 1544 14208 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-16 19:24:20,319 log 1544 1080 Unauthorized: /api/users/profile/
+WARNING 2025-07-16 19:24:20,322 basehttp 1544 1080 "GET /api/users/profile/ HTTP/1.1" 401 32
+ERROR 2025-07-16 19:24:21,213 log 1544 1080 Internal Server Error: /api/token/refresh/
+ERROR 2025-07-16 19:24:21,216 basehttp 1544 1080 "POST /api/token/refresh/ HTTP/1.1" 500 1099
+ERROR 2025-07-16 19:24:21,228 log 1544 14208 Internal Server Error: /api/token/refresh/
+ERROR 2025-07-16 19:24:21,238 basehttp 1544 14208 "POST /api/token/refresh/ HTTP/1.1" 500 1099
+INFO 2025-07-16 19:24:21,312 basehttp 1544 1080 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 19:24:21,338 basehttp 1544 14208 "POST /api/auth/logout/ HTTP/1.1" 200 47
+ERROR 2025-07-16 19:24:23,662 log 1544 14208 Internal Server Error: /api/token/
+ERROR 2025-07-16 19:24:23,663 basehttp 1544 14208 "POST /api/token/ HTTP/1.1" 500 1099
+INFO 2025-07-16 21:02:47,345 autoreload 24500 22708 Watching for file changes with StatReloader
+INFO 2025-07-16 21:02:56,537 basehttp 24500 13456 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-16 21:02:56,967 basehttp 24500 13456 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-16 21:02:56,976 basehttp 24500 13456 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-16 21:04:10,103 basehttp 24500 15244 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:04:12,592 basehttp 24500 15244 "POST /api/token/ HTTP/1.1" 200 1080
+INFO 2025-07-16 21:04:12,600 basehttp 24500 15244 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:04:12,881 basehttp 24500 15244 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-16 21:04:13,001 basehttp 24500 15244 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:04:13,918 basehttp 24500 15244 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 21:04:18,629 basehttp 24500 11780 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:04:18,636 basehttp 24500 1280 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:04:19,011 basehttp 24500 11780 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:04:19,345 basehttp 24500 11780 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:04:19,602 basehttp 24500 1280 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-16 21:04:19,842 basehttp 24500 1280 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-16 21:05:41,199 basehttp 24500 7668 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:41,199 basehttp 24500 12084 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:42,113 basehttp 24500 12084 "GET /api/notifications/ HTTP/1.1" 200 6172
+INFO 2025-07-16 21:05:42,661 basehttp 24500 7668 "GET /api/notifications/ HTTP/1.1" 200 6172
+INFO 2025-07-16 21:05:47,880 basehttp 24500 7668 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:47,881 basehttp 24500 12084 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:48,278 basehttp 24500 12084 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-16 21:05:48,603 basehttp 24500 12084 "GET /api/projects/ HTTP/1.1" 200 8652
+INFO 2025-07-16 21:05:49,089 basehttp 24500 12084 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:49,092 basehttp 24500 12084 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:50,018 basehttp 24500 12084 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-16 21:05:50,450 basehttp 24500 22632 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:50,453 basehttp 24500 22632 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:50,662 basehttp 24500 12084 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-16 21:05:51,430 basehttp 24500 22632 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-16 21:05:52,351 basehttp 24500 12084 "GET /api/projects/my_projects/ HTTP/1.1" 200 4702
+INFO 2025-07-16 21:05:53,309 basehttp 24500 12084 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:53,309 basehttp 24500 22632 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:53,309 basehttp 24500 18484 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:53,322 basehttp 24500 24540 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:53,888 basehttp 24500 18484 "GET /api/companies/ HTTP/1.1" 200 10617
+INFO 2025-07-16 21:05:54,331 basehttp 24500 24540 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:05:54,377 basehttp 24500 18484 "GET /api/companies/ HTTP/1.1" 200 10617
+INFO 2025-07-16 21:05:54,515 basehttp 24500 22632 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 21:05:54,817 basehttp 24500 24540 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:05:56,713 basehttp 24500 24540 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:56,713 basehttp 24500 22632 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:05:57,703 basehttp 24500 22632 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-16 21:05:58,459 basehttp 24500 24540 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-16 21:06:01,100 basehttp 24500 24540 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:01,447 basehttp 24500 24540 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:03,020 basehttp 24500 24540 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:06:03,023 basehttp 24500 24540 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:06:03,675 basehttp 24500 24540 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:03,761 basehttp 24500 8720 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:06:04,012 basehttp 24500 24540 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:04,168 basehttp 24500 8720 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:06:05,910 basehttp 24500 8720 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:06,237 basehttp 24500 8720 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:10,431 basehttp 24500 13344 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:10,481 basehttp 24500 15484 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:06:10,776 basehttp 24500 13344 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:10,891 basehttp 24500 15484 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:06:14,679 basehttp 24500 15484 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:14,999 basehttp 24500 15484 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:06:20,460 basehttp 24500 7692 "OPTIONS /api/students/api-level-request/ HTTP/1.1" 200 0
+WARNING 2025-07-16 21:06:20,841 log 24500 7692 Bad Request: /api/students/api-level-request/
+WARNING 2025-07-16 21:06:20,842 basehttp 24500 7692 "POST /api/students/api-level-request/ HTTP/1.1" 400 58
+WARNING 2025-07-16 21:06:27,427 log 24500 7692 Bad Request: /api/students/api-level-request/
+WARNING 2025-07-16 21:06:27,428 basehttp 24500 7692 "POST /api/students/api-level-request/ HTTP/1.1" 400 58
+INFO 2025-07-16 21:07:52,391 basehttp 24500 2692 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:07:52,392 basehttp 24500 12408 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:07:52,751 basehttp 24500 12408 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:07:52,793 basehttp 24500 2692 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:07:54,867 basehttp 24500 2692 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:07:55,193 basehttp 24500 2692 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:08:14,624 basehttp 24500 2692 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:08:14,645 basehttp 24500 2692 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 21:08:28,523 basehttp 24500 2692 "POST /api/token/ HTTP/1.1" 200 1024
+INFO 2025-07-16 21:08:28,788 basehttp 24500 2692 "GET /api/users/profile/ HTTP/1.1" 200 570
+INFO 2025-07-16 21:08:29,669 basehttp 24500 2692 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-16 21:08:32,422 basehttp 24500 2692 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:32,784 basehttp 24500 2692 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:35,326 basehttp 24500 12408 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:35,420 basehttp 24500 2692 "GET /api/students/api-level-requests/ HTTP/1.1" 200 15
+INFO 2025-07-16 21:08:35,688 basehttp 24500 12408 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:35,843 basehttp 24500 2692 "GET /api/students/api-level-requests/ HTTP/1.1" 200 15
+INFO 2025-07-16 21:08:37,508 basehttp 24500 2692 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:37,899 basehttp 24500 2692 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:42,608 basehttp 24500 2692 "POST /api/students/api-level-request/ HTTP/1.1" 200 55
+INFO 2025-07-16 21:08:50,166 basehttp 24500 12408 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:50,298 basehttp 24500 2692 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-16 21:08:50,551 basehttp 24500 12408 "GET /api/students/me/ HTTP/1.1" 200 954
+INFO 2025-07-16 21:08:50,727 basehttp 24500 2692 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-16 21:09:06,679 basehttp 24500 2692 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 21:09:10,515 basehttp 24500 2692 "POST /api/token/ HTTP/1.1" 200 1022
+INFO 2025-07-16 21:09:10,805 basehttp 24500 2692 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 21:09:10,865 basehttp 24500 2692 "OPTIONS /api/test-admin-stats/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:09:11,571 basehttp 24500 2692 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 21:09:22,749 basehttp 24500 2692 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 21:09:23,046 basehttp 24500 2692 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 21:09:30,411 basehttp 24500 12408 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:09:30,412 basehttp 24500 2692 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:09:31,477 basehttp 24500 12408 "GET /api/mass-notifications/ HTTP/1.1" 200 1962
+INFO 2025-07-16 21:09:32,338 basehttp 24500 12408 "GET /api/mass-notifications/ HTTP/1.1" 200 1962
+INFO 2025-07-16 21:10:00,404 basehttp 24500 12408 "OPTIONS /api/mass-notifications/create/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:10:01,435 basehttp 24500 12408 "POST /api/mass-notifications/create/ HTTP/1.1" 201 650
+INFO 2025-07-16 21:10:02,438 basehttp 24500 12408 "GET /api/mass-notifications/ HTTP/1.1" 200 2528
+INFO 2025-07-16 21:10:22,984 basehttp 24500 12408 "POST /api/mass-notifications/create/ HTTP/1.1" 201 665
+INFO 2025-07-16 21:10:24,233 basehttp 24500 12408 "GET /api/mass-notifications/ HTTP/1.1" 200 3109
+INFO 2025-07-16 21:10:33,779 basehttp 24500 12408 "OPTIONS /api/mass-notifications/7/send/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:10:34,813 basehttp 24500 2692 "OPTIONS /api/mass-notifications/8/send/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:10:46,713 basehttp 24500 12408 - Broken pipe from ('127.0.0.1', 50495)
+INFO 2025-07-16 21:10:47,391 basehttp 24500 19528 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 21:10:47,684 basehttp 24500 19528 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 21:10:51,084 basehttp 24500 2692 - Broken pipe from ('127.0.0.1', 50494)
+INFO 2025-07-16 21:10:51,463 basehttp 24500 11708 "GET /api/mass-notifications/ HTTP/1.1" 200 3168
+INFO 2025-07-16 21:10:52,961 basehttp 24500 11708 "GET /api/mass-notifications/ HTTP/1.1" 200 3169
+INFO 2025-07-16 21:11:23,482 basehttp 24500 11708 "POST /api/mass-notifications/create/ HTTP/1.1" 201 656
+INFO 2025-07-16 21:11:24,822 basehttp 24500 11708 "GET /api/mass-notifications/ HTTP/1.1" 200 3741
+INFO 2025-07-16 21:11:30,817 basehttp 24500 15756 "OPTIONS /api/mass-notifications/9/send/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:11:55,884 basehttp 24500 15756 "POST /api/mass-notifications/9/send/ HTTP/1.1" 200 150
+INFO 2025-07-16 21:11:58,112 basehttp 24500 15756 "GET /api/mass-notifications/ HTTP/1.1" 200 3772
+INFO 2025-07-16 21:12:11,933 basehttp 24500 15756 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:11,934 basehttp 24500 23488 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:12,374 basehttp 24500 23488 "GET /api/users/ HTTP/1.1" 200 61511
+INFO 2025-07-16 21:12:12,775 basehttp 24500 23488 "GET /api/users/ HTTP/1.1" 200 61511
+INFO 2025-07-16 21:12:22,778 basehttp 24500 23488 "OPTIONS /api/users/01b0e1c7-6528-472b-ab7d-254841607102/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:23,222 basehttp 24500 23488 "POST /api/users/01b0e1c7-6528-472b-ab7d-254841607102/suspend/ HTTP/1.1" 200 191
+INFO 2025-07-16 21:12:23,616 basehttp 24500 23488 "GET /api/users/ HTTP/1.1" 200 61512
+INFO 2025-07-16 21:12:31,585 basehttp 24500 23488 "OPTIONS /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:32,462 basehttp 24500 23488 "POST /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/suspend/ HTTP/1.1" 200 201
+INFO 2025-07-16 21:12:32,942 basehttp 24500 23488 "GET /api/users/ HTTP/1.1" 200 61513
+INFO 2025-07-16 21:12:35,460 basehttp 24500 23488 "OPTIONS /api/users/?is_active=false HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:35,844 basehttp 24500 23488 "GET /api/users/?is_active=false HTTP/1.1" 200 1288
+INFO 2025-07-16 21:12:43,568 basehttp 24500 23488 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:43,569 basehttp 24500 15756 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:45,776 basehttp 24500 15756 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 21:12:47,518 basehttp 24500 15756 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 21:12:49,446 basehttp 24500 15756 "OPTIONS /api/admin/companies/?limit=20&offset=0&status=suspended HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:50,022 basehttp 24500 15756 "GET /api/admin/companies/?limit=20&offset=0&status=suspended HTTP/1.1" 200 673
+INFO 2025-07-16 21:12:53,083 basehttp 24500 23488 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:53,083 basehttp 24500 15756 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:53,514 basehttp 24500 23488 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20957
+INFO 2025-07-16 21:12:53,903 basehttp 24500 23488 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20957
+INFO 2025-07-16 21:12:54,288 basehttp 24500 15756 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20957
+INFO 2025-07-16 21:12:56,290 basehttp 24500 15756 "OPTIONS /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 0
+INFO 2025-07-16 21:12:56,756 basehttp 24500 15756 "GET /api/students/?limit=20&offset=0&status=inactive HTTP/1.1" 200 1113
+INFO 2025-07-16 21:13:01,832 basehttp 24500 15756 "GET /api/users/ HTTP/1.1" 200 61513
+INFO 2025-07-16 21:13:02,228 basehttp 24500 23488 "GET /api/users/ HTTP/1.1" 200 61513
+INFO 2025-07-16 21:14:50,554 basehttp 24500 23488 "OPTIONS /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:14:51,609 basehttp 24500 15756 "OPTIONS /api/users/01b0e1c7-6528-472b-ab7d-254841607102/activate/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:14:52,408 basehttp 24500 15756 "POST /api/users/01b0e1c7-6528-472b-ab7d-254841607102/activate/ HTTP/1.1" 200 189
+INFO 2025-07-16 21:14:52,822 basehttp 24500 23488 "POST /api/users/04b8e473-5cbf-463d-a354-0b50580dc5a1/activate/ HTTP/1.1" 200 199
+INFO 2025-07-16 21:14:53,186 basehttp 24500 15756 "GET /api/users/ HTTP/1.1" 200 61511
+INFO 2025-07-16 21:14:53,788 basehttp 24500 15756 "GET /api/users/ HTTP/1.1" 200 61511
+INFO 2025-07-16 21:14:58,886 basehttp 24500 15756 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:14:59,748 basehttp 24500 15756 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:15:00,163 basehttp 24500 23488 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:15:06,903 basehttp 24500 23488 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 21:15:09,849 basehttp 24500 15756 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 21:15:27,726 basehttp 24500 15756 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:15:28,103 basehttp 24500 15756 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:15:28,471 basehttp 24500 15756 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:15:32,940 basehttp 24500 15756 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 21:15:35,028 basehttp 24500 23488 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12117
+INFO 2025-07-16 21:15:51,926 basehttp 24500 17896 "OPTIONS /api/admin/companies/?limit=100&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:15:56,255 basehttp 24500 17896 "GET /api/admin/companies/?limit=100&offset=0 HTTP/1.1" 200 30921
+INFO 2025-07-16 21:16:08,368 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:16:08,749 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:16:09,484 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20955
+INFO 2025-07-16 21:16:52,753 basehttp 24500 17896 "OPTIONS /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 0
+INFO 2025-07-16 21:16:52,756 basehttp 24500 17896 "OPTIONS /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 0
+INFO 2025-07-16 21:16:53,096 basehttp 24500 17896 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1418
+INFO 2025-07-16 21:16:53,444 basehttp 24500 17896 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1418
+INFO 2025-07-16 21:17:14,517 basehttp 24500 17896 "OPTIONS /api/students/admin/api-level-request/6/action/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:17:15,176 basehttp 24500 17896 "POST /api/students/admin/api-level-request/6/action/ HTTP/1.1" 200 39
+INFO 2025-07-16 21:17:15,463 basehttp 24500 17896 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1453
+INFO 2025-07-16 21:17:31,228 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:17:31,593 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:17:31,965 basehttp 24500 7288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:17:33,213 basehttp 24500 7288 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1453
+INFO 2025-07-16 21:17:33,545 basehttp 24500 7288 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 1453
+INFO 2025-07-16 21:17:35,223 basehttp 24500 7288 "OPTIONS /api/students/admin/api-level-requests/?limit=200 HTTP/1.1" 200 0
+INFO 2025-07-16 21:17:35,602 basehttp 24500 7288 "GET /api/students/admin/api-level-requests/?limit=200 HTTP/1.1" 200 1453
+INFO 2025-07-16 21:17:42,059 basehttp 24500 7288 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:17:42,400 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:17:42,768 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:17:43,668 basehttp 24500 17896 "OPTIONS /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:17:43,668 basehttp 24500 7288 "OPTIONS /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:17:44,165 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:44,662 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:45,067 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:49,027 basehttp 24500 7288 "OPTIONS /api/evaluation-criteria/ HTTP/1.1" 200 0
+INFO 2025-07-16 21:17:49,032 basehttp 24500 3152 "OPTIONS /api/evaluation-criteria/ HTTP/1.1" 200 0
+WARNING 2025-07-16 21:17:49,128 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:49,129 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18381
+WARNING 2025-07-16 21:17:49,227 log 24500 3152 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:49,229 basehttp 24500 3152 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18381
+INFO 2025-07-16 21:17:49,510 basehttp 24500 17896 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:49,865 basehttp 24500 17896 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:51,894 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+WARNING 2025-07-16 21:17:52,069 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:52,071 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18381
+WARNING 2025-07-16 21:17:52,185 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:52,188 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:52,393 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+WARNING 2025-07-16 21:17:52,964 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:52,978 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:52,982 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:53,114 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:53,117 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:53,761 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:53,811 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:54,081 log 24500 17896 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:54,089 basehttp 24500 17896 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+WARNING 2025-07-16 21:17:54,324 log 24500 17896 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:54,326 basehttp 24500 17896 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:54,404 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:54,467 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:54,745 log 24500 17896 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:54,746 basehttp 24500 17896 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+WARNING 2025-07-16 21:17:54,885 log 24500 17896 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:54,887 basehttp 24500 17896 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:55,029 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:55,029 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:55,406 log 24500 17896 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:55,408 basehttp 24500 17896 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+WARNING 2025-07-16 21:17:55,560 log 24500 17896 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:55,562 basehttp 24500 17896 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:55,575 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:55,634 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:55,923 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:56,192 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:56,195 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+WARNING 2025-07-16 21:17:56,349 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:56,358 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:56,382 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:56,417 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:56,856 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:56,861 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:56,878 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:57,021 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:57,024 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:57,071 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:57,309 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:57,466 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:57,468 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+WARNING 2025-07-16 21:17:57,596 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:57,598 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:57,636 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:57,739 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+WARNING 2025-07-16 21:17:57,976 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:57,977 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+WARNING 2025-07-16 21:17:58,135 log 24500 7288 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:17:58,137 basehttp 24500 7288 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18382
+INFO 2025-07-16 21:17:58,192 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:58,238 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:58,602 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:58,666 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:58,989 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:59,089 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:59,352 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:59,494 basehttp 24500 17896 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:17:59,702 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:17:59,901 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:00,056 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:18:00,208 basehttp 24500 17896 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:18:00,210 basehttp 24500 17896 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-16 21:18:00,563 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:00,619 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:18:01,025 basehttp 24500 7288 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:01,056 basehttp 24500 3152 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:18:01,456 basehttp 24500 17896 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9095
+INFO 2025-07-16 21:18:01,683 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:02,006 basehttp 24500 3152 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9095
+INFO 2025-07-16 21:18:02,170 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:02,608 basehttp 24500 3152 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 9095
+INFO 2025-07-16 21:18:02,708 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:03,082 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:03,533 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:03,960 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:04,414 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:04,842 basehttp 24500 3152 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:05,281 basehttp 24500 3152 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:05,738 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:06,199 basehttp 24500 23800 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:18:43,939 basehttp 24500 23800 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 21:18:45,059 basehttp 24500 23800 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 21:18:49,323 basehttp 24500 23800 "POST /api/token/ HTTP/1.1" 200 1080
+INFO 2025-07-16 21:18:49,618 basehttp 24500 23800 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-16 21:18:50,942 basehttp 24500 23800 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-16 21:19:02,573 basehttp 24500 3152 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:19:02,633 basehttp 24500 23800 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:19:02,910 basehttp 24500 3152 "GET /api/students/me/ HTTP/1.1" 200 1026
+INFO 2025-07-16 21:19:03,041 basehttp 24500 23800 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-16 21:19:07,071 basehttp 24500 23800 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 21:19:20,330 basehttp 24500 23800 "POST /api/token/ HTTP/1.1" 200 1024
+INFO 2025-07-16 21:19:20,572 basehttp 24500 23800 "GET /api/users/profile/ HTTP/1.1" 200 570
+INFO 2025-07-16 21:19:21,565 basehttp 24500 23800 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-16 21:19:25,556 basehttp 24500 3152 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:25,638 basehttp 24500 23800 "GET /api/students/api-level-requests/ HTTP/1.1" 200 205
+INFO 2025-07-16 21:19:25,952 basehttp 24500 3152 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:26,155 basehttp 24500 23800 "GET /api/students/api-level-requests/ HTTP/1.1" 200 205
+INFO 2025-07-16 21:19:38,769 basehttp 24500 23800 "GET /api/users/profile/ HTTP/1.1" 200 570
+INFO 2025-07-16 21:19:39,034 basehttp 24500 23800 "GET /api/users/profile/ HTTP/1.1" 200 570
+INFO 2025-07-16 21:19:39,254 basehttp 24500 3152 "GET /api/students/api-level-requests/ HTTP/1.1" 200 205
+INFO 2025-07-16 21:19:39,677 basehttp 24500 3152 "GET /api/students/api-level-requests/ HTTP/1.1" 200 205
+INFO 2025-07-16 21:19:39,709 basehttp 24500 17896 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:40,058 basehttp 24500 17896 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:44,514 basehttp 24500 17896 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:44,866 basehttp 24500 17896 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:54,691 basehttp 24500 3152 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:54,739 basehttp 24500 17896 "GET /api/students/api-level-requests/ HTTP/1.1" 200 205
+INFO 2025-07-16 21:19:55,031 basehttp 24500 3152 "GET /api/students/me/ HTTP/1.1" 200 955
+INFO 2025-07-16 21:19:55,151 basehttp 24500 17896 "GET /api/students/api-level-requests/ HTTP/1.1" 200 205
+INFO 2025-07-16 21:19:55,436 basehttp 24500 23800 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 68272
+INFO 2025-07-16 21:19:56,103 basehttp 24500 17896 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 68272
+INFO 2025-07-16 21:19:58,216 basehttp 24500 17896 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-16 21:19:59,213 basehttp 24500 17896 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-16 21:20:03,242 basehttp 24500 17896 "POST /api/token/ HTTP/1.1" 200 1022
+INFO 2025-07-16 21:20:03,526 basehttp 24500 17896 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-16 21:20:04,253 basehttp 24500 17896 "GET /api/test-admin-stats/ HTTP/1.1" 200 2002
+INFO 2025-07-16 21:20:06,713 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:20:07,047 basehttp 24500 17896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:20:07,413 basehttp 24500 23800 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 20956
+INFO 2025-07-16 21:20:16,724 basehttp 24500 22956 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:20:17,132 basehttp 24500 22956 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:20:17,570 basehttp 24500 22956 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+WARNING 2025-07-16 21:20:19,454 log 24500 3020 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:20:19,455 basehttp 24500 3020 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18381
+WARNING 2025-07-16 21:20:19,550 log 24500 3020 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:20:19,553 basehttp 24500 3020 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18381
+INFO 2025-07-16 21:20:19,787 basehttp 24500 22956 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:20:20,166 basehttp 24500 22956 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:21:08,600 basehttp 24500 22956 "GET /api/mass-notifications/ HTTP/1.1" 200 3772
+INFO 2025-07-16 21:21:10,302 basehttp 24500 3020 "GET /api/mass-notifications/ HTTP/1.1" 200 3772
+WARNING 2025-07-16 21:23:23,090 log 24500 22956 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:23:23,092 basehttp 24500 22956 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18381
+WARNING 2025-07-16 21:23:23,194 log 24500 22956 Not Found: /api/evaluation-criteria/
+WARNING 2025-07-16 21:23:23,198 basehttp 24500 22956 "GET /api/evaluation-criteria/ HTTP/1.1" 404 18381
+INFO 2025-07-16 21:23:23,834 basehttp 24500 3020 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:23:24,203 basehttp 24500 3020 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-16 21:25:31,310 basehttp 24500 15164 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:25:31,715 basehttp 24500 15164 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
+INFO 2025-07-16 21:25:32,162 basehttp 24500 15164 "GET /api/admin/projects/?limit=10&offset=0 HTTP/1.1" 200 6173
