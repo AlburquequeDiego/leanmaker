@@ -122,7 +122,7 @@ export const adaptCompany = (backendCompany: any): Company => ({
  */
 export const adaptProject = (backendProject: any): Project => {
   // Mapeo de status_name del backend a status del frontend
-  let status = 'draft';
+  let status = 'open'; // Por defecto 'open' para que siempre se muestre
   switch ((backendProject.status_name || '').toLowerCase()) {
     case 'abierto':
       status = 'open'; break;
@@ -135,7 +135,13 @@ export const adaptProject = (backendProject: any): Project => {
     case 'publicado':
       status = 'published'; break;
     default:
-      status = (backendProject.status_name || '').toLowerCase() || 'draft';
+      if (backendProject.status_name) {
+        status = (backendProject.status_name || '').toLowerCase();
+      } else if (backendProject.status) {
+        status = (backendProject.status || '').toLowerCase();
+      } else {
+        status = 'open';
+      }
   }
   return {
     id: String(backendProject.id),
@@ -370,7 +376,7 @@ export const adaptCompanyList = (backendCompanies: any[]): Company[] =>
  * Adapta una lista de proyectos del backend
  */
 export const adaptProjectList = (backendProjects: any[]): Project[] => 
-  backendProjects.map(adaptProject);
+  Array.isArray(backendProjects) ? backendProjects.map(adaptProject) : [];
 
 /**
  * Adapta una lista de aplicaciones del backend

@@ -41,36 +41,43 @@ export interface ProjectMember {
 export class ProjectService {
   // Obtener proyectos de la empresa autenticada
   async getMyProjects(): Promise<any[]> {
-    const response = await apiService.get('/api/projects/my_projects/');
-    // El backend responde { success, data: [...] }
+    const response = await apiService.get('/api/projects/company_projects/');
+    // El backend responde { success: true, data: [...] }
     return adaptProjectList(response.data?.data || response.data);
   }
 
   // Crear un nuevo proyecto (adaptando los campos al backend real)
   async createProject(projectData: any): Promise<any> {
     // Adaptar los campos al formato esperado por el backend
+    const tags = [];
+    if (projectData.encargado) tags.push(`encargado: ${projectData.encargado}`);
+    if (projectData.contacto) tags.push(`contacto: ${projectData.contacto}`);
     const backendData = {
-      titulo: projectData.title,
-      descripcion: projectData.description,
-      area: projectData.area, // UUID
-      requisitos: Array.isArray(projectData.requirements) ? projectData.requirements.join(', ') : projectData.requirements,
-      beneficios: Array.isArray(projectData.benefits) ? projectData.benefits.join(', ') : projectData.benefits,
-      modalidad: projectData.modality,
-      dificultad: projectData.difficulty,
-      duracion_semanas: projectData.duration_weeks,
-      horas_por_semana: projectData.hours_per_week,
-      max_estudiantes: projectData.max_students,
-      fecha_limite_postulacion: projectData.application_deadline,
-      fecha_inicio: projectData.start_date,
-      fecha_fin_estimado: projectData.end_date,
-      monto_stipendio: projectData.stipend_amount,
-      moneda_stipendio: projectData.stipend_currency,
-      tecnologias: JSON.stringify(projectData.technologies || []),
-      area_id: projectData.area, // si el backend espera area_id
+      title: projectData.title,
+      description: projectData.description,
+      requirements: Array.isArray(projectData.requirements) ? projectData.requirements.join(', ') : projectData.requirements,
+      benefits: Array.isArray(projectData.benefits) ? projectData.benefits.join(', ') : projectData.benefits,
+      modality: projectData.modalidad || projectData.modality,
+      difficulty: projectData.dificultad || projectData.difficulty,
+      duration_weeks: projectData.duration_weeks,
+      hours_per_week: projectData.hours_per_week,
+      max_students: projectData.max_students,
+      application_deadline: projectData.application_deadline,
+      start_date: projectData.fecha_inicio || projectData.start_date,
+      estimated_end_date: projectData.fecha_fin_estimado || projectData.estimated_end_date,
+      company_id: projectData.company_id,
+      status_id: projectData.status_id,
+      area_id: projectData.area_id || projectData.area,
+      trl_id: projectData.trl_id,
+      api_level: projectData.api_level,
+      required_hours: projectData.required_hours,
+      technologies: JSON.stringify(projectData.technologies || []),
+      tags: JSON.stringify(tags),
       // Agrega otros campos según lo que espera el backend
     };
-    const response = await apiService.post('/api/projects/', backendData);
-    return adaptProject(response.data);
+    const response = await apiService.post('/api/projects/create/', backendData);
+    // Devuelvo la respuesta completa del backend para que el componente maneje el éxito
+    return response.data;
   }
 
   async getProject(id: string): Promise<Project> {
@@ -192,6 +199,13 @@ export class ProjectService {
       console.error(`Error deleting project member ${id}:`, error);
       throw error;
     }
+  }
+
+  // Obtener lista de áreas
+  async getAreas(): Promise<any[]> {
+    const response = await apiService.get('/api/areas/');
+    // El backend responde { results: [...] }
+    return response.results || response.data || response;
   }
 }
 

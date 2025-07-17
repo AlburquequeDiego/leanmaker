@@ -15943,3 +15943,1007 @@ INFO 2025-07-17 04:57:13,694 basehttp 13672 19172 "GET /api/companies/company_me
 INFO 2025-07-17 04:57:14,103 basehttp 13672 2380 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
 INFO 2025-07-17 04:57:15,238 basehttp 13672 2380 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
 INFO 2025-07-17 04:57:15,924 basehttp 13672 2380 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 09:53:03,671 autoreload 14268 5748 Watching for file changes with StatReloader
+INFO 2025-07-17 09:53:08,664 basehttp 14268 25060 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-17 09:53:09,025 basehttp 14268 2200 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-17 09:53:09,033 basehttp 14268 2200 "GET /static/favicon.ico HTTP/1.1" 404 1893
+WARNING 2025-07-17 09:53:16,411 log 14268 12800 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-07-17 09:53:16,413 basehttp 14268 12800 "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 16273
+INFO 2025-07-17 09:54:51,645 basehttp 14268 5520 "GET / HTTP/1.1" 200 15334
+WARNING 2025-07-17 09:54:51,707 log 14268 5520 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-07-17 09:54:51,708 basehttp 14268 5520 "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 16273
+INFO 2025-07-17 09:54:59,863 basehttp 14268 21796 "GET / HTTP/1.1" 200 15334
+WARNING 2025-07-17 09:54:59,919 log 14268 21796 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-07-17 09:54:59,920 basehttp 14268 21796 "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 16273
+INFO 2025-07-17 09:56:32,605 basehttp 14268 5388 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:56:32,607 basehttp 14268 21260 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-17 09:56:32,624 log 14268 21260 Unauthorized: /api/users/profile/
+WARNING 2025-07-17 09:56:32,624 basehttp 14268 21260 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-17 09:56:32,628 basehttp 14268 5388 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-17 09:56:32,639 log 14268 21260 Unauthorized: /api/users/profile/
+WARNING 2025-07-17 09:56:32,639 basehttp 14268 21260 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-17 09:56:33,269 basehttp 14268 21260 "POST /api/token/refresh/ HTTP/1.1" 200 274
+INFO 2025-07-17 09:56:33,286 basehttp 14268 5388 "POST /api/token/refresh/ HTTP/1.1" 200 274
+INFO 2025-07-17 09:56:33,653 basehttp 14268 21260 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:56:33,849 basehttp 14268 21260 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:56:41,495 basehttp 14268 9396 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:56:41,678 basehttp 14268 9396 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:56:57,431 basehttp 14268 15468 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:56:58,793 basehttp 14268 15468 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 09:56:59,009 basehttp 14268 15468 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:56:59,062 basehttp 14268 15468 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:56:59,918 basehttp 14268 15468 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 09:57:08,550 basehttp 14268 12064 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:57:10,043 basehttp 14268 12064 "POST /api/token/ HTTP/1.1" 200 1022
+INFO 2025-07-17 09:57:10,048 basehttp 14268 12064 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:57:10,256 basehttp 14268 12064 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-17 09:57:10,454 basehttp 14268 12064 "OPTIONS /api/test-admin-stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:57:11,067 basehttp 14268 12064 "GET /api/test-admin-stats/ HTTP/1.1" 200 2001
+INFO 2025-07-17 09:57:13,013 basehttp 14268 12064 "POST /api/token/ HTTP/1.1" 200 1080
+INFO 2025-07-17 09:57:13,233 basehttp 14268 12064 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-17 09:57:13,290 basehttp 14268 12064 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:57:14,015 basehttp 14268 12064 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-17 09:57:29,751 basehttp 14268 21404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:57:29,960 basehttp 14268 21404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:57:30,672 basehttp 14268 23288 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 09:57:46,615 basehttp 14268 23288 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:57:46,619 basehttp 14268 21404 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-17 09:57:46,836 basehttp 14268 23288 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 09:57:47,301 basehttp 14268 21404 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 09:57:47,573 basehttp 14268 21404 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 09:57:47,979 basehttp 14268 23288 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 09:57:48,617 basehttp 14268 23288 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 09:59:56,821 basehttp 14268 3648 "OPTIONS /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/ HTTP/1.1" 200 0
+WARNING 2025-07-17 09:59:56,867 log 14268 3648 Not Found: /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/
+WARNING 2025-07-17 09:59:56,868 basehttp 14268 3648 "PATCH /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/ HTTP/1.1" 404 19646
+INFO 2025-07-17 10:01:55,036 autoreload 14268 5748 C:\Users\albur\Desktop\leanmaker\Backend\companies\urls.py changed, reloading.
+INFO 2025-07-17 10:01:56,342 autoreload 19308 22716 Watching for file changes with StatReloader
+INFO 2025-07-17 10:01:59,703 basehttp 19308 15136 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:01:59,703 basehttp 19308 13524 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:02:00,781 basehttp 19308 13524 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 10:02:01,212 basehttp 19308 13524 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 10:02:09,025 basehttp 19308 15652 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:02:09,026 basehttp 19308 20336 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:02:09,548 basehttp 19308 15652 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 10:02:09,914 basehttp 19308 15652 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 10:02:11,556 basehttp 19308 15652 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:02:12,599 basehttp 19308 15652 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:12,819 basehttp 19308 15652 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:13,346 basehttp 19308 20336 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:13,636 basehttp 19308 20336 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:14,004 basehttp 19308 15652 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:02:14,678 basehttp 19308 15652 - Broken pipe from ('127.0.0.1', 49873)
+INFO 2025-07-17 10:02:15,156 basehttp 19308 20336 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:15,420 basehttp 19308 20336 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:15,632 basehttp 19308 20336 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:15,853 basehttp 19308 20336 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:15,951 basehttp 19308 23724 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:16,114 basehttp 19308 20336 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:16,475 basehttp 19308 23724 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:16,752 basehttp 19308 23724 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:16,836 basehttp 19308 20336 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:02:17,471 basehttp 19308 20336 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:02:18,107 basehttp 19308 20336 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:02:44,866 autoreload 6380 24344 Watching for file changes with StatReloader
+INFO 2025-07-17 10:02:48,569 basehttp 6380 14744 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-17 10:02:51,709 basehttp 6380 22712 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:51,921 basehttp 6380 22712 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:52,134 basehttp 6380 22712 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:52,354 basehttp 6380 22712 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:52,598 basehttp 6380 22712 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:02:52,737 basehttp 6380 4664 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:53,028 basehttp 6380 4664 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:53,306 basehttp 6380 4664 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:02:53,616 basehttp 6380 22712 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:02:54,265 basehttp 6380 22712 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:02:54,924 basehttp 6380 22712 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:03:57,742 basehttp 6380 3420 "OPTIONS /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/update/ HTTP/1.1" 200 0
+WARNING 2025-07-17 10:03:57,974 log 6380 3420 Forbidden: /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/update/
+WARNING 2025-07-17 10:03:57,975 basehttp 6380 3420 "PATCH /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/update/ HTTP/1.1" 403 28
+INFO 2025-07-17 10:05:06,611 autoreload 6380 24344 C:\Users\albur\Desktop\leanmaker\Backend\companies\views.py changed, reloading.
+INFO 2025-07-17 10:05:07,473 autoreload 14608 11188 Watching for file changes with StatReloader
+INFO 2025-07-17 10:05:17,303 basehttp 14608 23452 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:05:17,516 basehttp 14608 23452 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:05:17,733 basehttp 14608 23452 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:05:17,953 basehttp 14608 23452 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:05:18,162 basehttp 14608 23452 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:05:18,295 basehttp 14608 19404 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:05:18,547 basehttp 14608 19404 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:05:19,214 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:05:19,388 basehttp 14608 17028 "GET /api/companies/company_me/ HTTP/1.1" 200 1059
+INFO 2025-07-17 10:05:19,867 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:05:20,527 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:05:52,034 basehttp 14608 19404 "PATCH /api/companies/02ca8d31-5df1-403e-9716-4d51a554c2c0/update/ HTTP/1.1" 200 93
+INFO 2025-07-17 10:05:52,251 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:05:52,520 basehttp 14608 19404 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:05:53,169 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:07:25,256 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:07:25,470 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:07:25,691 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:07:25,920 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:07:26,145 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:07:26,182 basehttp 14608 17028 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:07:26,468 basehttp 14608 17028 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:07:26,799 basehttp 14608 17028 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:07:26,900 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:07:27,548 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:07:28,204 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:07:37,904 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:07:38,923 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:07:39,149 basehttp 14608 19404 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:07:39,208 basehttp 14608 17028 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:07:39,497 basehttp 14608 17028 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:07:39,877 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:07:40,541 basehttp 14608 19404 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:07:42,204 basehttp 14608 19404 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 10:07:42,605 basehttp 14608 17028 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 10:08:01,569 basehttp 14608 17028 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:01,569 basehttp 14608 19404 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+WARNING 2025-07-17 10:08:01,850 log 14608 19404 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:08:01,851 basehttp 14608 19404 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-17 10:08:02,077 log 14608 19404 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:08:02,079 basehttp 14608 19404 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+INFO 2025-07-17 10:08:12,012 basehttp 14608 12884 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:12,012 basehttp 14608 16536 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:12,016 basehttp 14608 7660 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:12,016 basehttp 14608 16948 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:12,822 basehttp 14608 16536 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:08:12,885 basehttp 14608 12884 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:08:13,130 basehttp 14608 16948 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:08:13,360 basehttp 14608 16536 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:08:20,497 basehttp 14608 19404 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:20,497 basehttp 14608 17028 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:20,783 basehttp 14608 19404 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 10:08:20,787 basehttp 14608 19404 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:21,098 basehttp 14608 19404 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 10:08:21,108 basehttp 14608 17028 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 10:08:21,428 basehttp 14608 17028 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 10:08:28,436 basehttp 14608 17028 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:28,436 basehttp 14608 19404 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:28,717 basehttp 14608 19404 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:08:28,984 basehttp 14608 17028 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:08:29,377 basehttp 14608 19404 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:08:29,377 basehttp 14608 17028 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+WARNING 2025-07-17 10:08:29,415 log 14608 17028 Not Found: /api/interviews/
+WARNING 2025-07-17 10:08:29,415 basehttp 14608 17028 "GET /api/interviews/ HTTP/1.1" 404 18349
+WARNING 2025-07-17 10:08:29,439 log 14608 17028 Not Found: /api/interviews/
+WARNING 2025-07-17 10:08:29,440 basehttp 14608 17028 "GET /api/interviews/ HTTP/1.1" 404 18349
+INFO 2025-07-17 10:08:31,010 basehttp 14608 17028 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 10:08:31,340 basehttp 14608 17028 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 10:08:33,308 basehttp 14608 17028 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:08:33,497 basehttp 14608 17028 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:08:33,568 basehttp 14608 19404 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:08:33,854 basehttp 14608 19404 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:08:34,194 basehttp 14608 17028 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:08:34,794 basehttp 14608 17028 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 10:08:35,394 basehttp 14608 17028 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 10:08:35,799 basehttp 14608 19404 "GET /api/notifications/ HTTP/1.1" 200 6095
+WARNING 2025-07-17 10:10:23,930 log 14608 17984 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:10:23,930 basehttp 14608 17984 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-17 10:10:24,130 log 14608 17984 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:10:24,132 basehttp 14608 17984 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+INFO 2025-07-17 10:10:31,560 basehttp 14608 19116 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:10:31,765 basehttp 14608 19116 "GET /api/users/profile/ HTTP/1.1" 200 566
+WARNING 2025-07-17 10:10:32,067 log 14608 14772 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:10:32,068 basehttp 14608 14772 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-17 10:10:32,268 log 14608 14772 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:10:32,269 basehttp 14608 14772 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+INFO 2025-07-17 10:13:08,338 autoreload 14608 11188 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-17 10:13:09,624 autoreload 18144 14368 Watching for file changes with StatReloader
+INFO 2025-07-17 10:13:17,358 autoreload 18144 14368 C:\Users\albur\Desktop\leanmaker\Backend\projects\urls.py changed, reloading.
+INFO 2025-07-17 10:13:18,512 autoreload 10620 24476 Watching for file changes with StatReloader
+INFO 2025-07-17 10:13:33,668 basehttp 10620 23504 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:13:37,510 basehttp 10620 23504 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:14:27,549 basehttp 10620 13508 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:14:27,743 basehttp 10620 13508 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:14:30,818 basehttp 10620 17176 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:14:33,825 basehttp 10620 17176 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:15:16,760 basehttp 10620 23248 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:15:16,978 basehttp 10620 23248 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:15:19,479 basehttp 10620 1852 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:15:22,220 basehttp 10620 1852 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:19:38,735 basehttp 10620 18868 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:19:41,460 basehttp 10620 18824 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:19:44,063 basehttp 10620 18824 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:29:46,333 basehttp 10620 13144 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-17 10:29:46,754 basehttp 10620 4676 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-17 10:29:47,285 basehttp 10620 13144 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-17 10:29:51,671 basehttp 10620 13144 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-17 10:29:51,903 basehttp 10620 4676 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-17 10:29:52,132 basehttp 10620 13144 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:29:52,249 basehttp 10620 4676 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:29:52,459 basehttp 10620 14584 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:29:52,513 basehttp 10620 13144 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:29:59,078 basehttp 10620 24320 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:29:59,086 basehttp 10620 20256 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:29:59,657 basehttp 10620 24320 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-17 10:30:00,165 basehttp 10620 24320 "GET /api/applications/my_applications/ HTTP/1.1" 200 28022
+INFO 2025-07-17 10:30:00,189 basehttp 10620 6064 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:30:00,224 basehttp 10620 20256 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:30:00,489 basehttp 10620 24320 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:30:00,527 basehttp 10620 6064 "GET /api/projects/ HTTP/1.1" 200 8651
+INFO 2025-07-17 10:30:13,285 autoreload 10620 24476 C:\Users\albur\Desktop\leanmaker\Backend\projects\models.py changed, reloading.
+INFO 2025-07-17 10:30:14,694 autoreload 756 1528 Watching for file changes with StatReloader
+INFO 2025-07-17 10:30:18,067 autoreload 756 1528 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-17 10:30:18,892 autoreload 4664 25260 Watching for file changes with StatReloader
+INFO 2025-07-17 10:31:33,344 basehttp 4664 1852 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:31:33,349 basehttp 4664 3428 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-17 10:31:34,665 basehttp 4664 18552 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:31:34,720 basehttp 4664 1852 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-17 10:31:35,097 basehttp 4664 18552 "GET /api/students/api-level-requests/ HTTP/1.1" 200 946
+INFO 2025-07-17 10:31:35,227 basehttp 4664 3428 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:31:37,552 basehttp 4664 11592 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:31:37,881 basehttp 4664 20180 "GET /api/students/me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 10:31:45,452 basehttp 4664 20180 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-17 10:32:32,258 basehttp 4664 14156 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:32:32,484 basehttp 4664 14156 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:32:35,145 basehttp 4664 22516 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:32:37,914 basehttp 4664 14156 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:32:47,693 basehttp 4664 14156 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:32:47,898 basehttp 4664 14156 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:32:50,705 basehttp 4664 14156 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:32:53,349 basehttp 4664 14156 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:34:27,671 basehttp 4664 8752 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:34:27,871 basehttp 4664 8752 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:34:30,767 basehttp 4664 10364 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:34:33,514 basehttp 4664 10364 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:35:37,887 basehttp 4664 8156 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 10:35:42,218 log 4664 8156 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:35:42,219 basehttp 4664 8156 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-17 10:35:42,430 log 4664 8156 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:35:42,430 basehttp 4664 8156 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+INFO 2025-07-17 10:35:48,406 basehttp 4664 8156 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:35:48,644 basehttp 4664 8156 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:35:51,378 basehttp 4664 9304 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 10:35:52,355 log 4664 18460 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:35:52,356 basehttp 4664 18460 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+WARNING 2025-07-17 10:35:52,564 log 4664 18460 Forbidden: /api/projects/my_projects/
+WARNING 2025-07-17 10:35:52,565 basehttp 4664 18460 "GET /api/projects/my_projects/ HTTP/1.1" 403 28
+INFO 2025-07-17 10:35:54,117 basehttp 4664 9304 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:36:33,663 basehttp 4664 23720 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:36:54,603 basehttp 4664 21916 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:36:54,835 basehttp 4664 21916 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:36:57,526 basehttp 4664 19820 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:37:00,330 basehttp 4664 19820 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:37:03,289 basehttp 4664 19820 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:37:06,164 basehttp 4664 19820 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:48:39,794 basehttp 4664 13924 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:48:40,036 basehttp 4664 13924 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 10:48:42,848 basehttp 4664 14904 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 10:48:45,571 basehttp 4664 14904 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 11:05:56,871 log 4664 17596 Unauthorized: /api/projects/company_projects/
+WARNING 2025-07-17 11:05:56,876 basehttp 4664 17596 "GET /api/projects/company_projects/ HTTP/1.1" 401 32
+INFO 2025-07-17 11:05:57,710 basehttp 4664 17596 "POST /api/token/refresh/ HTTP/1.1" 200 274
+INFO 2025-07-17 11:06:00,703 basehttp 4664 17596 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:08:48,796 basehttp 4664 22320 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:08:49,003 basehttp 4664 22320 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:08:51,787 basehttp 4664 12916 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:08:54,484 basehttp 4664 22320 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:09:32,166 basehttp 4664 11204 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:09:35,171 basehttp 4664 11204 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 11:18:58,295 log 4664 272 Method Not Allowed (POST): /api/projects/
+WARNING 2025-07-17 11:18:58,365 basehttp 4664 272 "POST /api/projects/ HTTP/1.1" 405 0
+INFO 2025-07-17 11:21:07,957 basehttp 4664 11004 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:21:08,179 basehttp 4664 11004 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:21:11,085 basehttp 4664 12376 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:21:13,965 basehttp 4664 12376 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 11:21:53,444 log 4664 15180 Method Not Allowed (POST): /api/projects/
+WARNING 2025-07-17 11:21:53,481 basehttp 4664 15180 "POST /api/projects/ HTTP/1.1" 405 0
+INFO 2025-07-17 11:22:43,980 basehttp 4664 14452 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:23:07,469 basehttp 4664 2116 "OPTIONS /api/projects/create/ HTTP/1.1" 200 0
+ERROR 2025-07-17 11:23:07,816 log 4664 2116 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 11:23:07,824 basehttp 4664 2116 "POST /api/projects/create/ HTTP/1.1" 500 66
+INFO 2025-07-17 11:23:52,075 basehttp 4664 24056 - Broken pipe from ('127.0.0.1', 56192)
+INFO 2025-07-17 11:23:53,064 basehttp 4664 9628 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:23:53,314 basehttp 4664 9628 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:23:56,240 basehttp 4664 9628 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:23:59,304 basehttp 4664 9628 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+ERROR 2025-07-17 11:24:17,464 log 4664 11820 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 11:24:17,464 basehttp 4664 11820 "POST /api/projects/create/ HTTP/1.1" 500 66
+INFO 2025-07-17 11:25:32,174 autoreload 4664 25260 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-17 11:25:34,537 autoreload 23444 1748 Watching for file changes with StatReloader
+INFO 2025-07-17 11:25:38,101 basehttp 23444 3488 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:25:38,351 basehttp 23444 3488 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:25:41,356 basehttp 23444 11016 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:25:44,150 basehttp 23444 11016 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:25:56,520 autoreload 3420 21420 Watching for file changes with StatReloader
+INFO 2025-07-17 11:26:01,062 basehttp 3420 21952 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-17 11:26:08,242 basehttp 3420 100 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:26:08,486 basehttp 3420 100 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:26:11,847 basehttp 3420 13508 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:26:14,600 basehttp 3420 100 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+ERROR 2025-07-17 11:26:27,953 log 3420 7824 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 11:26:27,953 basehttp 3420 7824 "POST /api/projects/create/ HTTP/1.1" 500 67
+INFO 2025-07-17 11:27:37,437 basehttp 3420 20600 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 11:27:37,770 basehttp 3420 11848 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 11:27:38,073 basehttp 3420 20600 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 11:27:38,376 basehttp 3420 11848 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 11:27:39,491 basehttp 3420 20600 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-17 11:27:39,493 basehttp 3420 11848 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+WARNING 2025-07-17 11:27:39,553 log 3420 11848 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 11:27:39,553 basehttp 3420 11848 "GET /api/applications/received_applications/ HTTP/1.1" 404 18939
+WARNING 2025-07-17 11:27:39,596 log 3420 11848 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 11:27:39,598 basehttp 3420 11848 "GET /api/applications/received_applications/ HTTP/1.1" 404 18939
+INFO 2025-07-17 11:27:42,654 basehttp 3420 20600 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 11:27:43,093 basehttp 3420 20600 "GET /api/notifications/ HTTP/1.1" 200 6095
+WARNING 2025-07-17 11:27:43,138 log 3420 20600 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 11:27:43,143 basehttp 3420 20600 "GET /api/applications/received_applications/ HTTP/1.1" 404 18939
+INFO 2025-07-17 11:27:43,223 basehttp 3420 11848 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 11:27:43,236 log 3420 20600 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 11:27:43,237 basehttp 3420 20600 "GET /api/applications/received_applications/ HTTP/1.1" 404 18939
+INFO 2025-07-17 11:27:45,634 basehttp 3420 20600 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 11:27:46,075 basehttp 3420 11848 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:27:46,094 basehttp 3420 20600 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 11:27:47,756 basehttp 3420 20600 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:27:48,025 basehttp 3420 20600 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:27:48,811 basehttp 3420 24060 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 11:27:49,194 basehttp 3420 11848 - Broken pipe from ('127.0.0.1', 56752)
+INFO 2025-07-17 11:27:49,247 basehttp 3420 24060 "GET /api/notifications/ HTTP/1.1" 200 6095
+WARNING 2025-07-17 11:28:38,579 log 3420 21712 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 11:28:38,581 basehttp 3420 21712 "GET /api/applications/received_applications/ HTTP/1.1" 404 18939
+WARNING 2025-07-17 11:28:38,623 log 3420 21712 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 11:28:38,625 basehttp 3420 21712 "GET /api/applications/received_applications/ HTTP/1.1" 404 18939
+INFO 2025-07-17 11:28:42,304 basehttp 3420 21712 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:28:45,290 basehttp 3420 10300 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:28:45,530 basehttp 3420 21712 - Broken pipe from ('127.0.0.1', 56911)
+INFO 2025-07-17 11:28:45,624 basehttp 3420 10300 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:28:48,683 basehttp 3420 18764 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:28:51,597 basehttp 3420 10300 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:32:24,855 basehttp 3420 3424 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:32:48,799 basehttp 3420 11060 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+INFO 2025-07-17 11:32:48,804 basehttp 3420 14280 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+WARNING 2025-07-17 11:32:48,842 log 3420 11060 Not Found: /api/areas/
+WARNING 2025-07-17 11:32:48,842 basehttp 3420 11060 "GET /api/areas/ HTTP/1.1" 404 18329
+WARNING 2025-07-17 11:32:48,882 log 3420 14280 Not Found: /api/areas/
+WARNING 2025-07-17 11:32:48,884 basehttp 3420 14280 "GET /api/areas/ HTTP/1.1" 404 18329
+INFO 2025-07-17 11:36:50,648 basehttp 3420 18748 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:36:51,252 basehttp 3420 18748 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:36:53,819 basehttp 3420 9860 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:36:57,951 basehttp 3420 9860 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 11:38:56,793 log 3420 2112 Not Found: /api/areas/
+WARNING 2025-07-17 11:38:56,793 basehttp 3420 2112 "GET /api/areas/ HTTP/1.1" 404 18329
+WARNING 2025-07-17 11:38:56,860 log 3420 2112 Not Found: /api/areas/
+WARNING 2025-07-17 11:38:56,863 basehttp 3420 2112 "GET /api/areas/ HTTP/1.1" 404 18329
+WARNING 2025-07-17 11:40:51,076 log 3420 272 Not Found: /api/areas/
+WARNING 2025-07-17 11:40:51,076 basehttp 3420 272 "GET /api/areas/ HTTP/1.1" 404 18329
+INFO 2025-07-17 11:42:01,199 autoreload 3420 21420 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-17 11:42:03,191 autoreload 25272 11048 Watching for file changes with StatReloader
+INFO 2025-07-17 11:42:06,320 basehttp 25272 3356 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:42:19,632 basehttp 25272 24464 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:42:19,847 basehttp 25272 24464 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:42:23,400 basehttp 25272 24664 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:42:25,917 basehttp 25272 24464 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:42:26,291 basehttp 25272 24464 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:42:26,790 basehttp 25272 24664 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+ERROR 2025-07-17 11:43:02,928 log 25272 9692 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 11:43:02,929 basehttp 25272 9692 "POST /api/projects/create/ HTTP/1.1" 500 345
+ERROR 2025-07-17 11:48:20,742 log 25272 19152 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 11:48:20,744 basehttp 25272 19152 "POST /api/projects/create/ HTTP/1.1" 500 345
+ERROR 2025-07-17 11:48:20,992 log 25272 5164 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 11:48:20,992 basehttp 25272 5164 "POST /api/projects/create/ HTTP/1.1" 500 345
+INFO 2025-07-17 11:48:39,928 basehttp 25272 24528 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:48:56,934 basehttp 25272 21300 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:48:58,648 basehttp 25272 21300 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:49:10,953 basehttp 25272 24832 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:49:11,604 basehttp 25272 24832 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:49:35,299 basehttp 25272 17680 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:50:16,745 basehttp 25272 8300 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:50:17,218 basehttp 25272 8300 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:50:20,040 basehttp 25272 15904 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:50:22,936 basehttp 25272 15904 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:51:42,155 basehttp 25272 15904 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:51:42,387 basehttp 25272 8300 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:56:20,584 basehttp 25272 24196 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:56:20,841 basehttp 25272 24196 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 11:56:23,883 basehttp 25272 18912 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:56:25,744 basehttp 25272 6860 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:56:26,081 basehttp 25272 6860 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 11:56:26,821 basehttp 25272 18912 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 11:58:57,896 autoreload 25272 11048 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-17 11:58:59,428 autoreload 7780 22924 Watching for file changes with StatReloader
+INFO 2025-07-17 12:00:16,295 basehttp 7780 14240 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:00:16,297 basehttp 7780 25468 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:00:17,800 basehttp 7780 14240 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:00:18,053 basehttp 7780 14240 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:00:21,341 basehttp 7780 25468 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:00:22,887 basehttp 7780 25468 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:00:23,183 basehttp 7780 19076 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:00:24,195 basehttp 7780 14240 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:01:45,085 basehttp 7780 14240 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:01:45,600 basehttp 7780 14240 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:02:18,328 basehttp 7780 14240 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:02:18,855 basehttp 7780 14240 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:02:21,740 basehttp 7780 19076 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:02:23,385 basehttp 7780 14240 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:02:23,627 basehttp 7780 14240 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:02:24,517 basehttp 7780 19076 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:02:44,255 basehttp 7780 21064 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:03:53,790 basehttp 7780 21064 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:03:54,018 basehttp 7780 21064 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:03:57,170 basehttp 7780 21064 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:03:58,749 basehttp 7780 20772 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:03:59,043 basehttp 7780 20772 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:03:59,934 basehttp 7780 21064 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:04:19,728 basehttp 7780 21064 "GET /api/users/profile/ HTTP/1.1" 200 566
+WARNING 2025-07-17 12:09:55,099 log 7780 5984 Unauthorized: /api/users/profile/
+WARNING 2025-07-17 12:09:55,099 basehttp 7780 5984 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-17 12:09:55,133 log 7780 5984 Unauthorized: /api/users/profile/
+WARNING 2025-07-17 12:09:55,133 basehttp 7780 5984 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-17 12:09:55,138 basehttp 7780 5984 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:09:55,141 basehttp 7780 5984 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:09:55,954 basehttp 7780 18384 "POST /api/token/refresh/ HTTP/1.1" 200 274
+INFO 2025-07-17 12:09:56,043 basehttp 7780 5984 "POST /api/token/refresh/ HTTP/1.1" 200 274
+INFO 2025-07-17 12:09:56,231 basehttp 7780 18384 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:09:56,471 basehttp 7780 18384 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:09:59,259 basehttp 7780 5984 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:10:02,441 basehttp 7780 18384 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+WARNING 2025-07-17 12:10:21,088 log 7780 22200 Unauthorized: /api/users/profile/
+WARNING 2025-07-17 12:10:21,088 basehttp 7780 22200 "GET /api/users/profile/ HTTP/1.1" 401 28
+INFO 2025-07-17 12:10:21,194 basehttp 7780 22200 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-17 12:10:21,221 basehttp 7780 22200 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-17 12:11:54,069 basehttp 7780 17312 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:11:54,411 basehttp 7780 17312 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:12:17,214 basehttp 7780 17312 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:14:07,848 basehttp 7780 17312 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:14:07,872 basehttp 7780 17312 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-17 12:14:12,342 basehttp 7780 17312 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:14:14,892 basehttp 7780 17312 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 12:14:15,180 basehttp 7780 17312 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:14:15,283 basehttp 7780 17312 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:14:16,109 basehttp 7780 17312 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 12:14:19,661 basehttp 7780 17312 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:14:19,676 basehttp 7780 17312 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:14:22,467 basehttp 7780 17312 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:14:25,338 basehttp 7780 4192 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:14:25,783 basehttp 7780 4192 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:14:26,496 basehttp 7780 17312 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:14:45,236 basehttp 7780 9292 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:15:27,019 basehttp 7780 20988 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:16:43,147 autoreload 7780 22924 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-17 12:16:45,046 autoreload 8832 13532 Watching for file changes with StatReloader
+INFO 2025-07-17 12:17:37,491 basehttp 8832 14084 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:17:37,720 basehttp 8832 14084 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:17:40,980 basehttp 8832 21080 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:17:42,505 basehttp 8832 21080 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:17:42,776 basehttp 8832 21080 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:17:43,911 basehttp 8832 14084 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:18:00,479 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:11,759 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:12,856 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:13,481 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:13,723 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:13,968 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:14,196 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:14,461 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:14,710 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:14,941 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:18:15,491 basehttp 8832 19592 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:19:31,538 basehttp 8832 13508 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-17 12:19:46,886 basehttp 8832 13508 "POST /api/token/ HTTP/1.1" 200 1024
+INFO 2025-07-17 12:19:47,221 basehttp 8832 13508 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:19:48,109 basehttp 8832 13508 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 12:19:51,834 basehttp 8832 13508 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:19:51,839 basehttp 8832 10464 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:19:52,084 basehttp 8832 13508 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:19:52,542 basehttp 8832 10464 "GET /api/companies/company_me/ HTTP/1.1" 200 1092
+INFO 2025-07-17 12:19:52,846 basehttp 8832 10464 "GET /api/companies/company_me/ HTTP/1.1" 200 1092
+INFO 2025-07-17 12:19:53,336 basehttp 8832 13508 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 12:19:54,142 basehttp 8832 13508 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 12:19:54,812 basehttp 8832 10464 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:19:54,812 basehttp 8832 13508 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:19:55,330 basehttp 8832 10464 "GET /api/notifications/ HTTP/1.1" 200 6104
+INFO 2025-07-17 12:19:55,756 basehttp 8832 10464 "GET /api/notifications/ HTTP/1.1" 200 6104
+INFO 2025-07-17 12:20:02,055 basehttp 8832 10464 "GET /api/projects/company_projects/ HTTP/1.1" 200 11760
+INFO 2025-07-17 12:20:04,302 basehttp 8832 13508 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:20:04,603 basehttp 8832 13508 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:20:05,114 basehttp 8832 10464 "GET /api/projects/company_projects/ HTTP/1.1" 200 11760
+INFO 2025-07-17 12:20:30,327 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:08,826 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:09,512 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:09,751 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:10,021 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:10,233 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:12,373 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:15,002 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:19,144 basehttp 8832 24464 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:32,383 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:32,613 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:32,858 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:33,105 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:33,351 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:33,611 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:33,834 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:21:34,184 basehttp 8832 19852 "GET /api/users/profile/ HTTP/1.1" 200 569
+INFO 2025-07-17 12:22:19,096 basehttp 8832 17004 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-17 12:23:45,130 autoreload 12536 20740 Watching for file changes with StatReloader
+INFO 2025-07-17 12:23:49,273 basehttp 12536 7396 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-17 12:23:49,534 basehttp 12536 7396 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-17 12:23:49,540 basehttp 12536 7396 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-17 12:24:16,380 basehttp 12536 7700 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:24:17,598 basehttp 12536 7700 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 12:24:17,599 basehttp 12536 7700 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:24:17,824 basehttp 12536 7700 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:24:17,904 basehttp 12536 7700 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:24:18,614 basehttp 12536 7700 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 12:24:21,695 basehttp 12536 7700 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:24:21,695 basehttp 12536 996 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:24:25,033 basehttp 12536 996 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:24:26,191 basehttp 12536 7700 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:24:26,193 basehttp 12536 7700 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:24:26,940 basehttp 12536 7700 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:24:27,251 basehttp 12536 7700 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:24:28,207 basehttp 12536 996 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:25:11,241 basehttp 12536 16080 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:33:36,260 autoreload 12536 20740 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-17 12:33:38,809 autoreload 12604 12308 Watching for file changes with StatReloader
+INFO 2025-07-17 12:34:15,272 basehttp 12604 14356 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:34:15,507 basehttp 12604 14356 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:34:19,420 basehttp 12604 10316 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:34:22,883 basehttp 12604 10316 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:36:14,499 basehttp 12604 18252 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:36:14,723 basehttp 12604 18252 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:36:18,563 basehttp 12604 24948 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:36:20,431 basehttp 12604 24948 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:36:20,712 basehttp 12604 24948 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:36:22,066 basehttp 12604 18252 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:36:40,057 basehttp 12604 1652 "GET /api/users/profile/ HTTP/1.1" 200 566
+INFO 2025-07-17 12:41:44,007 autoreload 12604 12308 C:\Users\albur\Desktop\leanmaker\Backend\users\views.py changed, reloading.
+INFO 2025-07-17 12:41:45,404 autoreload 25380 18000 Watching for file changes with StatReloader
+INFO 2025-07-17 12:42:01,547 basehttp 25380 23440 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:42:05,671 basehttp 25380 23440 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:42:06,630 basehttp 25380 23440 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:44:57,953 basehttp 25380 2288 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 12:44:57,963 basehttp 25380 9044 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-17 12:44:58,325 basehttp 25380 2288 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 12:44:58,588 basehttp 25380 9044 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 12:44:58,931 basehttp 25380 9044 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 12:44:59,366 basehttp 25380 2288 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 12:45:00,016 basehttp 25380 2288 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 12:52:36,734 basehttp 25380 23960 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:52:39,783 basehttp 25380 23960 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:52:40,066 basehttp 25380 8568 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:52:40,374 basehttp 25380 8568 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:53:04,567 basehttp 25380 19956 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 12:53:04,573 basehttp 25380 19956 "OPTIONS /api/projects/create/ HTTP/1.1" 200 0
+ERROR 2025-07-17 12:53:05,152 log 25380 19956 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 12:53:05,154 basehttp 25380 19956 "POST /api/projects/create/ HTTP/1.1" 500 345
+INFO 2025-07-17 12:55:08,582 autoreload 25380 18000 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-17 12:55:10,104 autoreload 21112 7104 Watching for file changes with StatReloader
+INFO 2025-07-17 12:56:01,162 basehttp 21112 2040 "GET /api/users/profile/ HTTP/1.1" 200 1975
+ERROR 2025-07-17 12:56:01,536 log 21112 2040 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 12:56:01,536 basehttp 21112 2040 "POST /api/projects/create/ HTTP/1.1" 500 356
+INFO 2025-07-17 12:57:59,052 basehttp 21112 4544 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:58:02,446 basehttp 21112 7192 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:58:03,143 basehttp 21112 7192 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:58:03,431 basehttp 21112 7192 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:59:32,939 basehttp 21112 22340 - Broken pipe from ('127.0.0.1', 49736)
+INFO 2025-07-17 12:59:34,525 basehttp 21112 11592 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 12:59:35,004 basehttp 21112 11592 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 12:59:35,623 basehttp 21112 19900 - Broken pipe from ('127.0.0.1', 49738)
+INFO 2025-07-17 12:59:35,923 basehttp 21112 21012 - Broken pipe from ('127.0.0.1', 49740)
+INFO 2025-07-17 12:59:37,930 basehttp 21112 3188 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:59:40,946 basehttp 21112 11592 "GET /api/projects/company_projects/ HTTP/1.1" 200 11714
+INFO 2025-07-17 12:59:42,122 basehttp 21112 11592 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 12:59:42,416 basehttp 21112 11592 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:00:04,011 basehttp 21112 25512 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:00:04,426 basehttp 21112 25512 "POST /api/projects/create/ HTTP/1.1" 201 90
+INFO 2025-07-17 13:01:53,285 basehttp 21112 2316 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:01:53,710 basehttp 21112 2316 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:01:57,605 basehttp 21112 9920 "GET /api/projects/company_projects/ HTTP/1.1" 200 12271
+INFO 2025-07-17 13:02:02,103 basehttp 21112 9920 "GET /api/projects/company_projects/ HTTP/1.1" 200 12271
+INFO 2025-07-17 13:02:04,166 basehttp 21112 9920 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:02:13,431 basehttp 21112 9920 "GET /api/projects/company_projects/ HTTP/1.1" 200 12271
+INFO 2025-07-17 13:02:15,558 basehttp 21112 9920 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:02:15,846 basehttp 21112 9920 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:02:16,961 basehttp 21112 2316 "GET /api/projects/company_projects/ HTTP/1.1" 200 12271
+INFO 2025-07-17 13:02:49,320 basehttp 21112 2316 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:02:49,825 basehttp 21112 2316 "POST /api/projects/create/ HTTP/1.1" 201 90
+INFO 2025-07-17 13:05:15,541 basehttp 21112 1192 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:05:16,220 basehttp 21112 1192 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:05:19,504 basehttp 21112 22800 "GET /api/projects/company_projects/ HTTP/1.1" 200 12835
+INFO 2025-07-17 13:05:22,580 basehttp 21112 22800 "GET /api/projects/company_projects/ HTTP/1.1" 200 12835
+INFO 2025-07-17 13:07:12,113 basehttp 21112 23516 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:07:12,810 basehttp 21112 23516 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:07:34,235 autoreload 21112 7104 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-17 13:07:36,015 autoreload 348 21732 Watching for file changes with StatReloader
+INFO 2025-07-17 13:08:31,465 basehttp 348 19672 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:08:31,876 basehttp 348 19672 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:08:35,506 basehttp 348 20692 "GET /api/projects/company_projects/ HTTP/1.1" 200 12835
+INFO 2025-07-17 13:08:38,975 basehttp 348 24524 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:08:39,153 basehttp 348 20692 "GET /api/projects/company_projects/ HTTP/1.1" 200 12835
+INFO 2025-07-17 13:08:39,276 basehttp 348 24524 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:09:11,435 basehttp 348 19164 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:09:11,971 basehttp 348 19164 "POST /api/projects/create/ HTTP/1.1" 201 90
+INFO 2025-07-17 13:11:00,609 autoreload 348 21732 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-17 13:11:01,698 autoreload 12324 23320 Watching for file changes with StatReloader
+INFO 2025-07-17 13:11:16,651 basehttp 12324 8656 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:11:16,998 basehttp 12324 8656 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:11:20,644 basehttp 12324 7380 "GET /api/projects/company_projects/ HTTP/1.1" 200 13400
+INFO 2025-07-17 13:11:22,842 basehttp 12324 8832 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:11:23,148 basehttp 12324 8832 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:11:24,778 basehttp 12324 7380 "GET /api/projects/company_projects/ HTTP/1.1" 200 13400
+INFO 2025-07-17 13:12:33,011 basehttp 12324 24116 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:12:33,512 basehttp 12324 24116 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:13:16,101 basehttp 12324 9668 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:13:19,640 basehttp 12324 12852 "GET /api/projects/company_projects/ HTTP/1.1" 200 13952
+INFO 2025-07-17 13:13:19,942 basehttp 12324 12852 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:13:20,186 basehttp 12324 12852 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:13:23,649 basehttp 12324 12852 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:13:33,311 basehttp 12324 12852 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:13:33,669 basehttp 12324 12852 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:13:37,804 basehttp 12324 1072 "GET /api/projects/company_projects/ HTTP/1.1" 200 13952
+INFO 2025-07-17 13:13:39,272 basehttp 12324 13500 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:13:39,526 basehttp 12324 13500 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:13:41,618 basehttp 12324 1072 "GET /api/projects/company_projects/ HTTP/1.1" 200 13952
+INFO 2025-07-17 13:14:13,871 basehttp 12324 19668 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:14:14,545 basehttp 12324 19668 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:16:49,314 autoreload 16092 14880 Watching for file changes with StatReloader
+INFO 2025-07-17 13:16:53,517 basehttp 16092 24596 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-17 13:16:55,648 basehttp 16092 10032 - Broken pipe from ('127.0.0.1', 51554)
+INFO 2025-07-17 13:16:56,702 basehttp 16092 15428 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:16:57,161 basehttp 16092 15428 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:16:59,167 basehttp 16092 15428 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:16:59,170 basehttp 16092 15428 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:17:00,250 basehttp 16092 15428 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:17:00,256 basehttp 16092 1804 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:17:00,765 basehttp 16092 12720 - Broken pipe from ('127.0.0.1', 51555)
+INFO 2025-07-17 13:17:01,002 basehttp 16092 15428 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:17:01,044 basehttp 16092 1804 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 13:17:01,381 basehttp 16092 15428 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 13:17:02,131 basehttp 16092 1804 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:17:02,328 basehttp 16092 20784 "GET /api/projects/company_projects/ HTTP/1.1" 200 16152
+INFO 2025-07-17 13:17:08,036 basehttp 16092 1804 "GET /api/projects/company_projects/ HTTP/1.1" 200 16152
+INFO 2025-07-17 13:18:13,510 basehttp 16092 6524 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:18:13,527 basehttp 16092 6524 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-17 13:18:16,534 basehttp 16092 6524 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 13:18:16,649 basehttp 16092 19616 "GET /api/projects/company_projects/ HTTP/1.1" 200 16152
+INFO 2025-07-17 13:18:17,145 basehttp 16092 6524 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:18:17,911 basehttp 16092 6524 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:18:21,162 basehttp 16092 19616 "GET /api/projects/company_projects/ HTTP/1.1" 200 16152
+INFO 2025-07-17 13:18:25,118 basehttp 16092 19616 "GET /api/projects/company_projects/ HTTP/1.1" 200 16152
+INFO 2025-07-17 13:18:29,000 basehttp 16092 19616 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:18:29,252 basehttp 16092 19616 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:18:29,618 basehttp 16092 6524 "GET /api/projects/company_projects/ HTTP/1.1" 200 16152
+INFO 2025-07-17 13:19:07,765 basehttp 16092 1576 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:19:08,279 basehttp 16092 1576 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:19:54,618 basehttp 16092 13528 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:19:54,974 basehttp 16092 13528 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:20:08,921 basehttp 16092 10512 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:20:09,296 basehttp 16092 10512 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:20:13,802 basehttp 16092 24448 "GET /api/projects/company_projects/ HTTP/1.1" 200 16821
+INFO 2025-07-17 13:20:15,251 basehttp 16092 13880 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:20:15,528 basehttp 16092 13880 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:20:17,891 basehttp 16092 24448 "GET /api/projects/company_projects/ HTTP/1.1" 200 16821
+INFO 2025-07-17 13:20:57,479 basehttp 16092 9304 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:20:57,962 basehttp 16092 9304 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:22:13,013 basehttp 16092 21752 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:13,014 basehttp 16092 9052 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:13,909 basehttp 16092 9052 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 13:22:14,271 basehttp 16092 9052 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 13:22:15,145 basehttp 16092 21752 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:15,145 basehttp 16092 9052 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:16,971 basehttp 16092 9052 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+INFO 2025-07-17 13:22:17,442 basehttp 16092 9052 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:22:17,900 basehttp 16092 9052 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:17,900 basehttp 16092 8820 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+WARNING 2025-07-17 13:22:18,086 log 16092 9052 Not Found: /api/interviews/
+WARNING 2025-07-17 13:22:18,087 basehttp 16092 9052 "GET /api/interviews/ HTTP/1.1" 404 18354
+WARNING 2025-07-17 13:22:18,123 log 16092 9052 Not Found: /api/interviews/
+WARNING 2025-07-17 13:22:18,123 basehttp 16092 9052 "GET /api/interviews/ HTTP/1.1" 404 18353
+INFO 2025-07-17 13:22:18,709 basehttp 16092 21752 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+INFO 2025-07-17 13:22:18,844 basehttp 16092 8820 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:18,844 basehttp 16092 9052 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:18,992 basehttp 16092 21752 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:22:19,671 basehttp 16092 9052 "GET /api/projects/ HTTP/1.1" 200 7185
+INFO 2025-07-17 13:22:19,941 basehttp 16092 9052 "GET /api/projects/ HTTP/1.1" 200 7185
+INFO 2025-07-17 13:22:20,317 basehttp 16092 9052 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:22:20,619 basehttp 16092 9052 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:22:20,811 basehttp 16092 15988 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 13:22:21,101 basehttp 16092 9052 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 13:22:21,227 basehttp 16092 9052 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:22:21,227 basehttp 16092 15988 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+WARNING 2025-07-17 13:22:21,252 log 16092 15988 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 13:22:21,253 basehttp 16092 15988 "GET /api/applications/received_applications/ HTTP/1.1" 404 18943
+WARNING 2025-07-17 13:22:21,282 log 16092 9052 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 13:22:21,283 basehttp 16092 9052 "GET /api/applications/received_applications/ HTTP/1.1" 404 18943
+INFO 2025-07-17 13:22:26,398 basehttp 16092 9052 - Broken pipe from ('127.0.0.1', 52109)
+INFO 2025-07-17 13:22:26,488 basehttp 16092 15988 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:22:26,814 basehttp 16092 15988 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:22:30,807 basehttp 16092 15988 "GET /api/projects/company_projects/ HTTP/1.1" 200 17470
+INFO 2025-07-17 13:22:33,629 basehttp 16092 1884 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:22:33,888 basehttp 16092 1884 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:22:34,866 basehttp 16092 15988 "GET /api/projects/company_projects/ HTTP/1.1" 200 17470
+INFO 2025-07-17 13:23:41,356 basehttp 16092 18140 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:23:41,993 basehttp 16092 18140 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:28:04,855 basehttp 16092 23972 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:28:05,526 basehttp 16092 23972 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:28:09,505 basehttp 16092 9836 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:28:13,137 basehttp 16092 21432 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:28:13,432 basehttp 16092 21432 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:28:13,885 basehttp 16092 9836 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:29:12,660 basehttp 16092 17892 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-17 13:29:16,222 basehttp 16092 17892 "POST /api/token/ HTTP/1.1" 200 1022
+INFO 2025-07-17 13:29:16,463 basehttp 16092 17892 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-17 13:29:16,537 basehttp 16092 17892 "OPTIONS /api/test-admin-stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:29:17,225 basehttp 16092 17892 "GET /api/test-admin-stats/ HTTP/1.1" 200 1852
+INFO 2025-07-17 13:29:23,185 basehttp 16092 17892 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-17 13:29:23,423 basehttp 16092 17892 "GET /api/users/profile/ HTTP/1.1" 200 610
+INFO 2025-07-17 13:29:23,934 basehttp 16092 17892 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:29:23,935 basehttp 16092 16860 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:29:24,862 basehttp 16092 17892 "GET /api/users/ HTTP/1.1" 200 61571
+INFO 2025-07-17 13:29:25,442 basehttp 16092 16860 "GET /api/mass-notifications/ HTTP/1.1" 200 3772
+INFO 2025-07-17 13:29:25,701 basehttp 16092 17892 "GET /api/users/ HTTP/1.1" 200 61571
+INFO 2025-07-17 13:29:26,603 basehttp 16092 16860 "GET /api/mass-notifications/ HTTP/1.1" 200 3772
+INFO 2025-07-17 13:29:27,779 basehttp 16092 16860 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-17 13:29:27,779 basehttp 16092 17892 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-17 13:29:29,874 basehttp 16092 16860 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12085
+INFO 2025-07-17 13:29:31,571 basehttp 16092 16860 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 12085
+INFO 2025-07-17 13:29:31,865 basehttp 16092 16860 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-17 13:29:39,187 basehttp 16092 16860 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 13:29:39,745 basehttp 16092 16860 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:29:40,526 basehttp 16092 16860 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:29:42,049 basehttp 16092 16860 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:29:42,404 basehttp 16092 16860 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:29:42,739 basehttp 16092 15920 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 13:29:43,022 basehttp 16092 15920 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 13:29:43,398 basehttp 16092 16860 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:29:44,020 basehttp 16092 16860 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:29:44,493 basehttp 16092 15920 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:29:44,493 basehttp 16092 16860 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:29:44,931 basehttp 16092 16860 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 13:29:45,330 basehttp 16092 15920 "GET /api/notifications/ HTTP/1.1" 200 6095
+INFO 2025-07-17 13:29:50,650 basehttp 16092 15920 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:29:54,897 basehttp 16092 15920 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:29:56,284 basehttp 16092 15920 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:29:56,530 basehttp 16092 15920 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:30:31,873 autoreload 18464 11368 Watching for file changes with StatReloader
+INFO 2025-07-17 13:30:35,673 basehttp 18464 2268 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-17 13:30:44,815 basehttp 18464 13276 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:30:45,178 basehttp 18464 13276 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:30:50,036 basehttp 18464 8640 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:30:54,774 basehttp 18464 8640 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:30:59,266 basehttp 18464 8640 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:30:59,593 basehttp 18464 8640 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:31:03,841 basehttp 18464 13276 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:31:08,556 basehttp 18464 13276 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:31:51,987 basehttp 18464 13276 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:31:52,273 basehttp 18464 13276 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:32:07,702 basehttp 18464 13276 "GET /api/users/profile/ HTTP/1.1" 200 1975
+ERROR 2025-07-17 13:32:08,078 log 18464 13276 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 13:32:08,079 basehttp 18464 13276 "POST /api/projects/create/ HTTP/1.1" 500 76
+INFO 2025-07-17 13:33:47,074 basehttp 18464 12904 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:34:02,783 basehttp 18464 21792 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:34:03,141 basehttp 18464 21792 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:34:07,890 basehttp 18464 25228 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:34:09,746 basehttp 18464 24060 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:34:10,025 basehttp 18464 24060 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:34:12,572 basehttp 18464 25228 "GET /api/projects/company_projects/ HTTP/1.1" 200 18109
+INFO 2025-07-17 13:34:31,816 basehttp 18464 16108 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:34:32,297 basehttp 18464 16108 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:34:50,740 basehttp 18464 16108 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:34:51,076 basehttp 18464 16108 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:34:55,622 basehttp 18464 16108 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:34:57,212 basehttp 18464 16108 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:34:57,483 basehttp 18464 16108 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:35:00,695 basehttp 18464 20604 - Broken pipe from ('127.0.0.1', 53388)
+INFO 2025-07-17 13:35:01,899 basehttp 18464 14688 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:35:02,245 basehttp 18464 14688 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:35:07,018 basehttp 18464 3520 - Broken pipe from ('127.0.0.1', 53412)
+INFO 2025-07-17 13:35:08,117 basehttp 18464 14688 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:35:08,496 basehttp 18464 14688 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:35:13,373 basehttp 18464 14688 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:35:18,204 basehttp 18464 14688 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:35:51,602 basehttp 18464 14688 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:35:51,981 basehttp 18464 14688 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:35:56,505 basehttp 18464 14688 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:35:58,020 basehttp 18464 15108 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:35:58,460 basehttp 18464 15108 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:36:01,462 basehttp 18464 14688 - Broken pipe from ('127.0.0.1', 53411)
+INFO 2025-07-17 13:36:03,319 basehttp 18464 16216 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:36:08,161 basehttp 18464 16216 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:38:43,441 basehttp 18464 6920 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:38:43,858 basehttp 18464 6920 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:38:48,458 basehttp 18464 19184 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:38:53,225 basehttp 18464 19184 "GET /api/projects/company_projects/ HTTP/1.1" 200 18745
+INFO 2025-07-17 13:41:37,406 basehttp 18464 19184 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:41:37,713 basehttp 18464 19184 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:42:28,265 basehttp 18464 19184 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:42:28,823 basehttp 18464 19184 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:45:20,512 basehttp 18464 17880 - Broken pipe from ('127.0.0.1', 54185)
+INFO 2025-07-17 13:45:21,311 basehttp 18464 19636 - Broken pipe from ('127.0.0.1', 54187)
+INFO 2025-07-17 13:45:22,104 basehttp 18464 23612 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:22,463 basehttp 18464 23612 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:23,852 basehttp 18464 23612 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:24,199 basehttp 18464 23612 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:26,796 basehttp 18464 15016 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:27,203 basehttp 18464 15016 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:27,383 basehttp 18464 14744 - Broken pipe from ('127.0.0.1', 54194)
+INFO 2025-07-17 13:45:29,173 basehttp 18464 23612 - Broken pipe from ('127.0.0.1', 54193)
+INFO 2025-07-17 13:45:32,332 basehttp 18464 6648 "GET /api/projects/company_projects/ HTTP/1.1" 200 19390
+INFO 2025-07-17 13:45:37,339 basehttp 18464 15016 "GET /api/projects/company_projects/ HTTP/1.1" 200 19390
+INFO 2025-07-17 13:45:44,773 basehttp 18464 15016 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:45,154 basehttp 18464 15016 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:45:50,073 basehttp 18464 15016 "GET /api/projects/company_projects/ HTTP/1.1" 200 19390
+INFO 2025-07-17 13:45:55,168 basehttp 18464 24900 "GET /api/projects/company_projects/ HTTP/1.1" 200 19390
+INFO 2025-07-17 13:48:22,669 basehttp 18464 20580 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:48:24,576 basehttp 18464 20580 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 13:48:24,581 basehttp 18464 20580 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:48:24,922 basehttp 18464 20580 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:48:25,002 basehttp 18464 20580 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:48:25,719 basehttp 18464 20580 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:48:36,255 basehttp 18464 25564 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:48:36,257 basehttp 18464 20092 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:48:41,194 basehttp 18464 25564 "GET /api/projects/company_projects/ HTTP/1.1" 200 19390
+INFO 2025-07-17 13:48:43,444 basehttp 18464 20092 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:48:43,444 basehttp 18464 18016 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:48:44,122 basehttp 18464 18016 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:48:44,458 basehttp 18464 20092 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:48:46,182 basehttp 18464 25564 "GET /api/projects/company_projects/ HTTP/1.1" 200 19390
+INFO 2025-07-17 13:49:39,209 basehttp 18464 1152 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:49:39,215 basehttp 18464 1152 "OPTIONS /api/projects/create/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:49:39,783 basehttp 18464 1152 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 13:50:55,765 basehttp 18464 21788 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:55,766 basehttp 18464 24608 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+WARNING 2025-07-17 13:50:55,907 log 18464 21788 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 13:50:55,907 basehttp 18464 21788 "GET /api/applications/received_applications/ HTTP/1.1" 404 18944
+WARNING 2025-07-17 13:50:55,936 log 18464 24608 Not Found: /api/applications/received_applications/
+WARNING 2025-07-17 13:50:55,937 basehttp 18464 24608 "GET /api/applications/received_applications/ HTTP/1.1" 404 18943
+INFO 2025-07-17 13:50:56,534 basehttp 18464 21788 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:56,535 basehttp 18464 24608 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:57,401 basehttp 18464 24608 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:50:57,406 basehttp 18464 24608 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:57,747 basehttp 18464 21788 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:50:57,782 basehttp 18464 21788 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:57,782 basehttp 18464 18760 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:57,974 basehttp 18464 24608 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 13:50:58,133 basehttp 18464 18760 "GET /api/projects/ HTTP/1.1" 200 6523
+INFO 2025-07-17 13:50:58,270 basehttp 18464 21788 "GET /api/students/ HTTP/1.1" 200 10439
+INFO 2025-07-17 13:50:58,410 basehttp 18464 24608 "GET /api/projects/ HTTP/1.1" 200 6523
+INFO 2025-07-17 13:50:58,632 basehttp 18464 21788 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:58,633 basehttp 18464 24608 "OPTIONS /api/interviews/ HTTP/1.1" 200 0
+WARNING 2025-07-17 13:50:58,658 log 18464 21788 Not Found: /api/interviews/
+WARNING 2025-07-17 13:50:58,659 basehttp 18464 21788 "GET /api/interviews/ HTTP/1.1" 404 18353
+WARNING 2025-07-17 13:50:58,685 log 18464 24608 Not Found: /api/interviews/
+WARNING 2025-07-17 13:50:58,686 basehttp 18464 24608 "GET /api/interviews/ HTTP/1.1" 404 18353
+INFO 2025-07-17 13:50:59,240 basehttp 18464 24608 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:50:59,240 basehttp 18464 21788 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:51:01,378 basehttp 18464 24608 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+INFO 2025-07-17 13:51:01,724 basehttp 18464 24608 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:51:02,585 basehttp 18464 18760 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:51:02,585 basehttp 18464 24608 "OPTIONS /api/strikes/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:51:03,050 basehttp 18464 24608 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 13:51:03,386 basehttp 18464 21788 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+INFO 2025-07-17 13:51:03,487 basehttp 18464 24608 "GET /api/strikes/ HTTP/1.1" 200 2514
+INFO 2025-07-17 13:51:03,754 basehttp 18464 21788 "GET /api/users/ HTTP/1.1" 200 30171
+INFO 2025-07-17 13:51:11,766 basehttp 18464 21788 "GET /api/projects/company_projects/ HTTP/1.1" 200 20040
+INFO 2025-07-17 13:51:13,859 basehttp 18464 24608 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:51:14,212 basehttp 18464 18760 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:51:17,320 basehttp 18464 21788 "GET /api/projects/company_projects/ HTTP/1.1" 200 20040
+INFO 2025-07-17 13:51:19,244 basehttp 18464 21788 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:51:19,260 basehttp 18464 21788 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-17 13:52:21,084 basehttp 18464 24892 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-17 13:52:21,378 basehttp 18464 24892 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-17 13:52:21,386 basehttp 18464 24892 "GET /static/favicon.ico HTTP/1.1" 404 1893
+WARNING 2025-07-17 13:53:17,774 log 18464 16860 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-07-17 13:53:17,774 basehttp 18464 16860 "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 16277
+WARNING 2025-07-17 13:53:23,703 log 18464 16860 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-07-17 13:53:23,705 basehttp 18464 16860 "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 16277
+INFO 2025-07-17 13:53:47,656 basehttp 18464 1324 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:53:47,656 basehttp 18464 15560 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:53:48,475 basehttp 18464 1324 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:53:48,818 basehttp 18464 1324 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:53:51,324 basehttp 18464 1324 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:53:52,666 basehttp 18464 1324 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 13:53:53,033 basehttp 18464 1324 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:53:53,109 basehttp 18464 1324 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:53:53,885 basehttp 18464 1324 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:55:22,412 basehttp 18464 22004 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:55:22,782 basehttp 18464 22004 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:55:23,498 basehttp 18464 12436 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 13:55:41,857 basehttp 18464 24832 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:55:41,857 basehttp 18464 13292 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:55:47,071 basehttp 18464 24832 "GET /api/projects/company_projects/ HTTP/1.1" 200 20040
+INFO 2025-07-17 13:55:48,243 basehttp 18464 4500 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:55:48,243 basehttp 18464 24832 "OPTIONS /api/areas/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:55:49,092 basehttp 18464 4500 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:55:49,376 basehttp 18464 4500 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 13:55:52,269 basehttp 18464 13292 "GET /api/projects/company_projects/ HTTP/1.1" 200 20040
+INFO 2025-07-17 13:56:39,536 basehttp 18464 18284 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 13:56:39,564 basehttp 18464 18284 "OPTIONS /api/projects/create/ HTTP/1.1" 200 0
+INFO 2025-07-17 13:56:40,051 basehttp 18464 18284 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 14:00:28,040 basehttp 18464 15760 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:00:28,321 basehttp 18464 10816 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:00:28,581 basehttp 18464 15760 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:00:28,865 basehttp 18464 10816 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:02:44,846 basehttp 18464 8324 - Broken pipe from ('127.0.0.1', 55815)
+INFO 2025-07-17 14:02:46,372 basehttp 18464 4588 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:02:46,716 basehttp 18464 4588 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:02:52,124 basehttp 18464 25588 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:02:52,275 basehttp 18464 4588 - Broken pipe from ('127.0.0.1', 55819)
+INFO 2025-07-17 14:02:52,568 basehttp 18464 25588 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:02:58,176 basehttp 18464 20116 "GET /api/projects/company_projects/ HTTP/1.1" 200 20680
+INFO 2025-07-17 14:03:03,850 basehttp 18464 20116 "GET /api/projects/company_projects/ HTTP/1.1" 200 20680
+INFO 2025-07-17 14:03:07,260 basehttp 18464 20116 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:03:07,527 basehttp 18464 20116 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:04:08,653 basehttp 18464 20116 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:04:09,220 basehttp 18464 20116 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 14:05:24,503 basehttp 18464 20116 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:05:24,797 basehttp 18464 20116 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:05:43,882 basehttp 18464 16648 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:05:44,331 basehttp 18464 16648 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 14:08:21,701 basehttp 18464 16648 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:08:34,366 basehttp 18464 16648 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:08:34,751 basehttp 18464 16648 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:08:40,471 basehttp 18464 17980 "GET /api/projects/company_projects/ HTTP/1.1" 200 21970
+INFO 2025-07-17 14:08:42,450 basehttp 18464 20288 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:08:42,694 basehttp 18464 20288 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:08:45,828 basehttp 18464 17980 "GET /api/projects/company_projects/ HTTP/1.1" 200 21970
+INFO 2025-07-17 14:09:58,772 basehttp 18464 20140 "GET /api/users/profile/ HTTP/1.1" 200 1975
+ERROR 2025-07-17 14:09:59,265 log 18464 20140 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 14:09:59,266 basehttp 18464 20140 "POST /api/projects/create/ HTTP/1.1" 500 368
+INFO 2025-07-17 14:11:24,013 basehttp 18464 20140 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:11:40,851 basehttp 18464 4168 "GET /api/users/profile/ HTTP/1.1" 200 1975
+ERROR 2025-07-17 14:11:41,381 log 18464 4168 Internal Server Error: /api/projects/create/
+ERROR 2025-07-17 14:11:41,382 basehttp 18464 4168 "POST /api/projects/create/ HTTP/1.1" 500 368
+INFO 2025-07-17 14:11:45,234 basehttp 18464 4168 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:11:45,589 basehttp 18464 4168 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:11:51,493 basehttp 18464 17816 "GET /api/projects/company_projects/ HTTP/1.1" 200 21970
+INFO 2025-07-17 14:12:01,214 autoreload 9072 14528 Watching for file changes with StatReloader
+INFO 2025-07-17 14:12:07,216 basehttp 9072 18996 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-17 14:12:07,528 basehttp 9072 18996 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-17 14:12:07,535 basehttp 9072 18996 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-17 14:12:09,637 basehttp 9072 12792 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:12:10,058 basehttp 9072 12792 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:12:15,845 basehttp 9072 7732 "GET /api/projects/company_projects/ HTTP/1.1" 200 21970
+INFO 2025-07-17 14:12:17,535 basehttp 9072 12792 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:12:17,787 basehttp 9072 12792 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:12:21,505 basehttp 9072 7732 "GET /api/projects/company_projects/ HTTP/1.1" 200 21970
+INFO 2025-07-17 14:13:08,386 basehttp 9072 25272 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:13:08,953 basehttp 9072 25272 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 14:16:36,798 basehttp 9072 5976 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:16:37,308 basehttp 9072 5976 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 14:16:42,074 basehttp 9072 5976 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:16:42,615 basehttp 9072 5976 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 14:21:19,178 basehttp 9072 5976 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:21:25,648 basehttp 9072 5976 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:21:27,587 basehttp 9072 5976 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:21:45,445 basehttp 9072 5976 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:21:45,807 basehttp 9072 5976 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:21:48,758 basehttp 9072 16336 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:21:49,253 basehttp 9072 16336 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:21:52,490 basehttp 9072 5976 - Broken pipe from ('127.0.0.1', 57029)
+INFO 2025-07-17 14:21:54,067 basehttp 9072 25240 - Broken pipe from ('127.0.0.1', 57407)
+INFO 2025-07-17 14:21:55,481 basehttp 9072 18336 "GET /api/projects/company_projects/ HTTP/1.1" 200 24016
+INFO 2025-07-17 14:22:01,582 basehttp 9072 18336 - Broken pipe from ('127.0.0.1', 57415)
+INFO 2025-07-17 14:22:03,055 basehttp 9072 11716 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:22:03,459 basehttp 9072 11716 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:22:09,968 basehttp 9072 23672 "GET /api/projects/company_projects/ HTTP/1.1" 200 24016
+INFO 2025-07-17 14:22:11,655 basehttp 9072 25536 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:22:11,903 basehttp 9072 25536 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:22:16,149 basehttp 9072 23672 "GET /api/projects/company_projects/ HTTP/1.1" 200 24016
+INFO 2025-07-17 14:22:57,084 basehttp 9072 24060 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:22:57,623 basehttp 9072 24060 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-17 14:26:11,617 basehttp 9072 18520 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:26:12,027 basehttp 9072 18520 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 14:26:18,343 basehttp 9072 15876 "GET /api/projects/company_projects/ HTTP/1.1" 200 24714
+INFO 2025-07-17 14:26:24,898 basehttp 9072 18520 "GET /api/projects/company_projects/ HTTP/1.1" 200 24714
+INFO 2025-07-17 14:27:00,769 basehttp 9072 18520 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 14:27:01,005 basehttp 9072 15876 "GET /api/areas/ HTTP/1.1" 200 3736
+INFO 2025-07-17 15:19:15,911 autoreload 18924 1904 Watching for file changes with StatReloader
+INFO 2025-07-17 15:19:22,588 basehttp 18924 22828 "GET / HTTP/1.1" 200 15335
+INFO 2025-07-17 15:19:22,802 basehttp 18924 10848 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-17 15:19:22,815 basehttp 18924 10848 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-17 15:19:25,577 basehttp 18924 13504 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-17 15:19:35,235 basehttp 18924 13532 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-17 15:19:37,616 basehttp 18924 13532 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-17 15:19:37,622 basehttp 18924 13532 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-17 15:19:38,506 basehttp 18924 13532 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 15:19:38,591 basehttp 18924 13532 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-17 15:19:39,487 basehttp 18924 13532 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 15:22:49,963 basehttp 18924 18980 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 15:22:49,965 basehttp 18924 15748 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-17 15:22:50,290 basehttp 18924 18980 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-17 15:22:50,569 basehttp 18924 15748 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 15:22:50,832 basehttp 18924 15748 "GET /api/companies/company_me/ HTTP/1.1" 200 1027
+INFO 2025-07-17 15:22:51,211 basehttp 18924 18980 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-17 15:22:52,539 basehttp 18924 18980 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266

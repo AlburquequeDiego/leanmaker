@@ -386,6 +386,15 @@ def user_profile(request):
                 'position': current_user.position,
                 'department': current_user.department,
             }
+            # Si el usuario es empresa, incluir el perfil de empresa
+            if current_user.role == 'company':
+                from companies.models import Empresa
+                from companies.serializers import EmpresaSerializer
+                try:
+                    empresa = Empresa.objects.get(user=current_user)
+                    user_data['company_profile'] = EmpresaSerializer.to_dict(empresa)
+                except Empresa.DoesNotExist:
+                    user_data['company_profile'] = None
             return JsonResponse(user_data)
         
         elif request.method == "PATCH":

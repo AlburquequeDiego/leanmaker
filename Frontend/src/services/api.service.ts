@@ -55,7 +55,8 @@ class ApiService {
         }
       }
 
-      if (!response.ok) {
+      // Cambiar esta validación para aceptar 200, 201 y 204 como éxito
+      if (![200, 201, 204].includes(response.status)) {
         const errorData = await response.json().catch(() => ({}));
         console.error(`❌ [API] HTTP error ${response.status} en ${endpoint}:`, errorData);
         

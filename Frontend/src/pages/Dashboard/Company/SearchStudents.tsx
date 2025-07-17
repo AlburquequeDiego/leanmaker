@@ -86,7 +86,7 @@ export const SearchStudents: React.FC = () => {
 
       // Obtener perfiles de estudiantes
       const studentsResponse = await api.get('/api/students/');
-      const adaptedStudents = adaptStudentList(studentsResponse.data);
+      const adaptedStudents = adaptStudentList(studentsResponse.data.results || studentsResponse.data);
       setStudents(adaptedStudents);
       
     } catch (err: any) {

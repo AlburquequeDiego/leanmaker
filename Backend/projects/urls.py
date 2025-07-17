@@ -14,4 +14,5 @@ urlpatterns = [
     path('<uuid:project_id>/update/', views.projects_update, name='projects_update'),
     path('<uuid:project_id>/delete/', views.projects_delete, name='projects_delete'),
     path('my_projects/', views.my_projects, name='my_projects'),
+    path('company_projects/', views.company_projects, name='company_projects'),
 ] 

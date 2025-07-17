@@ -136,7 +136,7 @@ export const CompanyProfile: React.FC = () => {
         size: editData.size,
         description: editData.description,
       };
-      const response = await api.patch(`/api/companies/${profile.company.id}/`, payload);
+      const response = await api.patch(`/api/companies/${profile.company.id}/update/`, payload);
       // Refrescar datos tras guardar
       await loadProfile();
       setIsEditing(false);

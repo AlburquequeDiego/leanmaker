@@ -50,11 +50,6 @@ class ProyectoSerializer:
             'tags': proyecto.get_tags_list(),
             'technologies': proyecto.get_technologies_list(),
             'benefits': proyecto.get_benefits_list(),
-            'is_paid': proyecto.is_paid,
-            'payment_amount': proyecto.payment_amount,
-            'payment_currency': proyecto.payment_currency,
-            'stipend_amount': proyecto.stipend_amount,
-            'stipend_currency': proyecto.stipend_currency,
             'applications_count': proyecto.applications_count,
             'views_count': proyecto.views_count,
             'is_featured': proyecto.is_featured,
@@ -116,7 +111,7 @@ class ProyectoSerializer:
                 errors['trl_id'] = f'Error al validar el nivel TRL: {str(e)}'
         
         # Validar campos numéricos
-        numeric_fields = ['max_students', 'duration_weeks', 'hours_per_week', 'payment_amount', 'stipend_amount']
+        numeric_fields = ['max_students', 'duration_weeks', 'hours_per_week']
         for field in numeric_fields:
             if field in data and data[field] is not None:
                 try:
@@ -174,11 +169,6 @@ class ProyectoSerializer:
                 tags=data.get('tags', '[]'),
                 technologies=data.get('technologies', '[]'),
                 benefits=data.get('benefits', '[]'),
-                is_paid=data.get('is_paid', False),
-                payment_amount=data.get('payment_amount', 0),
-                payment_currency=data.get('payment_currency', 'USD'),
-                stipend_amount=data.get('stipend_amount', 0),
-                stipend_currency=data.get('stipend_currency', 'USD'),
                 is_featured=data.get('is_featured', False),
                 is_urgent=data.get('is_urgent', False)
             )
@@ -195,9 +185,7 @@ class ProyectoSerializer:
                 'min_api_level', 'max_students', 'duration_weeks', 'hours_per_week',
                 'start_date', 'estimated_end_date', 'application_deadline', 'modality',
                 'location', 'difficulty', 'required_skills', 'preferred_skills',
-                'tags', 'technologies', 'benefits', 'is_paid', 'payment_amount',
-                'payment_currency', 'stipend_amount', 'stipend_currency',
-                'is_featured', 'is_urgent'
+                'tags', 'technologies', 'benefits', 'is_featured', 'is_urgent'
             ]
             
             for field in basic_fields:

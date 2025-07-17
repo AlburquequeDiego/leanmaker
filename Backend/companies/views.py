@@ -267,7 +267,8 @@ def companies_update(request, companies_id):
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
         # Verificar permisos
-        if current_user.role == 'company' and str(companies_id) != str(current_user.id):
+        company = Empresa.objects.get(id=companies_id)
+        if current_user.role == 'company' and str(company.user.id) != str(current_user.id):
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
         try:

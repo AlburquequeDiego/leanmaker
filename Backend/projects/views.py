@@ -208,38 +208,77 @@ def projects_create(request):
         
         # Procesar datos
         data = json.loads(request.body)
+        print('--- DATOS RECIBIDOS PARA CREAR PROYECTO ---')
+        print(data)
         
-        # Crear proyecto
-        project = Proyecto.objects.create(
-            title=data.get('title'),
-            description=data.get('description', ''),
-            company_id=data.get('company_id'),
-            status_id=data.get('status_id'),
-            area_id=data.get('area_id'),
-            trl_id=data.get('trl_id'),
-            api_level=data.get('api_level', 1),
-            max_students=data.get('max_students', 1),
-            current_students=data.get('current_students', 0),
-            applications_count=data.get('applications_count', 0),
-            start_date=data.get('start_date'),
-            estimated_end_date=data.get('estimated_end_date'),
-            location=data.get('location', 'Remoto'),
-            modality=data.get('modality', 'remoto'),
-            difficulty=data.get('difficulty', 'intermedio'),
-            duration_weeks=data.get('duration_weeks', 12),
-            hours_per_week=data.get('hours_per_week', 10),
-            required_hours=data.get('required_hours', 120),
-            budget=data.get('budget', 0),
-        )
+        # Obtener la empresa del usuario autenticado
+        from companies.models import Empresa
+        try:
+            empresa = Empresa.objects.get(user=current_user)
+        except Empresa.DoesNotExist:
+            return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
+        
+        # Lógica para calcular api_level y required_hours según TRL
+        trl_to_api = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 4}
+        api_to_hours = {1: 20, 2: 40, 3: 80, 4: 160}
+        trl_level = None
+        if data.get('trl_id'):
+            from trl_levels.models import TRLLevel
+            try:
+                trl_obj = TRLLevel.objects.get(id=data['trl_id'])
+                trl_level = trl_obj.level
+            except Exception:
+                trl_level = None
+        if trl_level:
+            api_level = trl_to_api.get(trl_level, 1)
+            min_hours = api_to_hours.get(api_level, 20)
+            data['api_level'] = data.get('api_level', api_level)
+            data['required_hours'] = max(int(data.get('required_hours', min_hours)), min_hours)
+        # Validar que required_hours nunca sea menor al mínimo
+        if trl_level:
+            api_level = trl_to_api.get(trl_level, 1)
+            min_hours = api_to_hours.get(api_level, 20)
+            if int(data['required_hours']) < min_hours:
+                return JsonResponse({'error': f'El mínimo de horas para TRL {trl_level} (API {api_level}) es {min_hours} horas.'}, status=400)
+        try:
+            project = Proyecto.objects.create(
+                title=data.get('title'),
+                description=data.get('description', ''),
+                company=empresa,  # Forzar empresa correcta
+                status_id=data.get('status_id'),
+                area_id=data.get('area_id'),
+                trl_id=data.get('trl_id'),
+                api_level=data.get('api_level', 1),
+                max_students=data.get('max_students', 1),
+                current_students=data.get('current_students', 0),
+                applications_count=data.get('applications_count', 0),
+                start_date=data.get('start_date'),
+                estimated_end_date=data.get('estimated_end_date'),
+                location=data.get('location', 'Remoto'),
+                modality=data.get('modality', 'remoto'),
+                difficulty=data.get('difficulty', 'intermedio'),
+                duration_weeks=data.get('duration_weeks', 12),
+                hours_per_week=data.get('hours_per_week', 10),
+                required_hours=data.get('required_hours', 120)
+                # budget=data.get('budget', 0),  # Eliminado porque el modelo no lo acepta
+            )
+        except Exception as e:
+            print('--- ERROR AL CREAR PROYECTO ---')
+            print(str(e))
+            return JsonResponse({'error': f'Error SQL: {str(e)}'}, status=500)
         
         return JsonResponse({
-            'message': 'Proyecto creado correctamente',
-            'id': str(project.id)
+            'success': True,
+            'data': {
+                'message': 'Proyecto creado correctamente',
+                'id': str(project.id)
+            }
         }, status=201)
-        
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
+        print('--- ERROR GENERAL EN CREAR PROYECTO ---')
+        print(str(e))
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -460,5 +499,65 @@ def my_projects(request):
                 'nextMilestoneDate': '',
             })
         return JsonResponse({'success': True, 'data': projects_data, 'total': len(projects_data)})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def company_projects(request):
+    """Devuelve los proyectos publicados por la empresa autenticada."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        # Solo empresas pueden ver sus proyectos publicados
+        if current_user.role != 'company':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Obtener la empresa asociada al usuario
+        try:
+            from companies.models import Empresa
+            empresa = Empresa.objects.get(user=current_user)
+        except Empresa.DoesNotExist:
+            return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
+        # Filtrar proyectos de la empresa
+        from .models import Proyecto
+        projects = Proyecto.objects.filter(company=empresa)
+        projects_data = []
+        for project in projects:
+            projects_data.append({
+                'id': str(project.id),
+                'title': project.title,
+                'description': project.description,
+                'status': project.status.name if project.status else 'Sin estado',
+                'status_id': project.status.id if project.status else None,
+                'area': project.area.name if project.area else 'Sin área',
+                'area_id': project.area.id if project.area else None,
+                'trl_level': project.trl.level if project.trl else 1,
+                'trl_id': project.trl.id if project.trl else None,
+                'api_level': project.api_level or 1,
+                'max_students': project.max_students,
+                'current_students': project.current_students,
+                'applications_count': project.applications_count,
+                'start_date': project.start_date.isoformat() if project.start_date else None,
+                'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
+                'location': project.location or 'Remoto',
+                'modality': project.modality,
+                'difficulty': project.difficulty,
+                'duration_weeks': project.duration_weeks,
+                'hours_per_week': project.hours_per_week,
+                'required_hours': project.required_hours,
+                'is_featured': getattr(project, 'is_featured', False),
+                'is_urgent': getattr(project, 'is_urgent', False),
+                'created_at': project.created_at.isoformat() if project.created_at else None,
+                'updated_at': project.updated_at.isoformat() if project.updated_at else None,
+                'technologies': getattr(project, 'technologies', []),
+                'tags': getattr(project, 'tags', []),
+            })
+        return JsonResponse({'success': True, 'data': projects_data, 'count': len(projects_data)})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

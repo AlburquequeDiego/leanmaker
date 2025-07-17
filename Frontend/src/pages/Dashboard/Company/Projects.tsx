@@ -37,8 +37,9 @@ import { useApi } from '../../../hooks/useApi';
 import { adaptProjectList } from '../../../utils/adapters';
 import type { Project } from '../../../types';
 import { projectService } from '../../../services/project.service';
+import { PublishProjects } from './PublishProjects';
 
-const COUNT_OPTIONS = [5, 10, 15, 20, 30, 40, -1];
+const COUNT_OPTIONS = [20, 50, 100, 150, 200, 250, -1];
 
 const Projects: React.FC = () => {
   const api = useApi();
@@ -47,10 +48,10 @@ const Projects: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sectionCounts, setSectionCounts] = useState({
-    active: 5,
-    published: 5,
-    completed: 5,
-    draft: 5,
+    active: 20,
+    published: 20,
+    completed: 20,
+    draft: 20,
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -224,30 +225,30 @@ const Projects: React.FC = () => {
     }
 
   const renderDashboard = () => (
-    <Grid container spacing={3} sx={{ mb: 4 }}>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ bgcolor: '#e8f5e9', color: '#388e3c', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
+    <Grid container spacing={3} sx={{ mb: 4, justifyContent: 'center', alignItems: 'stretch' }}>
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#e8f5e9', color: '#388e3c', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#388e3c' }}>{statusCounts.active}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#388e3c' }}>Proyectos Activos</Typography>
         </Card>
       </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ bgcolor: '#e3f2fd', color: '#1976d2', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#e3f2fd', color: '#1976d2', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#1976d2' }}>{statusCounts.completed}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#1976d2' }}>Proyectos Completados</Typography>
-          </Card>
+        </Card>
       </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ bgcolor: '#fff3e0', color: '#f57c00', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#fff3e0', color: '#f57c00', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#f57c00' }}>{statusCounts.published}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#f57c00' }}>Proyectos Publicados</Typography>
-          </Card>
+        </Card>
       </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ bgcolor: '#f5f5f5', color: '#757575', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center' }}>
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#f5f5f5', color: '#757575', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: '#757575' }}>{statusCounts.draft}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#757575' }}>Proyectos Borradores</Typography>
-          </Card>
+        </Card>
       </Grid>
     </Grid>
   );
@@ -269,14 +270,16 @@ const Projects: React.FC = () => {
             {title} ({filtered.length})
                     </Typography>
           <Box sx={{ ml: 2 }}>
-            <FormControl size="small">
+            <FormControl size="medium" sx={{ minWidth: 140 }}>
               <Select
                 value={count}
                 onChange={handleSectionCountChange(status)}
-                sx={{ minWidth: 90, fontSize: 14 }}
+                sx={{ minWidth: 140, fontSize: 16 }}
+                displayEmpty
+                renderValue={selected => selected === -1 ? 'Todas' : `Últimos ${selected}`}
               >
                 {COUNT_OPTIONS.map(opt => (
-                  <MenuItem key={opt} value={opt}>{opt === -1 ? 'Todas' : opt}</MenuItem>
+                  <MenuItem key={opt} value={opt}>{opt === -1 ? 'Todas' : `Últimos ${opt}`}</MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -359,14 +362,7 @@ const Projects: React.FC = () => {
       )}
       
       {tab === 1 && (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            Funcionalidad de Creación de Proyectos
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Esta funcionalidad está en desarrollo. Por favor, contacta al administrador para crear nuevos proyectos.
-          </Typography>
-        </Paper>
+        <PublishProjects />
       )}
 
       {/* Diálogo de eliminar */}

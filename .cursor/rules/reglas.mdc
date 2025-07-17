@@ -1,0 +1,11 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+el front end que tengo se tiene que adaptar al backend nuevo , ayudame a adaptarlo y a que sea funcional , el backend debe consumir correctamente la base de datos y mandar bien los datos al frontend , pero muchas interfaces del front end apuntan a apis que no existen ya que este proyecto nuevo el backend no usa apis se conecta al fronnt atravez de endpoints ahora intergra el front al nuevo bacend para que pueda obtener los datos y poder mostrarlo en pantalla , lo que el front cree lo mande bien al backend y se garde en la base de datos , si necesitas cambiar algo el front y el backend hazlo , agregale la logica al backend si le falta , examina cada parte , hoy no tiene que quedar funcional , que cada interfaz este simcronisada 
+
+
+
+
+los cambios que te diga siguelos tales de mejora de diseño solo cuando te diga que cosa hacer 

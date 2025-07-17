@@ -483,11 +483,34 @@ def api_user_profile(request):
             # Si el usuario es empresa, incluir el perfil de empresa
             if user.role == "company":
                 try:
+                    from companies.models import Empresa
                     from companies.serializers import EmpresaSerializer
-                    empresa = user.empresa_profile
-                    user_data["company_profile"] = EmpresaSerializer.to_dict(empresa)
-                except Exception:
-                    user_data["company_profile"] = None
+                    empresa = getattr(user, 'empresa_profile', None)
+                    if not empresa:
+                        # Crear empresa dummy si no existe
+                        empresa = Empresa.objects.create(
+                            user=user,
+                            company_name=f"Empresa de {user.full_name or user.email}",
+                            verified=False,
+                            rating=0,
+                            total_projects=0,
+                            projects_completed=0,
+                            total_hours_offered=0,
+                            status='active',
+                        )
+                        user.empresa_profile = empresa
+                        user.save()
+                    # Validar que la empresa tiene id
+                    empresa_dict = EmpresaSerializer.to_dict(empresa)
+                    if not empresa_dict.get('id'):
+                        return JsonResponse({
+                            'error': 'No se pudo asociar un perfil de empresa válido a este usuario.'
+                        }, status=500)
+                    user_data["company_profile"] = empresa_dict
+                except Exception as e:
+                    return JsonResponse({
+                        'error': f'Error al asociar empresa: {str(e)}'
+                    }, status=500)
             return JsonResponse(user_data)
         
         elif request.method == "PATCH":
@@ -1082,12 +1105,24 @@ def generate_refresh_token(user):
 def verify_token(token):
     """Verificar token JWT."""
     try:
+        print(f"[verify_token] Decodificando token: {token[:30]}...")
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        print(f"[verify_token] Payload decodificado: {payload}")
         user_id = payload.get('user_id')
         if user_id:
-            return User.objects.get(id=user_id)
-    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, User.DoesNotExist):
-        pass
+            user = User.objects.get(id=user_id)
+            print(f"[verify_token] Usuario encontrado: {user.email} (id: {user_id})")
+            return user
+        else:
+            print("[verify_token] user_id no encontrado en el payload")
+    except jwt.ExpiredSignatureError:
+        print("[verify_token] Token expirado")
+    except jwt.InvalidTokenError as e:
+        print(f"[verify_token] Token inválido: {e}")
+    except User.DoesNotExist:
+        print("[verify_token] Usuario no existe para el user_id del token")
+    except Exception as e:
+        print(f"[verify_token] Error inesperado: {e}")
     return None
 
 def verify_refresh_token(token):

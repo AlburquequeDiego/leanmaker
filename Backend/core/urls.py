@@ -41,7 +41,7 @@ urlpatterns = [
     path('questionnaires/', include('questionnaires.urls')),
     path('platform-settings/', include('platform_settings.urls')),
     path('trl-levels/', include('trl_levels.urls')),
-    path('areas/', include('areas.urls')),
+    path('api/areas/', include('areas.urls')),
     path('project-status/', include('project_status.urls')),
     path('assignments/', include('assignments.urls')),
     path('evaluation-categories/', include('evaluation_categories.urls')),
