@@ -73,23 +73,24 @@ interface Application {
 }
 
 export const GestionProyectosAdmin = () => {
-  const [tabValue, setTabValue] = useState(0);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [actionDialog, setActionDialog] = useState(false);
-  const [actionType, setActionType] = useState<'edit' | 'suspend' | 'delete' | 'view_candidates' | null>(null);
+  const [actionType, setActionType] = useState<'edit' | 'suspend' | 'delete' | 'view_students' | null>(null);
   const [actionReason, setActionReason] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [projectStudents, setProjectStudents] = useState<any[]>([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
 
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number | 'ultimos'>(10);
+  const [pageSize, setPageSize] = useState<number | 'ultimos'>(50);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
 
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [applications, setApplications] = useState<Application[]>([]);
+
 
   useEffect(() => {
     fetchData();
@@ -111,7 +112,6 @@ export const GestionProyectosAdmin = () => {
 
       // Agregar filtros
       if (filters.search) params.append('search', filters.search);
-      if (filters.company) params.append('company', filters.company);
       if (filters.status) params.append('status', filters.status);
       if (filters.api_level) params.append('api_level', filters.api_level);
       if (filters.trl_level) params.append('trl_level', filters.trl_level);
@@ -132,11 +132,29 @@ export const GestionProyectosAdmin = () => {
     setTabValue(newValue);
   };
 
-  const handleAction = (project: Project, type: 'edit' | 'suspend' | 'delete' | 'view_candidates') => {
+  const handleAction = (project: Project, type: 'edit' | 'suspend' | 'delete' | 'view_students') => {
     setSelectedProject(project);
     setActionType(type);
     setActionDialog(true);
     setActionReason('');
+    
+    // Si es ver estudiantes, cargar la lista
+    if (type === 'view_students') {
+      fetchProjectStudents(project.id);
+    }
+  };
+
+  const fetchProjectStudents = async (projectId: string) => {
+    try {
+      setLoadingStudents(true);
+      const response = await apiService.get(`/api/projects/${projectId}/`);
+      setProjectStudents(response.estudiantes || []);
+    } catch (error) {
+      console.error('Error fetching project students:', error);
+      setProjectStudents([]);
+    } finally {
+      setLoadingStudents(false);
+    }
   };
 
   const handleConfirmAction = async () => {
@@ -153,7 +171,7 @@ export const GestionProyectosAdmin = () => {
           break;
         case 'delete':
           endpoint = `/api/admin/projects/${selectedProject.id}/delete/`;
-          payload = { reason: actionReason };
+          payload = {}; // No enviar razón para eliminar
           break;
         default:
           return;
@@ -185,7 +203,7 @@ export const GestionProyectosAdmin = () => {
       case 'active': return 'Activo';
       case 'suspended': return 'Suspendido';
       case 'completed': return 'Completado';
-      case 'cancelled': return 'Cancelado';
+      case 'cancelled': return 'Eliminados';
       default: return status;
     }
   };
@@ -264,20 +282,6 @@ export const GestionProyectosAdmin = () => {
       align: 'center' as const
     },
     {
-      key: 'required_api_level',
-      label: 'Nivel API',
-      render: (value: number) => (
-        <Chip 
-          label={`API ${value}`} 
-          color="primary" 
-          size="small"
-          variant="outlined"
-        />
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
       key: 'required_trl_level',
       label: 'Nivel TRL',
       render: (value: number) => (
@@ -307,7 +311,7 @@ export const GestionProyectosAdmin = () => {
     },
     {
       key: 'rating',
-      label: 'Rating',
+      label: 'Promedio General de Proyecto',
       render: (value: number) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Rating value={value} readOnly size="small" />
@@ -339,16 +343,6 @@ export const GestionProyectosAdmin = () => {
       type: 'text' as const
     },
     {
-      key: 'company',
-      label: 'Empresa',
-      type: 'select' as const,
-      options: [
-        { value: '1', label: 'Empresa A' },
-        { value: '2', label: 'Empresa B' },
-        { value: '3', label: 'Empresa C' }
-      ]
-    },
-    {
       key: 'status',
       label: 'Estado',
       type: 'select' as const,
@@ -356,19 +350,7 @@ export const GestionProyectosAdmin = () => {
         { value: 'active', label: 'Activo' },
         { value: 'suspended', label: 'Suspendido' },
         { value: 'completed', label: 'Completado' },
-        { value: 'cancelled', label: 'Cancelado' }
-      ]
-    },
-    {
-      key: 'api_level',
-      label: 'Nivel API',
-      type: 'select' as const,
-      options: [
-        { value: '1', label: 'API 1' },
-        { value: '2', label: 'API 2' },
-        { value: '3', label: 'API 3' },
-        { value: '4', label: 'API 4' },
-        { value: '5', label: 'API 5' }
+        { value: 'cancelled', label: 'Eliminados' }
       ]
     },
     {
@@ -408,10 +390,10 @@ export const GestionProyectosAdmin = () => {
       <Button
         variant="outlined"
         size="small"
-        onClick={() => handleAction(row, 'view_candidates')}
+        onClick={() => handleAction(row, 'view_students')}
         startIcon={<PeopleIcon />}
       >
-        Ver Postulantes
+        Ver Estudiantes
       </Button>
       {row.status === 'active' && (
         <Button
@@ -441,80 +423,83 @@ export const GestionProyectosAdmin = () => {
         Gestión de Proyectos
       </Typography>
 
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab label="Proyectos" />
-          <Tab label="Postulaciones" />
-        </Tabs>
-      </Box>
-
       {/* Tab: Proyectos */}
-      <div role="tabpanel" hidden={tabValue !== 0}>
-        {tabValue === 0 && (
-          <DataTable
-            title="Lista de Proyectos"
-            data={projects}
-            columns={columns}
-            loading={loading}
-            error={null}
-            filters={tableFilters}
-            onFilterChange={handleFilterChange}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-            totalCount={totalCount}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            showPagination={pageSize !== 'ultimos'}
-            actions={actions}
-            emptyMessage="No hay proyectos registrados"
-          />
-        )}
-      </div>
-
-      {/* Tab: Postulaciones */}
-      <div role="tabpanel" hidden={tabValue !== 1}>
-        {tabValue === 1 && (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Postulaciones de Estudiantes
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Aquí puedes ver todas las postulaciones de estudiantes a proyectos.
-            </Typography>
-            {/* Aquí iría la tabla de postulaciones usando DataTable */}
-          </Box>
-        )}
+      <div role="tabpanel">
+        <DataTable
+          title="Lista de Proyectos"
+          data={projects}
+          columns={columns}
+          loading={loading}
+          error={null}
+          filters={tableFilters}
+          onFilterChange={handleFilterChange}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          showPagination={false}
+          actions={actions}
+          emptyMessage="No hay proyectos registrados"
+          pageSizeOptions={[50, 100, 200, 500, 1000]}
+        />
       </div>
 
       {/* Modal de acción */}
-      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>
           {actionType === 'suspend' && 'Suspender Proyecto'}
           {actionType === 'delete' && 'Eliminar Proyecto'}
-          {actionType === 'view_candidates' && 'Ver Postulantes'}
+          {actionType === 'view_students' && 'Estudiantes del Proyecto'}
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body1" gutterBottom>
-              ¿Estás seguro de que quieres {actionType === 'suspend' ? 'suspender' : actionType === 'delete' ? 'eliminar' : 'ver los postulantes del'} proyecto{' '}
-              <strong>{selectedProject?.title}</strong>?
-            </Typography>
-            {(actionType === 'suspend' || actionType === 'delete') && (
-              <TextField
-                label="Razón (opcional)"
-                value={actionReason}
-                onChange={(e) => setActionReason(e.target.value)}
-                fullWidth
-                multiline
-                minRows={2}
-                sx={{ mt: 2 }}
-              />
-            )}
-          </Box>
+          {actionType === 'view_students' ? (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                {selectedProject?.title}
+              </Typography>
+              {loadingStudents ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                projectStudents.length > 0 ? (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      {projectStudents.length} estudiante{projectStudents.length !== 1 ? 's' : ''} trabajando en el proyecto:
+                    </Typography>
+                    <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
+                      {projectStudents.map((student: any, index: number) => (
+                        <Box key={student.id} sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, mb: 1 }}>
+                          <Typography variant="body1" fontWeight={600}>
+                            {student.nombre}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {student.email}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                ) : (
+                  <Typography variant="body1" color="text.secondary">
+                    No hay estudiantes asignados a este proyecto.
+                  </Typography>
+                )
+              )}
+            </Box>
+          ) : (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body1" gutterBottom>
+                ¿Estás seguro de que quieres {actionType === 'suspend' ? 'suspender' : 'eliminar'} el proyecto{' '}
+                <strong>{selectedProject?.title}</strong>?
+              </Typography>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setActionDialog(false)}>
-            Cancelar
+            Cerrar
           </Button>
           {(actionType === 'suspend' || actionType === 'delete') && (
             <Button

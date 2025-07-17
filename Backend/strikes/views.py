@@ -6,14 +6,15 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.core.exceptions import ValidationError
-from .models import Strike
-from core.auth_utils import get_user_from_token, require_auth
+from django.db.models import Q
+from users.models import User
+from .models import Strike, StrikeReport
 from core.views import verify_token
+
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def strike_list(request):
+def strikes_list(request):
     """Lista de strikes."""
     try:
         # Verificar autenticación
@@ -26,24 +27,78 @@ def strike_list(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        strikes = Strike.objects.all()
-        strikes_data = []
+        # Parámetros de paginación y filtros
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        student = request.GET.get('student', '')
+        company = request.GET.get('company', '')
+        status = request.GET.get('status', '')
         
+        # Query base
+        queryset = Strike.objects.select_related('student', 'student__user', 'company', 'project', 'issued_by').all()
+        
+        # Aplicar filtros según el rol del usuario
+        if current_user.role == 'student':
+            # Estudiantes solo ven sus propios strikes
+            queryset = queryset.filter(student__user=current_user)
+        elif current_user.role == 'company':
+            # Empresas ven strikes que han emitido
+            queryset = queryset.filter(company__user=current_user)
+        # Admins ven todas las strikes
+        
+        # Filtros adicionales
+        if student:
+            queryset = queryset.filter(student_id=student)
+        
+        if company:
+            queryset = queryset.filter(company_id=company)
+        
+        if status:
+            queryset = queryset.filter(is_active=(status == 'active'))
+        
+        # Contar total
+        total_count = queryset.count()
+        
+        # Paginar
+        strikes = queryset[offset:offset + limit]
+        
+        # Serializar datos
+        strikes_data = []
         for strike in strikes:
             strikes_data.append({
                 'id': str(strike.id),
+                'student_id': str(strike.student.id),
+                'student_name': strike.student.user.full_name,
+                'company_id': str(strike.company.id),
+                'company_name': strike.company.company_name,
+                'project_id': str(strike.project.id) if strike.project else None,
+                'project_title': strike.project.title if strike.project else None,
                 'reason': strike.reason,
+                'description': strike.description,
+                'severity': strike.severity,
+                'issued_by_id': str(strike.issued_by.id) if strike.issued_by else None,
+                'issued_by_name': strike.issued_by.full_name if strike.issued_by else None,
+                'issued_at': strike.issued_at.isoformat(),
+                'expires_at': strike.expires_at.isoformat() if strike.expires_at else None,
+                'is_active': strike.is_active,
+                'resolved_at': strike.resolved_at.isoformat() if strike.resolved_at else None,
+                'resolution_notes': strike.resolution_notes,
                 'created_at': strike.created_at.isoformat(),
                 'updated_at': strike.updated_at.isoformat(),
             })
         
         return JsonResponse({
-            'success': True,
-            'data': strikes_data
+            'results': strikes_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
         })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -60,14 +115,37 @@ def strike_detail(request, strike_id):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
+        # Obtener strike
         try:
-            strike = Strike.objects.get(id=strike_id)
+            strike = Strike.objects.select_related('student', 'student__user', 'company', 'project', 'issued_by').get(id=strike_id)
         except Strike.DoesNotExist:
             return JsonResponse({'error': 'Strike no encontrado'}, status=404)
         
+        # Verificar permisos
+        if current_user.role == 'student' and str(strike.student.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        elif current_user.role == 'company' and str(strike.company.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Serializar datos
         strike_data = {
             'id': str(strike.id),
+            'student_id': str(strike.student.id),
+            'student_name': strike.student.user.full_name,
+            'company_id': str(strike.company.id),
+            'company_name': strike.company.company_name,
+            'project_id': str(strike.project.id) if strike.project else None,
+            'project_title': strike.project.title if strike.project else None,
             'reason': strike.reason,
+            'description': strike.description,
+            'severity': strike.severity,
+            'issued_by_id': str(strike.issued_by.id) if strike.issued_by else None,
+            'issued_by_name': strike.issued_by.full_name if strike.issued_by else None,
+            'issued_at': strike.issued_at.isoformat(),
+            'expires_at': strike.expires_at.isoformat() if strike.expires_at else None,
+            'is_active': strike.is_active,
+            'resolved_at': strike.resolved_at.isoformat() if strike.resolved_at else None,
+            'resolution_notes': strike.resolution_notes,
             'created_at': strike.created_at.isoformat(),
             'updated_at': strike.updated_at.isoformat(),
         }
@@ -77,231 +155,208 @@ def strike_detail(request, strike_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-@csrf_exempt
-@require_http_methods(["GET"])
-@require_auth
-def strikes_list(request):
-    """Lista strikes con filtros"""
-    try:
-        user = get_user_from_token(request)
-        
-        # Filtrar por empresa si es empresa
-        if user.role == 'company':
-            queryset = Strike.objects.filter(company=user.empresa_profile)
-        else:
-            queryset = Strike.objects.all()
-        
-        # Aplicar filtros
-        status = request.GET.get('status')
-        if status:
-            queryset = queryset.filter(is_active=(status == 'active'))
-        
-        # Ordenar por fecha de creación
-        queryset = queryset.order_by('-issued_at')
-        
-        # Serializar datos
-        strikes_data = []
-        for strike in queryset:
-            strikes_data.append({
-                'id': str(strike.id),
-                'student_id': str(strike.student.id),
-                'student_name': strike.student.user.full_name,
-                'student_email': strike.student.user.email,
-                'project_id': str(strike.project.id) if strike.project else None,
-                'project_title': strike.project.title if strike.project else 'Sin proyecto',
-                'type': 'other',  # Campo agregado para compatibilidad
-                'severity': strike.severity,
-                'description': strike.reason,
-                'date': strike.issued_at.isoformat(),
-                'status': 'active' if strike.is_active else 'resolved',
-                'evidence': strike.description or '',
-                'resolution': strike.resolution_notes or '',
-                'resolved_date': strike.resolved_at.isoformat() if strike.resolved_at else None,
-            })
-        
-        return JsonResponse({
-            'success': True,
-            'data': strikes_data,
-            'total': len(strikes_data)
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': f'Error al listar strikes: {str(e)}'}, status=500)
-
-@csrf_exempt
-@require_http_methods(["GET"])
-@require_auth
-def strikes_detail(request, strikes_id):
-    """Obtener detalles de un strike"""
-    try:
-        user = get_user_from_token(request)
-        
-        try:
-            strike = Strike.objects.get(id=strikes_id)
-        except Strike.DoesNotExist:
-            return JsonResponse({'error': 'Strike no encontrado'}, status=404)
-        
-        # Verificar permisos
-        if user.role == 'company' and strike.company != user.empresa_profile:
-            return JsonResponse({'error': 'No tienes permisos para ver este strike'}, status=403)
-        
-        strike_data = {
-            'id': str(strike.id),
-            'student_id': str(strike.student.id),
-            'student_name': strike.student.user.full_name,
-            'student_email': strike.student.user.email,
-            'project_id': str(strike.project.id) if strike.project else None,
-            'project_title': strike.project.title if strike.project else 'Sin proyecto',
-            'type': 'other',
-            'severity': strike.severity,
-            'description': strike.reason,
-            'date': strike.issued_at.isoformat(),
-            'status': 'active' if strike.is_active else 'resolved',
-            'evidence': strike.description or '',
-            'resolution': strike.resolution_notes or '',
-            'resolved_date': strike.resolved_at.isoformat() if strike.resolved_at else None,
-        }
-        
-        return JsonResponse({'success': True, 'data': strike_data})
-        
-    except Exception as e:
-        return JsonResponse({'error': f'Error al obtener strike: {str(e)}'}, status=500)
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@require_auth
-def strikes_create(request):
-    """Crear un nuevo strike"""
+def strike_reports_create(request):
+    """Crear reporte de strike (empresa reporta estudiante)."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
-        if user.role not in ['admin', 'company']:
-            return JsonResponse({'error': 'No tienes permisos para crear strikes'}, status=403)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
         
+        # Solo empresas pueden crear reportes
+        if current_user.role != 'company':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Procesar datos
         data = json.loads(request.body)
         
-        # Validar datos requeridos
-        required_fields = ['student_name', 'project_title', 'description', 'severity']
-        for field in required_fields:
-            if not data.get(field):
-                return JsonResponse({'error': f'Campo requerido: {field}'}, status=400)
-        
-        # Crear el strike
-        strike = Strike.objects.create(
-            student=user,  # Temporalmente usar el usuario actual
-            company=user.empresa_profile if user.role == 'company' else None,
-            reason=data['description'],
-            description=data.get('evidence', ''),
-            severity=data['severity'],
-            issued_by=user,
+        # Crear reporte
+        report = StrikeReport.objects.create(
+            company_id=data.get('company_id'),
+            student_id=data.get('student_id'),
+            project_id=data.get('project_id'),
+            reason=data.get('reason'),
+            description=data.get('description'),
         )
         
-        strike_data = {
-            'id': str(strike.id),
-            'student_id': str(strike.student.id),
-            'student_name': strike.student.user.full_name,
-            'student_email': strike.student.user.email,
-            'project_id': str(strike.project.id) if strike.project else None,
-            'project_title': strike.project.title if strike.project else 'Sin proyecto',
-            'type': 'other',
-            'severity': strike.severity,
-            'description': strike.reason,
-            'date': strike.issued_at.isoformat(),
-            'status': 'active',
-            'evidence': strike.description or '',
-            'resolution': '',
-            'resolved_date': None,
-        }
-        
         return JsonResponse({
-            'success': True,
-            'message': 'Strike creado exitosamente',
-            'data': strike_data
+            'message': 'Reporte de strike creado correctamente',
+            'id': str(report.id)
         }, status=201)
         
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Error al crear strike: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def strike_reports_list(request):
+    """Lista de reportes de strikes (para admin)."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden ver reportes
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Parámetros de paginación y filtros
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        status = request.GET.get('status', '')
+        
+        # Query base
+        queryset = StrikeReport.objects.select_related('company', 'student', 'student__user', 'project', 'reviewed_by').all()
+        
+        # Filtros
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Contar total
+        total_count = queryset.count()
+        
+        # Paginar
+        reports = queryset[offset:offset + limit]
+        
+        # Serializar datos
+        reports_data = []
+        for report in reports:
+            reports_data.append({
+                'id': str(report.id),
+                'company_id': str(report.company.id),
+                'company_name': report.company.company_name,
+                'student_id': str(report.student.id),
+                'student_name': report.student.user.full_name,
+                'project_id': str(report.project.id),
+                'project_title': report.project.title,
+                'reason': report.reason,
+                'description': report.description,
+                'status': report.status,
+                'reviewed_by_id': str(report.reviewed_by.id) if report.reviewed_by else None,
+                'reviewed_by_name': report.reviewed_by.full_name if report.reviewed_by else None,
+                'reviewed_at': report.reviewed_at.isoformat() if report.reviewed_at else None,
+                'admin_notes': report.admin_notes,
+                'created_at': report.created_at.isoformat(),
+                'updated_at': report.updated_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'results': reports_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["PATCH"])
-@require_auth
-def strikes_update(request, strikes_id):
-    """Actualizar un strike"""
+def strike_report_approve(request, report_id):
+    """Aprobar reporte de strike (admin)."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden aprobar reportes
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Obtener reporte
         try:
-            strike = Strike.objects.get(id=strikes_id)
-        except Strike.DoesNotExist:
-            return JsonResponse({'error': 'Strike no encontrado'}, status=404)
+            report = StrikeReport.objects.get(id=report_id)
+        except StrikeReport.DoesNotExist:
+            return JsonResponse({'error': 'Reporte no encontrado'}, status=404)
         
-        # Verificar permisos
-        if user.role == 'company' and strike.company != user.empresa_profile:
-            return JsonResponse({'error': 'No tienes permisos para actualizar este strike'}, status=403)
+        # Procesar datos
+        data = json.loads(request.body) if request.body else {}
+        notes = data.get('notes')
         
-        data = json.loads(request.body)
-        
-        # Actualizar campos
-        if 'status' in data:
-            if data['status'] == 'resolved':
-                strike.resolver(data.get('resolution', ''))
-            elif data['status'] == 'active':
-                strike.reactivar()
-        
-        if 'resolution' in data:
-            strike.resolution_notes = data['resolution']
-        
-        strike.save()
-        
-        strike_data = {
-            'id': str(strike.id),
-            'student_id': str(strike.student.id),
-            'student_name': strike.student.user.full_name,
-            'student_email': strike.student.user.email,
-            'project_id': str(strike.project.id) if strike.project else None,
-            'project_title': strike.project.title if strike.project else 'Sin proyecto',
-            'type': 'other',
-            'severity': strike.severity,
-            'description': strike.reason,
-            'date': strike.issued_at.isoformat(),
-            'status': 'active' if strike.is_active else 'resolved',
-            'evidence': strike.description or '',
-            'resolution': strike.resolution_notes or '',
-            'resolved_date': strike.resolved_at.isoformat() if strike.resolved_at else None,
-        }
+        # Aprobar reporte
+        report.approve(current_user, notes)
         
         return JsonResponse({
-            'success': True,
-            'message': 'Strike actualizado exitosamente',
-            'data': strike_data
+            'message': 'Reporte aprobado correctamente',
+            'id': str(report.id),
+            'status': report.status
         })
         
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Error al actualizar strike: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
-@require_http_methods(["DELETE"])
-@require_auth
-def strikes_delete(request, strikes_id):
-    """Eliminar un strike"""
+@require_http_methods(["PATCH"])
+def strike_report_reject(request, report_id):
+    """Rechazar reporte de strike (admin)."""
     try:
-        user = get_user_from_token(request)
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
         
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden rechazar reportes
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Obtener reporte
         try:
-            strike = Strike.objects.get(id=strikes_id)
-        except Strike.DoesNotExist:
-            return JsonResponse({'error': 'Strike no encontrado'}, status=404)
+            report = StrikeReport.objects.get(id=report_id)
+        except StrikeReport.DoesNotExist:
+            return JsonResponse({'error': 'Reporte no encontrado'}, status=404)
         
-        # Verificar permisos
-        if user.role == 'company' and strike.company != user.empresa_profile:
-            return JsonResponse({'error': 'No tienes permisos para eliminar este strike'}, status=403)
+        # Procesar datos
+        data = json.loads(request.body) if request.body else {}
+        notes = data.get('notes')
         
-        strike.delete()
+        # Rechazar reporte
+        report.reject(current_user, notes)
         
         return JsonResponse({
-            'success': True,
-            'message': 'Strike eliminado exitosamente'
+            'message': 'Reporte rechazado correctamente',
+            'id': str(report.id),
+            'status': report.status
         })
         
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Error al eliminar strike: {str(e)}'}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)

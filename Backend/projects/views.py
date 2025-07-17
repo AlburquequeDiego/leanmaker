@@ -112,7 +112,7 @@ def projects_list(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def projects_detail(request, projects_id):
+def projects_detail(request, project_id):
     """Detalle de un proyecto."""
     try:
         # Verificar autenticación
@@ -127,7 +127,7 @@ def projects_detail(request, projects_id):
         
         # Obtener proyecto
         try:
-            project = Proyecto.objects.select_related('company', 'status', 'area', 'trl').get(id=projects_id)
+            project = Proyecto.objects.select_related('company', 'status', 'area', 'trl').get(id=project_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
         
@@ -154,11 +154,33 @@ def projects_detail(request, projects_id):
             'duration_weeks': project.duration_weeks,
             'hours_per_week': project.hours_per_week,
             'required_hours': project.required_hours,
-            'budget': project.budget,
             'created_at': project.created_at.isoformat(),
             'updated_at': project.updated_at.isoformat(),
         }
         
+        # Agregar budget solo si existe el campo
+        if hasattr(project, 'budget'):
+            project_data['budget'] = project.budget
+
+        # Obtener estudiantes asignados (aceptados) al proyecto
+        estudiantes = []
+        try:
+            from .models import AplicacionProyecto
+            aplicaciones_aceptadas = AplicacionProyecto.objects.filter(proyecto=project, estado='accepted').select_related('estudiante')
+            for app in aplicaciones_aceptadas:
+                user = app.estudiante
+                estudiantes.append({
+                    'id': str(user.id),
+                    'nombre': f"{user.first_name} {user.last_name}".strip() or user.email,
+                    'email': user.email,
+                })
+        except Exception as e:
+            # Si hay error al obtener estudiantes, continuar sin ellos
+            print(f"Error obteniendo estudiantes del proyecto: {e}")
+            estudiantes = []
+        
+        project_data['estudiantes'] = estudiantes
+
         return JsonResponse(project_data)
         
     except Exception as e:
@@ -278,7 +300,7 @@ def projects_update(request, projects_id):
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def projects_delete(request, projects_id):
-    """Eliminar proyecto."""
+    """Eliminar proyecto (soft delete - marcar como cancelled)."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -300,10 +322,19 @@ def projects_delete(request, projects_id):
         if current_user.role == 'company' and str(project.company.user.id) != str(current_user.id):
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        project.delete()
+        # Soft delete: marcar como cancelled en lugar de borrar
+        from project_status.models import ProjectStatus
+        try:
+            cancelled_status = ProjectStatus.objects.get(name='cancelled')
+            project.status = cancelled_status
+            project.save()
+        except ProjectStatus.DoesNotExist:
+            # Si no existe el estadocancelled', usar el primer estado disponible
+            project.status = ProjectStatus.objects.first()
+            project.save()
         
         return JsonResponse({
-            'message': 'Proyecto eliminado correctamente'
+            'message': 'Proyecto marcado como eliminado correctamente'
         })
         
     except Exception as e:

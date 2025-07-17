@@ -157,15 +157,32 @@ export interface Application {
 // Tipos de evaluación - Coinciden con el modelo Evaluacion del backend
 export interface Evaluation {
   id: string;
-  project: string; // UUID del proyecto
-  student: string; // UUID del estudiante
-  evaluator: string; // UUID del evaluador
-  category: string; // UUID de la categoría
-  score: number;
-  comments?: string;
-  evaluation_date: string;
+  project_id: string; // UUID del proyecto
+  project_title: string; // Título del proyecto
+  student_id: string; // UUID del estudiante
+  student_name: string; // Nombre del estudiante
+  company_id: string; // UUID de la empresa
+  company_name: string; // Nombre de la empresa
+  evaluator_id: string; // UUID del evaluador
+  evaluator_name: string; // Nombre del evaluador
+  evaluator_type: 'company' | 'admin' | 'student'; // Tipo de evaluador
+  score: number; // Calificación (1-5 estrellas)
+  comments?: string; // Comentarios de la evaluación
+  evaluation_date: string; // Fecha de evaluación
+  status: 'pending' | 'completed' | 'flagged'; // Estado de la evaluación
   created_at: string;
   updated_at: string;
+  // Campos adicionales para compatibilidad
+  strengths?: string; // Fortalezas del evaluado
+  areas_for_improvement?: string; // Áreas de mejora
+  project_duration?: string; // Duración del proyecto
+  technologies?: string; // Tecnologías utilizadas
+  deliverables?: string; // Entregables del proyecto
+  category_scores?: Array<{
+    category_id: string;
+    category_name: string;
+    rating: number;
+  }>; // Puntajes por categoría
 }
 
 // Tipos de notificación - Coinciden con el modelo Notificacion del backend
@@ -194,6 +211,31 @@ export interface Strike {
   issued_at: string;
   expires_at?: string;
   is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  // Campos adicionales para información anidada
+  student_name?: string;
+  company_name?: string;
+  project_title?: string;
+  issued_by_name?: string;
+}
+
+// Tipos de reporte de strike - Para reportes de empresas sobre estudiantes
+export interface StrikeReport {
+  id: string;
+  company_id: string;
+  company_name: string;
+  student_id: string;
+  student_name: string;
+  project_id: string;
+  project_title: string;
+  reason: string;
+  description: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by_id?: string;
+  reviewed_by_name?: string;
+  reviewed_at?: string;
+  admin_notes?: string;
   created_at: string;
   updated_at: string;
 }

@@ -20,12 +20,16 @@ import {
   InputLabel,
   CircularProgress,
   Paper,
+  Tooltip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { 
   Search as SearchIcon, 
   Visibility as VisibilityIcon,
-
+  Warning as WarningIcon,
+  Block as BlockIcon,
+  TrendingUp as TrendingUpIcon,
+  Science as ScienceIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../../services/api.service';
 import { ShowLatestFilter } from '../../../../components/common/ShowLatestFilter';
@@ -72,6 +76,7 @@ export default function AvailableProjects() {
   });
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [studentApiLevel, setStudentApiLevel] = useState<number>(1);
 
   // Filtros avanzados
   const [area, setArea] = useState('');
@@ -84,7 +89,18 @@ export default function AvailableProjects() {
 
   useEffect(() => {
     fetchProjects();
+    fetchStudentApiLevel();
   }, []);
+
+  const fetchStudentApiLevel = async () => {
+    try {
+      const studentData = await apiService.get('/api/students/me/');
+      setStudentApiLevel(Number(studentData.api_level) || 1);
+    } catch (error) {
+      console.error('Error fetching student API level:', error);
+      setStudentApiLevel(1);
+    }
+  };
 
   const fetchProjects = async () => {
     try {
@@ -108,7 +124,7 @@ export default function AvailableProjects() {
         applied_at: new Date().toISOString(),
       };
 
-              await apiService.post('/api/projects/applications/', applicationData);
+      await apiService.post('/api/projects/applications/', applicationData);
       setApplied((prev) => [...prev, projectId]);
       setSnackbar({ 
         open: true, 
@@ -137,6 +153,30 @@ export default function AvailableProjects() {
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
+  };
+
+  // Función para verificar si el estudiante cumple el nivel API requerido
+  const canApplyToProject = (project: Project) => {
+    const requiredApiLevel = project.api_level || 1;
+    return studentApiLevel >= requiredApiLevel;
+  };
+
+  // Función para obtener el color del chip según el nivel API
+  const getApiLevelColor = (level: number) => {
+    switch (level) {
+      case 1: return 'info';
+      case 2: return 'primary';
+      case 3: return 'success';
+      case 4: return 'warning';
+      default: return 'default';
+    }
+  };
+
+  // Función para obtener el color del chip según el nivel TRL
+  const getTrlLevelColor = (level: number) => {
+    if (level <= 3) return 'info';
+    if (level <= 6) return 'primary';
+    return 'warning';
   };
 
   // Filtrado de proyectos
@@ -347,35 +387,58 @@ export default function AvailableProjects() {
       </Typography>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}>
-        {filteredProjects.map(project => (
-          <Card key={project.id} sx={{ minWidth: 320, maxWidth: 400, flex: 1 }}>
-            <CardContent>
-              <Typography variant="h6">{project.title}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Empresa: {project.company_name} | Área: {project.area}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                {project.description.slice(0, 120)}...
-              </Typography>
-              <Chip label={project.status} color={project.status === 'Activo' ? 'success' : 'default'} size="small" sx={{ mr: 1 }} />
-              <Chip label={`Dificultad: ${project.difficulty}`} size="small" />
-            </CardContent>
-            <CardActions>
-              <Button size="small" onClick={() => handleOpenDetail(project)}>
-                Ver Detalles
-              </Button>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                disabled={applied.includes(project.id)}
-                onClick={() => handleApply(project.id)}
-              >
-                {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
+        {filteredProjects.map(project => {
+          const canApply = canApplyToProject(project);
+          const requiredApiLevel = project.api_level || 1;
+          return (
+            <Card key={project.id} sx={{ minWidth: 320, maxWidth: 400, flex: 1 }}>
+              <CardContent>
+                <Typography variant="h6">{project.title}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Empresa: {project.company_name} | Área: {project.area}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  {project.description.slice(0, 120)}...
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                  <Chip label={project.status} color={project.status === 'Activo' ? 'success' : 'default'} size="small" />
+                  <Chip label={`Dificultad: ${project.difficulty}`} size="small" />
+                  <Chip label={`API ${project.api_level || 1}`} color={getApiLevelColor(project.api_level || 1)} size="small" icon={<TrendingUpIcon />} />
+                  <Chip label={`TRL ${project.trl_level || 1}`} color={getTrlLevelColor(project.trl_level || 1)} size="small" icon={<ScienceIcon />} />
+                </Box>
+                {!canApply && (
+                  <Alert severity="warning" sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <WarningIcon />
+                      <Typography variant="body2">
+                        Requieres nivel API {requiredApiLevel} (tienes nivel {studentApiLevel})
+                      </Typography>
+                    </Box>
+                  </Alert>
+                )}
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={() => handleOpenDetail(project)}>
+                  Ver Detalles
+                </Button>
+                <Tooltip title={!canApply ? `Necesitas nivel API ${requiredApiLevel} para postularte` : ''} placement="top">
+                  <span>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      disabled={applied.includes(project.id) || !canApply}
+                      onClick={() => handleApply(project.id)}
+                      startIcon={!canApply ? <BlockIcon /> : undefined}
+                    >
+                      {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
+                    </Button>
+                  </span>
+                </Tooltip>
+              </CardActions>
+            </Card>
+          );
+        })}
       </Box>
 
       {filteredProjects.length === 0 && !loading && (

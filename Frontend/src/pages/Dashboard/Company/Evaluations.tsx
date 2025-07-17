@@ -29,6 +29,7 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   RateReview as RateReviewIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptProjectList, adaptEvaluation } from '../../../utils/adapters';
@@ -52,6 +53,11 @@ interface EvaluationFormState {
   improvement_areas: string[];
 }
 
+interface StrikeReportFormState {
+  reason: string;
+  description: string;
+}
+
 export const CompanyEvaluations: React.FC = () => {
   const api = useApi();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -62,6 +68,7 @@ export const CompanyEvaluations: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetalleOpen, setModalDetalleOpen] = useState(false);
+  const [strikeReportModalOpen, setStrikeReportModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [evaluationForm, setEvaluationForm] = useState<EvaluationFormState>({
@@ -69,6 +76,10 @@ export const CompanyEvaluations: React.FC = () => {
     comments: '',
     strengths: [],
     improvement_areas: [],
+  });
+  const [strikeReportForm, setStrikeReportForm] = useState<StrikeReportFormState>({
+    reason: '',
+    description: '',
   });
 
   useEffect(() => {
@@ -205,6 +216,47 @@ export const CompanyEvaluations: React.FC = () => {
     } catch (error: any) {
       console.error('Error eliminando evaluación:', error);
       setError(error.response?.data?.error || 'Error al eliminar evaluación');
+    }
+  };
+
+  const handleOpenStrikeReport = (student: any, project: Project) => {
+    setSelectedStudent(student);
+    setSelectedProject(project);
+    setStrikeReportForm({
+      reason: '',
+      description: '',
+    });
+    setStrikeReportModalOpen(true);
+  };
+
+  const handleSubmitStrikeReport = async () => {
+    if (!selectedStudent || !selectedProject) return;
+
+    try {
+      const reportData = {
+        company_id: selectedProject.company, // Asumiendo que el proyecto tiene company_id
+        student_id: selectedStudent.id,
+        project_id: selectedProject.id,
+        reason: strikeReportForm.reason,
+        description: strikeReportForm.description,
+      };
+
+      await api.post('/api/strikes/reports/create/', reportData);
+      
+      setStrikeReportModalOpen(false);
+      setSelectedStudent(null);
+      setSelectedProject(null);
+      setStrikeReportForm({
+        reason: '',
+        description: '',
+      });
+      
+      // Mostrar mensaje de éxito
+      setError(null);
+      // Aquí podrías mostrar un mensaje de éxito
+    } catch (error: any) {
+      console.error('Error enviando reporte de strike:', error);
+      setError(error.response?.data?.error || 'Error al enviar reporte de strike');
     }
   };
 
@@ -374,6 +426,15 @@ export const CompanyEvaluations: React.FC = () => {
                             >
                               Ver
                             </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="warning"
+                              onClick={() => handleOpenStrikeReport(student, project)}
+                              startIcon={<WarningIcon />}
+                            >
+                              Reportar
+                            </Button>
                   </Box>
                 </CardContent>
               </Card>
@@ -511,6 +572,67 @@ export const CompanyEvaluations: React.FC = () => {
         <DialogActions>
           <Button onClick={() => setModalDetalleOpen(false)}>
             Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de Reporte de Strike */}
+      <Dialog
+        open={strikeReportModalOpen}
+        onClose={() => setStrikeReportModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <WarningIcon color="warning" />
+          Reportar Strike - {selectedStudent?.first_name} {selectedStudent?.last_name}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            <Typography variant="body1" gutterBottom>
+              Proyecto: <strong>{selectedProject?.title}</strong>
+            </Typography>
+            
+            <TextField
+              fullWidth
+              label="Motivo del Strike"
+              value={strikeReportForm.reason}
+              onChange={(e) => setStrikeReportForm(prev => ({ ...prev, reason: e.target.value }))}
+              placeholder="Ej: Incumplimiento de horarios, falta de comunicación, etc."
+              sx={{ mb: 3 }}
+              required
+            />
+            
+            <TextField
+              fullWidth
+              label="Descripción Detallada"
+              value={strikeReportForm.description}
+              onChange={(e) => setStrikeReportForm(prev => ({ ...prev, description: e.target.value }))}
+              multiline
+              rows={4}
+              placeholder="Describe detalladamente el incidente o problema que motiva este reporte..."
+              required
+            />
+            
+            <Alert severity="info" sx={{ mt: 2 }}>
+              <Typography variant="body2">
+                <strong>Importante:</strong> Este reporte será revisado por un administrador. 
+                Solo se asignará un strike si se aprueba el reporte.
+              </Typography>
+            </Alert>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setStrikeReportModalOpen(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmitStrikeReport}
+            variant="contained"
+            color="warning"
+            disabled={!strikeReportForm.reason.trim() || !strikeReportForm.description.trim()}
+          >
+            Enviar Reporte
           </Button>
         </DialogActions>
       </Dialog>

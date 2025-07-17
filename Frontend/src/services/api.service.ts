@@ -1,6 +1,6 @@
 import { authService } from './auth.service';
 import { API_BASE_URL } from '../config/api.config';
-import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats } from '../utils/adapters';
+import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats, adaptEvaluation } from '../utils/adapters';
 
 class ApiService {
   private async request<T>(
@@ -123,6 +123,142 @@ class ApiService {
   }
 
   /**
+   * Obtiene la lista de evaluaciones para el admin
+   */
+  async getEvaluations(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    type?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.type) queryParams.append('type', params.type);
+    
+    const endpoint = `/api/admin/evaluations/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    return this.get(endpoint);
+  }
+
+  /**
+   * Obtiene el detalle de una evaluación específica
+   */
+  async getEvaluationDetail(evaluationId: string) {
+    return this.get(`/api/evaluations/${evaluationId}/`);
+  }
+
+  /**
+   * Crea una nueva evaluación
+   */
+  async createEvaluation(evaluationData: {
+    project_id: string;
+    student_id: string;
+    score: number;
+    comments?: string;
+    evaluator_type?: 'company' | 'admin';
+  }) {
+    return this.post('/api/evaluations/', evaluationData);
+  }
+
+  /**
+   * Actualiza una evaluación existente
+   */
+  async updateEvaluation(evaluationId: string, evaluationData: {
+    score?: number;
+    comments?: string;
+    status?: string;
+  }) {
+    return this.put(`/api/evaluations/${evaluationId}/`, evaluationData);
+  }
+
+  /**
+   * Aprueba una evaluación
+   */
+  async approveEvaluation(evaluationId: string) {
+    return this.patch(`/api/evaluations/${evaluationId}/approve/`);
+  }
+
+  /**
+   * Rechaza una evaluación
+   */
+  async rejectEvaluation(evaluationId: string) {
+    return this.patch(`/api/evaluations/${evaluationId}/reject/`);
+  }
+
+  /**
+   * Obtiene la lista de strikes
+   */
+  async getStrikes(params?: {
+    page?: number;
+    limit?: number;
+    student?: string;
+    company?: string;
+    status?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.student) queryParams.append('student', params.student);
+    if (params?.company) queryParams.append('company', params.company);
+    if (params?.status) queryParams.append('status', params.status);
+    
+    const endpoint = `/api/strikes/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    return this.get(endpoint);
+  }
+
+  /**
+   * Obtiene el detalle de un strike específico
+   */
+  async getStrikeDetail(strikeId: string) {
+    return this.get(`/api/strikes/${strikeId}/`);
+  }
+
+  /**
+   * Obtiene la lista de reportes de strikes (para admin)
+   */
+  async getStrikeReports(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.status) queryParams.append('status', params.status);
+    
+    const endpoint = `/api/strikes/reports/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    return this.get(endpoint);
+  }
+
+  /**
+   * Crea un reporte de strike (empresa reporta estudiante)
+   */
+  async createStrikeReport(reportData: {
+    company_id: string;
+    student_id: string;
+    project_id: string;
+    reason: string;
+    description: string;
+  }) {
+    return this.post('/api/strikes/reports/create/', reportData);
+  }
+
+  /**
+   * Aprueba un reporte de strike (admin)
+   */
+  async approveStrikeReport(reportId: string, notes?: string) {
+    return this.patch(`/api/strikes/reports/${reportId}/approve/`, { notes });
+  }
+
+  /**
+   * Rechaza un reporte de strike (admin)
+   */
+  async rejectStrikeReport(reportId: string, notes?: string) {
+    return this.patch(`/api/strikes/reports/${reportId}/reject/`, { notes });
+  }
+
+  /**
    * Aplica adaptadores según el endpoint para convertir campos del backend
    */
   private applyAdapter(data: any, endpoint: string): any {
@@ -233,6 +369,29 @@ class ApiService {
         };
       }
       return adaptNotification(data);
+    }
+    
+    if (endpoint.includes('/api/admin/evaluations/')) {
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptEvaluation)
+        };
+      }
+      return adaptEvaluation(data);
+    }
+    
+    if (endpoint.includes('/api/evaluations/')) {
+      if (Array.isArray(data)) {
+        return data.map(adaptEvaluation);
+      }
+      if (data.results && Array.isArray(data.results)) {
+        return {
+          ...data,
+          results: data.results.map(adaptEvaluation)
+        };
+      }
+      return adaptEvaluation(data);
     }
     
     if (endpoint.includes('/api/dashboard/')) {

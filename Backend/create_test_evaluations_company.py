@@ -14,8 +14,8 @@ from projects.models import Proyecto
 from applications.models import Aplicacion
 from evaluation_categories.models import EvaluationCategory
 
-def create_test_evaluations():
-    print("=== CREANDO EVALUACIONES DE PRUEBA ===")
+def create_company_evaluations():
+    print("=== CREANDO EVALUACIONES DE EMPRESA A ESTUDIANTE ===")
     
     # Buscar o crear categoría de evaluación
     category, created = EvaluationCategory.objects.get_or_create(
@@ -53,29 +53,34 @@ def create_test_evaluations():
     
     print(f"✅ Aplicaciones aceptadas encontradas: {accepted_applications.count()}")
     
-    # Crear evaluaciones para algunas aplicaciones
+    # Crear evaluaciones de empresa a estudiante
     evaluations_created = 0
     
-    for application in accepted_applications[:5]:  # Crear evaluaciones para las primeras 5
+    for application in accepted_applications[:3]:  # Crear evaluaciones para las primeras 3
         project = application.project
         
-        # Verificar si ya existe una evaluación para este proyecto
+        # Verificar si ya existe una evaluación de empresa para este proyecto
         existing_evaluation = Evaluation.objects.filter(
             student=user,
-            project=project
+            project=project,
+            evaluator_role='company'
         ).first()
         
         if existing_evaluation:
-            print(f"⚠️ Evaluación ya existe para proyecto: {project.title}")
+            print(f"⚠️ Evaluación de empresa ya existe para proyecto: {project.title}")
             continue
         
         # Crear evaluador (empresa)
         evaluator = project.company.user if project.company else None
         
+        if not evaluator:
+            print(f"⚠️ No hay empresa asociada al proyecto: {project.title}")
+            continue
+        
         # Generar puntuación aleatoria (1-5 estrellas)
         score = random.uniform(3.0, 5.0)
         
-        # Crear evaluación
+        # Crear evaluación de empresa a estudiante
         evaluation = Evaluation.objects.create(
             student=user,
             project=project,
@@ -83,22 +88,25 @@ def create_test_evaluations():
             category=category,
             score=score,
             overall_rating=score,
-            comments=f"Excelente trabajo en el proyecto {project.title}. El estudiante demostró habilidades técnicas sólidas y buena capacidad de trabajo en equipo.",
-            strengths="Trabajo en equipo, Habilidades técnicas, Puntualidad",
-            areas_for_improvement="Documentación, Comunicación",
+            comments=f"Evaluación de empresa: El estudiante demostró excelente desempeño en {project.title}. Cumplió con todas las expectativas del proyecto.",
+            strengths="Responsabilidad, Habilidades técnicas, Trabajo en equipo",
+            areas_for_improvement="Documentación técnica",
             evaluation_date=datetime.now() - timedelta(days=random.randint(1, 30)),
             status='completed',
             evaluator_role='company'
         )
         
-        print(f"✅ Evaluación creada: {project.title} - Puntuación: {score:.1f}/5")
+        print(f"✅ Evaluación de empresa creada: {project.title} - Puntuación: {score:.1f}/5")
         evaluations_created += 1
     
-    print(f"\n🎉 Se crearon {evaluations_created} evaluaciones de prueba")
+    print(f"\n🎉 Se crearon {evaluations_created} evaluaciones de empresa a estudiante")
     
     # Mostrar resumen
-    total_evaluations = Evaluation.objects.filter(student=user).count()
-    print(f"\n📊 Total evaluaciones del estudiante: {total_evaluations}")
+    company_evaluations = Evaluation.objects.filter(student=user, evaluator_role='company').count()
+    admin_evaluations = Evaluation.objects.filter(student=user, evaluator_role='admin').count()
+    print(f"\n📊 Total evaluaciones del estudiante:")
+    print(f"   - Empresa → Estudiante: {company_evaluations}")
+    print(f"   - Admin → Estudiante: {admin_evaluations}")
 
 if __name__ == "__main__":
-    create_test_evaluations() 
+    create_company_evaluations() 

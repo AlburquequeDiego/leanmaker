@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Table,
@@ -27,6 +27,8 @@ import {
   Search as SearchIcon,
   FilterList as FilterListIcon,
   Clear as ClearIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 
 interface DataTableProps {
@@ -107,6 +109,41 @@ export const DataTable: React.FC<DataTableProps> = ({
   };
 
   const totalPages = Math.ceil(totalCount / pageSize);
+
+  // Refs y sincronización de scroll horizontal
+  const scrollTopRef = useRef<HTMLDivElement>(null);
+  const scrollBottomRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
+  const [tableWidth, setTableWidth] = useState<number>(0);
+
+  useEffect(() => {
+    setTableWidth(300); // Ancho fijo muy alto para que siempre aparezca la barra
+  }, [columns, data]);
+
+  // Sincronizar scroll superior e inferior
+  const handleTopScroll = () => {
+    if (scrollTopRef.current && scrollBottomRef.current) {
+      scrollBottomRef.current.scrollLeft = scrollTopRef.current.scrollLeft;
+    }
+  };
+  const handleBottomScroll = () => {
+    if (scrollTopRef.current && scrollBottomRef.current) {
+      scrollTopRef.current.scrollLeft = scrollBottomRef.current.scrollLeft;
+    }
+  };
+
+  // Función para hacer scroll con las flechas
+  const handleScrollLeft = () => {
+    if (scrollTopRef.current) {
+      scrollTopRef.current.scrollLeft -= 200;
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (scrollTopRef.current) {
+      scrollTopRef.current.scrollLeft += 20;
+    }
+  };
 
   return (
     <Box>
@@ -207,73 +244,84 @@ export const DataTable: React.FC<DataTableProps> = ({
         </Alert>
       )}
 
-      {/* Tabla */}
+      {/* Tabla con scroll horizontal arriba */}
       {!loading && !error && (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 2 }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: 'primary.main' }}>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.key}
-                    sx={{
-                      color: 'white',
-                      fontWeight: 600,
-                      minWidth: column.width || 'auto',
-                      whiteSpace: 'nowrap',
-                      textAlign: column.align || 'left'
-                    }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-                {actions && (
-                  <TableCell
-                    align="center"
-                    sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}
-                  >
-                    Acciones
-                  </TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length + (actions ? 1 : 0)} align="center" sx={{ py: 4 }}>
-                    <Typography color="text.secondary">
-                      {emptyMessage}
-                    </Typography>
-                  </TableCell>
+        <Box sx={{ position: 'relative' }}>
+          {/* Tabla real con scroll horizontal nativo */}
+          <TableContainer
+            component={Paper}
+            sx={{
+              borderRadius: 2,
+              boxShadow: 2,
+              overflowX: 'auto',
+              overflowY: 'visible',
+              mt: 2.5, // Margen superior para que no tape el scrollbar
+            }}
+          >
+            <Table sx={{ minWidth: 1000 }}>
+              <TableHead>
+                <TableRow sx={{ bgcolor: 'primary.main' }}>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.key}
+                      sx={{
+                        color: 'white',
+                        fontWeight: 600,
+                        minWidth: column.width || 'auto',
+                        whiteSpace: 'nowrap',
+                        textAlign: column.align || 'left',
+                      }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                  {actions && (
+                    <TableCell
+                      align="center"
+                      sx={{ color: 'white', fontWeight: 600, minWidth: 120 }}
+                    >
+                      Acciones
+                    </TableCell>
+                  )}
                 </TableRow>
-              ) : (
-                data.map((row, index) => (
-                  <TableRow key={row.id || index} hover>
-                    {columns.map((column) => (
-                      <TableCell
-                        key={column.key}
-                        sx={{
-                          textAlign: column.align || 'left',
-                          minWidth: column.width || 'auto'
-                        }}
-                      >
-                        {column.render
-                          ? column.render(row[column.key], row)
-                          : row[column.key] || '-'
-                        }
-                      </TableCell>
-                    ))}
-                    {actions && (
-                      <TableCell align="center">
-                        {actions(row)}
-                      </TableCell>
-                    )}
+              </TableHead>
+              <TableBody>
+                {data.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={columns.length + (actions ? 1 : 0)} align="center" sx={{ py: 4 }}>
+                      <Typography color="text.secondary">
+                        {emptyMessage}
+                      </Typography>
+                    </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                ) : (
+                  data.map((row, index) => (
+                    <TableRow key={row.id || index} hover>
+                      {columns.map((column) => (
+                        <TableCell
+                          key={column.key}
+                          sx={{
+                            textAlign: column.align || 'left',
+                            minWidth: column.width || 'auto',
+                          }}
+                        >
+                          {column.render
+                            ? column.render(row[column.key], row)
+                            : row[column.key] || '-'}
+                        </TableCell>
+                      ))}
+                      {actions && (
+                        <TableCell align="center">
+                          {actions(row)}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       )}
 
       {/* Información de resultados */}

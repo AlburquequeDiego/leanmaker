@@ -38,7 +38,7 @@ urlpatterns = [
     path('work-hours/<uuid:work_hour_id>/approve/', views.approve_work_hour, name='approve_work_hour'),
     
     # Gestión de evaluaciones
-    # path('evaluations/', views.evaluation_list, name='evaluation_list'),
+    path('evaluations/', views.admin_evaluations_list, name='admin_evaluations_list'),
     # path('evaluations/<int:evaluation_id>/', views.evaluation_detail, name='evaluation_detail'),
     
     # Gestión de notificaciones

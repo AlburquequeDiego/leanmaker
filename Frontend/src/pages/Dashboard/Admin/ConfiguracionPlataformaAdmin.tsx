@@ -30,16 +30,13 @@ import {
 import {
   Settings as SettingsIcon,
   Security as SecurityIcon,
-  Storage as StorageIcon,
-  Speed as SpeedIcon,
-  Backup as BackupIcon,
-  Update as UpdateIcon,
   Save as SaveIcon,
   Refresh as RefreshIcon,
-  Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   Build as BuildIcon,
+  Autorenew as AutorenewIcon,
+  PowerSettingsNew as PowerSettingsNewIcon,
 } from '@mui/icons-material';
 
 interface SystemConfig {
@@ -87,14 +84,6 @@ export const ConfiguracionPlataformaAdmin = () => {
   const [tabValue, setTabValue] = useState(0);
   const [configs, setConfigs] = useState<SystemConfig[]>([
     {
-      id: '1',
-      name: 'Nombre de la Plataforma',
-      value: 'LeanMaker',
-      type: 'text',
-      category: 'general',
-      description: 'Nombre que se muestra en la plataforma',
-    },
-    {
       id: '2',
       name: 'Máximo de Strikes',
       value: 3,
@@ -111,16 +100,8 @@ export const ConfiguracionPlataformaAdmin = () => {
       type: 'number',
       category: 'academic',
       description: 'Horas mínimas requeridas para completar un proyecto',
-      min: 30,
+      min: 20,
       max: 500,
-    },
-    {
-      id: '4',
-      name: 'Notificaciones por Email',
-      value: true,
-      type: 'boolean',
-      category: 'notifications',
-      description: 'Habilitar envío de notificaciones por email',
     },
     {
       id: '5',
@@ -130,16 +111,6 @@ export const ConfiguracionPlataformaAdmin = () => {
       category: 'academic',
       description: 'Nivel API asignado por defecto a nuevos estudiantes',
       options: ['1', '2', '3', '4'],
-    },
-    {
-      id: '6',
-      name: 'Tiempo de Sesión (minutos)',
-      value: 120,
-      type: 'number',
-      category: 'security',
-      description: 'Tiempo de inactividad antes de cerrar sesión',
-      min: 30,
-      max: 480,
     },
     {
       id: '7',
@@ -186,10 +157,11 @@ export const ConfiguracionPlataformaAdmin = () => {
     },
   ]);
 
-  const [backupDialog, setBackupDialog] = useState(false);
-  const [maintenanceDialog, setMaintenanceDialog] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [manualDialog, setManualDialog] = useState(false);
+  const [manualContent, setManualContent] = useState({ title: '', content: [] as string[] });
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -207,21 +179,119 @@ export const ConfiguracionPlataformaAdmin = () => {
     console.log('Guardando configuración:', configs);
   };
 
-  const handleBackup = () => {
-    setSuccessMessage('Backup iniciado. Se completará en unos minutos.');
-    setShowSuccess(true);
-    setBackupDialog(false);
-  };
-
-  const handleMaintenance = () => {
-    setSuccessMessage('Modo mantenimiento activado. Solo los administradores pueden acceder.');
-    setShowSuccess(true);
-    setMaintenanceDialog(false);
-  };
-
   const handleSystemAction = (action: string) => {
-    setSuccessMessage(`Acción "${action}" ejecutada exitosamente`);
+    setSuccessMessage(`Acción ${action} ejecutada exitosamente`);
     setShowSuccess(true);
+  };
+
+  const showManual = (type: string) => {
+    const manuals = {
+      usuarios: {
+        title: '📋 Manual de Gestión de Usuarios',
+        content: [
+          '👥 Ver y buscar usuarios en la plataforma',
+          '🔍 Filtrar por tipo: estudiantes, empresas, administradores',
+          '🚫 Bloquear, suspender o eliminar usuarios problemáticos',
+          '✅ Verificar perfiles y restablecer contraseñas',
+          '📊 Monitorear actividad y estado de los usuarios'
+        ]
+      },
+      estudiantes: {
+        title: '📋 Manual de Gestión de Estudiantes',
+        content: [
+          '👨‍🎓 Visualizar y filtrar estudiantes registrados',
+          '🔎 Consultar detalles académicos y strikes',
+          '✏️ Editar información y estado del estudiante',
+          '📈 Ver historial de proyectos y desempeño',
+          '🚨 Suspender estudiantes con mal comportamiento'
+        ]
+      },
+      empresas: {
+        title: '📋 Manual de Gestión de Empresas',
+        content: [
+          '🏢 Ver y buscar empresas registradas',
+          '🔍 Filtrar por sector o estado de verificación',
+          '✅ Aprobar o rechazar nuevas empresas',
+          '📄 Consultar proyectos activos de cada empresa',
+          '🚫 Bloquear empresas con actividad sospechosa'
+        ]
+      },
+      proyectos: {
+        title: '📋 Manual de Gestión de Proyectos',
+        content: [
+          '📚 Revisar y aprobar proyectos propuestos',
+          '👥 Asignar estudiantes a proyectos',
+          '⏸️ Suspender o eliminar proyectos problemáticos',
+          '📊 Monitorear avance y entregables',
+          '📝 Ver historial y evaluaciones de proyectos'
+        ]
+      },
+      evaluaciones: {
+        title: '📋 Manual de Gestión de Evaluaciones',
+        content: [
+          '📝 Revisar evaluaciones entre empresas y estudiantes',
+          '✅ Aprobar o rechazar evaluaciones',
+          '🔍 Filtrar por estado o tipo de evaluación',
+          '📊 Analizar resultados y estadísticas',
+          '🚫 Eliminar evaluaciones incorrectas'
+        ]
+      },
+      strikes: {
+        title: '📋 Manual de Gestión de Strikes',
+        content: [
+          '⚠️ Revisar reportes de strikes enviados por empresas',
+          '✅ Aprobar o rechazar strikes',
+          '🔍 Filtrar por estado (pendiente, aprobado, rechazado)',
+          '📈 Ver historial de strikes por estudiante',
+          '🚨 Suspender estudiantes con 3 strikes activos'
+        ]
+      },
+      notificaciones: {
+        title: '📋 Manual de Gestión de Notificaciones',
+        content: [
+          '🔔 Crear y enviar notificaciones masivas',
+          '📬 Ver historial de notificaciones enviadas',
+          '🔍 Filtrar por tipo o destinatario',
+          '✏️ Editar plantillas de notificación',
+          '📊 Monitorear lecturas y respuestas'
+        ]
+      },
+      academica: {
+        title: '📋 Manual de Configuración Académica',
+        content: [
+          '⚙️ Ajustar parámetros académicos globales',
+          '⚠️ Definir máximo de strikes antes de suspensión',
+          '⏰ Establecer horas mínimas por proyecto',
+          '📊 Configurar nivel API por defecto',
+          '🔄 Guardar y aplicar cambios en tiempo real'
+        ]
+      },
+      monitoreo: {
+        title: '📋 Manual de Monitoreo del Sistema',
+        content: [
+          '📊 Revisar dashboard de estadísticas en tiempo real',
+          '⏳ Monitorear postulaciones y actividad reciente',
+          '🚨 Ver alertas de strikes y suspensiones',
+          '👀 Supervisar actividad de empresas y estudiantes',
+          '🛠️ Diagnosticar problemas de rendimiento'
+        ]
+      },
+      reportes: {
+        title: '📋 Manual de Reportes y Descargas',
+        content: [
+          '📄 Generar reportes de actividad y desempeño',
+          '⬇️ Descargar datos en formato Excel o PDF',
+          '🔍 Filtrar reportes por fechas o usuarios',
+          '📊 Analizar tendencias y métricas',
+          '🗂️ Compartir reportes con otros administradores'
+        ]
+      }
+    };
+    const manual = manuals[type as keyof typeof manuals];
+    if (manual) {
+      setManualContent(manual);
+      setManualDialog(true);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -242,7 +312,7 @@ export const ConfiguracionPlataformaAdmin = () => {
       case 'online':
         return <CheckCircleIcon color="success" />;
       case 'warning':
-        return <WarningIcon color="warning" />;
+        return <ErrorIcon color="warning" />; // Changed from WarningIcon to ErrorIcon
       case 'error':
         return <ErrorIcon color="error" />;
       default:
@@ -332,9 +402,7 @@ export const ConfiguracionPlataformaAdmin = () => {
           sx={{ borderBottom: 1, borderColor: 'divider' }}
         >
           <Tab label="Configuración General" />
-          <Tab label="Estado del Sistema" />
-          <Tab label="Mantenimiento" />
-          <Tab label="Seguridad" />
+          <Tab label="Manual" />
         </Tabs>
 
         {/* Tab: Configuración General */}
@@ -350,74 +418,33 @@ export const ConfiguracionPlataformaAdmin = () => {
           </Box>
 
           <Stack spacing={4}>
-            {/* Configuración General */}
-            <Box>
-              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                Configuración General
+            {/* Modo Mantenimiento */}
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h6" gutterBottom sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <AutorenewIcon color={maintenanceMode ? 'warning' : 'disabled'} sx={{ animation: maintenanceMode ? 'spin 1s linear infinite' : 'none' }} />
+                Modo Mantenimiento
+                {maintenanceMode ? (
+                  <Chip label="Activo" color="warning" sx={{ ml: 2, fontWeight: 600 }} />
+                ) : (
+                  <Chip label="Desactivado" color="success" sx={{ ml: 2, fontWeight: 600 }} />
+                )}
               </Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-                {configs.filter(config => config.category === 'general').map((config) => (
-                  <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom color="primary">
-                        {config.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        {config.description}
-                      </Typography>
-                      {renderConfigField(config)}
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Cuando el modo mantenimiento está activo, solo los administradores pueden acceder al sistema. El resto de los usuarios verá una pantalla de "En mantenimiento".
+              </Typography>
+              <Button
+                variant={maintenanceMode ? 'contained' : 'outlined'}
+                color={maintenanceMode ? 'warning' : 'primary'}
+                startIcon={<PowerSettingsNewIcon />}
+                sx={{ borderRadius: 2, px: 4, fontWeight: 600 }}
+                onClick={() => setMaintenanceMode((prev) => !prev)}
+              >
+                {maintenanceMode ? 'Desactivar Modo Mantenimiento' : 'Activar Modo Mantenimiento'}
+              </Button>
             </Box>
 
-            {/* Configuración Académica */}
-            <Box>
-              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                Configuración Académica
-              </Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-                {configs.filter(config => config.category === 'academic').map((config) => (
-                  <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom color="primary">
-                        {config.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        {config.description}
-                      </Typography>
-                      {renderConfigField(config)}
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
-            </Box>
-
-            {/* Configuración de Notificaciones */}
-            <Box>
-              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                Configuración de Notificaciones
-              </Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-                {configs.filter(config => config.category === 'notifications').map((config) => (
-                  <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom color="primary">
-                        {config.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        {config.description}
-                      </Typography>
-                      {renderConfigField(config)}
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
-            </Box>
-
-            {/* Botones de acción */}
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            {/* Eliminar el bloque de botones de acción: */}
+            {/* <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Button 
                 variant="contained" 
                 startIcon={<SaveIcon />} 
@@ -426,215 +453,230 @@ export const ConfiguracionPlataformaAdmin = () => {
               >
                 Guardar Cambios
               </Button>
-              <Button 
-                variant="outlined" 
-                startIcon={<RefreshIcon />}
-                sx={{ borderRadius: 2, px: 4 }}
-              >
-                Restaurar Valores por Defecto
-              </Button>
-            </Box>
+            </Box> */}
           </Stack>
         </TabPanel>
 
-        {/* Tab: Estado del Sistema */}
+        {/* Tab: Manual */}
         <TabPanel value={tabValue} index={1}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <SpeedIcon color="primary" />
-              Estado del Sistema
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Monitoreo en tiempo real de los componentes del sistema
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>
-            {systemStatus.map((status) => (
-              <Card key={status.component} sx={{ borderRadius: 3, boxShadow: 2 }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    {getStatusIcon(status.status)}
-                    <Typography variant="h6" sx={{ ml: 1, flex: 1 }}>
-                      {status.component}
-                    </Typography>
-                    <Chip
-                      label={getStatusText(status.status)}
-                      color={getStatusColor(status.status) as any}
-                      variant="filled"
-                      sx={{ fontWeight: 600 }}
-                    />
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Última verificación: {status.lastCheck}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Tiempo de respuesta: <strong>{status.responseTime}ms</strong>
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-
-          <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <SettingsIcon color="primary" />
-                Acciones del Sistema
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<BackupIcon />} 
-                  onClick={() => setBackupDialog(true)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Crear Backup Manual
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<UpdateIcon />}
-                  onClick={() => handleSystemAction('Verificar Actualizaciones')}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Verificar Actualizaciones
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<SpeedIcon />}
-                  onClick={() => handleSystemAction('Optimizar Base de Datos')}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Optimizar Base de Datos
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<StorageIcon />}
-                  onClick={() => handleSystemAction('Limpiar Cache')}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Limpiar Cache
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </TabPanel>
-
-        {/* Tab: Mantenimiento */}
-        <TabPanel value={tabValue} index={2}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <BuildIcon color="primary" />
-              Mantenimiento del Sistema
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Configuraciones para mantenimiento y administración del sistema
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>
-            {configs.filter(config => config.category === 'system').map((config) => (
-              <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom color="primary">
-                    {config.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    {config.description}
-                  </Typography>
-                  {renderConfigField(config)}
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-
-          <Alert severity="warning" sx={{ borderRadius: 2, mb: 3 }}>
-            <Typography variant="body2">
-              <strong>Advertencia:</strong> El modo mantenimiento restringe el acceso a todos los usuarios excepto administradores. 
-              Úsalo solo cuando sea necesario realizar mantenimiento del sistema.
-            </Typography>
-          </Alert>
-
-          <Button 
-            variant="contained" 
-            color="warning" 
-            startIcon={<SettingsIcon />}
-            onClick={() => setMaintenanceDialog(true)}
-            sx={{ borderRadius: 2, px: 4 }}
-          >
-            Activar Modo Mantenimiento
-          </Button>
-        </TabPanel>
-
-        {/* Tab: Seguridad */}
-        <TabPanel value={tabValue} index={3}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <SecurityIcon color="primary" />
-              Configuración de Seguridad
+              Manual del Administrador
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Ajustes de seguridad y políticas de acceso
+              Guía completa para gestionar y administrar el sistema LeanMaker
             </Typography>
-          </Box>
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>
-            {configs.filter(config => config.category === 'security').map((config) => (
-              <Card key={config.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom color="primary">
-                    {config.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    {config.description}
-                  </Typography>
-                  {renderConfigField(config)}
-                </CardContent>
-              </Card>
-            ))}
           </Box>
 
           <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <SecurityIcon color="primary" />
-                Políticas de Seguridad
+                Manual del Administrador
               </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Guía completa para gestionar y administrar el sistema LeanMaker
+              </Typography>
+              
               <List>
                 <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
                   <ListItemIcon>
                     <SecurityIcon color="primary" />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Autenticación de dos factores"
-                    secondary="Recomendado para todos los usuarios"
+                    primary="Gestión de Usuarios"
+                    secondary="Cómo administrar estudiantes, empresas y usuarios del sistema"
                   />
                   <ListItemSecondaryAction>
-                    <Switch color="primary" />
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('usuarios')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
                   </ListItemSecondaryAction>
                 </ListItem>
+                
                 <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
                   <ListItemIcon>
                     <SecurityIcon color="primary" />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Registro de actividades"
-                    secondary="Mantener logs de todas las acciones"
+                    primary="Gestión de Estudiantes"
+                    secondary="Cómo gestionar y monitorear estudiantes registrados"
                   />
                   <ListItemSecondaryAction>
-                    <Switch color="primary" defaultChecked />
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('estudiantes')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
                   </ListItemSecondaryAction>
                 </ListItem>
+                
                 <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
                   <ListItemIcon>
                     <SecurityIcon color="primary" />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Encriptación de datos"
-                    secondary="Encriptar datos sensibles en la base de datos"
+                    primary="Gestión de Empresas"
+                    secondary="Cómo administrar y verificar empresas registradas"
                   />
                   <ListItemSecondaryAction>
-                    <Switch color="primary" defaultChecked />
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('empresas')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Gestión de Proyectos"
+                    secondary="Cómo revisar, aprobar y gestionar proyectos de empresas"
+                  />
+                  <ListItemSecondaryAction>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('proyectos')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Gestión de Evaluaciones"
+                    secondary="Cómo revisar, aprobar y gestionar evaluaciones"
+                  />
+                  <ListItemSecondaryAction>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('evaluaciones')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Gestión de Strikes"
+                    secondary="Cómo gestionar y monitorear strikes de estudiantes"
+                  />
+                  <ListItemSecondaryAction>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('strikes')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Gestión de Notificaciones"
+                    secondary="Cómo enviar y monitorear notificaciones"
+                  />
+                  <ListItemSecondaryAction>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('notificaciones')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Configuración Académica"
+                    secondary="Cómoajustar parámetros académicos del sistema"
+                  />
+                  <ListItemSecondaryAction>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('academica')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Monitoreo del Sistema"
+                    secondary="Cómo supervisar el funcionamiento y rendimiento"
+                  />
+                  <ListItemSecondaryAction>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('monitoreo')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
+                  <ListItemIcon>
+                    <SecurityIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Reportes y Descargas"
+                    secondary="Cómo generar y descargar reportes de actividad"
+                  />
+                  <ListItemSecondaryAction>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      onClick={() => showManual('reportes')}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Ver Manual
+                    </Button>
                   </ListItemSecondaryAction>
                 </ListItem>
               </List>
@@ -642,89 +684,6 @@ export const ConfiguracionPlataformaAdmin = () => {
           </Card>
         </TabPanel>
       </Paper>
-
-      {/* Dialog para Backup */}
-      <Dialog 
-        open={backupDialog} 
-        onClose={() => setBackupDialog(false)} 
-        maxWidth="sm" 
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <BackupIcon color="primary" />
-          Crear Backup Manual
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" gutterBottom>
-            ¿Estás seguro de que deseas crear un backup manual de la base de datos?
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Esta acción puede tomar varios minutos dependiendo del tamaño de los datos.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={() => setBackupDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2 }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleBackup}
-            variant="contained" 
-            color="primary"
-            sx={{ borderRadius: 2 }}
-          >
-            Crear Backup
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog para Mantenimiento */}
-      <Dialog 
-        open={maintenanceDialog} 
-        onClose={() => setMaintenanceDialog(false)} 
-        maxWidth="sm" 
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <WarningIcon color="warning" />
-          Activar Modo Mantenimiento
-        </DialogTitle>
-        <DialogContent>
-          <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
-            <Typography variant="body2">
-              <strong>¡Advertencia!</strong> El modo mantenimiento:
-            </Typography>
-            <Typography variant="body2" component="ul" sx={{ mt: 1, pl: 2 }}>
-              <li>Bloqueará el acceso a todos los usuarios excepto administradores</li>
-              <li>Interrumpirá todas las sesiones activas</li>
-              <li>No se podrán realizar operaciones normales</li>
-            </Typography>
-          </Alert>
-          <Typography variant="body2" gutterBottom>
-            ¿Estás seguro de que deseas activar el modo mantenimiento?
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={() => setMaintenanceDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2 }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleMaintenance}
-            variant="contained" 
-            color="warning"
-            sx={{ borderRadius: 2 }}
-          >
-            Activar Modo Mantenimiento
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Snackbar de éxito */}
       <Snackbar
@@ -740,6 +699,118 @@ export const ConfiguracionPlataformaAdmin = () => {
           </Typography>
         </Paper>
       </Snackbar>
+
+      {/* Modal para el manual */}
+      <Dialog 
+        open={manualDialog} 
+        onClose={() => setManualDialog(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: 4,
+            minHeight: '400px',
+            display: 'flex',
+            flexDirection: 'column'
+          }
+        }}
+      >
+        <DialogTitle 
+          sx={{ 
+            background: 'linear-gradient(135deg, #1976d2, #42a5f5 100%)',
+            color: 'white',
+            textAlign: 'center',
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            py: 3
+          }}
+        >
+          {manualContent.title}
+        </DialogTitle>
+        <DialogContent 
+          dividers 
+          sx={{ 
+            flex: 1, 
+            p: 4,
+            background: 'linear-gradient(135deg, #f8fa0%, #e9ecef 100%)'
+          }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2}}>
+            {manualContent.content.map((item, index) => (
+              <Box 
+                key={index} 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  p: 2, 
+                  borderRadius: 2,
+                  backgroundColor: 'white',
+                  boxShadow: 1,
+                  border: '1px solid #e0e0e0',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    boxShadow: 3,
+                    transform: 'translateY(-2px)',
+                    borderColor: '#1976d2'
+                  }
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '50%', 
+                    backgroundColor: '#1976d2', 
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    mr: 2,
+                    flexShrink: 0
+                  }}
+                >
+                  {index + 1}
+                </Box>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontSize: '1.1rem',
+                    fontWeight: 500,
+                    color: '#333'
+                  }}
+                >
+                  {item}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions 
+          sx={{ 
+            p: 3, 
+            background: '#f8f9fa',
+            borderTop: '1px solid #e0e0e0'
+          }}
+        >
+          <Button 
+            onClick={() => setManualDialog(false)} 
+            variant="contained"
+            size="large"
+            sx={{ 
+              borderRadius: 2,
+              px: 4,
+              py: 1.5,
+              fontSize: '1.1rem',
+              fontWeight: 'bold'
+            }}
+          >
+            ✅ Entendido
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -134,7 +134,11 @@ def admin_projects_list(request, current_user):
         projects = queryset[offset:offset + limit]
         
         projects_data = []
+        from ratings.models import Rating
+        from django.db.models import Avg
         for project in projects:
+            avg_rating = Rating.objects.filter(project=project).aggregate(avg_rating=Avg('rating'))['avg_rating']
+            rating_value = round(avg_rating, 1) if avg_rating else 0
             projects_data.append({
                 'id': str(project.id),
                 'title': project.title,
@@ -150,7 +154,7 @@ def admin_projects_list(request, current_user):
                 'start_date': project.start_date.isoformat() if project.start_date else None,
                 'end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
                 'location': project.location or 'Remoto',
-                'rating': 0,
+                'rating': rating_value,
                 'hours_offered': project.required_hours or 0,
                 'created_at': project.created_at.isoformat(),
             })
@@ -410,28 +414,42 @@ def admin_evaluations_list(request, current_user):
         limit = int(request.GET.get('limit', 10))
         offset = (page - 1) * limit
         
-        queryset = Evaluation.objects.select_related('project', 'student', 'student__user', 'project__company').all()
+        queryset = Evaluation.objects.select_related('project', 'student', 'project__company').all()
         total_count = queryset.count()
         evaluations = queryset[offset:offset + limit]
         
         evaluations_data = []
         for evaluation in evaluations:
+            # Obtener información del estudiante (student es User directamente)
+            student_name = getattr(evaluation.student, 'full_name', 'Sin nombre') if evaluation.student else 'Sin nombre'
+            student_id = str(getattr(evaluation.student, 'id', '')) if evaluation.student else ''
+            
+            # Obtener información del proyecto
+            project = getattr(evaluation, 'project', None)
+            project_title = getattr(project, 'title', 'Sin proyecto') if project else 'Sin proyecto'
+            project_id = str(getattr(project, 'id', '')) if project else ''
+            
+            # Obtener información de la empresa
+            company = getattr(project, 'company', None) if project else None
+            company_name = getattr(company, 'company_name', 'Sin empresa') if company else 'Sin empresa'
+            company_id = str(getattr(company, 'id', '')) if company else None
+            
             evaluations_data.append({
                 'id': str(evaluation.id),
-                'student_name': evaluation.student.user.full_name,
-                'student_id': str(evaluation.student.id),
-                'company_name': evaluation.project.company.company_name if evaluation.project.company else 'Sin empresa',
-                'company_id': str(evaluation.project.company.id) if evaluation.project.company else None,
-                'project_title': evaluation.project.title,
-                'project_id': str(evaluation.project.id),
-                'score': evaluation.score,
-                'comments': evaluation.comments,
-                'evaluation_date': evaluation.evaluation_date.isoformat(),
-                'status': evaluation.status,
-                'evaluator_name': evaluation.evaluator_role or 'Sistema',
-                'evaluator_type': 'admin',
-                'overall_rating': evaluation.overall_rating,
-                'created_at': evaluation.created_at.isoformat(),
+                'student_name': student_name,
+                'student_id': student_id,
+                'company_name': company_name,
+                'company_id': company_id,
+                'project_title': project_title,
+                'project_id': project_id,
+                'score': getattr(evaluation, 'score', 0) or 0,
+                'comments': getattr(evaluation, 'comments', ''),
+                'evaluation_date': evaluation.evaluation_date.isoformat() if getattr(evaluation, 'evaluation_date', None) else '',
+                'status': getattr(evaluation, 'status', 'pending'),
+                'evaluator_name': getattr(evaluation, 'evaluator_role', None) or 'Sistema',
+                'evaluator_type': getattr(evaluation, 'evaluator_role', 'company'),
+                'overall_rating': getattr(evaluation, 'overall_rating', None),
+                'created_at': evaluation.created_at.isoformat() if getattr(evaluation, 'created_at', None) else '',
             })
         
         return JsonResponse({

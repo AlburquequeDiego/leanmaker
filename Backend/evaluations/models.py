@@ -17,7 +17,6 @@ class Evaluation(models.Model):
         ('pending', 'Pendiente'),
         ('completed', 'Completada'),
         ('flagged', 'Marcada'),
-        ('deleted', 'Eliminada'),
     ]
     TYPE_CHOICES = [
         ('intermediate', 'Intermedia'),

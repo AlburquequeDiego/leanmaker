@@ -15,7 +15,8 @@ import type {
   WorkHour, 
   Interview, 
   CalendarEvent,
-  DashboardStats 
+  DashboardStats,
+  StrikeReport 
 } from '../types';
 
 // ============================================================================
@@ -190,15 +191,28 @@ export const adaptApplication = (backendApplication: any): Application => ({
  */
 export const adaptEvaluation = (backendEvaluation: any): Evaluation => ({
   id: String(backendEvaluation.id),
-  project: String(backendEvaluation.project),
-  student: String(backendEvaluation.student),
-  evaluator: String(backendEvaluation.evaluator),
-  category: String(backendEvaluation.category),
-  score: backendEvaluation.score,
-  comments: backendEvaluation.comments,
-  evaluation_date: backendEvaluation.evaluation_date,
+  project_id: String(backendEvaluation.project_id || backendEvaluation.project),
+  project_title: backendEvaluation.project_title,
+  student_id: String(backendEvaluation.student_id || backendEvaluation.student),
+  student_name: backendEvaluation.student_name,
+  company_id: String(backendEvaluation.company_id || backendEvaluation.company),
+  company_name: backendEvaluation.company_name,
+  evaluator_id: String(backendEvaluation.evaluator_id || backendEvaluation.evaluator),
+  evaluator_name: backendEvaluation.evaluator_name,
+  evaluator_type: backendEvaluation.evaluator_type || backendEvaluation.evaluator_role || 'company',
+  score: Number(backendEvaluation.score || backendEvaluation.overall_rating || 0),
+  comments: backendEvaluation.comments || '',
+  evaluation_date: backendEvaluation.evaluation_date || backendEvaluation.created_at,
+  status: backendEvaluation.status || 'pending',
   created_at: backendEvaluation.created_at,
   updated_at: backendEvaluation.updated_at,
+  // Campos adicionales para compatibilidad
+  strengths: backendEvaluation.strengths,
+  areas_for_improvement: backendEvaluation.areas_for_improvement,
+  project_duration: backendEvaluation.project_duration,
+  technologies: backendEvaluation.technologies,
+  deliverables: backendEvaluation.deliverables,
+  category_scores: backendEvaluation.category_scores || [],
 });
 
 /**
@@ -222,17 +236,44 @@ export const adaptNotification = (backendNotification: any): Notification => ({
  */
 export const adaptStrike = (backendStrike: any): Strike => ({
   id: String(backendStrike.id),
-  student: String(backendStrike.student),
-  project: backendStrike.project ? String(backendStrike.project) : undefined,
+  student: String(backendStrike.student_id || backendStrike.student),
+  project: backendStrike.project_id || backendStrike.project ? String(backendStrike.project_id || backendStrike.project) : undefined,
   reason: backendStrike.reason,
   description: backendStrike.description,
   severity: backendStrike.severity,
-  issued_by: String(backendStrike.issued_by),
+  issued_by: String(backendStrike.issued_by_id || backendStrike.issued_by),
   issued_at: backendStrike.issued_at,
   expires_at: backendStrike.expires_at,
   is_active: backendStrike.is_active,
   created_at: backendStrike.created_at,
   updated_at: backendStrike.updated_at,
+  // Campos adicionales para información anidada
+  student_name: backendStrike.student_name,
+  company_name: backendStrike.company_name,
+  project_title: backendStrike.project_title,
+  issued_by_name: backendStrike.issued_by_name,
+});
+
+/**
+ * Adapta un reporte de strike del backend al formato del frontend
+ */
+export const adaptStrikeReport = (backendReport: any): StrikeReport => ({
+  id: String(backendReport.id),
+  company_id: String(backendReport.company_id),
+  company_name: backendReport.company_name,
+  student_id: String(backendReport.student_id),
+  student_name: backendReport.student_name,
+  project_id: String(backendReport.project_id),
+  project_title: backendReport.project_title,
+  reason: backendReport.reason,
+  description: backendReport.description,
+  status: backendReport.status,
+  reviewed_by_id: backendReport.reviewed_by_id ? String(backendReport.reviewed_by_id) : undefined,
+  reviewed_by_name: backendReport.reviewed_by_name,
+  reviewed_at: backendReport.reviewed_at,
+  admin_notes: backendReport.admin_notes,
+  created_at: backendReport.created_at,
+  updated_at: backendReport.updated_at,
 });
 
 /**

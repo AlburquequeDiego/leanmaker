@@ -100,7 +100,7 @@ def evaluations_list(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def evaluations_detail(request, evaluations_id):
+def evaluation_detail(request, evaluation_id):
     """Detalle de una evaluación."""
     try:
         # Verificar autenticación
@@ -115,7 +115,7 @@ def evaluations_detail(request, evaluations_id):
         
         # Obtener evaluación
         try:
-            evaluation = Evaluation.objects.select_related('project', 'student', 'project__company').get(id=evaluations_id)
+            evaluation = Evaluation.objects.select_related('project', 'student', 'project__company').get(id=evaluation_id)
         except Evaluation.DoesNotExist:
             return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
         
@@ -201,7 +201,7 @@ def evaluations_create(request):
 
 @csrf_exempt
 @require_http_methods(["PUT", "PATCH"])
-def evaluations_update(request, evaluations_id):
+def evaluations_update(request, evaluation_id):
     """Actualizar evaluación."""
     try:
         # Verificar autenticación
@@ -216,12 +216,12 @@ def evaluations_update(request, evaluations_id):
         
         # Obtener evaluación
         try:
-            evaluation = Evaluation.objects.get(id=evaluations_id)
+            evaluation = Evaluation.objects.get(id=evaluation_id)
         except Evaluation.DoesNotExist:
             return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
         
-        # Verificar permisos
-        if current_user.role == 'company' and str(evaluation.project.company.user.id) != str(current_user.id):
+        # Verificar permisos - solo admins pueden actualizar evaluaciones
+        if current_user.role != 'admin':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
         # Procesar datos
@@ -252,21 +252,9 @@ def evaluations_update(request, evaluations_id):
 
 
 @csrf_exempt
-@require_http_methods(["GET"])
-def evaluation_list(request):
-    """Lista de evaluaciones (alias para evaluations_list)."""
-    return evaluations_list(request)
-
-@csrf_exempt
-@require_http_methods(["GET"])
-def evaluation_detail(request, evaluation_id):
-    """Detalle de una evaluación (alias para evaluations_detail)."""
-    return evaluations_detail(request, evaluation_id)
-
-@csrf_exempt
-@require_http_methods(["DELETE"])
-def evaluations_delete(request, evaluations_id):
-    """Eliminar evaluación."""
+@require_http_methods(["PATCH"])
+def evaluation_approve(request, evaluation_id):
+    """Aprobar evaluación."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -278,20 +266,63 @@ def evaluations_delete(request, evaluations_id):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
+        # Solo admins pueden aprobar evaluaciones
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
         # Obtener evaluación
         try:
-            evaluation = Evaluation.objects.get(id=evaluations_id)
+            evaluation = Evaluation.objects.get(id=evaluation_id)
         except Evaluation.DoesNotExist:
             return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
         
-        # Verificar permisos
-        if current_user.role == 'company' and str(evaluation.project.company.user.id) != str(current_user.id):
-            return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        
-        evaluation.delete()
+        # Cambiar estado a aprobado
+        evaluation.status = 'completed'
+        evaluation.save()
         
         return JsonResponse({
-            'message': 'Evaluación eliminada correctamente'
+            'message': 'Evaluación aprobada correctamente',
+            'id': str(evaluation.id),
+            'status': evaluation.status
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["PATCH"])
+def evaluation_reject(request, evaluation_id):
+    """Rechazar evaluación."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo admins pueden rechazar evaluaciones
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Obtener evaluación
+        try:
+            evaluation = Evaluation.objects.get(id=evaluation_id)
+        except Evaluation.DoesNotExist:
+            return JsonResponse({'error': 'Evaluación no encontrada'}, status=404)
+        
+        # Cambiar estado a rechazado
+        evaluation.status = 'flagged'
+        evaluation.save()
+        
+        return JsonResponse({
+            'message': 'Evaluación rechazada correctamente',
+            'id': str(evaluation.id),
+            'status': evaluation.status
         })
         
     except Exception as e:
