@@ -12,6 +12,7 @@ import {
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { usePasswordReset } from '../../hooks/usePasswordReset';
 
 const emailSchema = yup.object({
   email: yup
@@ -41,15 +42,22 @@ const passwordSchema = yup.object({
 export default function ForgotPassword() {
   const [step, setStep] = useState<'email' | 'code' | 'password' | 'success'>('email');
   const [sentEmail, setSentEmail] = useState('');
+  const [sentCode, setSentCode] = useState('');
   const navigate = useNavigate();
+  const { loading, error, success, requestCode, validateCode, confirmReset, setError, setSuccess } = usePasswordReset();
 
   // Paso 1: Enviar correo
   const emailFormik = useFormik({
     initialValues: { email: '' },
     validationSchema: emailSchema,
-    onSubmit: (values) => {
-      setSentEmail(values.email);
-      setStep('code');
+    onSubmit: async (values) => {
+      setError(null);
+      setSuccess(null);
+      await requestCode(values.email);
+      if (!error) {
+        setSentEmail(values.email);
+        setStep('code');
+      }
     },
   });
 
@@ -57,8 +65,14 @@ export default function ForgotPassword() {
   const codeFormik = useFormik({
     initialValues: { code: '' },
     validationSchema: codeSchema,
-    onSubmit: () => {
-      setStep('password');
+    onSubmit: async (values) => {
+      setError(null);
+      setSuccess(null);
+      await validateCode(sentEmail, values.code);
+      if (!error) {
+        setSentCode(values.code);
+        setStep('password');
+      }
     },
   });
 
@@ -66,9 +80,14 @@ export default function ForgotPassword() {
   const passwordFormik = useFormik({
     initialValues: { password: '', confirmPassword: '' },
     validationSchema: passwordSchema,
-    onSubmit: () => {
-      setStep('success');
-      setTimeout(() => navigate('/login'), 2000);
+    onSubmit: async (values) => {
+      setError(null);
+      setSuccess(null);
+      await confirmReset(sentEmail, sentCode, values.password);
+      if (!error) {
+        setStep('success');
+        setTimeout(() => navigate('/login'), 2000);
+      }
     },
   });
 
@@ -99,6 +118,9 @@ export default function ForgotPassword() {
             Recuperar Contraseña
           </Typography>
 
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+
           {/* Paso 1: Ingresar correo */}
           {step === 'email' && (
             <form onSubmit={emailFormik.handleSubmit}>
@@ -118,6 +140,7 @@ export default function ForgotPassword() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 2, mb: 1 }}
+                disabled={loading}
               >
                 Enviar Código
               </Button>
@@ -158,6 +181,7 @@ export default function ForgotPassword() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 2, mb: 1 }}
+                  disabled={loading}
                 >
                   Verificar Código
                 </Button>
@@ -208,6 +232,7 @@ export default function ForgotPassword() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 2, mb: 1 }}
+                  disabled={loading}
                 >
                   Recuperar contraseña
                 </Button>

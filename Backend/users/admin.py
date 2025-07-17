@@ -5,6 +5,7 @@ Admin configuration for User models.
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User
+from .models import PasswordResetCode
 
 
 @admin.register(User)
@@ -27,4 +28,6 @@ class CustomUserAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2', 'role', 'first_name', 'last_name'),
         }),
-    ) 
+    )
+
+admin.site.register(PasswordResetCode) 

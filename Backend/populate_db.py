@@ -24,9 +24,9 @@ from applications.models import Aplicacion, Asignacion
 fake = Faker('es_ES')
 
 INSTITUCIONES = [
-    'Universidad de Chile', 'Pontificia Universidad Católica de Chile', 'Universidad de Concepción',
+    'INACAP', 'Universidad de Chile', 'Pontificia Universidad Católica de Chile', 'Universidad de Concepción',
     'Universidad Técnica Federico Santa María', 'Universidad de Santiago de Chile', 'Universidad Austral de Chile',
-    'Universidad de Valparaíso', 'Universidad de La Frontera', 'Universidad de Talca', 'INACAP'
+    'Universidad de Valparaíso', 'Universidad de La Frontera', 'Universidad de Talca'
 ]
 
 # 1. Administradores

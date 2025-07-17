@@ -111,6 +111,18 @@ class AuthService {
     }
   }
 
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
+    return apiService.post('/api/users/password-reset/request/', { email });
+  }
+
+  async validatePasswordResetCode(email: string, code: string): Promise<{ message: string }> {
+    return apiService.post('/api/users/password-reset/validate/', { email, code });
+  }
+
+  async confirmPasswordReset(email: string, code: string, new_password: string): Promise<{ message: string }> {
+    return apiService.post('/api/users/password-reset/confirm/', { email, code, new_password });
+  }
+
   isAuthenticated(): boolean {
     return !!localStorage.getItem('accessToken');
   }

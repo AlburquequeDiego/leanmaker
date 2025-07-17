@@ -9,6 +9,12 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate
 from .models import User
 from core.views import verify_token
+from django.utils import timezone
+from django.core.mail import send_mail
+from .models import PasswordResetCode, User
+import random
+import string
+from datetime import timedelta
 
 
 @csrf_exempt
@@ -648,5 +654,113 @@ def unblock_user(request, user_id):
                 pass  # No hay perfil de estudiante, continuar
         
         return JsonResponse({'success': True, 'message': f'Usuario {user.email} desbloqueado exitosamente', 'user_id': str(user.id), 'role': user.role, 'email': user.email})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def password_reset_request(request):
+    """Solicitar código de recuperación de contraseña (envía correo)."""
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+        if not email:
+            return JsonResponse({'error': 'El correo es requerido.'}, status=400)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'No existe usuario con ese correo.'}, status=404)
+        
+        # Generar código de 10 dígitos
+        code = ''.join(random.choices(string.digits, k=10))
+        expires_at = timezone.now() + timedelta(minutes=15)
+        
+        # Crear el código de recuperación
+        PasswordResetCode.objects.create(user=user, code=code, expires_at=expires_at)
+        
+        # Obtener el remitente desde settings
+        from django.conf import settings
+        from_email = settings.EMAIL_HOST_USER or 'noreply@leanmaker.com'
+        
+        # Enviar correo
+        try:
+            # Mensaje simple sin caracteres especiales para evitar problemas de codificación
+            message = f"""Hola {user.first_name or user.email},
+
+Tu codigo de recuperacion es: {code}
+
+Este codigo es valido por 15 minutos.
+Si no solicitaste este cambio, ignora este mensaje.
+
+Equipo LeanMaker"""
+            
+            send_mail(
+                'Recuperacion de contrasena - LeanMaker',
+                message,
+                from_email,
+                [user.email],
+                fail_silently=False,
+            )
+            return JsonResponse({'message': 'Se ha enviado un código de recuperación a tu correo.'})
+        except Exception as email_error:
+            # Si falla el envío de correo, eliminar el código creado
+            PasswordResetCode.objects.filter(user=user, code=code).delete()
+            return JsonResponse({
+                'error': f'Error al enviar el correo: {str(email_error)}. Verifica la configuración de email.'
+            }, status=500)
+            
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Error interno del servidor: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def password_reset_validate_code(request):
+    """Validar código de recuperación de contraseña."""
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+        code = data.get('code')
+        if not email or not code:
+            return JsonResponse({'error': 'Correo y código son requeridos.'}, status=400)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'No existe usuario con ese correo.'}, status=404)
+        now = timezone.now()
+        reset_code = PasswordResetCode.objects.filter(user=user, code=code, is_used=False, expires_at__gte=now).first()
+        if not reset_code:
+            return JsonResponse({'error': 'Código inválido o expirado.'}, status=400)
+        return JsonResponse({'message': 'Código válido.'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def password_reset_confirm(request):
+    """Cambiar contraseña usando el código de recuperación."""
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+        code = data.get('code')
+        new_password = data.get('new_password')
+        if not email or not code or not new_password:
+            return JsonResponse({'error': 'Correo, código y nueva contraseña son requeridos.'}, status=400)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'No existe usuario con ese correo.'}, status=404)
+        now = timezone.now()
+        reset_code = PasswordResetCode.objects.filter(user=user, code=code, is_used=False, expires_at__gte=now).first()
+        if not reset_code:
+            return JsonResponse({'error': 'Código inválido o expirado.'}, status=400)
+        user.set_password(new_password)
+        user.save()
+        reset_code.is_used = True
+        reset_code.save()
+        return JsonResponse({'message': 'Contraseña cambiada exitosamente.'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

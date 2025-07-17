@@ -73,6 +73,7 @@ const initialValues = {
 
 // Lista de instituciones permitidas y dominios
 const INSTITUTIONS = [
+  { name: 'INACAP', domain: 'inacapmail.cl' },
   { name: 'Universidad de Chile', domain: 'uchile.cl' },
   { name: 'Pontificia Universidad Católica de Chile', domain: 'uc.cl' },
   { name: 'Universidad de Concepción', domain: 'udec.cl' },
@@ -82,7 +83,6 @@ const INSTITUTIONS = [
   { name: 'Universidad de Valparaíso', domain: 'uv.cl' },
   { name: 'Universidad de La Frontera', domain: 'ufro.cl' },
   { name: 'Universidad de Talca', domain: 'utalca.cl' },
-  { name: 'INACAP', domain: 'inacap.cl' },
 ];
 
 // Esquema de validación

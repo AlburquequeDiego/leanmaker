@@ -91,6 +91,13 @@ class UserRegistrationForm(UserCreationForm):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
             raise ValidationError('Este email ya está registrado.')
+        
+        # Validación específica para dominio de INACAP
+        if email and '@' in email:
+            domain = email.split('@')[1].lower()
+            if domain == 'inacap.cl':
+                raise ValidationError('El dominio @inacap.cl no está permitido. Use @inacapmail.cl en su lugar.')
+        
         return email
     
     def clean(self):

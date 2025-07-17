@@ -57,7 +57,7 @@ Universidad Austral de Chile → @uach.cl
 Universidad de Valparaíso → @uv.cl
 Universidad de La Frontera → @ufro.cl
 Universidad de Talca → @utalca.cl
-INACAP → @inacap.cl
+INACAP → @inacapmail.cl
 
 
 super usuario : 
@@ -108,7 +108,7 @@ Sofía Ramírez      sofia.ramirez@uach.cl               Estudiante123!
 Diego Fernández    diego.fernandez@uv.cl               Estudiante123!
 Valentina López    valentina.lopez@ufro.cl             Estudiante123!
 Daniel Castro      daniel.castro@utalca.cl             Estudiante123!
-Camila Herrera     camila.herrera@inacap.cl            Estudiante123!
+Camila Herrera     camila.herrera@inacapmail.cl        Estudiante123!
 Mateo Ruiz         mateo.ruiz@uchile.cl                Estudiante123!
 Isabella Morales   isabella.morales@uc.cl              Estudiante123!
 Santiago Vargas    santiago.vargas@udec.cl             Estudiante123!

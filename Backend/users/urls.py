@@ -17,4 +17,7 @@ urlpatterns = [
     path('<uuid:user_id>/activate/', views.activate_user, name='activate_user'),
     path('<uuid:user_id>/block/', views.block_user, name='block_user'),
     path('<uuid:user_id>/unblock/', views.unblock_user, name='unblock_user'),
+    path('password-reset/request/', views.password_reset_request, name='password_reset_request'),
+    path('password-reset/validate/', views.password_reset_validate_code, name='password_reset_validate_code'),
+    path('password-reset/confirm/', views.password_reset_confirm, name='password_reset_confirm'),
 ] 

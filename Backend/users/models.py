@@ -118,3 +118,14 @@ class User(AbstractUser):
     def is_admin(self):
         """Check if user is an admin."""
         return self.role == 'admin' 
+
+
+class PasswordResetCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='password_reset_codes')
+    code = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.code}" 

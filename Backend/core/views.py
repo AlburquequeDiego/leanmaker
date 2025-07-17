@@ -389,6 +389,14 @@ def api_register(request):
                 'error': 'El email ya está registrado'
             }, status=400)
         
+        # Validación específica para dominio de INACAP
+        if email and '@' in email:
+            domain = email.split('@')[1].lower()
+            if domain == 'inacap.cl':
+                return JsonResponse({
+                    'error': 'El dominio @inacap.cl no está permitido. Use @inacapmail.cl en su lugar.'
+                }, status=400)
+        
         # Crear usuario
         username = email.split('@')[0]  # Usar parte del email como username
         user = User.objects.create_user(
