@@ -898,10 +898,10 @@ def api_dashboard_admin_stats(request):
         pending_applications = Aplicacion.objects.filter(status='pending').count()
         print(f"📝 [ADMIN DASHBOARD] Aplicaciones pendientes: {pending_applications}")
         
-        # Obtener alertas de strikes (strikes activos)
-        strikes_alerts = Strike.objects.filter(is_active=True).count()
-        print(f"⚠️ [ADMIN DASHBOARD] Alertas de strikes: {strikes_alerts}")
-        
+        # Obtener alertas de strikes (reportes de asignación de strikes pendientes)
+        from strikes.models import StrikeReport
+        strikes_alerts = StrikeReport.objects.filter(status='pending').count()
+        print(f"⚠️ [ADMIN DASHBOARD] Alertas de strikes (reportes pendientes): {strikes_alerts}")
         # Preparar respuesta
         response_data = {
             'total_users': total_users,

@@ -22,6 +22,8 @@ import {
   Grid,
   Rating,
   Slider,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -322,9 +324,8 @@ export const CompanyEvaluations: React.FC = () => {
   };
 
   const getProjectStudents = (projectId: string) => {
-    // En un caso real, esto vendría del backend
-    // Por ahora, simulamos estudiantes
-    return users.filter(user => user.role === 'student').slice(0, 3);
+    // Solo devolver estudiantes reales del backend
+    return users.filter(user => user.role === 'student' && user.projects?.includes(projectId));
   };
 
   const getStatusColor = (status: string) => {
@@ -388,48 +389,66 @@ export const CompanyEvaluations: React.FC = () => {
 
       {/* Tabs principales */}
       <Box sx={{ mb: 4 }}>
-        <Grid container spacing={1}>
-          {['Por Proyecto', 'Recibidas', 'Dadas'].map((tab, index) => (
-            <Grid item key={index}>
-              <Button
-                variant={mainTab === index ? 'contained' : 'outlined'}
-                onClick={() => setMainTab(index)}
-                sx={{ minWidth: 160, fontWeight: 600, fontSize: 16, borderRadius: 2, boxShadow: mainTab === index ? 2 : 0 }}
-              >
-                {tab}
-              </Button>
-            </Grid>
-          ))}
-        </Grid>
+        <Tabs
+          value={mainTab}
+          onChange={(_, newValue) => setMainTab(newValue)}
+          textColor="primary"
+          indicatorColor="primary"
+          sx={{
+            '& .MuiTab-root': {
+              fontWeight: 700,
+              fontSize: 18,
+              textTransform: 'none',
+              minWidth: 160,
+              letterSpacing: 0.5,
+            },
+            '& .Mui-selected': {
+              color: '#1976d2',
+            },
+            mb: 2
+          }}
+        >
+          <Tab label="Por Proyecto" />
+          <Tab label="Recibidas" />
+          <Tab label="Dadas" />
+        </Tabs>
       </Box>
 
       {/* Estadísticas */}
-      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <Card sx={{ bgcolor: '#1976d2', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
-          <CardContent>
-            <Typography variant="h3" fontWeight={700}>{projects.length}</Typography>
-            <Typography variant="body1" fontWeight={600}>Total Proyectos</Typography>
-          </CardContent>
-        </Card>
-        <Card sx={{ bgcolor: '#388e3c', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
-          <CardContent>
-            <Typography variant="h3" fontWeight={700}>{Object.values(evaluationsByProject).flat().length}</Typography>
-            <Typography variant="body1" fontWeight={600}>Total Evaluaciones</Typography>
-          </CardContent>
-        </Card>
-        <Card sx={{ bgcolor: '#ffa726', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
-          <CardContent>
-            <Typography variant="h3" fontWeight={700}>{Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'company').length}</Typography>
-            <Typography variant="body1" fontWeight={600}>Evaluaciones Realizadas</Typography>
-          </CardContent>
-        </Card>
-        <Card sx={{ bgcolor: '#29b6f6', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
-          <CardContent>
-            <Typography variant="h3" fontWeight={700}>{Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'student').length}</Typography>
-            <Typography variant="body1" fontWeight={600}>Evaluaciones Recibidas</Typography>
-          </CardContent>
-        </Card>
-      </Box>
+      <Box sx={{ display: 'flex', gap: 4, mb: 4, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+  <Paper elevation={3} sx={{ bgcolor: '#f5faff', borderRadius: 3, p: 3, minWidth: 220, flex: '1 1 220px', boxShadow: 3 }}>
+    <Typography variant="h5" fontWeight={700} color="#1976d2" gutterBottom>
+      Total Proyectos
+    </Typography>
+    <Typography variant="h2" fontWeight={700} color="#1976d2">
+      {projects.length}
+    </Typography>
+  </Paper>
+  <Paper elevation={3} sx={{ bgcolor: '#e8f5e9', borderRadius: 3, p: 3, minWidth: 220, flex: '1 1 220px', boxShadow: 3 }}>
+    <Typography variant="h5" fontWeight={700} color="#388e3c" gutterBottom>
+      Total Evaluaciones
+    </Typography>
+    <Typography variant="h2" fontWeight={700} color="#388e3c">
+      {Object.values(evaluationsByProject).flat().length}
+    </Typography>
+  </Paper>
+  <Paper elevation={3} sx={{ bgcolor: '#fff8e1', borderRadius: 3, p: 3, minWidth: 220, flex: '1 1 220px', boxShadow: 3 }}>
+    <Typography variant="h5" fontWeight={700} color="#ffa726" gutterBottom>
+      Evaluaciones Realizadas
+    </Typography>
+    <Typography variant="h2" fontWeight={700} color="#ffa726">
+      {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'company').length}
+    </Typography>
+  </Paper>
+  <Paper elevation={3} sx={{ bgcolor: '#e3f2fd', borderRadius: 3, p: 3, minWidth: 220, flex: '1 1 220px', boxShadow: 3 }}>
+    <Typography variant="h5" fontWeight={700} color="#29b6f6" gutterBottom>
+      Evaluaciones Recibidas
+    </Typography>
+    <Typography variant="h2" fontWeight={700} color="#29b6f6">
+      {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'student').length}
+    </Typography>
+  </Paper>
+</Box>
 
       {/* Tabs secundarios y contenido */}
       {mainTab === 0 && (
@@ -449,10 +468,10 @@ export const CompanyEvaluations: React.FC = () => {
               ))}
             </Grid>
           </Box>
-          {/* Lista de Proyectos */}
-          <Box>
-            {(() => {
-              const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
+      {/* Lista de Proyectos */}
+      <Box>
+        {(() => {
+          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
               if (currentProjects.length === 0) {
                 return (
                   <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -470,18 +489,18 @@ export const CompanyEvaluations: React.FC = () => {
                         <CardContent>
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                             <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
-                              {project.title}
-                            </Typography>
-                            <Chip
-                              label={getStatusLabel(project.status)}
-                              color={getStatusColor(project.status) as any}
-                              size="small"
+                    {project.title}
+                  </Typography>
+                    <Chip
+                      label={getStatusLabel(project.status)}
+                      color={getStatusColor(project.status) as any}
+                      size="small"
                               sx={{ fontWeight: 600 }}
-                            />
-                          </Box>
+                    />
+        </Box>
                           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                             {project.description && project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description || 'Sin descripción'}
-                          </Typography>
+              </Typography>
                           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', mb: 2 }}>
                             <Chip
                               label={`${project.current_students || 0}/${project.max_students || 1} estudiantes`}
@@ -495,7 +514,7 @@ export const CompanyEvaluations: React.FC = () => {
                               color="info"
                               sx={{ fontWeight: 600 }}
                             />
-                          </Box>
+          </Box>
                           <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
                             <Button
                               size="small"
@@ -524,13 +543,13 @@ export const CompanyEvaluations: React.FC = () => {
                             >
                               Reportar
                             </Button>
-                          </Box>
-                        </CardContent>
-                      </Card>
+                  </Box>
+                </CardContent>
+              </Card>
                     </Grid>
                   ))}
-                </Grid>
-              );
+                    </Grid>
+                  );
             })()}
           </Box>
         </>
@@ -594,8 +613,8 @@ export const CompanyEvaluations: React.FC = () => {
                       <Rating value={evalD.score} readOnly />
                       <Typography variant="body1" sx={{ ml: 2 }}>
                         {evalD.score}/5
-                      </Typography>
-                    </Box>
+                </Typography>
+              </Box>
                     {evalD.comments && (
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                         <strong>Comentarios:</strong> {evalD.comments}
@@ -609,7 +628,7 @@ export const CompanyEvaluations: React.FC = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
+                </Box>
       )}
 
       {/* Modal de Evaluación */}
@@ -703,12 +722,12 @@ export const CompanyEvaluations: React.FC = () => {
                           </Typography>
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                             <Rating value={companyToStudentEvaluation.score} readOnly />
-                            <Typography variant="body1" sx={{ ml: 2 }}>
+                        <Typography variant="body1" sx={{ ml: 2 }}>
                               {companyToStudentEvaluation.score}/5
-                            </Typography>
-                          </Box>
+                        </Typography>
+                      </Box>
                           {companyToStudentEvaluation.comments && (
-                            <Typography variant="body1" paragraph>
+                        <Typography variant="body1" paragraph>
                               <strong>Comentarios (Empresa):</strong> {companyToStudentEvaluation.comments}
                             </Typography>
                           )}
@@ -731,11 +750,11 @@ export const CompanyEvaluations: React.FC = () => {
                           {studentToCompanyEvaluation.comments && (
                             <Typography variant="body1" paragraph>
                               <strong>Comentarios (Estudiante):</strong> {studentToCompanyEvaluation.comments}
-                            </Typography>
-                          )}
-                          <Typography variant="body2" color="text.secondary">
+                        </Typography>
+                      )}
+                      <Typography variant="body2" color="text.secondary">
                             Evaluado el: {new Date(studentToCompanyEvaluation.evaluation_date).toLocaleDateString()}
-                          </Typography>
+                      </Typography>
                         </Box>
                       )}
                     </Box>

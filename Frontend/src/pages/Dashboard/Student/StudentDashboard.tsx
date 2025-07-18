@@ -55,15 +55,12 @@ export default function StudentDashboard() {
   const { user } = useAuth();
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('student');
 
-  // Simulación de datos para checklist de proyectos (reemplaza por tus datos reales si los tienes)
-  const checklist = [
-    { name: 'Proyecto Lean UX', progress: 80 },
-    { name: 'App de Voluntariado', progress: 65 },
-    { name: 'Rediseño Web ONG', progress: 50 },
-    { name: 'Sistema de Inventario', progress: 35 },
-    { name: 'Plataforma E-learning', progress: 20 },
-  ];
-
+  // Eliminar simulación de checklist y entregas
+  // const checklist = [...];
+  // const entregas = ...;
+  // const actividades = ...;
+  // const porcentajeEntregas = ...;
+  // Solo usar stats del backend para mostrar información
   // Datos de ejemplo para strikes y GPA (ajusta según tu modelo real)
   const strikes = stats?.strikes ?? 0;
   const maxStrikes = 3;
@@ -73,10 +70,6 @@ export default function StudentDashboard() {
   const activeProjects = stats?.active_projects ?? 0;
   const totalApplications = stats?.total_applications ?? 0;
   const availableProjects = stats?.available_projects ?? 0;
-  // Simulación de entregas (ajusta según tus datos reales)
-  const entregas = stats?.deliveries ?? 10;
-  const actividades = stats?.activities ?? 17;
-  const porcentajeEntregas = actividades > 0 ? Math.round((entregas / actividades) * 100) : 0;
 
   if (loading) {
     return (

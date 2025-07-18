@@ -27,6 +27,7 @@ import {
   ListItemText,
   Divider,
   CircularProgress,
+  Grid,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -38,208 +39,69 @@ import {
   Phone as PhoneIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
-import { adaptInterviewList } from '../../../utils/adapters';
+import { adaptInterviewList, adaptCalendarEvent } from '../../../utils/adapters';
 import type { Interview, Application } from '../../../types';
 
 const cantidadOpciones = [5, 10, 20, 50, 'todas'];
 
 export const CompanyInterviews: React.FC = () => {
   const api = useApi();
-  const [interviews, setInterviews] = useState<Interview[]>([]);
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [events, setEvents] = useState<any[]>([]); // Solo eventos tipo 'interview'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
-  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
-  const [feedbackData, setFeedbackData] = useState({
-    rating: 0,
-    feedback: '',
-  });
+  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editDate, setEditDate] = useState<string>('');
+  const [editEndDate, setEditEndDate] = useState<string>('');
+  const now = new Date();
+  const pendingInterviews = events.filter(ev => new Date(ev.start_date) > now);
+  const completedInterviews = events.filter(ev => new Date(ev.start_date) <= now);
+  const [sectionCount, setSectionCount] = useState(10);
+  const allInterviews = [...pendingInterviews, ...completedInterviews].sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
+  const allInterviewsToShow = allInterviews.slice(0, sectionCount);
 
-  // Filtros de cantidad por tab
-  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
 
   useEffect(() => {
-    loadData();
+    loadInterviewEvents();
   }, []);
 
-  const loadData = async () => {
+  const loadInterviewEvents = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // Obtener entrevistas
-      const interviewsResponse = await api.get('/api/interviews/');
-      const adaptedInterviews = adaptInterviewList(interviewsResponse.data.results || interviewsResponse.data);
-      setInterviews(adaptedInterviews);
-
-      // Obtener aplicaciones para contexto
-      const applicationsResponse = await api.get('/api/applications/');
-      setApplications(applicationsResponse.data.results || applicationsResponse.data);
-
-      // Obtener usuarios
-      const usersResponse = await api.get('/api/users/');
-      setUsers(usersResponse.data);
-      
+      // Obtener solo eventos de tipo 'interview' del calendario
+      const response = await api.get('/api/calendar/events/?event_type=interview');
+      const adaptedEvents = (response.data.results || response.data).map(adaptCalendarEvent);
+      setEvents(adaptedEvents);
     } catch (err: any) {
-      console.error('Error cargando entrevistas:', err);
       setError(err.response?.data?.error || 'Error al cargar entrevistas');
+      setEvents([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCantidadChange = (tabIdx: number, value: number | string) => {
-    setCantidadPorTab(prev => prev.map((v, i) => (i === tabIdx ? value : v)));
+  const handleOpenEdit = (event: any) => {
+    setSelectedEvent(event);
+    setEditDate(event.start_date.slice(0, 16));
+    setEditEndDate(event.end_date.slice(0, 16));
+    setEditDialogOpen(true);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-        return 'info';
-      case 'completed':
-        return 'success';
-      case 'cancelled':
-        return 'error';
-      case 'no-show':
-        return 'warning';
-      default:
-        return 'default';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-        return 'Programada';
-      case 'completed':
-        return 'Completada';
-      case 'cancelled':
-        return 'Cancelada';
-      case 'no-show':
-        return 'No se presentó';
-      default:
-        return status;
-    }
-  };
-
-  const handleSaveFeedback = async () => {
-    if (selectedInterview) {
-      try {
-        const updatedInterviewResponse = await api.patch(`/api/interviews/${selectedInterview.id}/`, {
-          rating: feedbackData.rating,
-          feedback: feedbackData.feedback,
-          status: 'completed',
-        });
-
-        const updatedInterview = updatedInterviewResponse.data;
-
-        setInterviews(prev =>
-          prev.map(interview =>
-            interview.id === selectedInterview.id ? {
-              ...interview,
-              rating: updatedInterview.rating,
-              feedback: updatedInterview.feedback,
-              status: updatedInterview.status,
-            } : interview
-          )
-        );
-        setShowFeedbackDialog(false);
-        setSelectedInterview(null);
-        setFeedbackData({ rating: 0, feedback: '' });
-      } catch (error: any) {
-        console.error('Error guardando feedback:', error);
-        setError(error.response?.data?.error || 'Error al guardar feedback');
-      }
-    }
-  };
-
-  const handleCompleteInterview = async (interviewId: string) => {
+  const handleSaveEdit = async () => {
+    if (!selectedEvent) return;
     try {
-      const response = await api.post(`/api/interviews/${interviewId}/complete/`);
-      const updatedInterview = response.data;
-      
-      setInterviews(prev =>
-        prev.map(interview =>
-          interview.id === interviewId ? {
-            ...interview,
-            status: updatedInterview.status,
-          } : interview
-        )
-      );
-      setShowDialog(false);
-    } catch (error: any) {
-      console.error('Error completando entrevista:', error);
-      setError(error.response?.data?.error || 'Error al completar entrevista');
-      }
-  };
-
-  const handleCancelInterview = async (interviewId: string) => {
-    try {
-      const response = await api.post(`/api/interviews/${interviewId}/cancel/`);
-      const updatedInterview = response.data;
-      
-      setInterviews(prev =>
-        prev.map(interview =>
-          interview.id === interviewId ? {
-            ...interview,
-            status: updatedInterview.status,
-          } : interview
-        )
-      );
-      setShowDialog(false);
-    } catch (error: any) {
-      console.error('Error cancelando entrevista:', error);
-      setError(error.response?.data?.error || 'Error al cancelar entrevista');
+      await api.put(`/api/calendar/events/${selectedEvent.id}/`, {
+        start_date: editDate,
+        end_date: editEndDate,
+      });
+      setEditDialogOpen(false);
+      setSelectedEvent(null);
+      loadInterviewEvents();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Error al actualizar la fecha');
     }
   };
-
-  const filteredInterviews = interviews.filter(interview => {
-    switch (selectedTab) {
-      case 0: // Todas
-        return true;
-      case 1: // Programadas
-        return interview.status === 'scheduled';
-      case 2: // Completadas
-        return interview.status === 'completed';
-      case 3: // Canceladas
-        return interview.status === 'cancelled' || interview.status === 'no-show';
-      default:
-        return true;
-    }
-  });
-
-  const cantidadActual = cantidadPorTab[selectedTab];
-  const entrevistasMostradas = cantidadActual === 'todas' ? filteredInterviews : filteredInterviews.slice(0, Number(cantidadActual));
-
-  // Obtener información del estudiante y proyecto desde la aplicación
-  const getInterviewInfo = (interview: Interview) => {
-    const application = applications.find(app => app.id === interview.application);
-    if (!application) return { student: null, project: null };
-    
-    const student = users.find(user => user.id === application.student);
-    const project = application.project; // Asumiendo que el proyecto está en la aplicación
-    
-    return { student, project };
-  };
-
-  const stats = {
-    total: interviews.length,
-    scheduled: interviews.filter(i => i.status === 'scheduled').length,
-    completed: interviews.filter(i => i.status === 'completed').length,
-    cancelled: interviews.filter(i => i.status === 'cancelled' || i.status === 'no-show').length,
-  };
-
-  const resumen = [
-    { label: 'Total', value: stats.total, icon: <ScheduleIcon />, color: '#42A5F5' },
-    { label: 'Programadas', value: stats.scheduled, icon: <ScheduleIcon />, color: '#29B6F6' },
-    { label: 'Completadas', value: stats.completed, icon: <CheckCircleIcon />, color: '#66BB6A' },
-    { label: 'Canceladas', value: stats.cancelled, icon: <EventIcon />, color: '#EF5350' },
-  ];
 
   if (loading) {
     return (
@@ -252,339 +114,212 @@ export const CompanyInterviews: React.FC = () => {
   if (error) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-        <Button onClick={loadData} variant="contained">
-          Reintentar
-        </Button>
+        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+        <Button onClick={loadInterviewEvents} variant="contained">Reintentar</Button>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Entrevistas
+    <Box sx={{ flexGrow: 1, p: { xs: 1, md: 3 }, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom>
+          Entrevistas Pendientes
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Visualiza y gestiona las entrevistas agendadas con estudiantes. Solo puedes cambiar la fecha/hora.
         </Typography>
       </Box>
 
-      {/* Estadísticas */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
-        {resumen.map((item, idx) => (
-          <Box key={idx} sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(25% - 12px)' } }}>
-            <Card sx={{ bgcolor: item.color, color: '#fff', borderRadius: 3, boxShadow: 1, minHeight: 90 }}>
-              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>{item.value}</Typography>
-                <Typography variant="body2" sx={{ mb: 1 }}>{item.label}</Typography>
-                <Box>{item.icon}</Box>
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
+      {/* Eliminar cualquier Card o Box que muestre solo el conteo de entrevistas pendientes antes de las tarjetas principales. Solo dejar el Box con display flex que contiene las dos tarjetas grandes (pendientes y completadas). */}
+      <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap', mt: 6 }}>
+        {/* Tarjeta de entrevistas pendientes */}
+        <Box sx={{ minWidth: 320, maxWidth: 400, width: '100%' }}>
+          <Paper elevation={3} sx={{ bgcolor: '#f5faff', borderRadius: 3, p: 0, boxShadow: 3 }}>
+            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Typography variant="h5" fontWeight={700} color="#1976d2" gutterBottom>
+                Entrevistas Pendientes
+              </Typography>
+              <Typography variant="h2" fontWeight={700} color="#1976d2" sx={{ mb: 2 }}>
+                {pendingInterviews.length}
+              </Typography>
+              {pendingInterviews.length === 0 ? (
+                <Typography variant="body1" color="text.secondary" align="center">
+                  No hay entrevistas pendientes
+                </Typography>
+              ) : (
+                <Box sx={{ maxHeight: 300, overflowY: 'auto', width: '100%' }}>
+                  {pendingInterviews.map(event => (
+                    <Paper key={event.id} sx={{ mb: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2, boxShadow: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Avatar sx={{ mr: 2, bgcolor: '#1976d2' }}>
+                          <PersonIcon />
+                        </Avatar>
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography variant="subtitle1" fontWeight={700} color="#1976d2">
+                            {event.attendees && event.attendees.length > 0 ? event.attendees.join(', ') : 'Estudiante no asignado'}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {event.title}
+                          </Typography>
+                        </Box>
+                        <Chip label="Pendiente" color="info" size="small" sx={{ fontWeight: 600 }} />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                        <strong>Fecha:</strong> {event.start_date ? new Date(event.start_date).toLocaleString() : '-'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                        <strong>Proyecto:</strong> {event.project_title || '-'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        <strong>Motivo:</strong> {event.description || '-'}
+                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                        <Button variant="outlined" color="primary" onClick={() => handleOpenEdit(event)}>
+                          Cambiar Fecha/Hora
+                        </Button>
+                      </Box>
+                    </Paper>
+                  ))}
+                </Box>
+              )}
+            </Box>
+          </Paper>
+        </Box>
+
+        {/* Tarjeta de entrevistas completadas */}
+        <Box sx={{ minWidth: 320, maxWidth: 400, width: '100%' }}>
+          <Paper elevation={3} sx={{ bgcolor: '#e8f5e9', borderRadius: 3, p: 0, boxShadow: 3 }}>
+            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Typography variant="h5" fontWeight={700} color="#388e3c" gutterBottom>
+                Entrevistas Completadas
+              </Typography>
+              <Typography variant="h2" fontWeight={700} color="#388e3c" sx={{ mb: 2 }}>
+                {completedInterviews.length}
+              </Typography>
+              {completedInterviews.length === 0 ? (
+                <Typography variant="body1" color="text.secondary" align="center">
+                  No hay entrevistas completadas
+                </Typography>
+              ) : (
+                <Box sx={{ maxHeight: 300, overflowY: 'auto', width: '100%' }}>
+                  {completedInterviews.map(event => (
+                    <Paper key={event.id} sx={{ mb: 2, p: 2, bgcolor: '#c8e6c9', borderRadius: 2, boxShadow: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Avatar sx={{ mr: 2, bgcolor: '#388e3c' }}>
+                          <PersonIcon />
+                        </Avatar>
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography variant="subtitle1" fontWeight={700} color="#388e3c">
+                            {event.attendees && event.attendees.length > 0 ? event.attendees.join(', ') : 'Estudiante no asignado'}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {event.title}
+                          </Typography>
+                        </Box>
+                        <Chip label="Completada" color="success" size="small" sx={{ fontWeight: 600 }} />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                        <strong>Fecha:</strong> {event.start_date ? new Date(event.start_date).toLocaleString() : '-'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                        <strong>Proyecto:</strong> {event.project_title || '-'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        <strong>Motivo:</strong> {event.description || '-'}
+                      </Typography>
+                    </Paper>
+                  ))}
+                </Box>
+              )}
+            </Box>
+          </Paper>
+        </Box>
       </Box>
 
-      {/* Tabs */}
-      <Paper sx={{ mb: 3 }}>
-        <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
-          <Tab label="Todos" />
-          <Tab label="Programados" />
-          <Tab label="Completados" />
-          <Tab label="Cancelados" />
-        </Tabs>
-      </Paper>
+      {/* Modal para editar fecha/hora */}
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Cambiar Fecha/Hora de Entrevista</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              fullWidth
+              type="datetime-local"
+              label="Nueva Fecha y Hora de Inicio"
+              value={editDate}
+              onChange={e => setEditDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              fullWidth
+              type="datetime-local"
+              label="Nueva Fecha y Hora de Fin"
+              value={editEndDate}
+              onChange={e => setEditEndDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={handleSaveEdit} variant="contained" color="primary">Guardar Cambios</Button>
+        </DialogActions>
+      </Dialog>
 
-      {/* Filtro de cantidad por tab */}
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-        <FormControl size="small" sx={{ minWidth: 120 }}>
-          <InputLabel id="cantidad-label">Mostrar</InputLabel>
+      {/* Historial de Entrevistas */}
+      <Box sx={{ mt: 8 }}>
+        <Typography variant="h5" fontWeight={700} gutterBottom>
+          Historial de Entrevistas
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+          <Typography variant="body2">Mostrar:</Typography>
           <Select
-            labelId="cantidad-label"
-            value={cantidadActual}
-            label="Mostrar"
-            onChange={e => handleCantidadChange(selectedTab, e.target.value)}
+            size="small"
+            value={String(sectionCount)}
+            onChange={e => setSectionCount(Number(e.target.value))}
+            sx={{ minWidth: 100 }}
           >
-            {cantidadOpciones.map(opt => (
-              <MenuItem key={opt} value={opt}>{opt === 'todas' ? 'Todas' : opt}</MenuItem>
+            {[10, 50, 100, 200].map(val => (
+              <MenuItem key={val} value={val}>{`Últimas ${val}`}</MenuItem>
             ))}
           </Select>
-        </FormControl>
-      </Box>
-
-      {/* Lista de Entrevistas */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {entrevistasMostradas.map((interview) => {
-          const { student, project } = getInterviewInfo(interview);
-          const interviewer = users.find(user => user.id === interview.interviewer);
-          
-          return (
-          <Box key={interview.id} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' } }}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+        </Box>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+          {allInterviewsToShow.length === 0 ? (
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
+              No hay entrevistas en el historial
+            </Typography>
+          ) : (
+            allInterviewsToShow.map(event => (
+              <Paper key={event.id} sx={{ p: 2, minWidth: 280, maxWidth: 400, flex: '1 1 320px', bgcolor: event.status === 'completed' ? '#e8f5e9' : '#e3f2fd', borderRadius: 2, boxShadow: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Avatar sx={{ mr: 2, bgcolor: event.status === 'completed' ? '#388e3c' : '#1976d2' }}>
                     <PersonIcon />
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" gutterBottom>
-                        {student?.full_name || 'Estudiante no encontrado'}
+                    <Typography variant="subtitle1" fontWeight={700} color={event.status === 'completed' ? '#388e3c' : '#1976d2'}>
+                      {event.attendees && event.attendees.length > 0 ? event.attendees.join(', ') : 'Estudiante no asignado'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        {student?.email || 'Email no disponible'}
+                      {event.title}
                     </Typography>
                   </Box>
-                  <Chip
-                    label={getStatusLabel(interview.status)}
-                    color={getStatusColor(interview.status) as any}
-                    size="small"
-                  />
+                  <Chip label={event.status === 'completed' ? 'Completada' : 'Pendiente'} color={event.status === 'completed' ? 'success' : 'info'} size="small" sx={{ fontWeight: 600 }} />
                 </Box>
-
-                <Typography variant="body1" gutterBottom>
-                    <strong>Proyecto:</strong> {project || 'Proyecto no encontrado'}
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  <strong>Fecha:</strong> {event.start_date ? new Date(event.start_date).toLocaleString() : '-'}
                 </Typography>
-
-                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                  <Chip
-                      label={`${interview.duration_minutes} min`}
-                      color="secondary"
-                      size="small"
-                    />
-                    {interview.rating && (
-                      <Chip
-                        label={`${interview.rating}/5`}
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                  />
-                    )}
-                </Box>
-
-                <Typography variant="body2" color="text.secondary" paragraph>
-                    {interview.notes || 'Sin notas'}
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  <strong>Proyecto:</strong> {event.project_title || '-'}
                 </Typography>
-
                 <Typography variant="body2" color="text.secondary">
-                    <strong>Fecha:</strong> {new Date(interview.interview_date).toLocaleString()}
+                  <strong>Motivo:</strong> {event.description || '-'}
                 </Typography>
-
-                <Typography variant="body2" color="text.secondary">
-                    <strong>Entrevistador:</strong> {interviewer?.full_name || 'No asignado'}
-                </Typography>
-
-                  {interview.feedback && (
-                    <Alert severity="info" sx={{ mt: 2 }}>
-                    <Typography variant="body2">
-                        <strong>Feedback:</strong> {interview.feedback}
-                    </Typography>
-                  </Alert>
-                )}
-              </CardContent>
-              <CardActions>
-                <Button
-                  size="small"
-                  onClick={() => {
-                    setSelectedInterview(interview);
-                    setShowDialog(true);
-                  }}
-                >
-                  Ver Detalles
-                </Button>
-                {interview.status === 'scheduled' && (
-                  <Button
-                    size="small"
-                    color="success"
-                    onClick={() => {
-                      setSelectedInterview(interview);
-                        setShowFeedbackDialog(true);
-                    }}
-                  >
-                    Completar
-                  </Button>
-                )}
-              </CardActions>
-            </Card>
-          </Box>
-          );
-        })}
-      </Box>
-
-      {/* Dialog para detalles de entrevista */}
-      <Dialog open={showDialog} onClose={() => setShowDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Detalles de la Entrevista</DialogTitle>
-        <DialogContent>
-          {selectedInterview && (() => {
-            const { student, project } = getInterviewInfo(selectedInterview);
-            const interviewer = users.find(user => user.id === selectedInterview.interviewer);
-            
-            return (
-            <Box sx={{ mt: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Avatar sx={{ mr: 2, width: 60, height: 60, bgcolor: 'primary.main' }}>
-                  <PersonIcon sx={{ fontSize: 30 }} />
-                </Avatar>
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                      {student?.full_name || 'Estudiante no encontrado'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                      {student?.email || 'Email no disponible'}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                    <Chip
-                      label={getStatusLabel(selectedInterview.status)}
-                      color={getStatusColor(selectedInterview.status) as any}
-                      size="small"
-                    />
-                      {selectedInterview.rating && (
-                      <Chip
-                          label={`${selectedInterview.rating}/5`}
-                          color="primary"
-                        size="small"
-                      />
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-
-              <Typography variant="h6" gutterBottom>
-                  Proyecto: {project || 'Proyecto no encontrado'}
-              </Typography>
-
-              <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                  <Chip label={`${selectedInterview.duration_minutes} minutos`} color="secondary" />
-              </Box>
-
-              <List dense>
-                <ListItem>
-                  <ScheduleIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                  <ListItemText
-                    primary="Fecha y Hora"
-                      secondary={new Date(selectedInterview.interview_date).toLocaleString()}
-                  />
-                </ListItem>
-                <ListItem>
-                    <PersonIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                  <ListItemText
-                      primary="Entrevistador"
-                      secondary={interviewer?.full_name || 'No asignado'}
-                  />
-                </ListItem>
-                <ListItem>
-                  <EmailIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                  <ListItemText
-                      primary="Email del Estudiante"
-                      secondary={student?.email || 'No disponible'}
-                  />
-                </ListItem>
-                <ListItem>
-                  <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                  <ListItemText
-                      primary="Teléfono del Estudiante"
-                      secondary={student?.phone || 'No disponible'}
-                  />
-                </ListItem>
-              </List>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Typography variant="h6" gutterBottom>
-                Notas
-              </Typography>
-              <Typography variant="body2" paragraph>
-                  {selectedInterview.notes || 'Sin notas'}
-              </Typography>
-
-              {selectedInterview.feedback && (
-                <>
-                  <Typography variant="h6" gutterBottom>
-                    Feedback
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    {selectedInterview.feedback}
-                  </Typography>
-                </>
-              )}
-
-                {selectedInterview.rating && (
-                <>
-                  <Typography variant="h6" gutterBottom>
-                      Calificación
-                  </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Rating value={selectedInterview.rating} readOnly />
-                      <Typography variant="body2" sx={{ ml: 1 }}>
-                        {selectedInterview.rating}/5
-                  </Typography>
-                    </Box>
-                </>
-              )}
-            </Box>
-            );
-          })()}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowDialog(false)}>Cerrar</Button>
-          {selectedInterview?.status === 'scheduled' && (
-            <>
-              <Button
-                onClick={() => handleCancelInterview(selectedInterview.id)}
-                variant="outlined"
-                color="error"
-              >
-                Cancelar
-              </Button>
-            <Button
-              onClick={() => {
-                setShowDialog(false);
-                  setShowFeedbackDialog(true);
-              }}
-              variant="contained"
-              color="success"
-            >
-                Completar Entrevista
-            </Button>
-            </>
+              </Paper>
+            ))
           )}
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog para feedback */}
-      <Dialog open={showFeedbackDialog} onClose={() => setShowFeedbackDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Completar Entrevista</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <Typography variant="body1" gutterBottom>
-                Calificación:
-              </Typography>
-              <Rating
-                value={feedbackData.rating}
-                onChange={(_, value) => setFeedbackData(prev => ({ ...prev, rating: value || 0 }))}
-                size="large"
-              />
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                label="Feedback"
-                value={feedbackData.feedback}
-                onChange={(e) => setFeedbackData(prev => ({ ...prev, feedback: e.target.value }))}
-                margin="normal"
-              />
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowFeedbackDialog(false)}>Cancelar</Button>
-          <Button onClick={handleSaveFeedback} variant="contained">
-            Completar Entrevista
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </Box>
     </Box>
   );
 };

@@ -4,8 +4,8 @@ import { apiService } from '../services/api.service';
 import { API_ENDPOINTS } from '../config/api.config';
 
 export const TestLogin = () => {
-  const [email, setEmail] = useState('admin@leanmaker.cl');
-  const [password, setPassword] = useState('Student123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

@@ -52,6 +52,7 @@ export const CompanyStrikes: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<any | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5]);
+  const [sectionCount, setSectionCount] = useState(10);
 
   useEffect(() => {
     loadStrikeReports();
@@ -107,6 +108,7 @@ export const CompanyStrikes: React.FC = () => {
 
   const cantidadActual = cantidadPorTab[selectedTab];
   const reportsMostrados = cantidadActual === 'todas' ? filteredReports : filteredReports.slice(0, Number(cantidadActual));
+  const reportsToShow = reportsMostrados.slice(0, sectionCount);
 
   if (loading) {
     return (
@@ -194,8 +196,21 @@ export const CompanyStrikes: React.FC = () => {
       </Box>
 
       {/* Lista de Reportes */}
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+        <Typography variant="body2">Mostrar:</Typography>
+        <Select
+          size="small"
+          value={String(sectionCount)}
+          onChange={e => setSectionCount(Number(e.target.value))}
+          sx={{ minWidth: 100 }}
+        >
+          {[10, 20, 50, 100, 200].map(val => (
+            <MenuItem key={val} value={val}>{`Últimos ${val}`}</MenuItem>
+          ))}
+        </Select>
+      </Box>
       <Box>
-        {reportsMostrados.length === 0 ? (
+        {reportsToShow.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h5" color="text.secondary" fontWeight={500}>
               No hay reportes en esta categoría
@@ -203,7 +218,7 @@ export const CompanyStrikes: React.FC = () => {
           </Box>
         ) : (
           <Grid container spacing={3}>
-            {reportsMostrados.map((report) => (
+            {reportsToShow.map((report) => (
               <Grid item xs={12} md={6} key={report.id}>
                 <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white', transition: 'box-shadow 0.2s', '&:hover': { boxShadow: 6 } }}>
                   <CardContent>

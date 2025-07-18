@@ -56,7 +56,7 @@ export const TestConnection: React.FC = () => {
   const testAllEndpoints = async () => {
     const tests = [
       { name: 'Health Check', endpoint: API_ENDPOINTS.HEALTH, method: 'GET' as const },
-      { name: 'Login Endpoint', endpoint: API_ENDPOINTS.LOGIN, method: 'POST' as const, data: { email: 'test@test.com', password: 'test123' } },
+      { name: 'Login Endpoint', endpoint: API_ENDPOINTS.LOGIN, method: 'POST' as const, data: { email: '', password: '' } },
       { name: 'Users List', endpoint: API_ENDPOINTS.USERS, method: 'GET' as const },
       { name: 'Projects List', endpoint: API_ENDPOINTS.PROJECTS, method: 'GET' as const },
       { name: 'Students List', endpoint: API_ENDPOINTS.STUDENTS, method: 'GET' as const },
