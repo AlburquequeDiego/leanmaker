@@ -33,6 +33,15 @@ const TRL_QUESTIONS = [
   'Contamos con un producto completamente desarrollado y disponible para la sociedad.'
 ];
 
+// Lista estática de áreas
+const AREAS_ESTATICAS = [
+  { id: 1, name: 'Tecnología' },
+  { id: 2, name: 'Marketing' },
+  { id: 3, name: 'Finanzas' },
+  { id: 4, name: 'Recursos Humanos' },
+  { id: 5, name: 'Innovación' },
+];
+
 export const PublishProjects: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [form, setForm] = useState({
@@ -61,23 +70,11 @@ export const PublishProjects: React.FC = () => {
   const trlKey = trlSelected as keyof typeof trlToApi;
   const apiKey = trlToApi[trlKey] as keyof typeof apiToHours;
   const minHours = apiToHours[apiKey];
-  const [areas, setAreas] = useState<{ id: number; name: string }[]>([]);
-  const [loadingAreas, setLoadingAreas] = useState(true);
+  const [areas, setAreas] = useState<{ id: number; name: string }[]>(AREAS_ESTATICAS);
+  const [loadingAreas, setLoadingAreas] = useState(false); // Ya no se carga desde API
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAreas = async () => {
-      try {
-        const data = await projectService.getAreas();
-        setAreas(data);
-      } catch (e) {
-        setAreas([]);
-      } finally {
-        setLoadingAreas(false);
-      }
-    };
-    fetchAreas();
-  }, []);
+  // Elimina el useEffect que cargaba áreas desde la API
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });

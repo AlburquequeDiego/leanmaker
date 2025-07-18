@@ -15,6 +15,20 @@ from applications.models import Aplicacion
 from project_status.models import ProjectStatus
 from evaluation_categories.models import EvaluationCategory
 from calendar_events.models import CalendarEvent
+from areas.models import Area
+
+# 0. Áreas (crear si no existen)
+print('--- BLOQUE 0: Áreas ---')
+AREAS_EJEMPLO = [
+    {"name": "Tecnología", "description": "Área de tecnología y desarrollo"},
+    {"name": "Marketing", "description": "Área de marketing y comunicación"},
+    {"name": "Finanzas", "description": "Área de finanzas y contabilidad"},
+    {"name": "Recursos Humanos", "description": "Área de gestión de personas"},
+    {"name": "Innovación", "description": "Área de innovación y creatividad"},
+]
+for area_data in AREAS_EJEMPLO:
+    Area.objects.get_or_create(name=area_data["name"], defaults={"description": area_data["description"]})
+print('Áreas listas.')
 
 # 1. Proyectos (20 por empresa, solo si faltan)
 print('--- BLOQUE 1: Proyectos ---')
