@@ -1,118 +1,135 @@
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const API_ENDPOINTS = {
-  // Auth endpoints
+  // Auth endpoints (estos sí existen en el backend)
   LOGIN: '/api/token/',
   REFRESH_TOKEN: '/api/token/refresh/',
   VERIFY_TOKEN: '/api/token/verify/',
+  AUTH_REGISTER: '/api/auth/register/',
+  AUTH_LOGOUT: '/api/auth/logout/',
   
   // User endpoints
   USERS: '/api/users/',
   USER_PROFILE: '/api/users/profile/',
-  AUTH_REGISTER: '/api/auth/register/',
-  AUTH_LOGOUT: '/api/auth/logout/',
-  PASSWORDS_CHANGE: '/api/passwords/change/',
+  PASSWORDS_CHANGE: '/api/users/change-password/',
   
-  // Dashboard
+  // Dashboard (estos existen)
   DASHBOARD: '/api/dashboard/',
   DASHBOARD_COMPANY_STATS: '/api/dashboard/company_stats/',
   DASHBOARD_STUDENT_STATS: '/api/dashboard/student_stats/',
-  DASHBOARD_ADMIN_STATS: '/api/test-admin-stats/', // Temporalmente usando endpoint de prueba
+  DASHBOARD_ADMIN_STATS: '/api/dashboard/admin_stats/',
   
-  // Students
+  // Students (endpoints reales del backend)
   STUDENTS: '/api/students/',
-  STUDENT_PROFILES: '/api/student-profiles/',
+  STUDENT_ME: '/api/students/me/',
+  STUDENT_DETAIL: '/api/students/{id}/',
+  STUDENT_API_LEVEL_REQUEST: '/api/students/api-level-request/',
+  STUDENT_API_LEVEL_REQUESTS: '/api/students/api-level-requests/',
+  STUDENT_ADMIN_API_LEVEL_REQUESTS: '/api/students/admin/api-level-requests/',
+  STUDENT_ADMIN_SUSPEND: '/api/students/admin/{id}/suspend/',
+  STUDENT_ADMIN_ACTIVATE: '/api/students/admin/{id}/activate/',
+  STUDENT_ADMIN_BLOCK: '/api/students/admin/{id}/block/',
   
-  // Companies
+  // Companies (endpoints reales del backend)
   COMPANIES: '/api/companies/',
-  COMPANY_RATINGS: '/api/company-ratings/',
+  COMPANY_DETAIL: '/api/companies/{id}/',
+  COMPANY_UPDATE: '/api/companies/{id}/update/',
+  COMPANY_ME: '/api/companies/company_me/',
+  COMPANY_ADMIN_SUSPEND: '/api/companies/admin/{id}/suspend/',
+  COMPANY_ADMIN_ACTIVATE: '/api/companies/admin/{id}/activate/',
+  COMPANY_ADMIN_BLOCK: '/api/companies/admin/{id}/block/',
   
-  // Projects
+  // Projects (endpoints reales del backend)
   PROJECTS: '/api/projects/',
+  PROJECT_CREATE: '/api/projects/create/',
+  PROJECT_DETAIL: '/api/projects/{id}/detail/',
+  PROJECT_UPDATE: '/api/projects/{id}/',
+  PROJECT_DELETE: '/api/projects/{id}/delete/',
   PROJECT_MY_PROJECTS: '/api/projects/my_projects/',
-  PROJECT_APPLICATIONS: '/api/project-applications/',
-  PROJECT_APPLICATIONS_RECEIVED: '/api/project-applications/received_applications/',
-  PROJECT_APPLICATIONS_MY_APPLICATIONS: '/api/project-applications/my_applications/',
-  PROJECT_MEMBERS: '/api/project-members/',
+  PROJECT_COMPANY_PROJECTS: '/api/projects/company_projects/',
   
-  // Areas
+  // Applications (endpoints reales del backend)
+  APPLICATIONS: '/api/applications/',
+  APPLICATIONS_RECEIVED: '/api/applications/received_applications/',
+  APPLICATIONS_MY: '/api/applications/my_applications/',
+  
+  // Areas (endpoints reales del backend)
   AREAS: '/api/areas/',
   
-  // TRL Levels
-  TRL_LEVELS: '/api/trl-levels/',
-  
-  // Project Status
-  PROJECT_STATUS: '/api/project-status/',
-  
-  // Assignments
-  ASSIGNMENTS: '/api/assignments/',
-  
-  // Evaluations
+  // Evaluations (endpoints reales del backend)
   EVALUATIONS: '/api/evaluations/',
-  EVALUATION_CATEGORIES: '/api/evaluation-categories/',
-  EVALUATION_TEMPLATES: '/api/evaluation-templates/',
   
-  // Ratings
-  RATINGS: '/api/ratings/',
-  
-  // Notifications
+  // Notifications (endpoints reales del backend)
   NOTIFICATIONS: '/api/notifications/',
-  NOTIFICATION_TEMPLATES: '/api/notification-templates/',
   MASS_NOTIFICATIONS: '/api/mass-notifications/',
-  MASS_NOTIFICATION_TEMPLATES: '/api/mass-notification-templates/',
   
-  // Calendar
-  CALENDAR_EVENTS: '/api/calendar-events/',
-  CALENDAR_COMPANY_EVENTS: '/api/calendar-events/company_events/',
-  CALENDAR_STUDENT_EVENTS: '/api/calendar-events/student_events/',
-  EVENT_REMINDERS: '/api/event-reminders/',
-  CALENDAR_SETTINGS: '/api/calendar-settings/',
+  // Calendar Events (endpoints reales del backend)
+  CALENDAR_EVENTS: '/api/calendar/events/',
   
-  // Work Hours
-  WORK_HOURS: '/api/work-hours/',
+  // Work Hours (endpoints reales del backend)
+  WORK_HOURS: '/work-hours/',
   
-  // Strikes
+  // Interviews (endpoints reales del backend)
+  INTERVIEWS: '/interviews/',
+  
+  // Strikes (endpoints reales del backend)
   STRIKES: '/api/strikes/',
   
-  // Questionnaires
-  QUESTIONNAIRES: '/api/questionnaires/',
-  QUESTIONS: '/api/questions/',
-  CHOICES: '/api/choices/',
-  ANSWERS: '/api/answers/',
+  // Questionnaires (endpoints reales del backend)
+  QUESTIONNAIRES: '/questionnaires/',
   
-  // Interviews
-  INTERVIEWS: '/api/interviews/',
+  // Platform Settings (endpoints reales del backend)
+  PLATFORM_SETTINGS: '/platform-settings/',
   
-  // Platform Settings
-  PLATFORM_SETTINGS: '/api/platform-settings/',
-  SYSTEM_CONFIGURATIONS: '/api/system-configurations/',
-  FEATURE_FLAGS: '/api/feature-flags/',
+  // TRL Levels (endpoints reales del backend)
+  TRL_LEVELS: '/trl-levels/',
   
-  // Search
-  SEARCH: '/api/search/',
+  // Project Status (endpoints reales del backend)
+  PROJECT_STATUS: '/project-status/',
   
-  // API Management
-  API_KEYS: '/api/api-keys/',
-  API_USAGE: '/api/api-usage/',
-  API_RATE_LIMITS: '/api/api-rate-limits/',
+  // Assignments (endpoints reales del backend)
+  ASSIGNMENTS: '/assignments/',
   
-  // Documents
-  DOCUMENTS: '/api/documents/',
+  // Evaluation Categories (endpoints reales del backend)
+  EVALUATION_CATEGORIES: '/evaluation-categories/',
   
-  // Disciplinary Records
-  DISCIPLINARY_RECORDS: '/api/disciplinary-records/',
+  // Ratings (endpoints reales del backend)
+  RATINGS: '/ratings/',
   
-  // Activity Logs
-  ACTIVITY_LOGS: '/api/activity-logs/',
+  // Disciplinary Records (endpoints reales del backend)
+  DISCIPLINARY_RECORDS: '/disciplinary-records/',
   
-  // Reports
-  REPORTS: '/api/reports/',
+  // Documents (endpoints reales del backend)
+  DOCUMENTS: '/documents/',
   
-  // Data Backups
-  DATA_BACKUPS: '/api/data-backups/',
+  // Activity Logs (endpoints reales del backend)
+  ACTIVITY_LOGS: '/activity-logs/',
+  
+  // Reports (endpoints reales del backend)
+  REPORTS: '/reports/',
+  
+  // Data Backups (endpoints reales del backend)
+  DATA_BACKUPS: '/data-backups/',
+  
+  // Admin (endpoints reales del backend)
+  ADMIN: '/api/admin/',
   
   // Health check
   HEALTH: '/api/health-simple/',
+  
+  // Test endpoints (temporales)
+  TEST_PROJECTS: '/api/test-projects/',
+  TEST_ADMIN_STATS: '/api/test-admin-stats/',
+  TEST_AUTH_ADMIN_STATS: '/api/test-auth-admin-stats/',
 };
 
 export const getApiUrl = (endpoint: string): string => `${API_BASE_URL}${endpoint}`;
+
+// Función para reemplazar parámetros en URLs
+export const buildUrl = (endpoint: string, params: Record<string, string | number> = {}): string => {
+  let url = endpoint;
+  Object.entries(params).forEach(([key, value]) => {
+    url = url.replace(`{${key}}`, String(value));
+  });
+  return url;
+};

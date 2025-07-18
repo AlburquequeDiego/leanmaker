@@ -35,13 +35,13 @@ def projects_list(request):
         search = request.GET.get('search', '')
         status = request.GET.get('status', '')
         
-        # Query base con serialización segura
+        # Query base con serialización segura - excluir proyectos eliminados y activos
         queryset = Proyecto.objects.select_related('status', 'company', 'area', 'trl').annotate(
             status_name=F('status__name'),
             company_name=F('company__company_name'),
             area_name=F('area__name'),
             trl_level=F('trl__level')
-        ).values(
+        ).exclude(status__name__in=['deleted', 'active']).values(
             'id', 'title', 'description', 'requirements', 'max_students', 'current_students',
             'applications_count', 'start_date', 'estimated_end_date', 'location', 'modality',
             'difficulty', 'duration_weeks', 'hours_per_week', 'required_hours',
@@ -284,7 +284,7 @@ def projects_create(request):
 
 @csrf_exempt
 @require_http_methods(["PUT", "PATCH"])
-def projects_update(request, projects_id):
+def projects_update(request, project_id):
     """Actualizar proyecto."""
     try:
         # Verificar autenticación
@@ -299,7 +299,7 @@ def projects_update(request, projects_id):
         
         # Obtener proyecto
         try:
-            project = Proyecto.objects.get(id=projects_id)
+            project = Proyecto.objects.get(id=project_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
         
@@ -310,7 +310,31 @@ def projects_update(request, projects_id):
         # Procesar datos
         data = json.loads(request.body)
         
-        # Actualizar campos del proyecto
+        # Manejar cambio de estado específicamente
+        if 'status' in data:
+            from project_status.models import ProjectStatus
+            try:
+                # Buscar el estado por nombre
+                status_name = data['status']
+                if status_name in ['published', 'active', 'completed', 'deleted']:
+                    # Mapear nombres del frontend a nombres del backend
+                    status_mapping = {
+                        'published': 'Publicado',
+                        'active': 'Activo', 
+                        'completed': 'Completado',
+                        'deleted': 'deleted'
+                    }
+                    backend_status_name = status_mapping[status_name]
+                    status_obj = ProjectStatus.objects.get(name=backend_status_name)
+                    project.status = status_obj
+                else:
+                    # Si se envía un ID, usarlo directamente
+                    status_obj = ProjectStatus.objects.get(id=data['status'])
+                    project.status = status_obj
+            except ProjectStatus.DoesNotExist:
+                return JsonResponse({'error': f'Estado no encontrado: {data["status"]}'}, status=400)
+        
+        # Actualizar otros campos del proyecto
         fields_to_update = [
             'title', 'description', 'company_id', 'status_id', 'area_id', 'trl_id',
             'api_level', 'max_students', 'current_students', 'applications_count',
@@ -319,26 +343,37 @@ def projects_update(request, projects_id):
         ]
         
         for field in fields_to_update:
-            if field in data:
+            if field in data and field != 'status_id':  # status_id ya se manejó arriba
                 setattr(project, field, data[field])
         
         project.save()
         
-        # Retornar datos actualizados
+        # Retornar datos actualizados con el nuevo estado
         return JsonResponse({
             'message': 'Proyecto actualizado correctamente',
-            'id': str(project.id)
+            'id': str(project.id),
+            'status': project.status.name if project.status else 'Sin estado',
+            'status_name': project.status.name if project.status else 'Sin estado',
+            'title': project.title,
+            'description': project.description,
+            'company_id': str(project.company.id) if project.company else None,
+            'area_id': str(project.area.id) if project.area else None,
+            'created_at': project.created_at.isoformat() if project.created_at else None,
+            'updated_at': project.updated_at.isoformat() if project.updated_at else None
         })
         
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
+        print(f"❌ ERROR en projects_update: {e}")
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
 
 
 @csrf_exempt
-@require_http_methods(["DELETE"])
-def projects_delete(request, projects_id):
+@require_http_methods(["DELETE", "PATCH"])
+def projects_delete(request, project_id):
     """Eliminar proyecto (soft delete - marcar como cancelled)."""
     try:
         # Verificar autenticación
@@ -353,7 +388,7 @@ def projects_delete(request, projects_id):
         
         # Obtener proyecto
         try:
-            project = Proyecto.objects.get(id=projects_id)
+            project = Proyecto.objects.get(id=project_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
         
@@ -361,15 +396,21 @@ def projects_delete(request, projects_id):
         if current_user.role == 'company' and str(project.company.user.id) != str(current_user.id):
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        # Soft delete: marcar como cancelled en lugar de borrar
+        # Soft delete: marcar como deleted en lugar de borrar
         from project_status.models import ProjectStatus
         try:
-            cancelled_status = ProjectStatus.objects.get(name='cancelled')
-            project.status = cancelled_status
+            deleted_status = ProjectStatus.objects.get(name='deleted')
+            project.status = deleted_status
             project.save()
         except ProjectStatus.DoesNotExist:
-            # Si no existe el estadocancelled', usar el primer estado disponible
-            project.status = ProjectStatus.objects.first()
+            # Si no existe el estado 'deleted', crearlo
+            deleted_status = ProjectStatus.objects.create(
+                name='deleted',
+                description='Proyecto eliminado',
+                color='#dc3545',
+                is_active=False
+            )
+            project.status = deleted_status
             project.save()
         
         return JsonResponse({

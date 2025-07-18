@@ -13,7 +13,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Tabs,
   Tab,
   Select,
@@ -35,9 +34,10 @@ import {
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptApplicationList } from '../../../utils/adapters';
+import { API_ENDPOINTS } from '../../../config/api.config';
 import type { Application } from '../../../types';
 
-const cantidadOpciones = [5, 10, 20, 50, 'todas'];
+const cantidadOpciones = [5, 10, 50, 100, 150, 200, 'todas'];
 
 export const CompanyApplications: React.FC = () => {
   const api = useApi();
@@ -47,9 +47,7 @@ export const CompanyApplications: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
-  const [showInterviewDialog, setShowInterviewDialog] = useState(false);
-  const [interviewData, setInterviewData] = useState({ date: '', notes: '' });
-  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5, 5]);
+  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,13 +59,42 @@ export const CompanyApplications: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      const response = await api.get('/api/applications/received_applications/');
-      const adaptedApplications = adaptApplicationList(response.data.results || response.data);
+      console.log('🚀 Cargando aplicaciones desde:', API_ENDPOINTS.APPLICATIONS_RECEIVED);
+      
+      const response = await api.get(API_ENDPOINTS.APPLICATIONS_RECEIVED);
+      console.log('🔍 Response completa:', response);
+      console.log('🔍 Response.results:', response.results);
+      console.log('🔍 Response.total:', response.total);
+      
+      // Verificar si la respuesta tiene la estructura esperada
+      const applicationsData = response.results || response.data?.results || response.data || [];
+      console.log('📊 Datos de aplicaciones sin adaptar:', applicationsData);
+      
+      const adaptedApplications = adaptApplicationList(applicationsData);
+      console.log('✅ Aplicaciones adaptadas:', adaptedApplications);
+      
       setApplications(adaptedApplications);
       
     } catch (err: any) {
-      console.error('Error cargando aplicaciones:', err);
-      setError(err.response?.data?.error || 'Error al cargar aplicaciones');
+      console.error('❌ Error cargando aplicaciones:', err);
+      console.error('❌ Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+      
+      let errorMessage = 'Error al cargar aplicaciones';
+      if (err.response?.status === 401) {
+        errorMessage = 'No tienes permisos para ver estas aplicaciones';
+      } else if (err.response?.status === 403) {
+        errorMessage = 'Acceso denegado. Solo empresas pueden ver aplicaciones recibidas.';
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -81,9 +108,8 @@ export const CompanyApplications: React.FC = () => {
     switch (tabIdx) {
       case 0: return undefined; // Todas
       case 1: return 'pending';
-      case 2: return 'interviewed';
-      case 3: return 'accepted';
-      case 4: return 'rejected';
+      case 2: return 'accepted';
+      case 3: return 'rejected';
       default: return undefined;
     }
   };
@@ -136,24 +162,36 @@ export const CompanyApplications: React.FC = () => {
     try {
       setUpdatingStatus(applicationId);
       
+      console.log('🔄 Actualizando aplicación:', applicationId, 'a estado:', newStatus);
+      
       const response = await api.patch(`/api/applications/${applicationId}/`, {
         status: newStatus,
       });
 
       const updatedApplication = response.data;
-      
+      console.log('✅ Aplicación actualizada:', updatedApplication);
+
+      if (!updatedApplication) {
+        // Si la respuesta es inválida, recarga toda la lista
+        await loadApplications();
+        return;
+      }
+
       setApplications(prev =>
         prev.map(app =>
           app.id === applicationId ? {
             ...app,
             status: updatedApplication.status,
             company_notes: updatedApplication.company_notes,
+            reviewed_at: updatedApplication.reviewed_at,
+            responded_at: updatedApplication.responded_at,
           } : app
         )
       );
     } catch (error: any) {
-      console.error('Error actualizando estado de aplicación:', error);
-      setError(error.response?.data?.error || 'Error al actualizar estado');
+      console.error('❌ Error actualizando estado de aplicación:', error);
+      // Si hay error, recarga la lista para mantener la app funcional
+      await loadApplications();
     } finally {
       setUpdatingStatus(null);
     }
@@ -162,40 +200,6 @@ export const CompanyApplications: React.FC = () => {
   const handleViewDetails = (application: Application) => {
     setSelectedApplication(application);
     setShowDetailDialog(true);
-  };
-
-  const handleScheduleInterview = (application: Application) => {
-    setSelectedApplication(application);
-    setShowInterviewDialog(true);
-  };
-
-  const handleSaveInterview = async () => {
-    if (selectedApplication) {
-      try {
-        const response = await api.patch(`/api/applications/${selectedApplication.id}/`, {
-          status: 'interviewed',
-          company_notes: interviewData.notes,
-        });
-
-        const updatedApplication = response.data;
-        
-        setApplications(prev =>
-          prev.map(app =>
-            app.id === selectedApplication.id ? {
-              ...app,
-              status: updatedApplication.status,
-              company_notes: updatedApplication.company_notes,
-            } : app
-          )
-        );
-        setShowInterviewDialog(false);
-        setInterviewData({ date: '', notes: '' });
-        setSelectedApplication(null);
-      } catch (error: any) {
-        console.error('Error guardando entrevista:', error);
-        setError(error.response?.data?.error || 'Error al guardar entrevista');
-      }
-    }
   };
 
   const stats = {
@@ -243,7 +247,7 @@ export const CompanyApplications: React.FC = () => {
       {/* Estadísticas mejoradas */}
       <Box sx={{ 
         display: 'grid', 
-        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, 
         gap: 3, 
         mb: 4 
       }}>
@@ -284,24 +288,6 @@ export const CompanyApplications: React.FC = () => {
           </CardContent>
         </Card>
         <Card sx={{ 
-          bgcolor: '#42a5f5', 
-          color: 'white',
-          borderRadius: 3,
-          boxShadow: 3,
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <PersonIcon sx={{ mr: 2, fontSize: 32 }} />
-              <Box>
-                <Typography variant="h3" fontWeight={700}>{stats.interviewed}</Typography>
-                <Typography variant="body1" fontWeight={600}>Entrevistadas</Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-        <Card sx={{ 
           bgcolor: '#388e3c', 
           color: 'white',
           borderRadius: 3,
@@ -337,7 +323,6 @@ export const CompanyApplications: React.FC = () => {
         >
           <Tab label={`Todas (${stats.total})`} />
           <Tab label={`Pendientes (${stats.pending + stats.reviewing})`} />
-          <Tab label={`Entrevistadas (${stats.interviewed})`} />
           <Tab label={`Aceptadas (${stats.accepted})`} />
           <Tab label={`Rechazadas (${stats.rejected})`} />
         </Tabs>
@@ -410,10 +395,10 @@ export const CompanyApplications: React.FC = () => {
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" fontWeight={700}>
-                      {application.student ? 'Estudiante' : 'Estudiante no encontrado'}
+                      {application.student_name || 'Estudiante no encontrado'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" fontWeight={500}>
-                      {application.project || 'Proyecto no encontrado'}
+                      {application.project_title || 'Proyecto no encontrado'}
                     </Typography>
                   </Box>
                   <Chip
@@ -468,17 +453,7 @@ export const CompanyApplications: React.FC = () => {
                 >
                   Ver Detalles
                 </Button>
-                {(application.status === 'pending' || application.status === 'reviewing') && (
-                  <Button
-                    size="small"
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleScheduleInterview(application)}
-                    sx={{ borderRadius: 2, fontWeight: 600 }}
-                  >
-                    Entrevistar
-                  </Button>
-                )}
+
                 {(application.status === 'pending' || application.status === 'reviewing') && (
                   <>
                     <Button
@@ -533,10 +508,10 @@ export const CompanyApplications: React.FC = () => {
                 </Avatar>
                 <Box>
                   <Typography variant="h5" fontWeight={700}>
-                    {selectedApplication.student ? 'Estudiante' : 'Estudiante no encontrado'}
+                    {selectedApplication.student_name || 'Estudiante no encontrado'}
                   </Typography>
                   <Typography variant="body1" color="text.secondary" fontWeight={500}>
-                    {selectedApplication.project || 'Proyecto no encontrado'}
+                    {selectedApplication.project_title || 'Proyecto no encontrado'}
                   </Typography>
                   {selectedApplication.compatibility_score && (
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
@@ -725,74 +700,7 @@ export const CompanyApplications: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Dialog de Entrevista mejorado */}
-      <Dialog open={showInterviewDialog} onClose={() => setShowInterviewDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ 
-          bgcolor: 'info.main', 
-          color: 'white',
-          fontWeight: 600
-        }}>
-          Programar Entrevista
-        </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
-          {selectedApplication && (
-            <Box sx={{ mt: 2 }}>
-              <Box sx={{ 
-                p: 3, 
-                bgcolor: '#e3f2fd', 
-                borderRadius: 2,
-                mb: 3
-              }}>
-                <Typography variant="h6" fontWeight={700} gutterBottom>
-                  {selectedApplication.student ? 'Estudiante' : 'Estudiante no encontrado'}
-                </Typography>
-                <Typography variant="body1" color="text.secondary" fontWeight={500}>
-                  {selectedApplication.project || 'Proyecto no encontrado'}
-                </Typography>
-              </Box>
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <TextField
-                  fullWidth
-                  type="datetime-local"
-                  label="Fecha y Hora de la Entrevista *"
-                  value={interviewData.date}
-                  onChange={(e) => setInterviewData(prev => ({ ...prev, date: e.target.value }))}
-                  InputLabelProps={{ shrink: true }}
-                  sx={{ borderRadius: 2 }}
-                />
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Notas de la Entrevista"
-                  value={interviewData.notes}
-                  onChange={(e) => setInterviewData(prev => ({ ...prev, notes: e.target.value }))}
-                  placeholder="Agrega notas sobre la entrevista, preguntas específicas, o cualquier información relevante..."
-                  sx={{ borderRadius: 2 }}
-                />
-              </Box>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
-          <Button 
-            onClick={() => setShowInterviewDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2, px: 3 }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSaveInterview}
-            variant="contained"
-            disabled={!interviewData.date}
-            sx={{ borderRadius: 2, px: 3 }}
-          >
-            Programar Entrevista
-          </Button>
-        </DialogActions>
-      </Dialog>
+
     </Box>
   );
 };

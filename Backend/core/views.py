@@ -307,7 +307,7 @@ def api_login(request):
             }, status=404)
         
         # Autenticar usuario (usar email ya que es el USERNAME_FIELD)
-        user = authenticate(request, username=user.email, password=password)
+        user = authenticate(request, username=email, password=password)
         
         if user is not None:
             # Generar tokens JWT

@@ -118,6 +118,24 @@ class User(AbstractUser):
     def is_admin(self):
         """Check if user is an admin."""
         return self.role == 'admin' 
+    
+    @property
+    def company_profile(self):
+        """Get the company profile for this user."""
+        try:
+            from companies.models import Empresa
+            return Empresa.objects.get(user=self)
+        except Empresa.DoesNotExist:
+            return None
+    
+    @property
+    def estudiante_profile(self):
+        """Get the student profile for this user."""
+        try:
+            from students.models import Estudiante
+            return Estudiante.objects.get(user=self)
+        except Estudiante.DoesNotExist:
+            return None 
 
 
 class PasswordResetCode(models.Model):

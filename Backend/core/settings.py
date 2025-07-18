@@ -275,7 +275,7 @@ CSRF_EXEMPT_URLS = [
     '/api/students/',
     '/api/companies/',
     '/api/projects/',
-    '/api/project-applications/',
+    '/api/applications/',
     '/api/notifications/',
     '/api/dashboard/',
 ]

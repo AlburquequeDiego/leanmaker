@@ -174,7 +174,7 @@ export const PublishProjects: React.FC = () => {
         required_hours: Number(form.horas) || 0,
         api_level: trlToApi[trlKey],
         company_id,
-        status_id: 1,
+        status_id: 9, // ID del estado "Publicado"
         max_students: Number(form.studentsNeeded) || 1,
         duration_weeks: Number(form.meses) || 1,
         hours_per_week: 10, // valor por defecto o puedes mapearlo si tienes el campo

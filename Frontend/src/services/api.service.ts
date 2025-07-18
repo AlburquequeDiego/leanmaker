@@ -274,6 +274,13 @@ class ApiService {
     }
     
     if (endpoint.includes('/api/projects/')) {
+      // No aplicar adaptador para respuestas de actualización (PATCH/PUT)
+      // Estas respuestas contienen solo campos específicos, no el proyecto completo
+      if (endpoint.includes('/api/projects/') && 
+          (endpoint.match(/\/[^\/]+\/$/) || endpoint.includes('/update/') || endpoint.includes('/delete/'))) {
+        return data; // Devolver datos tal como están
+      }
+      
       if (Array.isArray(data)) {
         return data.map(adaptProject);
       }
@@ -292,7 +299,7 @@ class ApiService {
       return adaptProject(data);
     }
     
-    if (endpoint.includes('/api/project-applications/')) {
+    if (endpoint.includes('/api/project-applications/') || endpoint.includes('/api/applications/')) {
       if (Array.isArray(data)) {
         return data.map(adaptApplication);
       }

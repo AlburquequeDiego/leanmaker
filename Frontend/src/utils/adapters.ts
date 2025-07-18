@@ -122,29 +122,23 @@ export const adaptCompany = (backendCompany: any): Company => ({
  */
 export const adaptProject = (backendProject: any): Project => {
   // Mapeo de status_name del backend a status del frontend
-  let status = 'open'; // Por defecto 'open' para que siempre se muestre
+  let status = 'published'; // Por defecto 'published' para que siempre se muestre
   
   // Manejar diferentes formatos de status que puede devolver el backend
   const statusValue = backendProject.status_name || backendProject.status;
   if (statusValue) {
     switch (statusValue.toLowerCase()) {
-      case 'abierto':
-        status = 'open'; break;
-      case 'en progreso':
-        status = 'active'; break;
-      case 'completado':
-        status = 'completed'; break;
-      case 'cancelado':
-        status = 'cancelled'; break;
       case 'publicado':
         status = 'published'; break;
-      case 'borrador':
-        status = 'draft'; break;
-      case 'draft':
-        status = 'draft'; break;
-      default:
-        status = statusValue.toLowerCase();
-    }
+      case 'activo':
+      status = 'active'; break;
+    case 'completado':
+      status = 'completed'; break;
+      case 'deleted':
+        status = 'deleted'; break;
+    default:
+        status = 'published'; // Por defecto publicado
+      }
   }
   
   return {
@@ -182,25 +176,39 @@ export const adaptProject = (backendProject: any): Project => {
 
 /**
  * Adapta una aplicación del backend al formato del frontend
+ * Maneja la estructura anidada que devuelve el backend Django
  */
-export const adaptApplication = (backendApplication: any): Application => ({
-  id: String(backendApplication.id),
-  project: String(backendApplication.project),
-  student: String(backendApplication.student),
-  status: backendApplication.status,
-  compatibility_score: backendApplication.compatibility_score,
-  cover_letter: backendApplication.cover_letter,
-  company_notes: backendApplication.company_notes,
-  student_notes: backendApplication.student_notes,
-  portfolio_url: backendApplication.portfolio_url,
-  github_url: backendApplication.github_url,
-  linkedin_url: backendApplication.linkedin_url,
-  applied_at: backendApplication.applied_at,
-  reviewed_at: backendApplication.reviewed_at,
-  responded_at: backendApplication.responded_at,
-  created_at: backendApplication.created_at,
-  updated_at: backendApplication.updated_at,
-});
+export const adaptApplication = (backendApplication: any): Application => {
+  // Extraer datos del proyecto (estructura anidada del backend)
+  const project = backendApplication.project || {};
+  const student = backendApplication.student || {};
+  
+  return {
+    id: String(backendApplication.id),
+    project: String(project.id || backendApplication.project || ''),
+    student: String(student.id || backendApplication.student || ''),
+    status: backendApplication.status || 'pending',
+    compatibility_score: backendApplication.compatibility_score || 0,
+    cover_letter: backendApplication.cover_letter || '',
+    company_notes: backendApplication.company_notes || '',
+    student_notes: backendApplication.student_notes || '',
+    portfolio_url: backendApplication.portfolio_url || '',
+    github_url: backendApplication.github_url || '',
+    linkedin_url: backendApplication.linkedin_url || '',
+    applied_at: backendApplication.applied_at || backendApplication.created_at || new Date().toISOString(),
+    reviewed_at: backendApplication.reviewed_at || null,
+    responded_at: backendApplication.responded_at || null,
+    created_at: backendApplication.created_at || new Date().toISOString(),
+    updated_at: backendApplication.updated_at || new Date().toISOString(),
+    
+    // Campos adicionales extraídos de la estructura anidada del backend
+    project_title: project.title || 'Proyecto no encontrado',
+    project_description: project.description || 'Sin descripción',
+    student_name: student.name || 'Estudiante no encontrado',
+    student_email: student.email || 'Sin email',
+    company_name: project.company?.name || 'Empresa no encontrada',
+  };
+};
 
 /**
  * Adapta una evaluación del backend al formato del frontend
