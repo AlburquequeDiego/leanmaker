@@ -123,50 +123,60 @@ export const adaptCompany = (backendCompany: any): Company => ({
 export const adaptProject = (backendProject: any): Project => {
   // Mapeo de status_name del backend a status del frontend
   let status = 'open'; // Por defecto 'open' para que siempre se muestre
-  switch ((backendProject.status_name || '').toLowerCase()) {
-    case 'abierto':
-      status = 'open'; break;
-    case 'en progreso':
-      status = 'active'; break;
-    case 'completado':
-      status = 'completed'; break;
-    case 'cancelado':
-      status = 'cancelled'; break;
-    case 'publicado':
-      status = 'published'; break;
-    default:
-      if (backendProject.status_name) {
-        status = (backendProject.status_name || '').toLowerCase();
-      } else if (backendProject.status) {
-        status = (backendProject.status || '').toLowerCase();
-      } else {
-        status = 'open';
-      }
+  
+  // Manejar diferentes formatos de status que puede devolver el backend
+  const statusValue = backendProject.status_name || backendProject.status;
+  if (statusValue) {
+    switch (statusValue.toLowerCase()) {
+      case 'abierto':
+        status = 'open'; break;
+      case 'en progreso':
+        status = 'active'; break;
+      case 'completado':
+        status = 'completed'; break;
+      case 'cancelado':
+        status = 'cancelled'; break;
+      case 'publicado':
+        status = 'published'; break;
+      case 'borrador':
+        status = 'draft'; break;
+      case 'draft':
+        status = 'draft'; break;
+      default:
+        status = statusValue.toLowerCase();
+    }
   }
+  
   return {
     id: String(backendProject.id),
-    title: backendProject.title || backendProject.titulo,
-    description: backendProject.description || backendProject.descripcion,
-    company: String(backendProject.company_id),
-    area: String(backendProject.area_id),
+    title: backendProject.title || backendProject.titulo || 'Sin título',
+    description: backendProject.description || backendProject.descripcion || 'Sin descripción',
+    company: String(backendProject.company_id || backendProject.company || ''),
+    area: String(backendProject.area_id || backendProject.area || ''),
     status,
-    requirements: backendProject.requirements || backendProject.requisitos,
-    min_api_level: backendProject.min_api_level,
-    max_students: backendProject.max_students || backendProject.max_estudiantes,
-    current_students: backendProject.current_students,
-    modality: backendProject.modality || backendProject.modalidad,
-    duration_weeks: backendProject.duration_weeks || backendProject.duracion_semanas,
-    hours_per_week: backendProject.hours_per_week || backendProject.horas_por_semana,
-    stipend_amount: backendProject.stipend_amount || backendProject.monto_stipendio,
-    stipend_currency: backendProject.stipend_currency || backendProject.moneda_stipendio,
-    technologies: backendProject.technologies,
-    benefits: backendProject.benefits || backendProject.beneficios,
-    application_deadline: backendProject.application_deadline || backendProject.fecha_limite_postulacion,
-    start_date: backendProject.start_date || backendProject.fecha_inicio,
-    end_date: backendProject.end_date || backendProject.fecha_fin_estimado,
-    created_by: String(backendProject.created_by),
-    created_at: backendProject.created_at,
-    updated_at: backendProject.updated_at,
+    requirements: backendProject.requirements || backendProject.requisitos || 'Sin requisitos especificados',
+    min_api_level: backendProject.api_level || backendProject.min_api_level || 1,
+    max_students: backendProject.max_students || backendProject.max_estudiantes || 1,
+    current_students: backendProject.current_students || 0,
+    applications_count: backendProject.applications_count || 0,
+    modality: backendProject.modality || backendProject.modalidad || 'remote',
+    duration_weeks: backendProject.duration_weeks || backendProject.duracion_semanas || 12,
+    hours_per_week: backendProject.hours_per_week || backendProject.horas_por_semana || 20,
+    required_hours: backendProject.required_hours || 0,
+    stipend_amount: backendProject.stipend_amount || backendProject.monto_stipendio || 0,
+    stipend_currency: backendProject.stipend_currency || backendProject.moneda_stipendio || 'CLP',
+    technologies: backendProject.technologies || [],
+    benefits: backendProject.benefits || backendProject.beneficios || [],
+    application_deadline: backendProject.application_deadline || backendProject.fecha_limite_postulacion || null,
+    start_date: backendProject.start_date || backendProject.fecha_inicio || null,
+    estimated_end_date: backendProject.estimated_end_date || backendProject.end_date || backendProject.fecha_fin_estimado || null,
+    location: backendProject.location || 'No especificada',
+    difficulty: backendProject.difficulty || 'intermediate',
+    is_featured: backendProject.is_featured || false,
+    is_urgent: backendProject.is_urgent || false,
+    created_by: String(backendProject.created_by || ''),
+    created_at: backendProject.created_at || new Date().toISOString(),
+    updated_at: backendProject.updated_at || new Date().toISOString(),
   };
 };
 

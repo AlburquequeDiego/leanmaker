@@ -193,16 +193,52 @@ export const CompanyProfile: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Perfil de Empresa
-        </Typography>
+    <Box sx={{ flexGrow: 1, p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+      {/* Banner de éxito */}
+      {success && (
+        <Alert 
+          severity="success" 
+          sx={{ 
+            mb: 3, 
+            borderRadius: 2,
+            '& .MuiAlert-icon': { fontSize: 28 },
+            '& .MuiAlert-message': { fontSize: '1rem' }
+          }} 
+          onClose={() => setSuccess(null)}
+        >
+          {success}
+        </Alert>
+      )}
+
+      {/* Header mejorado */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 4,
+        flexWrap: 'wrap',
+        gap: 2
+      }}>
+        <Box>
+          <Typography variant="h4" fontWeight={700} gutterBottom>
+            Perfil de Empresa
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Gestiona la información de tu empresa y mantén tu perfil actualizado
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           startIcon={<EditIcon />}
           onClick={handleEdit}
           color="primary"
+          size="large"
+          sx={{ 
+            borderRadius: 2,
+            px: 3,
+            py: 1.5,
+            boxShadow: 2
+          }}
         >
           Editar Perfil
         </Button>
@@ -211,148 +247,256 @@ export const CompanyProfile: React.FC = () => {
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
         {/* Información Principal */}
         <Box sx={{ flex: { xs: '1 1 100%', md: '2 1 0' } }}>
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Avatar sx={{ width: 80, height: 80, mr: 2, bgcolor: 'primary.main' }}>
-                <BusinessIcon sx={{ fontSize: 40 }} />
+          <Paper sx={{ 
+            p: 4, 
+            mb: 3, 
+            borderRadius: 3,
+            boxShadow: 3,
+            bgcolor: 'white'
+          }}>
+            {/* Header de la empresa */}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 4,
+              flexWrap: 'wrap',
+              gap: 2
+            }}>
+              <Avatar sx={{ 
+                width: 100, 
+                height: 100, 
+                mr: 2, 
+                bgcolor: 'primary.main',
+                boxShadow: 3
+              }}>
+                <BusinessIcon sx={{ fontSize: 50 }} />
               </Avatar>
-              <Box>
-                <Typography variant="h5" gutterBottom>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h4" fontWeight={700} gutterBottom>
                   {profile.company.company_name}
                 </Typography>
-                {/* Eliminar la visualización de la calificación promedio */}
-                {/* <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <StarIcon sx={{ color: 'warning.main', mr: 1 }} />
-                  <Typography variant="body1">
-                    {profile.averageRating.toFixed(1)} / 5.0
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  <Chip 
+                    label={profile.company.industry || 'Sin industria'} 
+                    color="primary" 
+                    size="medium"
+                    sx={{ fontWeight: 600 }}
+                  />
+                  {profile.company.verified && (
+                    <Chip 
+                      label="Verificada" 
+                      color="success" 
+                      size="medium"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  )}
+                </Box>
+                {profile.company.description && (
+                  <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 500 }}>
+                    {profile.company.description.length > 150 
+                      ? `${profile.company.description.substring(0, 150)}...` 
+                      : profile.company.description
+                    }
                   </Typography>
-                </Box> */}
-                <Chip label={profile.company.industry || 'Sin industria'} color="primary" size="small" />
-                {profile.company.verified && (
-                  <Chip label="Verificada" color="success" size="small" sx={{ ml: 1 }} />
                 )}
               </Box>
             </Box>
 
-            <Typography variant="h6" gutterBottom>
+            <Divider sx={{ my: 3 }} />
+
+            {/* Información de la empresa */}
+            <Typography variant="h5" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
               Información de la Empresa
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: 3
+            }}>
               {profile.company.rut && (
-                <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#f8f9fa', 
+                  borderRadius: 2,
+                  border: '1px solid #e9ecef'
+                }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <BadgeIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>RUT:</strong> {profile.company.rut}
+                    <BadgeIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      RUT
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.company.rut}
+                  </Typography>
                 </Box>
               )}
               {profile.company.personality && (
-                <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#f8f9fa', 
+                  borderRadius: 2,
+                  border: '1px solid #e9ecef'
+                }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>Personalidad:</strong> {profile.company.personality}
+                    <BusinessIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Personalidad
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.company.personality}
+                  </Typography>
                 </Box>
               )}
               {profile.company.business_name && (
-                <Box sx={{ flex: '1 1 100%' }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#f8f9fa', 
+                  borderRadius: 2,
+                  border: '1px solid #e9ecef',
+                  gridColumn: { xs: '1', sm: '1 / -1' }
+                }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>Razón Social:</strong> {profile.company.business_name}
+                    <BusinessIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Razón Social
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.company.business_name}
+                  </Typography>
                 </Box>
               )}
               {profile.company.address && (
-                <Box sx={{ flex: '1 1 100%' }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#f8f9fa', 
+                  borderRadius: 2,
+                  border: '1px solid #e9ecef',
+                  gridColumn: { xs: '1', sm: '1 / -1' }
+                }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <LocationIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>Dirección:</strong> {profile.company.address}
+                    <LocationIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Dirección
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.company.address}
+                  </Typography>
                 </Box>
               )}
               {profile.company.contact_phone && (
-                <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#f8f9fa', 
+                  borderRadius: 2,
+                  border: '1px solid #e9ecef'
+                }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>Teléfono:</strong> {profile.company.contact_phone}
+                    <PhoneIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Teléfono
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.company.contact_phone}
+                  </Typography>
                 </Box>
               )}
               {profile.company.contact_email && (
-                <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#f8f9fa', 
+                  borderRadius: 2,
+                  border: '1px solid #e9ecef'
+                }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>Email:</strong> {profile.company.contact_email}
+                    <EmailIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Email
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.company.contact_email}
+                  </Typography>
                 </Box>
               )}
               {profile.company.website && (
-                <Box sx={{ flex: '1 1 100%' }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#f8f9fa', 
+                  borderRadius: 2,
+                  border: '1px solid #e9ecef',
+                  gridColumn: { xs: '1', sm: '1 / -1' }
+                }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <WebIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>Sitio Web:</strong> {profile.company.website}
+                    <WebIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Sitio Web
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.company.website}
+                  </Typography>
                 </Box>
               )}
             </Box>
 
-            {profile.company.description && (
-              <>
-                <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                  Descripción
-                </Typography>
-                <Typography variant="body2" paragraph>
-                  {profile.company.description}
-                </Typography>
-              </>
-            )}
+            <Divider sx={{ my: 4 }} />
 
-            <Divider sx={{ my: 3 }} />
-
-            <Typography variant="h6" gutterBottom>
+            {/* Usuario Responsable */}
+            <Typography variant="h5" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
               Usuario Responsable
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              <Box sx={{ flex: '1 1 100%' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">
-                    <strong>Nombre:</strong> {profile.user.full_name}
-                  </Typography>
-                </Box>
-              </Box>
-              <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                  <Typography variant="body2">
-                    <strong>Email:</strong> {profile.user.email}
-                  </Typography>
-                </Box>
-              </Box>
-              {profile.user.phone && (
-                <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
+            <Box sx={{ 
+              p: 3, 
+              bgcolor: '#e3f2fd', 
+              borderRadius: 2,
+              border: '1px solid #bbdefb'
+            }}>
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                gap: 2
+              }}>
+                <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2">
-                      <strong>Teléfono:</strong> {profile.user.phone}
+                    <PersonIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Nombre
                     </Typography>
                   </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.user.full_name}
+                  </Typography>
                 </Box>
-              )}
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <EmailIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                      Email
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" fontWeight={500}>
+                    {profile.user.email}
+                  </Typography>
+                </Box>
+                {profile.user.phone && (
+                  <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <PhoneIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+                      <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                        Teléfono
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={500}>
+                      {profile.user.phone}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
             </Box>
           </Paper>
         </Box>
@@ -416,15 +560,29 @@ export const CompanyProfile: React.FC = () => {
 
       {/* Dialog para editar perfil */}
       <Dialog open={isEditing} onClose={handleCancel} maxWidth="md" fullWidth>
-        <DialogTitle>Editar Perfil de Empresa</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+        <DialogTitle sx={{ 
+          bgcolor: 'primary.main', 
+          color: 'white',
+          fontWeight: 600,
+          fontSize: '1.25rem'
+        }}>
+          Editar Perfil de Empresa
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+            gap: 3, 
+            mt: 2 
+          }}>
             <TextField
               fullWidth
-              label="Nombre de la Empresa"
+              label="Nombre de la Empresa *"
               value={editData.company_name || ''}
               onChange={(e) => handleInputChange('company_name', e.target.value)}
               margin="normal"
+              required
+              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
             />
             <TextField
               fullWidth
@@ -432,6 +590,7 @@ export const CompanyProfile: React.FC = () => {
               value={editData.rut || ''}
               onChange={(e) => handleInputChange('rut', e.target.value)}
               margin="normal"
+              placeholder="12.345.678-9"
             />
             <FormControl fullWidth margin="normal">
               <InputLabel>Personalidad</InputLabel>
@@ -450,6 +609,7 @@ export const CompanyProfile: React.FC = () => {
               value={editData.business_name || ''}
               onChange={(e) => handleInputChange('business_name', e.target.value)}
               margin="normal"
+              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
             />
             <TextField
               fullWidth
@@ -457,6 +617,7 @@ export const CompanyProfile: React.FC = () => {
               value={editData.address || ''}
               onChange={(e) => handleInputChange('address', e.target.value)}
               margin="normal"
+              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
             />
             <TextField
               fullWidth
@@ -478,6 +639,7 @@ export const CompanyProfile: React.FC = () => {
               value={editData.contact_phone || ''}
               onChange={(e) => handleInputChange('contact_phone', e.target.value)}
               margin="normal"
+              placeholder="+56 9 1234 5678"
             />
             <TextField
               fullWidth
@@ -485,6 +647,7 @@ export const CompanyProfile: React.FC = () => {
               value={editData.contact_email || ''}
               onChange={(e) => handleInputChange('contact_email', e.target.value)}
               margin="normal"
+              type="email"
             />
             <TextField
               fullWidth
@@ -492,6 +655,8 @@ export const CompanyProfile: React.FC = () => {
               value={editData.website || ''}
               onChange={(e) => handleInputChange('website', e.target.value)}
               margin="normal"
+              placeholder="https://www.ejemplo.com"
+              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
             />
             <TextField
               fullWidth
@@ -521,11 +686,18 @@ export const CompanyProfile: React.FC = () => {
               value={editData.description || ''}
               onChange={(e) => handleInputChange('description', e.target.value)}
               margin="normal"
+              placeholder="Describe tu empresa, misión, visión..."
+              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
             />
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} startIcon={<CancelIcon />}>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button 
+            onClick={handleCancel} 
+            startIcon={<CancelIcon />}
+            variant="outlined"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
             Cancelar
           </Button>
           <Button 
@@ -533,6 +705,11 @@ export const CompanyProfile: React.FC = () => {
             variant="contained" 
             startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
             disabled={saving}
+            sx={{ 
+              borderRadius: 2, 
+              px: 3,
+              boxShadow: 2
+            }}
           >
             {saving ? 'Guardando...' : 'Guardar Cambios'}
           </Button>

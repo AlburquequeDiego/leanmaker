@@ -42,8 +42,22 @@ export class ProjectService {
   // Obtener proyectos de la empresa autenticada
   async getMyProjects(): Promise<any[]> {
     const response = await apiService.get<any>('/api/projects/company_projects/');
-    // El apiService ya maneja la respuesta, devolvemos directamente los datos
-    return adaptProjectList(Array.isArray(response) ? response : (response.data || response));
+    
+    // El endpoint company_projects devuelve {success: true, data: [...], count: number}
+    // Necesitamos extraer el array de datos
+    let projectsData;
+    if (response && response.success && Array.isArray(response.data)) {
+      projectsData = response.data;
+    } else if (Array.isArray(response)) {
+      projectsData = response;
+    } else if (response && Array.isArray(response.data)) {
+      projectsData = response.data;
+    } else {
+      projectsData = [];
+    }
+    
+    // Aplicar el adaptador a los datos
+    return adaptProjectList(projectsData);
   }
 
   // Crear un nuevo proyecto (adaptando los campos al backend real)

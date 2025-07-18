@@ -108,21 +108,27 @@ export interface Project {
   description: string;
   company: string; // UUID de la empresa
   area: string; // UUID del área
-  status: string; // UUID del estado del proyecto
+  status: string; // Estado del proyecto (open, active, completed, etc.)
   requirements: string;
   min_api_level: number;
   max_students: number;
   current_students: number;
+  applications_count?: number; // Número de aplicaciones recibidas
   modality: 'remote' | 'hybrid' | 'onsite';
   duration_weeks: number;
   hours_per_week: number;
+  required_hours?: number; // Horas requeridas totales
   stipend_amount?: number;
   stipend_currency?: string;
   technologies: string[]; // JSON array
   benefits: string[]; // JSON array
   application_deadline?: string;
   start_date?: string;
-  end_date?: string;
+  estimated_end_date?: string; // Fecha estimada de fin
+  location?: string; // Ubicación del proyecto
+  difficulty?: string; // Dificultad del proyecto
+  is_featured?: boolean; // Si el proyecto está destacado
+  is_urgent?: boolean; // Si el proyecto es urgente
   created_by: string; // UUID del creador
   created_at: string;
   updated_at: string;

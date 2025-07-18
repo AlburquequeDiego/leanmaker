@@ -39,6 +39,10 @@ go
 
 -- Ver usuarios creados
 SELECT * FROM users;
+--nombre de estudiantes 
+SELECT u.first_name, u.last_name
+FROM students s
+JOIN users u ON s.user_id = u.id;
 
 -- Ver empresas
 SELECT * FROM companies;

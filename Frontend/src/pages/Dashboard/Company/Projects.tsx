@@ -264,6 +264,9 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
 
   const renderSection = (status: string, icon: React.ReactNode, title: string) => {
     const filtered = projects.filter(p => {
+      // Verificar que el proyecto tenga las propiedades básicas necesarias
+      if (!p || !p.id || !p.title) return false;
+      
       if (status === 'active') return p.status === 'active' || p.status === 'open';
       if (status === 'published') return p.status === 'published' || p.status === 'open';
       return p.status === status;
@@ -296,31 +299,92 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {toShow.length === 0 && (
-            <Paper sx={{ p: 4, textAlign: 'center' }}>
-              <Typography color="text.secondary">No hay proyectos {title.toLowerCase()}.</Typography>
+            <Paper sx={{ 
+              p: 4, 
+              textAlign: 'center',
+              bgcolor: '#f8f9fa',
+              borderRadius: 3
+            }}>
+              <Typography color="text.secondary" variant="h6">
+                No hay proyectos {title.toLowerCase()}.
+              </Typography>
             </Paper>
           )}
-          {toShow.map((project) => (
-            <Card key={project.id} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', p: 2, boxShadow: 1, borderRadius: 2 }}>
-              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="h6" fontWeight={600} sx={{ mr: 1 }}>{project.title}</Typography>
-                  <Chip label={getStatusLabel(project.status)} color={getStatusColor(project.status) as any} size="small" />
-                </Box>
-                    <Typography variant="body2" color="text.secondary">
-                  {project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description}
-                    </Typography>
-                <Box sx={{ display: 'flex', gap: 2, mt: 1, alignItems: 'center' }}>
-                  <Typography variant="caption" color="text.secondary">
-                    {project.duration_weeks ? `${project.duration_weeks} semanas • ` : ''} {project.hours_per_week} horas/semana
+          {toShow.map((project) => {
+            // Verificar que el proyecto tenga las propiedades necesarias
+            if (!project || !project.id || !project.title) {
+              return null;
+            }
+            
+            return (
+            <Card key={project.id} sx={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              p: 3, 
+              boxShadow: 3, 
+              borderRadius: 3,
+              bgcolor: 'white',
+              border: '1px solid #e0e0e0',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                boxShadow: 6,
+                transform: 'translateY(-2px)',
+                borderColor: 'primary.main'
+              }
+            }}>
+              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ mr: 1, color: 'primary.main' }}>
+                    {project.title}
                   </Typography>
-                  <Chip label={`${project.applications_count || 0} postulaciones`} size="small" color="info" />
-                  <Chip label={`${project.current_students}/${project.max_students} estudiantes`} size="small" color="success" />
+                  <Chip 
+                    label={getStatusLabel(project.status)} 
+                    color={getStatusColor(project.status) as any} 
+                    size="small"
+                    sx={{ fontWeight: 600 }}
+                  />
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                  {project.description && project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description || 'Sin descripción'}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    {project.duration_weeks ? `${project.duration_weeks} semanas • ` : ''} {project.hours_per_week || 0} horas/semana
+                  </Typography>
+                  <Chip 
+                    label={`${project.applications_count || 0} postulaciones`} 
+                    size="small" 
+                    color="info"
+                    sx={{ fontWeight: 600 }}
+                  />
+                  <Chip 
+                    label={`${project.current_students || 0}/${project.max_students || 1} estudiantes`} 
+                    size="small" 
+                    color="success"
+                    sx={{ fontWeight: 600 }}
+                  />
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1, minWidth: 120, ml: 2 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'flex-end', 
+                gap: 1, 
+                minWidth: 120, 
+                ml: 2 
+              }}>
                 {(project.status === 'published' || project.status === 'open' || project.status === 'active') && (
-                  <IconButton color="info" size="small" onClick={() => handleViewClick(project)}>
+                  <IconButton 
+                    color="info" 
+                    size="small" 
+                    onClick={() => handleViewClick(project)}
+                    sx={{ 
+                      bgcolor: 'info.light',
+                      color: 'info.contrastText',
+                      '&:hover': { bgcolor: 'info.main' }
+                    }}
+                  >
                     <EditIcon />
                   </IconButton>
                 )}
@@ -330,11 +394,25 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     size="small" 
                     onClick={() => handleCompleteClick(project)}
                     disabled={updatingProject === project.id}
+                    sx={{ 
+                      bgcolor: 'success.light',
+                      color: 'success.contrastText',
+                      '&:hover': { bgcolor: 'success.main' }
+                    }}
                   >
                     {updatingProject === project.id ? <CircularProgress size={16} /> : <TaskAltIcon />}
                   </IconButton>
                 )}
-                <IconButton color="primary" size="small" onClick={() => handleViewClick(project)}>
+                <IconButton 
+                  color="primary" 
+                  size="small" 
+                  onClick={() => handleViewClick(project)}
+                  sx={{ 
+                    bgcolor: 'primary.light',
+                    color: 'primary.contrastText',
+                    '&:hover': { bgcolor: 'primary.main' }
+                  }}
+                >
                   <VisibilityIcon />
                 </IconButton>
                 <IconButton 
@@ -342,21 +420,49 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                   size="small" 
                   onClick={() => handleDeleteClick(project)}
                   disabled={updatingProject === project.id}
+                  sx={{ 
+                    bgcolor: 'error.light',
+                    color: 'error.contrastText',
+                    '&:hover': { bgcolor: 'error.main' }
+                  }}
                 >
                   {updatingProject === project.id ? <CircularProgress size={16} /> : <DeleteIcon />}
                 </IconButton>
               </Box>
             </Card>
-          ))}
+            );
+          })}
           </Box>
       </Box>
     );
   };
 
   return (
-    <Box sx={{ width: '100%', p: { xs: 1, md: 3 } }}>
-      <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 3 }}>
-        <Tab label="Proyectos" />
+    <Box sx={{ width: '100%', p: { xs: 1, md: 3 }, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+      {/* Header mejorado */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom>
+          Gestión de Proyectos
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Administra y supervisa todos tus proyectos de la plataforma
+        </Typography>
+      </Box>
+
+      <Tabs 
+        value={tab} 
+        onChange={handleTabChange} 
+        sx={{ 
+          mb: 4,
+          '& .MuiTab-root': {
+            fontSize: '1rem',
+            fontWeight: 600,
+            textTransform: 'none',
+            minHeight: 48
+          }
+        }}
+      >
+        <Tab label="Mis Proyectos" />
         <Tab label="Crear Proyecto" icon={<AddIcon />} iconPosition="start" />
       </Tabs>
       
@@ -374,35 +480,72 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         <PublishProjects />
       )}
 
-      {/* Diálogo de eliminar */}
+      {/* Diálogo de eliminar mejorado */}
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
-        <DialogTitle>¿Eliminar proyecto?</DialogTitle>
-        <DialogContent>
-          ¿Seguro que deseas eliminar el proyecto "{selectedProject?.title}"?
+        <DialogTitle sx={{ 
+          bgcolor: 'error.main', 
+          color: 'white',
+          fontWeight: 600
+        }}>
+          ¿Eliminar proyecto?
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
+          <Typography variant="body1" gutterBottom>
+            ¿Seguro que deseas eliminar el proyecto <strong>"{selectedProject?.title}"</strong>?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Esta acción no se puede deshacer y se perderán todos los datos asociados al proyecto.
+          </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteCancel}>Cancelar</Button>
-          <Button onClick={handleDeleteConfirm} color="error">
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button 
+            onClick={handleDeleteCancel}
+            variant="outlined"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm} 
+            color="error"
+            variant="contained"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
             {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Eliminar'}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo de completar proyecto */}
+      {/* Diálogo de completar proyecto mejorado */}
       <Dialog open={completeDialogOpen} onClose={handleCompleteCancel}>
-        <DialogTitle>¿Marcar proyecto como completado?</DialogTitle>
-        <DialogContent>
-          ¿Seguro que deseas marcar el proyecto "{selectedProject?.title}" como completado?
-          <br />
-          <br />
-          <strong>Esta acción no se puede deshacer.</strong>
+        <DialogTitle sx={{ 
+          bgcolor: 'success.main', 
+          color: 'white',
+          fontWeight: 600
+        }}>
+          ¿Marcar proyecto como completado?
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
+          <Typography variant="body1" gutterBottom>
+            ¿Seguro que deseas marcar el proyecto <strong>"{selectedProject?.title}"</strong> como completado?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Esta acción no se puede deshacer y el proyecto pasará al estado de completado.
+          </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCompleteCancel}>Cancelar</Button>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button 
+            onClick={handleCompleteCancel}
+            variant="outlined"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cancelar
+          </Button>
           <Button 
             onClick={handleCompleteConfirm} 
             color="success" 
             variant="contained"
+            sx={{ borderRadius: 2, px: 3 }}
             disabled={updatingProject === selectedProject?.id}
           >
             {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Marcar como Completado'}
@@ -410,78 +553,123 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         </DialogActions>
       </Dialog>
 
-      {/* Modal de ver proyecto */}
+      {/* Modal de ver proyecto mejorado */}
       <Dialog open={viewDialogOpen} onClose={handleViewClose} maxWidth="md" fullWidth>
-        <DialogTitle>Detalles del Proyecto</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ 
+          bgcolor: 'primary.main', 
+          color: 'white',
+          fontWeight: 600
+        }}>
+          Detalles del Proyecto
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
           {selectedProject && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Typography variant="h6" color="primary">{selectedProject.title}</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box>
+                <Typography variant="h5" fontWeight={700} color="primary" gutterBottom>
+                  {selectedProject.title}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                  <Chip label={getStatusLabel(selectedProject.status)} color={getStatusColor(selectedProject.status) as any} size="medium" />
+                  <Chip label={`${selectedProject.applications_count || 0} postulaciones`} size="medium" color="info" />
+                  <Chip label={`${selectedProject.current_students}/${selectedProject.max_students} estudiantes`} size="medium" color="success" />
+                  {selectedProject.is_paid && (
+                    <Chip label="Remunerado" size="medium" color="warning" />
+                  )}
+                  {selectedProject.is_featured && (
+                    <Chip label="Destacado" size="medium" color="secondary" />
+                  )}
+                </Box>
+              </Box>
               
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" color="text.secondary">Descripción</Typography>
-                  <Typography variant="body2">{selectedProject.description}</Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Descripción
+                  </Typography>
+                  <Typography variant="body1" sx={{ bgcolor: '#f8f9fa', p: 2, borderRadius: 2 }}>
+                    {selectedProject.description}
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Requerimientos
+                  </Typography>
+                  <Typography variant="body1" sx={{ bgcolor: '#f8f9fa', p: 2, borderRadius: 2 }}>
+                    {selectedProject.requirements}
+                  </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" color="text.secondary">Requerimientos</Typography>
-                  <Typography variant="body2">{selectedProject.requirements}</Typography>
-                </Grid>
-                
-                <Grid item xs={12} md={6}>
-                <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
-                  <Typography variant="body2">
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Duración
+                  </Typography>
+                  <Typography variant="body1">
                     {selectedProject.duration_weeks} semanas • {selectedProject.hours_per_week} horas/semana
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" color="text.secondary">Modalidad</Typography>
-                  <Typography variant="body2">{selectedProject.modality}</Typography>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Modalidad
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.modality}
+                  </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" color="text.secondary">Dificultad</Typography>
-                  <Typography variant="body2">{selectedProject.difficulty}</Typography>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Dificultad
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.difficulty}
+                  </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" color="text.secondary">Nivel API Mínimo</Typography>
-                  <Typography variant="body2">{selectedProject.min_api_level}</Typography>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Nivel API Mínimo
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.min_api_level}
+                  </Typography>
                 </Grid>
                 
                 {selectedProject.start_date && (
                   <Grid item xs={12} md={6}>
-                    <Typography variant="subtitle2" color="text.secondary">Fecha de Inicio</Typography>
-                    <Typography variant="body2">{new Date(selectedProject.start_date).toLocaleDateString()}</Typography>
+                    <Typography variant="h6" fontWeight={600} gutterBottom>
+                      Fecha de Inicio
+                    </Typography>
+                    <Typography variant="body1">
+                      {new Date(selectedProject.start_date).toLocaleDateString()}
+                    </Typography>
                   </Grid>
                 )}
                 
                 {selectedProject.estimated_end_date && (
                   <Grid item xs={12} md={6}>
-                    <Typography variant="subtitle2" color="text.secondary">Fecha Estimada de Fin</Typography>
-                    <Typography variant="body2">{new Date(selectedProject.estimated_end_date).toLocaleDateString()}</Typography>
+                    <Typography variant="h6" fontWeight={600} gutterBottom>
+                      Fecha Estimada de Fin
+                    </Typography>
+                    <Typography variant="body1">
+                      {new Date(selectedProject.estimated_end_date).toLocaleDateString()}
+                    </Typography>
                   </Grid>
                 )}
               </Grid>
-              
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                <Chip label={`${selectedProject.applications_count || 0} postulaciones`} size="small" color="info" />
-                <Chip label={`${selectedProject.current_students}/${selectedProject.max_students} estudiantes`} size="small" color="success" />
-                <Chip label={getStatusLabel(selectedProject.status)} color={getStatusColor(selectedProject.status) as any} size="small" />
-                {selectedProject.is_paid && (
-                  <Chip label="Remunerado" size="small" color="warning" />
-                )}
-                {selectedProject.is_featured && (
-                  <Chip label="Destacado" size="small" color="secondary" />
-                )}
-              </Box>
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleViewClose}>Cerrar</Button>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button 
+            onClick={handleViewClose}
+            variant="contained"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
