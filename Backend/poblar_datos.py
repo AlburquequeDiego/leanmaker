@@ -6,31 +6,19 @@ from datetime import datetime, timedelta
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
-from users.models import User
 from students.models import Estudiante
 from companies.models import Empresa
-from projects.models import Proyecto
+from projects.models import Proyecto, MiembroProyecto
 from evaluations.models import Evaluation
-from calendar_events.models import CalendarEvent
-from interviews.models import Interview
 from strikes.models import Strike
-from notifications.models import Notification
 from applications.models import Aplicacion
-from project_status.models import ProjectStatus  # <--- Importar el modelo correcto
-from projects.models import MiembroProyecto  # Importar el modelo correcto
-from evaluation_categories.models import EvaluationCategory  # Importar el modelo correcto
+from project_status.models import ProjectStatus
+from evaluation_categories.models import EvaluationCategory
+from calendar_events.models import CalendarEvent
 
-# 1. BORRAR SOLO DATOS DE INTERACCIÓN (NO USUARIOS NI PERFILES)
-print('Eliminando datos de interacción previos...')
-CalendarEvent.objects.all().delete()
-Interview.objects.all().delete()
-Evaluation.objects.all().delete()
-Strike.objects.all().delete()
-Notification.objects.all().delete()
-Aplicacion.objects.all().delete()
-Proyecto.objects.all().delete()
-
-# Utilidades
+# 1. Proyectos (20 por empresa, solo si faltan)
+print('--- BLOQUE 1: Proyectos ---')
+empresas = list(Empresa.objects.all())
 NOMBRES_PROYECTOS = [
     'Desarrollo Web', 'App Móvil', 'Sistema de Inventario', 'Rediseño UX', 'Plataforma E-learning',
     'Automatización de Procesos', 'Dashboard de Analítica', 'Integración API', 'Soporte Técnico', 'Optimización SEO'
@@ -47,135 +35,122 @@ DESCRIPCIONES = [
     'Soporte y mantenimiento de sistemas.',
     'Mejoras en posicionamiento web.'
 ]
-COMENTARIOS_EVAL = [
-    'Excelente desempeño y compromiso.',
-    'Cumplió con los plazos y aportó ideas.',
-    'Buena comunicación y trabajo en equipo.',
-    'Debe mejorar la puntualidad.',
-    'Gran capacidad de adaptación.',
-    'Faltó proactividad en algunas tareas.'
-]
-NOTIFICACIONES = [
-    'Has sido asignado a un nuevo proyecto.',
-    'Tienes una entrevista agendada.',
-    'Recibiste una nueva evaluación.',
-    'Tienes un evento en el calendario.',
-    'Has recibido un strike por incumplimiento.'
-]
-TIPOS_EVENTO = ['Entrevista', 'Reunión', 'Entrega', 'Workshop']
-
-# Poblar empresas y administradores
-empresas = list(Empresa.objects.all())
-administradores = list(User.objects.filter(role='admin'))
-estudiantes = list(Estudiante.objects.all())
-usuarios_estudiantes = [e.user for e in estudiantes]
-
-# 2. CREAR PROYECTOS PARA EMPRESAS (máx 3 por empresa)
-proyectos_creados = []
+status_list = list(ProjectStatus.objects.all())
 for empresa in empresas:
-    for i in range(10):  # Solo 10 proyectos por empresa
+    proyectos_empresa = Proyecto.objects.filter(company=empresa)
+    faltan = 20 - proyectos_empresa.count()
+    for i in range(faltan):
         nombre = random.choice(NOMBRES_PROYECTOS) + f" {random.randint(2023,2025)}"
         descripcion = random.choice(DESCRIPCIONES)
-        status_name = random.choice(['active', 'completed', 'cancelled'])
-        status_obj, _ = ProjectStatus.objects.get_or_create(name=status_name)
-        proyecto = Proyecto.objects.create(
+        status = random.choice(status_list) if status_list else None
+        Proyecto.objects.get_or_create(
             company=empresa,
             title=nombre,
-            description=descripcion,
-            requirements="Requisitos del proyecto.",
-            status=status_obj,
-            start_date=datetime.now().date() - timedelta(days=random.randint(30, 180)),
-            estimated_end_date=datetime.now().date() + timedelta(days=random.randint(10, 90)),
+            defaults={
+                'description': descripcion,
+                'requirements': 'Trabajo en equipo, responsabilidad, comunicación.',
+                'status': status,
+                'start_date': datetime.now().date() - timedelta(days=random.randint(30, 180)),
+                'estimated_end_date': datetime.now().date() + timedelta(days=random.randint(10, 90)),
+                'duration_weeks': random.randint(8, 24),
+                'max_students': random.randint(2, 5),
+                'current_students': 0
+            }
         )
-        proyectos_creados.append(proyecto)
+print('Proyectos listos.')
 
-# 3. ASIGNAR ESTUDIANTES A PROYECTOS (máx 5 por proyecto)
-for proyecto in proyectos_creados:
-    if len(usuarios_estudiantes) >= 5:
-        asignados = random.sample(usuarios_estudiantes, k=random.randint(3, 5))
-    else:
-        asignados = usuarios_estudiantes
-    for user in asignados:
-        MiembroProyecto.objects.create(
+# 2. Asignación de estudiantes a proyectos (respetando TRL)
+print('--- BLOQUE 2: Asignación de estudiantes a proyectos ---')
+estudiantes = list(Estudiante.objects.all())  # <--- ESTA LÍNEA ES CLAVE
+proyectos = list(Proyecto.objects.all())
+for idx, proyecto in enumerate(proyectos):
+    print(f"Asignando estudiantes al proyecto {idx+1}/{len(proyectos)}: {proyecto.title}")
+    estudiantes_a_asignar = random.sample(estudiantes, k=min(3, len(estudiantes)))
+    for est in estudiantes_a_asignar:
+        MiembroProyecto.objects.get_or_create(
             proyecto=proyecto,
-            usuario=user,
-            rol='estudiante'
+            usuario=est.user,
+            defaults={
+                'rol': 'estudiante',
+                'horas_trabajadas': random.randint(20, 200),
+                'tareas_completadas': random.randint(5, 20),
+                'evaluacion_promedio': round(random.uniform(3, 5), 2)
+            }
         )
+print('Asignación de estudiantes lista.')
 
-# 4. CREAR APLICACIONES (máx 2 por estudiante)
-for estudiante in estudiantes:
-    proyectos_sample = random.sample(proyectos_creados, k=min(2, len(proyectos_creados)))
-    for proyecto in proyectos_sample:
-        Aplicacion.objects.create(
-            student=estudiante,
+# 3. Aplicaciones y membresías
+print('--- BLOQUE 3: Aplicaciones ---')
+for proyecto in proyectos:
+    miembros = MiembroProyecto.objects.filter(proyecto=proyecto)
+    for miembro in miembros:
+        Aplicacion.objects.get_or_create(
             project=proyecto,
-            status=random.choice(['pending', 'accepted', 'rejected']),
-            applied_at=datetime.now() - timedelta(days=random.randint(1, 60)),
+            student=Estudiante.objects.get(user=miembro.usuario),
+            defaults={
+                'status': random.choice(['accepted', 'completed']),
+                'compatibility_score': random.randint(60, 100),
+                'cover_letter': 'Estoy interesado en este proyecto por mi experiencia en el área.'
+            }
         )
+print('Aplicaciones listas.')
 
-# 5. CREAR EVALUACIONES (máx 2 por estudiante)
-category_obj, _ = EvaluationCategory.objects.get_or_create(name="General")
-for estudiante in estudiantes:
-    proyectos_sample = random.sample(proyectos_creados, k=min(2, len(proyectos_creados)))
-    for proyecto in proyectos_sample:
-        Evaluation.objects.create(
+# 4. Evaluaciones
+print('--- BLOQUE 4: Evaluaciones ---')
+cat = EvaluationCategory.objects.first()
+for proyecto in proyectos:
+    miembros = MiembroProyecto.objects.filter(proyecto=proyecto)
+    for miembro in miembros:
+        # Empresa evalúa estudiante
+        Evaluation.objects.get_or_create(
             project=proyecto,
-            student=estudiante.user,
-            evaluator=random.choice(empresas).user,
-            score=random.randint(3, 5),
-            comments=random.choice(COMENTARIOS_EVAL),
-            status='completed',
-            type='final',
-            evaluation_date=datetime.now() - timedelta(days=random.randint(1, 60)),
-            category=category_obj,
+            student=miembro.usuario,
+            evaluator=proyecto.company.user,
+            category=cat,
+            defaults={
+                'score': random.randint(3, 5),
+                'comments': 'Buen desempeño y compromiso.',
+                'status': 'completed',
+                'type': 'final',
+                'evaluation_date': datetime.now().date() - timedelta(days=random.randint(1, 60))
+            }
         )
+print('Evaluaciones listas.')
 
-# 6. CREAR ENTREVISTAS (máx 1 por estudiante)
-for estudiante in estudiantes:
-    aplicaciones = Aplicacion.objects.filter(student=estudiante)
-    if aplicaciones.exists():
-        aplicacion = random.choice(list(aplicaciones))
-        Interview.objects.create(
-            application=aplicacion,
-            interviewer=aplicacion.project.company.user,
-            interview_date=datetime.now() + timedelta(days=random.randint(1, 30)),
-            status=random.choice(['scheduled', 'completed']),
-            duration_minutes=60,
-            interview_type=random.choice(['technical', 'behavioral', 'video', 'phone', 'onsite']),
+# 5. Strikes (pocos)
+print('--- BLOQUE 5: Strikes ---')
+for est in estudiantes:
+    if random.random() < 0.3:
+        Strike.objects.get_or_create(
+            student=est,
+            company=random.choice(empresas),
+            project=random.choice(proyectos),
+            defaults={
+                'reason': 'Incumplimiento de horario en el proyecto.',
+                'description': 'El estudiante no cumplió con los horarios establecidos.',
+                'severity': random.choice(['medium', 'high']),
+                'issued_by': random.choice([e.user for e in empresas]),
+                'issued_at': datetime.now() - timedelta(days=random.randint(1, 90)),
+                'is_active': True
+            }
         )
+print('Strikes listos.')
 
-# 7. CREAR STRIKES (máx 2 por estudiante)
-for estudiante in estudiantes:
-    strikes_count = random.choices([0, 1, 2], weights=[70, 20, 10])[0]
-    for i in range(strikes_count):
-        Strike.objects.create(
-            student=estudiante,
-            reason='Incumplimiento de horario en el proyecto.',
-            date=datetime.now() - timedelta(days=random.randint(1, 90)),
-        )
+print('¡Base de datos poblada de forma modular, segura y sin duplicados!')
 
-# 8. CREAR NOTIFICACIONES (máx 5 por estudiante)
-for user in usuarios_estudiantes:
-    for i in range(random.randint(2, 5)):
-        Notification.objects.create(
-            user=user,
-            message=random.choice(NOTIFICACIONES),
-            created_at=datetime.now() - timedelta(days=random.randint(1, 60)),
-            read=random.choice([True, False]),
-        )
-
-# 9. CREAR EVENTOS DE CALENDARIO (máx 3 por estudiante)
-for user in usuarios_estudiantes:
-    proyectos_sample = random.sample(proyectos_creados, k=min(2, len(proyectos_creados)))
-    for proyecto in proyectos_sample:
-        for i in range(random.randint(1, 2)):
-            CalendarEvent.objects.create(
+TIPOS_EVENTO = ['Reunión', 'Entrega', 'Entrevista', 'Kickoff', 'Demo']
+for proyecto in proyectos:
+    miembros = MiembroProyecto.objects.filter(proyecto=proyecto)
+    for miembro in miembros:
+        for i in range(random.randint(2, 4)):
+            fecha_evento = datetime.now() + timedelta(days=random.randint(-60, 60))
+            CalendarEvent.objects.get_or_create(
                 project=proyecto,
-                user=user,
+                user=miembro.usuario,
                 company=proyecto.company,
-                title=f"{random.choice(TIPOS_EVENTO)} de {proyecto.title}",
-                description=random.choice(DESCRIPCIONES),
-                date=datetime.now() + timedelta(days=random.randint(1, 60)),
-            )
-
-print('¡Base de datos poblada con datos realistas, conectados y SIN borrar usuarios ni perfiles!') 
+                defaults={
+                    'title': f"{random.choice(TIPOS_EVENTO)} de {proyecto.title}",
+                    'description': f"Evento relacionado con el proyecto {proyecto.title}.",
+                    'date': fecha_evento,
+                }
+            ) 
