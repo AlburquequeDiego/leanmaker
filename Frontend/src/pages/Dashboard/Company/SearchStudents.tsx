@@ -79,19 +79,63 @@ export const SearchStudents: React.FC = () => {
       setLoading(true);
       setError(null);
       
+      console.log('🚀 Iniciando carga de estudiantes...');
+      
       // Obtener usuarios con rol student
-      const usersResponse = await api.get('/api/users/');
-      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
-      setUsers(studentUsers);
+      try {
+        const usersResponse = await api.get('/api/users/');
+        console.log('🔍 Users response:', usersResponse);
+        const studentUsers = usersResponse.data ? usersResponse.data.filter((user: any) => user.role === 'student') : [];
+        console.log('👥 Estudiantes encontrados en users:', studentUsers.length);
+        setUsers(studentUsers);
+      } catch (userError) {
+        console.error('❌ Error cargando usuarios:', userError);
+        setUsers([]);
+      }
 
-      // Obtener perfiles de estudiantes
-      const studentsResponse = await api.get('/api/students/');
-      const adaptedStudents = adaptStudentList(studentsResponse.data.results || studentsResponse.data);
-      setStudents(adaptedStudents);
+      // Obtener perfiles de estudiantes que hayan participado en proyectos
+      try {
+        const studentsResponse = await api.get('/api/students/');
+        console.log('🔍 Students response completa:', studentsResponse);
+        
+        // Manejar diferentes formatos de respuesta
+        let studentsData;
+        if (studentsResponse && studentsResponse.results) {
+          studentsData = studentsResponse.results;
+          console.log('📊 Usando studentsResponse.results');
+        } else if (Array.isArray(studentsResponse)) {
+          studentsData = studentsResponse;
+          console.log('📊 Usando studentsResponse como array');
+        } else {
+          studentsData = [];
+          console.log('📊 No se encontraron datos de estudiantes');
+        }
+        
+        // Filtrar solo estudiantes que hayan completado proyectos
+        const studentsWithProjects = studentsData.filter((student: any) => 
+          student.completed_projects && student.completed_projects > 0
+        );
+        
+        console.log('📊 Datos de estudiantes sin adaptar:', studentsData);
+        console.log('📊 Estudiantes con proyectos:', studentsWithProjects);
+        
+        if (studentsWithProjects.length > 0) {
+          const adaptedStudents = adaptStudentList(studentsWithProjects);
+          console.log('✅ Estudiantes adaptados:', adaptedStudents);
+          setStudents(adaptedStudents);
+        } else {
+          console.log('⚠️ No hay estudiantes con proyectos completados');
+          setStudents([]);
+        }
+        
+      } catch (studentError) {
+        console.error('❌ Error cargando estudiantes:', studentError);
+        setStudents([]);
+      }
       
     } catch (err: any) {
-      console.error('Error cargando estudiantes:', err);
-      setError(err.response?.data?.error || 'Error al cargar estudiantes');
+      console.error('❌ Error general cargando estudiantes:', err);
+      setError(err.message || 'Error al cargar estudiantes');
     } finally {
       setLoading(false);
     }
@@ -147,31 +191,21 @@ export const SearchStudents: React.FC = () => {
     setShowContactDialog(true);
   };
 
-  const handleSendEmail = (student: Student & { userData?: User }) => {
-    const userData = student.userData;
-    if (!userData) return;
-
-    const subject = encodeURIComponent('Interés en colaboración - LeanMaker');
-    const body = encodeURIComponent(`Hola ${userData.full_name},
-
-He revisado tu perfil en LeanMaker y me interesa mucho la posibilidad de trabajar contigo.
-
-Información de tu perfil:
-- Universidad: ${student.university || 'No especificada'}
-- Carrera: ${student.career || 'No especificada'}
-- Semestre: ${student.semester ? `${student.semester}°` : 'No especificado'}
-- Habilidades: ${student.skills?.join(', ') || 'No especificadas'}
-- Experiencia: ${student.experience_years || 0} años
-
-¿Te gustaría que conversemos sobre posibles oportunidades de colaboración?
-
-Saludos cordiales,
-[Tu nombre]
-[Tu empresa]`);
-    
-    const mailtoLink = `mailto:${userData.email}?subject=${subject}&body=${body}`;
-    window.open(mailtoLink, '_blank');
-    setShowContactDialog(false);
+  const handleSendMessage = async (student: Student & { userData?: any }) => {
+    try {
+      const response = await api.post('/api/notifications/send-company-message/', {
+        student_id: student.id,
+        message: `Interés en colaboración con ${student.userData?.full_name || 'estudiante'}`
+      });
+      
+      if (response.data.success) {
+        alert('Mensaje enviado exitosamente. El estudiante recibirá una notificación.');
+        setShowContactDialog(false);
+      }
+    } catch (error: any) {
+      console.error('Error enviando mensaje:', error);
+      alert('Error al enviar mensaje: ' + (error.response?.data?.error || 'Error desconocido'));
+    }
   };
 
   if (loading) {
@@ -198,7 +232,10 @@ Saludos cordiales,
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Buscar Estudiantes
+        Estudiantes con Experiencia en Proyectos
+      </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        Lista de estudiantes que han participado en proyectos con empresas. Puedes contactarlos enviando un mensaje.
       </Typography>
 
       {/* Filtros de búsqueda */}
@@ -283,81 +320,32 @@ Saludos cordiales,
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" gutterBottom>
-                        {userData.full_name}
+                      {userData.full_name}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <Rating value={Number(student.rating)} readOnly size="small" />
-                      <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                        ({student.rating})
-                      </Typography>
-                    </Box>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <EmailIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
+                      {userData.email}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <StarIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
+                      Nivel API: {student.api_level}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <WorkIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
+                      {student.completed_projects} proyectos completados
+                    </Typography>
                   </Box>
                 </Box>
-
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  <SchoolIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
-                    {student.university || 'Universidad no especificada'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  <WorkIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
-                    {student.career || 'Carrera no especificada'}
-                    {student.semester && ` - ${student.semester}° semestre`}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  <StarIcon sx={{ mr: 1, fontSize: 16, verticalAlign: 'middle' }} />
-                    {student.completed_projects} proyectos completados
-                </Typography>
-
-                <Box sx={{ mt: 2, mb: 2 }}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Habilidades:
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(student.skills || []).slice(0, 4).map((skill) => (
-                      <Chip
-                        key={skill}
-                        label={skill}
-                        size="small"
-                        variant="outlined"
-                      />
-                    ))}
-                      {(student.skills || []).length > 4 && (
-                      <Chip
-                          label={`+${(student.skills || []).length - 4}`}
-                        size="small"
-                        variant="outlined"
-                      />
-                    )}
-                  </Box>
-                </Box>
-
-                <Chip
-                  label={student.availability === 'full-time' ? 'Tiempo completo' : 
-                         student.availability === 'part-time' ? 'Tiempo parcial' : 'Flexible'}
-                  color="primary"
-                  size="small"
-                  sx={{ mb: 2 }}
-                />
               </CardContent>
               <CardActions>
-                <Button
-                  size="small"
-                  startIcon={<VisibilityIcon />}
-                  onClick={() => {
-                    setSelectedStudent(student);
-                      setSelectedUser(userData);
-                    setShowDetailDialog(true);
-                  }}
-                >
-                  Ver Detalles
-                </Button>
                 <Button
                   size="small"
                   color="primary"
                   startIcon={<SendIcon />}
                   onClick={() => handleContactStudent(student)}
+                  fullWidth
                 >
-                  Contactar
+                  Mandar Mensaje
                 </Button>
               </CardActions>
             </Card>
@@ -559,15 +547,15 @@ Saludos cordiales,
 
       {/* Dialog de contacto */}
       <Dialog open={showContactDialog} onClose={() => setShowContactDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Contactar Estudiante</DialogTitle>
+        <DialogTitle>Mandar Mensaje</DialogTitle>
         <DialogContent>
           {selectedStudent && selectedUser && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="body1" gutterBottom>
-                ¿Deseas contactar a <strong>{selectedUser.full_name}</strong>?
+                ¿Deseas enviar un mensaje a <strong>{selectedUser.full_name}</strong>?
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Se enviará una notificación al estudiante con tu interés en trabajar con él/ella.
+                Se enviará una notificación al estudiante indicando que tu empresa se quiere comunicar con él/ella a través de su correo institucional.
               </Typography>
               <List dense>
                 <ListItem>
@@ -575,8 +563,8 @@ Saludos cordiales,
                   <ListItemText primary={selectedUser.email} />
                 </ListItem>
                 <ListItem>
-                  <PhoneIcon sx={{ mr: 2, color: 'text.secondary' }} />
-                  <ListItemText primary={selectedUser.phone || 'No especificado'} />
+                  <StarIcon sx={{ mr: 2, color: 'text.secondary' }} />
+                  <ListItemText primary={`Nivel API: ${selectedStudent.api_level}`} />
                 </ListItem>
               </List>
             </Box>
@@ -585,7 +573,7 @@ Saludos cordiales,
         <DialogActions>
           <Button onClick={() => setShowContactDialog(false)}>Cancelar</Button>
           <Button
-            onClick={() => handleSendEmail({ ...selectedStudent!, userData: selectedUser! })}
+            onClick={() => handleSendMessage({ ...selectedStudent!, userData: selectedUser! })}
             variant="contained"
             color="primary"
           >

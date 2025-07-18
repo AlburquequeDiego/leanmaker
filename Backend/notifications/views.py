@@ -259,6 +259,73 @@ def create_notification(request):
     except Exception as e:
         return JsonResponse({'error': f'Error al crear notificación: {str(e)}'}, status=500)
 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def send_company_message(request):
+    """Envía un mensaje de empresa a estudiante."""
+    try:
+        current_user = get_user_from_token(request)
+        
+        # Verificar que sea una empresa
+        if current_user.role != 'company':
+            return JsonResponse({'error': 'Solo las empresas pueden enviar mensajes'}, status=403)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        # Validar datos requeridos
+        student_id = data.get('student_id')
+        message = data.get('message', '').strip()
+        
+        if not student_id:
+            return JsonResponse({'error': 'El ID del estudiante es requerido'}, status=400)
+        if not message:
+            return JsonResponse({'error': 'El mensaje es requerido'}, status=400)
+        
+        # Obtener el estudiante
+        from students.models import Estudiante
+        try:
+            student = Estudiante.objects.select_related('user').get(id=student_id)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        
+        # Obtener datos de la empresa
+        from companies.models import Empresa
+        try:
+            company = Empresa.objects.get(user=current_user)
+            company_name = company.company_name
+        except Empresa.DoesNotExist:
+            company_name = current_user.email
+        
+        # Crear notificación para el estudiante
+        notification = Notification.objects.create(
+            user=student.user,
+            title=f'Nueva comunicación de empresa',
+            message=f'La empresa {company_name} se quiere comunicar contigo a través de tu correo institucional. Revisa tu correo para más detalles.',
+            type='info',
+            related_url='/dashboard/student/notifications',
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Mensaje enviado exitosamente',
+            'data': {
+                'id': str(notification.id),
+                'title': notification.title,
+                'message': notification.message,
+                'type': notification.type,
+                'created_at': notification.created_at.isoformat(),
+            }
+        }, status=201)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al enviar mensaje: {str(e)}'}, status=500)
+
 @csrf_exempt
 @require_http_methods(["DELETE"])
 @require_auth

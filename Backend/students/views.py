@@ -282,6 +282,8 @@ def student_create(request):
 def student_update(request, student_id=None):
     """Actualizar perfil de estudiante."""
     try:
+        print(f"[student_update] Iniciando actualización - student_id: {student_id}")
+        
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
@@ -291,6 +293,8 @@ def student_update(request, student_id=None):
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        print(f"[student_update] Usuario autenticado: {current_user.id} - Role: {current_user.role}")
         
         # Si no se especifica student_id, usar el estudiante actual
         if student_id is None:
@@ -302,13 +306,16 @@ def student_update(request, student_id=None):
                 return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
         else:
             # Verificar permisos
-            if current_user.role == 'student' and str(student_id) != str(current_user.id):
-                return JsonResponse({'error': 'Acceso denegado'}, status=403)
-            
             try:
                 student = Estudiante.objects.get(id=student_id)
+                print(f"[student_update] Estudiante encontrado: {student.id} - User ID: {student.user.id}")
             except Estudiante.DoesNotExist:
                 return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+            
+            # Si es estudiante, solo puede actualizar su propio perfil
+            if current_user.role == 'student' and str(student.user.id) != str(current_user.id):
+                print(f"[student_update] Acceso denegado - Student user ID: {student.user.id}, Current user ID: {current_user.id}")
+                return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
         # Procesar datos
         data = json.loads(request.body)
@@ -330,6 +337,17 @@ def student_update(request, student_id=None):
                         setattr(student, field, json.dumps(data[field]))
                 else:
                     setattr(student, field, data[field])
+        
+        # Actualizar campos del usuario si se proporcionan
+        if 'user_data' in data:
+            user_data = data['user_data']
+            user_fields = ['first_name', 'last_name', 'email', 'phone', 'bio']
+            
+            for field in user_fields:
+                if field in user_data:
+                    setattr(student.user, field, user_data[field])
+            
+            student.user.save()
         
         student.save()
         
