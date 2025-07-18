@@ -5,7 +5,7 @@ archivos de las bases de datos en pc:
 C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\
 
 autenticacion : SQL Server Autentication
-login : administradortesis
+login : administradortesiss
 password: Admin@tesis
 
 para ver tu IP y ponerla para que tambien puedas modifiar la base de datos
@@ -64,10 +64,6 @@ Universidad de Talca → @utalca.cl
 INACAP → @inacapmail.cl
 
 
-super usuario : 
-
-admin@gmail.com
-admin
 
 Contraseñas:
 Estudiantes: Estudiante123!

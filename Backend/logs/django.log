@@ -19532,3 +19532,122 @@ ERROR 2025-07-18 01:52:56,186 log 19564 18120 Internal Server Error: /api/studen
 ERROR 2025-07-18 01:52:56,186 basehttp 19564 18120 "GET /api/students/me/ HTTP/1.1" 500 358
 ERROR 2025-07-18 01:52:56,467 log 19564 18120 Internal Server Error: /api/students/me/
 ERROR 2025-07-18 01:52:56,467 basehttp 19564 18120 "GET /api/students/me/ HTTP/1.1" 500 358
+INFO 2025-07-18 01:54:40,195 basehttp 19564 12416 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 01:54:40,416 basehttp 19564 12416 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 01:54:40,778 basehttp 19564 1728 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 01:54:40,995 basehttp 19564 12416 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 01:54:41,065 basehttp 19564 1728 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 01:54:41,324 basehttp 19564 1728 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 01:56:00,344 basehttp 19564 1936 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-18 01:56:06,037 basehttp 19564 1936 "POST /api/token/ HTTP/1.1" 200 1020
+INFO 2025-07-18 01:56:06,469 basehttp 19564 1936 "GET /api/users/profile/ HTTP/1.1" 200 1975
+INFO 2025-07-18 01:56:07,285 basehttp 19564 1936 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-18 01:56:08,929 basehttp 19564 1936 "GET /api/users/ HTTP/1.1" 200 37867
+INFO 2025-07-18 01:56:09,267 basehttp 19564 1936 "GET /api/users/ HTTP/1.1" 200 37867
+INFO 2025-07-18 01:56:09,509 basehttp 19564 3052 "GET /api/students/ HTTP/1.1" 200 10932
+INFO 2025-07-18 01:56:09,819 basehttp 19564 3052 "GET /api/students/ HTTP/1.1" 200 10932
+INFO 2025-07-18 01:56:11,951 basehttp 19564 3052 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 01:56:12,275 basehttp 19564 1936 "GET /api/projects/ HTTP/1.1" 200 7961
+WARNING 2025-07-18 02:02:43,316 log 19564 10276 Not Found: /api/interviews/
+WARNING 2025-07-18 02:02:43,318 basehttp 19564 10276 "GET /api/interviews/ HTTP/1.1" 404 18354
+WARNING 2025-07-18 02:02:43,415 log 19564 10276 Not Found: /api/interviews/
+WARNING 2025-07-18 02:02:43,415 basehttp 19564 10276 "GET /api/interviews/ HTTP/1.1" 404 18353
+INFO 2025-07-18 02:02:44,154 basehttp 19564 10276 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:02:44,154 basehttp 19564 4540 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:02:46,905 basehttp 19564 4540 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+INFO 2025-07-18 02:02:47,559 basehttp 19564 4540 "GET /api/users/ HTTP/1.1" 200 37867
+INFO 2025-07-18 02:02:48,784 basehttp 19564 10276 "GET /api/calendar/events/ HTTP/1.1" 200 383626
+INFO 2025-07-18 02:02:49,155 basehttp 19564 10276 "GET /api/users/ HTTP/1.1" 200 37867
+INFO 2025-07-18 02:02:53,319 basehttp 19564 13868 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-18 02:02:57,229 basehttp 19564 13868 "POST /api/token/ HTTP/1.1" 200 1080
+INFO 2025-07-18 02:02:57,478 basehttp 19564 13868 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:02:58,366 basehttp 19564 13868 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-18 02:03:00,603 basehttp 19564 13868 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:00,977 basehttp 19564 22352 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:03:01,103 basehttp 19564 13868 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:01,389 basehttp 19564 13868 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:03:12,004 basehttp 19564 13360 "GET /api/notifications/ HTTP/1.1" 200 6659
+INFO 2025-07-18 02:03:12,482 basehttp 19564 15260 "GET /api/notifications/ HTTP/1.1" 200 6659
+INFO 2025-07-18 02:03:17,944 basehttp 19564 13360 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:18,010 basehttp 19564 15260 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:03:18,264 basehttp 19564 13360 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:18,407 basehttp 19564 15260 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:03:37,308 basehttp 19564 10232 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:37,314 basehttp 19564 9192 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:38,130 basehttp 19564 9192 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-18 02:03:38,817 basehttp 19564 10232 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 73504
+INFO 2025-07-18 02:03:39,053 basehttp 19564 16868 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:39,056 basehttp 19564 9192 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:39,057 basehttp 19564 16868 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:39,062 basehttp 19564 9192 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:39,807 basehttp 19564 10232 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+INFO 2025-07-18 02:03:39,879 basehttp 19564 4368 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:39,895 basehttp 19564 10232 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:39,961 basehttp 19564 9192 "GET /api/companies/ HTTP/1.1" 200 10375
+INFO 2025-07-18 02:03:40,192 basehttp 19564 16868 "GET /api/evaluations/ HTTP/1.1" 200 4632
+INFO 2025-07-18 02:03:40,374 basehttp 19564 4368 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:40,374 basehttp 19564 17268 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:03:40,415 basehttp 19564 9192 "GET /api/companies/ HTTP/1.1" 200 10375
+INFO 2025-07-18 02:03:40,555 basehttp 19564 10232 "GET /api/projects/my_projects/ HTTP/1.1" 200 5149
+INFO 2025-07-18 02:03:40,918 basehttp 19564 16868 "GET /api/evaluations/ HTTP/1.1" 200 4632
+INFO 2025-07-18 02:03:41,013 basehttp 19564 10232 "GET /api/projects/my_projects/ HTTP/1.1" 200 5149
+INFO 2025-07-18 02:03:41,085 basehttp 19564 9192 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:03:41,329 basehttp 19564 17268 "GET /api/applications/my_applications/ HTTP/1.1" 200 31739
+INFO 2025-07-18 02:03:41,394 basehttp 19564 4368 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:41,544 basehttp 19564 9192 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:03:41,644 basehttp 19564 10232 "GET /api/notifications/ HTTP/1.1" 200 6659
+INFO 2025-07-18 02:03:41,744 basehttp 19564 4368 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:41,944 basehttp 19564 17268 "GET /api/applications/my_applications/ HTTP/1.1" 200 31739
+INFO 2025-07-18 02:03:42,095 basehttp 19564 9192 "GET /api/notifications/ HTTP/1.1" 200 6659
+INFO 2025-07-18 02:03:42,128 basehttp 19564 4368 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:42,389 basehttp 19564 9192 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:03:42,445 basehttp 19564 4368 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:42,705 basehttp 19564 4368 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:03:44,836 basehttp 19564 9192 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:44,893 basehttp 19564 4368 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:03:45,154 basehttp 19564 9192 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:03:45,293 basehttp 19564 4368 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:03:48,227 basehttp 19564 17520 "OPTIONS /api/projects/applications/ HTTP/1.1" 200 0
+WARNING 2025-07-18 02:03:48,320 log 19564 17520 Not Found: /api/projects/applications/
+WARNING 2025-07-18 02:03:48,320 basehttp 19564 17520 "POST /api/projects/applications/ HTTP/1.1" 404 19690
+INFO 2025-07-18 02:04:06,675 basehttp 19564 1084 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:04:06,974 basehttp 19564 1084 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:04:07,293 basehttp 19564 23156 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:04:07,347 basehttp 19564 1084 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:04:07,737 basehttp 19564 23156 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:04:07,737 basehttp 19564 1084 "GET /api/students/me/ HTTP/1.1" 200 1070
+WARNING 2025-07-18 02:04:43,167 log 19564 23156 Not Found: /api/projects/applications/
+WARNING 2025-07-18 02:04:43,167 basehttp 19564 23156 "POST /api/projects/applications/ HTTP/1.1" 404 19690
+INFO 2025-07-18 02:05:29,888 basehttp 19564 18296 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:05:29,927 basehttp 19564 23652 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:05:30,305 basehttp 19564 3188 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:05:30,379 basehttp 19564 18296 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:05:45,605 basehttp 19564 12040 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:05:45,816 basehttp 19564 12040 "GET /api/users/profile/ HTTP/1.1" 200 629
+INFO 2025-07-18 02:05:46,130 basehttp 19564 12040 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:05:46,447 basehttp 19564 12040 "GET /api/students/me/ HTTP/1.1" 200 1070
+INFO 2025-07-18 02:05:46,603 basehttp 19564 13988 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:05:47,017 basehttp 19564 12040 "GET /api/projects/ HTTP/1.1" 200 7961
+INFO 2025-07-18 02:05:48,433 basehttp 19564 12040 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-18 02:05:49,099 basehttp 19564 12040 "POST /api/applications/ HTTP/1.1" 200 75
+INFO 2025-07-18 02:05:52,598 basehttp 19564 12040 "GET /api/applications/my_applications/ HTTP/1.1" 200 32390
+INFO 2025-07-18 02:05:53,173 basehttp 19564 12040 "GET /api/applications/my_applications/ HTTP/1.1" 200 32390
+INFO 2025-07-18 02:06:03,552 basehttp 19564 12040 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
+WARNING 2025-07-18 02:06:09,683 log 19564 18568 Unauthorized: /api/projects/my_projects/
+WARNING 2025-07-18 02:06:09,685 basehttp 19564 18568 "GET /api/projects/my_projects/ HTTP/1.1" 401 32
+INFO 2025-07-18 02:06:09,691 basehttp 19564 11216 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+ERROR 2025-07-18 02:06:09,963 log 19564 11216 Internal Server Error: /api/token/refresh/
+ERROR 2025-07-18 02:06:09,965 basehttp 19564 11216 "POST /api/token/refresh/ HTTP/1.1" 500 439
+WARNING 2025-07-18 02:06:09,980 log 19564 18568 Unauthorized: /api/projects/my_projects/
+WARNING 2025-07-18 02:06:09,988 basehttp 19564 18568 "GET /api/projects/my_projects/ HTTP/1.1" 401 32
+INFO 2025-07-18 02:06:10,057 basehttp 19564 11216 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-18 02:06:10,073 basehttp 19564 18568 "POST /api/auth/logout/ HTTP/1.1" 200 47
+ERROR 2025-07-18 02:06:21,330 log 19564 5524 Internal Server Error: /api/token/
+ERROR 2025-07-18 02:06:21,333 basehttp 19564 5524 "POST /api/token/ HTTP/1.1" 500 439
+ERROR 2025-07-18 02:06:48,407 log 19564 11596 Internal Server Error: /api/token/
+ERROR 2025-07-18 02:06:48,409 basehttp 19564 11596 "POST /api/token/ HTTP/1.1" 500 439
+ERROR 2025-07-18 02:09:30,852 log 19564 23620 Internal Server Error: /api/token/
+ERROR 2025-07-18 02:09:30,859 basehttp 19564 23620 "POST /api/token/ HTTP/1.1" 500 457
+ERROR 2025-07-18 02:16:15,698 log 19564 24588 Internal Server Error: /api/token/
+ERROR 2025-07-18 02:16:15,701 basehttp 19564 24588 "POST /api/token/ HTTP/1.1" 500 457
+INFO 2025-07-18 02:24:47,177 autoreload 4472 17660 Watching for file changes with StatReloader

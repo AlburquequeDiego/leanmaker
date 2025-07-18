@@ -124,7 +124,7 @@ export default function AvailableProjects() {
         applied_at: new Date().toISOString(),
       };
 
-      await apiService.post('/api/projects/applications/', applicationData);
+      await apiService.post('/api/applications/', applicationData);
       setApplied((prev) => [...prev, projectId]);
       setSnackbar({ 
         open: true, 

@@ -97,9 +97,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': config('DB_NAME', default='leanmaker_db'),
-        'USER': config('DB_USER', default='administradortesis'),
+        'USER': config('DB_USER', default='administradortesiss'),
         'PASSWORD': config('DB_PASSWORD', default='Admin@tesis'),
-        'HOST': config('DB_HOST', default='servidortesis.database.windows.net'),
+        'HOST': config('DB_HOST', default='servidortesiss.database.windows.net'),
         'PORT': config('DB_PORT', default='1433'),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
