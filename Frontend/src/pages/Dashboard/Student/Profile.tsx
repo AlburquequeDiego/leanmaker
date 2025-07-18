@@ -40,8 +40,8 @@ interface ProfileData {
   nivel: string;
   habilidades: Array<{ nombre: string; nivel: string }>;
   biografia: string;
-  cv: File | null;
-  certificado: File | null;
+  cv_link: string;
+  certificado_link: string;
   area?: string;
   modalidadesDisponibles?: string[];
   experienciaPrevia?: string;
@@ -79,8 +79,8 @@ export const Profile = () => {
     nivel: '',
     habilidades: [],
     biografia: '',
-    cv: null,
-    certificado: null,
+    cv_link: '',
+    certificado_link: '',
     area: '',
     modalidadesDisponibles: [],
     experienciaPrevia: '',
@@ -101,8 +101,8 @@ export const Profile = () => {
     nivel: '',
     habilidades: [],
     biografia: '',
-    cv: null,
-    certificado: null,
+    cv_link: '',
+    certificado_link: '',
     area: '',
     modalidadesDisponibles: [],
     experienciaPrevia: '',
@@ -139,8 +139,8 @@ export const Profile = () => {
         nivel: studentData.api_level?.toString() || '1',
         habilidades: Array.isArray(studentData.skills) ? studentData.skills.map((skill: string) => ({ nombre: skill, nivel: 'Intermedio' })) : [],
         biografia: userData.bio || '',
-        cv: null,
-        certificado: null,
+        cv_link: studentData.cv_link || '',
+        certificado_link: studentData.certificado_link || '',
         area: '',
         modalidadesDisponibles: [studentData.availability] || [],
         experienciaPrevia: studentData.experience_years?.toString() || '',
@@ -169,6 +169,16 @@ export const Profile = () => {
   const validatePhone = (phone: string): boolean => {
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
     return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
+  const validateUrl = (url: string): boolean => {
+    if (!url.trim()) return true; // URLs vacías son válidas (opcionales)
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const validateForm = (): boolean => {
@@ -208,6 +218,27 @@ export const Profile = () => {
       errors.biografia = 'La biografía debe tener al menos 50 caracteres';
     }
 
+    // Validar URLs
+    if (editData.cv_link && !validateUrl(editData.cv_link)) {
+      errors.cv_link = 'La URL del CV no es válida';
+    }
+
+    if (editData.certificado_link && !validateUrl(editData.certificado_link)) {
+      errors.certificado_link = 'La URL del certificado no es válida';
+    }
+
+    if (editData.linkedin && !validateUrl(editData.linkedin)) {
+      errors.linkedin = 'La URL de LinkedIn no es válida';
+    }
+
+    if (editData.github && !validateUrl(editData.github)) {
+      errors.github = 'La URL de GitHub no es válida';
+    }
+
+    if (editData.portafolio && !validateUrl(editData.portafolio)) {
+      errors.portafolio = 'La URL del portafolio no es válida';
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -237,6 +268,8 @@ export const Profile = () => {
         portfolio_url: editData.portafolio,
         github_url: editData.github,
         linkedin_url: editData.linkedin,
+        cv_link: editData.cv_link,
+        certificado_link: editData.certificado_link,
         availability: editData.modalidadesDisponibles?.[0] || 'flexible',
         location: '', // Por ahora vacío
         experience_years: parseInt(editData.experienciaPrevia) || 0,
@@ -318,38 +351,14 @@ export const Profile = () => {
     setSkillToDelete('');
   };
 
-  // Documentos
-  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > 5 * 1024 * 1024) { // 5MB
-        setErrorMessage('El archivo CV no puede ser mayor a 5MB');
-        setShowError(true);
-        return;
-      }
-      if (file.type !== 'application/pdf') {
-        setErrorMessage('El CV debe ser un archivo PDF');
-        setShowError(true);
-        return;
-      }
-      setEditData(prev => ({ ...prev, cv: file }));
-    }
+  // Documentos - Links de drivers
+  const handleCvLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditData(prev => ({ ...prev, cv_link: e.target.value }));
   };
 
-  const handleCertChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > 10 * 1024 * 1024) { // 10MB
-        setErrorMessage('El archivo de certificado no puede ser mayor a 10MB');
-        setShowError(true);
-        return;
-      }
-      setEditData(prev => ({ ...prev, certificado: file }));
-    }
+  const handleCertLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditData(prev => ({ ...prev, certificado_link: e.target.value }));
   };
-
-  const handleRemoveCv = () => setEditData(prev => ({ ...prev, cv: null }));
-  const handleRemoveCert = () => setEditData(prev => ({ ...prev, certificado: null }));
 
   if (loading) {
     return (
@@ -527,60 +536,71 @@ export const Profile = () => {
             </Box>
           )}
 
-          {/* Documentos */}
+          {/* Documentos - Links de Drivers */}
           <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" fontWeight={600}>Documentos</Typography>
+          <Typography variant="h6" fontWeight={600}>Documentos - Links de Drivers</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Sube tus documentos a Google Drive, OneDrive o similar y comparte los links aquí
+          </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="subtitle1">CV</Typography>
-              {editData.cv ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                  <Chip
-                    label={typeof editData.cv === 'string' ? editData.cv : editData.cv.name}
-                    color="info"
-                    icon={<CheckCircleIcon />}
-                  />
-                  {isEditing && <IconButton onClick={handleRemoveCv}><DeleteIcon /></IconButton>}
-                </Box>
-              ) : isEditing ? (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  component="label"
-                  startIcon={<CloudUploadIcon />}
-                  sx={{ mt: 1, borderRadius: 2 }}
-                >
-                  Subir CV (PDF, max 5MB)
-                  <input type="file" hidden accept="application/pdf" onChange={handleCvChange} />
-                </Button>
+              <Typography variant="subtitle1" fontWeight={600}>CV</Typography>
+              {isEditing ? (
+                <TextField
+                  fullWidth
+                  value={editData.cv_link || ''}
+                  onChange={handleCvLinkChange}
+                  placeholder="https://drive.google.com/file/d/... (Google Drive, OneDrive, etc.)"
+                  error={!!validationErrors.cv_link}
+                  helperText={validationErrors.cv_link || 'Link al CV en Google Drive, OneDrive o similar'}
+                  sx={{ mt: 1 }}
+                />
               ) : (
-                <Typography variant="body2" color="text.secondary">No subido</Typography>
+                <Box sx={{ mt: 1 }}>
+                  {editData.cv_link ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Chip
+                        label="CV disponible"
+                        color="success"
+                        icon={<CheckCircleIcon />}
+                        onClick={() => window.open(editData.cv_link, '_blank')}
+                        sx={{ cursor: 'pointer' }}
+                      />
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">No agregado</Typography>
+                  )}
+                </Box>
               )}
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="subtitle1">Certificado</Typography>
-              {editData.certificado ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                  <Chip
-                    label={typeof editData.certificado === 'string' ? editData.certificado : editData.certificado.name}
-                    color="info"
-                    icon={<CheckCircleIcon />}
-                  />
-                  {isEditing && <IconButton onClick={handleRemoveCert}><DeleteIcon /></IconButton>}
-                </Box>
-              ) : isEditing ? (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  component="label"
-                  startIcon={<CloudUploadIcon />}
-                  sx={{ mt: 1, borderRadius: 2 }}
-                >
-                  Subir Certificado (max 10MB)
-                  <input type="file" hidden accept="application/pdf,image/*" onChange={handleCertChange} />
-                </Button>
+              <Typography variant="subtitle1" fontWeight={600}>Certificado</Typography>
+              {isEditing ? (
+                <TextField
+                  fullWidth
+                  value={editData.certificado_link || ''}
+                  onChange={handleCertLinkChange}
+                  placeholder="https://drive.google.com/file/d/... (Google Drive, OneDrive, etc.)"
+                  error={!!validationErrors.certificado_link}
+                  helperText={validationErrors.certificado_link || 'Link al certificado en Google Drive, OneDrive o similar'}
+                  sx={{ mt: 1 }}
+                />
               ) : (
-                <Typography variant="body2" color="text.secondary">No subido</Typography>
+                <Box sx={{ mt: 1 }}>
+                  {editData.certificado_link ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Chip
+                        label="Certificado disponible"
+                        color="success"
+                        icon={<CheckCircleIcon />}
+                        onClick={() => window.open(editData.certificado_link, '_blank')}
+                        sx={{ cursor: 'pointer' }}
+                      />
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">No agregado</Typography>
+                  )}
+                </Box>
               )}
             </Box>
           </Box>

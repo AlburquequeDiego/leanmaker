@@ -40,18 +40,17 @@ import {
   Send as SendIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
+import { notificationService } from '../../../services/notification.service';
 import { adaptStudentList } from '../../../utils/adapters';
 import type { Student } from '../../../types';
 
-// Agrega las áreas posibles
-const AREAS = [
-  'Todas',
-  'Informática',
-  'Administración',
-  'Diseño',
-  'Ingeniería',
-  'Salud',
-  'Educación',
+// Niveles de API posibles
+const API_LEVELS = [
+  'Todos',
+  'API 1',
+  'API 2', 
+  'API 3',
+  'API 4',
 ];
 
 export const SearchStudents: React.FC = () => {
@@ -63,7 +62,8 @@ export const SearchStudents: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
-  const [areaFilter, setAreaFilter] = useState<string>('Todas');
+  const [apiLevelFilter, setApiLevelFilter] = useState<string>('Todos');
+  const [resultsLimit, setResultsLimit] = useState<number>(20);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
@@ -171,11 +171,12 @@ export const SearchStudents: React.FC = () => {
       
     const matchesAvailability = !availabilityFilter || student.availability === availabilityFilter;
       
-      const matchesArea = areaFilter === 'Todas' || 
-        student.career?.toLowerCase().includes(areaFilter.toLowerCase());
+      const matchesApiLevel = apiLevelFilter === 'Todos' || 
+        student.api_level === apiLevelFilter;
       
-    return matchesSearch && matchesSkills && matchesAvailability && matchesArea;
-  });
+    return matchesSearch && matchesSkills && matchesAvailability && matchesApiLevel;
+  })
+  .slice(0, resultsLimit); // Limitar resultados según el filtro seleccionado
 
   const handleSkillToggle = (skill: string) => {
     setSelectedSkills(prev => 
@@ -193,18 +194,24 @@ export const SearchStudents: React.FC = () => {
 
   const handleSendMessage = async (student: Student & { userData?: any }) => {
     try {
-      const response = await api.post('/api/notifications/send-company-message/', {
+      console.log('🚀 Enviando mensaje a estudiante:', student.id);
+      
+      const response = await notificationService.sendCompanyMessage({
         student_id: student.id,
         message: `Interés en colaboración con ${student.userData?.full_name || 'estudiante'}`
       });
       
-      if (response.data.success) {
+      console.log('✅ Respuesta del servidor:', response);
+      
+      if (response.success) {
         alert('Mensaje enviado exitosamente. El estudiante recibirá una notificación.');
         setShowContactDialog(false);
+      } else {
+        alert('Error al enviar mensaje: ' + (response.error || 'Error desconocido'));
       }
     } catch (error: any) {
-      console.error('Error enviando mensaje:', error);
-      alert('Error al enviar mensaje: ' + (error.response?.data?.error || 'Error desconocido'));
+      console.error('❌ Error enviando mensaje:', error);
+      alert('Error al enviar mensaje: ' + (error.response?.data?.error || error.message || 'Error desconocido'));
     }
   };
 
@@ -270,15 +277,30 @@ export const SearchStudents: React.FC = () => {
             </Box>
             <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(25% - 12px)' }, minWidth: 180 }}>
               <FormControl fullWidth>
-                <InputLabel>Área</InputLabel>
+                <InputLabel>Nivel de API</InputLabel>
                 <Select
-                  value={areaFilter}
-                  label="Área"
-                  onChange={(e) => setAreaFilter(e.target.value)}
+                  value={apiLevelFilter}
+                  label="Nivel de API"
+                  onChange={(e) => setApiLevelFilter(e.target.value)}
                 >
-                  {AREAS.map(area => (
-                    <MenuItem key={area} value={area}>{area}</MenuItem>
+                  {API_LEVELS.map(level => (
+                    <MenuItem key={level} value={level}>{level}</MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(25% - 12px)' }, minWidth: 180 }}>
+              <FormControl fullWidth>
+                <InputLabel>Mostrar</InputLabel>
+                <Select
+                  value={resultsLimit}
+                  label="Mostrar"
+                  onChange={(e) => setResultsLimit(Number(e.target.value))}
+                >
+                  <MenuItem value={20}>Últimos 20</MenuItem>
+                  <MenuItem value={50}>Últimos 50</MenuItem>
+                  <MenuItem value={100}>Últimos 100</MenuItem>
+                  <MenuItem value={200}>Últimos 200</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -303,6 +325,13 @@ export const SearchStudents: React.FC = () => {
           </Box>
         </CardContent>
       </Card>
+
+      {/* Contador de resultados */}
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          Mostrando {filteredStudents.length} estudiantes
+        </Typography>
+      </Box>
 
       {/* Lista de estudiantes */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>

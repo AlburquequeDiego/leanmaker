@@ -124,18 +124,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
 
   const handleMarkAllAsRead = async () => {
     try {
-      const unreadNotifications = notifications.filter(n => !n.read);
-      if (unreadNotifications.length > 0) {
-        await notificationService.markMultipleAsRead(
-          unreadNotifications.map(n => n.id)
-        );
-        
-        // Actualizar estado local
-        setNotifications(prev => 
-          prev.map(n => ({ ...n, read: true }))
-        );
-        setUnreadCount(0);
-      }
+      await notificationService.markAllAsRead();
+      
+      // Actualizar estado local
+      setNotifications(prev => 
+        prev.map(n => ({ ...n, read: true }))
+      );
+      setUnreadCount(0);
     } catch (err) {
       console.error('Error marking all as read:', err);
     }

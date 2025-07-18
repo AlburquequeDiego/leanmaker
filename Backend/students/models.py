@@ -51,6 +51,10 @@ class Estudiante(models.Model):
     github_url = models.CharField(max_length=500, null=True, blank=True)
     linkedin_url = models.CharField(max_length=500, null=True, blank=True)
     
+    # Campos para links de documentos (nuevos)
+    cv_link = models.CharField(max_length=500, null=True, blank=True)
+    certificado_link = models.CharField(max_length=500, null=True, blank=True)
+    
     # Campos adicionales - coinciden con frontend
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='flexible')
     location = models.CharField(max_length=200, null=True, blank=True)

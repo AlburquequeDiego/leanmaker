@@ -327,6 +327,126 @@ def send_company_message(request):
         return JsonResponse({'error': f'Error al enviar mensaje: {str(e)}'}, status=500)
 
 @csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def create_system_notification(request):
+    """Crea una notificación del sistema para un usuario específico."""
+    try:
+        current_user = get_user_from_token(request)
+        
+        # Verificar que sea admin o empresa
+        if current_user.role not in ['admin', 'company']:
+            return JsonResponse({'error': 'No tienes permisos para crear notificaciones del sistema'}, status=403)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        # Validar datos requeridos
+        user_id = data.get('user_id')
+        title = data.get('title', '').strip()
+        message = data.get('message', '').strip()
+        notification_type = data.get('type', 'info')
+        
+        if not user_id:
+            return JsonResponse({'error': 'El ID del usuario es requerido'}, status=400)
+        if not title:
+            return JsonResponse({'error': 'El título es requerido'}, status=400)
+        if not message:
+            return JsonResponse({'error': 'El mensaje es requerido'}, status=400)
+        
+        # Obtener el usuario
+        from users.models import User
+        try:
+            target_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+        # Crear notificación
+        notification = Notification.objects.create(
+            user=target_user,
+            title=title,
+            message=message,
+            type=notification_type,
+            related_url=data.get('related_url'),
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Notificación del sistema creada exitosamente',
+            'data': {
+                'id': str(notification.id),
+                'title': notification.title,
+                'message': notification.message,
+                'type': notification.type,
+                'created_at': notification.created_at.isoformat(),
+            }
+        }, status=201)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al crear notificación del sistema: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def mark_all_as_read(request):
+    """Marca todas las notificaciones del usuario como leídas."""
+    try:
+        user = get_user_from_token(request)
+        
+        # Marcar todas como leídas
+        updated_count = Notification.objects.filter(
+            user=user,
+            read=False
+        ).update(
+            read=True,
+            is_read=True,
+            read_at=timezone.now()
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{updated_count} notificaciones marcadas como leídas'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al marcar notificaciones: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def notification_stats(request):
+    """Obtiene estadísticas de notificaciones del usuario."""
+    try:
+        user = get_user_from_token(request)
+        
+        # Obtener estadísticas
+        total_notifications = Notification.objects.filter(user=user).count()
+        unread_notifications = Notification.objects.filter(user=user, read=False).count()
+        read_notifications = Notification.objects.filter(user=user, read=True).count()
+        
+        # Notificaciones por tipo
+        notifications_by_type = {}
+        for notification_type in Notification.objects.filter(user=user).values_list('type', flat=True).distinct():
+            count = Notification.objects.filter(user=user, type=notification_type).count()
+            notifications_by_type[notification_type] = count
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'total': total_notifications,
+                'unread': unread_notifications,
+                'read': read_notifications,
+                'by_type': notifications_by_type
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error al obtener estadísticas: {str(e)}'}, status=500)
+
+@csrf_exempt
 @require_http_methods(["DELETE"])
 @require_auth
 def delete_notification(request, notification_id):
@@ -356,3 +476,31 @@ def delete_notification(request, notification_id):
         
     except Exception as e:
         return JsonResponse({'error': f'Error al eliminar notificación: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def test_endpoint(request):
+    """Endpoint de prueba para verificar que POST funciona."""
+    try:
+        return JsonResponse({
+            'success': True,
+            'message': 'Endpoint de prueba funcionando correctamente',
+            'method': request.method,
+            'content_type': request.content_type,
+        })
+    except Exception as e:
+        return JsonResponse({'error': f'Error en endpoint de prueba: {str(e)}'}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def test_endpoint_no_auth(request):
+    """Endpoint de prueba sin autenticación para verificar que POST funciona."""
+    try:
+        return JsonResponse({
+            'success': True,
+            'message': 'Endpoint de prueba sin auth funcionando correctamente',
+            'method': request.method,
+            'content_type': request.content_type,
+        })
+    except Exception as e:
+        return JsonResponse({'error': f'Error en endpoint de prueba: {str(e)}'}, status=500)

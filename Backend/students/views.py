@@ -100,6 +100,8 @@ def student_list(request):
                 'portfolio_url': student.portfolio_url,
                 'github_url': student.github_url,
                 'linkedin_url': student.linkedin_url,
+                'cv_link': student.cv_link,
+                'certificado_link': student.certificado_link,
                 'availability': student.availability,
                 'location': student.location,
                 'rating': float(student.rating),
@@ -183,6 +185,8 @@ def student_detail(request, student_id):
             'portfolio_url': student.portfolio_url,
             'github_url': student.github_url,
             'linkedin_url': student.linkedin_url,
+            'cv_link': student.cv_link,
+            'certificado_link': student.certificado_link,
             'availability': student.availability,
             'location': student.location,
             'rating': float(student.rating),
@@ -324,8 +328,8 @@ def student_update(request, student_id=None):
         fields_to_update = [
             'career', 'semester', 'graduation_year', 'status', 'api_level',
             'strikes', 'gpa', 'completed_projects', 'total_hours', 'experience_years',
-            'portfolio_url', 'github_url', 'linkedin_url', 'availability', 'location',
-            'rating', 'skills', 'languages'
+            'portfolio_url', 'github_url', 'linkedin_url', 'cv_link', 'certificado_link',
+            'availability', 'location', 'rating', 'skills', 'languages'
         ]
         
         for field in fields_to_update:
@@ -445,6 +449,8 @@ def student_me(request):
             'portfolio_url': student.portfolio_url,
             'github_url': student.github_url,
             'linkedin_url': student.linkedin_url,
+            'cv_link': student.cv_link,
+            'certificado_link': student.certificado_link,
             'availability': student.availability,
             'location': student.location,
             'rating': float(student.rating),

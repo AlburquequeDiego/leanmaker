@@ -30,6 +30,29 @@ export interface UnreadCountResponse {
   };
 }
 
+export interface NotificationStatsResponse {
+  success: boolean;
+  data: {
+    total: number;
+    unread: number;
+    read: number;
+    by_type: Record<string, number>;
+  };
+}
+
+export interface CompanyMessageRequest {
+  student_id: number;
+  message: string;
+}
+
+export interface SystemNotificationRequest {
+  user_id: number;
+  title: string;
+  message: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
+  related_url?: string;
+}
+
 class NotificationService {
   /**
    * Obtiene las notificaciones del usuario
@@ -61,6 +84,13 @@ class NotificationService {
   }
 
   /**
+   * Obtiene estadísticas de notificaciones
+   */
+  async getNotificationStats(): Promise<NotificationStatsResponse> {
+    return apiService.get<NotificationStatsResponse>('/api/notifications/stats/');
+  }
+
+  /**
    * Marca una notificación como leída
    */
   async markAsRead(notificationId: string): Promise<any> {
@@ -77,6 +107,13 @@ class NotificationService {
   }
 
   /**
+   * Marca todas las notificaciones como leídas
+   */
+  async markAllAsRead(): Promise<any> {
+    return apiService.post('/api/notifications/mark-all-read/');
+  }
+
+  /**
    * Crea una nueva notificación
    */
   async createNotification(data: {
@@ -86,6 +123,20 @@ class NotificationService {
     related_url?: string;
   }): Promise<any> {
     return apiService.post('/api/notifications/create/', data);
+  }
+
+  /**
+   * Crea una notificación del sistema para otro usuario
+   */
+  async createSystemNotification(data: SystemNotificationRequest): Promise<any> {
+    return apiService.post('/api/notifications/create-system/', data);
+  }
+
+  /**
+   * Envía un mensaje de empresa a estudiante
+   */
+  async sendCompanyMessage(data: CompanyMessageRequest): Promise<any> {
+    return apiService.post('/api/notifications/send-company-message/', data);
   }
 
   /**
