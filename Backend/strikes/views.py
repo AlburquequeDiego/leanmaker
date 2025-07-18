@@ -360,3 +360,44 @@ def strike_report_reject(request, report_id):
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def strike_reports_company(request):
+    """Lista de reportes de strikes enviados por la empresa autenticada."""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        if current_user.role != 'company':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Obtener reportes enviados por la empresa
+        queryset = StrikeReport.objects.select_related('company', 'student', 'student__user', 'project', 'reviewed_by').filter(company__user=current_user)
+        reports_data = []
+        for report in queryset:
+            reports_data.append({
+                'id': str(report.id),
+                'company_id': str(report.company.id),
+                'company_name': report.company.company_name,
+                'student_id': str(report.student.id),
+                'student_name': report.student.user.full_name,
+                'project_id': str(report.project.id),
+                'project_title': report.project.title,
+                'reason': report.reason,
+                'description': report.description,
+                'status': report.status,
+                'reviewed_by_id': str(report.reviewed_by.id) if report.reviewed_by else None,
+                'reviewed_by_name': report.reviewed_by.full_name if report.reviewed_by else None,
+                'reviewed_at': report.reviewed_at.isoformat() if report.reviewed_at else None,
+                'admin_notes': report.admin_notes,
+                'created_at': report.created_at.isoformat(),
+                'updated_at': report.updated_at.isoformat(),
+            })
+        return JsonResponse({'results': reports_data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

@@ -184,10 +184,19 @@ class Estudiante(models.Model):
         self.completed_projects += 1
         self.save(update_fields=['completed_projects'])
     
-    def actualizar_calificacion(self, nueva_calificacion):
-        """Actualiza la calificación promedio del estudiante"""
-        # Implementar lógica de calificación promedio
-        pass
+    def actualizar_calificacion(self, _=None):
+        """Actualiza la calificación promedio del estudiante (GPA y rating)"""
+        from Backend.evaluations.models import Evaluation
+        # Buscar todas las evaluaciones completadas para este estudiante
+        evaluaciones = Evaluation.objects.filter(student__id=self.user.id, status='completed')
+        if evaluaciones.exists():
+            promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
+            self.gpa = round(promedio, 2)
+            self.rating = round(promedio, 2)
+        else:
+            self.gpa = 0
+            self.rating = 0
+        self.save(update_fields=['gpa', 'rating'])
 
 class PerfilEstudiante(models.Model):
     """

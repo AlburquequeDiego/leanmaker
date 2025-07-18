@@ -61,11 +61,12 @@ interface StrikeReportFormState {
 export const CompanyEvaluations: React.FC = () => {
   const api = useApi();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [evaluationsByProject, setEvaluationsByProject] = useState<Record<string, any[]>>({});
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [mainTab, setMainTab] = useState(0); // 0: Por Proyecto, 1: Recibidas, 2: Dadas
+  const [selectedTab, setSelectedTab] = useState(0); // 0: Activos, 1: Completados, 2: Cancelados
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetalleOpen, setModalDetalleOpen] = useState(false);
   const [strikeReportModalOpen, setStrikeReportModalOpen] = useState(false);
@@ -90,25 +91,68 @@ export const CompanyEvaluations: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
       // Obtener proyectos
       const projectsResponse = await api.get('/api/projects/');
-      const adaptedProjects = adaptProjectList(projectsResponse.data.results || projectsResponse.data);
+      let projectsData: any[] = [];
+      if (projectsResponse?.data?.results) {
+        projectsData = projectsResponse.data.results;
+      } else if (projectsResponse?.results) {
+        projectsData = projectsResponse.results;
+      } else if (Array.isArray(projectsResponse)) {
+        projectsData = projectsResponse;
+      } else if (projectsResponse?.data && Array.isArray(projectsResponse.data)) {
+        projectsData = projectsResponse.data;
+      } else {
+        setError('La respuesta del backend no contiene proyectos válidos.');
+        setProjects([]);
+        setLoading(false);
+        return;
+      }
+      if (!Array.isArray(projectsData)) {
+        setError('La respuesta del backend no es un array de proyectos.');
+        setProjects([]);
+        setLoading(false);
+        return;
+      }
+      const adaptedProjects = adaptProjectList(projectsData);
       setProjects(adaptedProjects);
 
-      // Obtener evaluaciones
-      const evaluationsResponse = await api.get('/api/evaluations/');
-      const adaptedEvaluations = (evaluationsResponse.data.results || evaluationsResponse.data).map(adaptEvaluation);
-      setEvaluations(adaptedEvaluations);
+      // Obtener evaluaciones mutuas por proyecto
+      const evaluationsByProj: Record<string, any[]> = {};
+      for (const project of adaptedProjects) {
+        try {
+          const evalsResp = await api.get(`/api/evaluations/by_project/${project.id}/`);
+          evaluationsByProj[project.id] = evalsResp.data?.results || evalsResp.results || [];
+        } catch (e) {
+          evaluationsByProj[project.id] = [];
+        }
+      }
+      setEvaluationsByProject(evaluationsByProj);
 
       // Obtener usuarios
       const usersResponse = await api.get('/api/users/');
-      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
-      setUsers(studentUsers);
-      
+      let usersData: any[] = [];
+      if (usersResponse?.data?.results) {
+        usersData = usersResponse.data.results;
+      } else if (usersResponse?.results) {
+        usersData = usersResponse.results;
+      } else if (Array.isArray(usersResponse)) {
+        usersData = usersResponse;
+      } else if (usersResponse?.data && Array.isArray(usersResponse.data)) {
+        usersData = usersResponse.data;
+      } else if (Array.isArray(usersResponse.data)) {
+        usersData = usersResponse.data;
+      } else {
+        setError('La respuesta del backend no contiene usuarios válidos.');
+        setUsers([]);
+        setLoading(false);
+        return;
+      }
+      setUsers(usersData.filter((user: any) => user.role === 'student'));
     } catch (err: any) {
-      console.error('Error cargando datos:', err);
-      setError(err.response?.data?.error || 'Error al cargar datos');
+      setError('Error al cargar datos');
+      setProjects([]);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -121,15 +165,19 @@ export const CompanyEvaluations: React.FC = () => {
 
   // Verificar si un estudiante ya fue evaluado en un proyecto
   const isStudentEvaluated = (studentId: string, projectId: string) => {
-    return evaluations.some(evaluation =>
-      evaluation.student === studentId && evaluation.project === projectId
+    return evaluationsByProject[projectId]?.some(evaluation =>
+      evaluation.student === studentId && evaluation.evaluator_role === 'company'
+    ) || evaluationsByProject[projectId]?.some(evaluation =>
+      evaluation.student === studentId && evaluation.evaluator_role === 'student'
     );
   };
 
   // Obtener evaluación existente
   const getExistingEvaluation = (studentId: string, projectId: string) => {
-    return evaluations.find(evaluation =>
-      evaluation.student === studentId && evaluation.project === projectId
+    return evaluationsByProject[projectId]?.find(evaluation =>
+      evaluation.student === studentId && evaluation.evaluator_role === 'company'
+    ) || evaluationsByProject[projectId]?.find(evaluation =>
+      evaluation.student === studentId && evaluation.evaluator_role === 'student'
     );
   };
 
@@ -182,14 +230,18 @@ export const CompanyEvaluations: React.FC = () => {
         // Actualizar evaluación existente
         const response = await api.patch(`/api/evaluations/${existingEvaluation.id}/`, evaluationData);
         const updatedEvaluation = adaptEvaluation(response.data);
-                 setEvaluations(prev =>
-           prev.map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
-         );
+                 setEvaluationsByProject(prev => ({
+           ...prev,
+           [selectedProject.id]: prev[selectedProject.id].map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
+         }));
       } else {
         // Crear nueva evaluación
         const response = await api.post('/api/evaluations/', evaluationData);
         const newEvaluation = adaptEvaluation(response.data);
-        setEvaluations(prev => [...prev, newEvaluation]);
+        setEvaluationsByProject(prev => ({
+          ...prev,
+          [selectedProject.id]: [...prev[selectedProject.id], newEvaluation]
+        }));
       }
 
       setModalOpen(false);
@@ -212,7 +264,16 @@ export const CompanyEvaluations: React.FC = () => {
 
     try {
       await api.delete(`/api/evaluations/${evaluationId}/`);
-      setEvaluations(prev => prev.filter(evaluation => evaluation.id !== evaluationId));
+      setEvaluationsByProject(prev => {
+        const projectId = prev[selectedProject.id]?.find(e => e.id === evaluationId)?.project;
+        if (projectId) {
+          return {
+            ...prev,
+            [projectId]: prev[projectId].filter(evaluation => evaluation.id !== evaluationId)
+          };
+        }
+        return prev;
+      });
     } catch (error: any) {
       console.error('Error eliminando evaluación:', error);
       setError(error.response?.data?.error || 'Error al eliminar evaluación');
@@ -314,115 +375,143 @@ export const CompanyEvaluations: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
+    <Box sx={{ flexGrow: 1, p: { xs: 1, md: 3 }, bgcolor: '#f7fafd', minHeight: '100vh' }}>
       {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom>
           Evaluaciones de Estudiantes
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Evalúa el desempeño de los estudiantes en tus proyectos
+          Evalúa el desempeño de los estudiantes en tus proyectos y consulta las evaluaciones recibidas
         </Typography>
       </Box>
 
-      {/* Tabs */}
-      <Box sx={{ mb: 3 }}>
+      {/* Tabs principales */}
+      <Box sx={{ mb: 4 }}>
         <Grid container spacing={1}>
-          {['Activos', 'Completados', 'Cancelados'].map((tab, index) => (
+          {['Por Proyecto', 'Recibidas', 'Dadas'].map((tab, index) => (
             <Grid item key={index}>
               <Button
-                variant={selectedTab === index ? 'contained' : 'outlined'}
-                onClick={() => setSelectedTab(index)}
-                sx={{ minWidth: 120 }}
+                variant={mainTab === index ? 'contained' : 'outlined'}
+                onClick={() => setMainTab(index)}
+                sx={{ minWidth: 160, fontWeight: 600, fontSize: 16, borderRadius: 2, boxShadow: mainTab === index ? 2 : 0 }}
               >
                 {tab}
               </Button>
             </Grid>
           ))}
         </Grid>
-                </Box>
+      </Box>
 
-      {/* Lista de Proyectos */}
-      <Box>
-        {(() => {
-          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
-          
-          return currentProjects.map((project) => (
-            <Paper key={project.id} sx={{ p: 3, mb: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    {project.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    {project.description}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                    <Chip
-                      label={getStatusLabel(project.status)}
-                      color={getStatusColor(project.status) as any}
-                      size="small"
-                    />
-                    <Chip
-                      label={`${project.current_students}/${project.max_students} estudiantes`}
-                      variant="outlined"
-                      size="small"
-                    />
-        </Box>
-                </Box>
-              </Box>
+      {/* Estadísticas */}
+      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <Card sx={{ bgcolor: '#1976d2', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
+          <CardContent>
+            <Typography variant="h3" fontWeight={700}>{projects.length}</Typography>
+            <Typography variant="body1" fontWeight={600}>Total Proyectos</Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ bgcolor: '#388e3c', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
+          <CardContent>
+            <Typography variant="h3" fontWeight={700}>{Object.values(evaluationsByProject).flat().length}</Typography>
+            <Typography variant="body1" fontWeight={600}>Total Evaluaciones</Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ bgcolor: '#ffa726', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
+          <CardContent>
+            <Typography variant="h3" fontWeight={700}>{Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'company').length}</Typography>
+            <Typography variant="body1" fontWeight={600}>Evaluaciones Realizadas</Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ bgcolor: '#29b6f6', color: 'white', borderRadius: 3, boxShadow: 3, minWidth: 220 }}>
+          <CardContent>
+            <Typography variant="h3" fontWeight={700}>{Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'student').length}</Typography>
+            <Typography variant="body1" fontWeight={600}>Evaluaciones Recibidas</Typography>
+          </CardContent>
+        </Card>
+      </Box>
 
-              {/* Estudiantes del proyecto */}
-              <Typography variant="h6" gutterBottom>
-                Estudiantes Participantes
-              </Typography>
-              <Grid container spacing={2}>
-                {getProjectStudents(project.id).map((student) => {
-                  const isEvaluated = isStudentEvaluated(student.id, project.id);
-                  const existingEvaluation = getExistingEvaluation(student.id, project.id);
-                  
-                  return (
-                    <Grid item xs={12} sm={6} md={4} key={student.id}>
-                      <Card variant="outlined">
-              <CardContent>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Typography variant="subtitle1">
-                              {student.first_name} {student.last_name}
-                    </Typography>
-                            <Chip
-                              label={isEvaluated ? 'Evaluado' : 'Pendiente'}
-                              color={isEvaluated ? 'success' : 'warning'}
-                              size="small"
-                            />
+      {/* Tabs secundarios y contenido */}
+      {mainTab === 0 && (
+        <>
+          <Box sx={{ mb: 4 }}>
+            <Grid container spacing={1}>
+              {['Activos', 'Completados', 'Cancelados'].map((tab, index) => (
+                <Grid item key={index}>
+                  <Button
+                    variant={selectedTab === index ? 'contained' : 'outlined'}
+                    onClick={() => setSelectedTab(index)}
+                    sx={{ minWidth: 140, fontWeight: 600, fontSize: 16, borderRadius: 2, boxShadow: selectedTab === index ? 2 : 0 }}
+                  >
+                    {tab}
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
           </Box>
-                          
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {student.email}
-                  </Typography>
-                          
-                          {existingEvaluation && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                              <Rating value={existingEvaluation.score} readOnly size="small" />
-                              <Typography variant="body2" sx={{ ml: 1 }}>
-                                {existingEvaluation.score}/5
+          {/* Lista de Proyectos */}
+          <Box>
+            {(() => {
+              const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
+              if (currentProjects.length === 0) {
+                return (
+                  <Box sx={{ textAlign: 'center', py: 8 }}>
+                    <Typography variant="h5" color="text.secondary" fontWeight={500}>
+                      No hay proyectos en esta categoría
                     </Typography>
-                    </Box>
-                          )}
-                          
+                  </Box>
+                );
+              }
+              return (
+                <Grid container spacing={3}>
+                  {currentProjects.map((project) => (
+                    <Grid item xs={12} md={6} key={project.id}>
+                      <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white', transition: 'box-shadow 0.2s', '&:hover': { boxShadow: 6 } }}>
+                        <CardContent>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
+                              {project.title}
+                            </Typography>
+                            <Chip
+                              label={getStatusLabel(project.status)}
+                              color={getStatusColor(project.status) as any}
+                              size="small"
+                              sx={{ fontWeight: 600 }}
+                            />
+                          </Box>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            {project.description && project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description || 'Sin descripción'}
+                          </Typography>
+                          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', mb: 2 }}>
+                            <Chip
+                              label={`${project.current_students || 0}/${project.max_students || 1} estudiantes`}
+                              size="small"
+                              color="success"
+                              sx={{ fontWeight: 600 }}
+                            />
+                            <Chip
+                              label={`${(evaluationsByProject[project.id] || []).length} evaluaciones`}
+                              size="small"
+                              color="info"
+                              sx={{ fontWeight: 600 }}
+                            />
+                          </Box>
                           <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
                             <Button
                               size="small"
-                              variant={isEvaluated ? 'outlined' : 'contained'}
-                              onClick={() => handleOpenEvaluar(student, project)}
-                              startIcon={isEvaluated ? <EditIcon /> : <RateReviewIcon />}
+                              variant="contained"
+                              color="primary"
+                              onClick={() => handleOpenEvaluar(users[0], project)}
+                              sx={{ borderRadius: 2 }}
                             >
-                              {isEvaluated ? 'Reevaluar' : 'Evaluar'}
+                              Evaluar
                             </Button>
                             <Button
                               size="small"
                               variant="outlined"
-                              onClick={() => handleOpenDetalle(student, project)}
-                              startIcon={<VisibilityIcon />}
+                              color="info"
+                              onClick={() => handleOpenDetalle(users[0], project)}
+                              sx={{ borderRadius: 2 }}
                             >
                               Ver
                             </Button>
@@ -430,35 +519,98 @@ export const CompanyEvaluations: React.FC = () => {
                               size="small"
                               variant="outlined"
                               color="warning"
-                              onClick={() => handleOpenStrikeReport(student, project)}
-                              startIcon={<WarningIcon />}
+                              onClick={() => handleOpenStrikeReport(users[0], project)}
+                              sx={{ borderRadius: 2 }}
                             >
                               Reportar
                             </Button>
-                  </Box>
-                </CardContent>
-              </Card>
+                          </Box>
+                        </CardContent>
+                      </Card>
                     </Grid>
-                  );
-                })}
+                  ))}
+                </Grid>
+              );
+            })()}
+          </Box>
+        </>
+      )}
+      {mainTab === 1 && (
+        // Evaluaciones Recibidas de Estudiantes
+        <Box>
+          <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+            Evaluaciones Recibidas de Estudiantes
+          </Typography>
+          <Grid container spacing={3}>
+            {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'student').map((evalR, idx) => (
+              <Grid item xs={12} md={6} key={evalR.id || idx}>
+                <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white' }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
+                        {evalR.student_name}
+                      </Typography>
+                      <Chip label="Recibida" color="info" size="small" sx={{ fontWeight: 600 }} />
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <Rating value={evalR.score} readOnly />
+                      <Typography variant="body1" sx={{ ml: 2 }}>
+                        {evalR.score}/5
+                      </Typography>
+                    </Box>
+                    {evalR.comments && (
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        <strong>Comentarios:</strong> {evalR.comments}
+                      </Typography>
+                    )}
+                    <Typography variant="body2" color="text.secondary">
+                      Evaluado el: {new Date(evalR.evaluation_date).toLocaleDateString()}
+                    </Typography>
+                  </CardContent>
+                </Card>
               </Grid>
-            </Paper>
-          ));
-        })()}
-        
-        {(() => {
-          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
-          if (currentProjects.length === 0) {
-            return (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant="h6" color="text.secondary">
-                  No hay proyectos en esta categoría
-                </Typography>
-              </Box>
-            );
-          }
-        })()}
-                </Box>
+            ))}
+          </Grid>
+        </Box>
+      )}
+      {mainTab === 2 && (
+        // Evaluaciones Realizadas a Estudiantes
+        <Box>
+          <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+            Evaluaciones Realizadas a Estudiantes
+          </Typography>
+          <Grid container spacing={3}>
+            {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'company').map((evalD, idx) => (
+              <Grid item xs={12} md={6} key={evalD.id || idx}>
+                <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white' }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
+                        {evalD.student_name}
+                      </Typography>
+                      <Chip label="Dada" color="success" size="small" sx={{ fontWeight: 600 }} />
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <Rating value={evalD.score} readOnly />
+                      <Typography variant="body1" sx={{ ml: 2 }}>
+                        {evalD.score}/5
+                      </Typography>
+                    </Box>
+                    {evalD.comments && (
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        <strong>Comentarios:</strong> {evalD.comments}
+                      </Typography>
+                    )}
+                    <Typography variant="body2" color="text.secondary">
+                      Evaluado el: {new Date(evalD.evaluation_date).toLocaleDateString()}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      )}
 
       {/* Modal de Evaluación */}
       <Dialog
@@ -535,33 +687,63 @@ export const CompanyEvaluations: React.FC = () => {
               </Typography>
               
               {(() => {
-                const evaluation = getExistingEvaluation(selectedStudent.id, selectedProject.id);
-                if (evaluation) {
+                const companyToStudentEvaluation = getCompanyToStudentEvaluation(selectedProject.id, selectedStudent.id);
+                const studentToCompanyEvaluation = getStudentToCompanyEvaluation(selectedProject.id, selectedStudent.id);
+
+                if (companyToStudentEvaluation || studentToCompanyEvaluation) {
                   return (
                     <Box>
                       <Typography variant="h6" gutterBottom>
-                        Evaluación
+                        Evaluaciones
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Rating value={evaluation.score} readOnly />
-                        <Typography variant="body1" sx={{ ml: 2 }}>
-                          {evaluation.score}/5
-                        </Typography>
-                      </Box>
-                      {evaluation.comments && (
-                        <Typography variant="body1" paragraph>
-                          <strong>Comentarios:</strong> {evaluation.comments}
-                        </Typography>
+                      {companyToStudentEvaluation && (
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="subtitle2" gutterBottom>
+                            Evaluación de la Empresa al Estudiante
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Rating value={companyToStudentEvaluation.score} readOnly />
+                            <Typography variant="body1" sx={{ ml: 2 }}>
+                              {companyToStudentEvaluation.score}/5
+                            </Typography>
+                          </Box>
+                          {companyToStudentEvaluation.comments && (
+                            <Typography variant="body1" paragraph>
+                              <strong>Comentarios (Empresa):</strong> {companyToStudentEvaluation.comments}
+                            </Typography>
+                          )}
+                          <Typography variant="body2" color="text.secondary">
+                            Evaluado el: {new Date(companyToStudentEvaluation.evaluation_date).toLocaleDateString()}
+                          </Typography>
+                        </Box>
                       )}
-                      <Typography variant="body2" color="text.secondary">
-                        Evaluado el: {new Date(evaluation.evaluation_date).toLocaleDateString()}
-                      </Typography>
+                      {studentToCompanyEvaluation && (
+                        <Box>
+                          <Typography variant="subtitle2" gutterBottom>
+                            Evaluación del Estudiante a la Empresa
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Rating value={studentToCompanyEvaluation.score} readOnly />
+                            <Typography variant="body1" sx={{ ml: 2 }}>
+                              {studentToCompanyEvaluation.score}/5
+                            </Typography>
+                          </Box>
+                          {studentToCompanyEvaluation.comments && (
+                            <Typography variant="body1" paragraph>
+                              <strong>Comentarios (Estudiante):</strong> {studentToCompanyEvaluation.comments}
+                            </Typography>
+                          )}
+                          <Typography variant="body2" color="text.secondary">
+                            Evaluado el: {new Date(studentToCompanyEvaluation.evaluation_date).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                      )}
                     </Box>
                   );
                 } else {
                   return (
                     <Typography variant="body1" color="text.secondary">
-                      No hay evaluación registrada para este estudiante en este proyecto.
+                      No hay evaluaciones registradas para este estudiante en este proyecto.
                     </Typography>
                   );
                 }

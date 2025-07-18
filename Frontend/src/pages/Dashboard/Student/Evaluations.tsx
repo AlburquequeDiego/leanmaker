@@ -148,17 +148,35 @@ export const Evaluations = () => {
     setLoading(true);
     try {
       const response = await apiService.get('/api/evaluations/');
-      console.log('[Evaluations] Response:', response);
-      // El backend puede devolver {success: true, data: Array, ...} o un array directo
-      let evaluationsData = response.data || response;
-      if (!Array.isArray(evaluationsData)) {
-        // Si viene paginado o con otra estructura
-        evaluationsData = evaluationsData.results || evaluationsData.data || [];
+      console.log('[Evaluations] Respuesta real del backend:', response);
+
+      let evaluationsData: any[] = [];
+      if (response?.data?.results) {
+        evaluationsData = response.data.results;
+      } else if (response?.results) {
+        evaluationsData = response.results;
+      } else if (Array.isArray(response)) {
+        evaluationsData = response;
+      } else if (response?.data && Array.isArray(response.data)) {
+        evaluationsData = response.data;
+      } else {
+        setSnackbar({ open: true, message: 'La respuesta del backend no contiene evaluaciones válidas.', severity: 'error' });
+        console.error('Formato inesperado de respuesta:', response);
+        setEvaluations([]);
+        setLoading(false);
+        return;
       }
-      // Adaptar cada evaluación
+      if (!Array.isArray(evaluationsData)) {
+        setSnackbar({ open: true, message: 'La respuesta del backend no es un array de evaluaciones.', severity: 'error' });
+        console.error('Evaluations no es un array:', evaluationsData);
+        setEvaluations([]);
+        setLoading(false);
+        return;
+      }
       setEvaluations(evaluationsData.map(adaptEvaluation));
     } catch (error) {
       console.error('Error fetching evaluations:', error);
+      setSnackbar({ open: true, message: 'Error al cargar evaluaciones.', severity: 'error' });
       setEvaluations([]);
     }
     setLoading(false);

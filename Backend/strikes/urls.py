@@ -14,6 +14,7 @@ urlpatterns = [
     
     # Reportes de strikes
     path('reports/', views.strike_reports_list, name='strike_reports_list'),
+    path('reports/company/', views.strike_reports_company, name='strike_reports_company'),
     path('reports/create/', views.strike_reports_create, name='strike_reports_create'),
     path('reports/<uuid:report_id>/approve/', views.strike_report_approve, name='strike_report_approve'),
     path('reports/<uuid:report_id>/reject/', views.strike_report_reject, name='strike_report_reject'),

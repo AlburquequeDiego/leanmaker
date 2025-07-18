@@ -8,6 +8,8 @@ from users.models import User
 from evaluation_categories.models import EvaluationCategory
 import uuid
 import json
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Evaluation(models.Model):
     """
@@ -283,3 +285,13 @@ class StudentAchievement(models.Model):
             from django.utils import timezone
             return timezone.now().date() > self.expiry_date
         return False
+
+@receiver(post_save, sender=Evaluation)
+def actualizar_gpa_estudiante(sender, instance, **kwargs):
+    try:
+        # Buscar el perfil de estudiante correspondiente al usuario evaluado
+        from students.models import Estudiante
+        estudiante = Estudiante.objects.get(user=instance.student)
+        estudiante.actualizar_calificacion()
+    except Estudiante.DoesNotExist:
+        pass
