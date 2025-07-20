@@ -89,7 +89,7 @@ function adaptEvaluation(raw: any): Evaluation {
   return {
     id: raw.id || '',
     projectTitle: raw.project_title || raw.projectTitle || 'Sin título',
-    company: raw.project?.company?.company_name || 'Sin empresa',
+    company: raw.company_name || raw.project?.company?.company_name || 'Sin empresa',
     evaluator: raw.evaluator_name || raw.evaluator || 'Sin evaluador',
     evaluatorRole: raw.evaluator_role || raw.evaluatorRole || 'Sin rol',
     date: raw.evaluation_date || raw.date || raw.created_at || '',

@@ -937,7 +937,7 @@ def api_test_admin_stats(request):
         from companies.models import Empresa
         from students.models import Estudiante
         from applications.models import Aplicacion
-        from strikes.models import Strike
+        from strikes.models import StrikeReport
         
         # Obtener estadísticas básicas
         total_users = User.objects.count()
@@ -945,7 +945,9 @@ def api_test_admin_stats(request):
         total_students = Estudiante.objects.count()
         total_projects = Proyecto.objects.count()
         pending_applications = Aplicacion.objects.filter(status='pending').count()
-        strikes_alerts = Strike.objects.filter(is_active=True).count()
+        
+        # Obtener alertas de strikes (reportes de asignación de strikes pendientes)
+        strikes_alerts = StrikeReport.objects.filter(status='pending').count()
         
         # Obtener algunos ejemplos de datos
         sample_users = list(User.objects.values('id', 'email', 'role')[:5])
@@ -1025,7 +1027,7 @@ def api_test_auth_admin_stats(request):
         from companies.models import Empresa
         from students.models import Estudiante
         from applications.models import Aplicacion
-        from strikes.models import Strike
+        from strikes.models import StrikeReport
         
         # Obtener estadísticas básicas
         total_users = User.objects.count()
@@ -1033,7 +1035,9 @@ def api_test_auth_admin_stats(request):
         total_students = Estudiante.objects.count()
         total_projects = Proyecto.objects.count()
         pending_applications = Aplicacion.objects.filter(status='pending').count()
-        strikes_alerts = Strike.objects.filter(is_active=True).count()
+        
+        # Obtener alertas de strikes (reportes de asignación de strikes pendientes)
+        strikes_alerts = StrikeReport.objects.filter(status='pending').count()
         
         response_data = {
             'total_users': total_users,

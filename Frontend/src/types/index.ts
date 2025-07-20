@@ -107,7 +107,7 @@ export interface Project {
   title: string;
   description: string;
   company: string; // UUID de la empresa
-  area: string; // UUID del área
+  area: string; // Nombre del área (ej: "Tecnología", "Marketing", etc.)
   status: string; // Estado del proyecto (open, active, completed, etc.)
   requirements: string;
   min_api_level: number;
@@ -140,7 +140,6 @@ export interface Application {
   project: string; // UUID del proyecto
   student: string; // UUID del estudiante
   status: 'pending' | 'reviewing' | 'interviewed' | 'accepted' | 'rejected' | 'withdrawn' | 'completed';
-  compatibility_score?: number;
   cover_letter?: string;
   company_notes?: string;
   student_notes?: string;
@@ -158,6 +157,9 @@ export interface Application {
   student_name?: string;
   student_email?: string;
   company_name?: string;
+  // Campos adicionales del backend para compatibilidad
+  project_id?: string; // ID del proyecto (para compatibilidad)
+  student_id?: string; // ID del estudiante (para compatibilidad)
 }
 
 // Tipos de evaluación - Coinciden con el modelo Evaluacion del backend
@@ -189,6 +191,9 @@ export interface Evaluation {
     category_name: string;
     rating: number;
   }>; // Puntajes por categoría
+  // Campos adicionales del backend
+  evaluator_role?: string; // Rol del evaluador (para compatibilidad)
+  overall_rating?: number; // Rating general (para compatibilidad)
 }
 
 // Tipos de notificación - Coinciden con el modelo Notificacion del backend
@@ -451,6 +456,7 @@ export interface DashboardStats {
   active_projects: number;
   total_applications: number;
   pending_applications: number;
+  strikes_alerts: number; // Agregado para coincidir con el backend
 }
 
 // Universidades disponibles

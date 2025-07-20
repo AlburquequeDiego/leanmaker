@@ -238,6 +238,59 @@ class Proyecto(models.Model):
         """Publica el proyecto"""
         self.published_at = timezone.now()
         self.save(update_fields=['published_at'])
+    
+    def marcar_como_completado(self, user=None):
+        """Marca el proyecto como completado y genera horas trabajadas automáticamente"""
+        from django.utils import timezone
+        from work_hours.models import WorkHour
+        from applications.models import Asignacion
+        
+        # Cambiar estado del proyecto
+        self.real_end_date = timezone.now().date()
+        self.save(update_fields=['real_end_date'])
+        
+        # Obtener todas las asignaciones activas del proyecto
+        asignaciones = Asignacion.objects.filter(
+            application__project=self,
+            estado='en curso'
+        ).select_related('application__student', 'application__project__company')
+        
+        # Generar horas trabajadas para cada asignación
+        for asignacion in asignaciones:
+            # Calcular horas totales del proyecto
+            horas_proyecto = self.required_hours or self.hours_per_week * self.duration_weeks
+            
+            # Crear registro de horas trabajadas
+            work_hour = WorkHour.objects.create(
+                assignment=asignacion,
+                student=asignacion.application.student,
+                project=self,
+                company=self.company,
+                date=timezone.now().date(),
+                hours_worked=horas_proyecto,
+                description=f"Horas automáticas del proyecto completado: {self.title}",
+                approved=False,  # Pendiente de validación del admin
+                approved_by=None,
+                approved_at=None
+            )
+            
+            # Finalizar la asignación
+            asignacion.finalizar_asignacion()
+        
+        # Registrar el cambio de estado en el historial
+        if user:
+            from .models import HistorialEstadosProyecto
+            from project_status.models import ProjectStatus
+            try:
+                status_completado = ProjectStatus.objects.get(name='Completado')
+                HistorialEstadosProyecto.objects.create(
+                    project=self,
+                    status=status_completado,
+                    user=user,
+                    comentario=f"Proyecto marcado como completado por {user.full_name}"
+                )
+            except ProjectStatus.DoesNotExist:
+                pass  # Si no existe el estado, no se registra el historial
 
 class HistorialEstadosProyecto(models.Model):
     """
@@ -282,7 +335,6 @@ class AplicacionProyecto(models.Model):
     # Información de la aplicación - coinciden con frontend
     cover_letter = models.TextField()  # Campo renombrado para coincidir con frontend
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pending')
-    compatibility_score = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(100)])  # Campo renombrado para coincidir con frontend
     
     # Fechas - coinciden con frontend
     applied_at = models.DateTimeField(auto_now_add=True)  # Campo renombrado para coincidir con frontend

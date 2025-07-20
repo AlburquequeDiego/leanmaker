@@ -368,16 +368,49 @@ def admin_work_hours_list(request, current_user):
             # Calificaciones mutuas (estrellas)
             empresa_stars = getattr(work_hour.company, 'stars', None)
             estudiante_stars = getattr(work_hour.student, 'stars', None)
+            
+            # Información adicional del proyecto
+            is_project_completion = "Horas automáticas del proyecto completado" in (work_hour.description or "")
+            project_duration_weeks = getattr(work_hour.project, 'duration_weeks', None)
+            project_hours_per_week = getattr(work_hour.project, 'hours_per_week', None)
+            project_required_hours = getattr(work_hour.project, 'required_hours', None)
+            
+            # Obtener calificaciones del proyecto si existen
+            from ratings.models import Rating
+            company_rating = None
+            student_rating = None
+            try:
+                # Buscar calificación de la empresa al estudiante
+                company_rating_obj = Rating.objects.filter(
+                    project=work_hour.project,
+                    user=work_hour.company.user
+                ).first()
+                if company_rating_obj:
+                    company_rating = company_rating_obj.rating
+                
+                # Buscar calificación del estudiante a la empresa
+                student_rating_obj = Rating.objects.filter(
+                    project=work_hour.project,
+                    user=work_hour.student.user
+                ).first()
+                if student_rating_obj:
+                    student_rating = student_rating_obj.rating
+            except:
+                pass
+            
             work_hours_data.append({
                 'id': str(work_hour.id),
                 'student_name': work_hour.student.user.full_name,
                 'student_email': work_hour.student.user.email,
                 'project_title': work_hour.project.title,
-                'company_name': work_hour.company.company_name,
+                'project_id': str(work_hour.project.id),
+                'empresa_nombre': work_hour.company.company_name,
+                'empresa_email': work_hour.company.user.email,
                 'date': work_hour.date.isoformat(),
                 'hours_worked': work_hour.hours_worked,
                 'description': work_hour.description,
-                'approved': work_hour.approved,
+                'status': 'approved' if work_hour.approved else 'pending',
+                'admin_comment': work_hour.description if work_hour.approved_by else None,
                 'approved_by': work_hour.approved_by.full_name if work_hour.approved_by else None,
                 'approved_at': work_hour.approved_at.isoformat() if work_hour.approved_at else None,
                 'created_at': work_hour.created_at.isoformat(),
@@ -391,6 +424,13 @@ def admin_work_hours_list(request, current_user):
                 'estudiante_gpa': estudiante_gpa,
                 'empresa_stars': empresa_stars,
                 'estudiante_stars': estudiante_stars,
+                # Campos adicionales para validación de horas de proyectos
+                'is_project_completion': is_project_completion,
+                'project_duration_weeks': project_duration_weeks,
+                'project_hours_per_week': project_hours_per_week,
+                'project_required_hours': project_required_hours,
+                'company_rating': company_rating,
+                'student_rating': student_rating,
             })
         
         return JsonResponse({
@@ -563,7 +603,7 @@ def admin_profile(request, current_user):
 @require_http_methods(["POST"])
 @require_admin_auth
 def approve_work_hour(request, current_user, work_hour_id):
-    """Aprobar horas trabajadas desde el panel admin/empresa"""
+    """Validar horas trabajadas desde el panel admin (solo aprobación, no se puede rechazar)"""
     from work_hours.models import WorkHour
     import json
     try:
@@ -573,9 +613,13 @@ def approve_work_hour(request, current_user, work_hour_id):
         except WorkHour.DoesNotExist:
             return JsonResponse({'error': 'Horas trabajadas no encontradas'}, status=404)
 
-        # Solo admins o empresas pueden aprobar
-        if current_user.role not in ['admin', 'company']:
-            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Solo admins pueden validar horas
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Solo los administradores pueden validar horas'}, status=403)
+
+        # Verificar que no esté ya aprobada
+        if work_hour.approved:
+            return JsonResponse({'error': 'Las horas ya han sido validadas'}, status=400)
 
         # Leer comentario opcional
         comentario = None
@@ -586,12 +630,12 @@ def approve_work_hour(request, current_user, work_hour_id):
             except Exception:
                 pass
 
-        # Aprobar horas
+        # Validar horas (solo aprobación)
         work_hour.aprobar_horas(current_user, comentario)
 
         return JsonResponse({
             'success': True,
-            'message': 'Horas trabajadas aprobadas correctamente',
+            'message': 'Horas trabajadas validadas correctamente',
             'id': str(work_hour.id),
             'approved': work_hour.approved,
             'approved_by': work_hour.approved_by.full_name if work_hour.approved_by else None,

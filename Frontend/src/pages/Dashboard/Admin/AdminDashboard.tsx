@@ -13,8 +13,8 @@ export default function AdminDashboard() {
 
   // Cálculos de KPIs usando datos reales
   const totalUsers = stats?.total_users || 0;
-  const totalStudents = stats?.total_students || 0;
-  const totalCompanies = stats?.total_companies || 0;
+  const totalStudents = stats?.students || 0; // Corregido: usar el campo mapeado por el adaptador
+  const totalCompanies = stats?.companies || 0; // Corregido: usar el campo mapeado por el adaptador
   const totalProjects = stats?.total_projects || 0;
   const pendingApplications = stats?.pending_applications || 0;
   const strikesAlerts = stats?.strikes_alerts || 0;
@@ -111,14 +111,14 @@ export default function AdminDashboard() {
               <Typography variant="body2" color="#666666">Postulaciones realizadas</Typography>
             </Paper>
             
-            {/* Alertas - Naranja */}
+            {/* Asignaciones de Strikes - Naranja */}
             <Paper sx={{ p: 2.5, minWidth: 220, flex: '1 1 260px', display: 'flex', flexDirection: 'column', bgcolor: '#ff9800', color: 'white', boxShadow: 2, borderRadius: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <PendingIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography variant="h6" fontWeight={700}>Alertas</Typography>
+                <Typography variant="h6" fontWeight={700}>Asignaciones de Strikes</Typography>
               </Box>
               <Typography variant="h4" fontWeight={700}>{strikesAlerts}</Typography>
-              <Typography variant="body2">Alertas pendientes</Typography>
+              <Typography variant="body2">Reportes pendientes de revisión</Typography>
             </Paper>
           </Box>
         </>

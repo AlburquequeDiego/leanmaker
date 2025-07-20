@@ -99,10 +99,33 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       const adaptedEvents = (eventsResponse.data.results || eventsResponse.data).map(adaptCalendarEvent);
       setEvents(adaptedEvents);
 
-      // Obtener usuarios para invitar a eventos
+      // Obtener estudiantes que han postulado a proyectos de la empresa
+      const applicationsResponse = await api.get('/api/applications/received_applications/');
+      const applications = applicationsResponse.results || applicationsResponse.data || [];
+      
+      // Crear lista de estudiantes postulantes
+      const postulantStudents = applications.map((app: any) => ({
+        id: app.student?.id || app.student_id,
+        full_name: app.student?.name || app.student_name || 'Estudiante no encontrado',
+        email: app.student?.email || app.student_email || '',
+        role: 'student',
+        project_title: app.project?.title || app.project_title || '',
+        status: app.status
+      }));
+
+      // Obtener todos los usuarios estudiantes para completar la lista
       const usersResponse = await api.get('/api/users/');
-      const studentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
-      setUsers(studentUsers);
+      const allStudentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
+      
+      // Combinar estudiantes postulantes con todos los estudiantes
+      const combinedUsers = [...postulantStudents, ...allStudentUsers];
+      
+      // Eliminar duplicados basándose en el ID
+      const uniqueUsers = combinedUsers.filter((user, index, self) => 
+        index === self.findIndex(u => u.id === user.id)
+      );
+      
+      setUsers(uniqueUsers);
       
     } catch (err: any) {
       console.error('Error cargando datos del calendario:', err);
@@ -192,6 +215,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         created_by: createdEvent.created_by,
         created_at: createdEvent.created_at,
         updated_at: createdEvent.updated_at,
+        priority: createdEvent.priority || 'normal',
       };
 
       setEvents(prev => [...prev, adaptedEvent]);
@@ -322,11 +346,28 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 value={newEvent.attendees}
                 onChange={e => setNewEvent((prev: any) => ({ ...prev, attendees: e.target.value }))}
                 label="Participantes"
-                renderValue={(selected) => (selected as string[]).map(id => users.find(u => u.id === id)?.full_name).join(', ')}
+                renderValue={(selected) => (selected as string[]).map(id => {
+                  const user = users.find(u => u.id === id);
+                  return user?.full_name || 'Usuario no encontrado';
+                }).join(', ')}
               >
                 {users.map(user => (
                   <MenuItem key={user.id} value={user.id}>
-                    {user.full_name}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <Typography variant="body2" fontWeight={600}>
+                        {user.full_name}
+                      </Typography>
+                      {user.project_title && (
+                        <Typography variant="caption" color="text.secondary">
+                          Postuló a: {user.project_title}
+                        </Typography>
+                      )}
+                      {user.status && (
+                        <Typography variant="caption" color="text.secondary">
+                          Estado: {user.status}
+                        </Typography>
+                      )}
+                    </Box>
                   </MenuItem>
                 ))}
               </Select>

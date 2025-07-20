@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -24,6 +24,9 @@ import {
   CloudUpload as CloudUploadIcon,
   Delete as DeleteIcon,
   CheckCircle as CheckCircleIcon,
+  Lock as LockIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
@@ -54,6 +57,157 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
+interface ChangePasswordData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
+// Componente separado para el formulario de contraseña
+const PasswordForm = ({ 
+  onSubmit, 
+  onCancel, 
+  error, 
+  success 
+}: { 
+  onSubmit: (data: ChangePasswordData) => void;
+  onCancel: () => void;
+  error: string | null;
+  success: string | null;
+}) => {
+  const [passwordData, setPasswordData] = useState<ChangePasswordData>({
+    current_password: '',
+    new_password: '',
+    confirm_password: '',
+  });
+
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
+
+  // Ref para forzar la limpieza del campo
+  const currentPasswordRef = useRef<HTMLInputElement>(null);
+
+  // Efecto para limpiar el campo cuando se monta el componente
+  useEffect(() => {
+    // Limpiar el estado inmediatamente
+    setPasswordData({
+      current_password: '',
+      new_password: '',
+      confirm_password: '',
+    });
+    
+    // Esperar a que el DOM esté listo
+    const timer = setTimeout(() => {
+      if (currentPasswordRef.current) {
+        // Forzar la limpieza del campo usando JavaScript directo
+        currentPasswordRef.current.value = '';
+        
+        // Forzar el foco y luego quitar el foco para asegurar la limpieza
+        currentPasswordRef.current.focus();
+        setTimeout(() => {
+          if (currentPasswordRef.current) {
+            currentPasswordRef.current.blur();
+          }
+        }, 50);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSubmit = () => {
+    onSubmit(passwordData);
+  };
+
+  return (
+    <>
+      <DialogTitle>Cambiar Contraseña</DialogTitle>
+      <DialogContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+          <Box sx={{ position: 'relative' }}>
+            <input
+              ref={currentPasswordRef}
+              type={showPasswords.current ? 'text' : 'password'}
+              value={passwordData.current_password}
+              onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
+              required
+              autoComplete="off"
+              style={{
+                width: '100%',
+                padding: '16.5px 14px',
+                border: '1px solid rgba(0, 0, 0, 0.23)',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontFamily: 'inherit',
+                backgroundColor: 'transparent',
+              }}
+              placeholder="Contraseña actual *"
+            />
+            <IconButton
+              onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+              }}
+            >
+              {showPasswords.current ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
+          </Box>
+          
+          <TextField
+            label="Nueva contraseña"
+            type={showPasswords.new ? 'text' : 'password'}
+            value={passwordData.new_password}
+            onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
+            required
+            autoComplete="off"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                >
+                  {showPasswords.new ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
+          />
+          <TextField
+            label="Confirmar nueva contraseña"
+            type={showPasswords.confirm ? 'text' : 'password'}
+            value={passwordData.confirm_password}
+            onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+            required
+            autoComplete="off"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                >
+                  {showPasswords.confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel}>Cancelar</Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_password}
+        >
+          Cambiar Contraseña
+        </Button>
+      </DialogActions>
+    </>
+  );
+};
 
 
 export const Profile = () => {
@@ -114,6 +268,12 @@ export const Profile = () => {
   const [newSkillLevel, setNewSkillLevel] = useState('Básico');
   const [userId, setUserId] = useState<string>('');
 
+  // Estados para cambio de contraseña
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [dialogKey, setDialogKey] = useState(Date.now());
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -138,7 +298,7 @@ export const Profile = () => {
         carrera: studentData.career || '',
         nivel: studentData.api_level?.toString() || '1',
         habilidades: Array.isArray(studentData.skills) ? studentData.skills.map((skill: string) => ({ nombre: skill, nivel: 'Intermedio' })) : [],
-        biografia: userData.bio || '',
+        biografia: userData.bio || '', // Carta de presentación
         cv_link: studentData.cv_link || '',
         certificado_link: studentData.certificado_link || '',
         area: '',
@@ -213,9 +373,9 @@ export const Profile = () => {
     }
 
     if (!editData.biografia.trim()) {
-      errors.biografia = 'La biografía es requerida';
+      errors.biografia = 'La carta de presentación es requerida';
     } else if (editData.biografia.length < 50) {
-      errors.biografia = 'La biografía debe tener al menos 50 caracteres';
+      errors.biografia = 'La carta de presentación debe tener al menos 50 caracteres';
     }
 
     // Validar URLs
@@ -279,7 +439,7 @@ export const Profile = () => {
           last_name: editData.apellido,
           email: editData.email,
           phone: editData.telefono,
-          bio: editData.biografia,
+          bio: editData.biografia, // Carta de presentación
         }
       };
 
@@ -360,6 +520,50 @@ export const Profile = () => {
     setEditData(prev => ({ ...prev, certificado_link: e.target.value }));
   };
 
+  // Funciones para cambio de contraseña
+  const handleChangePassword = async (formData: ChangePasswordData) => {
+    if (formData.new_password !== formData.confirm_password) {
+      setPasswordError('Las contraseñas nuevas no coinciden');
+      return;
+    }
+
+    if (formData.new_password.length < 8) {
+      setPasswordError('La nueva contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+
+    try {
+      const passwordData = {
+        old_password: formData.current_password,
+        new_password: formData.new_password,
+        new_password_confirm: formData.confirm_password,
+      };
+      
+      await apiService.post('/api/users/change-password/', passwordData);
+      
+      setPasswordSuccess('Contraseña cambiada exitosamente');
+      setShowPasswordDialog(false);
+    } catch (error) {
+      console.error('❌ [StudentProfile] Error al cambiar contraseña:', error);
+      setPasswordError('Error al cambiar la contraseña. Verifica tu contraseña actual.');
+    }
+  };
+
+  const handleOpenPasswordDialog = () => {
+    // Limpiar errores y mensajes
+    setPasswordError(null);
+    setPasswordSuccess(null);
+    
+    // Cerrar el diálogo primero para destruir el componente
+    setShowPasswordDialog(false);
+    
+    // Generar una nueva key única y abrir el diálogo después de un delay
+    setTimeout(() => {
+      setDialogKey(Date.now());
+      setShowPasswordDialog(true);
+    }, 100);
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
@@ -373,13 +577,22 @@ export const Profile = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4">Mi Perfil</Typography>
         {!isEditing ? (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={handleEdit}
-          >
-            Editar Perfil
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="outlined"
+              startIcon={<LockIcon />}
+              onClick={handleOpenPasswordDialog}
+            >
+              Cambiar Contraseña
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={handleEdit}
+            >
+              Editar Perfil
+            </Button>
+          </Box>
         ) : (
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
@@ -605,9 +818,9 @@ export const Profile = () => {
             </Box>
           </Box>
 
-          {/* Biografía */}
+          {/* Carta de Presentación */}
           <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" fontWeight={600}>Biografía</Typography>
+          <Typography variant="h6" fontWeight={600}>Carta de Presentación</Typography>
           <TextField
             fullWidth
             multiline
@@ -615,7 +828,7 @@ export const Profile = () => {
             value={isEditing ? (editData.biografia || '') : (profileData.biografia || '')}
             onChange={e => handleInputChange('biografia', e.target.value)}
             disabled={!isEditing}
-            placeholder="Cuéntanos sobre ti... (mínimo 50 caracteres)"
+            placeholder="Escribe tu carta de presentación para las empresas... (mínimo 50 caracteres)"
             sx={{ borderRadius: 2 }}
             error={!!validationErrors.biografia}
             helperText={validationErrors.biografia || `${(editData.biografia || '').length}/50 caracteres mínimos`}
@@ -749,6 +962,45 @@ export const Profile = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Modal de cambio de contraseña */}
+      <Dialog
+        key={dialogKey}
+        open={showPasswordDialog}
+        onClose={() => setShowPasswordDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <PasswordForm
+          onSubmit={handleChangePassword}
+          onCancel={() => setShowPasswordDialog(false)}
+          error={passwordError}
+          success={passwordSuccess}
+        />
+      </Dialog>
+
+      {/* Snackbar para mensajes de contraseña */}
+      <Snackbar
+        open={!!passwordError}
+        autoHideDuration={6000}
+        onClose={() => setPasswordError(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error" sx={{ width: '100%' }}>
+          {passwordError}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={!!passwordSuccess}
+        autoHideDuration={4000}
+        onClose={() => setPasswordSuccess(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          {passwordSuccess}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -47,8 +47,15 @@ interface WorkHour {
   horas_validadas?: number;
   empresa_gpa?: number;
   estudiante_gpa?: number;
-  empresa_nombre?: string; // Added for the new line
-  empresa_email?: string; // Added for the new line
+  empresa_nombre?: string;
+  empresa_email?: string;
+  // Campos adicionales para validación de horas de proyectos
+  is_project_completion?: boolean;
+  project_duration_weeks?: number;
+  project_hours_per_week?: number;
+  project_required_hours?: number;
+  company_rating?: number;
+  student_rating?: number;
 }
 
 export default function ValidacionHorasAdmin() {
@@ -174,6 +181,26 @@ export default function ValidacionHorasAdmin() {
       width: '250px'
     },
     {
+      key: 'project_title',
+      label: 'Proyecto',
+      render: (value: string, row: WorkHour) => (
+        <Box>
+          <Typography variant="body2" fontWeight={600} color="primary">
+            {value}
+          </Typography>
+          {row.is_project_completion && (
+            <Chip 
+              label="Completado" 
+              color="success" 
+              size="small" 
+              sx={{ mt: 0.5 }}
+            />
+          )}
+        </Box>
+      ),
+      width: '200px'
+    },
+    {
       key: 'empresa_nombre',
       label: 'Empresa',
       render: (value: string, row: WorkHour) => (
@@ -181,7 +208,7 @@ export default function ValidacionHorasAdmin() {
           {value && row.empresa_email ? `${value} (${row.empresa_email})` : '-'}
         </Typography>
       ),
-      width: '250px'
+      width: '200px'
     },
     {
       key: 'student_api_level',
@@ -220,6 +247,26 @@ export default function ValidacionHorasAdmin() {
         <Chip label={typeof value === 'number' ? `${value.toFixed(2)} ★` : '-'} color="success" size="small" />
       ),
       width: '100px',
+      align: 'center' as const
+    },
+    {
+      key: 'project_details',
+      label: 'Detalles Proyecto',
+      render: (_: any, row: WorkHour) => (
+        <Box sx={{ textAlign: 'center' }}>
+          {row.project_required_hours && (
+            <Typography variant="caption" display="block">
+              {row.project_required_hours}h requeridas
+            </Typography>
+          )}
+          {row.project_duration_weeks && (
+            <Typography variant="caption" display="block" color="text.secondary">
+              {row.project_duration_weeks} semanas
+            </Typography>
+          )}
+        </Box>
+      ),
+      width: '120px',
       align: 'center' as const
     },
     {
@@ -295,32 +342,28 @@ export default function ValidacionHorasAdmin() {
           size="small"
           color="success"
           onClick={() => handleOpenModal(row)}
-          startIcon={<WorkIcon />}
+          startIcon={<CheckCircleIcon />}
+          sx={{ 
+            fontWeight: 600,
+            '&:hover': { 
+              bgcolor: 'success.dark',
+              transform: 'translateY(-1px)',
+              boxShadow: 2
+            }
+          }}
         >
-          Validar horas
+          Validar Horas
         </Button>
       ) : (
-        <>
-          <Button
-            variant="outlined"
-            size="small"
-            color="info"
-            onClick={() => {
-              setReportHour(row);
-              setReportModalOpen(true);
-            }}
-          >
-            Ver reporte
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            color="info"
-            disabled
-          >
-            Ya validada
-          </Button>
-        </>
+        <Button
+          variant="outlined"
+          size="small"
+          color="success"
+          disabled
+          sx={{ fontWeight: 600 }}
+        >
+          ✅ Validada
+        </Button>
       )}
     </Box>
   );
@@ -329,7 +372,7 @@ export default function ValidacionHorasAdmin() {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" fontWeight={700}>
-          VALIDACION DE HORAS
+          VALIDACIÓN DE HORAS DE PROYECTOS
         </Typography>
         
         <FormControl size="small" sx={{ minWidth: 150 }}>
@@ -368,9 +411,9 @@ export default function ValidacionHorasAdmin() {
       >
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <WorkIcon />
-            <Typography variant="h6">
-              Validar Hora Trabajada
+            <CheckCircleIcon color="success" />
+            <Typography variant="h6" color="success.main">
+              Validar Horas de Proyecto
             </Typography>
           </Box>
         </DialogTitle>
@@ -391,7 +434,14 @@ export default function ValidacionHorasAdmin() {
                   
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body2" color="text.secondary">Proyecto:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{selectedHour.project_title}</Typography>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography variant="body1" fontWeight={600} color="primary">
+                        {selectedHour.project_title}
+                      </Typography>
+                      {selectedHour.is_project_completion && (
+                        <Chip label="Proyecto Completado" color="success" size="small" sx={{ mt: 0.5 }} />
+                      )}
+                    </Box>
                   </Box>
                   
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -400,9 +450,23 @@ export default function ValidacionHorasAdmin() {
                   </Box>
                   
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Horas:</Typography>
+                    <Typography variant="body2" color="text.secondary">Horas Trabajadas:</Typography>
                     <Typography variant="body1" fontWeight={600}>{selectedHour.hours_worked} hrs</Typography>
                   </Box>
+                  
+                  {selectedHour.project_required_hours && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography variant="body2" color="text.secondary">Horas Requeridas del Proyecto:</Typography>
+                      <Typography variant="body1">{selectedHour.project_required_hours} hrs</Typography>
+                    </Box>
+                  )}
+                  
+                  {selectedHour.project_duration_weeks && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography variant="body2" color="text.secondary">Duración del Proyecto:</Typography>
+                      <Typography variant="body1">{selectedHour.project_duration_weeks} semanas</Typography>
+                    </Box>
+                  )}
                   
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body2" color="text.secondary">Descripción:</Typography>
@@ -445,8 +509,9 @@ export default function ValidacionHorasAdmin() {
             onClick={handleValidate}
             disabled={actionLoading}
             startIcon={<CheckCircleIcon />}
+            sx={{ fontWeight: 600 }}
           >
-            {actionLoading ? 'Procesando...' : 'Aprobar'}
+            {actionLoading ? 'Procesando...' : 'Validar Horas'}
           </Button>
         </DialogActions>
       </Dialog>

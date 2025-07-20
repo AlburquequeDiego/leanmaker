@@ -71,12 +71,26 @@ class WorkHour(models.Model):
         self.approved = True
         self.approved_by = aprobador
         self.approved_at = timezone.now()
+        
+        # Agregar comentario del admin si se proporciona
         if comentario:
-            self.description = comentario
-        self.save(update_fields=['approved', 'approved_by', 'approved_at', 'description'])
+            self.comentario_validacion = comentario
+            # Mantener la descripción original si es de proyecto completado
+            if not "Horas automáticas del proyecto completado" in (self.description or ""):
+                self.description = comentario
+        
+        self.save(update_fields=['approved', 'approved_by', 'approved_at', 'comentario_validacion', 'description'])
         
         # Actualizar horas totales del estudiante
         self.student.actualizar_horas_totales(self.hours_worked)
+        
+        # Si es un proyecto completado, también actualizar el estado de la asignación
+        if "Horas automáticas del proyecto completado" in (self.description or ""):
+            try:
+                if hasattr(self, 'assignment') and self.assignment:
+                    self.assignment.finalizar_asignacion()
+            except:
+                pass
     
     def rechazar_horas(self, rechazador, comentario=None):
         """Rechaza las horas trabajadas"""

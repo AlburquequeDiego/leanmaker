@@ -150,6 +150,13 @@ class ApiService {
   }
 
   /**
+   * Obtiene evaluaciones por proyecto
+   */
+  async getEvaluationsByProject(projectId: string) {
+    return this.get(`/api/evaluations/by_project/${projectId}/`);
+  }
+
+  /**
    * Crea una nueva evaluación
    */
   async createEvaluation(evaluationData: {
@@ -157,9 +164,10 @@ class ApiService {
     student_id: string;
     score: number;
     comments?: string;
-    evaluator_type?: 'company' | 'admin';
+    evaluator_type?: 'company' | 'admin' | 'student';
+    status?: 'pending' | 'completed';
   }) {
-    return this.post('/api/evaluations/', evaluationData);
+    return this.post('/api/evaluations/create/', evaluationData);
   }
 
   /**
@@ -169,8 +177,10 @@ class ApiService {
     score?: number;
     comments?: string;
     status?: string;
+    strengths?: string;
+    areas_for_improvement?: string;
   }) {
-    return this.put(`/api/evaluations/${evaluationId}/`, evaluationData);
+    return this.patch(`/api/evaluations/${evaluationId}/update/`, evaluationData);
   }
 
   /**
@@ -185,6 +195,48 @@ class ApiService {
    */
   async rejectEvaluation(evaluationId: string) {
     return this.patch(`/api/evaluations/${evaluationId}/reject/`);
+  }
+
+  /**
+   * Obtiene aplicaciones recibidas por empresa
+   */
+  async getReceivedApplications() {
+    return this.get('/api/applications/received_applications/');
+  }
+
+  /**
+   * Obtiene mis aplicaciones (estudiante)
+   */
+  async getMyApplications() {
+    return this.get('/api/applications/my_applications/');
+  }
+
+  /**
+   * Actualiza el estado de una aplicación
+   */
+  async updateApplicationStatus(applicationId: string, status: string, notes?: string) {
+    return this.patch(`/api/applications/${applicationId}/`, {
+      status,
+      company_notes: notes
+    });
+  }
+
+  /**
+   * Acepta una aplicación
+   */
+  async acceptApplication(applicationId: string, notes?: string) {
+    return this.post(`/api/applications/${applicationId}/accept/`, {
+      company_notes: notes
+    });
+  }
+
+  /**
+   * Rechaza una aplicación
+   */
+  async rejectApplication(applicationId: string, notes?: string) {
+    return this.post(`/api/applications/${applicationId}/reject/`, {
+      company_notes: notes
+    });
   }
 
   /**

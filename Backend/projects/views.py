@@ -322,11 +322,16 @@ def projects_update(request, project_id):
                         'published': 'Publicado',
                         'active': 'Activo', 
                         'completed': 'Completado',
-                        'deleted': 'deleted'
+                        'deleted': 'deleted',
+                        'cancelled': 'cancelled'
                     }
                     backend_status_name = status_mapping[status_name]
                     status_obj = ProjectStatus.objects.get(name=backend_status_name)
                     project.status = status_obj
+                    
+                    # Si se está marcando como completado, ejecutar lógica especial
+                    if status_name == 'completed':
+                        project.marcar_como_completado(current_user)
                 else:
                     # Si se envía un ID, usarlo directamente
                     status_obj = ProjectStatus.objects.get(id=data['status'])

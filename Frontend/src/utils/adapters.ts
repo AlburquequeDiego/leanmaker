@@ -146,7 +146,7 @@ export const adaptProject = (backendProject: any): Project => {
     title: backendProject.title || backendProject.titulo || 'Sin título',
     description: backendProject.description || backendProject.descripcion || 'Sin descripción',
     company: String(backendProject.company_id || backendProject.company || ''),
-    area: String(backendProject.area_id || backendProject.area || ''),
+    area: String(backendProject.area_name || backendProject.area || ''),
     status,
     requirements: backendProject.requirements || backendProject.requisitos || 'Sin requisitos especificados',
     min_api_level: backendProject.api_level || backendProject.min_api_level || 1,
@@ -182,13 +182,13 @@ export const adaptApplication = (backendApplication: any): Application => {
   // Extraer datos del proyecto (estructura anidada del backend)
   const project = backendApplication.project || {};
   const student = backendApplication.student || {};
+  const company = project.company || {};
   
   return {
     id: String(backendApplication.id),
     project: String(project.id || backendApplication.project || ''),
     student: String(student.id || backendApplication.student || ''),
     status: backendApplication.status || 'pending',
-    compatibility_score: backendApplication.compatibility_score || 0,
     cover_letter: backendApplication.cover_letter || '',
     company_notes: backendApplication.company_notes || '',
     student_notes: backendApplication.student_notes || '',
@@ -202,42 +202,54 @@ export const adaptApplication = (backendApplication: any): Application => {
     updated_at: backendApplication.updated_at || new Date().toISOString(),
     
     // Campos adicionales extraídos de la estructura anidada del backend
-    project_title: project.title || 'Proyecto no encontrado',
+    project_title: project.title || backendApplication.project_title || 'Proyecto no encontrado',
     project_description: project.description || 'Sin descripción',
-    student_name: student.name || 'Estudiante no encontrado',
-    student_email: student.email || 'Sin email',
-    company_name: project.company?.name || 'Empresa no encontrada',
+    student_name: student.name || student.full_name || backendApplication.student_name || 'Estudiante no encontrado',
+    student_email: student.email || backendApplication.student_email || 'Sin email',
+    company_name: company.company_name || company.name || backendApplication.company_name || 'Empresa no encontrada',
+    // Campos adicionales para el perfil completo del estudiante
+    student_career: student.career || backendApplication.student_career || '',
+    student_semester: student.semester || backendApplication.student_semester || '',
+    student_api_level: student.api_level || backendApplication.student_api_level || 1,
+    student_rating: student.rating || backendApplication.student_rating || 0,
   };
 };
 
 /**
  * Adapta una evaluación del backend al formato del frontend
  */
-export const adaptEvaluation = (backendEvaluation: any): Evaluation => ({
-  id: String(backendEvaluation.id),
-  project_id: String(backendEvaluation.project_id || backendEvaluation.project),
-  project_title: backendEvaluation.project_title,
-  student_id: String(backendEvaluation.student_id || backendEvaluation.student),
-  student_name: backendEvaluation.student_name,
-  company_id: String(backendEvaluation.company_id || backendEvaluation.company),
-  company_name: backendEvaluation.company_name,
-  evaluator_id: String(backendEvaluation.evaluator_id || backendEvaluation.evaluator),
-  evaluator_name: backendEvaluation.evaluator_name,
-  evaluator_type: backendEvaluation.evaluator_type || backendEvaluation.evaluator_role || 'company',
-  score: Number(backendEvaluation.score || backendEvaluation.overall_rating || 0),
-  comments: backendEvaluation.comments || '',
-  evaluation_date: backendEvaluation.evaluation_date || backendEvaluation.created_at,
-  status: backendEvaluation.status || 'pending',
-  created_at: backendEvaluation.created_at,
-  updated_at: backendEvaluation.updated_at,
-  // Campos adicionales para compatibilidad
-  strengths: backendEvaluation.strengths,
-  areas_for_improvement: backendEvaluation.areas_for_improvement,
-  project_duration: backendEvaluation.project_duration,
-  technologies: backendEvaluation.technologies,
-  deliverables: backendEvaluation.deliverables,
-  category_scores: backendEvaluation.category_scores || [],
-});
+export const adaptEvaluation = (backendEvaluation: any): Evaluation => {
+  // Extraer datos del proyecto si está anidado
+  const project = backendEvaluation.project || {};
+  const student = backendEvaluation.student || {};
+  const company = project.company || {};
+  
+  return {
+    id: String(backendEvaluation.id),
+    project_id: String(backendEvaluation.project_id || project.id || backendEvaluation.project || ''),
+    project_title: backendEvaluation.project_title || project.title || 'Sin título',
+    student_id: String(backendEvaluation.student_id || student.id || backendEvaluation.student || ''),
+    student_name: backendEvaluation.student_name || student.name || student.full_name || 'Sin nombre',
+    company_id: String(backendEvaluation.company_id || company.id || backendEvaluation.company || ''),
+    company_name: backendEvaluation.company_name || company.company_name || company.name || 'Sin empresa',
+    evaluator_id: String(backendEvaluation.evaluator_id || backendEvaluation.evaluator || ''),
+    evaluator_name: backendEvaluation.evaluator_name || 'Sin evaluador',
+    evaluator_type: backendEvaluation.evaluator_type || backendEvaluation.evaluator_role || 'company',
+    score: Number(backendEvaluation.score || backendEvaluation.overall_rating || 0),
+    comments: backendEvaluation.comments || '',
+    evaluation_date: backendEvaluation.evaluation_date || backendEvaluation.created_at || new Date().toISOString(),
+    status: backendEvaluation.status || 'pending',
+    created_at: backendEvaluation.created_at || new Date().toISOString(),
+    updated_at: backendEvaluation.updated_at || new Date().toISOString(),
+    // Campos adicionales para compatibilidad
+    strengths: backendEvaluation.strengths || '',
+    areas_for_improvement: backendEvaluation.areas_for_improvement || '',
+    project_duration: backendEvaluation.project_duration || '',
+    technologies: backendEvaluation.technologies || '',
+    deliverables: backendEvaluation.deliverables || '',
+    category_scores: backendEvaluation.category_scores || [],
+  };
+};
 
 /**
  * Adapta una notificación del backend al formato del frontend
@@ -360,12 +372,13 @@ export const adaptDashboardStats = (backendStats: any): DashboardStats => ({
   total_users: backendStats.total_users || 0,
   active_users: backendStats.active_users || 0,
   verified_users: backendStats.verified_users || 0,
-  students: backendStats.students || 0,
-  companies: backendStats.companies || 0,
+  students: backendStats.total_students || 0, // Corregido: total_students del backend
+  companies: backendStats.total_companies || 0, // Corregido: total_companies del backend
   total_projects: backendStats.total_projects || 0,
   active_projects: backendStats.active_projects || 0,
   total_applications: backendStats.total_applications || 0,
   pending_applications: backendStats.pending_applications || 0,
+  strikes_alerts: backendStats.strikes_alerts || 0, // Agregado para coincidir con el backend
 });
 
 // ============================================================================

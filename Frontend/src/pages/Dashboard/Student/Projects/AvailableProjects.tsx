@@ -58,7 +58,18 @@ interface Project {
   updated_at?: string;
 }
 
-const areas = ['Tecnología', 'Marketing', 'Diseño', 'Administración'];
+const areas = [
+  'Tecnología y Sistemas',
+  'Administración y Gestión',
+  'Comunicación y Marketing',
+  'Salud y Ciencias',
+  'Ingeniería y Construcción',
+  'Educación y Formación',
+  'Arte y Diseño',
+  'Investigación y Desarrollo',
+  'Servicios y Atención al Cliente',
+  'Sostenibilidad y Medio Ambiente'
+];
 const modalidades = ['Remoto', 'Presencial', 'Híbrido'];
 const duraciones = ['1 mes', '2 meses', '3 meses', '6 meses', '12 meses'];
 const tecnologias = ['React', 'Node.js', 'MongoDB', 'Python', 'Pandas', 'Power BI', 'Figma', 'Adobe XD', 'UI/UX'];

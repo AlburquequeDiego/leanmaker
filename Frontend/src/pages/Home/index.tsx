@@ -80,9 +80,9 @@ export default function Home() {
             fontSize: { xs: '1rem', md: '1.25rem' },
             lineHeight: 1.4
           }}>
-            Plataforma de vinculación, proyectos y prácticas para estudiantes y empresas,
-            integral para la gestión de proyectos, prácticas y vinculación entre empresas 
-            y estudiantes universitarios.
+           Facilitamos la gestión de proyectos, prácticas y procesos de vinculación
+            entre estudiantes universitarios y empresas, promoviendo el 
+            crecimiento conjunto y el aprendizaje con propósito.
           </Typography>
           <Box sx={{ 
             display: 'flex', 

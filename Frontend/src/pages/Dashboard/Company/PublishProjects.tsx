@@ -35,11 +35,16 @@ const TRL_QUESTIONS = [
 
 // Lista estática de áreas
 const AREAS_ESTATICAS = [
-  { id: 1, name: 'Tecnología' },
-  { id: 2, name: 'Marketing' },
-  { id: 3, name: 'Finanzas' },
-  { id: 4, name: 'Recursos Humanos' },
-  { id: 5, name: 'Innovación' },
+  { id: 1, name: 'Tecnología y Sistemas' },
+  { id: 2, name: 'Administración y Gestión' },
+  { id: 3, name: 'Comunicación y Marketing' },
+  { id: 4, name: 'Salud y Ciencias' },
+  { id: 5, name: 'Ingeniería y Construcción' },
+  { id: 6, name: 'Educación y Formación' },
+  { id: 7, name: 'Arte y Diseño' },
+  { id: 8, name: 'Investigación y Desarrollo' },
+  { id: 9, name: 'Servicios y Atención al Cliente' },
+  { id: 10, name: 'Sostenibilidad y Medio Ambiente' },
 ];
 
 export const PublishProjects: React.FC = () => {

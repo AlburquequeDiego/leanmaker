@@ -1,41 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
-  Paper,
   Typography,
-  Avatar,
-  Button,
+  Paper,
   TextField,
-  Card,
-  CardContent,
+  Button,
+  Divider,
   Chip,
+  Alert,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
   MenuItem,
-  Divider,
+  Snackbar,
   CircularProgress,
-  Alert,
   FormControl,
   InputLabel,
   Select,
 } from '@mui/material';
 import {
   Edit as EditIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  Lock as LockIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
   Business as BusinessIcon,
   LocationOn as LocationIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
   Web as WebIcon,
-  Star as StarIcon,
-  TrendingUp as TrendingUpIcon,
-  People as PeopleIcon,
-  Assignment as AssignmentIcon,
-  Person as PersonIcon,
-  Badge as BadgeIcon,
-  Save as SaveIcon,
-  Cancel as CancelIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { useAuth } from '../../../hooks/useAuth';
@@ -46,12 +42,159 @@ interface CompanyProfileData {
   user: User;
   // Datos de la empresa
   company: Company;
-  // Estadísticas
-  totalProjects: number;
-  activeStudents: number;
-  completedProjects: number;
-  averageRating: number;
 }
+
+interface ChangePasswordData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
+// Componente separado para el formulario de contraseña
+const PasswordForm = ({ 
+  onSubmit, 
+  onCancel, 
+  error, 
+  success 
+}: { 
+  onSubmit: (data: ChangePasswordData) => void;
+  onCancel: () => void;
+  error: string | null;
+  success: string | null;
+}) => {
+  const [passwordData, setPasswordData] = useState<ChangePasswordData>({
+    current_password: '',
+    new_password: '',
+    confirm_password: '',
+  });
+
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
+
+  // Ref para forzar la limpieza del campo
+  const currentPasswordRef = useRef<HTMLInputElement>(null);
+
+  // Efecto para limpiar el campo cuando se monta el componente
+  useEffect(() => {
+    // Limpiar el estado inmediatamente
+    setPasswordData({
+      current_password: '',
+      new_password: '',
+      confirm_password: '',
+    });
+    
+    // Esperar a que el DOM esté listo
+    const timer = setTimeout(() => {
+      if (currentPasswordRef.current) {
+        // Forzar la limpieza del campo usando JavaScript directo
+        currentPasswordRef.current.value = '';
+        
+        // Forzar el foco y luego quitar el foco para asegurar la limpieza
+        currentPasswordRef.current.focus();
+        setTimeout(() => {
+          if (currentPasswordRef.current) {
+            currentPasswordRef.current.blur();
+          }
+        }, 50);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSubmit = () => {
+    onSubmit(passwordData);
+  };
+
+  return (
+    <>
+      <DialogTitle>Cambiar Contraseña</DialogTitle>
+      <DialogContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+          <Box sx={{ position: 'relative' }}>
+            <input
+              ref={currentPasswordRef}
+              type={showPasswords.current ? 'text' : 'password'}
+              value={passwordData.current_password}
+              onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
+              required
+              autoComplete="off"
+              style={{
+                width: '100%',
+                padding: '16.5px 14px',
+                border: '1px solid rgba(0, 0, 0, 0.23)',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontFamily: 'inherit',
+                backgroundColor: 'transparent',
+              }}
+              placeholder="Contraseña actual *"
+            />
+            <IconButton
+              onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+              }}
+            >
+              {showPasswords.current ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
+          </Box>
+          
+          <TextField
+            label="Nueva contraseña"
+            type={showPasswords.new ? 'text' : 'password'}
+            value={passwordData.new_password}
+            onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
+            required
+            autoComplete="off"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                >
+                  {showPasswords.new ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
+          />
+          <TextField
+            label="Confirmar nueva contraseña"
+            type={showPasswords.confirm ? 'text' : 'password'}
+            value={passwordData.confirm_password}
+            onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+            required
+            autoComplete="off"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                >
+                  {showPasswords.confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel}>Cancelar</Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_password}
+        >
+          Cambiar Contraseña
+        </Button>
+      </DialogActions>
+    </>
+  );
+};
 
 export const CompanyProfile: React.FC = () => {
   const api = useApi();
@@ -62,8 +205,11 @@ export const CompanyProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<Company>>({});
   const [saving, setSaving] = useState(false);
-  // 3. Agrego feedback visual de éxito:
   const [success, setSuccess] = useState<string | null>(null);
+  
+  // Estados para cambio de contraseña
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [dialogKey, setDialogKey] = useState(Date.now());
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -79,20 +225,10 @@ export const CompanyProfile: React.FC = () => {
       const userData = await api.get('/api/users/profile/');
       // Obtener datos de la empresa
       const companyData = await api.get('/api/companies/company_me/');
-      // Obtener estadísticas del dashboard
-      const statsResponse = await api.get('/api/dashboard/company_stats/');
-      const statsData = statsResponse.data;
-      const totalProjects = statsData?.total_projects ?? 0;
-      const activeStudents = statsData?.active_students ?? 0;
-      const completedProjects = statsData?.completed_projects ?? 0;
-      const averageRating = statsData?.rating ?? 0;
+      
       const profileData: CompanyProfileData = {
         user: userData,
         company: companyData,
-        totalProjects,
-        activeStudents,
-        completedProjects,
-        averageRating,
       };
       setProfile(profileData);
       setEditData(companyData);
@@ -141,7 +277,6 @@ export const CompanyProfile: React.FC = () => {
       await loadProfile();
       setIsEditing(false);
       setError(null);
-      // En handleSave, después de guardar correctamente:
       setSuccess("Perfil actualizado correctamente.");
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error al guardar perfil');
@@ -159,6 +294,49 @@ export const CompanyProfile: React.FC = () => {
 
   const handleInputChange = (field: keyof Company, value: any) => {
     setEditData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleChangePassword = async (formData: ChangePasswordData) => {
+    if (formData.new_password !== formData.confirm_password) {
+      setError('Las contraseñas nuevas no coinciden');
+      return;
+    }
+
+    if (formData.new_password.length < 8) {
+      setError('La nueva contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+
+    try {
+      const passwordData = {
+        old_password: formData.current_password,
+        new_password: formData.new_password,
+        new_password_confirm: formData.confirm_password,
+      };
+      
+      await api.post('/api/users/change-password/', passwordData);
+      
+      setSuccess('Contraseña cambiada exitosamente');
+      setShowPasswordDialog(false);
+    } catch (error) {
+      console.error('❌ [CompanyProfile] Error al cambiar contraseña:', error);
+      setError('Error al cambiar la contraseña. Verifica tu contraseña actual.');
+    }
+  };
+
+  const handleOpenPasswordDialog = () => {
+    // Limpiar errores y mensajes
+    setError(null);
+    setSuccess(null);
+    
+    // Cerrar el diálogo primero para destruir el componente
+    setShowPasswordDialog(false);
+    
+    // Generar una nueva key única y abrir el diálogo después de un delay
+    setTimeout(() => {
+      setDialogKey(Date.now());
+      setShowPasswordDialog(true);
+    }, 100);
   };
 
   if (loading) {
@@ -193,7 +371,51 @@ export const CompanyProfile: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+    <Box sx={{ flexGrow: 1, p: 3 }}>
+      {/* Header con botones de acción */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4">Perfil de Empresa</Typography>
+        {!isEditing ? (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="outlined"
+              startIcon={<LockIcon />}
+              onClick={handleOpenPasswordDialog}
+            >
+              Cambiar Contraseña
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={handleEdit}
+            >
+              Editar Perfil
+            </Button>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="contained"
+              startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
+              onClick={handleSave}
+              disabled={saving}
+              sx={{ minWidth: 140, borderRadius: 2 }}
+            >
+              {saving ? 'Guardando...' : 'Guardar cambios'}
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={handleCancel}
+              disabled={saving}
+              sx={{ minWidth: 120, borderRadius: 2 }}
+            >
+              Cancelar
+            </Button>
+          </Box>
+        )}
+      </Box>
+
       {/* Banner de éxito */}
       {success && (
         <Alert 
@@ -210,467 +432,121 @@ export const CompanyProfile: React.FC = () => {
         </Alert>
       )}
 
-      {/* Header mejorado */}
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        mb: 4,
-        flexWrap: 'wrap',
-        gap: 2
-      }}>
-        <Box>
-          <Typography variant="h4" fontWeight={700} gutterBottom>
-            Perfil de Empresa
+      <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 3, maxWidth: 800, mx: 'auto' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Información de la Empresa */}
+          <Typography variant="h5" fontWeight={600} gutterBottom>
+            Información de la Empresa
           </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Gestiona la información de tu empresa y mantén tu perfil actualizado
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
-          onClick={handleEdit}
-          color="primary"
-          size="large"
-          sx={{ 
-            borderRadius: 2,
-            px: 3,
-            py: 1.5,
-            boxShadow: 2
-          }}
-        >
-          Editar Perfil
-        </Button>
-      </Box>
-
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        {/* Información Principal */}
-        <Box sx={{ flex: { xs: '1 1 100%', md: '2 1 0' } }}>
-          <Paper sx={{ 
-            p: 4, 
-            mb: 3, 
-            borderRadius: 3,
-            boxShadow: 3,
-            bgcolor: 'white'
-          }}>
-            {/* Header de la empresa */}
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              mb: 4,
-              flexWrap: 'wrap',
-              gap: 2
-            }}>
-              <Avatar sx={{ 
-                width: 100, 
-                height: 100, 
-                mr: 2, 
-                bgcolor: 'primary.main',
-                boxShadow: 3
-              }}>
-                <BusinessIcon sx={{ fontSize: 50 }} />
-              </Avatar>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="h4" fontWeight={700} gutterBottom>
-                  {profile.company.company_name}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <Chip 
-                    label={profile.company.industry || 'Sin industria'} 
-                    color="primary" 
-                    size="medium"
-                    sx={{ fontWeight: 600 }}
-                  />
-                  {profile.company.verified && (
-                    <Chip 
-                      label="Verificada" 
-                      color="success" 
-                      size="medium"
-                      sx={{ fontWeight: 600 }}
-                    />
-                  )}
-                </Box>
-                {profile.company.description && (
-                  <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 500 }}>
-                    {profile.company.description.length > 150 
-                      ? `${profile.company.description.substring(0, 150)}...` 
-                      : profile.company.description
-                    }
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-
-            <Divider sx={{ my: 3 }} />
-
-            {/* Información de la empresa */}
-            <Typography variant="h5" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
-              Información de la Empresa
-            </Typography>
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-              gap: 3
-            }}>
-              {profile.company.rut && (
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: '#f8f9fa', 
-                  borderRadius: 2,
-                  border: '1px solid #e9ecef'
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <BadgeIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      RUT
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.company.rut}
-                  </Typography>
-                </Box>
-              )}
-              {profile.company.personality && (
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: '#f8f9fa', 
-                  borderRadius: 2,
-                  border: '1px solid #e9ecef'
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <BusinessIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Personalidad
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.company.personality}
-                  </Typography>
-                </Box>
-              )}
-              {profile.company.business_name && (
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: '#f8f9fa', 
-                  borderRadius: 2,
-                  border: '1px solid #e9ecef',
-                  gridColumn: { xs: '1', sm: '1 / -1' }
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <BusinessIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Razón Social
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.company.business_name}
-                  </Typography>
-                </Box>
-              )}
-              {profile.company.address && (
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: '#f8f9fa', 
-                  borderRadius: 2,
-                  border: '1px solid #e9ecef',
-                  gridColumn: { xs: '1', sm: '1 / -1' }
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <LocationIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Dirección
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.company.address}
-                  </Typography>
-                </Box>
-              )}
-              {profile.company.contact_phone && (
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: '#f8f9fa', 
-                  borderRadius: 2,
-                  border: '1px solid #e9ecef'
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <PhoneIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Teléfono
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.company.contact_phone}
-                  </Typography>
-                </Box>
-              )}
-              {profile.company.contact_email && (
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: '#f8f9fa', 
-                  borderRadius: 2,
-                  border: '1px solid #e9ecef'
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <EmailIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Email
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.company.contact_email}
-                  </Typography>
-                </Box>
-              )}
-              {profile.company.website && (
-                <Box sx={{ 
-                  p: 2, 
-                  bgcolor: '#f8f9fa', 
-                  borderRadius: 2,
-                  border: '1px solid #e9ecef',
-                  gridColumn: { xs: '1', sm: '1 / -1' }
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <WebIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Sitio Web
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.company.website}
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-
-            <Divider sx={{ my: 4 }} />
-
-            {/* Usuario Responsable */}
-            <Typography variant="h5" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
-              Usuario Responsable
-            </Typography>
-            <Box sx={{ 
-              p: 3, 
-              bgcolor: '#e3f2fd', 
-              borderRadius: 2,
-              border: '1px solid #bbdefb'
-            }}>
-              <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-                gap: 2
-              }}>
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <PersonIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Nombre
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.user.full_name}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <EmailIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                      Email
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {profile.user.email}
-                  </Typography>
-                </Box>
-                {profile.user.phone && (
-                  <Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <PhoneIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                      <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                        Teléfono
-                      </Typography>
-                    </Box>
-                    <Typography variant="body1" fontWeight={500}>
-                      {profile.user.phone}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            </Box>
-          </Paper>
-        </Box>
-        {/* Eliminar la sección de estadísticas */}
-        {/* <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 0' } }}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Estadísticas
-            </Typography>
-            
-            <Card sx={{ mb: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <AssignmentIcon sx={{ mr: 1 }} />
-                  <Box>
-                    <Typography variant="h4">{profile.totalProjects}</Typography>
-                    <Typography variant="body2">Total Proyectos</Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-
-            <Card sx={{ mb: 2, bgcolor: 'success.light', color: 'success.contrastText' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <PeopleIcon sx={{ mr: 1 }} />
-                  <Box>
-                    <Typography variant="h4">{profile.activeStudents}</Typography>
-                    <Typography variant="body2">Estudiantes Activos</Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-
-            <Card sx={{ mb: 2, bgcolor: 'info.light', color: 'info.contrastText' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <TrendingUpIcon sx={{ mr: 1 }} />
-                  <Box>
-                    <Typography variant="h4">{profile.completedProjects}</Typography>
-                    <Typography variant="body2">Proyectos Completados</Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <StarIcon sx={{ mr: 1 }} />
-                  <Box>
-                    <Typography variant="h4">{profile.averageRating.toFixed(1)}</Typography>
-                    <Typography variant="body2">Rating Promedio</Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Paper>
-        </Box> */}
-      </Box>
-
-      {/* Dialog para editar perfil */}
-      <Dialog open={isEditing} onClose={handleCancel} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ 
-          bgcolor: 'primary.main', 
-          color: 'white',
-          fontWeight: 600,
-          fontSize: '1.25rem'
-        }}>
-          Editar Perfil de Empresa
-        </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-            gap: 3, 
-            mt: 2 
-          }}>
+          
             <TextField
-              fullWidth
               label="Nombre de la Empresa *"
-              value={editData.company_name || ''}
+            value={isEditing ? (editData.company_name || '') : (profile.company.company_name || '')}
               onChange={(e) => handleInputChange('company_name', e.target.value)}
-              margin="normal"
+            disabled={!isEditing}
+            fullWidth
               required
-              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
             />
+          
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
-              fullWidth
               label="RUT"
-              value={editData.rut || ''}
+              value={isEditing ? (editData.rut || '') : (profile.company.rut || '')}
               onChange={(e) => handleInputChange('rut', e.target.value)}
-              margin="normal"
+              disabled={!isEditing}
+              fullWidth
               placeholder="12.345.678-9"
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth>
               <InputLabel>Personalidad</InputLabel>
               <Select
-                value={editData.personality || ''}
+                value={isEditing ? (editData.personality || '') : (profile.company.personality || '')}
                 label="Personalidad"
                 onChange={(e) => handleInputChange('personality', e.target.value)}
+                disabled={!isEditing}
               >
                 <MenuItem value="Jurídica">Jurídica</MenuItem>
                 <MenuItem value="Natural">Natural</MenuItem>
               </Select>
             </FormControl>
+          </Box>
+          
             <TextField
-              fullWidth
               label="Razón Social"
-              value={editData.business_name || ''}
+            value={isEditing ? (editData.business_name || '') : (profile.company.business_name || '')}
               onChange={(e) => handleInputChange('business_name', e.target.value)}
-              margin="normal"
-              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
+            disabled={!isEditing}
+            fullWidth
             />
+          
             <TextField
-              fullWidth
               label="Dirección"
-              value={editData.address || ''}
+            value={isEditing ? (editData.address || '') : (profile.company.address || '')}
               onChange={(e) => handleInputChange('address', e.target.value)}
-              margin="normal"
-              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
+            disabled={!isEditing}
+            fullWidth
             />
+          
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
-              fullWidth
               label="Ciudad"
-              value={editData.city || ''}
+              value={isEditing ? (editData.city || '') : (profile.company.city || '')}
               onChange={(e) => handleInputChange('city', e.target.value)}
-              margin="normal"
+              disabled={!isEditing}
+              fullWidth
             />
             <TextField
-              fullWidth
               label="País"
-              value={editData.country || ''}
+              value={isEditing ? (editData.country || '') : (profile.company.country || '')}
               onChange={(e) => handleInputChange('country', e.target.value)}
-              margin="normal"
-            />
-            <TextField
+              disabled={!isEditing}
               fullWidth
+            />
+          </Box>
+          
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+            <TextField
               label="Teléfono"
-              value={editData.contact_phone || ''}
+              value={isEditing ? (editData.contact_phone || '') : (profile.company.contact_phone || '')}
               onChange={(e) => handleInputChange('contact_phone', e.target.value)}
-              margin="normal"
+              disabled={!isEditing}
+              fullWidth
               placeholder="+56 9 1234 5678"
             />
             <TextField
-              fullWidth
               label="Email de Contacto"
-              value={editData.contact_email || ''}
+              value={isEditing ? (editData.contact_email || '') : (profile.company.contact_email || '')}
               onChange={(e) => handleInputChange('contact_email', e.target.value)}
-              margin="normal"
+              disabled={!isEditing}
+              fullWidth
               type="email"
             />
+          </Box>
+          
             <TextField
-              fullWidth
               label="Sitio Web"
-              value={editData.website || ''}
+            value={isEditing ? (editData.website || '') : (profile.company.website || '')}
               onChange={(e) => handleInputChange('website', e.target.value)}
-              margin="normal"
+            disabled={!isEditing}
+            fullWidth
               placeholder="https://www.ejemplo.com"
-              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
             />
+          
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
-              fullWidth
               label="Industria"
-              value={editData.industry || ''}
+              value={isEditing ? (editData.industry || '') : (profile.company.industry || '')}
               onChange={(e) => handleInputChange('industry', e.target.value)}
-              margin="normal"
+              disabled={!isEditing}
+              fullWidth
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth>
               <InputLabel>Tamaño</InputLabel>
               <Select
-                value={editData.size || ''}
+                value={isEditing ? (editData.size || '') : (profile.company.size || '')}
                 label="Tamaño"
                 onChange={(e) => handleInputChange('size', e.target.value)}
+                disabled={!isEditing}
               >
                 <MenuItem value="Pequeña">Pequeña</MenuItem>
                 <MenuItem value="Mediana">Mediana</MenuItem>
@@ -678,49 +554,87 @@ export const CompanyProfile: React.FC = () => {
                 <MenuItem value="Startup">Startup</MenuItem>
               </Select>
             </FormControl>
+          </Box>
+          
+          <TextField
+            label="Descripción"
+            value={isEditing ? (editData.description || '') : (profile.company.description || '')}
+            onChange={(e) => handleInputChange('description', e.target.value)}
+            disabled={!isEditing}
+            fullWidth
+            multiline
+            rows={4}
+            placeholder="Describe tu empresa, misión, visión..."
+          />
+
+          <Divider sx={{ my: 2 }} />
+
+          {/* Información del Usuario Responsable */}
+          <Typography variant="h5" fontWeight={600} gutterBottom>
+            Usuario Responsable
+          </Typography>
+          
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
+              label="Nombre"
+              value={profile.user.first_name || ''}
+              disabled
               fullWidth
-              multiline
-              rows={4}
-              label="Descripción"
-              value={editData.description || ''}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              margin="normal"
-              placeholder="Describe tu empresa, misión, visión..."
-              sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
+            />
+            <TextField
+              label="Apellido"
+              value={profile.user.last_name || ''}
+              disabled
+              fullWidth
             />
           </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
-          <Button 
-            onClick={handleCancel} 
-            startIcon={<CancelIcon />}
-            variant="outlined"
-            sx={{ borderRadius: 2, px: 3 }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleSave} 
-            variant="contained" 
-            startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-            disabled={saving}
-            sx={{ 
-              borderRadius: 2, 
-              px: 3,
-              boxShadow: 2
-            }}
-          >
-            {saving ? 'Guardando...' : 'Guardar Cambios'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* Muestro el mensaje de éxito si existe: */}
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
-          {success}
-        </Alert>
+          
+          <TextField
+            label="Email"
+            value={profile.user.email || ''}
+            disabled
+            fullWidth
+          />
+          
+          <TextField
+            label="Teléfono"
+            value={profile.user.phone || ''}
+            disabled
+            fullWidth
+          />
+        </Box>
+      </Paper>
+
+      {/* Dialog para cambio de contraseña */}
+      {showPasswordDialog && (
+        <Dialog 
+          key={`password-dialog-${dialogKey}`}
+          open={showPasswordDialog} 
+          onClose={() => setShowPasswordDialog(false)} 
+          maxWidth="sm" 
+          fullWidth
+        >
+          <PasswordForm 
+            key={`password-form-${dialogKey}`}
+            onSubmit={handleChangePassword} 
+            onCancel={() => setShowPasswordDialog(false)} 
+            error={error} 
+            success={success} 
+          />
+        </Dialog>
       )}
+
+      {/* Snackbar para errores */}
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -58,6 +58,10 @@ export const API_ENDPOINTS = {
   
   // Evaluations (endpoints reales del backend)
   EVALUATIONS: '/api/evaluations/',
+  EVALUATIONS_BY_PROJECT: '/api/evaluations/by_project/{project_id}/',
+  EVALUATIONS_CREATE: '/api/evaluations/create/',
+  EVALUATIONS_DETAIL: '/api/evaluations/{id}/',
+  EVALUATIONS_UPDATE: '/api/evaluations/{id}/update/',
   
   // Notifications (endpoints reales del backend)
   NOTIFICATIONS: '/api/notifications/',

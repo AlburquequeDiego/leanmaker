@@ -54,12 +54,16 @@ const trlOptions = [
 ];
 
 const studentAreas = [
-  'Ingeniería de Sistemas',
-  'Ingeniería Industrial',
-  'Diseño',
-  'Administración',
-  'Marketing',
-  'Otra',
+  'Tecnología y Sistemas',
+  'Administración y Gestión',
+  'Comunicación y Marketing',
+  'Salud y Ciencias',
+  'Ingeniería y Construcción',
+  'Educación y Formación',
+  'Arte y Diseño',
+  'Investigación y Desarrollo',
+  'Servicios y Atención al Cliente',
+  'Sostenibilidad y Medio Ambiente',
 ];
 
 const skillsList = [
@@ -362,8 +366,8 @@ export const ManageProjects: React.FC = () => {
 
                   <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                     <Chip
-                      label={project.difficulty}
-                      color={getDifficultyColor(project.difficulty) as any}
+                      label={project.difficulty || 'intermediate'}
+                      color={getDifficultyColor(project.difficulty || 'intermediate') as any}
                       size="small"
                     />
                     <Chip

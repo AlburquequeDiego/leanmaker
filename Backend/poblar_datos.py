@@ -20,11 +20,16 @@ from areas.models import Area
 # 0. Áreas (crear si no existen)
 print('--- BLOQUE 0: Áreas ---')
 AREAS_EJEMPLO = [
-    {"name": "Tecnología", "description": "Área de tecnología y desarrollo"},
-    {"name": "Marketing", "description": "Área de marketing y comunicación"},
-    {"name": "Finanzas", "description": "Área de finanzas y contabilidad"},
-    {"name": "Recursos Humanos", "description": "Área de gestión de personas"},
-    {"name": "Innovación", "description": "Área de innovación y creatividad"},
+    {"name": "Tecnología y Sistemas", "description": "Área de tecnología, informática y sistemas"},
+    {"name": "Administración y Gestión", "description": "Área de administración, gestión empresarial y finanzas"},
+    {"name": "Comunicación y Marketing", "description": "Área de comunicación, marketing y publicidad"},
+    {"name": "Salud y Ciencias", "description": "Área de salud, medicina, biología y ciencias"},
+    {"name": "Ingeniería y Construcción", "description": "Área de ingeniería, construcción y arquitectura"},
+    {"name": "Educación y Formación", "description": "Área de educación, pedagogía y formación"},
+    {"name": "Arte y Diseño", "description": "Área de arte, diseño gráfico y creatividad"},
+    {"name": "Investigación y Desarrollo", "description": "Área de investigación, desarrollo e innovación"},
+    {"name": "Servicios y Atención al Cliente", "description": "Área de servicios, atención al cliente y ventas"},
+    {"name": "Sostenibilidad y Medio Ambiente", "description": "Área de sostenibilidad, medio ambiente y responsabilidad social"},
 ]
 for area_data in AREAS_EJEMPLO:
     Area.objects.get_or_create(name=area_data["name"], defaults={"description": area_data["description"]})
@@ -103,7 +108,6 @@ for proyecto in proyectos:
             student=Estudiante.objects.get(user=miembro.usuario),
             defaults={
                 'status': random.choice(['accepted', 'completed']),
-                'compatibility_score': random.randint(60, 100),
                 'cover_letter': 'Estoy interesado en este proyecto por mi experiencia en el área.'
             }
         )

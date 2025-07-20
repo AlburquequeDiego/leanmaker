@@ -257,15 +257,7 @@ class AplicacionProyectoSerializer:
         else:
             data['cover_letter'] = data['cover_letter'].strip()
         
-        # Validar compatibility_score
-        if 'compatibility_score' in data and data['compatibility_score'] is not None:
-            try:
-                score = float(data['compatibility_score'])
-                if score < 0 or score > 100:
-                    errors['compatibility_score'] = 'El puntaje de compatibilidad debe estar entre 0 y 100'
-                data['compatibility_score'] = score
-            except (ValueError, TypeError):
-                errors['compatibility_score'] = 'El puntaje de compatibilidad debe ser un número'
+
         
         return errors
     
@@ -288,7 +280,6 @@ class AplicacionProyectoSerializer:
                 estudiante=user,
                 cover_letter=data['cover_letter'],
                 estado=data.get('estado', 'pendiente'),
-                compatibility_score=data.get('compatibility_score'),
                 company_notes=data.get('company_notes', ''),
                 student_notes=data.get('student_notes', ''),
                 portfolio_url=data.get('portfolio_url', ''),
@@ -304,7 +295,7 @@ class AplicacionProyectoSerializer:
         with transaction.atomic():
             # Solo permitir actualizar ciertos campos
             allowed_fields = [
-                'estado', 'compatibility_score', 'company_notes', 'student_notes',
+                'estado', 'company_notes', 'student_notes',
                 'portfolio_url', 'github_url', 'linkedin_url'
             ]
             

@@ -92,6 +92,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+
+#leanmaker_db
+#administradortesis
+#Admin@tesis
+
+
 # Database - SQL Server Azure
 DATABASES = {
     'default': {

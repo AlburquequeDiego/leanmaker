@@ -27,7 +27,6 @@ class Aplicacion(models.Model):
     
     # Campos de estado con valores por defecto
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    compatibility_score = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(100)])
     
     # Campos opcionales (NULL permitido)
     cover_letter = models.TextField(null=True, blank=True)
@@ -122,33 +121,7 @@ class Aplicacion(models.Model):
         self.responded_at = timezone.now()
         self.save(update_fields=['status', 'responded_at'])
     
-    def calcular_compatibilidad(self):
-        """Calcula el score de compatibilidad entre estudiante y proyecto"""
-        score = 0
-        
-        # Verificar nivel API
-        if self.student.api_level >= self.project.min_api_level:
-            score += 25
-        
-        # Verificar habilidades (implementar lógica de comparación de skills)
-        # Por ahora, un score básico
-        score += 25
-        
-        # Verificar disponibilidad
-        if self.student.availability == 'flexible' or self.project.modality == 'remote':
-            score += 20
-        
-        # Verificar experiencia
-        if self.student.experience_years > 0:
-            score += 15
-        
-        # Verificar calificación del estudiante
-        if self.student.rating > 3.0:
-            score += 15
-        
-        self.compatibility_score = min(100, score)
-        self.save(update_fields=['compatibility_score'])
-        return self.compatibility_score
+
 
 class Asignacion(models.Model):
     """

@@ -1,25 +1,13 @@
-cadena de conexion : 
-Server=localhost;Database=master;Trusted_Connection=True;
-
-archivos de las bases de datos en pc:
-C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\
 
 autenticacion : SQL Server Autentication
 login : administradortesiss
 password: Admin@tesis
 
 para ver tu IP y ponerla para que tambien puedas modifiar la base de datos
-
 https://www.whatismyip.com/ 
 
 Nombre del servidor:servidortesis.database.windows.net
 nombre de la base de datos : leanmaker_db
-
-
-Backend: http://localhost:8000/
-Admin: http://localhost:8000/admin/
-Login: http://localhost:8000/api/token/
-
 
 use leanmaker_db;
 go
@@ -28,14 +16,6 @@ SELECT TABLE_SCHEMA, TABLE_NAME
 FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_TYPE = 'BASE TABLE'
 ORDER BY TABLE_SCHEMA, TABLE_NAME;
-
-use leanmaker_db;
-go
-
---SELECT TABLE_SCHEMA, TABLE_NAME
---FROM INFORMATION_SCHEMA.TABLES
---WHERE TABLE_TYPE = 'BASE TABLE'
---ORDER BY TABLE_SCHEMA, TABLE_NAME;
 
 -- Ver usuarios creados
 SELECT * FROM users;
@@ -50,8 +30,6 @@ SELECT * FROM companies;
 -- Ver estudiantes
 SELECT * FROM students;
 
-
-
 Universidad de Chile → @uchile.cl
 Pontificia Universidad Católica de Chile → @uc.cl
 Universidad de Concepción → @udec.cl
@@ -63,60 +41,11 @@ Universidad de La Frontera → @ufro.cl
 Universidad de Talca → @utalca.cl
 INACAP → @inacapmail.cl
 
-
-
-Contraseñas:
-Estudiantes: Estudiante123!
-Empresas: Empresa123!
-Administradores: Admin123!
-
-
 Lista de cuentas
 
-Administradores
-Nombre	        Correo	                Contraseña
-Laura Martínez	admin1@leanmaker.com	Admin123!
-Carlos Ramírez	admin2@leanmaker.com	Admin123!
-
-Empresas
-Nombre Empresa	Correo	                     Contraseña
-InovaTech S.A.	contacto@inovatech.com  	Empresa123!
-AgroSoluciones	contacto@agrosoluciones.com	Empresa123!
-EcoLogística	contacto@ecologistica.com	Empresa123!
-SaludVital   	contacto@saludvital.com	    Empresa123!
-ConstruRed	    contacto@construred.com	    Empresa123!
-FinanPlus	    contacto@finanplus.com	    Empresa123!
-EducaFuturo	    contacto@educafuturo.com	Empresa123!
-MoviTrans	    contacto@movitrans.com	    Empresa123!
-BioEnergía	    contacto@bioenergia.com	    Empresa123!
-SegurMax	    contacto@segurmax.com	    Empresa123!
-RedComercial	contacto@redcomercial.com	Empresa123!
-AgroMarket	    contacto@agromarket.com	    Empresa123!
-TecnoVision 	contacto@tecnovision.com	Empresa123!
-Medilab 	    contacto@medilab.com	    Empresa123!
-Urbaniza	    contacto@urbaniza.com	    Empresa123!
-
-
-Estudiantes
-Nombre Completo    Correo institucional                Contraseña
-Juan Pérez         juan.perez@uchile.cl                Estudiante123!
-Ana Gómez          ana.gomez@uc.cl                     Estudiante123!
-Luis Torres        luis.torres@udec.cl                 Estudiante123!
-María Rodríguez    maria.rodriguez@usm.cl              Estudiante123!
-Pedro Sánchez      pedro.sanchez@usach.cl              Estudiante123!
-Sofía Ramírez      sofia.ramirez@uach.cl               Estudiante123!
-Diego Fernández    diego.fernandez@uv.cl               Estudiante123!
-Valentina López    valentina.lopez@ufro.cl             Estudiante123!
-Daniel Castro      daniel.castro@utalca.cl             Estudiante123!
-Camila Herrera     camila.herrera@inacapmail.cl        Estudiante123!
-Mateo Ruiz         mateo.ruiz@uchile.cl                Estudiante123!
-Isabella Morales   isabella.morales@uc.cl              Estudiante123!
-Santiago Vargas    santiago.vargas@udec.cl             Estudiante123!
-Paula Jiménez      paula.jimenez@usm.cl                Estudiante123!
-Alejandro Mendoza  alejandro.mendoza@usach.cl          Estudiante123!
-
-
-
-
+Nombre	          Correo	                Contraseña
+Laura Martínez	  admin1@leanmaker.com	    Admin123!
+FinanPlus	      contacto@finanplus.com    Empresa123!
+Juan Pérez        juan.perez@uchile.cl      Estudiante123!
 
 

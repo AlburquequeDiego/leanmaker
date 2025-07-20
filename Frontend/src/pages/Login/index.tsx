@@ -178,16 +178,7 @@ export const Login = () => {
                 >
                   Iniciar Sesión
                 </LoadingButton>
-                <Box sx={{ mt: 1, mb: 2 }}>
-                  <Link
-                    component={RouterLink}
-                    to="/forgot-password"
-                    variant="body2"
-                    sx={{ textDecoration: 'none' }}
-                  >
-                    ¿Olvidaste tu contraseña?
-                  </Link>
-                </Box>
+
                 {/* Checkbox Recordar contraseña debajo de recuperar contraseña */}
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <input type="checkbox" id="remember" name="remember" style={{ marginRight: 8 }} />

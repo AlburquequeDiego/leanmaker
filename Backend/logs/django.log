@@ -22181,3 +22181,1899 @@ INFO 2025-07-18 15:59:06,162 basehttp 11012 3144 "GET /api/areas/ HTTP/1.1" 200 
 INFO 2025-07-18 15:59:57,907 basehttp 11012 11432 "GET /api/areas/ HTTP/1.1" 200 27
 INFO 2025-07-18 15:59:58,013 basehttp 11012 11432 "GET /favicon.ico HTTP/1.1" 302 0
 WARNING 2025-07-18 15:59:58,079 basehttp 11012 11432 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-18 16:03:23,346 basehttp 11012 16696 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-18 16:03:23,358 basehttp 11012 16696 "OPTIONS /api/projects/create/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:03:25,748 basehttp 11012 16696 "GET /api/users/profile/ HTTP/1.1" 200 1775
+ERROR 2025-07-18 16:03:27,562 log 11012 1664 Internal Server Error: /api/projects/create/
+ERROR 2025-07-18 16:03:27,562 basehttp 11012 1664 "POST /api/projects/create/ HTTP/1.1" 500 368
+ERROR 2025-07-18 16:03:28,568 log 11012 16696 Internal Server Error: /api/projects/create/
+ERROR 2025-07-18 16:03:28,568 basehttp 11012 16696 "POST /api/projects/create/ HTTP/1.1" 500 368
+INFO 2025-07-18 16:13:36,230 basehttp 11012 12820 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:13:37,654 basehttp 11012 22364 "OPTIONS /api/students/api-level-request/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:13:38,133 basehttp 11012 12820 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:13:41,754 basehttp 11012 22364 "POST /api/students/api-level-request/ HTTP/1.1" 200 55
+INFO 2025-07-18 16:13:44,812 basehttp 11012 22364 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:13:44,812 basehttp 11012 12820 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:13:46,591 basehttp 11012 22364 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:13:46,974 basehttp 11012 12820 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-18 16:13:48,396 basehttp 11012 22364 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:13:49,211 basehttp 11012 12820 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-18 16:16:12,844 basehttp 11012 12820 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-18 16:22:52,608 basehttp 11012 12020 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:23:00,019 basehttp 11012 12020 "POST /api/token/ HTTP/1.1" 200 1015
+INFO 2025-07-18 16:23:00,025 basehttp 11012 12020 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:23:01,371 basehttp 11012 12020 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-18 16:23:01,436 basehttp 11012 12020 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:23:04,522 basehttp 11012 12020 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-18 16:23:13,860 basehttp 11012 12020 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-18 16:23:13,860 basehttp 11012 15488 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-18 16:23:15,690 basehttp 11012 12020 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-18 16:23:17,685 basehttp 11012 15488 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-18 16:23:19,328 basehttp 11012 15488 "OPTIONS /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 0
+INFO 2025-07-18 16:23:19,330 basehttp 11012 15488 "OPTIONS /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 0
+INFO 2025-07-18 16:23:19,420 basehttp 11012 12020 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-18 16:23:22,097 basehttp 11012 15488 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 467
+INFO 2025-07-18 16:23:23,613 basehttp 11012 12020 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 467
+INFO 2025-07-18 16:24:06,856 basehttp 11012 1304 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:24:06,861 basehttp 11012 15620 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:24:08,398 basehttp 11012 1304 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-18 16:24:09,730 basehttp 11012 1304 "GET /api/users/profile/ HTTP/1.1" 200 584
+WARNING 2025-07-18 16:34:40,245 log 11012 12028 Unauthorized: /api/students/me/
+WARNING 2025-07-18 16:34:40,245 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 401 32
+WARNING 2025-07-18 16:34:40,260 log 11012 12028 Unauthorized: /api/students/me/
+WARNING 2025-07-18 16:34:40,261 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 401 32
+WARNING 2025-07-18 16:34:43,231 log 11012 16404 Unauthorized: /api/dashboard/student_stats/
+WARNING 2025-07-18 16:34:43,231 basehttp 11012 16404 "GET /api/dashboard/student_stats/ HTTP/1.1" 401 32
+INFO 2025-07-18 16:34:43,422 basehttp 11012 12028 "POST /api/token/refresh/ HTTP/1.1" 200 271
+INFO 2025-07-18 16:34:43,468 basehttp 11012 21620 "POST /api/token/refresh/ HTTP/1.1" 200 271
+INFO 2025-07-18 16:34:45,292 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:34:46,131 basehttp 11012 16404 "POST /api/token/refresh/ HTTP/1.1" 200 271
+INFO 2025-07-18 16:34:46,866 basehttp 11012 21620 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-18 16:34:47,354 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:34:48,923 basehttp 11012 12028 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-18 16:34:50,949 basehttp 11012 16404 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-18 16:36:27,823 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:36:29,793 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:36:30,460 basehttp 11012 12028 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-18 16:36:32,010 basehttp 11012 12028 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-18 16:37:34,708 basehttp 11012 12028 "GET /api/notifications/ HTTP/1.1" 200 1159
+INFO 2025-07-18 16:37:37,391 basehttp 11012 12028 "GET /api/notifications/ HTTP/1.1" 200 1159
+INFO 2025-07-18 16:37:51,577 basehttp 11012 12028 "OPTIONS /api/notifications/f61771d3-1e12-47bd-b133-d4d48e727bb9/mark-read/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:37:54,359 basehttp 11012 12028 "POST /api/notifications/f61771d3-1e12-47bd-b133-d4d48e727bb9/mark-read/ HTTP/1.1" 200 73
+INFO 2025-07-18 16:38:01,147 basehttp 11012 12028 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-18 16:38:02,150 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:38:03,438 basehttp 11012 12028 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-18 16:38:04,123 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:39:01,268 basehttp 11012 16404 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+WARNING 2025-07-18 16:39:03,969 log 11012 16404 Bad Request: /api/applications/
+WARNING 2025-07-18 16:39:03,971 basehttp 11012 16404 "POST /api/applications/ HTTP/1.1" 400 42
+WARNING 2025-07-18 16:39:09,207 log 11012 16404 Bad Request: /api/applications/
+WARNING 2025-07-18 16:39:09,208 basehttp 11012 16404 "POST /api/applications/ HTTP/1.1" 400 42
+INFO 2025-07-18 16:39:21,199 basehttp 11012 16404 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:39:21,465 basehttp 11012 12028 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-18 16:39:24,535 basehttp 11012 21620 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:39:24,792 basehttp 11012 16404 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-18 16:39:59,093 basehttp 11012 16404 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:40:02,199 basehttp 11012 21620 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:40:14,883 basehttp 11012 21620 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-18 16:40:15,436 basehttp 11012 16404 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:40:17,410 basehttp 11012 12028 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-18 16:40:18,673 basehttp 11012 21620 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:40:20,500 basehttp 11012 16404 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-18 16:40:21,790 basehttp 11012 21620 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:40:24,760 basehttp 11012 21620 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-18 16:40:55,476 basehttp 11012 12028 "GET /api/companies/ HTTP/1.1" 200 8678
+INFO 2025-07-18 16:40:55,876 basehttp 11012 16404 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-18 16:40:57,320 basehttp 11012 12028 "GET /api/companies/ HTTP/1.1" 200 8678
+INFO 2025-07-18 16:40:57,721 basehttp 11012 21620 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-18 16:40:58,118 basehttp 11012 16404 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-18 16:41:34,895 basehttp 11012 16404 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 2
+INFO 2025-07-18 16:41:36,735 basehttp 11012 16404 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 2
+INFO 2025-07-18 16:42:07,820 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:42:09,648 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+WARNING 2025-07-18 16:43:06,992 log 11012 16404 Bad Request: /api/students/api-level-request/
+WARNING 2025-07-18 16:43:06,994 basehttp 11012 16404 "POST /api/students/api-level-request/ HTTP/1.1" 400 51
+INFO 2025-07-18 16:43:14,253 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:43:15,539 basehttp 11012 21620 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-18 16:43:16,054 basehttp 11012 16404 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:43:17,693 basehttp 11012 21620 "GET /api/students/api-level-requests/ HTTP/1.1" 200 170
+INFO 2025-07-18 16:43:54,272 basehttp 11012 5036 "OPTIONS /api/students/admin/api-level-request/2/action/ HTTP/1.1" 200 0
+INFO 2025-07-18 16:43:57,455 basehttp 11012 5036 "POST /api/students/admin/api-level-request/2/action/ HTTP/1.1" 200 39
+INFO 2025-07-18 16:43:59,065 basehttp 11012 5036 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 490
+INFO 2025-07-18 16:44:15,850 basehttp 11012 21620 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-18 16:44:17,286 basehttp 11012 21620 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-18 16:44:18,106 basehttp 11012 16404 "GET /api/students/api-level-requests/ HTTP/1.1" 200 193
+INFO 2025-07-18 16:44:18,933 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:44:20,270 basehttp 11012 16404 "GET /api/students/api-level-requests/ HTTP/1.1" 200 193
+INFO 2025-07-18 16:44:20,662 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:44:35,175 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:44:36,891 basehttp 11012 12028 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-18 16:44:54,337 basehttp 11012 12028 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-18 16:45:04,586 basehttp 11012 12028 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-19 22:50:40,436 autoreload 9324 12180 Watching for file changes with StatReloader
+INFO 2025-07-19 22:51:03,905 basehttp 9324 20384 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-19 22:51:03,939 basehttp 9324 20384 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:03,939 basehttp 9324 13540 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:03,960 basehttp 9324 13540 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:04,195 basehttp 9324 13540 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:04,254 basehttp 9324 13540 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-19 22:51:04,304 basehttp 9324 13540 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-19 22:51:17,258 basehttp 9324 19004 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-19 22:51:17,363 basehttp 9324 19004 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:17,373 basehttp 9324 19004 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:17,375 basehttp 9324 17164 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:17,491 basehttp 9324 17164 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 304 0
+INFO 2025-07-19 22:51:17,554 basehttp 9324 17164 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-19 22:51:17,579 basehttp 9324 17164 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-19 22:51:54,598 basehttp 9324 10032 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-19 22:51:54,598 basehttp 9324 20428 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-19 22:51:54,621 log 9324 20428 Unauthorized: /api/users/profile/
+WARNING 2025-07-19 22:51:54,622 basehttp 9324 20428 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-19 22:51:54,626 basehttp 9324 10032 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-19 22:51:54,646 log 9324 20428 Unauthorized: /api/users/profile/
+WARNING 2025-07-19 22:51:54,646 basehttp 9324 20428 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-19 22:51:56,278 basehttp 9324 10032 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-19 22:51:57,634 basehttp 9324 20428 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-19 22:51:58,011 basehttp 9324 10032 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 22:51:59,657 basehttp 9324 10032 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 22:52:29,868 basehttp 9324 12908 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-19 22:52:37,544 basehttp 9324 12908 "POST /api/token/ HTTP/1.1" 200 1035
+INFO 2025-07-19 22:52:37,556 basehttp 9324 12908 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-19 22:52:39,202 basehttp 9324 12908 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-19 22:52:39,438 basehttp 9324 12908 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-19 22:52:44,150 basehttp 9324 12908 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-19 22:54:18,847 basehttp 9324 21648 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-19 22:54:18,871 basehttp 9324 21648 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-19 23:17:51,345 basehttp 9324 22524 "POST /api/token/ HTTP/1.1" 200 1015
+INFO 2025-07-19 23:17:53,128 basehttp 9324 22524 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:17:53,207 basehttp 9324 22524 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:17:56,633 basehttp 9324 22524 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-19 23:20:44,553 basehttp 9324 3972 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:20:52,878 basehttp 9324 3972 "POST /api/token/ HTTP/1.1" 200 1035
+INFO 2025-07-19 23:20:52,902 basehttp 9324 3972 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:20:54,266 basehttp 9324 3972 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-19 23:20:54,524 basehttp 9324 3972 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:20:59,137 basehttp 9324 3972 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-19 23:31:33,660 basehttp 9324 19996 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:31:35,503 basehttp 9324 19996 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:33:35,614 basehttp 9324 10324 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:35,640 basehttp 9324 15092 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:35,807 basehttp 9324 15092 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:35,811 basehttp 9324 15092 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:36,246 basehttp 9324 3448 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:36,246 basehttp 9324 19400 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:39,771 basehttp 9324 10324 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-19 23:33:39,773 basehttp 9324 10324 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:39,777 basehttp 9324 10324 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:40,732 basehttp 9324 15092 "GET /api/notifications/ HTTP/1.1" 200 1158
+INFO 2025-07-19 23:33:40,746 basehttp 9324 19400 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-19 23:33:41,794 basehttp 9324 10324 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-19 23:33:42,914 basehttp 9324 15140 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-19 23:33:43,579 basehttp 9324 19400 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-19 23:33:43,649 basehttp 9324 11168 "GET /api/notifications/ HTTP/1.1" 200 1158
+INFO 2025-07-19 23:33:44,197 basehttp 9324 15092 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-19 23:33:44,376 basehttp 9324 11168 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:44,385 basehttp 9324 19400 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:44,385 basehttp 9324 19400 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:44,550 basehttp 9324 5920 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-19 23:33:45,439 basehttp 9324 10324 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-19 23:33:45,454 basehttp 9324 15140 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-19 23:33:46,748 basehttp 9324 7540 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:46,757 basehttp 9324 7540 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:33:46,784 basehttp 9324 11168 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-19 23:33:47,317 basehttp 9324 19400 "GET /api/companies/ HTTP/1.1" 200 8683
+INFO 2025-07-19 23:33:47,408 basehttp 9324 15140 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-19 23:33:47,668 basehttp 9324 5920 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-19 23:33:48,676 basehttp 9324 15092 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-19 23:33:48,858 basehttp 9324 7540 - Broken pipe from ('127.0.0.1', 51462)
+INFO 2025-07-19 23:33:48,967 basehttp 9324 11168 - Broken pipe from ('127.0.0.1', 51455)
+INFO 2025-07-19 23:33:49,088 basehttp 9324 19400 - Broken pipe from ('127.0.0.1', 51443)
+INFO 2025-07-19 23:33:49,190 basehttp 9324 15140 - Broken pipe from ('127.0.0.1', 51454)
+INFO 2025-07-19 23:33:51,033 basehttp 9324 15092 - Broken pipe from ('127.0.0.1', 51440)
+INFO 2025-07-19 23:34:23,394 basehttp 9324 12892 "OPTIONS /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:23,398 basehttp 9324 1908 "OPTIONS /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:23,398 basehttp 9324 20020 "OPTIONS /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:23,398 basehttp 9324 4100 "OPTIONS /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:25,589 basehttp 9324 1908 - Broken pipe from ('127.0.0.1', 51506)
+INFO 2025-07-19 23:34:25,809 basehttp 9324 4100 - Broken pipe from ('127.0.0.1', 51509)
+INFO 2025-07-19 23:34:27,386 basehttp 9324 12892 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:34:27,702 basehttp 9324 20020 - Broken pipe from ('127.0.0.1', 51508)
+INFO 2025-07-19 23:34:29,491 basehttp 9324 6136 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-19 23:34:29,746 basehttp 9324 4408 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-19 23:34:30,322 basehttp 9324 12892 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:34:31,882 basehttp 9324 6136 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-19 23:34:32,074 basehttp 9324 4408 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-19 23:34:37,733 basehttp 9324 4408 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-19 23:34:49,983 basehttp 9324 6136 "OPTIONS /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:49,983 basehttp 9324 4408 "OPTIONS /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:55,377 basehttp 9324 4408 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:55,377 basehttp 9324 12892 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:57,073 basehttp 9324 4408 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:57,073 basehttp 9324 4408 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:57,710 basehttp 9324 12892 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-19 23:34:57,926 basehttp 9324 15468 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:57,928 basehttp 9324 15580 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:58,810 basehttp 9324 15580 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:34:58,817 basehttp 9324 15580 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:35:00,181 basehttp 9324 15468 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-19 23:35:00,454 basehttp 9324 12892 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-19 23:35:00,641 basehttp 9324 15580 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-19 23:35:02,208 basehttp 9324 15468 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-19 23:35:02,412 basehttp 9324 12892 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-19 23:35:02,630 basehttp 9324 16988 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-19 23:35:04,146 basehttp 9324 15468 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-19 23:35:04,493 basehttp 9324 4408 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 4403
+INFO 2025-07-19 23:35:11,220 basehttp 9324 4408 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 4403
+INFO 2025-07-19 23:35:14,786 basehttp 9324 6136 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27076
+INFO 2025-07-19 23:35:17,073 basehttp 9324 6136 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-19 23:35:19,197 basehttp 9324 4408 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-19 23:35:21,446 basehttp 9324 4408 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-19 23:35:35,474 basehttp 9324 15468 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27076
+INFO 2025-07-19 23:35:36,082 basehttp 9324 16988 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27076
+INFO 2025-07-19 23:35:52,781 basehttp 9324 16988 "OPTIONS /api/students/admin/5/suspend/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:35:55,952 basehttp 9324 16988 - Broken pipe from ('127.0.0.1', 51538)
+INFO 2025-07-19 23:35:56,362 basehttp 9324 15468 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:35:57,688 basehttp 9324 15468 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:35:58,292 basehttp 9324 4408 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11997
+INFO 2025-07-19 23:35:59,417 basehttp 9324 15468 "OPTIONS /api/students/admin/5/activate/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:36:00,348 basehttp 9324 4408 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11997
+INFO 2025-07-19 23:36:00,801 basehttp 9324 4408 "OPTIONS /api/students/admin/13/block/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:36:02,075 basehttp 9324 6136 - Broken pipe from ('127.0.0.1', 51511)
+INFO 2025-07-19 23:36:02,427 basehttp 9324 15468 - Broken pipe from ('127.0.0.1', 51534)
+INFO 2025-07-19 23:36:03,608 basehttp 9324 12892 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:36:03,739 basehttp 9324 4408 - Broken pipe from ('127.0.0.1', 51526)
+INFO 2025-07-19 23:36:05,073 basehttp 9324 12892 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:36:06,405 basehttp 9324 15580 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11996
+INFO 2025-07-19 23:36:08,964 basehttp 9324 12892 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11996
+INFO 2025-07-19 23:36:10,939 basehttp 9324 12892 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11996
+INFO 2025-07-19 23:44:23,530 basehttp 9324 15420 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:44:23,533 basehttp 9324 11252 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:44:26,507 basehttp 9324 11252 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:44:27,840 basehttp 9324 11252 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:50:11,014 autoreload 1892 11220 Watching for file changes with StatReloader
+INFO 2025-07-19 23:50:18,130 basehttp 1892 7200 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:50:18,132 basehttp 1892 12540 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:50:21,586 basehttp 1892 7200 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:50:23,428 basehttp 1892 7200 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:50:38,720 basehttp 1892 7200 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:50:44,550 basehttp 1892 7200 "POST /api/token/ HTTP/1.1" 200 1015
+INFO 2025-07-19 23:50:45,958 basehttp 1892 7200 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:50:46,154 basehttp 1892 7200 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:50:49,196 basehttp 1892 7200 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-19 23:51:54,459 basehttp 1892 13764 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:51:55,777 basehttp 1892 13764 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:52:06,016 basehttp 1892 2648 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:52:06,017 basehttp 1892 7608 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:52:08,175 basehttp 1892 7608 "GET /api/users/ HTTP/1.1" 200 13090
+INFO 2025-07-19 23:52:09,743 basehttp 1892 7608 "GET /api/users/ HTTP/1.1" 200 13090
+INFO 2025-07-19 23:52:17,925 basehttp 1892 7608 "OPTIONS /api/users/32a7a582-f022-4dd4-92b1-4719479a8e17/unblock/ HTTP/1.1" 200 0
+INFO 2025-07-19 23:52:20,922 basehttp 1892 7608 - Broken pipe from ('127.0.0.1', 52690)
+INFO 2025-07-19 23:52:23,777 basehttp 1892 18972 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:52:25,099 basehttp 1892 18972 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:52:25,527 basehttp 1892 11760 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-19 23:52:27,602 basehttp 1892 18972 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-19 23:52:44,673 basehttp 1892 15484 "OPTIONS /api/users/?role=student HTTP/1.1" 200 0
+INFO 2025-07-19 23:52:46,581 basehttp 1892 15484 "GET /api/users/?role=student HTTP/1.1" 200 6048
+INFO 2025-07-19 23:52:52,066 basehttp 1892 3872 "OPTIONS /api/users/?role=company HTTP/1.1" 200 0
+INFO 2025-07-19 23:52:54,010 basehttp 1892 3872 "GET /api/users/?role=company HTTP/1.1" 200 5915
+INFO 2025-07-19 23:53:00,837 basehttp 1892 3872 "GET /api/users/?role=company HTTP/1.1" 200 5915
+INFO 2025-07-19 23:58:14,398 basehttp 1892 18912 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:58:15,705 basehttp 1892 18912 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-19 23:59:47,540 basehttp 1892 18912 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:06:35,327 basehttp 1892 19928 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:06:36,642 basehttp 1892 19928 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:06:36,826 basehttp 1892 16204 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:06:39,657 basehttp 1892 16204 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:06:57,939 basehttp 1892 9656 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:06:59,231 basehttp 1892 9656 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:07:00,506 basehttp 1892 20728 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:07:03,287 basehttp 1892 20728 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:07:19,920 basehttp 1892 20728 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:07:21,215 basehttp 1892 20728 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:07:22,770 basehttp 1892 9656 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:08:07,150 basehttp 1892 5360 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:08:08,462 basehttp 1892 5360 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:08:09,573 basehttp 1892 5360 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:08:09,573 basehttp 1892 21648 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:08:16,548 basehttp 1892 21648 "GET /api/mass-notifications/ HTTP/1.1" 200 3904
+INFO 2025-07-20 00:08:20,872 basehttp 1892 17328 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:08:22,410 basehttp 1892 17328 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:08:23,262 basehttp 1892 21648 "GET /api/mass-notifications/ HTTP/1.1" 200 3904
+INFO 2025-07-20 00:08:25,558 basehttp 1892 21648 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:08:25,558 basehttp 1892 17328 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:08:27,353 basehttp 1892 17328 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:08:29,066 basehttp 1892 17328 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:08:29,874 basehttp 1892 21648 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:08:29,875 basehttp 1892 21648 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:08:30,788 basehttp 1892 17328 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:08:35,375 basehttp 1892 21648 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 4403
+INFO 2025-07-20 00:08:40,893 basehttp 1892 21648 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 4403
+INFO 2025-07-20 00:09:04,262 basehttp 1892 21648 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:09:05,912 basehttp 1892 21648 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:10:52,853 basehttp 1892 21648 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:10:54,608 basehttp 1892 21648 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:10:57,834 basehttp 1892 19864 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:10:57,994 basehttp 1892 21648 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:10:59,396 basehttp 1892 19864 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:13:27,856 basehttp 1892 7560 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:13:27,856 basehttp 1892 2512 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:13:30,807 basehttp 1892 2512 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:13:30,854 basehttp 1892 3212 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:13:30,854 basehttp 1892 7560 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:13:32,203 basehttp 1892 2512 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:13:34,037 basehttp 1892 7560 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:13:36,191 basehttp 1892 2512 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:14:46,580 basehttp 1892 14716 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:14:46,582 basehttp 1892 9212 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:14:46,584 basehttp 1892 14716 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:14:49,839 basehttp 1892 14716 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:14:50,468 basehttp 1892 9212 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:14:51,623 basehttp 1892 14716 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:14:53,443 basehttp 1892 14716 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:14:54,548 basehttp 1892 9212 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:14:57,002 basehttp 1892 9212 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:14:58,526 basehttp 1892 14716 "GET /api/users/ HTTP/1.1" 200 13089
+INFO 2025-07-20 00:15:01,728 basehttp 1892 14716 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:15:03,520 basehttp 1892 14716 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:15:05,318 basehttp 1892 14716 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:15:33,168 basehttp 1892 4432 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:15:39,224 basehttp 1892 4432 "POST /api/token/ HTTP/1.1" 200 1034
+INFO 2025-07-20 00:15:39,228 basehttp 1892 4432 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:15:41,626 basehttp 1892 4432 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:15:41,693 basehttp 1892 4432 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:15:46,674 basehttp 1892 4432 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 00:15:53,356 basehttp 1892 16516 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:15:53,357 basehttp 1892 4432 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:16:03,867 basehttp 1892 4432 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 00:16:11,708 basehttp 1892 4536 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:16:13,107 basehttp 1892 4536 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:16:15,359 basehttp 1892 16516 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 00:16:15,858 basehttp 1892 20272 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:16:20,843 basehttp 1892 20272 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:16:22,255 basehttp 1892 20272 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:16:32,587 basehttp 1892 20272 "POST /api/token/ HTTP/1.1" 200 1035
+INFO 2025-07-20 00:16:33,956 basehttp 1892 20272 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 00:16:34,141 basehttp 1892 20272 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:16:38,751 basehttp 1892 20272 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-20 00:16:52,848 basehttp 1892 20272 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:16:52,849 basehttp 1892 20272 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:16:52,851 basehttp 1892 20272 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:16:52,853 basehttp 1892 20272 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:16:55,060 basehttp 1892 9796 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:16:55,234 basehttp 1892 20272 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-20 00:16:56,976 basehttp 1892 9796 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:16:57,742 basehttp 1892 20272 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-20 00:17:04,467 basehttp 1892 20272 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+WARNING 2025-07-20 00:17:06,957 log 1892 20272 Bad Request: /api/applications/
+WARNING 2025-07-20 00:17:06,957 basehttp 1892 20272 "POST /api/applications/ HTTP/1.1" 400 42
+WARNING 2025-07-20 00:21:53,692 log 1892 8960 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 00:21:53,693 basehttp 1892 8960 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-20 00:21:53,706 log 1892 8960 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 00:21:53,706 basehttp 1892 8960 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-20 00:21:53,709 basehttp 1892 8960 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:21:56,586 basehttp 1892 8960 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-20 00:21:56,607 basehttp 1892 1652 "POST /api/token/refresh/ HTTP/1.1" 200 269
+INFO 2025-07-20 00:21:57,763 basehttp 1892 1652 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:21:57,763 basehttp 1892 1032 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:21:57,982 basehttp 1892 8960 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:21:59,336 basehttp 1892 8960 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:21:59,718 basehttp 1892 1032 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-20 00:22:01,437 basehttp 1892 8960 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-20 00:22:03,208 basehttp 1892 1032 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-20 00:23:27,926 basehttp 1892 9716 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:23:27,930 basehttp 1892 22228 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:23:58,506 basehttp 1892 9716 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:24:18,584 basehttp 1892 21248 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:24:18,585 basehttp 1892 17524 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:24:19,879 basehttp 1892 13504 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:24:20,737 basehttp 1892 21248 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 00:24:20,741 basehttp 1892 21248 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:24:22,782 basehttp 1892 13504 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 00:24:23,776 basehttp 1892 21248 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 00:24:25,601 basehttp 1892 13504 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 00:24:41,819 basehttp 1892 21248 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 00:24:52,459 basehttp 1892 3036 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-20 00:24:56,247 basehttp 1892 13504 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:25:12,662 basehttp 1892 3036 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:25:14,218 basehttp 1892 1932 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 00:25:14,388 basehttp 1892 3036 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:25:15,742 basehttp 1892 3036 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 00:25:17,236 basehttp 1892 21248 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:25:31,364 basehttp 1892 1932 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:25:31,364 basehttp 1892 3036 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:25:34,761 basehttp 1892 3036 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-20 00:25:34,975 basehttp 1892 1932 "GET /api/notifications/ HTTP/1.1" 200 1158
+INFO 2025-07-20 00:25:35,690 basehttp 1892 8296 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:25:36,861 basehttp 1892 3036 "GET /api/projects/ HTTP/1.1" 200 7781
+INFO 2025-07-20 00:25:37,418 basehttp 1892 8296 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:25:37,464 basehttp 1892 1932 "GET /api/notifications/ HTTP/1.1" 200 1158
+INFO 2025-07-20 00:25:47,569 basehttp 1892 8296 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:25:47,569 basehttp 1892 1932 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:25:51,441 basehttp 1892 8296 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-20 00:25:54,584 basehttp 1892 1932 "GET /api/projects/my_projects/ HTTP/1.1" 200 28080
+INFO 2025-07-20 00:25:56,780 basehttp 1892 21248 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:25:56,792 basehttp 1892 21248 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-20 00:26:04,693 basehttp 1892 21248 "POST /api/token/ HTTP/1.1" 200 1015
+INFO 2025-07-20 00:26:06,079 basehttp 1892 21248 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:26:06,195 basehttp 1892 21248 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:26:09,204 basehttp 1892 21248 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:28:32,722 autoreload 1892 11220 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-20 00:28:33,748 autoreload 10908 11036 Watching for file changes with StatReloader
+INFO 2025-07-20 00:28:43,449 autoreload 10908 11036 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-07-20 00:28:44,387 autoreload 10728 13292 Watching for file changes with StatReloader
+INFO 2025-07-20 00:28:57,003 basehttp 10728 8716 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:28:58,400 basehttp 10728 8716 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:30:52,057 basehttp 10728 7952 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:31:05,674 basehttp 10728 3212 "OPTIONS /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 0
+INFO 2025-07-20 00:31:05,676 basehttp 10728 3212 "OPTIONS /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 0
+INFO 2025-07-20 00:31:06,900 basehttp 10728 18420 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-20 00:31:08,640 basehttp 10728 3212 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 490
+INFO 2025-07-20 00:31:08,825 basehttp 10728 8896 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-20 00:31:10,163 basehttp 10728 3212 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 490
+INFO 2025-07-20 00:31:10,545 basehttp 10728 18420 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 11995
+INFO 2025-07-20 00:32:03,857 basehttp 10728 1512 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:32:03,869 basehttp 10728 1512 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-20 00:32:08,334 basehttp 10728 1512 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:32:13,945 basehttp 10728 1512 "POST /api/token/ HTTP/1.1" 200 1034
+INFO 2025-07-20 00:32:16,071 basehttp 10728 1512 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:32:16,117 basehttp 10728 1512 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:32:20,268 basehttp 10728 1512 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 00:32:32,488 basehttp 10728 8832 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:32:32,488 basehttp 10728 1512 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:32:37,397 basehttp 10728 8832 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:32:37,399 basehttp 10728 8832 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:32:42,271 basehttp 10728 1512 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 00:32:52,563 basehttp 10728 13404 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 00:33:04,611 basehttp 10728 6380 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:33:05,169 basehttp 10728 8832 - Broken pipe from ('127.0.0.1', 54198)
+INFO 2025-07-20 00:33:06,753 basehttp 10728 6380 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:33:25,766 basehttp 10728 9560 - Broken pipe from ('127.0.0.1', 54214)
+INFO 2025-07-20 00:33:34,330 basehttp 10728 12256 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:33:52,371 basehttp 10728 10276 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:34:31,631 basehttp 10728 13860 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:34:37,523 basehttp 10728 13860 "POST /api/token/ HTTP/1.1" 200 1015
+INFO 2025-07-20 00:34:37,528 basehttp 10728 13860 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:34:38,870 basehttp 10728 13860 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 00:34:38,932 basehttp 10728 13860 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:34:41,784 basehttp 10728 13860 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 00:34:44,766 basehttp 10728 13860 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:34:44,768 basehttp 10728 13860 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 00:34:46,564 basehttp 10728 13860 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:34:48,470 basehttp 10728 19280 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:34:50,251 basehttp 10728 19280 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:42:45,590 autoreload 10728 13292 C:\Users\albur\Desktop\leanmaker\Backend\projects\models.py changed, reloading.
+INFO 2025-07-20 00:42:46,936 autoreload 10948 17620 Watching for file changes with StatReloader
+INFO 2025-07-20 00:43:10,883 autoreload 10948 17620 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-20 00:43:11,695 autoreload 9848 5196 Watching for file changes with StatReloader
+INFO 2025-07-20 00:43:31,242 basehttp 9848 20444 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:43:33,151 basehttp 9848 15096 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:43:40,861 basehttp 9848 15096 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:43:42,618 basehttp 9848 20444 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:43:50,889 basehttp 9848 20444 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:43:52,933 basehttp 9848 20444 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 00:44:46,573 autoreload 9848 5196 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-07-20 00:44:47,512 autoreload 13560 19768 Watching for file changes with StatReloader
+INFO 2025-07-20 00:45:08,390 autoreload 13560 19768 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-07-20 00:45:09,342 autoreload 18480 5720 Watching for file changes with StatReloader
+INFO 2025-07-20 00:46:17,912 autoreload 18480 5720 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\models.py changed, reloading.
+INFO 2025-07-20 00:46:18,908 autoreload 8276 15984 Watching for file changes with StatReloader
+INFO 2025-07-20 00:49:02,433 basehttp 8276 11460 - Broken pipe from ('127.0.0.1', 54840)
+INFO 2025-07-20 00:49:03,373 basehttp 8276 21476 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:49:05,527 basehttp 8276 21476 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:49:14,940 basehttp 8276 8892 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 00:49:21,331 basehttp 8276 21476 "OPTIONS /api/projects/c2226797-269a-4c70-928c-ce48aa9feca3/ HTTP/1.1" 200 0
+WARNING 2025-07-20 00:49:24,351 log 8276 21476 Bad Request: /api/projects/c2226797-269a-4c70-928c-ce48aa9feca3/
+WARNING 2025-07-20 00:49:24,352 basehttp 8276 21476 "PATCH /api/projects/c2226797-269a-4c70-928c-ce48aa9feca3/ HTTP/1.1" 400 41
+INFO 2025-07-20 00:49:24,953 basehttp 8276 8892 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 00:51:19,025 basehttp 8276 21424 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:51:21,147 basehttp 8276 21424 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 00:51:22,918 basehttp 8276 21476 - Broken pipe from ('127.0.0.1', 54841)
+INFO 2025-07-20 00:51:36,537 basehttp 8276 8892 - Broken pipe from ('127.0.0.1', 54854)
+INFO 2025-07-20 00:51:48,736 basehttp 8276 13512 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:52:05,723 basehttp 8276 21424 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 00:54:05,774 basehttp 8276 15596 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:54:13,450 basehttp 8276 15596 "POST /api/token/ HTTP/1.1" 200 1035
+INFO 2025-07-20 00:54:13,456 basehttp 8276 15596 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:54:14,809 basehttp 8276 15596 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 00:54:14,953 basehttp 8276 15596 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:54:18,954 basehttp 8276 15596 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-20 00:54:18,970 basehttp 8276 15596 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:54:18,972 basehttp 8276 15596 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:54:20,722 basehttp 8276 15596 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:54:22,599 basehttp 8276 8720 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 00:54:23,219 basehttp 8276 15596 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 00:54:24,597 basehttp 8276 8720 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 00:56:02,969 autoreload 8276 15984 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-20 00:56:04,025 autoreload 8400 16856 Watching for file changes with StatReloader
+INFO 2025-07-20 00:58:38,524 basehttp 8400 19576 "OPTIONS /api/company/applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 00:58:38,526 basehttp 8400 10516 "OPTIONS /api/company/applications/ HTTP/1.1" 200 0
+WARNING 2025-07-20 00:58:38,746 log 8400 19576 Not Found: /api/company/applications/
+WARNING 2025-07-20 00:58:38,748 basehttp 8400 19576 "GET /api/company/applications/ HTTP/1.1" 404 18394
+WARNING 2025-07-20 00:58:38,788 log 8400 19576 Not Found: /api/company/applications/
+WARNING 2025-07-20 00:58:38,789 basehttp 8400 19576 "GET /api/company/applications/ HTTP/1.1" 404 18393
+WARNING 2025-07-20 00:58:39,129 log 8400 19576 Not Found: /api/company/applications/
+WARNING 2025-07-20 00:58:39,130 basehttp 8400 19576 "GET /api/company/applications/ HTTP/1.1" 404 18393
+INFO 2025-07-20 00:59:38,004 autoreload 8400 16856 C:\Users\albur\Desktop\leanmaker\Backend\applications\views.py changed, reloading.
+INFO 2025-07-20 00:59:38,959 autoreload 2244 1792 Watching for file changes with StatReloader
+INFO 2025-07-20 01:01:06,571 autoreload 20672 17668 Watching for file changes with StatReloader
+INFO 2025-07-20 01:03:17,045 autoreload 7232 16600 Watching for file changes with StatReloader
+INFO 2025-07-20 01:04:16,067 autoreload 7232 16600 C:\Users\albur\Desktop\leanmaker\Backend\applications\views.py changed, reloading.
+INFO 2025-07-20 01:04:17,085 autoreload 22108 16172 Watching for file changes with StatReloader
+INFO 2025-07-20 01:05:44,352 autoreload 22108 16172 C:\Users\albur\Desktop\leanmaker\Backend\applications\views.py changed, reloading.
+INFO 2025-07-20 01:05:45,631 autoreload 21776 10308 Watching for file changes with StatReloader
+WARNING 2025-07-20 01:05:56,027 log 21776 14000 Not Found: /api/health/
+WARNING 2025-07-20 01:05:56,031 basehttp 21776 14000 "GET /api/health/ HTTP/1.1" 404 18338
+WARNING 2025-07-20 01:05:59,766 log 21776 14000 Method Not Allowed (GET): /api/token/
+WARNING 2025-07-20 01:05:59,807 basehttp 21776 14000 "GET /api/token/ HTTP/1.1" 405 0
+INFO 2025-07-20 01:06:17,990 basehttp 21776 13480 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-20 01:06:18,259 basehttp 21776 13480 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-20 01:06:18,261 basehttp 21776 13480 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-20 01:06:49,087 basehttp 21776 7088 "GET / HTTP/1.1" 200 15333
+INFO 2025-07-20 01:06:49,380 basehttp 21776 7088 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-20 01:06:49,410 basehttp 21776 7088 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-20 01:08:45,071 basehttp 21776 16476 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:08:47,197 basehttp 21776 16476 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:08:56,102 basehttp 21776 16476 "POST /api/token/ HTTP/1.1" 200 1015
+INFO 2025-07-20 01:08:57,431 basehttp 21776 16476 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 01:09:00,570 basehttp 21776 16476 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 01:09:06,961 basehttp 21776 16476 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 01:09:09,636 basehttp 21776 16476 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 01:09:11,430 basehttp 21776 16476 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 01:09:27,313 basehttp 21776 16476 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 01:09:27,313 basehttp 21776 3812 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 01:09:34,310 basehttp 21776 3812 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 4403
+INFO 2025-07-20 01:09:40,925 basehttp 21776 3812 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 4403
+INFO 2025-07-20 01:10:30,341 basehttp 21776 3812 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 01:10:31,658 basehttp 21776 3812 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 01:10:42,785 basehttp 21776 3812 "OPTIONS /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-20 01:10:42,790 basehttp 21776 16476 "OPTIONS /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-20 01:10:42,790 basehttp 21776 3812 "OPTIONS /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-20 01:10:42,792 basehttp 21776 16476 "OPTIONS /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-07-20 01:10:44,606 basehttp 21776 3812 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-20 01:10:46,462 basehttp 21776 16476 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-20 01:10:47,165 basehttp 21776 3812 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-20 01:10:49,250 basehttp 21776 16476 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-20 01:10:52,337 basehttp 21776 16476 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-07-20 01:10:55,337 basehttp 21776 16476 "OPTIONS /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 01:10:55,337 basehttp 21776 3812 "OPTIONS /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 01:11:25,541 basehttp 21776 3812 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27076
+INFO 2025-07-20 01:11:47,116 basehttp 21776 12012 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27076
+INFO 2025-07-20 01:11:47,233 basehttp 21776 11268 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27076
+INFO 2025-07-20 01:12:10,498 basehttp 21776 11268 "OPTIONS /api/admin/projects/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/delete/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:12:13,102 basehttp 21776 11268 "POST /api/admin/projects/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/delete/ HTTP/1.1" 200 101
+INFO 2025-07-20 01:12:21,917 basehttp 21776 12012 "OPTIONS /api/admin/projects/?limit=50&offset=0&status=cancelled HTTP/1.1" 200 0
+INFO 2025-07-20 01:12:25,745 basehttp 21776 6156 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 01:12:27,096 basehttp 21776 6156 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 01:12:35,127 basehttp 21776 11268 - Broken pipe from ('127.0.0.1', 56426)
+INFO 2025-07-20 01:12:44,500 basehttp 21776 12012 - Broken pipe from ('127.0.0.1', 56427)
+INFO 2025-07-20 01:12:49,781 basehttp 21776 11344 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27079
+INFO 2025-07-20 01:12:51,303 basehttp 21776 6156 "GET /api/admin/projects/?limit=50&offset=0&status=cancelled HTTP/1.1" 200 27166
+INFO 2025-07-20 01:13:07,994 basehttp 21776 19264 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27079
+INFO 2025-07-20 01:13:09,062 basehttp 21776 4108 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 27079
+INFO 2025-07-20 01:13:56,638 basehttp 21776 11556 "OPTIONS /api/projects/0e148e26-0274-4293-88f5-8c90b3bc9bdd/ HTTP/1.1" 200 0
+WARNING 2025-07-20 01:13:56,646 log 21776 11556 Method Not Allowed (GET): /api/projects/0e148e26-0274-4293-88f5-8c90b3bc9bdd/
+WARNING 2025-07-20 01:13:56,684 basehttp 21776 11556 "GET /api/projects/0e148e26-0274-4293-88f5-8c90b3bc9bdd/ HTTP/1.1" 405 0
+INFO 2025-07-20 01:14:36,664 basehttp 21776 1320 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 01:14:38,036 basehttp 21776 1320 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 01:15:23,404 basehttp 21776 1320 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-20 01:15:31,100 basehttp 21776 1320 "POST /api/token/ HTTP/1.1" 200 1034
+INFO 2025-07-20 01:15:33,248 basehttp 21776 1320 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:15:37,360 basehttp 21776 1320 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:15:52,262 basehttp 21776 1320 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:15:52,576 basehttp 21776 17616 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:15:54,369 basehttp 21776 1320 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:15:55,554 basehttp 21776 17616 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:15:57,296 basehttp 21776 17616 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:16:00,527 basehttp 21776 1320 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:16:04,706 basehttp 21776 1320 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:17:47,931 basehttp 21776 1004 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:17:52,272 basehttp 21776 1004 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:17:53,992 basehttp 21776 21708 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:17:59,451 basehttp 21776 1004 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:17:59,475 basehttp 21776 21708 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:18:02,023 basehttp 21776 21708 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:18:02,049 basehttp 21776 14108 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:18:03,410 basehttp 21776 1004 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:18:05,129 basehttp 21776 1004 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:18:06,179 basehttp 21776 14108 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:18:10,197 basehttp 21776 14108 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:18:14,247 basehttp 21776 14108 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:18:36,139 basehttp 21776 20732 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:18:36,143 basehttp 21776 10712 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:18:38,511 basehttp 21776 10712 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:18:40,630 basehttp 21776 10712 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:18:42,819 basehttp 21776 10712 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:18:42,827 basehttp 21776 20732 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:18:44,851 basehttp 21776 20732 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:18:44,851 basehttp 21776 20732 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:18:45,051 basehttp 21776 10712 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:18:47,023 basehttp 21776 10608 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:18:47,235 basehttp 21776 10712 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:18:48,985 basehttp 21776 20732 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:18:49,051 basehttp 21776 10712 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:18:53,165 basehttp 21776 20732 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:18:57,153 basehttp 21776 20732 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:18:59,577 basehttp 21776 10712 "OPTIONS /api/calendar/events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-07-20 01:18:59,577 basehttp 21776 20732 "OPTIONS /api/calendar/events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-07-20 01:19:01,139 basehttp 21776 20732 "GET /api/calendar/events/?event_type=interview HTTP/1.1" 200 29
+INFO 2025-07-20 01:19:02,681 basehttp 21776 20732 "GET /api/calendar/events/?event_type=interview HTTP/1.1" 200 29
+INFO 2025-07-20 01:19:11,435 basehttp 21776 20732 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 01:20:34,007 basehttp 21776 12700 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:20:36,504 basehttp 21776 12700 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:20:37,269 basehttp 21776 11192 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:20:39,138 basehttp 21776 11192 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:22:04,586 basehttp 21776 6732 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:22:04,586 basehttp 21776 6728 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:22:07,338 basehttp 21776 6732 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:22:07,338 basehttp 21776 7164 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:22:09,727 basehttp 21776 6728 "GET /api/notifications/ HTTP/1.1" 200 412
+INFO 2025-07-20 01:22:12,228 basehttp 21776 6728 "GET /api/notifications/ HTTP/1.1" 200 412
+INFO 2025-07-20 01:22:18,979 basehttp 21776 7164 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 01:22:29,336 basehttp 21776 7164 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 01:24:15,545 basehttp 21776 16656 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:24:17,663 basehttp 21776 16656 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:24:18,816 basehttp 21776 12692 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:24:20,588 basehttp 21776 12692 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 01:24:24,380 basehttp 21776 12692 "GET /api/notifications/ HTTP/1.1" 200 412
+INFO 2025-07-20 01:24:26,917 basehttp 21776 12692 "GET /api/notifications/ HTTP/1.1" 200 412
+INFO 2025-07-20 01:24:38,644 basehttp 21776 16656 "OPTIONS /api/company/applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:24:38,649 basehttp 21776 16656 "OPTIONS /api/company/applications/ HTTP/1.1" 200 0
+WARNING 2025-07-20 01:24:38,765 log 21776 16656 Not Found: /api/company/applications/
+WARNING 2025-07-20 01:24:38,766 basehttp 21776 16656 "GET /api/company/applications/ HTTP/1.1" 404 18394
+WARNING 2025-07-20 01:24:38,880 log 21776 16656 Not Found: /api/company/applications/
+WARNING 2025-07-20 01:24:38,881 basehttp 21776 16656 "GET /api/company/applications/ HTTP/1.1" 404 18393
+INFO 2025-07-20 01:24:39,365 basehttp 21776 12692 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 01:24:49,094 basehttp 21776 12692 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 01:25:28,393 basehttp 21776 17660 "OPTIONS /api/applications/company/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:25:31,782 basehttp 21776 17660 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:25:35,098 basehttp 21776 22088 "GET /api/applications/company/ HTTP/1.1" 200 51701
+WARNING 2025-07-20 01:25:36,881 log 21776 20112 Unauthorized: /api/applications/company/
+WARNING 2025-07-20 01:25:36,881 basehttp 21776 20112 "GET /api/applications/company/ HTTP/1.1" 401 66
+INFO 2025-07-20 01:25:40,903 basehttp 21776 22088 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:25:43,075 basehttp 21776 22088 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:25:45,861 basehttp 21776 15644 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:25:49,066 basehttp 21776 15644 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:32:34,468 basehttp 21776 8660 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:32:37,478 basehttp 21776 8660 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:32:42,928 basehttp 21776 15692 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:32:49,091 basehttp 21776 15692 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:34:38,088 basehttp 21776 8660 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:34:38,088 basehttp 21776 15692 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:34:41,873 basehttp 21776 15692 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 01:34:41,882 basehttp 21776 8660 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:34:44,665 basehttp 21776 15692 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 01:34:46,345 basehttp 21776 8660 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 01:34:48,692 basehttp 21776 8660 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 01:34:49,208 basehttp 21776 8660 "OPTIONS /api/notifications/send-company-message/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:34:52,957 basehttp 21776 8660 "POST /api/notifications/send-company-message/ HTTP/1.1" 201 376
+INFO 2025-07-20 01:34:55,727 basehttp 21776 15692 "POST /api/notifications/send-company-message/ HTTP/1.1" 201 376
+INFO 2025-07-20 01:35:21,607 basehttp 21776 15692 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:35:25,423 basehttp 21776 15692 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:39:59,195 basehttp 21776 15692 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:40:01,823 basehttp 21776 15692 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:40:08,506 basehttp 21776 18912 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:40:12,066 basehttp 21776 15692 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:40:42,927 basehttp 21776 12692 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:40:53,571 basehttp 21776 12692 "POST /api/token/ HTTP/1.1" 200 1035
+INFO 2025-07-20 01:40:53,583 basehttp 21776 12692 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:40:55,272 basehttp 21776 12692 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 01:40:55,354 basehttp 21776 12692 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:41:01,370 basehttp 21776 12692 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-20 01:41:06,144 basehttp 21776 12692 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:41:06,144 basehttp 21776 4368 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:41:10,535 basehttp 21776 12692 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:41:10,535 basehttp 21776 12692 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:41:10,535 basehttp 21776 12692 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:41:10,535 basehttp 21776 12692 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 01:41:10,915 basehttp 21776 4368 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-20 01:41:14,607 basehttp 21776 8068 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 01:41:15,887 basehttp 21776 12692 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 01:41:16,654 basehttp 21776 4368 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 01:41:17,067 basehttp 21776 18976 "GET /api/applications/my_applications/ HTTP/1.1" 200 42202
+INFO 2025-07-20 01:41:19,932 basehttp 21776 8068 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 01:41:32,128 basehttp 21776 8068 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 01:41:33,969 basehttp 21776 8068 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 01:41:34,175 basehttp 21776 18976 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 01:41:35,797 basehttp 21776 18976 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 01:43:34,802 basehttp 21776 15432 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:46:30,856 basehttp 21776 21224 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:46:35,553 basehttp 21776 21224 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 01:46:37,212 basehttp 21776 9116 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 01:46:44,379 basehttp 21776 9116 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 02:05:17,563 basehttp 21776 19380 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 02:05:17,565 basehttp 21776 7296 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 02:05:21,812 basehttp 21776 19380 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 02:05:21,986 basehttp 21776 7296 "OPTIONS /api/applications/company/ HTTP/1.1" 200 0
+INFO 2025-07-20 02:05:23,965 basehttp 21776 19380 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 02:05:27,749 basehttp 21776 7296 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 02:05:31,987 basehttp 21776 7296 "GET /api/applications/company/ HTTP/1.1" 200 51701
+INFO 2025-07-20 02:05:37,309 basehttp 21776 19380 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 02:05:37,309 basehttp 21776 7296 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 02:05:40,137 basehttp 21776 7296 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 02:05:40,150 basehttp 21776 7296 "OPTIONS /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:40,309 log 21776 7296 Not Found: /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/
+WARNING 2025-07-20 02:05:40,309 basehttp 21776 7296 "GET /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:40,316 basehttp 21776 7296 "OPTIONS /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:40,469 log 21776 7296 Not Found: /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/
+WARNING 2025-07-20 02:05:40,469 basehttp 21776 7296 "GET /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:40,478 basehttp 21776 7296 "OPTIONS /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:40,631 log 21776 7296 Not Found: /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/
+WARNING 2025-07-20 02:05:40,631 basehttp 21776 7296 "GET /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:40,641 basehttp 21776 7296 "OPTIONS /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:40,811 log 21776 7296 Not Found: /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/
+WARNING 2025-07-20 02:05:40,811 basehttp 21776 7296 "GET /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:40,818 basehttp 21776 7296 "OPTIONS /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:40,958 log 21776 7296 Not Found: /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/
+WARNING 2025-07-20 02:05:40,960 basehttp 21776 7296 "GET /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:40,968 basehttp 21776 7296 "OPTIONS /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:41,094 log 21776 7296 Not Found: /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/
+WARNING 2025-07-20 02:05:41,098 basehttp 21776 7296 "GET /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:41,099 basehttp 21776 7296 "OPTIONS /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:41,224 log 21776 7296 Not Found: /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/
+WARNING 2025-07-20 02:05:41,224 basehttp 21776 7296 "GET /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:41,235 basehttp 21776 7296 "OPTIONS /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:41,356 log 21776 7296 Not Found: /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/
+WARNING 2025-07-20 02:05:41,364 basehttp 21776 7296 "GET /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:41,370 basehttp 21776 7296 "OPTIONS /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:41,506 log 21776 7296 Not Found: /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/
+WARNING 2025-07-20 02:05:41,508 basehttp 21776 7296 "GET /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:41,519 basehttp 21776 7296 "OPTIONS /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 0
+WARNING 2025-07-20 02:05:41,642 log 21776 7296 Not Found: /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/
+WARNING 2025-07-20 02:05:41,643 basehttp 21776 7296 "GET /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:41,648 basehttp 21776 7296 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-20 02:05:42,373 basehttp 21776 19380 "GET /api/projects/ HTTP/1.1" 200 7774
+WARNING 2025-07-20 02:05:42,510 log 21776 19380 Not Found: /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/
+WARNING 2025-07-20 02:05:42,512 basehttp 21776 19380 "GET /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:05:42,641 log 21776 19380 Not Found: /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/
+WARNING 2025-07-20 02:05:42,641 basehttp 21776 19380 "GET /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:05:42,808 log 21776 19380 Not Found: /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/
+WARNING 2025-07-20 02:05:42,808 basehttp 21776 19380 "GET /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:05:42,931 log 21776 19380 Not Found: /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/
+WARNING 2025-07-20 02:05:42,931 basehttp 21776 19380 "GET /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:05:43,074 log 21776 19380 Not Found: /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/
+WARNING 2025-07-20 02:05:43,074 basehttp 21776 19380 "GET /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:05:43,241 log 21776 19380 Not Found: /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/
+WARNING 2025-07-20 02:05:43,243 basehttp 21776 19380 "GET /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:05:43,394 log 21776 19380 Not Found: /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/
+WARNING 2025-07-20 02:05:43,398 basehttp 21776 19380 "GET /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:05:43,556 log 21776 19380 Not Found: /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/
+WARNING 2025-07-20 02:05:43,558 basehttp 21776 19380 "GET /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 404 19923
+INFO 2025-07-20 02:05:43,652 basehttp 21776 7296 "GET /api/students/ HTTP/1.1" 200 11995
+WARNING 2025-07-20 02:05:44,380 log 21776 7296 Not Found: /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/
+WARNING 2025-07-20 02:05:44,380 basehttp 21776 7296 "GET /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:05:44,479 log 21776 7296 Not Found: /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/
+WARNING 2025-07-20 02:05:44,488 basehttp 21776 7296 "GET /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 404 19922
+INFO 2025-07-20 02:05:46,518 basehttp 21776 7296 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 02:06:03,390 basehttp 21776 7296 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 02:06:06,047 basehttp 21776 7296 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 02:06:06,351 basehttp 21776 19380 "GET /api/projects/ HTTP/1.1" 200 7774
+WARNING 2025-07-20 02:06:06,954 log 21776 7296 Not Found: /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/
+WARNING 2025-07-20 02:06:06,954 basehttp 21776 7296 "GET /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:07,150 log 21776 7296 Not Found: /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/
+WARNING 2025-07-20 02:06:07,152 basehttp 21776 7296 "GET /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:07,440 log 21776 7296 Not Found: /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/
+WARNING 2025-07-20 02:06:07,443 basehttp 21776 7296 "GET /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:07,626 log 21776 7296 Not Found: /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/
+WARNING 2025-07-20 02:06:07,631 basehttp 21776 7296 "GET /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:07,785 log 21776 7296 Not Found: /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/
+WARNING 2025-07-20 02:06:07,785 basehttp 21776 7296 "GET /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:07,889 log 21776 7296 Not Found: /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/
+WARNING 2025-07-20 02:06:07,891 basehttp 21776 7296 "GET /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:07,998 log 21776 7296 Not Found: /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/
+WARNING 2025-07-20 02:06:07,998 basehttp 21776 7296 "GET /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:08,088 log 21776 7296 Not Found: /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/
+WARNING 2025-07-20 02:06:08,092 basehttp 21776 7296 "GET /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:08,205 log 21776 7296 Not Found: /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/
+WARNING 2025-07-20 02:06:08,205 basehttp 21776 7296 "GET /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:08,319 log 21776 7296 Not Found: /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/
+WARNING 2025-07-20 02:06:08,319 basehttp 21776 7296 "GET /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 404 19922
+INFO 2025-07-20 02:06:09,233 basehttp 21776 19380 "GET /api/projects/ HTTP/1.1" 200 7774
+WARNING 2025-07-20 02:06:09,355 log 21776 19380 Not Found: /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/
+WARNING 2025-07-20 02:06:09,355 basehttp 21776 19380 "GET /api/applications/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:09,470 log 21776 19380 Not Found: /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/
+WARNING 2025-07-20 02:06:09,470 basehttp 21776 19380 "GET /api/applications/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:09,583 log 21776 19380 Not Found: /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/
+WARNING 2025-07-20 02:06:09,586 basehttp 21776 19380 "GET /api/applications/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:09,704 log 21776 19380 Not Found: /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/
+WARNING 2025-07-20 02:06:09,706 basehttp 21776 19380 "GET /api/applications/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:09,841 log 21776 19380 Not Found: /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/
+WARNING 2025-07-20 02:06:09,841 basehttp 21776 19380 "GET /api/applications/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:09,964 log 21776 19380 Not Found: /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/
+WARNING 2025-07-20 02:06:09,972 basehttp 21776 19380 "GET /api/applications/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:10,097 log 21776 19380 Not Found: /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/
+WARNING 2025-07-20 02:06:10,097 basehttp 21776 19380 "GET /api/applications/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:10,228 log 21776 19380 Not Found: /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/
+WARNING 2025-07-20 02:06:10,232 basehttp 21776 19380 "GET /api/applications/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 404 19923
+WARNING 2025-07-20 02:06:10,343 log 21776 19380 Not Found: /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/
+WARNING 2025-07-20 02:06:10,351 basehttp 21776 19380 "GET /api/applications/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 404 19922
+WARNING 2025-07-20 02:06:10,443 log 21776 19380 Not Found: /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/
+WARNING 2025-07-20 02:06:10,443 basehttp 21776 19380 "GET /api/applications/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 404 19922
+INFO 2025-07-20 02:06:10,589 basehttp 21776 7296 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 02:06:13,135 basehttp 21776 7296 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 06:16:15,632 autoreload 4180 5852 Watching for file changes with StatReloader
+INFO 2025-07-20 06:16:37,067 basehttp 4180 4384 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:16:37,067 basehttp 4180 1760 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-20 06:16:37,160 log 4180 1760 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 06:16:37,160 basehttp 4180 1760 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-20 06:16:37,166 basehttp 4180 4384 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-20 06:16:37,189 log 4180 1760 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 06:16:37,189 basehttp 4180 1760 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-20 06:16:40,939 basehttp 4180 1760 - Broken pipe from ('127.0.0.1', 62549)
+INFO 2025-07-20 06:16:41,007 basehttp 4180 4384 - Broken pipe from ('127.0.0.1', 62548)
+INFO 2025-07-20 06:16:46,030 basehttp 4180 7476 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:16:46,030 basehttp 4180 18176 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-20 06:16:46,087 log 4180 18176 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 06:16:46,087 basehttp 4180 18176 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-20 06:16:46,095 basehttp 4180 7476 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-20 06:16:46,149 log 4180 18176 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 06:16:46,149 basehttp 4180 18176 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-20 06:16:49,240 basehttp 4180 7476 "POST /api/token/refresh/ HTTP/1.1" 200 275
+INFO 2025-07-20 06:16:49,252 basehttp 4180 18176 "POST /api/token/refresh/ HTTP/1.1" 200 275
+INFO 2025-07-20 06:16:51,947 basehttp 4180 7476 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:16:54,502 basehttp 4180 7476 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:16:56,483 basehttp 4180 7476 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:17:03,787 basehttp 4180 7476 "POST /api/token/ HTTP/1.1" 200 1034
+INFO 2025-07-20 06:17:06,777 basehttp 4180 7476 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:17:07,049 basehttp 4180 7476 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:17:12,528 basehttp 4180 7476 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 06:18:49,693 basehttp 4180 7476 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:18:49,696 basehttp 4180 7476 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:18:54,155 basehttp 4180 7476 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 06:18:54,166 basehttp 4180 9080 "OPTIONS /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:18:57,089 basehttp 4180 7476 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 06:18:57,542 basehttp 4180 9080 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:18:57,548 basehttp 4180 7476 "OPTIONS /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:18:59,684 basehttp 4180 9080 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:18:59,693 basehttp 4180 7476 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:18:59,703 basehttp 4180 9080 "OPTIONS /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:01,586 basehttp 4180 9080 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:01,591 basehttp 4180 9080 "OPTIONS /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:01,636 basehttp 4180 7476 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:03,553 basehttp 4180 9080 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:03,560 basehttp 4180 9080 "OPTIONS /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:03,560 basehttp 4180 7476 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:05,523 basehttp 4180 7476 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:05,529 basehttp 4180 9080 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:05,539 basehttp 4180 7476 "OPTIONS /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:07,772 basehttp 4180 9080 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:07,777 basehttp 4180 7476 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:07,788 basehttp 4180 9080 "OPTIONS /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:10,045 basehttp 4180 7476 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:10,066 basehttp 4180 9080 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:10,073 basehttp 4180 7476 "OPTIONS /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:12,027 basehttp 4180 9080 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:12,027 basehttp 4180 7476 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:12,037 basehttp 4180 9080 "OPTIONS /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:14,066 basehttp 4180 9080 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:14,078 basehttp 4180 7476 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:14,078 basehttp 4180 9080 "OPTIONS /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:16,206 basehttp 4180 9080 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:16,212 basehttp 4180 9080 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:16,223 basehttp 4180 7476 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:18,236 basehttp 4180 7476 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:19:18,256 basehttp 4180 9080 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 06:19:20,319 basehttp 4180 9080 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 06:19:51,820 basehttp 4180 9080 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:19:51,820 basehttp 4180 7476 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:20:24,849 basehttp 4180 7476 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:20:44,796 basehttp 4180 9080 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:25:10,086 basehttp 4180 11672 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:25:12,338 basehttp 4180 11672 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:25:43,489 basehttp 4180 20992 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:25:48,178 basehttp 4180 20992 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:25:50,429 basehttp 4180 20992 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:26:03,125 basehttp 4180 20992 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:26:03,916 basehttp 4180 11672 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:26:05,385 basehttp 4180 20992 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:26:17,159 basehttp 4180 11672 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:26:19,828 basehttp 4180 11672 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:26:21,864 basehttp 4180 11504 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:26:40,726 basehttp 4180 20992 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:26:55,697 basehttp 4180 11672 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:26:55,986 basehttp 4180 13520 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:26:56,624 basehttp 4180 6156 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:26:56,629 basehttp 4180 11504 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:26:56,782 basehttp 4180 8948 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:13,579 basehttp 4180 20992 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:26,552 basehttp 4180 13520 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:30,504 basehttp 4180 11672 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:30,925 basehttp 4180 11504 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:40,295 basehttp 4180 8948 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:46,890 basehttp 4180 6156 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:47,567 basehttp 4180 20992 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:27:56,774 basehttp 4180 13520 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:28:00,509 basehttp 4180 11672 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:29:26,997 basehttp 4180 9924 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:31:10,677 basehttp 4180 16920 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 06:31:13,323 basehttp 4180 4340 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 06:31:13,931 basehttp 4180 16920 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:16,483 basehttp 4180 16920 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:16,489 basehttp 4180 4340 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:18,524 basehttp 4180 16920 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:18,933 basehttp 4180 4340 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:20,983 basehttp 4180 16920 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:21,486 basehttp 4180 4340 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:23,437 basehttp 4180 16920 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:24,012 basehttp 4180 4340 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:25,783 basehttp 4180 16920 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:26,399 basehttp 4180 4340 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:28,148 basehttp 4180 16920 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:28,809 basehttp 4180 4340 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:30,425 basehttp 4180 16920 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:30,824 basehttp 4180 4340 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:32,474 basehttp 4180 16920 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:33,048 basehttp 4180 4340 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:34,423 basehttp 4180 16920 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:35,023 basehttp 4180 4340 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:37,470 basehttp 4180 16920 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 06:31:37,709 basehttp 4180 4340 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 06:31:40,334 basehttp 4180 4340 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 06:31:53,526 basehttp 4180 4340 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:31:53,551 basehttp 4180 16920 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:31:55,859 basehttp 4180 4340 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:31:57,023 basehttp 4180 16920 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 06:31:59,466 basehttp 4180 16920 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 06:32:21,065 basehttp 4180 19012 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:32:21,089 basehttp 4180 19012 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-20 06:32:30,566 basehttp 4180 19012 "POST /api/token/ HTTP/1.1" 200 1035
+INFO 2025-07-20 06:32:32,446 basehttp 4180 19012 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:32:32,500 basehttp 4180 19012 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:32:39,146 basehttp 4180 19012 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-20 06:32:52,306 basehttp 4180 7936 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:32:52,306 basehttp 4180 13956 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:32:54,841 basehttp 4180 13956 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:32:57,116 basehttp 4180 13956 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:32:58,394 basehttp 4180 7936 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:33:00,093 basehttp 4180 7936 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:33:36,749 basehttp 4180 1520 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-20 06:45:00,097 basehttp 4180 1744 "POST /api/token/ HTTP/1.1" 200 1015
+INFO 2025-07-20 06:45:01,797 basehttp 4180 1744 "GET /api/users/profile/ HTTP/1.1" 200 562
+INFO 2025-07-20 06:45:02,025 basehttp 4180 1744 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:45:05,330 basehttp 4180 1744 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 06:46:44,304 basehttp 4180 1540 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 06:46:44,309 basehttp 4180 2748 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 06:46:44,309 basehttp 4180 1540 "OPTIONS /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-20 06:46:48,955 basehttp 4180 1540 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 06:46:50,886 basehttp 4180 1540 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 06:46:53,540 basehttp 4180 1540 "GET /api/admin/work-hours/?limit=20&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-20 06:47:08,901 basehttp 4180 1540 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 06:47:16,171 basehttp 4180 1540 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 158
+INFO 2025-07-20 06:47:16,205 basehttp 4180 1540 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-20 06:47:28,723 basehttp 4180 1540 "POST /api/token/ HTTP/1.1" 200 1034
+INFO 2025-07-20 06:47:31,634 basehttp 4180 1540 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:47:37,679 basehttp 4180 1540 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 06:47:46,264 basehttp 4180 5692 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:47:53,707 basehttp 4180 5692 "POST /api/token/ HTTP/1.1" 200 1035
+INFO 2025-07-20 06:47:53,716 basehttp 4180 5692 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:47:55,594 basehttp 4180 5692 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:47:55,793 basehttp 4180 5692 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:48:00,809 basehttp 4180 5692 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-20 06:48:13,983 basehttp 4180 12844 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:48:13,983 basehttp 4180 2608 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-20 06:48:17,585 basehttp 4180 12844 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:48:19,841 basehttp 4180 2608 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:48:20,244 basehttp 4180 12844 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:48:21,683 basehttp 4180 2608 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:48:37,362 basehttp 4180 6832 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:48:59,171 basehttp 4180 19880 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:54:47,211 basehttp 4180 1928 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:54:49,868 basehttp 4180 2380 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:54:50,291 basehttp 4180 1928 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:54:52,025 basehttp 4180 2380 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:54:52,324 basehttp 4180 13168 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:54:54,063 basehttp 4180 2380 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:54:54,373 basehttp 4180 1928 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:54:56,118 basehttp 4180 1928 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:55:02,571 basehttp 4180 1928 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:55:03,923 basehttp 4180 1928 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:55:04,410 basehttp 4180 2380 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:55:05,811 basehttp 4180 2380 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:55:10,642 basehttp 4180 2380 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:55:12,207 basehttp 4180 2380 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:55:12,580 basehttp 4180 1928 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:55:14,237 basehttp 4180 1928 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:55:18,597 basehttp 4180 1928 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:55:20,381 basehttp 4180 1928 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:55:20,901 basehttp 4180 2380 "GET /api/students/me/ HTTP/1.1" 200 1109
+INFO 2025-07-20 06:55:22,521 basehttp 4180 2380 "GET /api/users/profile/ HTTP/1.1" 200 584
+INFO 2025-07-20 06:56:02,262 basehttp 4180 6052 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:56:21,013 basehttp 4180 19580 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 219
+INFO 2025-07-20 06:56:21,959 basehttp 4180 19004 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:56:32,496 basehttp 4180 6052 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:56:36,291 basehttp 4180 15836 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:56:56,785 basehttp 4180 17632 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:56:58,205 basehttp 4180 19004 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:57:05,969 basehttp 4180 6052 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:57:12,911 basehttp 4180 15836 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:57:34,781 basehttp 4180 19004 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:57:35,903 basehttp 4180 17632 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:57:37,332 basehttp 4180 6052 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:57:57,997 basehttp 4180 10204 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:58:10,872 basehttp 4180 17632 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:58:26,473 basehttp 4180 7568 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:58:57,500 basehttp 4180 16924 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:58:59,793 basehttp 4180 16924 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 06:59:30,256 basehttp 4180 8784 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 06:59:52,276 basehttp 4180 13344 "GET /api/applications/received_applications/ HTTP/1.1" 200 51075
+INFO 2025-07-20 07:00:58,293 basehttp 4180 10496 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:00:58,304 basehttp 4180 10496 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-07-20 07:01:01,070 basehttp 4180 13604 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:01:01,554 basehttp 4180 10496 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 07:01:03,520 basehttp 4180 13604 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 07:01:43,694 autoreload 4180 5852 C:\Users\albur\Desktop\leanmaker\Backend\applications\models.py changed, reloading.
+INFO 2025-07-20 07:01:44,979 autoreload 21668 20500 Watching for file changes with StatReloader
+INFO 2025-07-20 07:01:50,769 autoreload 21668 20500 C:\Users\albur\Desktop\leanmaker\Backend\applications\models.py changed, reloading.
+INFO 2025-07-20 07:01:51,805 autoreload 21820 14844 Watching for file changes with StatReloader
+INFO 2025-07-20 07:01:58,409 autoreload 21820 14844 C:\Users\albur\Desktop\leanmaker\Backend\projects\models.py changed, reloading.
+INFO 2025-07-20 07:01:59,395 autoreload 13772 12020 Watching for file changes with StatReloader
+INFO 2025-07-20 07:02:05,116 autoreload 13772 12020 C:\Users\albur\Desktop\leanmaker\Backend\applications\views.py changed, reloading.
+INFO 2025-07-20 07:02:06,117 autoreload 14476 6832 Watching for file changes with StatReloader
+INFO 2025-07-20 07:02:14,161 autoreload 14476 6832 C:\Users\albur\Desktop\leanmaker\Backend\applications\views.py changed, reloading.
+INFO 2025-07-20 07:02:15,185 autoreload 1656 11352 Watching for file changes with StatReloader
+INFO 2025-07-20 07:02:22,249 autoreload 1656 11352 C:\Users\albur\Desktop\leanmaker\Backend\applications\views.py changed, reloading.
+INFO 2025-07-20 07:02:23,530 autoreload 15160 16952 Watching for file changes with StatReloader
+INFO 2025-07-20 07:02:27,965 autoreload 15160 16952 C:\Users\albur\Desktop\leanmaker\Backend\applications\views.py changed, reloading.
+INFO 2025-07-20 07:02:29,041 autoreload 14948 3500 Watching for file changes with StatReloader
+INFO 2025-07-20 07:02:38,805 basehttp 14948 22228 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:02:41,105 basehttp 14948 22228 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:02:41,925 basehttp 14948 14884 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 07:02:43,797 basehttp 14948 14884 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 07:03:14,153 basehttp 14948 22228 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:03:22,717 basehttp 14948 8492 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:03:25,035 basehttp 14948 8492 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:03:32,935 basehttp 14948 14884 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:03:49,744 basehttp 14948 22228 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:07,043 basehttp 14948 14884 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:09,698 basehttp 14948 13564 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:09,898 basehttp 14948 8492 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:17,309 basehttp 14948 1076 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:18,715 basehttp 14948 10500 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:19,424 basehttp 14948 22228 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:40,945 basehttp 14948 14884 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:04:49,894 basehttp 14948 14884 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:04:52,485 basehttp 14948 22228 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:04:52,744 basehttp 14948 14884 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 07:04:54,946 basehttp 14948 22228 "GET /api/students/ HTTP/1.1" 200 11995
+INFO 2025-07-20 07:05:31,896 basehttp 14948 22228 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:05:53,638 basehttp 14948 10596 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:07:23,646 basehttp 14948 10596 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:07:49,349 basehttp 14948 13692 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:07:58,451 basehttp 14948 10596 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:08:14,211 basehttp 14948 20868 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:08:16,456 basehttp 14948 20868 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:08:17,873 basehttp 14948 20500 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 07:08:20,057 basehttp 14948 20500 "GET /api/companies/company_me/ HTTP/1.1" 200 877
+INFO 2025-07-20 07:08:20,654 basehttp 14948 2596 "GET /api/applications/received_applications/ HTTP/1.1" 200 49453
+INFO 2025-07-20 07:08:21,298 basehttp 14948 20868 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 07:08:23,523 basehttp 14948 20868 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:24,695 basehttp 14948 2596 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 07:08:26,198 basehttp 14948 20868 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:26,799 basehttp 14948 2596 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:28,011 basehttp 14948 20868 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:28,645 basehttp 14948 2596 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:30,191 basehttp 14948 20868 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:30,743 basehttp 14948 2596 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:32,033 basehttp 14948 20868 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:32,734 basehttp 14948 2596 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:34,176 basehttp 14948 20868 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:34,783 basehttp 14948 2596 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:36,337 basehttp 14948 20868 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:36,940 basehttp 14948 2596 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:38,278 basehttp 14948 20868 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:38,983 basehttp 14948 2596 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:40,520 basehttp 14948 20868 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:41,242 basehttp 14948 2596 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:42,496 basehttp 14948 20868 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:43,283 basehttp 14948 2596 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:44,728 basehttp 14948 20868 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:08:45,302 basehttp 14948 2596 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:08:47,709 basehttp 14948 2596 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:08:54,958 basehttp 14948 2596 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 07:08:54,963 basehttp 14948 2596 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-20 07:09:08,803 basehttp 14948 2596 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 07:09:13,635 basehttp 14948 3220 "OPTIONS /api/projects/c301edf8-41ba-4868-8fd2-bb2691be33e7/ HTTP/1.1" 200 0
+INFO 2025-07-20 07:09:17,983 basehttp 14948 3220 "PATCH /api/projects/c301edf8-41ba-4868-8fd2-bb2691be33e7/ HTTP/1.1" 200 418
+INFO 2025-07-20 07:09:21,185 basehttp 14948 2596 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 07:09:27,713 basehttp 14948 2596 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:09:30,389 basehttp 14948 2596 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:09:41,157 basehttp 14948 15784 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 07:09:54,356 basehttp 14948 15784 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 07:13:26,938 basehttp 14948 5744 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:13:30,107 basehttp 14948 5744 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:13:39,002 basehttp 14948 11404 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 07:13:50,822 basehttp 14948 1864 "GET /api/projects/company_projects/ HTTP/1.1" 200 14671
+INFO 2025-07-20 07:15:25,233 basehttp 14948 10988 - Broken pipe from ('127.0.0.1', 50691)
+INFO 2025-07-20 07:15:28,091 basehttp 14948 5048 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:15:30,472 basehttp 14948 5048 "GET /api/users/profile/ HTTP/1.1" 200 1775
+INFO 2025-07-20 07:15:31,163 basehttp 14948 12176 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 07:15:33,117 basehttp 14948 5048 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:33,695 basehttp 14948 12176 "GET /api/projects/ HTTP/1.1" 200 7774
+INFO 2025-07-20 07:15:35,745 basehttp 14948 12176 "GET /api/evaluations/by_project/c00881fb-ed87-4b35-b2c4-b0bf209d6d68/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:36,363 basehttp 14948 5048 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:38,318 basehttp 14948 12176 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:38,323 basehttp 14948 5048 "GET /api/evaluations/by_project/822cfb75-e65a-449c-9af5-9fc7bd6fd93e/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:40,877 basehttp 14948 12176 "GET /api/evaluations/by_project/0eaf5a5a-ac4c-4937-bd86-abf229f2d367/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:40,885 basehttp 14948 5048 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:43,035 basehttp 14948 12176 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:43,042 basehttp 14948 5048 "GET /api/evaluations/by_project/0a260ff7-cb58-4186-80ba-fcf66cf88aff/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:44,964 basehttp 14948 12176 "GET /api/evaluations/by_project/facebd6a-330f-492b-988e-0ad131d08bd5/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:44,972 basehttp 14948 5048 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:46,819 basehttp 14948 12176 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:46,821 basehttp 14948 5048 "GET /api/evaluations/by_project/96f61b36-9c7c-42cf-b079-25fafbc6076b/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:48,688 basehttp 14948 5048 "GET /api/evaluations/by_project/497550c7-23c2-4a54-8227-b244fb1effb7/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:48,700 basehttp 14948 12176 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:50,635 basehttp 14948 5048 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:50,668 basehttp 14948 12176 "GET /api/evaluations/by_project/20eaeed9-0a1b-42a0-b206-ceebf347ea0a/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:52,561 basehttp 14948 12176 "GET /api/evaluations/by_project/bfbb71de-67dd-4216-827d-f0573d45476f/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:53,904 basehttp 14948 5048 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:55,923 basehttp 14948 7660 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 266
+INFO 2025-07-20 07:15:55,979 basehttp 14948 12176 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:15:55,981 basehttp 14948 5048 "GET /api/evaluations/by_project/c13421f8-7c9a-4036-824b-de39d9c69ca0/ HTTP/1.1" 200 15
+INFO 2025-07-20 07:15:58,269 basehttp 14948 12176 "GET /api/users/ HTTP/1.1" 200 6048
+INFO 2025-07-20 07:18:14,276 basehttp 14948 3144 - Broken pipe from ('127.0.0.1', 50947)
+INFO 2025-07-20 07:18:22,182 basehttp 14948 11604 "GET / HTTP/1.1" 200 15334
+INFO 2025-07-20 07:18:22,570 basehttp 14948 11604 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-20 07:18:22,586 basehttp 14948 11604 "GET /static/favicon.ico HTTP/1.1" 404 1893
+WARNING 2025-07-20 07:22:39,071 log 14948 11480 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 07:22:39,073 basehttp 14948 11480 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-20 07:22:40,821 log 14948 11480 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 07:22:40,821 basehttp 14948 11480 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-20 07:22:42,737 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:42,740 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:42,976 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:42,976 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+INFO 2025-07-20 07:22:43,175 basehttp 14948 14032 "GET / HTTP/1.1" 200 15329
+WARNING 2025-07-20 07:22:44,621 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:44,621 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:44,911 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:44,914 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:46,154 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:46,156 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:47,828 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:47,828 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:47,866 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:47,866 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:49,509 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:49,511 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:49,516 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:49,517 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:50,938 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:50,938 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:50,951 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:50,951 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:52,486 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:52,486 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:52,486 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:52,486 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:54,418 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:54,423 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:54,429 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:54,432 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:56,162 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:56,162 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:56,168 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:56,171 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:57,575 log 14948 11480 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:57,575 basehttp 14948 11480 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:57,586 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:57,586 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:59,027 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:59,029 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:22:59,542 log 14948 13016 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:22:59,543 basehttp 14948 13016 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:00,544 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:00,544 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:00,966 log 14948 13016 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:00,966 basehttp 14948 13016 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:02,100 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:02,100 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:02,506 log 14948 13016 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:02,506 basehttp 14948 13016 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:03,487 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:03,487 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:03,852 log 14948 13016 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:03,852 basehttp 14948 13016 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:04,962 log 14948 5036 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:04,962 basehttp 14948 5036 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:05,477 log 14948 13016 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:23:05,479 basehttp 14948 13016 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:23:06,571 log 14948 5036 Unauthorized: /api/token/refresh/
+INFO 2025-07-20 07:23:06,573 basehttp 14948 5036 - Broken pipe from ('127.0.0.1', 51311)
+INFO 2025-07-20 07:24:22,952 autoreload 18124 9672 Watching for file changes with StatReloader
+INFO 2025-07-20 07:24:30,576 basehttp 18124 12536 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-20 07:24:30,576 basehttp 18124 11452 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-20 07:24:30,948 log 18124 12536 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 07:24:30,948 basehttp 18124 12536 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-20 07:24:30,954 basehttp 18124 11452 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-20 07:24:31,011 log 18124 12536 Unauthorized: /api/users/profile/
+WARNING 2025-07-20 07:24:31,015 basehttp 18124 12536 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-20 07:24:34,287 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:34,289 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:34,289 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:34,289 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:36,134 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:36,138 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:37,152 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:37,156 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:37,527 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:37,527 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:38,591 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:38,592 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:39,195 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:39,201 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:40,199 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:40,201 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:40,625 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:40,627 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:41,650 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:41,650 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:42,145 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:42,148 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:43,181 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:43,181 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:43,545 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:43,547 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:44,574 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:44,574 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:45,013 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:45,016 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:46,248 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:46,249 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:46,748 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:46,749 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:47,738 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:47,745 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:48,181 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:48,181 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:49,291 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:49,291 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:49,675 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:49,675 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:50,842 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:50,842 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:51,351 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:51,351 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:52,379 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:52,382 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:52,889 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:52,893 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:53,871 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:53,873 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:54,248 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:54,256 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:55,252 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:55,252 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:55,656 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:55,657 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:56,662 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:56,666 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:57,076 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:57,076 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:58,312 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:58,314 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:58,409 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:58,409 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:24:59,630 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:24:59,630 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:00,942 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:00,942 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:00,958 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:00,958 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:02,747 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:02,747 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:02,769 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:02,769 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:04,089 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:04,089 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:04,108 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:04,108 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:05,532 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:05,532 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:05,547 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:05,556 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:07,031 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:07,031 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:07,035 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:07,035 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:08,656 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:08,658 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:08,658 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:08,669 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:10,215 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:10,219 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:10,219 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:10,219 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:11,749 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:11,749 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:11,751 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:11,757 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:13,175 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:13,175 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:13,175 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:13,192 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:14,709 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:14,712 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:14,713 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:14,713 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:16,209 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:16,216 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:16,233 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:16,233 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:17,659 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:17,662 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:17,670 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:17,673 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:19,105 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:19,109 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:19,109 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:19,120 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:20,648 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:20,649 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:20,649 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:20,649 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:21,997 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:22,001 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:22,015 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:22,017 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:23,481 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:23,485 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:23,495 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:23,495 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:24,861 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:24,861 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:24,882 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:24,882 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:26,661 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:26,666 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:26,675 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:26,679 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:28,126 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:28,129 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:28,129 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:28,132 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:29,642 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:29,646 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:29,646 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:29,646 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:31,087 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:31,087 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:31,106 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:31,106 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:32,626 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:32,628 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:32,631 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:32,635 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:34,282 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:34,282 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:34,287 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:34,287 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:35,821 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:35,825 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:35,829 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:35,835 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:37,445 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:37,452 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:37,455 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:37,455 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:38,866 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:38,866 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:38,896 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:38,896 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:40,416 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:40,418 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:40,421 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:40,425 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:42,152 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:42,155 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:42,155 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:42,156 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:43,990 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:43,990 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:43,998 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:44,005 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:45,582 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:45,582 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:45,602 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:45,602 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:47,478 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:47,479 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:47,479 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:47,486 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:49,308 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:49,308 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:49,321 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:49,325 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:51,364 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:51,366 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:51,366 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:51,366 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:52,895 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:52,895 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:52,911 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:52,911 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:54,738 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:54,738 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:54,754 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:54,754 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:56,798 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:56,805 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:56,805 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:56,805 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:58,319 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:58,319 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:58,332 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:58,335 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:59,878 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:59,882 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:25:59,888 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:25:59,891 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:01,395 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:01,397 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:01,402 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:01,405 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:02,785 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:02,785 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:02,790 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:02,795 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:04,157 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:04,162 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:04,177 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:04,177 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:05,601 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:05,601 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:05,605 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:05,605 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:07,350 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:07,350 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:07,355 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:07,359 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:09,190 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:09,190 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:09,195 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:09,198 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:10,729 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:10,733 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:10,735 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:10,735 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:12,155 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:12,160 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:12,165 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:12,165 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:13,693 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:13,695 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:13,705 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:13,705 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:15,332 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:15,332 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:15,338 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:15,341 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:16,845 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:16,845 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:16,861 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:16,861 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:18,487 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:18,496 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:18,496 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:18,498 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:19,928 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:19,935 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:19,937 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:19,937 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:21,375 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:21,378 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:21,378 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:21,381 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:23,117 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:23,118 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:23,118 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:23,118 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:24,715 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:24,725 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:24,735 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:24,735 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:26,288 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:26,290 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:26,295 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:26,298 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:27,785 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:27,785 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:27,804 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:27,805 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:29,255 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:29,262 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:29,266 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:29,270 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:30,995 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:30,999 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:31,009 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:31,009 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:32,718 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:32,720 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:32,728 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:32,728 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:34,176 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:34,180 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:34,180 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:34,180 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:35,697 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:35,701 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:35,720 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:35,720 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:37,244 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:37,245 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:37,248 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:37,248 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:38,676 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:38,678 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:38,685 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:38,685 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:40,109 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:40,109 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:40,120 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:40,120 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:41,451 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:41,451 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:41,505 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:41,508 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:42,860 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:42,865 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:43,169 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:43,170 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:44,188 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:44,188 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:44,463 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:44,465 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:45,499 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:45,504 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:45,769 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:45,775 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:46,808 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:46,808 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:47,083 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:47,085 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:48,395 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:48,395 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:48,655 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:48,655 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:49,832 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:49,832 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:50,028 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:50,032 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:51,261 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:51,261 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:51,465 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:51,472 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:52,695 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:52,695 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:52,900 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:52,900 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:54,235 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:54,238 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:54,441 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:54,441 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:55,768 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:55,768 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:56,151 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:56,153 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:57,411 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:57,411 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:57,585 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:57,585 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:58,735 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:58,735 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:26:59,323 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:26:59,323 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:00,275 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:00,275 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:00,888 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:00,888 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:01,918 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:01,918 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:02,511 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:02,513 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:03,352 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:03,353 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:03,965 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:03,965 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:04,991 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:04,992 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:05,595 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:05,595 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:06,506 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:06,507 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:07,235 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:07,235 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:08,027 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:08,029 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:08,672 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:08,672 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:09,488 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:09,488 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:10,112 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:10,112 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:10,915 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:10,915 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:11,498 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:11,498 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:12,361 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:12,362 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:13,055 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:13,055 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:13,848 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:13,850 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:14,408 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:14,409 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:15,145 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:15,145 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:15,727 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:15,728 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:16,455 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:16,455 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:17,067 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:17,075 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:17,806 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:17,806 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:18,395 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:18,395 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:19,150 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:19,150 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:19,706 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:19,708 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:20,446 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:20,448 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:21,016 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:21,016 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:21,777 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:21,777 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:22,335 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:22,335 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:23,081 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:23,081 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:23,628 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:23,628 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:24,438 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:24,440 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:25,056 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:25,056 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:25,863 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:25,863 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:26,421 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:26,428 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:27,185 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:27,186 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:27,791 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:27,795 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:28,476 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:28,476 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:29,095 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:29,095 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:29,783 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:29,783 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:30,389 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:30,389 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:31,098 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:31,100 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:31,687 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:31,687 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:32,431 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:32,436 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:33,878 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:33,878 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:34,405 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:34,405 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:35,433 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:35,434 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:35,895 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:35,900 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:36,945 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:36,945 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:37,576 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:37,578 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:38,480 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:38,480 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:39,025 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:39,026 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:39,790 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:39,793 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:40,413 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:40,415 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:41,235 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:41,237 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:41,846 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:41,848 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:42,665 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:42,665 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:43,287 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:43,288 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:44,048 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:44,048 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:44,716 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:44,716 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:45,736 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:45,736 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:46,458 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:46,458 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:47,253 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:47,255 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:47,808 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:47,808 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:48,913 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:48,914 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:49,628 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:49,628 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:50,652 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:50,653 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:51,371 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:51,372 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:52,286 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:52,287 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:53,114 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:53,115 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:54,239 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:54,240 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:55,158 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:55,160 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:56,076 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:56,076 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:57,001 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:57,001 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:57,828 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:57,828 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:58,538 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:58,540 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:27:59,969 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:27:59,969 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:00,165 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:00,165 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:01,586 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:01,586 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:01,703 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:01,705 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:02,985 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:02,985 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:03,098 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:03,098 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:04,355 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:04,356 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:04,430 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:04,431 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:06,025 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:06,026 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:06,038 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:06,038 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:07,558 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:07,561 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:07,561 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:07,561 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:08,987 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:08,987 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:09,001 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:09,001 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:10,442 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:10,445 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:10,449 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:10,451 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:11,848 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:11,851 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:11,867 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:11,867 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:13,289 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:13,297 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:13,297 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:13,297 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:14,834 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:14,836 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:14,836 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:14,836 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:16,147 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:16,148 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:16,160 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:16,165 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:17,485 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:17,492 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:17,495 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:17,496 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:18,995 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:19,002 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:19,015 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:19,015 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:20,454 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:20,461 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:20,461 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:20,461 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:22,124 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:22,125 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:22,141 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:22,141 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:23,739 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:23,744 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:23,744 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:23,744 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:25,265 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:25,265 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:26,084 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:26,087 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:26,798 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:26,798 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:27,615 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:27,615 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:28,236 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:28,241 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:29,161 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:29,161 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:29,871 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:29,873 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:30,769 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:30,769 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:31,509 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:31,511 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:32,334 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:32,334 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:32,945 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:32,945 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:33,714 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:33,717 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:34,354 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:34,354 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:35,194 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:35,194 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:35,778 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:35,778 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:36,730 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:36,730 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:37,448 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:37,454 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:38,228 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:38,228 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:38,850 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:38,850 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:39,904 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:39,904 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:40,161 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:40,161 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:41,445 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:41,445 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:41,648 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:41,648 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:42,881 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:42,886 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:43,103 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:43,160 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:44,224 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:44,224 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:44,886 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:44,886 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:45,684 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:45,684 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:46,230 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:46,232 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:47,020 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:47,020 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:47,688 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:47,688 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:48,611 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:48,611 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:49,208 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:49,208 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:50,044 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:50,045 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:50,654 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:50,654 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:51,484 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:51,484 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:52,189 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:52,189 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:52,974 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:52,974 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:53,532 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:53,532 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:54,454 log 18124 11452 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:54,456 basehttp 18124 11452 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:55,065 log 18124 12536 Unauthorized: /api/token/refresh/
+WARNING 2025-07-20 07:28:55,066 basehttp 18124 12536 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-20 07:28:55,881 log 18124 11452 Unauthorized: /api/token/refresh/
+INFO 2025-07-20 07:28:55,881 basehttp 18124 11452 - Broken pipe from ('127.0.0.1', 51444)
+INFO 2025-07-20 07:28:56,007 basehttp 18124 9144 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-20 07:28:56,016 basehttp 18124 17020 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+WARNING 2025-07-20 07:28:56,504 log 18124 12536 Unauthorized: /api/token/refresh/
+INFO 2025-07-20 07:28:56,504 basehttp 18124 12536 - Broken pipe from ('127.0.0.1', 51443)

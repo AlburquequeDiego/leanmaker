@@ -7,18 +7,7 @@ import {
   Tab,
   Card,
   CardContent,
-  TextField,
   Button,
-  Switch,
-  FormControl,
-  Select,
-  MenuItem,
-  Alert,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListItemSecondaryAction,
   Chip,
   Dialog,
   DialogTitle,
@@ -39,17 +28,7 @@ import {
   PowerSettingsNew as PowerSettingsNewIcon,
 } from '@mui/icons-material';
 
-interface SystemConfig {
-  id: string;
-  name: string;
-  value: string | number | boolean;
-  type: 'text' | 'number' | 'boolean' | 'select';
-  category: string;
-  description: string;
-  options?: string[];
-  min?: number;
-  max?: number;
-}
+
 
 interface SystemStatus {
   component: string;
@@ -82,45 +61,6 @@ function TabPanel(props: TabPanelProps) {
 
 export const ConfiguracionPlataformaAdmin = () => {
   const [tabValue, setTabValue] = useState(0);
-  const [configs, setConfigs] = useState<SystemConfig[]>([
-    {
-      id: '2',
-      name: 'Máximo de Strikes',
-      value: 3,
-      type: 'number',
-      category: 'academic',
-      description: 'Número máximo de strikes antes de suspensión',
-      min: 1,
-      max: 10,
-    },
-    {
-      id: '3',
-      name: 'Horas Mínimas por Proyecto',
-      value: 60,
-      type: 'number',
-      category: 'academic',
-      description: 'Horas mínimas requeridas para completar un proyecto',
-      min: 20,
-      max: 500,
-    },
-    {
-      id: '5',
-      name: 'Nivel API por Defecto',
-      value: '1',
-      type: 'select',
-      category: 'academic',
-      description: 'Nivel API asignado por defecto a nuevos estudiantes',
-      options: ['1', '2', '3', '4'],
-    },
-    {
-      id: '7',
-      name: 'Backup Automático',
-      value: true,
-      type: 'boolean',
-      category: 'system',
-      description: 'Realizar backup automático de la base de datos',
-    },
-  ]);
 
   const [systemStatus] = useState<SystemStatus[]>([
     {
@@ -134,12 +74,6 @@ export const ConfiguracionPlataformaAdmin = () => {
       status: 'online',
       lastCheck: '2024-01-25 10:30:00',
       responseTime: 120,
-    },
-    {
-      component: 'Servicio de Email',
-      status: 'warning',
-      lastCheck: '2024-01-25 10:25:00',
-      responseTime: 2500,
     },
     {
       component: 'Almacenamiento',
@@ -158,131 +92,29 @@ export const ConfiguracionPlataformaAdmin = () => {
     setTabValue(newValue);
   };
 
-  const handleConfigChange = (id: string, value: string | number | boolean) => {
-    setConfigs(prev => prev.map(config => 
-      config.id === id ? { ...config, value } : config
-    ));
-  };
 
-  const handleSaveConfig = () => {
-    setSuccessMessage('Configuración guardada exitosamente');
-    setShowSuccess(true);
-    console.log('Guardando configuración:', configs);
-  };
 
   const handleSystemAction = (action: string) => {
     setSuccessMessage(`Acción ${action} ejecutada exitosamente`);
     setShowSuccess(true);
   };
 
-  const showManual = (type: string) => {
-    const manuals = {
-      usuarios: {
-        title: '📋 Manual de Gestión de Usuarios',
-        content: [
-          '👥 Ver y buscar usuarios en la plataforma',
-          '🔍 Filtrar por tipo: estudiantes, empresas, administradores',
-          '🚫 Bloquear, suspender o eliminar usuarios problemáticos',
-          '✅ Verificar perfiles y restablecer contraseñas',
-          '📊 Monitorear actividad y estado de los usuarios'
-        ]
-      },
-      estudiantes: {
-        title: '📋 Manual de Gestión de Estudiantes',
-        content: [
-          '👨‍🎓 Visualizar y filtrar estudiantes registrados',
-          '🔎 Consultar detalles académicos y strikes',
-          '✏️ Editar información y estado del estudiante',
-          '📈 Ver historial de proyectos y desempeño',
-          '🚨 Suspender estudiantes con mal comportamiento'
-        ]
-      },
-      empresas: {
-        title: '📋 Manual de Gestión de Empresas',
-        content: [
-          '🏢 Ver y buscar empresas registradas',
-          '🔍 Filtrar por sector o estado de verificación',
-          '✅ Aprobar o rechazar nuevas empresas',
-          '📄 Consultar proyectos activos de cada empresa',
-          '🚫 Bloquear empresas con actividad sospechosa'
-        ]
-      },
-      proyectos: {
-        title: '📋 Manual de Gestión de Proyectos',
-        content: [
-          '📚 Revisar y aprobar proyectos propuestos',
-          '👥 Asignar estudiantes a proyectos',
-          '⏸️ Suspender o eliminar proyectos problemáticos',
-          '📊 Monitorear avance y entregables',
-          '📝 Ver historial y evaluaciones de proyectos'
-        ]
-      },
-      evaluaciones: {
-        title: '📋 Manual de Gestión de Evaluaciones',
-        content: [
-          '📝 Revisar evaluaciones entre empresas y estudiantes',
-          '✅ Aprobar o rechazar evaluaciones',
-          '🔍 Filtrar por estado o tipo de evaluación',
-          '📊 Analizar resultados y estadísticas',
-          '🚫 Eliminar evaluaciones incorrectas'
-        ]
-      },
-      strikes: {
-        title: '📋 Manual de Gestión de Strikes',
-        content: [
-          '⚠️ Revisar reportes de strikes enviados por empresas',
-          '✅ Aprobar o rechazar strikes',
-          '🔍 Filtrar por estado (pendiente, aprobado, rechazado)',
-          '📈 Ver historial de strikes por estudiante',
-          '🚨 Suspender estudiantes con 3 strikes activos'
-        ]
-      },
-      notificaciones: {
-        title: '📋 Manual de Gestión de Notificaciones',
-        content: [
-          '🔔 Crear y enviar notificaciones masivas',
-          '📬 Ver historial de notificaciones enviadas',
-          '🔍 Filtrar por tipo o destinatario',
-          '✏️ Editar plantillas de notificación',
-          '📊 Monitorear lecturas y respuestas'
-        ]
-      },
-      academica: {
-        title: '📋 Manual de Configuración Académica',
-        content: [
-          '⚙️ Ajustar parámetros académicos globales',
-          '⚠️ Definir máximo de strikes antes de suspensión',
-          '⏰ Establecer horas mínimas por proyecto',
-          '📊 Configurar nivel API por defecto',
-          '🔄 Guardar y aplicar cambios en tiempo real'
-        ]
-      },
-      monitoreo: {
-        title: '📋 Manual de Monitoreo del Sistema',
-        content: [
-          '📊 Revisar dashboard de estadísticas en tiempo real',
-          '⏳ Monitorear postulaciones y actividad reciente',
-          '🚨 Ver alertas de strikes y suspensiones',
-          '👀 Supervisar actividad de empresas y estudiantes',
-          '🛠️ Diagnosticar problemas de rendimiento'
-        ]
-      },
-      reportes: {
-        title: '📋 Manual de Reportes y Descargas',
-        content: [
-          '📄 Generar reportes de actividad y desempeño',
-          '⬇️ Descargar datos en formato Excel o PDF',
-          '🔍 Filtrar reportes por fechas o usuarios',
-          '📊 Analizar tendencias y métricas',
-          '🗂️ Compartir reportes con otros administradores'
-        ]
-      }
+  const showManual = () => {
+    const manual = {
+      title: '📋 Manual del Administrador - LeanMaker',
+      content: [
+        '👥 GESTIÓN DE USUARIOS: Ver, buscar y filtrar todos los usuarios (estudiantes, empresas, administradores). Bloquear, suspender o activar usuarios según sea necesario.',
+        '🏢 GESTIÓN DE EMPRESAS: Revisar y aprobar nuevas empresas registradas. Verificar información y proyectos activos. Bloquear empresas con actividad sospechosa.',
+        '👨‍🎓 GESTIÓN DE ESTUDIANTES: Monitorear estudiantes registrados, ver sus strikes, historial de proyectos y desempeño. Suspender estudiantes con mal comportamiento.',
+        '⚠️ GESTIÓN DE STRIKES: Revisar reportes de strikes enviados por empresas. Aprobar o rechazar strikes. Ver historial por estudiante. Suspender automáticamente con 3 strikes.',
+        '⏰ VALIDACIÓN DE HORAS: Revisar y validar horas reportadas por estudiantes en sus proyectos. Aprobar o rechazar solicitudes de validación.',
+        '📊 MONITOREO GENERAL: Supervisar actividad en tiempo real, postulaciones recientes, alertas de strikes y suspensiones. Diagnosticar problemas del sistema.',
+        '⚙️ CONFIGURACIÓN: Ajustar parámetros académicos (máximo strikes, horas mínimas, nivel API por defecto). Configurar notificaciones y reportes automáticos.',
+        '📄 REPORTES: Generar reportes de actividad, desempeño y estadísticas. Descargar datos en Excel/PDF. Analizar tendencias y métricas del sistema.'
+      ]
     };
-    const manual = manuals[type as keyof typeof manuals];
-    if (manual) {
-      setManualContent(manual);
-      setManualDialog(true);
-    }
+    setManualContent(manual);
+    setManualDialog(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -324,60 +156,7 @@ export const ConfiguracionPlataformaAdmin = () => {
     }
   };
 
-  const renderConfigField = (config: SystemConfig) => {
-    switch (config.type) {
-      case 'text':
-        return (
-          <TextField
-            fullWidth
-            value={config.value}
-            onChange={(e) => handleConfigChange(config.id, e.target.value)}
-            variant="outlined"
-            size="small"
-            sx={{ borderRadius: 2 }}
-          />
-        );
-      case 'number':
-        return (
-          <TextField
-            fullWidth
-            type="number"
-            value={config.value}
-            onChange={(e) => handleConfigChange(config.id, Number(e.target.value))}
-            variant="outlined"
-            size="small"
-            inputProps={{ min: config.min, max: config.max }}
-            sx={{ borderRadius: 2 }}
-          />
-        );
-      case 'boolean':
-        return (
-          <Switch
-            checked={config.value as boolean}
-            onChange={(e) => handleConfigChange(config.id, e.target.checked)}
-            color="primary"
-          />
-        );
-      case 'select':
-        return (
-          <FormControl fullWidth size="small">
-            <Select
-              value={config.value}
-              onChange={(e) => handleConfigChange(config.id, e.target.value)}
-              sx={{ borderRadius: 2 }}
-            >
-              {config.options?.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        );
-      default:
-        return null;
-    }
-  };
+
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
@@ -392,7 +171,7 @@ export const ConfiguracionPlataformaAdmin = () => {
           onChange={handleTabChange}
           sx={{ borderBottom: 1, borderColor: 'divider' }}
         >
-          <Tab label="Configuración General" />
+          <Tab label="Estado del Sistema" />
           <Tab label="Manual" />
         </Tabs>
 
@@ -401,241 +180,98 @@ export const ConfiguracionPlataformaAdmin = () => {
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <SettingsIcon color="primary" />
-              Configuración General
+              Estado del Sistema
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Ajusta los parámetros generales de la plataforma
+              Monitoreo del estado y funcionamiento de los componentes del sistema
             </Typography>
           </Box>
 
           <Stack spacing={4}>
-            {/* Eliminar el bloque de UI de Modo Mantenimiento */}
+            {/* Estado del Sistema */}
+            <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                  <AutorenewIcon color="primary" />
+                  Estado del Sistema
+                </Typography>
+                
+                <Stack spacing={2}>
+                  {systemStatus.map((status, index) => (
+                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, borderRadius: 2, bgcolor: 'grey.50' }}>
+                      {getStatusIcon(status.status)}
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          {status.component}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Última verificación: {status.lastCheck} | Tiempo de respuesta: {status.responseTime}ms
+                        </Typography>
+                      </Box>
+                      <Chip 
+                        label={getStatusText(status.status)} 
+                        color={getStatusColor(status.status) as any}
+                        size="small"
+                      />
+                    </Box>
+                  ))}
+                </Stack>
+                
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<RefreshIcon />}
+                    onClick={() => handleSystemAction('refresh')}
+                    sx={{ 
+                      borderRadius: 2,
+                      px: 3,
+                      py: 1,
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    🔄 Actualizar Estado
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
           </Stack>
         </TabPanel>
 
         {/* Tab: Manual */}
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <SecurityIcon color="primary" />
-              Manual del Administrador
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Guía completa para gestionar y administrar el sistema LeanMaker
-            </Typography>
-          </Box>
-
           <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <SecurityIcon color="primary" />
                 Manual del Administrador
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Guía completa para gestionar y administrar el sistema LeanMaker
+                Guía completa para gestionar y administrar el sistema LeanMaker. Incluye todas las funcionalidades principales como gestión de usuarios, empresas, estudiantes, strikes, validación de horas y más.
               </Typography>
               
-              <List>
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Gestión de Usuarios"
-                    secondary="Cómo administrar estudiantes, empresas y usuarios del sistema"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('usuarios')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Gestión de Estudiantes"
-                    secondary="Cómo gestionar y monitorear estudiantes registrados"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('estudiantes')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Gestión de Empresas"
-                    secondary="Cómo administrar y verificar empresas registradas"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('empresas')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Gestión de Proyectos"
-                    secondary="Cómo revisar, aprobar y gestionar proyectos de empresas"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('proyectos')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Gestión de Evaluaciones"
-                    secondary="Cómo revisar, aprobar y gestionar evaluaciones"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('evaluaciones')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Gestión de Strikes"
-                    secondary="Cómo gestionar y monitorear strikes de estudiantes"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('strikes')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Gestión de Notificaciones"
-                    secondary="Cómo enviar y monitorear notificaciones"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('notificaciones')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Configuración Académica"
-                    secondary="Cómoajustar parámetros académicos del sistema"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('academica')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Monitoreo del Sistema"
-                    secondary="Cómo supervisar el funcionamiento y rendimiento"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('monitoreo')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem sx={{ borderRadius: 2, mb: 1, bgcolor: 'grey.50' }}>
-                  <ListItemIcon>
-                    <SecurityIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Reportes y Descargas"
-                    secondary="Cómo generar y descargar reportes de actividad"
-                  />
-                  <ListItemSecondaryAction>
-                    <Button 
-                      variant="outlined" 
-                      size="small"
-                      onClick={() => showManual('reportes')}
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Ver Manual
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </List>
+              <Box sx={{ textAlign: 'center', py: 3 }}>
+                <Button 
+                  variant="contained" 
+                  size="large"
+                  onClick={showManual}
+                  startIcon={<SecurityIcon />}
+                  sx={{ 
+                    borderRadius: 3,
+                    px: 4,
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #1565c0, #1976d2)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: 4
+                    }
+                  }}
+                >
+                  📋 Ver Manual Completo
+                </Button>
+              </Box>
             </CardContent>
           </Card>
         </TabPanel>

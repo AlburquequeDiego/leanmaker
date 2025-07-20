@@ -6,8 +6,11 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
 from .models import Aplicacion
-from core.views import verify_token
+from users.models import User
+from core.auth_utils import get_user_from_token, require_auth
+from django.utils import timezone
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -15,12 +18,7 @@ def application_list(request):
     """Lista de aplicaciones y creación de nuevas postulaciones."""
     try:
         # Verificar autenticación
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Token requerido'}, status=401)
-        
-        token = auth_header.split(' ')[1]
-        current_user = verify_token(token)
+        current_user = get_user_from_token(request)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
@@ -73,12 +71,7 @@ def application_detail(request, application_id):
     """Detalle de una aplicación y actualización."""
     try:
         # Verificar autenticación
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Token requerido'}, status=401)
-        
-        token = auth_header.split(' ')[1]
-        current_user = verify_token(token)
+        current_user = get_user_from_token(request)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
@@ -109,8 +102,7 @@ def application_detail(request, application_id):
             if 'student_notes' in data:
                 application.student_notes = data['student_notes']
             
-            if 'compatibility_score' in data:
-                application.compatibility_score = data['compatibility_score']
+
             
             # Actualizar fechas según el estado
             from django.utils import timezone
@@ -127,7 +119,6 @@ def application_detail(request, application_id):
                 'status': application.status,
                 'company_notes': application.company_notes,
                 'student_notes': application.student_notes,
-                'compatibility_score': application.compatibility_score,
                 'reviewed_at': application.reviewed_at.isoformat() if application.reviewed_at else None,
                 'responded_at': application.responded_at.isoformat() if application.responded_at else None,
                 'updated_at': application.updated_at.isoformat(),
@@ -155,12 +146,7 @@ def my_applications(request):
     """Devuelve las aplicaciones del estudiante autenticado con datos de proyecto y empresa."""
     try:
         # Verificar autenticación
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Token requerido'}, status=401)
-        token = auth_header.split(' ')[1]
-        from core.views import verify_token
-        current_user = verify_token(token)
+        current_user = get_user_from_token(request)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         # Obtener el perfil de estudiante
@@ -180,7 +166,6 @@ def my_applications(request):
                 'updated_at': app.updated_at.isoformat(),
                 'applied_at': app.applied_at.isoformat() if app.applied_at else None,
                 'responded_at': app.responded_at.isoformat() if app.responded_at else None,
-                'compatibility_score': app.compatibility_score,
                 'student_notes': app.student_notes,
                 'cover_letter': app.cover_letter,
                 'project': {
@@ -205,12 +190,7 @@ def received_applications(request):
     """Devuelve las aplicaciones recibidas por la empresa autenticada."""
     try:
         # Verificar autenticación
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Token requerido'}, status=401)
-        
-        token = auth_header.split(' ')[1]
-        current_user = verify_token(token)
+        current_user = get_user_from_token(request)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
@@ -257,7 +237,6 @@ def received_applications(request):
                     'rating': app.student.rating if app.student else 0,
                 } if app.student else {},
                 'status': app.status,
-                'compatibility_score': app.compatibility_score,
                 'cover_letter': app.cover_letter,
                 'company_notes': app.company_notes,
                 'student_notes': app.student_notes,
@@ -280,4 +259,154 @@ def received_applications(request):
         print(f"❌ ERROR en received_applications: {e}")
         import traceback
         traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_auth
+def company_applications_list(request):
+    """Lista de postulaciones para proyectos de la empresa"""
+    try:
+        # Verificar que sea una empresa
+        if request.user.role != 'company':
+            return JsonResponse({'error': 'Solo las empresas pueden ver postulaciones'}, status=403)
+        
+        # Obtener proyectos de la empresa
+        company_projects = request.user.empresa_profile.proyectos.all()
+        
+        # Obtener postulaciones para esos proyectos
+        applications = Aplicacion.objects.filter(
+            project__in=company_projects
+        ).select_related(
+            'student__user',
+            'project'
+        ).order_by('-applied_at')
+        
+        applications_data = []
+        for application in applications:
+            # Obtener datos del estudiante
+            student = application.student
+            student_user = student.user
+            
+            # Obtener habilidades del estudiante
+            student_skills = []
+            if hasattr(student, 'skills') and student.skills:
+                try:
+                    import json
+                    student_skills = json.loads(student.skills)
+                except:
+                    student_skills = []
+            
+            # Obtener certificados del estudiante
+            student_certificates = []
+            if hasattr(student, 'certificates') and student.certificates:
+                try:
+                    student_certificates = json.loads(student.certificates)
+                except:
+                    student_certificates = []
+            
+            applications_data.append({
+                'id': str(application.id),
+                'student_name': student_user.full_name,
+                'student_email': student_user.email,
+                'student_id': str(student.id),
+                'project_title': application.project.title,
+                'project_id': str(application.project.id),
+                'status': application.status,
+                'cover_letter': application.cover_letter or '',
+                'applied_at': application.applied_at.isoformat(),
+                'compatibility_score': application.compatibility_score,
+                'portfolio_url': application.portfolio_url,
+                'github_url': application.github_url,
+                'linkedin_url': application.linkedin_url,
+                # Datos del estudiante
+                'student_api_level': getattr(student, 'api_level', None),
+                'student_gpa': getattr(student, 'gpa', None),
+                'student_skills': student_skills,
+                'student_experience_years': getattr(student, 'experience_years', None),
+                'student_availability': getattr(student, 'availability', None),
+                'student_bio': getattr(student_user, 'bio', None),
+                'student_phone': getattr(student_user, 'phone', None),
+                'student_location': getattr(student_user, 'location', None),
+                'student_university': getattr(student, 'university', None),
+                'student_major': getattr(student, 'major', None),
+                'student_certificates': student_certificates,
+                'student_cv_url': getattr(student, 'cv_url', None),
+            })
+        
+        return JsonResponse({
+            'results': applications_data,
+            'count': len(applications_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def accept_application(request, application_id):
+    """Aceptar una postulación"""
+    try:
+        # Verificar que sea una empresa
+        if request.user.role != 'company':
+            return JsonResponse({'error': 'Solo las empresas pueden aceptar postulaciones'}, status=403)
+        
+        # Obtener la aplicación
+        application = get_object_or_404(Aplicacion, id=application_id)
+        
+        # Verificar que el proyecto pertenezca a la empresa
+        if application.project.company != request.user.empresa_profile:
+            return JsonResponse({'error': 'No tienes permisos para esta postulación'}, status=403)
+        
+        # Leer notas de la empresa
+        data = json.loads(request.body) if request.body else {}
+        company_notes = data.get('company_notes', '')
+        
+        # Aceptar la aplicación
+        if application.aceptar(company_notes):
+            return JsonResponse({
+                'success': True,
+                'message': 'Postulación aceptada correctamente',
+                'application_id': str(application.id)
+            })
+        else:
+            return JsonResponse({
+                'error': 'No se puede aceptar esta postulación'
+            }, status=400)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@require_auth
+def reject_application(request, application_id):
+    """Rechazar una postulación"""
+    try:
+        # Verificar que sea una empresa
+        if request.user.role != 'company':
+            return JsonResponse({'error': 'Solo las empresas pueden rechazar postulaciones'}, status=403)
+        
+        # Obtener la aplicación
+        application = get_object_or_404(Aplicacion, id=application_id)
+        
+        # Verificar que el proyecto pertenezca a la empresa
+        if application.project.company != request.user.empresa_profile:
+            return JsonResponse({'error': 'No tienes permisos para esta postulación'}, status=403)
+        
+        # Leer notas de la empresa
+        data = json.loads(request.body) if request.body else {}
+        company_notes = data.get('company_notes', '')
+        
+        # Rechazar la aplicación
+        application.rechazar(company_notes)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Postulación rechazada correctamente',
+            'application_id': str(application.id)
+        })
+        
+    except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

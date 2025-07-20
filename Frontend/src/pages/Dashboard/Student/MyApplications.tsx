@@ -31,6 +31,7 @@ import {
   TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { adaptApplication } from '../../../utils/adapters';
 
 interface Application {
   id: string;
@@ -58,7 +59,18 @@ interface FilterOptions {
 }
 
 // Opciones de filtros
-const areas = ['Tecnología', 'Marketing', 'Diseño', 'Administración'];
+const areas = [
+  'Tecnología y Sistemas',
+  'Administración y Gestión',
+  'Comunicación y Marketing',
+  'Salud y Ciencias',
+  'Ingeniería y Construcción',
+  'Educación y Formación',
+  'Arte y Diseño',
+  'Investigación y Desarrollo',
+  'Servicios y Atención al Cliente',
+  'Sostenibilidad y Medio Ambiente'
+];
 const modalidades = ['Remoto', 'Presencial', 'Híbrido'];
 const ubicaciones = ['Santiago', 'Bogotá', 'CDMX', 'Buenos Aires'];
 const niveles = ['Básico', 'Intermedio', 'Avanzado'];
@@ -193,19 +205,20 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
 
 // Función para adaptar los datos del backend al formato del frontend
 const adaptApplicationData = (backendData: any): Application => {
+  const adapted = adaptApplication(backendData);
   return {
-    id: backendData.id,
-    projectTitle: backendData.project?.title || 'Sin título',
-    company: backendData.project?.company?.name || 'Sin empresa',
-    status: backendData.status || backendData.status || 'pending',
-    appliedDate: backendData.applied_at || '',
-    responseDate: backendData.responded_at || undefined,
+    id: adapted.id,
+    projectTitle: adapted.project_title || 'Sin título',
+    company: adapted.company_name || 'Sin empresa',
+    status: adapted.status as any,
+    appliedDate: adapted.applied_at,
+    responseDate: adapted.responded_at || undefined,
     requiredSkills: [], // El backend no devuelve skills en este endpoint
-    projectDuration: backendData.project?.duration_weeks ? `${backendData.project.duration_weeks} semanas` : 'No especificado',
-    location: backendData.project?.location || 'No especificada',
-    description: backendData.project?.description || 'Sin descripción',
-    compatibility: backendData.compatibility_score || 0,
-    notes: backendData.student_notes || backendData.cover_letter || undefined,
+    projectDuration: 'No especificado', // El backend no devuelve duration en este endpoint
+    location: 'No especificada', // El backend no devuelve location en este endpoint
+    description: adapted.project_description || 'Sin descripción',
+    compatibility: adapted.compatibility_score || 0,
+    notes: adapted.student_notes || adapted.cover_letter || undefined,
   };
 };
 
@@ -229,10 +242,10 @@ export const MyApplications: React.FC = () => {
         const applicationsArray = data.results || data;
         
         if (Array.isArray(applicationsArray)) {
-          // Adaptar cada aplicación al formato del frontend
-          const adaptedApplications = applicationsArray.map(adaptApplicationData);
-          setApplications(adaptedApplications);
-          setFilteredApplications(adaptedApplications);
+                  // Adaptar cada aplicación al formato del frontend
+        const adaptedApplications = applicationsArray.map(app => adaptApplicationData(app));
+        setApplications(adaptedApplications);
+        setFilteredApplications(adaptedApplications);
         } else {
           setApplications([]);
           setFilteredApplications([]);
@@ -264,7 +277,7 @@ export const MyApplications: React.FC = () => {
     
     if (filters.area) {
       filtered = filtered.filter(app => 
-        app.requiredSkills.some(skill => skill.toLowerCase().includes(filters.area!.toLowerCase()))
+        app.area?.toLowerCase().includes(filters.area!.toLowerCase())
       );
     }
     

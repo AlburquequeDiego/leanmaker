@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense } from 'react';
 import { CircularProgress, Box } from '@mui/material';
-import { Home, Login, Register, ForgotPassword } from '../pages';
+import { Home, Login, Register } from '../pages';
 import { TestConnection } from '../components/TestConnection';
 import { TestLogin } from '../components/TestLogin';
 import StudentDashboard from '../pages/Dashboard/Student/StudentDashboard';
@@ -20,7 +20,7 @@ import CompanyNotifications from '../pages/Dashboard/Company/Notifications';
 import CompanyProjects from '../pages/Dashboard/Company/Projects';
 import CompanyApplications from '../pages/Dashboard/Company/Applications';
 import SearchStudents from '../pages/Dashboard/Company/SearchStudents';
-import CompanyEvaluations from '../pages/Dashboard/Company/Evaluations';
+import CompanyStudentSelection from '../pages/Dashboard/Company/Evaluations';
 import CompanyInterviews from '../pages/Dashboard/Company/Interviews';
 import CompanyCalendar from '../pages/Dashboard/Company/Calendar';
 import CompanyStrikes from '../pages/Dashboard/Company/Strikes';
@@ -79,7 +79,6 @@ export const AppRoutes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/test-connection" element={<TestConnection />} />
         <Route path="/test-login" element={<TestLogin />} />
 
@@ -130,7 +129,7 @@ export const AppRoutes = () => {
           <Route path="projects" element={<CompanyProjects />} />
           <Route path="applications" element={<CompanyApplications />} />
           <Route path="search-students" element={<SearchStudents />} />
-          <Route path="evaluations" element={<CompanyEvaluations />} />
+          <Route path="evaluations" element={<CompanyStudentSelection />} />
           <Route path="interviews" element={<CompanyInterviews />} />
           <Route path="calendar" element={<CompanyCalendar />} />
           <Route path="strikes" element={<CompanyStrikes />} />

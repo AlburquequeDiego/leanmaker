@@ -124,8 +124,13 @@ export const CompanyEvaluations: React.FC = () => {
       for (const project of adaptedProjects) {
         try {
           const evalsResp = await api.get(`/api/evaluations/by_project/${project.id}/`);
-          evaluationsByProj[project.id] = evalsResp.data?.results || evalsResp.results || [];
+          const evaluationsData = evalsResp.data?.results || evalsResp.results || [];
+          // Aplicar adaptador a cada evaluación
+          evaluationsByProj[project.id] = Array.isArray(evaluationsData) 
+            ? evaluationsData.map(evaluation => adaptEvaluation(evaluation))
+            : [];
         } catch (e) {
+          console.error(`Error obteniendo evaluaciones para proyecto ${project.id}:`, e);
           evaluationsByProj[project.id] = [];
         }
       }
@@ -177,9 +182,9 @@ export const CompanyEvaluations: React.FC = () => {
   // Obtener evaluación existente
   const getExistingEvaluation = (studentId: string, projectId: string) => {
     return evaluationsByProject[projectId]?.find(evaluation =>
-      evaluation.student === studentId && evaluation.evaluator_role === 'company'
+      evaluation.student_id === studentId && evaluation.evaluator_type === 'company'
     ) || evaluationsByProject[projectId]?.find(evaluation =>
-      evaluation.student === studentId && evaluation.evaluator_role === 'student'
+      evaluation.student_id === studentId && evaluation.evaluator_type === 'student'
     );
   };
 
@@ -226,23 +231,23 @@ export const CompanyEvaluations: React.FC = () => {
         category: 'general', // Categoría por defecto
       };
 
-      const existingEvaluation = getExistingEvaluation(selectedStudent.id, selectedProject.id);
+      const existingEvaluation = selectedProject ? getExistingEvaluation(selectedStudent.id, selectedProject.id) : null;
       
       if (existingEvaluation) {
         // Actualizar evaluación existente
         const response = await api.patch(`/api/evaluations/${existingEvaluation.id}/`, evaluationData);
         const updatedEvaluation = adaptEvaluation(response.data);
-                 setEvaluationsByProject(prev => ({
-           ...prev,
-           [selectedProject.id]: prev[selectedProject.id].map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
-         }));
+                         setEvaluationsByProject(prev => ({
+          ...prev,
+          [selectedProject!.id]: prev[selectedProject!.id].map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
+        }));
       } else {
         // Crear nueva evaluación
         const response = await api.post('/api/evaluations/', evaluationData);
         const newEvaluation = adaptEvaluation(response.data);
         setEvaluationsByProject(prev => ({
           ...prev,
-          [selectedProject.id]: [...prev[selectedProject.id], newEvaluation]
+          [selectedProject!.id]: [...prev[selectedProject!.id], newEvaluation]
         }));
       }
 
@@ -267,7 +272,7 @@ export const CompanyEvaluations: React.FC = () => {
     try {
       await api.delete(`/api/evaluations/${evaluationId}/`);
       setEvaluationsByProject(prev => {
-        const projectId = prev[selectedProject.id]?.find(e => e.id === evaluationId)?.project;
+        const projectId = selectedProject ? prev[selectedProject.id]?.find(e => e.id === evaluationId)?.project_id : null;
         if (projectId) {
           return {
             ...prev,
@@ -437,7 +442,7 @@ export const CompanyEvaluations: React.FC = () => {
       Evaluaciones Realizadas
     </Typography>
     <Typography variant="h2" fontWeight={700} color="#ffa726">
-      {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'company').length}
+      {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_type === 'company').length}
     </Typography>
   </Paper>
   <Paper elevation={3} sx={{ bgcolor: '#e3f2fd', borderRadius: 3, p: 3, minWidth: 220, flex: '1 1 220px', boxShadow: 3 }}>
@@ -445,7 +450,7 @@ export const CompanyEvaluations: React.FC = () => {
       Evaluaciones Recibidas
     </Typography>
     <Typography variant="h2" fontWeight={700} color="#29b6f6">
-      {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'student').length}
+      {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_type === 'student').length}
     </Typography>
   </Paper>
 </Box>
@@ -561,13 +566,13 @@ export const CompanyEvaluations: React.FC = () => {
             Evaluaciones Recibidas de Estudiantes
           </Typography>
           <Grid container spacing={3}>
-            {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'student').map((evalR, idx) => (
+            {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_type === 'student').map((evalR, idx) => (
               <Grid item xs={12} md={6} key={evalR.id || idx}>
                 <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white' }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
-                        {evalR.student_name}
+                        {evalR.student_name || 'Sin nombre'}
                       </Typography>
                       <Chip label="Recibida" color="info" size="small" sx={{ fontWeight: 600 }} />
                     </Box>
@@ -599,13 +604,13 @@ export const CompanyEvaluations: React.FC = () => {
             Evaluaciones Realizadas a Estudiantes
           </Typography>
           <Grid container spacing={3}>
-            {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_role === 'company').map((evalD, idx) => (
+            {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_type === 'company').map((evalD, idx) => (
               <Grid item xs={12} md={6} key={evalD.id || idx}>
                 <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white' }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
-                        {evalD.student_name}
+                        {evalD.student_name || 'Sin nombre'}
                       </Typography>
                       <Chip label="Dada" color="success" size="small" sx={{ fontWeight: 600 }} />
                     </Box>
@@ -706,8 +711,12 @@ export const CompanyEvaluations: React.FC = () => {
               </Typography>
               
               {(() => {
-                const companyToStudentEvaluation = getCompanyToStudentEvaluation(selectedProject.id, selectedStudent.id);
-                const studentToCompanyEvaluation = getStudentToCompanyEvaluation(selectedProject.id, selectedStudent.id);
+                const companyToStudentEvaluation = evaluationsByProject[selectedProject.id]?.find(e => 
+                  e.student_id === selectedStudent.id && e.evaluator_type === 'company'
+                );
+                const studentToCompanyEvaluation = evaluationsByProject[selectedProject.id]?.find(e => 
+                  e.student_id === selectedStudent.id && e.evaluator_type === 'student'
+                );
 
                 if (companyToStudentEvaluation || studentToCompanyEvaluation) {
                   return (
