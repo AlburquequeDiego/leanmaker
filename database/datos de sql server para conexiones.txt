@@ -44,8 +44,36 @@ INACAP → @inacapmail.cl
 Lista de cuentas
 
 Nombre	          Correo	                Contraseña
-Laura Martínez	  admin1@leanmaker.com	    Admin123!
-FinanPlus	      contacto@finanplus.com    Empresa123!
-Juan Pérez        juan.perez@uchile.cl      Estudiante123!
+Laura Martínez	  admin1@leanmaker.com	    Admin1234!
+FinanPlus	      contacto@finanplus.com    Empresa1234!
+Juan Pérez        juan.perez@uchile.cl      Estudiante1234!
 
 
+ADMIN
+VALIDACION DE HORAS  
+GESTION DE PROYECTOS  
+
+
+
+EMPRESA LE FUNCIONA EL : 
+DASHBOARD        OK
+PERFIL           OK
+NOTIFICACIONES   OK
+
+
+
+
+
+
+ESTUDIANTE LE FUNCIONA EL :
+DASHBOARD           OK
+PERFIL              OK
+NOTIFICACIONES      OK
+CUESTIONARIO API    OK
+RESULTADOS API      OK
+
+--PROYECTOS DISPONIBLES
+--MIS APLICACIONES
+--MISPROYECTOS
+--EVALUACIONES
+--CALENDARIO

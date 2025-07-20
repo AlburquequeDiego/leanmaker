@@ -194,12 +194,13 @@ def mass_notifications_delete(request, notification_id):
         except MassNotification.DoesNotExist:
             return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
         
-        # Eliminar notificación
-        notification.delete()
+        # Marcar como cancelada en lugar de eliminar
+        notification.status = 'cancelled'
+        notification.save(update_fields=['status'])
         
         return JsonResponse({
             'success': True,
-            'message': 'Notificación eliminada exitosamente'
+            'message': 'Notificación cancelada exitosamente'
         })
         
     except Exception as e:

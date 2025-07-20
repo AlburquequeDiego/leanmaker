@@ -45,8 +45,11 @@ export interface Student {
   portfolio_url?: string;
   github_url?: string;
   linkedin_url?: string;
+  cv_link?: string; // <-- AÑADIDO
+  certificado_link?: string; // <-- AÑADIDO
   availability: 'full-time' | 'part-time' | 'flexible';
   location?: string;
+  area?: string; // <-- AÑADIDO
   rating: number;
   skills?: string[]; // JSON array
   languages?: string[]; // JSON array
@@ -67,6 +70,23 @@ export interface Student {
     date_joined: string;
     last_login?: string;
     full_name?: string;
+  };
+  // Campo adicional para perfil detallado
+  perfil_detallado?: {
+    fecha_nacimiento?: string;
+    genero?: string;
+    nacionalidad?: string;
+    universidad?: string;
+    facultad?: string;
+    promedio_historico?: number;
+    experiencia_laboral?: string;
+    certificaciones?: string[];
+    proyectos_personales?: string[];
+    tecnologias_preferidas?: string[];
+    industrias_interes?: string[];
+    tipo_proyectos_preferidos?: string[];
+    telefono_emergencia?: string;
+    contacto_emergencia?: string;
   };
 }
 
@@ -99,6 +119,10 @@ export interface Company {
   status: 'active' | 'inactive' | 'suspended';
   created_at: string;
   updated_at: string;
+  // Campos adicionales para el perfil de empresa
+  rut?: string;
+  personality?: string;
+  business_name?: string;
 }
 
 // Tipos de proyecto - Coinciden con el modelo Proyecto del backend

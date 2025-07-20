@@ -58,6 +58,7 @@ class Estudiante(models.Model):
     # Campos adicionales - coinciden con frontend
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='flexible')
     location = models.CharField(max_length=200, null=True, blank=True)
+    area = models.CharField(max_length=200, null=True, blank=True, help_text="Área de interés del estudiante")
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     
     # Campos JSON (se almacenan como texto en SQL Server) - coinciden con frontend

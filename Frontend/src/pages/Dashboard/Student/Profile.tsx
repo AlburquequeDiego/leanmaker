@@ -16,13 +16,14 @@ import {
   MenuItem,
   Snackbar,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
 } from '@mui/material';
 import {
   Edit as EditIcon,
   Save as SaveIcon,
   Cancel as CancelIcon,
-  CloudUpload as CloudUploadIcon,
-  Delete as DeleteIcon,
   CheckCircle as CheckCircleIcon,
   Lock as LockIcon,
   Visibility as VisibilityIcon,
@@ -53,6 +54,29 @@ interface ProfileData {
   portafolio?: string;
 }
 
+interface UserData {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  bio: string;
+}
+
+interface StudentData {
+  id: string;
+  career: string;
+  api_level: number;
+  skills: string[];
+  cv_link: string;
+  certificado_link: string;
+  availability: string;
+  experience_years: number;
+  linkedin_url: string;
+  github_url: string;
+  portfolio_url: string;
+}
+
 interface ValidationErrors {
   [key: string]: string;
 }
@@ -63,17 +87,91 @@ interface ChangePasswordData {
   confirm_password: string;
 }
 
+// Habilidades técnicas organizadas por área
+const HABILIDADES_POR_AREA = {
+  'Tecnología y Sistemas': [
+    'JavaScript', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Rust', 'Swift',
+    'React', 'Angular', 'Vue.js', 'Node.js', 'Django', 'Flask', 'Spring Boot', 'Laravel',
+    'HTML/CSS', 'SQL', 'MongoDB', 'PostgreSQL', 'MySQL', 'Redis', 'Docker', 'Kubernetes',
+    'AWS', 'Azure', 'Google Cloud', 'Git', 'GitHub', 'GitLab', 'Jenkins', 'CI/CD',
+    'Machine Learning', 'Data Science', 'Big Data', 'Hadoop', 'Spark', 'TensorFlow', 'PyTorch',
+    'Cybersecurity', 'Ethical Hacking', 'Network Security', 'DevOps', 'Linux', 'Windows Server'
+  ],
+  'Administración y Gestión': [
+    'Gestión de Proyectos', 'Scrum', 'Agile', 'Kanban', 'Lean Management', 'Six Sigma',
+    'Análisis Financiero', 'Contabilidad', 'Presupuestos', 'Control de Costos', 'ROI',
+    'Gestión de Recursos Humanos', 'Reclutamiento', 'Capacitación', 'Evaluación de Desempeño',
+    'Marketing Digital', 'SEO', 'SEM', 'Google Analytics', 'Facebook Ads', 'Email Marketing',
+    'Ventas', 'Negociación', 'Customer Relationship Management (CRM)', 'Business Intelligence',
+    'Logística', 'Cadena de Suministro', 'Inventarios', 'Compras', 'Proveedores'
+  ],
+  'Comunicación y Marketing': [
+    'Redacción Publicitaria', 'Copywriting', 'Content Marketing', 'Social Media Marketing',
+    'Branding', 'Identidad Corporativa', 'Publicidad Digital', 'Influencer Marketing',
+    'Comunicación Corporativa', 'Relaciones Públicas', 'Eventos', 'Presentaciones',
+    'Fotografía', 'Videografía', 'Edición de Video', 'Motion Graphics', 'Animación',
+    'Diseño Gráfico', 'Ilustración', 'Tipografía', 'Color Theory', 'Composición Visual',
+    'Periodismo', 'Comunicación Digital', 'Podcasting', 'Streaming', 'Live Marketing'
+  ],
+  'Salud y Ciencias': [
+    'Anatomía', 'Fisiología', 'Bioquímica', 'Microbiología', 'Genética', 'Farmacología',
+    'Epidemiología', 'Bioestadística', 'Investigación Clínica', 'Enfermería', 'Fisioterapia',
+    'Nutrición', 'Psicología', 'Psiquiatría', 'Terapia Ocupacional', 'Tecnología Médica',
+    'Laboratorio Clínico', 'Radiología', 'Anestesiología', 'Cirugía', 'Medicina Preventiva',
+    'Salud Pública', 'Toxicología', 'Inmunología', 'Oncología', 'Cardiología', 'Neurología'
+  ],
+  'Ingeniería y Construcción': [
+    'AutoCAD', 'Revit', 'SolidWorks', 'Inventor', 'SketchUp', '3D Modeling', 'Drafting',
+    'Ingeniería Estructural', 'Análisis de Elementos Finitos', 'Diseño Mecánico',
+    'Termodinámica', 'Mecánica de Fluidos', 'Transferencia de Calor', 'Materiales',
+    'Ingeniería Eléctrica', 'Electrónica', 'Circuitos', 'Microcontroladores', 'PLC',
+    'Ingeniería Civil', 'Topografía', 'Geotecnia', 'Hidráulica', 'Transporte',
+    'Construcción', 'Gestión de Obras', 'Seguridad Industrial', 'Mantenimiento'
+  ],
+  'Educación y Formación': [
+    'Diseño Instruccional', 'E-learning', 'Plataformas LMS', 'Moodle', 'Canvas',
+    'Metodologías Pedagógicas', 'Evaluación Educativa', 'Tecnología Educativa',
+    'Gamificación', 'Realidad Virtual en Educación', 'Inteligencia Artificial en Educación',
+    'Tutoring', 'Coaching', 'Mentoring', 'Capacitación Corporativa', 'Desarrollo de Contenido',
+    'Psicopedagogía', 'Educación Especial', 'Educación a Distancia', 'Blended Learning'
+  ],
+  'Arte y Diseño': [
+    'Dibujo', 'Pintura', 'Escultura', 'Fotografía', 'Cinematografía', 'Animación 2D/3D',
+    'Diseño de Personajes', 'Concept Art', 'Storyboarding', 'Comic/Manga',
+    'Diseño de Interiores', 'Arquitectura', 'Diseño Industrial', 'Diseño de Producto',
+    'Diseño Web', 'UI/UX Design', 'Diseño de Apps', 'Diseño Editorial', 'Typography',
+    'Color Theory', 'Composición', 'Ilustración Digital', 'Fotografía de Producto'
+  ],
+  'Investigación y Desarrollo': [
+    'Metodología de Investigación', 'Estadística', 'Análisis de Datos', 'SPSS', 'R', 'Python',
+    'Machine Learning', 'Deep Learning', 'Inteligencia Artificial', 'Computer Vision',
+    'Natural Language Processing', 'Robótica', 'Automatización', 'IoT', 'Blockchain',
+    'Nanotecnología', 'Biotecnología', 'Química Analítica', 'Física Aplicada',
+    'Investigación de Mercados', 'Estudios de Usabilidad', 'Prototipado', 'Validación'
+  ],
+  'Servicios y Atención al Cliente': [
+    'Customer Service', 'Call Center', 'Chat Support', 'Email Support', 'Social Media Support',
+    'Gestión de Quejas', 'Resolución de Conflictos', 'Empatía', 'Comunicación Asertiva',
+    'Ventas', 'Técnicas de Venta', 'Cierre de Ventas', 'Fidelización de Clientes',
+    'Hospitalidad', 'Turismo', 'Gastronomía', 'Eventos', 'Wedding Planning',
+    'Consultoría', 'Coaching', 'Mentoring', 'Recursos Humanos', 'Reclutamiento'
+  ],
+  'Sostenibilidad y Medio Ambiente': [
+    'Gestión Ambiental', 'ISO 14001', 'Auditoría Ambiental', 'Evaluación de Impacto Ambiental',
+    'Energías Renovables', 'Solar', 'Eólica', 'Hidroeléctrica', 'Biomasa', 'Geotérmica',
+    'Eficiencia Energética', 'Construcción Sostenible', 'LEED', 'BREEAM',
+    'Economía Circular', 'Reciclaje', 'Gestión de Residuos', 'Huella de Carbono',
+    'Biodiversidad', 'Conservación', 'Educación Ambiental', 'Políticas Ambientales'
+  ]
+};
+
 // Componente separado para el formulario de contraseña
 const PasswordForm = ({ 
   onSubmit, 
-  onCancel, 
-  error, 
-  success 
+  onCancel
 }: { 
   onSubmit: (data: ChangePasswordData) => void;
   onCancel: () => void;
-  error: string | null;
-  success: string | null;
 }) => {
   const [passwordData, setPasswordData] = useState<ChangePasswordData>({
     current_password: '',
@@ -266,6 +364,7 @@ export const Profile = () => {
   });
   const [newSkill, setNewSkill] = useState('');
   const [newSkillLevel, setNewSkillLevel] = useState('Básico');
+  const [selectedArea, setSelectedArea] = useState('');
   const [userId, setUserId] = useState<string>('');
 
   // Estados para cambio de contraseña
@@ -278,22 +377,38 @@ export const Profile = () => {
     fetchProfile();
   }, []);
 
+  // Limpiar habilidad cuando cambie el área
+  useEffect(() => {
+    setNewSkill('');
+    setNewSkillLevel('Básico');
+  }, [selectedArea]);
+
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      // 1. Obtener datos académicos
-      const studentData = await apiService.get('/api/students/me/');
-      // 2. Obtener datos personales
-      const userData = await apiService.get('/api/users/profile/');
-
-      // 3. Mapear y unir los datos
+      // Obtener datos del estudiante (que incluye datos del usuario)
+      const studentResponse = await apiService.get('/api/students/me/');
+      const studentData = studentResponse as any; // Usar any para acceder a user_data
+      
+      console.log('📄 [StudentProfile] Datos completos recibidos:', studentData);
+      console.log('📄 [StudentProfile] Tipo de studentData:', typeof studentData);
+      console.log('📄 [StudentProfile] studentData.cv_link:', studentData.cv_link);
+      console.log('📄 [StudentProfile] studentData.certificado_link:', studentData.certificado_link);
+      console.log('📄 [StudentProfile] studentData.portfolio_url:', studentData.portfolio_url);
+      console.log('📄 [StudentProfile] studentData.github_url:', studentData.github_url);
+      console.log('📄 [StudentProfile] studentData.linkedin_url:', studentData.linkedin_url);
+      
+      // Extraer datos del usuario desde user_data
+      const userData = studentData.user_data || {};
+      
+      // Mapear y unir los datos
       const safeData: ProfileData = {
         nombre: userData.first_name || '',
         apellido: userData.last_name || '',
         email: userData.email || '',
         telefono: userData.phone || '',
-        fechaNacimiento: '', // No disponible
-        genero: '', // No disponible
+        fechaNacimiento: studentData.perfil_detallado?.fecha_nacimiento || '',
+        genero: studentData.perfil_detallado?.genero || '',
         institucion: '', // No disponible
         carrera: studentData.career || '',
         nivel: studentData.api_level?.toString() || '1',
@@ -301,14 +416,18 @@ export const Profile = () => {
         biografia: userData.bio || '', // Carta de presentación
         cv_link: studentData.cv_link || '',
         certificado_link: studentData.certificado_link || '',
-        area: '',
-        modalidadesDisponibles: [studentData.availability] || [],
+        area: studentData.area || '',
+        modalidadesDisponibles: studentData.availability ? [studentData.availability] : [],
         experienciaPrevia: studentData.experience_years?.toString() || '',
         linkedin: studentData.linkedin_url || '',
         github: studentData.github_url || '',
         portafolio: studentData.portfolio_url || '',
       };
 
+      console.log('📄 [StudentProfile] CV Link recibido del backend:', studentData.cv_link);
+      console.log('📄 [StudentProfile] Certificado Link recibido del backend:', studentData.certificado_link);
+      console.log('📄 [StudentProfile] Datos mapeados:', safeData);
+      
       setProfileData(safeData);
       setEditData(safeData);
       setUserId(studentData.id || '');
@@ -364,9 +483,10 @@ export const Profile = () => {
       errors.telefono = 'El teléfono no es válido';
     }
 
-    if (!editData.institucion.trim()) {
-      errors.institucion = 'La institución es requerida';
-    }
+    // Remover validación de institución ya que no se usa en el backend
+    // if (!editData.institucion.trim()) {
+    //   errors.institucion = 'La institución es requerida';
+    // }
 
     if (!editData.carrera.trim()) {
       errors.carrera = 'La carrera es requerida';
@@ -407,6 +527,10 @@ export const Profile = () => {
     setEditData(profileData);
     setIsEditing(true);
     setValidationErrors({});
+    // Limpiar estados de habilidades
+    setNewSkill('');
+    setNewSkillLevel('Básico');
+    setSelectedArea('');
   };
 
   const handleSave = async () => {
@@ -432,7 +556,8 @@ export const Profile = () => {
         certificado_link: editData.certificado_link,
         availability: editData.modalidadesDisponibles?.[0] || 'flexible',
         location: '', // Por ahora vacío
-        experience_years: parseInt(editData.experienciaPrevia) || 0,
+        area: editData.area, // <-- AÑADIDO
+        experience_years: parseInt(editData.experienciaPrevia || '0') || 0,
         // También actualizar datos del usuario
         user_data: {
           first_name: editData.nombre,
@@ -440,10 +565,19 @@ export const Profile = () => {
           email: editData.email,
           phone: editData.telefono,
           bio: editData.biografia, // Carta de presentación
+        },
+        // Datos del perfil detallado
+        perfil_detallado: {
+          fecha_nacimiento: editData.fechaNacimiento || null,
+          genero: editData.genero || null,
         }
       };
 
-      const updatedProfile = await apiService.put(`/api/students/${userId}/update/`, backendData);
+      console.log('🔍 [StudentProfile] Enviando datos al backend:', backendData);
+      console.log('📄 [StudentProfile] CV Link a enviar:', backendData.cv_link);
+      console.log('📄 [StudentProfile] Certificado Link a enviar:', backendData.certificado_link);
+      
+      await apiService.put(`/api/students/${userId}/update/`, backendData);
       
       // Recargar el perfil para obtener los datos actualizados
       await fetchProfile();
@@ -464,6 +598,10 @@ export const Profile = () => {
     setEditData(profileData);
     setIsEditing(false);
     setValidationErrors({});
+    // Limpiar estados de habilidades
+    setNewSkill('');
+    setNewSkillLevel('Básico');
+    setSelectedArea('');
   };
 
   const handleInputChange = (field: string, value: any) => {
@@ -478,7 +616,14 @@ export const Profile = () => {
   // Habilidades
   const handleAddSkill = () => {
     if (!newSkill.trim()) {
-      setErrorMessage('Por favor, ingresa el nombre de la habilidad');
+      setErrorMessage('Por favor, selecciona una habilidad');
+      setShowError(true);
+      return;
+    }
+
+    // Validar que la habilidad esté en la lista de habilidades disponibles
+    if (selectedArea && !HABILIDADES_POR_AREA[selectedArea as keyof typeof HABILIDADES_POR_AREA]?.includes(newSkill.trim())) {
+      setErrorMessage('La habilidad seleccionada no es válida para el área elegida');
       setShowError(true);
       return;
     }
@@ -495,6 +640,7 @@ export const Profile = () => {
     }));
     setNewSkill('');
     setNewSkillLevel('Básico');
+    setSelectedArea('');
   };
 
   const handleDeleteSkill = (nombre: string) => {
@@ -513,10 +659,12 @@ export const Profile = () => {
 
   // Documentos - Links de drivers
   const handleCvLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('📄 [StudentProfile] CV Link cambiado a:', e.target.value);
     setEditData(prev => ({ ...prev, cv_link: e.target.value }));
   };
 
   const handleCertLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('📄 [StudentProfile] Certificado Link cambiado a:', e.target.value);
     setEditData(prev => ({ ...prev, certificado_link: e.target.value }));
   };
 
@@ -682,15 +830,7 @@ export const Profile = () => {
               <MenuItem value="Otro">Otro</MenuItem>
             </TextField>
           </Box>
-          <TextField
-            label="Institución Educativa"
-            value={isEditing ? (editData.institucion || '') : (profileData.institucion || '')}
-            onChange={e => handleInputChange('institucion', e.target.value)}
-            disabled={!isEditing}
-            fullWidth
-            error={!!validationErrors.institucion}
-            helperText={validationErrors.institucion}
-          />
+          {/* Campo de institución removido ya que no es necesario */}
           <TextField
             label="Carrera"
             value={isEditing ? (editData.carrera || '') : (profileData.carrera || '')}
@@ -724,13 +864,35 @@ export const Profile = () => {
           </Box>
           {isEditing && (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-              <TextField
-                size="small"
-                label="Agregar habilidad"
-                value={newSkill}
-                onChange={e => setNewSkill(e.target.value)}
-                sx={{ minWidth: 150 }}
-              />
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel>Área de habilidad</InputLabel>
+                <Select
+                  value={selectedArea}
+                  onChange={e => setSelectedArea(e.target.value)}
+                  label="Área de habilidad"
+                >
+                  <MenuItem value="">Seleccionar área</MenuItem>
+                  {Object.keys(HABILIDADES_POR_AREA).map(area => (
+                    <MenuItem key={area} value={area}>{area}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel>Habilidad</InputLabel>
+                <Select
+                  value={newSkill}
+                  onChange={e => setNewSkill(e.target.value)}
+                  label="Habilidad"
+                  disabled={!selectedArea}
+                >
+                  <MenuItem value="">Seleccionar habilidad</MenuItem>
+                  {selectedArea && HABILIDADES_POR_AREA[selectedArea as keyof typeof HABILIDADES_POR_AREA]?.map(skill => (
+                    <MenuItem key={skill} value={skill}>{skill}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
               <TextField
                 size="small"
                 select
@@ -743,7 +905,13 @@ export const Profile = () => {
                 <MenuItem value="Intermedio">Intermedio</MenuItem>
                 <MenuItem value="Avanzado">Avanzado</MenuItem>
               </TextField>
-              <Button variant="contained" onClick={handleAddSkill} size="small">
+              
+              <Button 
+                variant="contained" 
+                onClick={handleAddSkill} 
+                size="small"
+                disabled={!newSkill || !selectedArea}
+              >
                 Agregar
               </Button>
             </Box>
@@ -974,8 +1142,6 @@ export const Profile = () => {
         <PasswordForm
           onSubmit={handleChangePassword}
           onCancel={() => setShowPasswordDialog(false)}
-          error={passwordError}
-          success={passwordSuccess}
         />
       </Dialog>
 

@@ -227,6 +227,12 @@ def company_me(request):
             'total_hours_offered': company.total_hours_offered,
             'created_at': company.created_at.isoformat(),
             'updated_at': company.updated_at.isoformat(),
+            # Campos adicionales del registro de empresa
+            'rut': company.rut,
+            'personality': company.personality,
+            'business_name': company.business_name,
+            'city': company.city,
+            'country': company.country,
             # Datos del usuario
             'user_data': {
                 'id': str(company.user.id),
@@ -244,6 +250,8 @@ def company_me(request):
                 'full_name': company.user.full_name,
             }
         }
+        
+        print(f"🔍 [company_me] Datos enviados al frontend: {company_data}")
         
         return JsonResponse(company_data)
         
@@ -279,18 +287,30 @@ def companies_update(request, companies_id):
         # Procesar datos
         data = json.loads(request.body)
         
+        print(f"🔍 [companies_update] Datos recibidos: {data}")
+        
         # Actualizar campos de la empresa
         fields_to_update = [
             'company_name', 'description', 'status', 'contact_phone', 'contact_email',
             'address', 'website', 'industry', 'size', 'verified', 'rating',
-            'total_projects', 'projects_completed', 'total_hours_offered'
+            'total_projects', 'projects_completed', 'total_hours_offered',
+            # Campos adicionales del registro de empresa
+            'rut', 'personality', 'business_name', 'city', 'country'
         ]
+        
+        print(f"🔍 [companies_update] Campos a actualizar: {fields_to_update}")
         
         for field in fields_to_update:
             if field in data:
-                setattr(company, field, data[field])
+                old_value = getattr(company, field, None)
+                new_value = data[field]
+                setattr(company, field, new_value)
+                print(f"🔍 [companies_update] Campo '{field}': {old_value} -> {new_value}")
+            else:
+                print(f"🔍 [companies_update] Campo '{field}' no encontrado en datos")
         
         company.save()
+        print(f"🔍 [companies_update] Empresa guardada: {company.company_name}")
         
         # Retornar datos actualizados
         return JsonResponse({

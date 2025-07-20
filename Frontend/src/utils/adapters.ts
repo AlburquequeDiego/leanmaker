@@ -74,14 +74,18 @@ export const adaptStudent = (backendStudent: any): Student => ({
   portfolio_url: backendStudent.portfolio_url,
   github_url: backendStudent.github_url,
   linkedin_url: backendStudent.linkedin_url,
+  cv_link: backendStudent.cv_link, // <-- AÑADIDO
+  certificado_link: backendStudent.certificado_link, // <-- AÑADIDO
   availability: backendStudent.availability || 'flexible',
   location: backendStudent.location,
+  area: backendStudent.area, // <-- AÑADIDO
   rating: backendStudent.rating || 0,
   skills: parseJsonArray(backendStudent.skills),
   languages: parseJsonArray(backendStudent.languages),
   created_at: backendStudent.created_at,
   updated_at: backendStudent.updated_at,
   user_data: backendStudent.user_data, // <-- Añadido
+  perfil_detallado: backendStudent.perfil_detallado, // <-- AÑADIDO
 });
 
 /**
@@ -115,6 +119,10 @@ export const adaptCompany = (backendCompany: any): Company => ({
   status: backendCompany.status || 'active',
   created_at: backendCompany.created_at,
   updated_at: backendCompany.updated_at,
+  // Campos adicionales del registro de empresa
+  rut: backendCompany.rut,
+  personality: backendCompany.personality,
+  business_name: backendCompany.business_name,
 });
 
 /**

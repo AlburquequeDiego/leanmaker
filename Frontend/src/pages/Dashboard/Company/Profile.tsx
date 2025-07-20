@@ -204,6 +204,7 @@ export const CompanyProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<Company>>({});
+  const [editUserData, setEditUserData] = useState<Partial<User>>({});
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   
@@ -226,6 +227,8 @@ export const CompanyProfile: React.FC = () => {
       // Obtener datos de la empresa
       const companyData = await api.get('/api/companies/company_me/');
       
+      console.log('🔍 [CompanyProfile] Datos de empresa recibidos:', companyData);
+      
       const profileData: CompanyProfileData = {
         user: userData,
         company: companyData,
@@ -243,6 +246,7 @@ export const CompanyProfile: React.FC = () => {
   const handleEdit = () => {
     if (profile) {
       setEditData(profile.company);
+      setEditUserData(profile.user);
       setIsEditing(true);
     }
   };
@@ -272,7 +276,23 @@ export const CompanyProfile: React.FC = () => {
         size: editData.size,
         description: editData.description,
       };
-      const response = await api.patch(`/api/companies/${profile.company.id}/update/`, payload);
+
+      console.log('Enviando datos de empresa:', payload);
+      
+      // Guardar datos de la empresa
+      await api.patch(`/api/companies/${profile.company.id}/update/`, payload);
+      
+      // Guardar datos del usuario si hay cambios
+      if (Object.keys(editUserData).length > 0) {
+        const userPayload = {
+          first_name: editUserData.first_name,
+          last_name: editUserData.last_name,
+          phone: editUserData.phone,
+        };
+        console.log('Enviando datos de usuario:', userPayload);
+        await api.patch('/api/users/profile/', userPayload);
+      }
+      
       // Refrescar datos tras guardar
       await loadProfile();
       setIsEditing(false);
@@ -288,12 +308,17 @@ export const CompanyProfile: React.FC = () => {
   const handleCancel = () => {
     if (profile) {
       setEditData(profile.company);
+      setEditUserData(profile.user);
     }
     setIsEditing(false);
   };
 
   const handleInputChange = (field: keyof Company, value: any) => {
     setEditData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleUserInputChange = (field: keyof User, value: any) => {
+    setEditUserData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleChangePassword = async (formData: ChangePasswordData) => {
@@ -577,14 +602,16 @@ export const CompanyProfile: React.FC = () => {
           <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
               label="Nombre"
-              value={profile.user.first_name || ''}
-              disabled
+              value={isEditing ? (editUserData.first_name || '') : (profile.user.first_name || '')}
+              onChange={(e) => handleUserInputChange('first_name', e.target.value)}
+              disabled={!isEditing}
               fullWidth
             />
             <TextField
               label="Apellido"
-              value={profile.user.last_name || ''}
-              disabled
+              value={isEditing ? (editUserData.last_name || '') : (profile.user.last_name || '')}
+              onChange={(e) => handleUserInputChange('last_name', e.target.value)}
+              disabled={!isEditing}
               fullWidth
             />
           </Box>
@@ -594,12 +621,14 @@ export const CompanyProfile: React.FC = () => {
             value={profile.user.email || ''}
             disabled
             fullWidth
+            helperText="El email no se puede cambiar desde aquí"
           />
           
           <TextField
             label="Teléfono"
-            value={profile.user.phone || ''}
-            disabled
+            value={isEditing ? (editUserData.phone || '') : (profile.user.phone || '')}
+            onChange={(e) => handleUserInputChange('phone', e.target.value)}
+            disabled={!isEditing}
             fullWidth
           />
         </Box>

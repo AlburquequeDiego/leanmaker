@@ -152,7 +152,7 @@ class MassNotificationSerializer:
         else:
             data['message'] = data['message'].strip()
         
-        # Validar scheduled_at
+        # Validar scheduled_at (opcional ahora)
         if 'scheduled_at' in data and data['scheduled_at']:
             try:
                 scheduled_at = timezone.datetime.fromisoformat(data['scheduled_at'].replace('Z', '+00:00'))

@@ -86,7 +86,6 @@ export default function NotificacionesAdmin() {
     target_all_companies: false,
     target_student_ids: [] as string[],
     target_company_ids: [] as string[],
-    scheduled_at: '',
   });
 
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
@@ -115,12 +114,7 @@ export default function NotificacionesAdmin() {
       errors.recipients = 'Debe seleccionar al menos un destinatario';
     }
     
-    if (formData.scheduled_at) {
-      const scheduledDate = new Date(formData.scheduled_at);
-      if (scheduledDate <= new Date()) {
-        errors.scheduled_at = 'La fecha programada debe ser futura';
-      }
-    }
+
     
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -179,10 +173,11 @@ export default function NotificacionesAdmin() {
     try {
       const notificationData = {
         ...formData,
-        status: formData.scheduled_at ? 'scheduled' : 'draft',
+        status: 'draft', // Siempre será draft, se enviará inmediatamente
       };
 
       console.log('Enviando datos de notificación:', notificationData);
+      console.log('formData completo:', formData);
       await apiService.post('/api/mass-notifications/create/', notificationData);
 
       setSnackbar({ 
@@ -241,16 +236,16 @@ export default function NotificacionesAdmin() {
       
       setSnackbar({ 
         open: true, 
-        message: 'Notificación masiva eliminada exitosamente', 
+        message: 'Notificación masiva cancelada exitosamente', 
         severity: 'success' 
       });
       
       await fetchNotifications();
     } catch (error) {
-      console.error('Error deleting mass notification:', error);
+      console.error('Error cancelling mass notification:', error);
       setSnackbar({ 
         open: true, 
-        message: 'Error al eliminar la notificación masiva', 
+        message: 'Error al cancelar la notificación masiva', 
         severity: 'error' 
       });
     }
@@ -266,7 +261,6 @@ export default function NotificacionesAdmin() {
       target_all_companies: false,
       target_student_ids: [],
       target_company_ids: [],
-      scheduled_at: '',
     });
     setFormErrors({});
   };
@@ -379,6 +373,10 @@ export default function NotificacionesAdmin() {
     (priorityFilter ? notification.priority === priorityFilter : true)
   );
 
+  // Debug: mostrar información de filtrado
+  console.log('Filtros aplicados:', { statusFilter, typeFilter, priorityFilter });
+  console.log('Notificaciones filtradas:', filteredNotifications.map(n => ({ id: n.id, title: n.title, status: n.status })));
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
@@ -446,12 +444,9 @@ export default function NotificacionesAdmin() {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="sent">Enviadas</MenuItem>
                 <MenuItem value="draft">Borrador</MenuItem>
-                <MenuItem value="scheduled">Programada</MenuItem>
-                <MenuItem value="sending">Enviando</MenuItem>
-                <MenuItem value="sent">Enviada</MenuItem>
-                <MenuItem value="cancelled">Cancelada</MenuItem>
-                <MenuItem value="failed">Fallida</MenuItem>
+                <MenuItem value="cancelled">Canceladas</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -561,7 +556,7 @@ export default function NotificacionesAdmin() {
                     size="small" 
                     color="primary"
                     onClick={() => handleSendNotification(notification.id)}
-                    disabled={notification.status === 'sent' || notification.status === 'sending'}
+                    disabled={notification.status === 'sent' || notification.status === 'sending' || notification.status === 'cancelled'}
                   >
                     <SendIcon />
                   </IconButton>
@@ -569,6 +564,7 @@ export default function NotificacionesAdmin() {
                     size="small" 
                     color="error"
                     onClick={() => handleDeleteNotification(notification.id)}
+                    disabled={notification.status === 'cancelled'}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -683,18 +679,6 @@ export default function NotificacionesAdmin() {
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 Seleccione al menos una opción de destinatarios. Si no selecciona ninguna, la notificación no se podrá crear.
               </Typography>
-            </Box>
-            <Box>
-              <TextField
-                label="Programar envío (opcional)"
-                type="datetime-local"
-                value={formData.scheduled_at}
-                onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                error={!!formErrors.scheduled_at}
-                helperText={formErrors.scheduled_at}
-              />
             </Box>
           </Box>
         </DialogContent>

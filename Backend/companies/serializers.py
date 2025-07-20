@@ -43,6 +43,10 @@ class EmpresaSerializer:
             'status': empresa.status,
             'created_at': empresa.created_at.isoformat() if empresa.created_at else None,
             'updated_at': empresa.updated_at.isoformat() if empresa.updated_at else None,
+            # Campos adicionales del registro de empresa
+            'rut': empresa.rut,
+            'personality': empresa.personality,
+            'business_name': empresa.business_name,
         }
     
     @staticmethod

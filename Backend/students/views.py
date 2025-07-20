@@ -323,22 +323,28 @@ def student_update(request, student_id=None):
         
         # Procesar datos
         data = json.loads(request.body)
+        print(f"[student_update] Datos recibidos: {data}")
         
         # Actualizar campos del estudiante
         fields_to_update = [
             'career', 'semester', 'graduation_year', 'status', 'api_level',
             'strikes', 'gpa', 'completed_projects', 'total_hours', 'experience_years',
             'portfolio_url', 'github_url', 'linkedin_url', 'cv_link', 'certificado_link',
-            'availability', 'location', 'rating', 'skills', 'languages'
+            'availability', 'location', 'area', 'rating', 'skills', 'languages'
         ]
         
         for field in fields_to_update:
             if field in data:
+                print(f"[student_update] Actualizando campo '{field}': {data[field]}")
                 if field in ['skills', 'languages']:
                     # Convertir listas a JSON
                     if isinstance(data[field], list):
-                        import json
-                        setattr(student, field, json.dumps(data[field]))
+                        json_value = json.dumps(data[field])
+                        print(f"[student_update] Campo '{field}' convertido a JSON: {json_value}")
+                        setattr(student, field, json_value)
+                    else:
+                        print(f"[student_update] Campo '{field}' no es una lista, valor: {data[field]}")
+                        setattr(student, field, data[field])
                 else:
                     setattr(student, field, data[field])
         
@@ -353,6 +359,52 @@ def student_update(request, student_id=None):
             
             student.user.save()
         
+        # Actualizar perfil detallado si se proporcionan datos
+        if 'perfil_detallado' in data:
+            perfil_data = data['perfil_detallado']
+            print(f"[student_update] Datos de perfil detallado recibidos: {perfil_data}")
+            
+            # Obtener o crear perfil detallado
+            try:
+                perfil_detallado = student.perfil_detallado
+                print(f"[student_update] Perfil detallado existente encontrado: ID {perfil_detallado.id}")
+            except:
+                from students.models import PerfilEstudiante
+                perfil_detallado = PerfilEstudiante(estudiante=student)
+                print(f"[student_update] Creando nuevo perfil detallado")
+            
+            # Campos del perfil detallado
+            perfil_fields = [
+                'fecha_nacimiento', 'genero', 'nacionalidad', 'universidad', 'facultad',
+                'promedio_historico', 'experiencia_laboral', 'telefono_emergencia', 'contacto_emergencia'
+            ]
+            
+            for field in perfil_fields:
+                if field in perfil_data:
+                    print(f"[student_update] Actualizando campo '{field}': {perfil_data[field]}")
+                    setattr(perfil_detallado, field, perfil_data[field])
+            
+            # Campos JSON del perfil detallado
+            json_fields = {
+                'certificaciones': 'set_certificaciones_list',
+                'proyectos_personales': 'set_proyectos_personales_list',
+                'tecnologias_preferidas': 'set_tecnologias_preferidas_list',
+                'industrias_interes': 'set_industrias_interes_list',
+                'tipo_proyectos_preferidos': 'set_tipo_proyectos_preferidos_list'
+            }
+            
+            for field, method_name in json_fields.items():
+                if field in perfil_data:
+                    print(f"[student_update] Actualizando campo JSON '{field}': {perfil_data[field]}")
+                    method = getattr(perfil_detallado, method_name)
+                    method(perfil_data[field])
+            
+            print(f"[student_update] Guardando perfil detallado...")
+            perfil_detallado.save()
+            print(f"[student_update] Perfil detallado guardado exitosamente")
+        else:
+            print(f"[student_update] No se proporcionaron datos de perfil detallado")
+        
         student.save()
         
         # Retornar datos actualizados
@@ -361,9 +413,13 @@ def student_update(request, student_id=None):
             'id': str(student.id)
         })
         
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print(f"[student_update] Error JSON inválido: {e}")
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
+        print(f"[student_update] Error general: {e}")
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -431,6 +487,12 @@ def student_me(request):
         except Estudiante.DoesNotExist:
             return JsonResponse({'error': 'No existe perfil de estudiante asociado a este usuario.'}, status=404)
         
+        # Obtener perfil detallado si existe
+        try:
+            perfil_detallado = student.perfil_detallado
+        except:
+            perfil_detallado = None
+        
         # Serializar datos
         student_data = {
             'id': str(student.id),
@@ -453,6 +515,7 @@ def student_me(request):
             'certificado_link': student.certificado_link,
             'availability': student.availability,
             'location': student.location,
+            'area': student.area,  # <-- AÑADIDO
             'rating': float(student.rating),
             'skills': student.get_skills_list(),
             'languages': student.get_languages_list(),
@@ -461,6 +524,23 @@ def student_me(request):
             # Datos adicionales calculados
             'horas_permitidas': student.horas_permitidas_segun_api,
             'trl_permitido': student.trl_permitido_segun_api,
+            # Datos del perfil detallado
+            'perfil_detallado': {
+                'fecha_nacimiento': perfil_detallado.fecha_nacimiento.isoformat() if perfil_detallado and perfil_detallado.fecha_nacimiento else None,
+                'genero': perfil_detallado.genero if perfil_detallado else None,
+                'nacionalidad': perfil_detallado.nacionalidad if perfil_detallado else None,
+                'universidad': perfil_detallado.universidad if perfil_detallado else None,
+                'facultad': perfil_detallado.facultad if perfil_detallado else None,
+                'promedio_historico': float(perfil_detallado.promedio_historico) if perfil_detallado and perfil_detallado.promedio_historico else None,
+                'experiencia_laboral': perfil_detallado.experiencia_laboral if perfil_detallado else None,
+                'certificaciones': perfil_detallado.get_certificaciones_list() if perfil_detallado else [],
+                'proyectos_personales': perfil_detallado.get_proyectos_personales_list() if perfil_detallado else [],
+                'tecnologias_preferidas': perfil_detallado.get_tecnologias_preferidas_list() if perfil_detallado else [],
+                'industrias_interes': perfil_detallado.get_industrias_interes_list() if perfil_detallado else [],
+                'tipo_proyectos_preferidos': perfil_detallado.get_tipo_proyectos_preferidos_list() if perfil_detallado else [],
+                'telefono_emergencia': perfil_detallado.telefono_emergencia if perfil_detallado else None,
+                'contacto_emergencia': perfil_detallado.contacto_emergencia if perfil_detallado else None,
+            } if perfil_detallado else None,
             # Datos del usuario
             'user_data': {
                 'id': str(student.user.id),
@@ -478,6 +558,17 @@ def student_me(request):
                 'full_name': student.user.full_name,
             }
         }
+        
+        # Agregar logs para debugging
+        print(f"[student_me] Datos del estudiante:")
+        print(f"[student_me] - cv_link: '{student.cv_link}'")
+        print(f"[student_me] - certificado_link: '{student.certificado_link}'")
+        print(f"[student_me] - portfolio_url: '{student.portfolio_url}'")
+        print(f"[student_me] - github_url: '{student.github_url}'")
+        print(f"[student_me] - linkedin_url: '{student.linkedin_url}'")
+        print(f"[student_me] Datos serializados:")
+        print(f"[student_me] - cv_link en response: '{student_data.get('cv_link')}'")
+        print(f"[student_me] - certificado_link en response: '{student_data.get('certificado_link')}'")
         
         return JsonResponse(student_data)
         
