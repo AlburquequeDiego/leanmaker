@@ -187,29 +187,24 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
 
   const handleActivateConfirm = async () => {
     if (!selectedProject) return;
-    
     try {
       setUpdatingProject(selectedProject.id);
-      const response = await api.patch(`/api/projects/${selectedProject.id}/`, {
-        status: 'active'
-      });
-      
-      const updatedProject = response;
-      console.log('Respuesta del backend:', updatedProject); // Debug
-      
-      if (updatedProject && (updatedProject.status || updatedProject.status_name)) {
-        const newStatus = updatedProject.status || updatedProject.status_name;
+      // Llamar al nuevo endpoint para activar el proyecto y estudiantes
+      const response = await api.post(`/api/projects/${selectedProject.id}/activate/`);
+      console.log('Respuesta del backend (activar proyecto):', response);
+      if (response && response.success) {
+        // Actualizar el estado del proyecto a 'active'
         setProjects(projects.map(p =>
           p.id === selectedProject.id ? {
             ...p,
-            status: newStatus
+            status: 'active',
+            active_students: response.active_students // si quieres mostrar el contador
           } : p
         ));
         setActivateDialogOpen(false);
         setSelectedProject(null);
       } else {
-        console.error('Respuesta inesperada del backend:', updatedProject);
-        setError('Respuesta inesperada del servidor');
+        setError('Error al activar el proyecto o respuesta inesperada del servidor');
       }
     } catch (error: any) {
       console.error('Error activando proyecto:', error);

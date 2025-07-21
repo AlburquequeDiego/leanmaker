@@ -92,7 +92,9 @@ export const MyProjects = () => {
         // El backend devuelve {success: true, data: Array, total: number}
         const projectsData = response.data || response;
         const arr = Array.isArray(projectsData) ? projectsData : projectsData.data;
-        setProjects(Array.isArray(arr) ? arr.map(adaptProjectData) : []);
+        // Solo mostrar proyectos con estado 'active' o 'completed'
+        const filtered = Array.isArray(arr) ? arr.filter(p => p.status === 'active' || p.status === 'completed') : [];
+        setProjects(filtered.map(adaptProjectData));
       } catch (error) {
         console.error('Error fetching projects:', error);
         setProjects([]);

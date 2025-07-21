@@ -27645,3 +27645,172 @@ INFO 2025-07-21 17:34:03,465 autoreload 17972 728 C:\Users\albur\Desktop\leanmak
 INFO 2025-07-21 17:34:04,985 autoreload 5808 1328 Watching for file changes with StatReloader
 INFO 2025-07-21 17:34:09,794 autoreload 5808 1328 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
 INFO 2025-07-21 17:34:10,972 autoreload 3104 9108 Watching for file changes with StatReloader
+INFO 2025-07-21 17:38:16,290 basehttp 3104 21288 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:16,290 basehttp 3104 15148 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:19,931 basehttp 3104 15148 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-21 17:38:20,042 basehttp 3104 21288 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:21,332 basehttp 3104 15148 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-21 17:38:25,970 basehttp 3104 21288 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 216
+INFO 2025-07-21 17:38:31,768 basehttp 3104 21288 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:31,791 basehttp 3104 21288 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-21 17:38:37,304 basehttp 3104 21288 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:42,950 basehttp 3104 21288 "POST /api/token/ HTTP/1.1" 200 1050
+INFO 2025-07-21 17:38:45,130 basehttp 3104 21288 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 17:38:45,207 basehttp 3104 21288 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:48,521 basehttp 3104 12216 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:48,521 basehttp 3104 15148 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:49,202 basehttp 3104 21288 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 268
+INFO 2025-07-21 17:38:52,936 basehttp 3104 15148 "GET /api/calendar/events/ HTTP/1.1" 200 7597
+INFO 2025-07-21 17:38:52,953 basehttp 3104 21288 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:38:57,173 basehttp 3104 15148 "GET /api/calendar/events/ HTTP/1.1" 200 7597
+INFO 2025-07-21 17:39:15,758 basehttp 3104 21288 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:39:15,766 basehttp 3104 15148 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:39:23,118 basehttp 3104 18352 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:39:30,028 basehttp 3104 18352 "POST /api/token/ HTTP/1.1" 200 1050
+INFO 2025-07-21 17:39:30,036 basehttp 3104 18352 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:39:32,145 basehttp 3104 18352 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 17:39:32,335 basehttp 3104 18352 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:39:32,576 basehttp 3104 15148 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 17:39:36,392 basehttp 3104 18352 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 268
+INFO 2025-07-21 17:39:38,909 basehttp 3104 21288 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:39:55,341 basehttp 3104 21288 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 17:40:23,202 basehttp 3104 2944 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:40:23,202 basehttp 3104 10168 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:40:30,545 basehttp 3104 10168 "GET /api/calendar/events/ HTTP/1.1" 200 7597
+INFO 2025-07-21 17:40:30,554 basehttp 3104 10168 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:40:34,987 basehttp 3104 2944 "GET /api/calendar/events/ HTTP/1.1" 200 7597
+INFO 2025-07-21 17:40:53,583 basehttp 3104 10168 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:40:53,589 basehttp 3104 10168 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:41:09,959 basehttp 3104 10168 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 17:41:16,217 basehttp 3104 2944 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:41:34,505 basehttp 3104 2944 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 17:41:41,790 basehttp 3104 15936 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:41:41,813 basehttp 3104 15936 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-21 17:41:43,613 basehttp 3104 2944 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 268
+INFO 2025-07-21 17:41:50,253 basehttp 3104 2944 "POST /api/token/ HTTP/1.1" 200 1145
+INFO 2025-07-21 17:41:51,569 basehttp 3104 2944 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-21 17:41:51,669 basehttp 3104 2944 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:41:53,247 basehttp 3104 15936 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:41:53,250 basehttp 3104 15936 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:41:56,015 basehttp 3104 2944 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 216
+INFO 2025-07-21 17:41:57,961 basehttp 3104 15936 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 2248
+INFO 2025-07-21 17:42:02,561 basehttp 3104 2944 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 2248
+INFO 2025-07-21 17:56:04,097 autoreload 3104 9108 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-21 17:56:05,635 autoreload 16340 10752 Watching for file changes with StatReloader
+INFO 2025-07-21 17:56:10,604 autoreload 16340 10752 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\urls.py changed, reloading.
+INFO 2025-07-21 17:56:11,957 autoreload 3496 11872 Watching for file changes with StatReloader
+INFO 2025-07-21 17:56:34,157 basehttp 3496 16980 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 17:56:36,699 basehttp 3496 16980 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 17:56:38,733 basehttp 3496 14460 - Broken pipe from ('127.0.0.1', 49210)
+INFO 2025-07-21 17:56:47,456 basehttp 3496 10632 - Broken pipe from ('127.0.0.1', 49212)
+INFO 2025-07-21 17:56:59,711 basehttp 3496 10640 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:57:17,446 basehttp 3496 16980 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:57:22,991 basehttp 3496 10640 "OPTIONS /api/calendar/events/company_events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:57:22,992 basehttp 3496 16980 "OPTIONS /api/calendar/events/company_events/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:57:27,335 basehttp 3496 16980 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 7670
+INFO 2025-07-21 17:57:32,267 basehttp 3496 10640 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 7670
+INFO 2025-07-21 17:57:50,734 basehttp 3496 16980 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:58:07,003 basehttp 3496 16980 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 17:58:13,838 basehttp 3496 10640 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 17:58:31,257 basehttp 3496 10640 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 17:58:46,594 basehttp 3496 10640 "POST /api/calendar/events/ HTTP/1.1" 201 582
+INFO 2025-07-21 18:01:23,203 basehttp 3496 17140 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:23,204 basehttp 3496 12856 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:33,931 basehttp 3496 17140 "GET /api/applications/my_applications/ HTTP/1.1" 200 15724
+INFO 2025-07-21 18:01:43,232 basehttp 3496 12856 "GET /api/applications/my_applications/ HTTP/1.1" 200 15724
+INFO 2025-07-21 18:01:47,452 basehttp 3496 15336 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:47,452 basehttp 3496 17140 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:47,452 basehttp 3496 12856 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:47,458 basehttp 3496 15336 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:47,458 basehttp 3496 17140 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:47,458 basehttp 3496 12856 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:01:50,845 basehttp 3496 12856 "GET /api/students/me/ HTTP/1.1" 200 1959
+INFO 2025-07-21 18:01:53,204 basehttp 3496 6168 "GET /api/students/me/ HTTP/1.1" 200 1959
+INFO 2025-07-21 18:01:56,884 basehttp 3496 15336 "GET /api/applications/ HTTP/1.1" 200 4969
+INFO 2025-07-21 18:02:05,868 basehttp 3496 6168 "GET /api/applications/ HTTP/1.1" 200 4969
+INFO 2025-07-21 18:02:18,353 basehttp 3496 17140 "GET /api/projects/ HTTP/1.1" 200 13226
+INFO 2025-07-21 18:02:28,624 basehttp 3496 17140 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:02:28,624 basehttp 3496 15336 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:02:30,834 basehttp 3496 15336 "GET /api/projects/my_projects/ HTTP/1.1" 200 64
+INFO 2025-07-21 18:02:32,945 basehttp 3496 17140 "GET /api/projects/my_projects/ HTTP/1.1" 200 64
+INFO 2025-07-21 18:02:36,914 basehttp 3496 6168 "GET /api/projects/ HTTP/1.1" 200 13226
+INFO 2025-07-21 18:02:57,091 basehttp 3496 5732 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:03:17,024 basehttp 3496 6996 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:03:31,138 basehttp 3496 5732 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:03:47,450 basehttp 3496 5732 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:04:10,582 basehttp 3496 17140 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:04:10,582 basehttp 3496 6168 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:04:13,106 basehttp 3496 6168 "GET /api/notifications/ HTTP/1.1" 200 7281
+INFO 2025-07-21 18:04:15,617 basehttp 3496 17140 "GET /api/notifications/ HTTP/1.1" 200 7281
+INFO 2025-07-21 18:04:17,423 basehttp 3496 5732 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:04:38,430 basehttp 3496 6996 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:04:50,300 basehttp 3496 5732 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:05:07,568 basehttp 3496 6996 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:05:23,050 basehttp 3496 5732 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:05:42,652 basehttp 3496 6996 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:08:26,885 basehttp 3496 6996 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8376
+INFO 2025-07-21 18:08:31,648 basehttp 3496 6996 - Broken pipe from ('127.0.0.1', 49854)
+INFO 2025-07-21 18:08:32,656 basehttp 3496 5264 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:08:34,802 basehttp 3496 5264 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:08:37,547 basehttp 3496 2508 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8376
+INFO 2025-07-21 18:08:42,191 basehttp 3496 2508 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8376
+INFO 2025-07-21 18:08:51,045 basehttp 3496 5732 - Broken pipe from ('127.0.0.1', 49852)
+INFO 2025-07-21 18:09:00,060 basehttp 3496 5264 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:09:17,400 basehttp 3496 19928 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:09:23,094 basehttp 3496 5264 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:09:39,834 basehttp 3496 5264 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:11:45,157 autoreload 3496 11872 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-21 18:11:46,985 autoreload 19396 14232 Watching for file changes with StatReloader
+INFO 2025-07-21 18:12:12,704 basehttp 19396 3416 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:12:14,800 basehttp 19396 3416 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:12:18,655 basehttp 19396 13328 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:12:23,229 basehttp 19396 13328 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:12:41,402 basehttp 19396 3416 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:12:57,868 basehttp 19396 13328 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:13:04,173 basehttp 19396 3416 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:13:20,605 basehttp 19396 3416 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:14:29,482 autoreload 19396 14232 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-21 18:14:30,867 autoreload 18712 18520 Watching for file changes with StatReloader
+INFO 2025-07-21 18:14:41,359 basehttp 18712 14236 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:14:43,445 basehttp 18712 14236 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:14:47,309 basehttp 18712 19032 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:14:51,968 basehttp 18712 19032 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:15:11,308 basehttp 18712 14236 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:15:15,017 basehttp 18712 10268 "GET /api/students/me/ HTTP/1.1" 200 1959
+INFO 2025-07-21 18:15:17,380 basehttp 18712 17980 "GET /api/students/me/ HTTP/1.1" 200 1959
+INFO 2025-07-21 18:15:21,983 basehttp 18712 9240 "GET /api/applications/ HTTP/1.1" 200 4969
+INFO 2025-07-21 18:15:29,033 basehttp 18712 14236 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:15:30,953 basehttp 18712 17980 "GET /api/applications/ HTTP/1.1" 200 4969
+INFO 2025-07-21 18:15:33,918 basehttp 18712 19032 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:15:44,289 basehttp 18712 7772 "GET /api/projects/ HTTP/1.1" 200 13226
+INFO 2025-07-21 18:15:50,793 basehttp 18712 19032 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:16:03,089 basehttp 18712 17980 "GET /api/projects/ HTTP/1.1" 200 13226
+INFO 2025-07-21 18:23:02,881 basehttp 18712 10528 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:23:02,890 basehttp 18712 18688 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:23:04,775 basehttp 18712 18632 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 268
+INFO 2025-07-21 18:23:05,000 basehttp 18712 10528 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:23:05,836 basehttp 18712 18688 "GET /api/companies/company_me/ HTTP/1.1" 200 1174
+INFO 2025-07-21 18:23:07,572 basehttp 18712 18688 "GET /api/companies/company_me/ HTTP/1.1" 200 1174
+INFO 2025-07-21 18:23:48,422 basehttp 18712 18688 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:24:08,487 basehttp 18712 10528 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:24:43,741 basehttp 18712 10528 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:24:48,361 basehttp 18712 18632 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:24:59,524 basehttp 18712 18688 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:25:07,128 basehttp 18712 10528 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:25:15,974 basehttp 18712 18688 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:25:29,679 basehttp 18712 18632 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:25:32,790 basehttp 18712 18688 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:25:43,717 basehttp 18712 18632 "OPTIONS /api/calendar/events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-07-21 18:25:43,717 basehttp 18712 10528 "OPTIONS /api/calendar/events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-07-21 18:25:48,197 basehttp 18712 10528 "GET /api/calendar/events/?event_type=interview HTTP/1.1" 200 5257
+INFO 2025-07-21 18:25:49,561 basehttp 18712 18688 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:25:52,467 basehttp 18712 10528 "GET /api/calendar/events/?event_type=interview HTTP/1.1" 200 5257
+INFO 2025-07-21 18:25:56,222 basehttp 18712 18688 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:26:00,807 basehttp 18712 18688 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 8651
+INFO 2025-07-21 18:26:20,048 basehttp 18712 10528 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:26:36,768 basehttp 18712 18688 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:26:42,973 basehttp 18712 10528 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:27:01,342 basehttp 18712 10528 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:29:18,456 basehttp 18712 10528 "POST /api/calendar/events/ HTTP/1.1" 201 566
+INFO 2025-07-21 18:34:36,468 autoreload 18712 18520 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-21 18:34:38,031 autoreload 15820 9664 Watching for file changes with StatReloader

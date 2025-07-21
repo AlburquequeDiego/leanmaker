@@ -99,7 +99,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       setError(null);
       
       // Obtener eventos de calendario
-      const eventsResponse = await api.get('/api/calendar/events/');
+      const eventsResponse = await api.get('/api/calendar/events/company_events/');
       const eventsArray = Array.isArray(eventsResponse.data)
         ? eventsResponse.data
         : (eventsResponse.data?.results || []);
@@ -181,6 +181,12 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     try {
       const startDate = new Date(newEvent.start_date);
       const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 hora
+      // Asegurar que si hay un participante seleccionado, se agregue como attendee
+      let attendees = Array.isArray(newEvent.attendees) ? [...newEvent.attendees] : [];
+      // Si solo se permite seleccionar un estudiante, asegúrate de que sea un array con un solo ID
+      if (typeof attendees === 'string') {
+        attendees = [attendees];
+      }
       const eventData = {
         title: newEvent.title,
         description: newEvent.description,
@@ -188,7 +194,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
         location: newEvent.location,
-        attendees: newEvent.attendees,
+        attendees: attendees, // Siempre enviar el array de IDs
         is_public: newEvent.is_public,
         priority: newEvent.priority,
         project: selectedProject || undefined, // Enviar el proyecto seleccionado

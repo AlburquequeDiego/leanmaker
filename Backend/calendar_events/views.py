@@ -552,3 +552,74 @@ def student_events(request):
         return JsonResponse(events_data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def company_events(request):
+    """Endpoint específico para eventos de empresas"""
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+
+        # Solo eventos creados por la empresa autenticada
+        queryset = CalendarEvent.objects.filter(created_by=current_user)
+
+        # Filtros adicionales
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        event_type = request.GET.get('event_type')
+        status = request.GET.get('status')
+        if start_date:
+            queryset = queryset.filter(start_date__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(end_date__lte=end_date)
+        if event_type:
+            queryset = queryset.filter(event_type=event_type)
+        if status:
+            queryset = queryset.filter(status=status)
+
+        events_data = []
+        for event in queryset:
+            events_data.append({
+                'id': str(event.id),
+                'title': event.title,
+                'description': event.description,
+                'event_type': event.event_type,
+                'start_date': event.start_date.isoformat(),
+                'end_date': event.end_date.isoformat(),
+                'all_day': event.all_day,
+                'location': event.location,
+                'priority': event.priority,
+                'status': event.status,
+                'is_online': event.is_online,
+                'meeting_url': event.meeting_url,
+                'is_public': event.is_public,
+                'color': event.color,
+                'icon': event.icon,
+                'created_by': str(event.created_by.id) if event.created_by else None,
+                'attendees': [str(att.id) for att in event.attendees.all()],
+                'project': {
+                    'id': str(event.project.id),
+                    'title': event.project.title,
+                    'empresa': {
+                        'nombre': event.project.company.company_name if event.project.company else 'Sin empresa'
+                    }
+                } if event.project else None,
+                'created_at': event.created_at.isoformat(),
+                'updated_at': event.updated_at.isoformat(),
+            })
+
+        # Depuración: mostrar usuario autenticado y eventos encontrados
+        print('Usuario autenticado:', current_user.id, current_user.role)
+        print('Eventos encontrados:', queryset.count())
+        for e in queryset:
+            print('Evento:', e.id, e.title, 'project:', e.project_id)
+
+        return JsonResponse(events_data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
