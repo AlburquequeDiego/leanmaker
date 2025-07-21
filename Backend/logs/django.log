@@ -27634,3 +27634,14 @@ INFO 2025-07-21 17:08:18,189 basehttp 1196 9384 "GET /api/projects/my_projects/ 
 INFO 2025-07-21 17:08:20,266 basehttp 1196 9384 "GET /api/projects/my_projects/ HTTP/1.1" 200 3172
 INFO 2025-07-21 17:10:42,549 autoreload 1196 1364 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
 INFO 2025-07-21 17:10:43,620 autoreload 13608 18908 Watching for file changes with StatReloader
+INFO 2025-07-21 17:21:03,597 autoreload 13608 18908 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-21 17:21:05,053 autoreload 13072 19816 Watching for file changes with StatReloader
+INFO 2025-07-21 17:21:11,656 autoreload 13072 19816 C:\Users\albur\Desktop\leanmaker\Backend\projects\urls.py changed, reloading.
+INFO 2025-07-21 17:21:12,935 autoreload 17972 728 Watching for file changes with StatReloader
+INFO 2025-07-21 17:27:09,006 basehttp 17972 20660 "GET /api/projects/my_projects/ HTTP/1.1" 200 64
+INFO 2025-07-21 17:30:21,741 basehttp 17972 15068 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-21 17:30:21,778 basehttp 17972 15068 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-21 17:34:03,465 autoreload 17972 728 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-21 17:34:04,985 autoreload 5808 1328 Watching for file changes with StatReloader
+INFO 2025-07-21 17:34:09,794 autoreload 5808 1328 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-07-21 17:34:10,972 autoreload 3104 9108 Watching for file changes with StatReloader

@@ -36,7 +36,7 @@ urlpatterns = [
     path('api/calendar/events/', include('calendar_events.urls')),
     path('work-hours/', include('work_hours.urls')),
     path('interviews/', include('interviews.urls')),
-    path('calendar/', include('calendar_events.urls')),
+    #path('calendar/', include('calendar_events.urls')),
     path('api/strikes/', include('strikes.urls')),
     path('questionnaires/', include('questionnaires.urls')),
     path('platform-settings/', include('platform_settings.urls')),

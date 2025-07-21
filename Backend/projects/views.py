@@ -700,3 +700,41 @@ def company_projects(request):
         return JsonResponse({'success': True, 'data': projects_data, 'count': len(projects_data)})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def activate_project(request, project_id):
+    """Activa el proyecto: todas las aplicaciones aceptadas pasan a estado 'active'. Solo la empresa dueña puede usarlo."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        # Verificar que es empresa
+        if current_user.role != 'company':
+            return JsonResponse({'error': 'Solo empresas pueden activar proyectos'}, status=403)
+        from .models import Proyecto
+        try:
+            project = Proyecto.objects.get(id=project_id)
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        # Verificar que la empresa es dueña del proyecto
+        if not project.company or project.company.user_id != current_user.id:
+            return JsonResponse({'error': 'No tienes permisos para activar este proyecto'}, status=403)
+        # Cambiar todas las aplicaciones aceptadas a 'active'
+        from applications.models import Aplicacion
+        accepted_apps = Aplicacion.objects.filter(project=project, status='accepted')
+        updated_count = 0
+        for app in accepted_apps:
+            app.status = 'active'
+            app.save(update_fields=['status'])
+            updated_count += 1
+        # Contar estudiantes activos (active o completed)
+        active_count = Aplicacion.objects.filter(project=project, status__in=['active', 'completed']).count()
+        return JsonResponse({'success': True, 'active_students': active_count, 'updated': updated_count})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
