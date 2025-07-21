@@ -85,6 +85,15 @@ const INSTITUTIONS = [
   { name: 'Universidad de Talca', domain: 'utalca.cl' },
 ];
 
+// Función para obtener el placeholder de email basado en la institución
+const getEmailPlaceholder = (university: string) => {
+  const institution = INSTITUTIONS.find(inst => inst.name === university);
+  if (institution) {
+    return `ejemplo@${institution.domain}`;
+  }
+  return 'ejemplo@institucion.cl';
+};
+
 // Esquema de validación
 const getValidationSchema = (userType: UserType) => {
   const baseSchema = {
@@ -262,6 +271,25 @@ export const Register = () => {
     formik.resetForm();
   };
 
+  // Función para manejar el cambio de institución
+  const handleUniversityChange = (event: any) => {
+    const newUniversity = event.target.value;
+    formik.setFieldValue('university', newUniversity);
+    
+    // Si hay un email ingresado, verificar si coincide con la nueva institución
+    const currentEmail = formik.values.email;
+    if (currentEmail) {
+      const institution = INSTITUTIONS.find(inst => inst.name === newUniversity);
+      if (institution) {
+        const currentDomain = currentEmail.split('@')[1];
+        if (currentDomain && currentDomain !== institution.domain) {
+          // Si el dominio no coincide, limpiar el email
+          formik.setFieldValue('email', '');
+        }
+      }
+    }
+  };
+
   // useEffect para mostrar el recuadro de normas de conducta automáticamente
   useEffect(() => {
     if (userType === 'student') {
@@ -428,10 +456,17 @@ export const Register = () => {
                         name="email"
                         label="Correo electrónico"
                         type="email"
+                        placeholder={getEmailPlaceholder(formik.values.university)}
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={formik.touched.email && formik.errors.email}
+                        helperText={
+                          formik.touched.email && formik.errors.email 
+                            ? formik.errors.email 
+                            : formik.values.university 
+                              ? `Formato requerido: nombre.apellido@${INSTITUTIONS.find(inst => inst.name === formik.values.university)?.domain}`
+                              : 'Selecciona una institución para ver el formato de correo requerido'
+                        }
                         disabled={loading}
                       />
                     </Box>
@@ -495,6 +530,9 @@ export const Register = () => {
                     <Typography variant="h6" gutterBottom>
                       Información Académica
                     </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Selecciona tu institución educativa para ver el formato de correo requerido
+                    </Typography>
                   </Box>
 
                   <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
@@ -504,7 +542,7 @@ export const Register = () => {
                         <Select
                           name="university"
                           value={formik.values.university}
-                          onChange={formik.handleChange}
+                          onChange={handleUniversityChange}
                           error={formik.touched.university && Boolean(formik.errors.university)}
                           disabled={loading}
                         >

@@ -1,45 +1,10 @@
-
+Nombre del servidor:servidortesis.database.windows.net
 autenticacion : SQL Server Autentication
 login : administradortesiss
 password: Admin@tesis
 
 para ver tu IP y ponerla para que tambien puedas modifiar la base de datos
 https://www.whatismyip.com/ 
-
-Nombre del servidor:servidortesis.database.windows.net
-nombre de la base de datos : leanmaker_db
-
-use leanmaker_db;
-go
-
-SELECT TABLE_SCHEMA, TABLE_NAME
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_TYPE = 'BASE TABLE'
-ORDER BY TABLE_SCHEMA, TABLE_NAME;
-
--- Ver usuarios creados
-SELECT * FROM users;
---nombre de estudiantes 
-SELECT u.first_name, u.last_name
-FROM students s
-JOIN users u ON s.user_id = u.id;
-
--- Ver empresas
-SELECT * FROM companies;
-
--- Ver estudiantes
-SELECT * FROM students;
-
-Universidad de Chile → @uchile.cl
-Pontificia Universidad Católica de Chile → @uc.cl
-Universidad de Concepción → @udec.cl
-Universidad Técnica Federico Santa María → @usm.cl
-Universidad de Santiago de Chile → @usach.cl
-Universidad Austral de Chile → @uach.cl
-Universidad de Valparaíso → @uv.cl
-Universidad de La Frontera → @ufro.cl
-Universidad de Talca → @utalca.cl
-INACAP → @inacapmail.cl
 
 Lista de cuentas
 
@@ -48,30 +13,42 @@ Laura Martínez	  admin1@leanmaker.com	    Admin1234!
 FinanPlus	      contacto@finanplus.com    Empresa1234!
 Juan Pérez        juan.perez@uchile.cl      Estudiante1234!
 
-
-ADMIN
-VALIDACION DE HORAS  
-GESTION DE PROYECTOS  
-
-
-
+--------ESTADO DEL SISTEMA-------- 
+------------------------------
+REGISTRO DE EMPRESA             OK 
+REGISTRO DE ESTUDIANTE          OK 
+BLOG (CARTA DE PRECENTACION)    OK
+------------------------------
+ADMIN LE FUNCIONAN BIEN EL : 
+DASHBOARD                       OK
+PERFIL                          OK
+NOTIFICACIONES                  OK
+GESTION DE USUARIOS             OK
+GESTION DE ESTUDIANTES          OK
+GESTION DE EMPRESAS             OK
+CONFIGURACION DE LA PLATAFORMA  OK 
+--VALIDACION DE HORAS  
+--GESTION DE PROYECTOS
+--GESTION DE EVALUACIONES  
+-------------------------------
 EMPRESA LE FUNCIONA EL : 
-DASHBOARD        OK
-PERFIL           OK
-NOTIFICACIONES   OK
-
-
-
-
-
-
+DASHBOARD                       OK
+PERFIL                          OK
+NOTIFICACIONES                  OK
+--PROYECTOS
+--POSTULACIONES
+--BUSCAR ESTUDIANTES
+--EVALUACIONES
+--ENTREVISTAS
+--CALENDARIO
+--STRIKES
+-------------------------------
 ESTUDIANTE LE FUNCIONA EL :
 DASHBOARD           OK
 PERFIL              OK
 NOTIFICACIONES      OK
 CUESTIONARIO API    OK
 RESULTADOS API      OK
-
 --PROYECTOS DISPONIBLES
 --MIS APLICACIONES
 --MISPROYECTOS
