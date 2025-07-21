@@ -566,8 +566,14 @@ def company_events(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
 
-        # Solo eventos creados por la empresa autenticada
-        queryset = CalendarEvent.objects.filter(created_by=current_user)
+        from django.db import models
+        # Mostrar todos los eventos relevantes para la empresa:
+        queryset = CalendarEvent.objects.filter(
+            models.Q(project__company__user=current_user) |
+            models.Q(created_by=current_user) |
+            models.Q(attendees=current_user) |
+            models.Q(is_public=True)
+        ).distinct()
 
         # Filtros adicionales
         start_date = request.GET.get('start_date')
@@ -607,7 +613,7 @@ def company_events(request):
                     'id': str(event.project.id),
                     'title': event.project.title,
                     'empresa': {
-                        'nombre': event.project.company.company_name if event.project.company else 'Sin empresa'
+                        'nombre': event.project.company.company_name if event.project and event.project.company else 'Sin empresa'
                     }
                 } if event.project else None,
                 'created_at': event.created_at.isoformat(),

@@ -100,9 +100,14 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       
       // Obtener eventos de calendario
       const eventsResponse = await api.get('/api/calendar/events/company_events/');
-      const eventsArray = Array.isArray(eventsResponse.data)
-        ? eventsResponse.data
-        : (eventsResponse.data?.results || []);
+      // El backend devuelve un array plano, no un objeto con .data
+      const eventsArray = Array.isArray(eventsResponse)
+        ? eventsResponse
+        : Array.isArray(eventsResponse.data)
+          ? eventsResponse.data
+          : Array.isArray(eventsResponse.results)
+            ? eventsResponse.results
+            : [];
       console.log('Eventos recibidos del backend:', eventsArray);
       const adaptedEvents = eventsArray.map(adaptCalendarEvent);
       console.log('Eventos adaptados:', adaptedEvents);

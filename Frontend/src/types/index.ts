@@ -314,6 +314,8 @@ export interface CalendarEvent {
   priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   start_date: string;
   end_date: string;
+  start: Date; // <-- AGREGADO
+  end: Date;   // <-- AGREGADO
   all_day: boolean;
   location?: string;
   attendees: string[]; // Array de UUIDs de usuarios

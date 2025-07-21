@@ -27814,3 +27814,274 @@ INFO 2025-07-21 18:27:01,342 basehttp 18712 10528 "GET /api/applications/receive
 INFO 2025-07-21 18:29:18,456 basehttp 18712 10528 "POST /api/calendar/events/ HTTP/1.1" 201 566
 INFO 2025-07-21 18:34:36,468 autoreload 18712 18520 C:\Users\albur\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
 INFO 2025-07-21 18:34:38,031 autoreload 15820 9664 Watching for file changes with StatReloader
+INFO 2025-07-21 18:46:22,227 autoreload 21328 18772 Watching for file changes with StatReloader
+INFO 2025-07-21 18:48:01,530 basehttp 21328 21604 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:48:01,531 basehttp 21328 16808 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-21 18:48:01,864 log 21328 21604 Unauthorized: /api/users/profile/
+WARNING 2025-07-21 18:48:01,865 basehttp 21328 21604 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-21 18:48:01,870 basehttp 21328 16808 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-21 18:48:01,883 log 21328 21604 Unauthorized: /api/users/profile/
+WARNING 2025-07-21 18:48:01,884 basehttp 21328 21604 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-07-21 18:48:04,415 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:04,415 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:04,419 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:04,421 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:05,595 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:05,599 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:05,599 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:05,599 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:06,775 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:06,776 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:06,781 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:06,784 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:07,947 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:07,948 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:07,961 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:07,961 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:09,115 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:09,115 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:09,132 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:09,133 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:10,282 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:10,282 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:10,301 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:10,301 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:11,452 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:11,452 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:11,476 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:11,477 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:12,621 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:12,621 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:12,648 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:12,648 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:13,786 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:13,787 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:13,819 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:13,820 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:14,955 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:14,956 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:14,987 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:14,987 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:16,123 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:16,124 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:16,158 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:16,159 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:17,328 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:17,329 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:17,346 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:17,346 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:18,490 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:18,490 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:18,510 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:18,511 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:19,658 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:19,658 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:19,682 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:19,683 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:20,824 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:20,824 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:20,852 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:20,852 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:21,992 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:21,993 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:22,027 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:22,028 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:23,160 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:23,160 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:23,194 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:23,196 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:24,331 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:24,331 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:24,365 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:24,366 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:25,498 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:25,499 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:25,539 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:25,539 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:26,663 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:26,664 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:26,704 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:26,705 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:27,834 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:27,836 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:27,871 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:27,871 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:29,006 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:29,006 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:29,046 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:29,047 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:30,179 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:30,180 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:30,241 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:30,242 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:31,355 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:31,356 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:31,421 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:31,421 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:32,531 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:32,531 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:32,592 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:32,592 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:33,700 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:33,700 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:33,765 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:33,765 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:34,868 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:34,869 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:34,943 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:34,944 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:36,040 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:36,041 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:36,116 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:36,116 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:37,210 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:37,211 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:37,299 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:37,300 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:38,379 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:38,380 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:38,478 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:38,478 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:39,546 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:39,546 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:39,651 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:39,651 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:40,712 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:40,713 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:40,823 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:40,825 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:41,883 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:41,883 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:41,994 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:41,994 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:43,051 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:43,052 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:43,165 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:43,165 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:44,218 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:44,218 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:44,332 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:44,334 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:45,387 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:45,388 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:45,508 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:45,508 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:46,556 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:46,557 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:46,679 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:46,679 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:47,726 log 21328 16808 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:47,726 basehttp 21328 16808 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:47,851 log 21328 21604 Unauthorized: /api/token/refresh/
+WARNING 2025-07-21 18:48:47,852 basehttp 21328 21604 "POST /api/token/refresh/ HTTP/1.1" 401 40
+WARNING 2025-07-21 18:48:48,908 log 21328 16808 Unauthorized: /api/token/refresh/
+INFO 2025-07-21 18:48:48,909 basehttp 21328 16808 - Broken pipe from ('127.0.0.1', 54513)
+WARNING 2025-07-21 18:48:49,023 log 21328 21604 Unauthorized: /api/token/refresh/
+INFO 2025-07-21 18:48:49,023 basehttp 21328 21604 - Broken pipe from ('127.0.0.1', 54512)
+INFO 2025-07-21 18:52:01,985 basehttp 21328 20488 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:52:08,225 basehttp 21328 20488 "POST /api/token/ HTTP/1.1" 200 1050
+INFO 2025-07-21 18:52:10,089 basehttp 21328 20488 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:52:10,207 basehttp 21328 20488 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:52:13,723 basehttp 21328 20488 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 268
+INFO 2025-07-21 18:52:17,312 basehttp 21328 20488 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:52:17,313 basehttp 21328 21144 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:52:37,277 basehttp 21328 21144 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:52:57,027 basehttp 21328 20488 "GET /api/projects/company_projects/ HTTP/1.1" 200 13492
+INFO 2025-07-21 18:54:02,802 basehttp 21328 20488 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:54:02,809 basehttp 21328 20488 "OPTIONS /api/projects/create/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:54:05,175 basehttp 21328 20488 "POST /api/projects/create/ HTTP/1.1" 201 117
+INFO 2025-07-21 18:54:19,776 basehttp 21328 21144 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:54:19,777 basehttp 21328 20488 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:54:33,955 basehttp 21328 20488 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:54:48,078 basehttp 21328 21144 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:54:55,785 basehttp 21328 20488 "OPTIONS /api/calendar/events/company_events/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:54:55,785 basehttp 21328 21144 "OPTIONS /api/calendar/events/company_events/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:55:12,776 basehttp 21328 20488 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10211
+INFO 2025-07-21 18:55:29,570 basehttp 21328 21144 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10211
+INFO 2025-07-21 18:55:34,112 basehttp 21328 20488 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 18:55:48,239 basehttp 21328 21144 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:55:54,480 basehttp 21328 20488 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 18:56:04,217 basehttp 21328 21144 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:04,234 basehttp 21328 21144 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-21 18:56:08,371 basehttp 21328 20488 "GET /api/applications/received_applications/ HTTP/1.1" 200 37709
+INFO 2025-07-21 18:56:26,985 basehttp 21328 20488 "POST /api/token/ HTTP/1.1" 200 1145
+INFO 2025-07-21 18:56:28,171 basehttp 21328 20488 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-21 18:56:28,232 basehttp 21328 20488 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:31,765 basehttp 21328 20488 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 216
+INFO 2025-07-21 18:56:38,254 basehttp 21328 21144 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:38,254 basehttp 21328 20488 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:38,257 basehttp 21328 21144 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:38,259 basehttp 21328 20488 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:38,265 basehttp 21328 21144 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:38,265 basehttp 21328 20488 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:56:40,126 basehttp 21328 21144 "GET /api/students/me/ HTTP/1.1" 200 1959
+INFO 2025-07-21 18:56:41,965 basehttp 21328 21144 "GET /api/students/me/ HTTP/1.1" 200 1959
+INFO 2025-07-21 18:56:47,506 basehttp 21328 3796 "GET /api/applications/ HTTP/1.1" 200 4969
+INFO 2025-07-21 18:56:55,307 basehttp 21328 3796 "GET /api/applications/ HTTP/1.1" 200 4969
+INFO 2025-07-21 18:57:07,020 basehttp 21328 20488 "GET /api/projects/ HTTP/1.1" 200 13975
+INFO 2025-07-21 18:57:12,729 basehttp 21328 20488 "POST /api/applications/ HTTP/1.1" 200 75
+INFO 2025-07-21 18:57:17,485 basehttp 21328 20488 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-21 18:57:25,300 basehttp 21328 3796 "GET /api/projects/ HTTP/1.1" 200 13975
+INFO 2025-07-21 18:57:25,958 basehttp 21328 20488 "POST /api/token/ HTTP/1.1" 200 1050
+INFO 2025-07-21 18:57:27,813 basehttp 21328 20488 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 18:57:31,373 basehttp 21328 20488 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 268
+INFO 2025-07-21 18:57:53,633 basehttp 21328 20488 "GET /api/applications/received_applications/ HTTP/1.1" 200 39792
+INFO 2025-07-21 18:58:03,146 basehttp 21328 3796 "OPTIONS /api/applications/9394033f-18c4-4b27-b93d-f04013569ab9/ HTTP/1.1" 200 0
+INFO 2025-07-21 18:58:07,292 basehttp 21328 3796 "PATCH /api/applications/9394033f-18c4-4b27-b93d-f04013569ab9/ HTTP/1.1" 200 237
+INFO 2025-07-21 18:58:08,468 basehttp 21328 20488 "GET /api/applications/received_applications/ HTTP/1.1" 200 39792
+INFO 2025-07-21 18:58:23,257 basehttp 21328 20488 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 18:58:34,190 basehttp 21328 3796 "OPTIONS /api/calendar/events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-07-21 18:58:34,190 basehttp 21328 20488 "OPTIONS /api/calendar/events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-07-21 18:58:38,019 basehttp 21328 20488 "GET /api/calendar/events/?event_type=interview HTTP/1.1" 200 6619
+INFO 2025-07-21 18:58:41,707 basehttp 21328 20488 "GET /api/calendar/events/?event_type=interview HTTP/1.1" 200 6619
+INFO 2025-07-21 18:58:56,056 basehttp 21328 3796 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10211
+INFO 2025-07-21 18:59:12,906 basehttp 21328 3796 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10211
+INFO 2025-07-21 18:59:17,247 basehttp 21328 20488 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 18:59:32,377 basehttp 21328 3796 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 18:59:38,002 basehttp 21328 20488 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 18:59:52,823 basehttp 21328 20488 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:00:46,259 basehttp 21328 20488 "OPTIONS /api/calendar/events/ HTTP/1.1" 200 0
+INFO 2025-07-21 19:00:50,980 basehttp 21328 20488 "POST /api/calendar/events/ HTTP/1.1" 201 597
+INFO 2025-07-21 19:01:09,324 basehttp 21328 20488 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:01:11,165 basehttp 21328 20488 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:01:28,167 basehttp 21328 3796 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10977
+INFO 2025-07-21 19:01:45,937 basehttp 21328 20488 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10977
+INFO 2025-07-21 19:01:48,938 basehttp 21328 3796 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:02:03,742 basehttp 21328 20488 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:02:09,332 basehttp 21328 3796 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:02:23,861 basehttp 21328 3796 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:03:38,665 basehttp 21328 3796 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:03:40,579 basehttp 21328 3796 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:03:57,483 basehttp 21328 20488 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10977
+INFO 2025-07-21 19:04:15,354 basehttp 21328 20488 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10977
+INFO 2025-07-21 19:04:19,030 basehttp 21328 3796 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:04:34,387 basehttp 21328 3796 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:04:39,507 basehttp 21328 20488 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:04:51,124 basehttp 21328 3796 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:04:53,029 basehttp 21328 3796 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:04:54,142 basehttp 21328 20488 - Broken pipe from ('127.0.0.1', 54600)
+INFO 2025-07-21 19:05:11,377 basehttp 21328 15148 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10977
+INFO 2025-07-21 19:05:29,089 basehttp 21328 3796 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 10977
+INFO 2025-07-21 19:05:32,907 basehttp 21328 15148 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:05:47,492 basehttp 21328 3796 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:05:54,430 basehttp 21328 15148 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:06:09,745 basehttp 21328 15148 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:06:53,226 basehttp 21328 15148 "POST /api/calendar/events/ HTTP/1.1" 201 597
+INFO 2025-07-21 19:07:08,414 basehttp 21328 15148 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:07:10,232 basehttp 21328 15148 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:07:28,650 basehttp 21328 3796 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 11743
+INFO 2025-07-21 19:07:47,669 basehttp 21328 15148 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 11743
+INFO 2025-07-21 19:07:50,189 basehttp 21328 3796 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:08:05,577 basehttp 21328 15148 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:08:10,644 basehttp 21328 3796 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:08:25,229 basehttp 21328 3796 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:13:17,706 autoreload 21328 18772 C:\Users\joaqu\Desktop\leanmaker\Backend\calendar_events\views.py changed, reloading.
+INFO 2025-07-21 19:13:18,815 autoreload 19448 2388 Watching for file changes with StatReloader
+INFO 2025-07-21 19:13:28,199 basehttp 19448 20132 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:13:30,024 basehttp 19448 20132 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-21 19:13:49,111 basehttp 19448 20620 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 11743
+INFO 2025-07-21 19:14:07,736 basehttp 19448 20132 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 11743
+INFO 2025-07-21 19:14:09,977 basehttp 19448 20620 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:14:24,764 basehttp 19448 20132 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
+INFO 2025-07-21 19:14:30,798 basehttp 19448 20620 "GET /api/projects/company_projects/ HTTP/1.1" 200 14255
+INFO 2025-07-21 19:14:45,646 basehttp 19448 20620 "GET /api/applications/received_applications/ HTTP/1.1" 200 39823
