@@ -16,7 +16,7 @@ from django.db.models import F
 @csrf_exempt
 @require_http_methods(["GET"])
 def projects_list(request):
-    """Lista de proyectos disponibles para estudiantes."""
+    """Lista de proyectos disponibles para estudiantes, filtrados por nivel API y TRL permitido."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -28,85 +28,56 @@ def projects_list(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Parámetros de paginación y filtros
-        page = int(request.GET.get('page', 1))
-        limit = int(request.GET.get('limit', 10))
-        offset = (page - 1) * limit
-        search = request.GET.get('search', '')
-        status = request.GET.get('status', '')
+        # Obtener perfil de estudiante
+        estudiante = getattr(current_user, 'estudiante_profile', None)
+        if not estudiante:
+            return JsonResponse({'error': 'Solo estudiantes pueden ver proyectos disponibles'}, status=403)
         
-        # Query base con serialización segura - excluir proyectos eliminados y activos
-        queryset = Proyecto.objects.select_related('status', 'company', 'area', 'trl').annotate(
-            status_name=F('status__name'),
-            company_name=F('company__company_name'),
-            area_name=F('area__name'),
-            trl_level=F('trl__level')
-        ).exclude(status__name__in=['deleted', 'active']).values(
-            'id', 'title', 'description', 'requirements', 'max_students', 'current_students',
-            'applications_count', 'start_date', 'estimated_end_date', 'location', 'modality',
-            'difficulty', 'duration_weeks', 'hours_per_week', 'required_hours',
-            'created_at', 'updated_at', 'status_id', 'status_name', 'company_name', 
-            'area_name', 'trl_level', 'api_level', 'is_featured', 'is_urgent'
+        # Calcular TRL máximo permitido según API
+        trl_max = estudiante.trl_permitido_segun_api
+        api_level = estudiante.api_level
+        
+        # Filtrar proyectos activos/publicados, con TRL y API permitidos
+        from project_status.models import ProjectStatus
+        estados_visibles = ProjectStatus.objects.filter(name__in=['Publicado', 'Activo', 'published', 'active'])
+        proyectos = Proyecto.objects.filter(
+            status__in=estados_visibles,
+            trl__level__lte=trl_max,
+            api_level__lte=api_level
         )
         
-        # Aplicar filtros
-        if search:
-            queryset = queryset.filter(
-                Q(title__icontains=search) |
-                Q(description__icontains=search) |
-                Q(company_name__icontains=search)
-            )
-        
-        if status:
-            queryset = queryset.filter(status_name=status)
-        
-        # Contar total
-        total_count = queryset.count()
-        
-        # Paginar
-        projects = queryset[offset:offset + limit]
-        
-        # Serializar datos de forma segura
+        # Serializar proyectos
         projects_data = []
-        for project in projects:
+        for project in proyectos:
             projects_data.append({
-                'id': str(project['id']),
-                'title': project['title'],
-                'description': project['description'],
-                'requirements': project['requirements'],
-                'company_name': project['company_name'] or 'Sin empresa',
-                'status': project['status_name'] or 'Sin estado',
-                'status_id': project['status_id'],
-                'area': project['area_name'] or 'Sin área',
-                'trl_level': project['trl_level'] or 1,
-                'api_level': project['api_level'] or 1,
-                'max_students': project['max_students'],
-                'current_students': project['current_students'],
-                'applications_count': project['applications_count'],
-                'start_date': project['start_date'].isoformat() if project['start_date'] else None,
-                'estimated_end_date': project['estimated_end_date'].isoformat() if project['estimated_end_date'] else None,
-                'location': project['location'] or 'Remoto',
-                'modality': project['modality'],
-                'difficulty': project['difficulty'],
-                'duration_weeks': project['duration_weeks'],
-                'hours_per_week': project['hours_per_week'],
-                'required_hours': project['required_hours'],
-                'is_featured': project['is_featured'],
-                'is_urgent': project['is_urgent'],
-                'created_at': project['created_at'].isoformat() if project['created_at'] else None,
-                'updated_at': project['updated_at'].isoformat() if project['updated_at'] else None,
+                'id': str(project.id),
+                'title': project.title,
+                'description': project.description,
+                'requirements': project.requirements,
+                'company_name': project.company.company_name if project.company else 'Sin empresa',
+                'status': project.status.name if project.status else 'Sin estado',
+                'status_id': project.status.id if project.status else None,
+                'area': project.area.name if project.area else 'Sin área',
+                'trl_level': project.trl.level if project.trl else 1,
+                'api_level': project.api_level or 1,
+                'max_students': project.max_students,
+                'current_students': project.current_students,
+                'applications_count': project.applications_count,
+                'start_date': project.start_date.isoformat() if project.start_date else None,
+                'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
+                'location': project.location or 'Remoto',
+                'modality': project.modality,
+                'difficulty': project.difficulty,
+                'duration_weeks': project.duration_weeks,
+                'hours_per_week': project.hours_per_week,
+                'required_hours': project.required_hours,
+                'is_featured': getattr(project, 'is_featured', False),
+                'is_urgent': getattr(project, 'is_urgent', False),
+                'created_at': project.created_at.isoformat() if project.created_at else None,
+                'updated_at': project.updated_at.isoformat() if project.updated_at else None,
             })
-        
-        return JsonResponse({
-            'results': projects_data,
-            'count': total_count,
-            'page': page,
-            'limit': limit,
-            'total_pages': (total_count + limit - 1) // limit
-        })
-        
+        return JsonResponse({'results': projects_data, 'count': len(projects_data)})
     except Exception as e:
-        print(f"Error en projects_list: {e}")
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -218,9 +189,19 @@ def projects_create(request):
         except Empresa.DoesNotExist:
             return JsonResponse({'error': 'No existe perfil de empresa asociado a este usuario.'}, status=404)
         
-        # Lógica para calcular api_level y required_hours según TRL
-        trl_to_api = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 4}
-        api_to_hours = {1: 20, 2: 40, 3: 80, 4: 160}
+        # Lógica mejorada para calcular api_level y required_hours según TRL
+        trl_to_config = {
+            1: {'api_level': 1, 'min_hours': 20, 'max_hours': 40, 'description': 'Principios básicos observados'},
+            2: {'api_level': 1, 'min_hours': 20, 'max_hours': 40, 'description': 'Concepto tecnológico formulado'},
+            3: {'api_level': 2, 'min_hours': 40, 'max_hours': 80, 'description': 'Prueba de concepto analítica'},
+            4: {'api_level': 2, 'min_hours': 40, 'max_hours': 80, 'description': 'Validación en laboratorio'},
+            5: {'api_level': 3, 'min_hours': 80, 'max_hours': 160, 'description': 'Validación en ambiente relevante'},
+            6: {'api_level': 3, 'min_hours': 80, 'max_hours': 160, 'description': 'Demostración en ambiente relevante'},
+            7: {'api_level': 4, 'min_hours': 160, 'max_hours': 320, 'description': 'Demostración en ambiente operacional'},
+            8: {'api_level': 4, 'min_hours': 160, 'max_hours': 320, 'description': 'Sistema completo calificado'},
+            9: {'api_level': 4, 'min_hours': 160, 'max_hours': 320, 'description': 'Sistema probado en ambiente real'}
+        }
+        
         trl_level = None
         if data.get('trl_id'):
             from trl_levels.models import TRLLevel
@@ -229,17 +210,69 @@ def projects_create(request):
                 trl_level = trl_obj.level
             except Exception:
                 trl_level = None
-        if trl_level:
-            api_level = trl_to_api.get(trl_level, 1)
-            min_hours = api_to_hours.get(api_level, 20)
-            data['api_level'] = data.get('api_level', api_level)
-            data['required_hours'] = max(int(data.get('required_hours', min_hours)), min_hours)
-        # Validar que required_hours nunca sea menor al mínimo
-        if trl_level:
-            api_level = trl_to_api.get(trl_level, 1)
-            min_hours = api_to_hours.get(api_level, 20)
-            if int(data['required_hours']) < min_hours:
-                return JsonResponse({'error': f'El mínimo de horas para TRL {trl_level} (API {api_level}) es {min_hours} horas.'}, status=400)
+        
+        # Configurar valores por defecto coherentes
+        if trl_level and trl_level in trl_to_config:
+            config = trl_to_config[trl_level]
+            data['api_level'] = config['api_level']
+            
+            # Calcular horas requeridas de forma inteligente
+            requested_hours = data.get('required_hours', config['min_hours'])
+            if isinstance(requested_hours, str):
+                requested_hours = int(requested_hours)
+            
+            # Asegurar que las horas estén dentro del rango válido
+            data['required_hours'] = max(config['min_hours'], min(requested_hours, config['max_hours']))
+            
+            # Calcular horas por semana de forma realista
+            if not data.get('hours_per_week'):
+                # Para proyectos de 4-12 semanas, 10-20 horas por semana
+                # Para proyectos de 12-26 semanas, 8-15 horas por semana
+                # Para proyectos de 26+ semanas, 5-10 horas por semana
+                weeks_estimate = data['required_hours'] / 15  # Estimación inicial
+                if weeks_estimate <= 12:
+                    data['hours_per_week'] = max(10, min(20, data['required_hours'] // 8))
+                elif weeks_estimate <= 26:
+                    data['hours_per_week'] = max(8, min(15, data['required_hours'] // 16))
+                else:
+                    data['hours_per_week'] = max(5, min(10, data['required_hours'] // 32))
+            
+            # Calcular duración en semanas
+            if not data.get('duration_weeks'):
+                data['duration_weeks'] = max(4, min(52, data['required_hours'] // data['hours_per_week']))
+            
+            # Ajustar horas por semana si la duración es muy corta o muy larga
+            if data.get('duration_weeks') and data.get('hours_per_week'):
+                semanas_calculadas = data['required_hours'] / data['hours_per_week']
+                if semanas_calculadas < 4:
+                    # Si es muy corto, reducir horas por semana
+                    data['hours_per_week'] = max(5, data['required_hours'] // 4)
+                elif semanas_calculadas > 52:
+                    # Si es muy largo, aumentar horas por semana
+                    data['hours_per_week'] = min(40, data['required_hours'] // 52)
+            
+            # Configurar dificultad según TRL
+            if not data.get('difficulty'):
+                if trl_level <= 2:
+                    data['difficulty'] = 'beginner'
+                elif trl_level <= 5:
+                    data['difficulty'] = 'intermediate'
+                else:
+                    data['difficulty'] = 'advanced'
+            
+            print(f"📋 Configuración automática para TRL {trl_level}:")
+            print(f"   • API Level: {data['api_level']}")
+            print(f"   • Horas requeridas: {data['required_hours']}")
+            print(f"   • Horas por semana: {data['hours_per_week']}")
+            print(f"   • Duración semanas: {data['duration_weeks']}")
+            print(f"   • Dificultad: {data['difficulty']}")
+        else:
+            # Valores por defecto para proyectos sin TRL
+            data['api_level'] = data.get('api_level', 1)
+            data['required_hours'] = data.get('required_hours', 40)
+            data['hours_per_week'] = data.get('hours_per_week', 10)
+            data['duration_weeks'] = data.get('duration_weeks', 12)
+            data['difficulty'] = data.get('difficulty', 'intermediate')
         try:
             project = Proyecto.objects.create(
                 title=data.get('title'),
@@ -426,6 +459,60 @@ def projects_delete(request, project_id):
         return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
+@require_http_methods(["PATCH"])
+def projects_restore(request, project_id):
+    """Restaurar proyecto eliminado (cambiar de deleted a publicado y activar)."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Obtener proyecto
+        try:
+            project = Proyecto.objects.get(id=project_id)
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        
+        # Verificar permisos
+        if current_user.role == 'company' and str(project.company.user.id) != str(current_user.id):
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Restaurar: cambiar de deleted a publicado y activar
+        from project_status.models import ProjectStatus
+        try:
+            published_status = ProjectStatus.objects.filter(name__in=['Publicado', 'published']).first()
+            if published_status:
+                published_status.is_active = True
+                published_status.save()
+                project.status = published_status
+                project.save()
+            else:
+                return JsonResponse({'error': 'No se encontró un estado válido para restaurar'}, status=500)
+        except ProjectStatus.DoesNotExist:
+            return JsonResponse({'error': 'No se encontró un estado válido para restaurar'}, status=500)
+        
+        return JsonResponse({
+            'message': 'Proyecto restaurado correctamente',
+            'id': str(project.id),
+            'status': project.status.name,
+            'status_name': project.status.name,
+            'title': project.title,
+            'description': project.description,
+            'company_id': str(project.company.id) if project.company else None,
+            'area_id': str(project.area.id) if project.area else None,
+            'created_at': project.created_at.isoformat() if project.created_at else None,
+            'updated_at': project.updated_at.isoformat() if project.updated_at else None
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
 @require_http_methods(["GET"])
 def project_list(request):
     """Lista de proyectos."""
@@ -518,13 +605,19 @@ def my_projects(request):
             return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
         # Obtener aplicaciones aceptadas o completadas
         from applications.models import Aplicacion
-        accepted_statuses = ['accepted', 'completed', 'active']
+        accepted_statuses = ['active', 'completed']
         applications = Aplicacion.objects.filter(student=student, status__in=accepted_statuses).select_related('project', 'project__company')
         projects_data = []
+        horas_acumuladas = 0
         for app in applications:
             project = app.project
             if not project:
                 continue
+            # Sumar horas ofrecidas si el proyecto está completado
+            if app.status == 'completed':
+                horas_ofrecidas = getattr(project, 'required_hours', 0)
+                if isinstance(horas_ofrecidas, (int, float)):
+                    horas_acumuladas += horas_ofrecidas
             projects_data.append({
                 'id': str(project.id),
                 'title': project.title,
@@ -544,7 +637,7 @@ def my_projects(request):
                 'nextMilestone': '',
                 'nextMilestoneDate': '',
             })
-        return JsonResponse({'success': True, 'data': projects_data, 'total': len(projects_data)})
+        return JsonResponse({'success': True, 'data': projects_data, 'total': len(projects_data), 'horas_acumuladas': horas_acumuladas})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 

@@ -162,13 +162,14 @@ export default function APIRequestsAdmin() {
               <Select
                 value={pageSize}
                 label="Mostrar"
-                onChange={(e) => setPageSize(e.target.value as number)}
+                onChange={(e) => setPageSize(e.target.value === 'todos' ? 1000000 : Number(e.target.value))}
               >
                 <MenuItem value={20}>20</MenuItem>
                 <MenuItem value={50}>50</MenuItem>
                 <MenuItem value={100}>100</MenuItem>
                 <MenuItem value={150}>150</MenuItem>
                 <MenuItem value={200}>200</MenuItem>
+                <MenuItem value={'todos'}>Todos</MenuItem>
               </Select>
             </FormControl>
           </Box>

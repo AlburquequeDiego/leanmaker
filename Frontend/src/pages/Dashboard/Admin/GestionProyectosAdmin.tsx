@@ -83,7 +83,7 @@ export const GestionProyectosAdmin = () => {
   const [loadingStudents, setLoadingStudents] = useState(false);
 
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number | 'ultimos'>(50);
+  const [pageSize, setPageSize] = useState<number | 'todos'>(50);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
@@ -105,6 +105,8 @@ export const GestionProyectosAdmin = () => {
       if (pageSize === 'ultimos') {
         params.append('limit', '20');
         params.append('ultimos', 'true');
+      } else if (pageSize === 'todos') {
+        params.append('limit', '1000000'); // Limite muy alto para obtener todos
       } else {
         params.append('limit', pageSize.toString());
         params.append('offset', ((currentPage - 1) * pageSize).toString());
@@ -380,7 +382,7 @@ export const GestionProyectosAdmin = () => {
     setCurrentPage(page);
   };
 
-  const handlePageSizeChange = (newPageSize: number | 'ultimos') => {
+  const handlePageSizeChange = (newPageSize: number | 'ultimos' | 'todos') => {
     setPageSize(newPageSize);
     setCurrentPage(1); // Resetear a la primera página
   };
@@ -441,7 +443,7 @@ export const GestionProyectosAdmin = () => {
           showPagination={false}
           actions={actions}
           emptyMessage="No hay proyectos registrados"
-          pageSizeOptions={[50, 100, 200, 500, 1000]}
+          pageSizeOptions={[50, 100, 200, 500, 1000, 'todos']}
         />
       </div>
 

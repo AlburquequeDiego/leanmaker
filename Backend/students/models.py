@@ -3,7 +3,7 @@ from users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 import json
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 class Estudiante(models.Model):
@@ -187,7 +187,7 @@ class Estudiante(models.Model):
     
     def actualizar_calificacion(self, _=None):
         """Actualiza la calificación promedio del estudiante (GPA y rating)"""
-        from Backend.evaluations.models import Evaluation
+        from evaluations.models import Evaluation
         # Buscar todas las evaluaciones completadas para este estudiante
         evaluaciones = Evaluation.objects.filter(student__id=self.user.id, status='completed')
         if evaluaciones.exists():
@@ -370,3 +370,19 @@ def actualizar_trl_automaticamente(sender, instance, **kwargs):
         instance.trl_level = trl_calculado
         # Evitar recursión infinita
         Estudiante.objects.filter(id=instance.id).update(trl_level=trl_calculado)
+
+@receiver(post_save, sender='evaluations.Evaluation')
+def actualizar_gpa_estudiante_post_save(sender, instance, **kwargs):
+    try:
+        estudiante = Estudiante.objects.get(user=instance.student)
+        estudiante.actualizar_calificacion()
+    except Estudiante.DoesNotExist:
+        pass
+
+@receiver(post_delete, sender='evaluations.Evaluation')
+def actualizar_gpa_estudiante_post_delete(sender, instance, **kwargs):
+    try:
+        estudiante = Estudiante.objects.get(user=instance.student)
+        estudiante.actualizar_calificacion()
+    except Estudiante.DoesNotExist:
+        pass

@@ -71,7 +71,9 @@ class ProyectoSerializer:
                 errors[field] = f'El campo {field} es requerido'
         
         # Validar company_id
-        if 'company_id' in data and data['company_id']:
+        if not data.get('company_id'):
+            errors['company_id'] = 'La empresa es obligatoria para publicar un proyecto'
+        else:
             try:
                 company = Empresa.objects.get(id=data['company_id'])
                 data['company'] = company
@@ -210,26 +212,24 @@ class AplicacionProyectoSerializer:
     
     @staticmethod
     def to_dict(aplicacion):
-        """Convierte un objeto AplicacionProyecto a diccionario"""
         return {
             'id': str(aplicacion.id),
-            'proyecto_id': str(aplicacion.proyecto.id),
-            'proyecto_title': aplicacion.proyecto.title,
-            'estudiante_id': str(aplicacion.estudiante.id),
-            'estudiante_name': aplicacion.estudiante.full_name,
-            'cover_letter': aplicacion.cover_letter,
             'estado': aplicacion.estado,
-            'compatibility_score': aplicacion.compatibility_score,
             'applied_at': aplicacion.applied_at.isoformat() if aplicacion.applied_at else None,
-            'reviewed_at': aplicacion.reviewed_at.isoformat() if aplicacion.reviewed_at else None,
-            'responded_at': aplicacion.responded_at.isoformat() if aplicacion.responded_at else None,
+            'cover_letter': aplicacion.cover_letter,
             'company_notes': aplicacion.company_notes,
             'student_notes': aplicacion.student_notes,
             'portfolio_url': aplicacion.portfolio_url,
             'github_url': aplicacion.github_url,
             'linkedin_url': aplicacion.linkedin_url,
-            'created_at': aplicacion.created_at.isoformat(),
-            'updated_at': aplicacion.updated_at.isoformat()
+            'proyecto': ProyectoSerializer.to_dict(aplicacion.proyecto),
+            'empresa': {
+                'id': str(aplicacion.proyecto.company.id),
+                'nombre': aplicacion.proyecto.company.company_name,
+                'email': aplicacion.proyecto.company.user.email,
+                'descripcion': aplicacion.proyecto.company.description,
+                'telefono': aplicacion.proyecto.company.phone,
+            } if aplicacion.proyecto.company else None
         }
     
     @staticmethod

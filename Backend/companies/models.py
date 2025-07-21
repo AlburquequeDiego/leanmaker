@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from users.models import User
 import uuid
@@ -206,3 +206,25 @@ def crear_perfil_empresa(sender, instance, created, **kwargs):
         from .models import Empresa
         if not hasattr(instance, 'empresa_profile'):
             Empresa.objects.create(user=instance, company_name=instance.email)
+
+@receiver(post_save, sender=CalificacionEmpresa)
+def actualizar_rating_empresa_post_save(sender, instance, **kwargs):
+    empresa = instance.empresa
+    calificaciones = CalificacionEmpresa.objects.filter(empresa=empresa)
+    if calificaciones.exists():
+        promedio = sum([c.puntuacion for c in calificaciones]) / calificaciones.count()
+        empresa.rating = round(promedio, 2)
+    else:
+        empresa.rating = 0
+    empresa.save(update_fields=['rating'])
+
+@receiver(post_delete, sender=CalificacionEmpresa)
+def actualizar_rating_empresa_post_delete(sender, instance, **kwargs):
+    empresa = instance.empresa
+    calificaciones = CalificacionEmpresa.objects.filter(empresa=empresa)
+    if calificaciones.exists():
+        promedio = sum([c.puntuacion for c in calificaciones]) / calificaciones.count()
+        empresa.rating = round(promedio, 2)
+    else:
+        empresa.rating = 0
+    empresa.save(update_fields=['rating'])

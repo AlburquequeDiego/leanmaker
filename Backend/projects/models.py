@@ -22,6 +22,7 @@ class Proyecto(models.Model):
     DIFFICULTY_CHOICES = (
         ('beginner', 'Principiante'),
         ('intermediate', 'Intermedio'),
+        ('intermediate-advanced', 'Intermedio-Avanzado'),
         ('advanced', 'Avanzado'),
     )
     
@@ -34,7 +35,7 @@ class Proyecto(models.Model):
     
     # Campos básicos (coinciden exactamente con interface Project del frontend)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='proyectos', null=True, blank=True)
+    company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='proyectos', null=False, blank=False)
     status = models.ForeignKey('project_status.ProjectStatus', on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
     
@@ -64,7 +65,7 @@ class Proyecto(models.Model):
     # Campos adicionales - coinciden con frontend
     modality = models.CharField(max_length=20, choices=MODALITY_CHOICES, default='remote')
     location = models.CharField(max_length=200, null=True, blank=True)
-    difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default='intermediate')
+    difficulty = models.CharField(max_length=25, choices=DIFFICULTY_CHOICES, default='intermediate')
     
     # Campos JSON (se almacenan como texto en SQL Server) - coinciden con frontend
     required_skills = models.TextField(null=True, blank=True)  # JSON array

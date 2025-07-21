@@ -71,7 +71,7 @@ export default function ValidacionHorasAdmin() {
   const [reportHour, setReportHour] = useState<WorkHour | null>(null);
 
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number>(20); // Por defecto 20
+  const [pageSize, setPageSize] = useState<number | 'todos'>(20); // Por defecto 20
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
@@ -88,7 +88,9 @@ export default function ValidacionHorasAdmin() {
       // Construir parámetros de consulta
       const params = new URLSearchParams();
       
-      if (pageSize === 'ultimos') {
+      if (pageSize === 'todos') {
+        params.append('limit', '1000000'); // Para obtener todos los registros, evitar 0
+      } else if (pageSize === 'ultimos') {
         params.append('limit', '20');
         params.append('ultimos', 'true');
       } else {
@@ -380,18 +382,19 @@ export default function ValidacionHorasAdmin() {
           <Select
             value={pageSize}
             label="Mostrar"
-            onChange={(e) => setPageSize(Number(e.target.value))}
+            onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
           >
             <MenuItem value={20}>20 últimos</MenuItem>
             <MenuItem value={50}>50 últimos</MenuItem>
             <MenuItem value={100}>100 últimos</MenuItem>
             <MenuItem value={150}>150 últimos</MenuItem>
             <MenuItem value={200}>200 últimos</MenuItem>
+            <MenuItem value={'todos'}>Todos</MenuItem>
           </Select>
         </FormControl>
       </Box>
       <DataTable
-        data={workHours.slice(0, pageSize)}
+        data={pageSize === 'todos' ? workHours : workHours.slice(0, pageSize)}
         columns={columns}
         loading={loading}
         error={error}

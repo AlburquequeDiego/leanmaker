@@ -3,15 +3,15 @@ autenticacion : SQL Server Autentication
 login : administradortesiss
 password: Admin@tesis
 
-para ver tu IP y ponerla para que tambien puedas modifiar la base de datos
-https://www.whatismyip.com/ 
+IP  :   https://www.whatismyip.com/ 
 
 Lista de cuentas
-
 Nombre	          Correo	                Contraseña
 Laura Martínez	  admin1@leanmaker.com	    Admin1234!
 FinanPlus	      contacto@finanplus.com    Empresa1234!
 Juan Pérez        juan.perez@uchile.cl      Estudiante1234!
+
+
 
 --------ESTADO DEL SISTEMA-------- 
 ------------------------------
@@ -26,31 +26,31 @@ NOTIFICACIONES                  OK
 GESTION DE USUARIOS             OK
 GESTION DE ESTUDIANTES          OK
 GESTION DE EMPRESAS             OK
-CONFIGURACION DE LA PLATAFORMA  OK 
---VALIDACION DE HORAS  
---GESTION DE PROYECTOS
---GESTION DE EVALUACIONES  
+CONFIGURACION DE LA PLATAFORMA  OK   
+GESTION DE PROYECTOS            OK
+VALIDACION DE HORAS             OK
+--GESTION DE EVALUACIONES       OK -
 -------------------------------
 EMPRESA LE FUNCIONA EL : 
 DASHBOARD                       OK
 PERFIL                          OK
 NOTIFICACIONES                  OK
---PROYECTOS
---POSTULACIONES
---BUSCAR ESTUDIANTES
---EVALUACIONES
---ENTREVISTAS
---CALENDARIO
---STRIKES
+PROYECTOS                       OK -
+POSTULACIONES                   OK - 
+BUSCAR ESTUDIANTES              OK -
+EVALUACIONES                    OK -
+ENTREVISTAS                     OK - 
+CALENDARIO                      OK 
+STRIKES                         OK -
 -------------------------------
 ESTUDIANTE LE FUNCIONA EL :
-DASHBOARD           OK
-PERFIL              OK
-NOTIFICACIONES      OK
-CUESTIONARIO API    OK
-RESULTADOS API      OK
---PROYECTOS DISPONIBLES
---MIS APLICACIONES
---MISPROYECTOS
---EVALUACIONES
---CALENDARIO
+DASHBOARD             OK
+PERFIL                OK
+NOTIFICACIONES        OK
+CUESTIONARIO API      OK
+RESULTADOS API        OK
+PROYECTOS DISPONIBLES ok
+MIS APLICACIONES      OK
+MISPROYECTOS          OK
+EVALUACIONES          OK          - 
+CALENDARIO            OK

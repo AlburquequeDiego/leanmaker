@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.db import models
+from projects.models import Proyecto
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -25,6 +26,17 @@ def calendar_events_list(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
+        # Log de depuración: queryset completo antes del filtro
+        all_events = CalendarEvent.objects.all()
+        print('--- TODOS LOS EVENTOS EN BD ---')
+        for e in all_events:
+            print('Evento:', e.id, e.title, 'created_by:', e.created_by_id, 'project:', e.project_id)
+        print('--- FIN TODOS LOS EVENTOS ---')
+
+        # Filtro según rol (ya existente)
+        if current_user.role == 'company':
+            print('Empresa autenticada:', current_user.id)
+
         if request.method == 'POST':
             return calendar_events_create(request)
         
@@ -48,7 +60,7 @@ def calendar_events_list(request):
             ).distinct()
         elif current_user.role == 'company':
             queryset = queryset.filter(
-                models.Q(project__company=current_user.empresa_profile) | 
+                models.Q(project__company__user=current_user) | 
                 models.Q(created_by=current_user) | 
                 models.Q(attendees=current_user) | 
                 models.Q(is_public=True)
@@ -79,22 +91,26 @@ def calendar_events_list(request):
                 'event_type': event.event_type,
                 'start_date': event.start_date.isoformat(),
                 'end_date': event.end_date.isoformat(),
-                'all_day': event.all_day,
+                'all_day': bool(event.all_day),
                 'location': event.location,
                 'priority': event.priority,
                 'status': event.status,
-                'is_online': event.is_online,
+                'is_online': bool(event.is_online),
                 'meeting_url': event.meeting_url,
-                'is_public': event.is_public,
+                'is_public': bool(event.is_public),
                 'color': event.color,
                 'icon': event.icon,
-                'created_by': event.created_by.get_full_name() if event.created_by else None,
-                'attendees': [attendee.get_full_name() for attendee in event.attendees.all()],
+                'created_by': str(event.created_by.id) if event.created_by else None,
+                'attendees': [str(att.id) for att in event.attendees.all()],
                 'project': str(event.project.id) if event.project else None,
                 'created_at': event.created_at.isoformat(),
                 'updated_at': event.updated_at.isoformat(),
             })
         
+        print('Eventos encontrados tras filtro:', queryset.count())
+        for e in queryset:
+            print('Evento:', e.id, e.title, 'created_by:', e.created_by_id, 'project:', e.project_id)
+        print('events_data a devolver:', events_data)
         return JsonResponse({
             'results': events_data,
             'count': paginator.count,
@@ -200,6 +216,13 @@ def calendar_events_create(request):
             return JsonResponse({'error': 'La fecha de inicio debe ser anterior a la fecha de fin'}, status=400)
         
         # Crear evento
+        project_instance = None
+        if data.get('project'):
+            try:
+                project_instance = Proyecto.objects.get(id=data['project'])
+            except Proyecto.DoesNotExist:
+                pass
+
         event = CalendarEvent.objects.create(
             title=data['title'],
             description=data.get('description'),
@@ -217,7 +240,8 @@ def calendar_events_create(request):
             color=data.get('color', '#1976d2'),
             icon=data.get('icon'),
             created_by=current_user,
-            user=current_user
+            user=current_user,
+            project=project_instance
         )
         
         # Establecer reglas de recurrencia si aplica
@@ -235,6 +259,9 @@ def calendar_events_create(request):
                 except User.DoesNotExist:
                     pass
         
+        # Agregar log para depuración de asistentes
+        print("Attendees recibidos:", data.get('attendees'))
+
         event_data = {
             'id': str(event.id),
             'title': event.title,

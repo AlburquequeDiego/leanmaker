@@ -62,12 +62,12 @@ export const Calendar = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [view, setView] = useState('week'); // Vista por defecto: semana
+  const [view, setView] = useState('month'); // Vista por defecto: mes
   const [date, setDate] = useState(new Date());
   const [showRequestChange, setShowRequestChange] = useState(false);
   const [requestMessage, setRequestMessage] = useState('');
   const [requestSuccess, setRequestSuccess] = useState(false);
-  const [upcomingEventsLimit, setUpcomingEventsLimit] = useState(5);
+  const [upcomingEventsLimit, setUpcomingEventsLimit] = useState(20);
 
   useEffect(() => {
     fetchEvents();
@@ -79,8 +79,10 @@ export const Calendar = () => {
     try {
       // Obtener eventos específicos del estudiante
       const eventsData = await apiService.get('/api/calendar/events/student_events/');
-      
-      const formattedEvents = Array.isArray(eventsData) ? eventsData.map((event: any) => ({
+      const eventsArray = Array.isArray(eventsData)
+        ? eventsData
+        : (eventsData?.results || []);
+      const formattedEvents = eventsArray.map((event: any) => ({
         id: event.id,
         title: event.title,
         start: new Date(event.start_date),
@@ -91,8 +93,7 @@ export const Calendar = () => {
         description: event.description,
         company: event.project?.empresa?.nombre || 'Sin empresa',
         status: event.status || 'upcoming',
-      })) : [];
-      
+      }));
       console.log('Calendar - Events loaded successfully:', formattedEvents.length);
       setEvents(formattedEvents);
     } catch (error) {
@@ -145,6 +146,17 @@ export const Calendar = () => {
       case 'normal': return 'Normal';
       case 'low': return 'Baja';
       default: return priority;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'upcoming': return 'Próximo';
+      case 'in-progress': return 'En curso';
+      case 'completed': return 'Completado';
+      case 'cancelled': return 'Cancelado';
+      case 'scheduled': return 'Programado';
+      default: return status;
     }
   };
 
@@ -322,6 +334,8 @@ export const Calendar = () => {
             <ShowLatestFilter
               value={upcomingEventsLimit}
               onChange={setUpcomingEventsLimit}
+              options={[20, 50, 100, 150, -1]}
+              label="Mostrar"
             />
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -388,50 +402,13 @@ export const Calendar = () => {
               <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                 <Chip label={getEventTypeText(selectedEvent.type)} color="primary" />
                 <Chip label={getPriorityLabel(selectedEvent.priority)} color={getPriorityColor(selectedEvent.priority)} />
-                <Chip label={selectedEvent.status} color="default" />
+                <Chip label={getStatusLabel(selectedEvent.status)} color="default" />
               </Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">Cerrar</Button>
-          <Button onClick={() => setShowRequestChange(true)} color="primary" variant="contained">Solicitar cambio</Button>
-        </DialogActions>
-      </Dialog>
-      {/* Modal para solicitar cambio de evento */}
-      <Dialog open={showRequestChange} onClose={() => setShowRequestChange(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Solicitar cambio de evento</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            Escribe tu solicitud o motivo para cambiar este evento. La empresa recibirá tu mensaje.
-          </Typography>
-          <TextField
-            fullWidth
-            multiline
-            minRows={3}
-            placeholder="Ejemplo: Solicito cambiar la fecha por..."
-            value={requestMessage}
-            onChange={e => setRequestMessage(e.target.value)}
-          />
-          {requestSuccess && <Alert severity="success" sx={{ mt: 2 }}>¡Solicitud enviada correctamente!</Alert>}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowRequestChange(false)} color="secondary">Cancelar</Button>
-          <Button
-            onClick={() => {
-              setRequestSuccess(true);
-              setTimeout(() => {
-                setShowRequestChange(false);
-                setRequestSuccess(false);
-                setRequestMessage('');
-              }, 1500);
-            }}
-            color="primary"
-            variant="contained"
-            disabled={!requestMessage.trim()}
-          >
-            Enviar solicitud
-          </Button>
         </DialogActions>
       </Dialog>
     </Box>

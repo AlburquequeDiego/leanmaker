@@ -24,7 +24,7 @@ export const ShowLatestFilter: React.FC<ShowLatestFilterProps> = ({
       >
         {options.map((option) => (
           <MenuItem key={option} value={option}>
-            {option} últimas
+            {option === -1 ? 'Todas' : `${option} primeras`}
           </MenuItem>
         ))}
       </Select>

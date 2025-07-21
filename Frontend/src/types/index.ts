@@ -320,6 +320,8 @@ export interface CalendarEvent {
   created_by: string; // UUID del creador
   created_at: string;
   updated_at: string;
+  project?: string; // UUID del proyecto
+  project_title?: string; // Título del proyecto (opcional)
 }
 
 // Tipos de cuestionario - Coinciden con el modelo Cuestionario del backend

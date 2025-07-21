@@ -95,7 +95,7 @@ export const GestionEmpresasAdmin = () => {
   const [errorMessage, setErrorMessage] = useState('');
   
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number>(20); // <-- Cambiado de 10 a 20
+  const [pageSize, setPageSize] = useState<number | 'todos'>(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
@@ -114,8 +114,8 @@ export const GestionEmpresasAdmin = () => {
     try {
       // Construir parámetros de consulta
       const params = new URLSearchParams();
-      params.append('limit', pageSize.toString());
-      params.append('offset', ((currentPage - 1) * pageSize).toString());
+      params.append('limit', pageSize === 'todos' ? '0' : pageSize.toString()); // Si 'todos', no limitar
+      params.append('offset', ((currentPage - 1) * (pageSize === 'todos' ? 1000000 : pageSize)).toString()); // Offset grande para 'todos'
       
       if (filters.search) params.append('search', filters.search);
       if (filters.status) params.append('status', filters.status);
@@ -440,18 +440,19 @@ export const GestionEmpresasAdmin = () => {
           Gestión de Empresas
         </Typography>
         
-        <FormControl size="small" sx={{ minWidth: 120 }}>
+        <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>Mostrar</InputLabel>
           <Select
             value={pageSize}
             label="Mostrar"
-            onChange={(e) => handlePageSizeChange(e.target.value as number)}
+            onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
           >
-            <MenuItem value={20}>20</MenuItem>
-            <MenuItem value={50}>50</MenuItem>
-            <MenuItem value={100}>100</MenuItem>
-            <MenuItem value={150}>150</MenuItem>
-            <MenuItem value={200}>200</MenuItem>
+            <MenuItem value={20}>20 últimos</MenuItem>
+            <MenuItem value={50}>50 últimos</MenuItem>
+            <MenuItem value={100}>100 últimos</MenuItem>
+            <MenuItem value={150}>150 últimos</MenuItem>
+            <MenuItem value={200}>200 últimos</MenuItem>
+            <MenuItem value={'todos'}>Todos</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -491,7 +492,7 @@ export const GestionEmpresasAdmin = () => {
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={pageSize}
-        pageSizeOptions={[20, 50, 100, 150, 200]}
+        pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
         showPagination={false}
         showPageSizeSelector={false}
       />

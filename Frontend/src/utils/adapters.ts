@@ -86,6 +86,7 @@ export const adaptStudent = (backendStudent: any): Student => ({
   updated_at: backendStudent.updated_at,
   user_data: backendStudent.user_data, // <-- Añadido
   perfil_detallado: backendStudent.perfil_detallado, // <-- AÑADIDO
+  bio: backendStudent.bio, // <-- AÑADIDO para carta de presentación
 });
 
 /**
@@ -173,7 +174,7 @@ export const adaptProject = (backendProject: any): Project => {
     start_date: backendProject.start_date || backendProject.fecha_inicio || null,
     estimated_end_date: backendProject.estimated_end_date || backendProject.end_date || backendProject.fecha_fin_estimado || null,
     location: backendProject.location || 'No especificada',
-    difficulty: backendProject.difficulty || 'intermediate',
+    difficulty: translateDifficulty(backendProject.difficulty || 'intermediate'),
     is_featured: backendProject.is_featured || false,
     is_urgent: backendProject.is_urgent || false,
     created_by: String(backendProject.created_by || ''),
@@ -191,11 +192,12 @@ export const adaptApplication = (backendApplication: any): Application => {
   const project = backendApplication.project || {};
   const student = backendApplication.student || {};
   const company = project.company || {};
-  
+
   return {
     id: String(backendApplication.id),
     project: String(project.id || backendApplication.project || ''),
-    student: String(student.id || backendApplication.student || ''),
+    // CAMBIO: student ahora es el objeto adaptado
+    student: adaptStudent(student),
     status: backendApplication.status || 'pending',
     cover_letter: backendApplication.cover_letter || '',
     company_notes: backendApplication.company_notes || '',
@@ -208,18 +210,29 @@ export const adaptApplication = (backendApplication: any): Application => {
     responded_at: backendApplication.responded_at || null,
     created_at: backendApplication.created_at || new Date().toISOString(),
     updated_at: backendApplication.updated_at || new Date().toISOString(),
-    
     // Campos adicionales extraídos de la estructura anidada del backend
     project_title: project.title || backendApplication.project_title || 'Proyecto no encontrado',
     project_description: project.description || 'Sin descripción',
+    requirements: project.requirements || '',
+    projectDuration: project.duration_weeks ? `${project.duration_weeks} semanas` : '',
+    location: project.location || '',
+    modality: project.modality || '',
+    difficulty: project.difficulty || '',
+    required_hours: project.required_hours || '',
+    hours_per_week: project.hours_per_week || '',
+    max_students: project.max_students || '',
+    current_students: project.current_students || '',
+    trl_level: project.trl_level || '',
+    api_level: project.api_level || '',
+    area: project.area || '',
+    company: project.company_name || company.company_name || company.name || backendApplication.company_name || 'Sin empresa',
+    // Campos adicionales para el perfil completo del estudiante
     student_name: student.name || student.full_name || backendApplication.student_name || 'Estudiante no encontrado',
     student_email: student.email || backendApplication.student_email || 'Sin email',
-    company_name: company.company_name || company.name || backendApplication.company_name || 'Empresa no encontrada',
-    // Campos adicionales para el perfil completo del estudiante
-    student_career: student.career || backendApplication.student_career || '',
-    student_semester: student.semester || backendApplication.student_semester || '',
-    student_api_level: student.api_level || backendApplication.student_api_level || 1,
-    student_rating: student.rating || backendApplication.student_rating || 0,
+    // Skills y requisitos
+    requiredSkills: Array.isArray(project.requirements) ? project.requirements : (typeof project.requirements === 'string' && project.requirements ? project.requirements.split(',').map((s: string) => s.trim()) : []),
+    compatibility: backendApplication.compatibility_score || 0,
+    notes: backendApplication.student_notes || backendApplication.cover_letter || undefined,
   };
 };
 
@@ -363,6 +376,8 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => ({
   description: backendEvent.description,
   event_type: backendEvent.event_type,
   priority: backendEvent.priority || 'normal',
+  start: backendEvent.start_date ? new Date(backendEvent.start_date) : null,
+  end: backendEvent.end_date ? new Date(backendEvent.end_date) : null,
   start_date: backendEvent.start_date,
   end_date: backendEvent.end_date,
   all_day: backendEvent.all_day,
@@ -371,6 +386,8 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => ({
   created_by: String(backendEvent.created_by),
   created_at: backendEvent.created_at,
   updated_at: backendEvent.updated_at,
+  project: backendEvent.project ? String(backendEvent.project) : undefined,
+  project_title: backendEvent.project_title || (backendEvent.project && backendEvent.project.title) || undefined,
 });
 
 /**
@@ -475,4 +492,17 @@ export const adaptPaginatedResponse = <T>(
       has_previous: backendResponse.has_previous || false,
     }
   };
+}; 
+
+export const translateDifficulty = (difficulty: string): string => {
+  switch (difficulty) {
+    case 'intermediate':
+      return 'Intermedio';
+    case 'intermediate-advanced':
+      return 'Intermedio-Avanzado';
+    case 'advanced':
+      return 'Avanzado';
+    default:
+      return difficulty;
+  }
 }; 

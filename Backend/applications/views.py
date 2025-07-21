@@ -38,7 +38,6 @@ def application_list(request):
             except Exception:
                 return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
             # Verificar si ya existe una postulación
-            from .models import Aplicacion
             if Aplicacion.objects.filter(project=project, student=student).exists():
                 return JsonResponse({'error': 'Ya postulaste a este proyecto'}, status=400)
             # Crear la postulación
@@ -48,12 +47,30 @@ def application_list(request):
                 status='pending',
             )
             return JsonResponse({'success': True, 'application_id': str(app.id)})
-        # GET: lista de aplicaciones
-        applications = Aplicacion.objects.all()
+        # GET: lista de aplicaciones del usuario autenticado
+        if current_user.role == 'student':
+            try:
+                student = current_user.estudiante_profile
+                applications = Aplicacion.objects.filter(student=student)
+            except Exception:
+                return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+        elif current_user.role == 'company':
+            # Para empresas, mostrar aplicaciones de sus proyectos
+            try:
+                company = current_user.empresa_profile
+                applications = Aplicacion.objects.filter(project__company=company)
+            except Exception:
+                return JsonResponse({'error': 'Perfil de empresa no encontrado'}, status=404)
+        else:
+            # Para admins, mostrar todas las aplicaciones
+            applications = Aplicacion.objects.all()
+        
         applications_data = []
         for application in applications:
             applications_data.append({
                 'id': str(application.id),
+                'project_id': str(application.project.id) if application.project else None,
+                'project': str(application.project.id) if application.project else None,  # Para compatibilidad
                 'status': application.status,
                 'created_at': application.created_at.isoformat(),
                 'updated_at': application.updated_at.isoformat(),
@@ -159,6 +176,9 @@ def my_applications(request):
         applications = Aplicacion.objects.filter(student=student).select_related('project', 'project__company')
         applications_data = []
         for app in applications:
+            # Solo incluir si el proyecto tiene empresa asociada
+            if not app.project or not app.project.company:
+                continue
             applications_data.append({
                 'id': str(app.id),
                 'status': app.status,
@@ -172,13 +192,24 @@ def my_applications(request):
                     'id': str(app.project.id),
                     'title': app.project.title,
                     'description': app.project.description,
+                    'requirements': getattr(app.project, 'requirements', ''),
                     'duration_weeks': getattr(app.project, 'duration_weeks', None),
                     'location': getattr(app.project, 'location', ''),
+                    'modality': getattr(app.project, 'modality', ''),
+                    'difficulty': getattr(app.project, 'difficulty', ''),
+                    'required_hours': getattr(app.project, 'required_hours', None),
+                    'hours_per_week': getattr(app.project, 'hours_per_week', None),
+                    'max_students': getattr(app.project, 'max_students', None),
+                    'current_students': getattr(app.project, 'current_students', None),
+                    'trl_level': getattr(app.project, 'trl_level', None),
+                    'api_level': getattr(app.project, 'api_level', None),
+                    'area': getattr(app.project.area, 'name', '') if getattr(app.project, 'area', None) else '',
                     'company': {
-                        'id': str(app.project.company.id) if app.project.company else '',
-                        'name': app.project.company.company_name if app.project.company else '',
-                    } if hasattr(app.project, 'company') and app.project.company else {},
-                } if app.project else {},
+                        'id': str(app.project.company.id),
+                        'name': app.project.company.company_name,
+                    },
+                    'company_name': app.project.company.company_name,
+                },
             })
         return JsonResponse({'results': applications_data, 'total': applications.count()})
     except Exception as e:
@@ -216,9 +247,17 @@ def received_applications(request):
         
         applications_data = []
         for app in applications:
-            # Obtener datos del estudiante
             student_user = app.student.user if app.student else None
-            
+            # Obtener perfil detallado si existe
+            perfil_detallado = getattr(app.student, 'perfil_detallado', None) if app.student else None
+            # Habilidades y certificados
+            student_skills = app.student.get_skills_list() if app.student else []
+            student_languages = app.student.get_languages_list() if app.student else []
+            certificaciones = perfil_detallado.get_certificaciones_list() if perfil_detallado else []
+            proyectos_personales = perfil_detallado.get_proyectos_personales_list() if perfil_detallado else []
+            tecnologias_preferidas = perfil_detallado.get_tecnologias_preferidas_list() if perfil_detallado else []
+            industrias_interes = perfil_detallado.get_industrias_interes_list() if perfil_detallado else []
+            tipo_proyectos_preferidos = perfil_detallado.get_tipo_proyectos_preferidos_list() if perfil_detallado else []
             applications_data.append({
                 'id': str(app.id),
                 'project': {
@@ -229,12 +268,46 @@ def received_applications(request):
                 } if app.project else {},
                 'student': {
                     'id': str(app.student.id) if app.student else None,
+                    'user': str(app.student.user.id) if app.student and app.student.user else None,
                     'name': f"{student_user.first_name} {student_user.last_name}".strip() if student_user else 'Sin nombre',
-                    'email': student_user.email if student_user else 'Sin email',
+                    'email': student_user.email if student_user else '',
                     'career': app.student.career if app.student else None,
                     'semester': app.student.semester if app.student else None,
                     'api_level': app.student.api_level if app.student else 1,
-                    'rating': app.student.rating if app.student else 0,
+                    'rating': float(app.student.rating) if app.student else 0,
+                    'gpa': float(app.student.gpa) if app.student else 0,
+                    'university': app.student.university if app.student else None,
+                    'education_level': app.student.education_level if app.student else None,
+                    'graduation_year': app.student.graduation_year if app.student else None,
+                    'availability': app.student.availability if app.student else None,
+                    'location': app.student.location if app.student else None,
+                    'area': app.student.area if app.student else None,
+                    'portfolio_url': app.student.portfolio_url if app.student else None,
+                    'github_url': app.student.github_url if app.student else None,
+                    'linkedin_url': app.student.linkedin_url if app.student else None,
+                    'cv_link': app.student.cv_link if app.student else None,
+                    'certificado_link': app.student.certificado_link if app.student else None,
+                    'skills': student_skills,
+                    'languages': student_languages,
+                    'experience_years': app.student.experience_years if app.student else None,
+                    'completed_projects': app.student.completed_projects if app.student else None,
+                    'bio': student_user.bio if student_user else None,
+                    'perfil_detallado': {
+                        'fecha_nacimiento': perfil_detallado.fecha_nacimiento.isoformat() if perfil_detallado and perfil_detallado.fecha_nacimiento else None,
+                        'genero': perfil_detallado.genero if perfil_detallado else None,
+                        'nacionalidad': perfil_detallado.nacionalidad if perfil_detallado else None,
+                        'universidad': perfil_detallado.universidad if perfil_detallado else None,
+                        'facultad': perfil_detallado.facultad if perfil_detallado else None,
+                        'promedio_historico': float(perfil_detallado.promedio_historico) if perfil_detallado and perfil_detallado.promedio_historico else None,
+                        'experiencia_laboral': perfil_detallado.experiencia_laboral if perfil_detallado else None,
+                        'certificaciones': certificaciones,
+                        'proyectos_personales': proyectos_personales,
+                        'tecnologias_preferidas': tecnologias_preferidas,
+                        'industrias_interes': industrias_interes,
+                        'tipo_proyectos_preferidos': tipo_proyectos_preferidos,
+                        'telefono_emergencia': perfil_detallado.telefono_emergencia if perfil_detallado else None,
+                        'contacto_emergencia': perfil_detallado.contacto_emergencia if perfil_detallado else None,
+                    } if perfil_detallado else None,
                 } if app.student else {},
                 'status': app.status,
                 'cover_letter': app.cover_letter,

@@ -258,6 +258,7 @@ export const ManageProjects: React.FC = () => {
         max_students: 1,
         hours_per_week: 20,
         trl: parseInt(newProject.trl),
+        area_id: Array.isArray(newProject.areas) && newProject.areas.length > 0 ? newProject.areas[0] : undefined,
       };
 
       const response = await api.post('/api/projects/', projectData);

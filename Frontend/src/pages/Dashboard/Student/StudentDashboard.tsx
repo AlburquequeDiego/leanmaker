@@ -120,15 +120,6 @@ export default function StudentDashboard() {
           <Typography variant="h4" fontWeight={700}>{totalHours}</Typography>
           <Typography variant="body2">Horas de experiencia en proyectos</Typography>
             </Paper>
-        {/* GPA Actual */}
-        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#ffc107', color: 'white', p: 2, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <TrendingUpIcon sx={{ mr: 1, fontSize: 28, color: 'white' }} />
-            <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white' }}>GPA Actual</Typography>
-                </Box>
-          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{gpa}</Typography>
-          <Typography variant="body2" sx={{ color: 'white' }}>Promedio académico actual</Typography>
-            </Paper>
         {/* Proyectos Disponibles */}
         <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#2196f3', color: 'white', p: 2, borderRadius: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -164,6 +155,15 @@ export default function StudentDashboard() {
           </Box>
           <Typography variant="h4" fontWeight={700}>{activeProjects}</Typography>
           <Typography variant="body2">Proyectos en curso</Typography>
+        </Paper>
+        {/* GPA Actual */}
+        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#ffc107', color: 'white', p: 2, borderRadius: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <TrendingUpIcon sx={{ mr: 1, fontSize: 28, color: 'white' }} />
+            <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white' }}>GPA Actual</Typography>
+          </Box>
+          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{gpa && gpa > 0 ? gpa : 'Sin calificaciones'}</Typography>
+          <Typography variant="body2" sx={{ color: 'white' }}>Promedio académico actual</Typography>
         </Paper>
         </Box>
     </Box>

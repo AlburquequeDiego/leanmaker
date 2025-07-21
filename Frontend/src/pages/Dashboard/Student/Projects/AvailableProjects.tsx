@@ -21,6 +21,7 @@ import {
   CircularProgress,
   Paper,
   Tooltip,
+  Grid,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { 
@@ -33,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import { apiService } from '../../../../services/api.service';
 import { ShowLatestFilter } from '../../../../components/common/ShowLatestFilter';
+import { translateDifficulty } from '../../../../utils/adapters';
 
 interface Project {
   id: string;
@@ -56,6 +58,7 @@ interface Project {
   is_urgent?: boolean;
   created_at?: string;
   updated_at?: string;
+  required_hours?: number;
 }
 
 const areas = [
@@ -94,13 +97,15 @@ export default function AvailableProjects() {
   const [modalidad, setModalidad] = useState('');
   const [duracion, setDuracion] = useState('');
   const [tecs, setTecs] = useState<string[]>([]);
-  const [empresa, setEmpresa] = useState('');
+  // Eliminar estado y lógica de empresa
+  // const [empresa, setEmpresa] = useState('');
   const [ordenFecha, setOrdenFecha] = useState('recientes');
-  const [showLatest, setShowLatest] = useState(5);
+  const [showLatest, setShowLatest] = useState(50);
 
   useEffect(() => {
     fetchProjects();
     fetchStudentApiLevel();
+    fetchExistingApplications();
   }, []);
 
   const fetchStudentApiLevel = async () => {
@@ -110,6 +115,20 @@ export default function AvailableProjects() {
     } catch (error) {
       console.error('Error fetching student API level:', error);
       setStudentApiLevel(1);
+    }
+  };
+
+  const fetchExistingApplications = async () => {
+    try {
+      const applications = await apiService.get('/api/applications/');
+      if (applications.data && Array.isArray(applications.data)) {
+        const appliedProjectIds = applications.data.map((app: any) => app.project_id || app.project);
+        setApplied(appliedProjectIds);
+      }
+    } catch (error) {
+      console.error('Error fetching existing applications:', error);
+      // No fallar si no se pueden cargar las aplicaciones, solo mostrar error en consola
+      setApplied([]);
     }
   };
 
@@ -209,23 +228,10 @@ export default function AvailableProjects() {
     );
   }
   
-  if (duracion) {
-    const duracionValue = duracion.replace(' meses', '');
-    const semanas = parseInt(duracionValue) * 4; // Convertir meses a semanas aproximadas
-    filteredProjects = filteredProjects.filter(project => project.duration_weeks === semanas);
-  }
-  
-  if (tecs.length > 0) {
-    filteredProjects = filteredProjects.filter(project =>
-      tecs.every(tec => 
-        project.requirements.toLowerCase().includes(tec.toLowerCase())
-      )
-    );
-  }
-  
-  if (empresa) {
-    filteredProjects = filteredProjects.filter(project => project.company_name === empresa);
-  }
+  // Eliminar estado y lógica de empresa
+  // if (empresa) {
+  //   filteredProjects = filteredProjects.filter(project => project.company_name === empresa);
+  // }
   
   if (ordenFecha === 'recientes') {
     filteredProjects = filteredProjects.sort((a, b) => 
@@ -240,7 +246,8 @@ export default function AvailableProjects() {
   // Aplicar límite de "mostrar X últimas"
   filteredProjects = filteredProjects.slice(0, showLatest);
 
-  const empresas = [...new Set(projects.map(p => p.company_name).filter(Boolean))];
+  // Eliminar estado y lógica de empresa
+  // const empresas = [...new Set(projects.map(p => p.company_name).filter(Boolean))];
 
   if (loading) {
     return (
@@ -253,44 +260,53 @@ export default function AvailableProjects() {
   // Renderizado de detalles del proyecto
   const renderProjectDetail = (project: Project) => (
     <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="md" fullWidth>
-      <Box sx={{ p: 4 }}>
-        <Typography variant="h5" gutterBottom>{project.title}</Typography>
+      <Paper sx={{ p: 4, borderRadius: 3, bgcolor: '#f8fafc' }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom color="primary.main">{project.title}</Typography>
         <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-          Empresa: {project.company_name} | Área: {project.area} | Estado: {project.status}
+          <b>Empresa:</b> {project.company_name} &nbsp;|&nbsp; <b>Área:</b> {project.area} &nbsp;|&nbsp; <b>Estado:</b> {project.status}
         </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          <b>Descripción:</b> {project.description}
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          <b>Requisitos:</b> {project.requirements}
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          <b>Modalidad:</b> {project.modality} | <b>Ubicación:</b> {project.location}
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          <b>Dificultad:</b> {project.difficulty} | <b>Duración (semanas):</b> {project.duration_weeks}
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          <b>Estudiantes máximos:</b> {project.max_students} | <b>Actualmente:</b> {project.current_students}
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          <b>TRL:</b> {project.trl_level} | <b>API Level:</b> {project.api_level}
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          <b>Creado:</b> {project.created_at ? new Date(project.created_at).toLocaleString() : '-'}
-        </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Button onClick={handleCloseDetail} color="secondary" variant="outlined">Cerrar</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={applied.includes(project.id)}
-            onClick={() => handleApply(project.id)}
-          >
-            {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
-          </Button>
-        </Box>
-      </Box>
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} md={8}>
+            <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
+              <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Descripción</Typography>
+              <Typography variant="body1">{project.description}</Typography>
+            </Paper>
+            <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
+              <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Requisitos</Typography>
+              <Typography variant="body2">{project.requirements}</Typography>
+            </Paper>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+              <Chip label={`Modalidad: ${project.modality}`} color="info" />
+              <Chip label={`Ubicación: ${project.location}`} color="default" />
+              <Chip label={`Dificultad: ${translateDifficulty(project.difficulty)}`} color="secondary" />
+              <Chip label={`Horas totales: ${project.required_hours || (project.hours_per_week && project.duration_weeks ? project.hours_per_week * project.duration_weeks : '-')}`} color="default" />
+              <Chip label={`Horas/semana: ${project.hours_per_week || '-'}`} color="default" />
+              <Chip label={`Máx. estudiantes: ${project.max_students}`} color="success" />
+              <Chip label={`Actualmente: ${project.current_students}`} color="warning" />
+              <Chip label={`TRL: ${project.trl_level}`} color="primary" icon={<ScienceIcon />} />
+              <Chip label={`API Level: ${project.api_level}`} color="primary" icon={<TrendingUpIcon />} />
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2, bgcolor: '#f1f8e9' }} elevation={1}>
+              <Typography variant="subtitle2" color="text.secondary">Creado:</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>{project.created_at ? new Date(project.created_at).toLocaleString() : '-'}</Typography>
+              <Typography variant="subtitle2" color="text.secondary">Estado actual:</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>{project.status}</Typography>
+              <Button onClick={handleCloseDetail} color="secondary" variant="outlined" sx={{ mt: 2, mr: 1 }}>Cerrar</Button>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={applied.includes(project.id)}
+                onClick={() => handleApply(project.id)}
+                sx={{ mt: 2 }}
+              >
+                {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
+              </Button>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Paper>
     </Dialog>
   );
 
@@ -342,7 +358,7 @@ export default function AvailableProjects() {
             <MenuItem key="todas-modalidades" value="">Todas</MenuItem>
             {modalidades.map((m, index) => <MenuItem key={`modalidad-${index}-${m}`} value={m}>{m}</MenuItem>)}
           </TextField>
-          <TextField
+          {/* <TextField
             select
             label="Duración"
             value={duracion}
@@ -352,7 +368,7 @@ export default function AvailableProjects() {
           >
             <MenuItem key="todas-duraciones" value="">Todas</MenuItem>
             {duraciones.map((d, index) => <MenuItem key={`duracion-${index}-${d}`} value={d}>{d}</MenuItem>)}
-          </TextField>
+          </TextField> */}
           <Autocomplete
             multiple
             options={tecnologias}
@@ -363,7 +379,8 @@ export default function AvailableProjects() {
             getOptionLabel={(option) => option}
             isOptionEqualToValue={(option, value) => option === value}
           />
-          <TextField
+          {/* Eliminar estado y lógica de empresa */}
+          {/* <TextField
             select
             label="Empresa"
             value={empresa}
@@ -373,8 +390,8 @@ export default function AvailableProjects() {
           >
             <MenuItem key="todas-empresas" value="">Todas</MenuItem>
             {empresas.map((e, index) => <MenuItem key={`empresa-${index}-${e}`} value={e}>{e}</MenuItem>)}
-          </TextField>
-          <FormControl size="small" sx={{ minWidth: 140 }}>
+          </TextField> */}
+          {/* <FormControl size="small" sx={{ minWidth: 140 }}>
             <InputLabel>Ordenar por</InputLabel>
             <Select
               value={ordenFecha}
@@ -384,10 +401,12 @@ export default function AvailableProjects() {
               <MenuItem key="recientes" value="recientes">Más recientes</MenuItem>
               <MenuItem key="antiguos" value="antiguos">Más antiguos</MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
           <ShowLatestFilter
             value={showLatest}
             onChange={setShowLatest}
+            options={[50, 100, 200, 250, -1]}
+            label="Mostrar"
           />
         </Box>
       </Paper>
@@ -413,7 +432,7 @@ export default function AvailableProjects() {
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                   <Chip label={project.status} color={project.status === 'Activo' ? 'success' : 'default'} size="small" />
-                  <Chip label={`Dificultad: ${project.difficulty}`} size="small" />
+                  <Chip label={`Dificultad: ${translateDifficulty(project.difficulty)}`} size="small" />
                   <Chip label={`API ${project.api_level || 1}`} color={getApiLevelColor(project.api_level || 1)} size="small" icon={<TrendingUpIcon />} />
                   <Chip label={`TRL ${project.trl_level || 1}`} color={getTrlLevelColor(project.trl_level || 1)} size="small" icon={<ScienceIcon />} />
                 </Box>

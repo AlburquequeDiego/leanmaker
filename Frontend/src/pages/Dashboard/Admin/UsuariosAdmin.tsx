@@ -379,13 +379,14 @@ export default function UsuariosAdmin() {
             <Select
               value={limit}
               label="Mostrar"
-              onChange={(e) => setLimit(Number(e.target.value))}
+              onChange={(e) => setLimit(e.target.value === 'todos' ? 1000000 : Number(e.target.value))}
             >
               <MenuItem value={20}>20 últimos</MenuItem>
               <MenuItem value={50}>50 últimos</MenuItem>
               <MenuItem value={100}>100 últimos</MenuItem>
               <MenuItem value={150}>150 últimos</MenuItem>
               <MenuItem value={200}>200 últimos</MenuItem>
+              <MenuItem value={'todos'}>Todos</MenuItem>
             </Select>
           </FormControl>
           <Button

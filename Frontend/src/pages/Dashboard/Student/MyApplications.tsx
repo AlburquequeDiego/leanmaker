@@ -20,6 +20,7 @@ import {
   TextField,
   MenuItem,
   Autocomplete,
+  Grid,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -46,6 +47,15 @@ interface Application {
   description: string;
   compatibility: number;
   notes?: string;
+  modality?: string;
+  difficulty?: string;
+  required_hours?: string;
+  hours_per_week?: string;
+  max_students?: string;
+  current_students?: string;
+  trl_level?: string;
+  api_level?: string;
+  area?: string; // <-- Agregado
 }
 
 interface FilterOptions {
@@ -56,6 +66,7 @@ interface FilterOptions {
   nivel?: string;
   duracion?: string;
   tecnologias?: string[];
+  estado?: string; // <-- Agregado
 }
 
 // Opciones de filtros
@@ -85,39 +96,30 @@ interface FiltrosProyectosDisponiblesProps {
 const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter }) => {
   const [busqueda, setBusqueda] = useState('');
   const [area, setArea] = useState('');
-  const [modalidad, setModalidad] = useState('');
-  const [ubicacion, setUbicacion] = useState('');
-  const [nivel, setNivel] = useState('');
-  const [duracion, setDuracion] = useState('');
-  const [tecs, setTecs] = useState<string[]>([]);
+  const [estado, setEstado] = useState('');
 
   const handleFiltrar = () => {
-    onFilter?.({ busqueda, area, modalidad, ubicacion, nivel, duracion, tecnologias: tecs });
+    onFilter?.({ busqueda, area, estado });
   };
 
   const handleLimpiar = () => {
     setBusqueda('');
     setArea('');
-    setModalidad('');
-    setUbicacion('');
-    setNivel('');
-    setDuracion('');
-    setTecs([]);
+    setEstado('');
     onFilter?.({});
   };
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3, alignItems: 'center' }}>
-      {/* Bloque 1: Búsqueda */}
+      {/* Búsqueda por texto */}
       <TextField
-        label="¿Qué estás buscando hoy?"
+        label="Buscar"
         value={busqueda}
         onChange={e => setBusqueda(e.target.value)}
         sx={{ minWidth: 220, flex: 1 }}
         size="small"
       />
-
-      {/* Bloque 2: Área */}
+      {/* Área */}
       <TextField
         select
         label="Área"
@@ -129,69 +131,20 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
         <MenuItem value="">Todas</MenuItem>
         {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
       </TextField>
-
-      {/* Bloque 3: Modalidad */}
+      {/* Estado */}
       <TextField
         select
-        label="Modalidad"
-        value={modalidad}
-        onChange={e => setModalidad(e.target.value)}
-        sx={{ minWidth: 140 }}
-        size="small"
-      >
-        <MenuItem value="">Todas</MenuItem>
-        {modalidades.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
-      </TextField>
-
-      {/* Bloque 4: Ubicación */}
-      <TextField
-        select
-        label="Ubicación"
-        value={ubicacion}
-        onChange={e => setUbicacion(e.target.value)}
-        sx={{ minWidth: 140 }}
-        size="small"
-      >
-        <MenuItem value="">Todas</MenuItem>
-        {ubicaciones.map(u => <MenuItem key={u} value={u}>{u}</MenuItem>)}
-      </TextField>
-
-      {/* Bloque 5: Nivel */}
-      <TextField
-        select
-        label="Nivel"
-        value={nivel}
-        onChange={e => setNivel(e.target.value)}
+        label="Estado"
+        value={estado}
+        onChange={e => setEstado(e.target.value)}
         sx={{ minWidth: 140 }}
         size="small"
       >
         <MenuItem value="">Todos</MenuItem>
-        {niveles.map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
+        <MenuItem value="pending">Pendiente</MenuItem>
+        <MenuItem value="accepted">Aceptada</MenuItem>
+        <MenuItem value="rejected">Rechazada</MenuItem>
       </TextField>
-
-      {/* Bloque 6: Duración */}
-      <TextField
-        select
-        label="Duración"
-        value={duracion}
-        onChange={e => setDuracion(e.target.value)}
-        sx={{ minWidth: 120 }}
-        size="small"
-      >
-        <MenuItem value="">Todas</MenuItem>
-        {duraciones.map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
-      </TextField>
-
-      {/* Bloque 7: Tecnologías */}
-      <Autocomplete
-        multiple
-        options={tecnologias}
-        value={tecs}
-        onChange={(_, value) => setTecs(value)}
-        renderInput={(params) => <TextField {...params} label="Tecnologías" size="small" />}
-        sx={{ minWidth: 180 }}
-      />
-
       {/* Botones */}
       <Button variant="contained" color="primary" onClick={handleFiltrar}>
         Filtrar
@@ -205,20 +158,28 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
 
 // Función para adaptar los datos del backend al formato del frontend
 const adaptApplicationData = (backendData: any): Application => {
-  const adapted = adaptApplication(backendData);
   return {
-    id: adapted.id,
-    projectTitle: adapted.project_title || 'Sin título',
-    company: adapted.company_name || 'Sin empresa',
-    status: adapted.status as any,
-    appliedDate: adapted.applied_at,
-    responseDate: adapted.responded_at || undefined,
-    requiredSkills: [], // El backend no devuelve skills en este endpoint
-    projectDuration: 'No especificado', // El backend no devuelve duration en este endpoint
-    location: 'No especificada', // El backend no devuelve location en este endpoint
-    description: adapted.project_description || 'Sin descripción',
-    compatibility: adapted.compatibility_score || 0,
-    notes: adapted.student_notes || adapted.cover_letter || undefined,
+    id: backendData.id,
+    projectTitle: backendData.project_title || 'Sin título',
+    company: backendData.company || 'Sin empresa',
+    status: backendData.status as any,
+    appliedDate: backendData.applied_at || backendData.created_at,
+    responseDate: backendData.responded_at || undefined,
+    requiredSkills: backendData.requiredSkills || [],
+    projectDuration: backendData.projectDuration || 'No especificado',
+    location: backendData.location || 'No especificada',
+    description: backendData.project_description || 'Sin descripción',
+    compatibility: backendData.compatibility || 0,
+    notes: backendData.student_notes || backendData.cover_letter || undefined,
+    modality: backendData.modality,
+    difficulty: backendData.difficulty,
+    required_hours: backendData.required_hours,
+    hours_per_week: backendData.hours_per_week,
+    max_students: backendData.max_students,
+    current_students: backendData.current_students,
+    trl_level: backendData.trl_level,
+    api_level: backendData.api_level,
+    area: backendData.area || '', // <-- Agregado
   };
 };
 
@@ -229,7 +190,7 @@ export const MyApplications: React.FC = () => {
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
-  const [historyLimit, setHistoryLimit] = useState(5);
+  const [historyLimit, setHistoryLimit] = useState(25); // Por defecto 25
 
   useEffect(() => {
     async function fetchApplications() {
@@ -264,45 +225,31 @@ export const MyApplications: React.FC = () => {
     setDialogOpen(true);
   };
 
+  // Actualizar handleFilter para soportar solo los filtros esenciales
   const handleFilter = (filters: FilterOptions) => {
     let filtered = [...applications];
-    
     if (filters.busqueda) {
-      filtered = filtered.filter(app => 
+      filtered = filtered.filter(app =>
         app.projectTitle.toLowerCase().includes(filters.busqueda!.toLowerCase()) ||
         app.company.toLowerCase().includes(filters.busqueda!.toLowerCase()) ||
         app.description.toLowerCase().includes(filters.busqueda!.toLowerCase())
       );
     }
-    
     if (filters.area) {
-      filtered = filtered.filter(app => 
+      filtered = filtered.filter(app =>
         app.area?.toLowerCase().includes(filters.area!.toLowerCase())
       );
     }
-    
-    if (filters.modalidad) {
-      filtered = filtered.filter(app => app.location === filters.modalidad);
+    if (filters.estado) {
+      filtered = filtered.filter(app => app.status === filters.estado);
     }
-    
-    if (filters.ubicacion) {
-      filtered = filtered.filter(app => app.location === filters.ubicacion);
-    }
-    
-    if (filters.tecnologias && filters.tecnologias.length > 0) {
-      filtered = filtered.filter(app => 
-        app.requiredSkills.some(skill => 
-          filters.tecnologias!.some(tech => skill.toLowerCase().includes(tech.toLowerCase()))
-        )
-      );
-    }
-    
     setFilteredApplications(filtered);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
+      case 'reviewing':
         return 'warning';
       case 'accepted':
         return 'success';
@@ -319,6 +266,8 @@ export const MyApplications: React.FC = () => {
     switch (status) {
       case 'pending':
         return 'Pendiente';
+      case 'reviewing':
+        return 'En revisión';
       case 'accepted':
         return 'Aceptada';
       case 'rejected':
@@ -373,9 +322,9 @@ export const MyApplications: React.FC = () => {
 
       {/* Estadísticas */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
-        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#fff3e0' }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#FFE082' }}>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="warning.main">
+            <Typography variant="h3" sx={{ color: '#FF6F00' }}>
               {pendingApplications.length}
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -383,10 +332,9 @@ export const MyApplications: React.FC = () => {
             </Typography>
           </CardContent>
         </Card>
-        
-        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e8f5e8' }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#B9F6CA' }}>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="success.main">
+            <Typography variant="h3" sx={{ color: '#00C853' }}>
               {acceptedApplications.length}
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -394,21 +342,9 @@ export const MyApplications: React.FC = () => {
             </Typography>
           </CardContent>
         </Card>
-        
-        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#e3f2fd' }}>
+        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#FF8A80' }}>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="info.main">
-              {completedApplications.length}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Completadas
-            </Typography>
-          </CardContent>
-        </Card>
-        
-        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#ffebee' }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="error.main">
+            <Typography variant="h3" sx={{ color: '#D50000' }}>
               {rejectedApplications.length}
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -433,10 +369,10 @@ export const MyApplications: React.FC = () => {
               onChange={e => setHistoryLimit(Number(e.target.value))}
               sx={{ minWidth: 110 }}
             >
-              <MenuItem value={5}>Últimos 5</MenuItem>
-              <MenuItem value={10}>Últimos 10</MenuItem>
-              <MenuItem value={15}>Últimos 15</MenuItem>
-              <MenuItem value={20}>Últimos 20</MenuItem>
+              <MenuItem value={25}>Últimos 25</MenuItem>
+              <MenuItem value={50}>Últimos 50</MenuItem>
+              <MenuItem value={100}>Últimos 100</MenuItem>
+              <MenuItem value={200}>Últimos 200</MenuItem>
               <MenuItem value={filteredApplications.length}>Todos</MenuItem>
             </TextField>
           </Box>
@@ -462,9 +398,7 @@ export const MyApplications: React.FC = () => {
                   <TableCell>Proyecto</TableCell>
                   <TableCell>Empresa</TableCell>
                   <TableCell>Estado</TableCell>
-                  <TableCell>Compatibilidad</TableCell>
                   <TableCell>Fecha Aplicación</TableCell>
-                  <TableCell>Duración</TableCell>
                   <TableCell>Acciones</TableCell>
                 </TableRow>
               </TableHead>
@@ -498,17 +432,7 @@ export const MyApplications: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={`${application.compatibility}%`}
-                        color={getCompatibilityColor(application.compatibility) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
                       {new Date(application.appliedDate).toLocaleDateString('es-ES')}
-                    </TableCell>
-                    <TableCell>
-                      {application.projectDuration}
                     </TableCell>
                     <TableCell>
                       <IconButton
@@ -531,97 +455,63 @@ export const MyApplications: React.FC = () => {
       {/* Dialog para detalles */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
         {selectedApplication && (
-          <Box sx={{ p: 2, pt: 3, pb: 1 }}>
-            {/* Encabezado */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56, boxShadow: 2 }}>
-                <AssignmentIcon fontSize="large" />
-              </Avatar>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="h5" fontWeight={700} sx={{ mb: 0.5 }}>
-                  {selectedApplication.projectTitle}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Chip
-                    icon={getStatusIcon(selectedApplication.status)}
-                    label={getStatusText(selectedApplication.status)}
-                    color={getStatusColor(selectedApplication.status) as any}
-                    sx={{ fontWeight: 600 }}
-                  />
-                  <Chip
-                    label={`Compatibilidad: ${selectedApplication.compatibility}%`}
-                    color={getCompatibilityColor(selectedApplication.compatibility) as any}
-                    size="small"
-                  />
-                </Box>
-              </Box>
-            </Box>
-            {/* Empresa */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, background: 'rgba(0,0,0,0.03)', borderRadius: 2, p: 2 }}>
-              <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}>
-                <BusinessIcon />
-              </Avatar>
-              <Box>
-                <Typography variant="subtitle1" fontWeight={600}>{selectedApplication.company}</Typography>
-                <Typography variant="caption" color="text.secondary">Empresa</Typography>
-              </Box>
-            </Box>
-            {/* Descripción */}
-            <Typography variant="body1" sx={{ mb: 3, color: 'text.primary', background: 'rgba(0,0,0,0.02)', p: 2, borderRadius: 2 }}>
-              {selectedApplication.description}
+          <Paper sx={{ p: 4, borderRadius: 3, bgcolor: '#f8fafc' }}>
+            <Typography variant="h4" fontWeight={700} gutterBottom color="primary.main">{selectedApplication.projectTitle}</Typography>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              <b>Empresa:</b> {selectedApplication.company} &nbsp;|&nbsp; <b>Área:</b> {selectedApplication.area || 'Sin área'} &nbsp;|&nbsp; <b>Estado:</b> {getStatusText(selectedApplication.status)}
             </Typography>
-            {/* Datos clave */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-              <Box sx={{ minWidth: 120 }}>
-                <Typography variant="subtitle2" color="text.secondary">Duración</Typography>
-                <Typography variant="body1">{selectedApplication.projectDuration}</Typography>
-              </Box>
-              <Box sx={{ minWidth: 120 }}>
-                <Typography variant="subtitle2" color="text.secondary">Ubicación</Typography>
-                <Typography variant="body1">{selectedApplication.location}</Typography>
-              </Box>
-            </Box>
-            {/* Habilidades requeridas */}
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-              Habilidades Requeridas:
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-              {selectedApplication.requiredSkills.map((skill) => (
-                <Chip key={skill} label={skill} size="small" variant="outlined" />
-              ))}
-            </Box>
-            {/* Fechas */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">Fecha de Aplicación</Typography>
-                <Typography variant="body1">
-                  {new Date(selectedApplication.appliedDate).toLocaleDateString('es-ES')}
-                </Typography>
-              </Box>
-              {selectedApplication.responseDate && (
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Fecha de Respuesta</Typography>
-                  <Typography variant="body1">
-                    {new Date(selectedApplication.responseDate).toLocaleDateString('es-ES')}
-                  </Typography>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
+              <Grid item xs={12} md={8}>
+                <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Descripción</Typography>
+                  <Typography variant="body1">{selectedApplication.description || 'Sin descripción'}</Typography>
+                </Paper>
+                {selectedApplication.requiredSkills && selectedApplication.requiredSkills.length > 0 && (
+                  <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
+                    <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Requisitos</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {selectedApplication.requiredSkills.map((skill) => (
+                        <Chip key={skill} label={skill} size="small" variant="outlined" />
+                      ))}
+                    </Box>
+                  </Paper>
+                )}
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                  {selectedApplication.modality && <Chip label={`Modalidad: ${selectedApplication.modality}`} color="info" />}
+                  {selectedApplication.location && <Chip label={`Ubicación: ${selectedApplication.location}`} color="default" />}
+                  {selectedApplication.difficulty && <Chip label={`Dificultad: ${selectedApplication.difficulty}`} color="secondary" />}
+                  {selectedApplication.required_hours && <Chip label={`Horas totales: ${selectedApplication.required_hours}`} color="default" />}
+                  {selectedApplication.hours_per_week && <Chip label={`Horas/semana: ${selectedApplication.hours_per_week}`} color="default" />}
+                  {selectedApplication.max_students && <Chip label={`Máx. estudiantes: ${selectedApplication.max_students}`} color="success" />}
+                  {selectedApplication.current_students !== undefined && <Chip label={`Actualmente: ${selectedApplication.current_students}`} color="warning" />}
+                  {selectedApplication.trl_level && <Chip label={`TRL: ${selectedApplication.trl_level}`} color="primary" />}
+                  {selectedApplication.api_level && <Chip label={`API Level: ${selectedApplication.api_level}`} color="primary" />}
                 </Box>
-              )}
-            </Box>
-            {/* Notas */}
-            {selectedApplication.notes && (
-              <Alert severity="info" sx={{ mb: 2 }}>
-                <Typography variant="body2">
-                  <strong>Notas:</strong> {selectedApplication.notes}
-                </Typography>
-              </Alert>
-            )}
-            {/* Botón cerrar */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-              <Button onClick={() => setDialogOpen(false)} variant="contained" sx={{ minWidth: 140, borderRadius: 2 }}>
-                Cerrar
-              </Button>
-            </Box>
-          </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Paper sx={{ p: 2, bgcolor: '#f1f8e9' }} elevation={1}>
+                  <Typography variant="subtitle2" color="text.secondary">Fecha de Aplicación:</Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>{selectedApplication.appliedDate ? new Date(selectedApplication.appliedDate).toLocaleString('es-ES') : '-'}</Typography>
+                  {selectedApplication.responseDate && (
+                    <>
+                      <Typography variant="subtitle2" color="text.secondary">Fecha de Respuesta:</Typography>
+                      <Typography variant="body2" sx={{ mb: 2 }}>{new Date(selectedApplication.responseDate).toLocaleString('es-ES')}</Typography>
+                    </>
+                  )}
+                  <Typography variant="subtitle2" color="text.secondary">Estado actual:</Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>{getStatusText(selectedApplication.status)}</Typography>
+                  {selectedApplication.notes && (
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                      <Typography variant="body2">
+                        <strong>Notas:</strong> {selectedApplication.notes}
+                      </Typography>
+                    </Alert>
+                  )}
+                  <Button onClick={() => setDialogOpen(false)} color="secondary" variant="outlined" sx={{ mt: 2, mr: 1 }}>Cerrar</Button>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Paper>
         )}
       </Dialog>
     </Box>

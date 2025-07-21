@@ -32,6 +32,7 @@ import {
   Publish as PublishIcon,
   Drafts as DraftsIcon,
   TaskAlt as TaskAltIcon,
+  Restore as RestoreIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptProjectList } from '../../../utils/adapters';
@@ -59,6 +60,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [activateDialogOpen, setActivateDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [updatingProject, setUpdatingProject] = useState<string | null>(null);
 
@@ -266,6 +268,36 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
     setSelectedProject(null);
   };
 
+  const handleRestoreClick = (project: Project) => {
+    setSelectedProject(project);
+    setRestoreDialogOpen(true);
+  };
+
+  const handleRestoreConfirm = async () => {
+    if (!selectedProject) return;
+
+    try {
+      setUpdatingProject(selectedProject.id);
+      await api.patch(`/api/projects/${selectedProject.id}/restore/`);
+      
+      // Recargar proyectos
+      await loadProjects();
+      
+      setRestoreDialogOpen(false);
+      setSelectedProject(null);
+    } catch (err: any) {
+      console.error('Error restaurando proyecto:', err);
+      setError(err.response?.data?.error || 'Error al restaurar proyecto');
+    } finally {
+      setUpdatingProject(null);
+    }
+  };
+
+  const handleRestoreCancel = () => {
+    setRestoreDialogOpen(false);
+    setSelectedProject(null);
+  };
+
   const handleViewClick = (project: Project) => {
     setSelectedProject(project);
     setViewDialogOpen(true);
@@ -410,12 +442,6 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     {project.duration_weeks ? `${project.duration_weeks} semanas • ` : ''} {project.hours_per_week || 0} horas/semana
                   </Typography>
                   <Chip 
-                    label={`${project.applications_count || 0} postulaciones`} 
-                    size="small" 
-                    color="info"
-                    sx={{ fontWeight: 600 }}
-                  />
-                  <Chip 
                     label={`${project.current_students || 0}/${project.max_students || 1} estudiantes`} 
                     size="small" 
                     color="success"
@@ -473,6 +499,21 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 >
                   <VisibilityIcon />
                 </IconButton>
+                {project.status === 'deleted' && (
+                  <IconButton 
+                    color="success" 
+                    size="small" 
+                    onClick={() => handleRestoreClick(project)}
+                    disabled={updatingProject === project.id}
+                    sx={{ 
+                      bgcolor: 'success.light',
+                      color: 'success.contrastText',
+                      '&:hover': { bgcolor: 'success.main' }
+                    }}
+                  >
+                    {updatingProject === project.id ? <CircularProgress size={16} /> : <RestoreIcon />}
+                  </IconButton>
+                )}
                 {tab !== 1 && (
                   <IconButton 
                     color="error" 
@@ -677,7 +718,6 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                   <Chip label={getStatusLabel(selectedProject.status)} color={getStatusColor(selectedProject.status) as any} size="medium" />
-                  <Chip label={`${selectedProject.applications_count || 0} postulaciones`} size="medium" color="info" />
                   <Chip label={`${selectedProject.current_students}/${selectedProject.max_students} estudiantes`} size="medium" color="success" />
                   {selectedProject.is_paid && (
                     <Chip label="Remunerado" size="medium" color="warning" />
@@ -775,6 +815,43 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
             sx={{ borderRadius: 2, px: 3 }}
           >
             Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de restaurar proyecto */}
+      <Dialog open={restoreDialogOpen} onClose={handleRestoreCancel} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ 
+          bgcolor: 'success.main', 
+          color: 'white',
+          fontWeight: 600
+        }}>
+          Restaurar Proyecto
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
+          <Typography variant="body1" gutterBottom>
+            ¿Estás seguro de que quieres restaurar el proyecto "{selectedProject?.title}"?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            El proyecto volverá a estar publicado y será visible para los estudiantes.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button 
+            onClick={handleRestoreCancel}
+            variant="outlined"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleRestoreConfirm}
+            variant="contained"
+            color="success"
+            sx={{ borderRadius: 2, px: 3 }}
+            disabled={updatingProject === selectedProject?.id}
+          >
+            {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Restaurar Proyecto'}
           </Button>
         </DialogActions>
       </Dialog>

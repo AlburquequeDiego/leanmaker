@@ -135,6 +135,20 @@ export const PublishProjects: React.FC = () => {
     if (!form.horas || Number(form.horas) < minHours) {
       errors.push(`Debes ingresar las horas ofrecidas (mínimo ${minHours}).`);
     }
+    
+    // Validar coherencia entre horas totales y duración
+    const horasTotales = Number(form.horas) || 0;
+    const duracionMeses = Number(form.meses) || 1;
+    const duracionSemanas = duracionMeses * 4;
+    const horasPorSemana = Math.ceil(horasTotales / duracionSemanas);
+    
+    if (horasPorSemana > 40) {
+      errors.push(`Las horas por semana (${horasPorSemana}) son muy altas. Considera aumentar la duración del proyecto.`);
+    }
+    if (horasPorSemana < 5) {
+      errors.push(`Las horas por semana (${horasPorSemana}) son muy bajas. Considera reducir la duración del proyecto.`);
+    }
+    
     return errors;
   };
 
@@ -176,17 +190,19 @@ export const PublishProjects: React.FC = () => {
         required_hours: Number(form.horas) || 0,
         api_level: trlToApi[trlKey],
         company_id,
-        status_id: 9, // ID del estado "Publicado"
+        status_id: 4, // ID del estado "Publicado" (no 9)
         max_students: Number(form.studentsNeeded) || 1,
         duration_weeks: Number(form.meses) || 1,
-        hours_per_week: 10, // valor por defecto o puedes mapearlo si tienes el campo
+        // Calcular hours_per_week de forma coherente
+        hours_per_week: Math.ceil((Number(form.horas) || 0) / (Number(form.meses) * 4 || 1)),
         modality: (form.modalidad || '').toLowerCase() === 'remoto' ? 'remote' : (form.modalidad || '').toLowerCase() === 'presencial' ? 'onsite' : (form.modalidad || '').toLowerCase() === 'híbrido' || (form.modalidad || '').toLowerCase() === 'hibrido' ? 'hybrid' : 'remote',
-        difficulty: (form.tipo || '').toLowerCase() === 'principiante' ? 'beginner' : (form.tipo || '').toLowerCase() === 'intermedio' ? 'intermediate' : (form.tipo || '').toLowerCase() === 'avanzado' ? 'advanced' : 'intermediate',
+        difficulty: form.dificultad || 'intermediate',
       };
       console.log('Datos enviados al backend:', datosAEnviar);
       const response = await projectService.createProject(datosAEnviar);
       // El servicio ya maneja la respuesta y devuelve directamente los datos
-      if (response && response.id) {
+      const projectId = response?.id || response?.data?.id;
+      if (projectId) {
         setSuccess('Proyecto creado exitosamente.');
         setTimeout(() => {
           setSuccess(null);
@@ -262,6 +278,31 @@ export const PublishProjects: React.FC = () => {
             helperText={hoursError}
             inputProps={{ min: minHours }}
           />
+          
+          {/* Visualización del cálculo en tiempo real */}
+          {form.horas && form.meses && (
+            <MuiPaper sx={{ bgcolor: '#e3f2fd', p: 2, borderRadius: 2, border: '1px solid #2196f3' }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: '#1976d2' }}>
+                📊 Cálculo de horas por semana
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#1976d2' }}>
+                <strong>Horas totales:</strong> {form.horas} horas<br/>
+                <strong>Duración:</strong> {form.meses} mes(es) = {(Number(form.meses) || 1) * 4} semanas<br/>
+                <strong>Horas por semana:</strong> {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4))} horas/semana
+              </Typography>
+              {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4)) > 40 && (
+                <Typography variant="body2" sx={{ mt: 1, color: '#f57c00', fontWeight: 'bold' }}>
+                  ⚠️ Las horas por semana son muy altas. Considera aumentar la duración.
+                </Typography>
+              )}
+              {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4)) < 5 && (
+                <Typography variant="body2" sx={{ mt: 1, color: '#f57c00', fontWeight: 'bold' }}>
+                  ⚠️ Las horas por semana son muy bajas. Considera reducir la duración.
+                </Typography>
+              )}
+            </MuiPaper>
+          )}
+          
           <MuiPaper sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 2, mt: 2 }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>Relación entre TRL, API y Horas mínimas</Typography>
             <TableContainer>
@@ -315,6 +356,19 @@ export const PublishProjects: React.FC = () => {
       {activeStep === 2 && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField label="Modalidad" name="modalidad" value={form.modalidad} onChange={handleChange} fullWidth required placeholder="Presencial, Remoto, Híbrido" />
+          <FormControl fullWidth required>
+            <Select
+              name="dificultad"
+              value={form.dificultad || ''}
+              onChange={e => setForm({ ...form, dificultad: e.target.value })}
+              displayEmpty
+            >
+              <MenuItem value=""><em>Selecciona la dificultad</em></MenuItem>
+              <MenuItem value="intermediate">Intermedio</MenuItem>
+              <MenuItem value="intermediate-advanced">Intermedio-Avanzado</MenuItem>
+              <MenuItem value="advanced">Avanzado</MenuItem>
+            </Select>
+          </FormControl>
           <TextField label="Encargado del Proyecto" name="encargado" value={form.encargado} onChange={handleChange} fullWidth required />
           <TextField label="Contacto de la Empresa" name="contacto" value={form.contacto} onChange={handleChange} fullWidth required />
           <TextField label="Fecha de Inicio Estimada" name="fechaInicio" type="date" value={form.fechaInicio} onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} required />
@@ -329,11 +383,11 @@ export const PublishProjects: React.FC = () => {
           <Typography variant="subtitle2">Nombre: {form.title}</Typography>
           <Typography variant="subtitle2">Tipo: {form.tipo}</Typography>
           <Typography variant="subtitle2">Objetivo: {form.objetivo}</Typography>
-          <Typography variant="subtitle2">Duración: {form.meses} meses</Typography>
-          <Typography variant="subtitle2">Requerimientos: {form.requirements}</Typography>
           <Typography variant="subtitle2">Estudiantes requeridos: {form.studentsNeeded}</Typography>
           <Typography variant="subtitle2">TRL Seleccionado: TRL {trlSelected}</Typography>
           <Typography variant="subtitle2">Horas ofrecidas: {form.horas}</Typography>
+          <Typography variant="subtitle2">Duración: {form.meses} mes(es) = {(Number(form.meses) || 1) * 4} semanas</Typography>
+          <Typography variant="subtitle2">Horas por semana: {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4))} horas/semana</Typography>
         </Box>
       )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>

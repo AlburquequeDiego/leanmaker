@@ -21,6 +21,10 @@ import {
   IconButton,
   Tooltip,
   Snackbar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -133,8 +137,8 @@ export default function GestionEstudiantesAdmin() {
       
       // Construir parámetros de consulta
       const params = new URLSearchParams();
-      params.append('limit', pageSize.toString());
-      params.append('offset', ((currentPage - 1) * pageSize).toString());
+      params.append('limit', pageSize === 'todos' ? '0' : pageSize.toString()); // Si 'todos', no aplicar límite
+      params.append('offset', ((currentPage - 1) * (pageSize === 'todos' ? 10000 : pageSize)).toString()); // Offset grande para 'todos'
 
       // Agregar filtros
       if (filters.search) params.append('search', filters.search);
@@ -594,7 +598,7 @@ export default function GestionEstudiantesAdmin() {
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={pageSize}
-        pageSizeOptions={[20, 50, 100, 150, 200]}
+        pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
         showPagination={false}
         emptyMessage="No hay estudiantes registrados"
       />

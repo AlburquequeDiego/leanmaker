@@ -85,6 +85,10 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     priority: 'medium',
   });
 
+  // Estado para el proyecto seleccionado
+  const [selectedProject, setSelectedProject] = useState<string>('');
+  const [companyProjects, setCompanyProjects] = useState<any[]>([]);
+
   useEffect(() => {
     loadCalendarData();
   }, []);
@@ -96,36 +100,25 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       
       // Obtener eventos de calendario
       const eventsResponse = await api.get('/api/calendar/events/');
-      const adaptedEvents = (eventsResponse.data.results || eventsResponse.data).map(adaptCalendarEvent);
+      const eventsArray = Array.isArray(eventsResponse.data)
+        ? eventsResponse.data
+        : (eventsResponse.data?.results || []);
+      console.log('Eventos recibidos del backend:', eventsArray);
+      const adaptedEvents = eventsArray.map(adaptCalendarEvent);
+      console.log('Eventos adaptados:', adaptedEvents);
       setEvents(adaptedEvents);
 
-      // Obtener estudiantes que han postulado a proyectos de la empresa
+      // Obtener proyectos de la empresa
+      const projectsResponse = await api.get('/api/projects/company_projects/');
+      const projects = Array.isArray(projectsResponse.data) ? projectsResponse.data : (projectsResponse.data?.data || []);
+      setCompanyProjects(projects);
+
+      // Obtener postulaciones recibidas
       const applicationsResponse = await api.get('/api/applications/received_applications/');
       const applications = applicationsResponse.results || applicationsResponse.data || [];
       
-      // Crear lista de estudiantes postulantes
-      const postulantStudents = applications.map((app: any) => ({
-        id: app.student?.id || app.student_id,
-        full_name: app.student?.name || app.student_name || 'Estudiante no encontrado',
-        email: app.student?.email || app.student_email || '',
-        role: 'student',
-        project_title: app.project?.title || app.project_title || '',
-        status: app.status
-      }));
-
-      // Obtener todos los usuarios estudiantes para completar la lista
-      const usersResponse = await api.get('/api/users/');
-      const allStudentUsers = usersResponse.data.filter((user: any) => user.role === 'student');
-      
-      // Combinar estudiantes postulantes con todos los estudiantes
-      const combinedUsers = [...postulantStudents, ...allStudentUsers];
-      
-      // Eliminar duplicados basándose en el ID
-      const uniqueUsers = combinedUsers.filter((user, index, self) => 
-        index === self.findIndex(u => u.id === user.id)
-      );
-      
-      setUsers(uniqueUsers);
+      // Guardar todas las aplicaciones para filtrar después
+      setUsers(applications);
       
     } catch (err: any) {
       console.error('Error cargando datos del calendario:', err);
@@ -186,21 +179,29 @@ export const CompanyCalendar = forwardRef((_, ref) => {
 
   const handleAddEvent = async () => {
     try {
+      const startDate = new Date(newEvent.start_date);
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 hora
       const eventData = {
         title: newEvent.title,
         description: newEvent.description,
         event_type: newEvent.event_type,
-        start_date: newEvent.start_date,
-        end_date: newEvent.end_date,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
         location: newEvent.location,
         attendees: newEvent.attendees,
         is_public: newEvent.is_public,
         priority: newEvent.priority,
+        project: selectedProject || undefined, // Enviar el proyecto seleccionado
       };
 
       const createdEventResponse = await api.post('/api/calendar/events/', eventData);
-      const createdEvent = createdEventResponse.data;
-      
+      // Soportar ambos formatos de respuesta
+      const createdEvent = createdEventResponse?.data?.id ? createdEventResponse.data : createdEventResponse;
+
+      if (!createdEvent || !createdEvent.id) {
+        throw new Error(createdEvent?.error || 'Error desconocido al crear el evento');
+      }
+
       // Adaptar el evento creado
       const adaptedEvent = {
         id: createdEvent.id,
@@ -295,11 +296,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       <Box sx={{ height: 600 }}>
         <BigCalendar
           localizer={localizer}
-          events={events.map(event => ({
-            ...event,
-            start: new Date(event.start_date),
-            end: new Date(event.end_date),
-          }))}
+          events={events}
           startAccessor="start"
           endAccessor="end"
           style={{ height: '100%' }}
@@ -339,6 +336,22 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               value={newEvent.description} 
               onChange={(e) => setNewEvent((prev: any) => ({ ...prev, description: e.target.value }))} 
             />
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Proyecto</InputLabel>
+              <Select
+                value={selectedProject}
+                onChange={e => {
+                  setSelectedProject(e.target.value);
+                  setNewEvent((prev: any) => ({ ...prev, attendees: [] })); // Limpiar selección de participantes
+                }}
+                label="Proyecto"
+              >
+                <MenuItem value="">Selecciona un proyecto</MenuItem>
+                {companyProjects.map(project => (
+                  <MenuItem key={project.id} value={project.id}>{project.title}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <FormControl fullWidth>
               <InputLabel>Participantes</InputLabel>
               <Select
@@ -347,46 +360,32 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 onChange={e => setNewEvent((prev: any) => ({ ...prev, attendees: e.target.value }))}
                 label="Participantes"
                 renderValue={(selected) => (selected as string[]).map(id => {
-                  const user = users.find(u => u.id === id);
-                  return user?.full_name || 'Usuario no encontrado';
+                  const user = users.find(u => u.student?.user === id && u.project === selectedProject);
+                  return user?.student?.name || 'Usuario no encontrado';
                 }).join(', ')}
+                disabled={!selectedProject}
               >
-                {users.map(user => (
-                  <MenuItem key={user.id} value={user.id}>
+                {users.filter(u => u.project === selectedProject).map(user => (
+                  <MenuItem key={user.student?.user} value={user.student?.user}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                       <Typography variant="body2" fontWeight={600}>
-                        {user.full_name}
+                        {user.student?.name}
                       </Typography>
-                      {user.project_title && (
-                        <Typography variant="caption" color="text.secondary">
-                          Postuló a: {user.project_title}
-                        </Typography>
-                      )}
-                      {user.status && (
-                        <Typography variant="caption" color="text.secondary">
-                          Estado: {user.status}
-                        </Typography>
-                      )}
+                      <Typography variant="caption" color="text.secondary">
+                        Estado: {user.status}
+                      </Typography>
                     </Box>
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr' }, gap: 2 }}>
               <TextField 
                 fullWidth 
                 type="datetime-local" 
                 label="Fecha y hora de inicio" 
                 value={newEvent.start_date} 
                 onChange={(e) => setNewEvent((prev: any) => ({ ...prev, start_date: e.target.value }))} 
-                InputLabelProps={{ shrink: true }} 
-              />
-              <TextField 
-                fullWidth 
-                type="datetime-local" 
-                label="Fecha y hora de fin" 
-                value={newEvent.end_date} 
-                onChange={(e) => setNewEvent((prev: any) => ({ ...prev, end_date: e.target.value }))} 
                 InputLabelProps={{ shrink: true }} 
               />
             </Box>

@@ -21,6 +21,7 @@ import {
   InputLabel,
   CircularProgress,
   Alert,
+  Divider,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -439,7 +440,7 @@ export const CompanyApplications: React.FC = () => {
                     borderRadius: 1,
                     border: '1px solid #e0e0e0'
                   }}>
-                    {application.cover_letter || 'No se ha proporcionado carta de presentación'}
+                    {application.cover_letter || application.student?.bio || application.student?.user_data?.bio || 'No se ha proporcionado carta de presentación'}
                   </Typography>
                 </Box>
 
@@ -531,272 +532,121 @@ export const CompanyApplications: React.FC = () => {
         <DialogContent sx={{ p: 3 }}>
           {selectedApplication && (
             <Box>
-              {/* Header con información básica */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                <Avatar sx={{ 
-                  width: 80, 
-                  height: 80, 
-                  mr: 3, 
-                  bgcolor: 'primary.main',
-                  boxShadow: 3
-                }}>
+              {/* Header con nombre y apellido */}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main', boxShadow: 3 }}>
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Avatar>
-                <Box sx={{ flex: 1 }}>
+                <Box>
                   <Typography variant="h5" fontWeight={700}>
-                    {selectedApplication.student_name || 'Estudiante no encontrado'}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary" fontWeight={500}>
-                    Postuló a: {selectedApplication.project_title || 'Proyecto no encontrado'}
+                    {(selectedApplication.student?.user_data?.first_name || '') + ' ' + (selectedApplication.student?.user_data?.last_name || '') || selectedApplication.student?.name || '-'}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {selectedApplication.student_email || 'Sin email'}
+                    {selectedApplication.student?.user_data?.email || selectedApplication.student?.email || '-'}
                   </Typography>
-
+                  <Typography variant="body2" color="text.secondary">
+                    {selectedApplication.student?.user_data?.phone || selectedApplication.student?.phone || '-'}
+                  </Typography>
                 </Box>
-                <Chip
-                  label={getStatusLabel(selectedApplication.status)}
-                  color={getStatusColor(selectedApplication.status) as any}
-                  size="medium"
-                  sx={{ fontWeight: 600 }}
-                />
               </Box>
 
-              <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, 
-                gap: 3,
-                mb: 3
-              }}>
-                {selectedApplication.portfolio_url && (
-                  <Box sx={{ 
-                    p: 2, 
-                    bgcolor: '#f8f9fa', 
-                    borderRadius: 2,
-                    border: '1px solid #e9ecef'
-                  }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <LanguageIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                      <Typography variant="body2" fontWeight={600}>
-                        Portfolio
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2">
-                      <a 
-                        href={selectedApplication.portfolio_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#1976d2', textDecoration: 'none' }}
-                      >
-                        Ver portfolio
-                      </a>
-                    </Typography>
+              <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  <Box sx={{ flex: 1, minWidth: 220 }}>
+                    <Typography variant="body2" color="text.secondary">Fecha de Nacimiento:</Typography>
+                    <Typography variant="body1">{selectedApplication.student?.perfil_detallado?.fecha_nacimiento || '-'}</Typography>
                   </Box>
-                )}
-                {selectedApplication.github_url && (
-                  <Box sx={{ 
-                    p: 2, 
-                    bgcolor: '#f8f9fa', 
-                    borderRadius: 2,
-                    border: '1px solid #e9ecef'
-                  }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <GitHubIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                      <Typography variant="body2" fontWeight={600}>
-                        GitHub
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2">
-                      <a 
-                        href={selectedApplication.github_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#1976d2', textDecoration: 'none' }}
-                      >
-                        Ver GitHub
-                      </a>
-                    </Typography>
+                  <Box sx={{ flex: 1, minWidth: 220 }}>
+                    <Typography variant="body2" color="text.secondary">Género:</Typography>
+                    <Typography variant="body1">{selectedApplication.student?.perfil_detallado?.genero || '-'}</Typography>
                   </Box>
-                )}
-                {selectedApplication.linkedin_url && (
-                  <Box sx={{ 
-                    p: 2, 
-                    bgcolor: '#f8f9fa', 
-                    borderRadius: 2,
-                    border: '1px solid #e9ecef'
-                  }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <LinkedInIcon sx={{ mr: 1.5, color: 'primary.main' }} />
-                      <Typography variant="body2" fontWeight={600}>
-                        LinkedIn
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2">
-                      <a 
-                        href={selectedApplication.linkedin_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#1976d2', textDecoration: 'none' }}
-                      >
-                        Ver LinkedIn
-                      </a>
-                    </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+                  <Box sx={{ flex: 1, minWidth: 220 }}>
+                    <Typography variant="body2" color="text.secondary">Carrera:</Typography>
+                    <Typography variant="body1">{selectedApplication.student?.career || '-'}</Typography>
                   </Box>
-                )}
+                  <Box sx={{ flex: 1, minWidth: 220 }}>
+                    <Typography variant="body2" color="text.secondary">Nivel Educativo:</Typography>
+                    <Typography variant="body1">{selectedApplication.student?.api_level || '-'}</Typography>
+                  </Box>
+                </Box>
+              </Paper>
+
+              {/* Habilidades */}
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" fontWeight={600}>Habilidades</Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                {(selectedApplication.student?.skills || []).map((h: string) => (
+                  <Chip key={h} label={h} color="primary" />
+                ))}
+                {(!selectedApplication.student?.skills || selectedApplication.student.skills.length === 0) && <Typography variant="body2" color="text.secondary">-</Typography>}
               </Box>
 
-              {selectedApplication.cover_letter && (
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
-                    Carta de Presentación
+              {/* Documentos */}
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" fontWeight={600}>Documentos</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                {selectedApplication.student?.cv_link && (
+                  <Typography variant="body2">
+                    <strong>CV:</strong> <a href={selectedApplication.student.cv_link} target="_blank" rel="noopener noreferrer">{selectedApplication.student.cv_link}</a>
                   </Typography>
-                  <Typography variant="body1" sx={{ 
-                    bgcolor: '#f8f9fa', 
-                    p: 3, 
-                    borderRadius: 2,
-                    lineHeight: 1.6
-                  }}>
-                    {selectedApplication.cover_letter}
+                )}
+                {selectedApplication.student?.certificado_link && (
+                  <Typography variant="body2">
+                    <strong>Certificado:</strong> <a href={selectedApplication.student.certificado_link} target="_blank" rel="noopener noreferrer">{selectedApplication.student.certificado_link}</a>
                   </Typography>
-                </Box>
-              )}
+                )}
+                {(!selectedApplication.student?.cv_link && !selectedApplication.student?.certificado_link) && <Typography variant="body2" color="text.secondary">No hay documentos</Typography>}
+              </Box>
 
-              {selectedApplication.company_notes && (
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
-                    Notas de la Empresa
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
-                    bgcolor: '#e3f2fd', 
-                    p: 3, 
-                    borderRadius: 2,
-                    lineHeight: 1.6
-                  }}>
-                    {selectedApplication.company_notes}
-                  </Typography>
+              {/* Área de interés y modalidades */}
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" fontWeight={600}>Área y Modalidad</Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                <Box sx={{ flex: 1, minWidth: 220 }}>
+                  <Typography variant="body2" color="text.secondary">Área de interés:</Typography>
+                  <Typography variant="body1">{selectedApplication.student?.area || '-'}</Typography>
                 </Box>
-              )}
+                <Box sx={{ flex: 1, minWidth: 220 }}>
+                  <Typography variant="body2" color="text.secondary">Modalidad:</Typography>
+                  <Typography variant="body1">{selectedApplication.student?.availability || '-'}</Typography>
+                </Box>
+              </Box>
 
-              <Box sx={{ 
-                p: 3, 
-                bgcolor: '#f5f5f5', 
-                borderRadius: 2,
-                border: '1px solid #e0e0e0'
-              }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Información de la Postulación
-                </Typography>
-                              {/* Información de la Postulación */}
-              <Box sx={{ mb: 4, p: 3, bgcolor: '#f8f9fa', borderRadius: 2 }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Información de la Postulación
-                </Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-                  <Box>
-                    <Typography variant="body2" fontWeight={600} color="text.secondary">
-                      Estado
-                    </Typography>
-                    <Typography variant="body1" fontWeight={500}>
-                      {getStatusLabel(selectedApplication.status)}
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="body2" fontWeight={600} color="text.secondary">
-                      Fecha de postulación
-                    </Typography>
-                    <Typography variant="body1" fontWeight={500}>
-                      {new Date(selectedApplication.applied_at).toLocaleString('es-ES')}
-                    </Typography>
-                  </Box>
-                  {selectedApplication.reviewed_at && (
-                    <Box>
-                      <Typography variant="body2" fontWeight={600} color="text.secondary">
-                        Revisada
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {new Date(selectedApplication.reviewed_at).toLocaleString('es-ES')}
-                      </Typography>
-                    </Box>
-                  )}
-                  {selectedApplication.responded_at && (
-                    <Box>
-                      <Typography variant="body2" fontWeight={600} color="text.secondary">
-                        Respondida
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {new Date(selectedApplication.responded_at).toLocaleString('es-ES')}
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
+              {/* Experiencia previa */}
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" fontWeight={600}>Experiencia Previa</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>{selectedApplication.student?.experience_years ? `${selectedApplication.student.experience_years} años` : '-'}</Typography>
+
+              {/* Enlaces */}
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" fontWeight={600}>Enlaces</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                {selectedApplication.student?.linkedin_url && (
+                  <Typography variant="body2">
+                    <strong>LinkedIn:</strong> <a href={selectedApplication.student.linkedin_url} target="_blank" rel="noopener noreferrer">{selectedApplication.student.linkedin_url}</a>
+                  </Typography>
+                )}
+                {selectedApplication.student?.github_url && (
+                  <Typography variant="body2">
+                    <strong>GitHub:</strong> <a href={selectedApplication.student.github_url} target="_blank" rel="noopener noreferrer">{selectedApplication.student.github_url}</a>
+                  </Typography>
+                )}
+                {selectedApplication.student?.portfolio_url && (
+                  <Typography variant="body2">
+                    <strong>Portafolio:</strong> <a href={selectedApplication.student.portfolio_url} target="_blank" rel="noopener noreferrer">{selectedApplication.student.portfolio_url}</a>
+                  </Typography>
+                )}
+                {(!selectedApplication.student?.linkedin_url && !selectedApplication.student?.github_url && !selectedApplication.student?.portfolio_url) && <Typography variant="body2" color="text.secondary">No hay enlaces</Typography>}
               </Box>
 
               {/* Carta de Presentación */}
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Carta de Presentación
-                </Typography>
-                <Box sx={{ p: 3, bgcolor: '#fafafa', borderRadius: 2, border: '1px solid #e0e0e0' }}>
-                  <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                    {selectedApplication.cover_letter || 'No se ha proporcionado carta de presentación'}
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* Enlaces y Documentos */}
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Enlaces y Documentos
-                </Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-                  {selectedApplication.portfolio_url && (
-                    <Box sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 2 }}>
-                      <Typography variant="body2" fontWeight={600} color="text.secondary">
-                        Portafolio
-                      </Typography>
-                      <Button
-                        variant="text"
-                        size="small"
-                        onClick={() => window.open(selectedApplication.portfolio_url, '_blank')}
-                        sx={{ p: 0, textTransform: 'none' }}
-                      >
-                        Ver Portafolio
-                      </Button>
-                    </Box>
-                  )}
-                  {selectedApplication.github_url && (
-                    <Box sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 2 }}>
-                      <Typography variant="body2" fontWeight={600} color="text.secondary">
-                        GitHub
-                      </Typography>
-                      <Button
-                        variant="text"
-                        size="small"
-                        onClick={() => window.open(selectedApplication.github_url, '_blank')}
-                        sx={{ p: 0, textTransform: 'none' }}
-                      >
-                        Ver GitHub
-                      </Button>
-                    </Box>
-                  )}
-                  {selectedApplication.linkedin_url && (
-                    <Box sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 2 }}>
-                      <Typography variant="body2" fontWeight={600} color="text.secondary">
-                        LinkedIn
-                      </Typography>
-                      <Button
-                        variant="text"
-                        size="small"
-                        onClick={() => window.open(selectedApplication.linkedin_url, '_blank')}
-                        sx={{ p: 0, textTransform: 'none' }}
-                      >
-                        Ver LinkedIn
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
-              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" fontWeight={600}>Carta de Presentación</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                {selectedApplication.cover_letter || selectedApplication.student?.bio || selectedApplication.student?.user_data?.bio || '-'}
+              </Typography>
             </Box>
           )}
         </DialogContent>

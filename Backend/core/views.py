@@ -702,8 +702,8 @@ def api_dashboard_company_stats(request):
             completed_projects = Proyecto.objects.filter(company=company, status__name='completed').count()
             active_students = Aplicacion.objects.filter(project__company=company, status='accepted').count()
             
-            # Rating promedio (placeholder)
-            rating = 4.5  # Por ahora un valor fijo
+            # Rating promedio (real)
+            rating = company.rating
             
             # Horas totales (placeholder)
             total_hours_offered = 0  # Por ahora 0

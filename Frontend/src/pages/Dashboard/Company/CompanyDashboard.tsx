@@ -150,7 +150,7 @@ export default function CompanyDashboard() {
               <StarIcon sx={{ fontSize: 32, mr: 1 }} />
               <Typography variant="h6" fontWeight={700}>GPA Empresa</Typography>
             </Box>
-            <Typography variant="h4" fontWeight={700}>{averageRating}</Typography>
+            <Typography variant="h4" fontWeight={700}>{averageRating && averageRating > 0 ? averageRating : 'Sin calificaciones'}</Typography>
             <Typography variant="body2">Calificación promedio</Typography>
           </Paper>
           {/* Tasa de Éxito */}
