@@ -20,14 +20,14 @@ class EvaluationSerializer:
             'id': str(evaluation.id),
             'project_id': str(evaluation.project.id) if evaluation.project else None,
             'project_title': evaluation.project.title if evaluation.project else None,
-            'student_id': str(evaluation.student.id),
-            'student_name': evaluation.student.full_name,
+            'student_id': evaluation.student.id,  # Integer
+            'student_name': evaluation.student.user.full_name if hasattr(evaluation.student, 'user') else '',
+            'student_user_id': evaluation.student.user.id if hasattr(evaluation.student, 'user') else '',
             'evaluator_id': str(evaluation.evaluator.id) if evaluation.evaluator else None,
             'evaluator_name': evaluation.evaluator.full_name if evaluation.evaluator else None,
             'category_id': evaluation.category.id if evaluation.category else None,
             'category_name': evaluation.category.name if evaluation.category else None,
             'score': evaluation.score,
-            'comments': evaluation.comments,
             'evaluation_date': evaluation.evaluation_date.isoformat() if evaluation.evaluation_date else None,
             'status': evaluation.status,
             'type': evaluation.type,
@@ -67,9 +67,10 @@ class EvaluationSerializer:
         # Validar student_id
         if 'student_id' in data and data['student_id']:
             try:
-                student = User.objects.get(id=data['student_id'])
+                from students.models import Estudiante
+                student = Estudiante.objects.get(id=data['student_id'])
                 data['student'] = student
-            except User.DoesNotExist:
+            except Estudiante.DoesNotExist:
                 errors['student_id'] = 'El estudiante especificado no existe'
             except Exception as e:
                 errors['student_id'] = f'Error al validar el estudiante: {str(e)}'
@@ -105,11 +106,6 @@ class EvaluationSerializer:
                 errors['overall_rating'] = 'La calificación general debe ser un número'
         
         # Validar campos de texto
-        if 'comments' in data and data['comments']:
-            if len(data['comments'].strip()) < 10:
-                errors['comments'] = 'Los comentarios deben tener al menos 10 caracteres'
-            data['comments'] = data['comments'].strip()
-        
         if 'strengths' in data and data['strengths']:
             strengths_list = [s.strip() for s in data['strengths'].split(',') if s.strip()]
             if len(strengths_list) < 1:
@@ -132,7 +128,6 @@ class EvaluationSerializer:
                 evaluator=user,
                 category=data.get('category'),
                 score=data.get('score', 0),
-                comments=data.get('comments', ''),
                 status=data.get('status', 'pendiente'),
                 type=data.get('type', 'proyecto'),
                 overall_rating=data.get('overall_rating', 0),
@@ -151,7 +146,7 @@ class EvaluationSerializer:
         with transaction.atomic():
             # Actualizar campos básicos
             basic_fields = [
-                'score', 'comments', 'status', 'type', 'overall_rating',
+                'score', 'status', 'type', 'overall_rating',
                 'strengths', 'areas_for_improvement', 'project_duration',
                 'technologies', 'deliverables'
             ]

@@ -252,7 +252,7 @@ class Proyecto(models.Model):
         """Marca el proyecto como completado y genera horas trabajadas automáticamente"""
         from django.utils import timezone
         from work_hours.models import WorkHour
-        from applications.models import Asignacion
+        from applications.models import Asignacion, Aplicacion
         
         # Cambiar estado del proyecto
         self.real_end_date = timezone.now().date()
@@ -286,6 +286,9 @@ class Proyecto(models.Model):
             
             # Finalizar la asignación
             asignacion.finalizar_asignacion()
+        
+        # ACTUALIZAR TODAS LAS APLICACIONES RELACIONADAS A 'completed'
+        Aplicacion.objects.filter(project=self, status__in=['active', 'accepted']).update(status='completed')
         
         # Registrar el cambio de estado en el historial
         if user:

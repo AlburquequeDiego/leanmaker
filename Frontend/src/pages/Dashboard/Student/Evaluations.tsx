@@ -73,6 +73,13 @@ interface CompanyRating {
   date: string;
 }
 
+interface Project {
+  id: string;
+  title: string;
+  company: string;
+  status: 'active' | 'completed' | 'paused';
+}
+
 const typeConfig = {
   intermediate: {
     label: 'Intermedia',
@@ -136,12 +143,18 @@ export const Evaluations = () => {
     severity: 'success' 
   });
 
+  const [completedProjects, setCompletedProjects] = useState<Project[]>([]);
+  // 1. Estado para la lista de empresas
+  const [empresas, setEmpresas] = useState<any[]>([]);
+
   const { data: stats } = useDashboardStats('student');
 
+  // 2. Cargar empresas al montar el componente
   useEffect(() => {
     fetchEvaluations();
     fetchCompanyRatings();
-    fetchAvailableCompanies();
+    fetchCompletedProjects();
+    fetchEmpresas(); // nueva función
   }, []);
 
   const fetchEvaluations = async () => {
@@ -207,6 +220,35 @@ export const Evaluations = () => {
     }
   };
 
+  // Nueva función para obtener proyectos completados
+  const fetchCompletedProjects = async () => {
+    try {
+      const response = await apiService.get('/api/projects/my_projects/');
+      const projectsData = response.data || response;
+      const arr = Array.isArray(projectsData) ? projectsData : projectsData.data;
+      const completed = Array.isArray(arr) ? arr.filter((p: any) => p.status === 'completed') : [];
+      setCompletedProjects(completed.map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        company: p.company,
+        status: p.status
+      })));
+    } catch (error) {
+      setCompletedProjects([]);
+    }
+  };
+
+  const fetchEmpresas = async () => {
+    try {
+      const response = await apiService.get('/api/companies/');
+      // Ajusta según la estructura real de la respuesta
+      const empresasData = response.data?.results || response.results || response.data || [];
+      setEmpresas(empresasData);
+    } catch (error) {
+      setEmpresas([]);
+    }
+  };
+
   const handleAction = (evaluation: Evaluation) => {
     setSelectedEvaluation(evaluation);
     setDialogOpen(true);
@@ -221,8 +263,16 @@ export const Evaluations = () => {
   // Usar el GPA real del backend si está disponible
   const gpa = stats?.gpa !== undefined ? Number(stats.gpa).toFixed(2) : '0.00';
 
+  // 1. Crear lista de proyectos completados para calificar
+  const proyectosCompletados = completedProjects.map(p => ({
+    id: p.id,
+    label: `${p.title} – ${p.company}`,
+    company: p.company
+  }));
+
+  // 3. handleCalificarEmpresa: buscar el UUID por nombre
   const handleCalificarEmpresa = async () => {
-    if (!empresaSeleccionada || !calificacion || !comentario.trim()) {
+    if (!empresaSeleccionada || !calificacion) {
       setSnackbar({ 
         open: true, 
         message: 'Por favor completa todos los campos', 
@@ -230,22 +280,29 @@ export const Evaluations = () => {
       });
       return;
     }
-
+    // Buscar el proyecto seleccionado
+    const proyecto = proyectosCompletados.find(p => p.id === empresaSeleccionada);
+    // Buscar el UUID de la empresa por nombre (usando company_name)
+    const empresa = empresas.find(e => e.company_name === proyecto.company);
+    const companyUUID = empresa ? empresa.id : '';
+    const projectUUID = proyecto?.id ? String(proyecto.id) : '';
+    console.log('Objeto proyecto seleccionado:', proyecto);
+    console.log('Empresa encontrada:', empresa);
+    console.log('Payload enviado a /api/company-ratings/:', {
+      project: projectUUID,
+      company: companyUUID,
+      rating: calificacion
+    });
     try {
       const newRating = await apiService.post('/api/company-ratings/', {
-        company: empresaSeleccionada,
-        rating: calificacion,
-        comment: comentario.trim()
+        project: projectUUID,
+        company: companyUUID,
+        rating: calificacion
       });
-
       setCompanyRatings(prev => [...prev, newRating as CompanyRating]);
-
-      // Limpiar el formulario
       setEmpresaSeleccionada('');
       setCalificacion(null);
-      setComentario('');
       setCalificarModalOpen(false);
-
       setSnackbar({ 
         open: true, 
         message: '¡Evaluación enviada con éxito!', 
@@ -264,9 +321,11 @@ export const Evaluations = () => {
   const handleCloseCalificarModal = () => {
     setEmpresaSeleccionada('');
     setCalificacion(null);
-    setComentario('');
     setCalificarModalOpen(false);
   };
+
+  // 1. Obtener empresas con proyectos completados
+  const empresasCompletadas = Array.from(new Set(completedEvaluations.map(e => e.company)));
 
   if (loading) {
     return (
@@ -803,15 +862,15 @@ export const Evaluations = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
             {/* Selección de empresa */}
             <FormControl fullWidth>
-              <InputLabel>Empresa a calificar</InputLabel>
+              <InputLabel>Proyecto a calificar</InputLabel>
               <Select
                 value={empresaSeleccionada}
-                label="Empresa a calificar"
+                label="Proyecto a calificar"
                 onChange={(e) => setEmpresaSeleccionada(e.target.value)}
               >
-                {availableCompanies.map((empresa) => (
-                  <MenuItem key={empresa} value={empresa}>
-                    {empresa}
+                {proyectosCompletados.map((proy) => (
+                  <MenuItem key={proy.id} value={proy.id}>
+                    {proy.label}
                   </MenuItem>
                 ))}
               </Select>
@@ -835,15 +894,7 @@ export const Evaluations = () => {
             </Box>
 
             {/* Comentario */}
-            <TextField
-              label="Comparte tu experiencia"
-              multiline
-              rows={4}
-              value={comentario}
-              onChange={(e) => setComentario(e.target.value)}
-              placeholder="Describe tu experiencia trabajando con esta empresa. ¿Qué te gustó? ¿Qué podría mejorar?"
-              fullWidth
-            />
+            {/* (Quitar el TextField de feedback/comentario) */}
           </Box>
         </DialogContent>
         <DialogActions>
@@ -854,7 +905,7 @@ export const Evaluations = () => {
             onClick={handleCalificarEmpresa} 
             variant="contained" 
             color="primary"
-            disabled={!empresaSeleccionada || !calificacion || !comentario.trim()}
+            disabled={!empresaSeleccionada || !calificacion}
           >
             Enviar Evaluación
           </Button>

@@ -4,6 +4,7 @@ URLs para la app companies.
 
 from django.urls import path
 from . import views
+from .views import company_ratings
 
 app_name = 'companies'
 
@@ -15,4 +16,8 @@ urlpatterns = [
     path('admin/<uuid:company_id>/activate/', views.admin_activate_company, name='admin_activate_company'),
     path('admin/<uuid:company_id>/block/', views.admin_block_company, name='admin_block_company'),
     path('company_me/', views.company_me, name='company_me'),
+]
+
+urlpatterns += [
+    path('api/company-ratings/', company_ratings, name='company_ratings'),
 ] 

@@ -203,11 +203,12 @@ export const SearchStudents: React.FC = () => {
       
       console.log('✅ Respuesta del servidor:', response);
       
-      if (response.success) {
+      // Aceptar como éxito si response.success es true o si el mensaje es de éxito
+      if (response.success || response.message === 'Mensaje enviado exitosamente') {
         alert('Mensaje enviado exitosamente. El estudiante recibirá una notificación.');
         setShowContactDialog(false);
       } else {
-        alert('Error al enviar mensaje: ' + (response.error || 'Error desconocido'));
+        alert('Error al enviar mensaje: ' + (response.error || response.message || 'Error desconocido'));
       }
     } catch (error: any) {
       console.error('❌ Error enviando mensaje:', error);

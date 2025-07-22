@@ -9,6 +9,7 @@ from django.views.generic import RedirectView
 
 # Importar vistas personalizadas
 from . import views
+from companies.views import company_ratings
 
 urlpatterns = [
     # Admin
@@ -72,6 +73,7 @@ urlpatterns = [
     path('api/test-projects/', views.api_test_projects, name='api_test_projects'),
     path('api/test-admin-stats/', views.api_test_admin_stats, name='api_test_admin_stats'),
     path('api/test-auth-admin-stats/', views.api_test_auth_admin_stats, name='api_test_auth_admin_stats'),
+    path('api/company-ratings/', company_ratings, name='company_ratings'),
     
     # Redirección por defecto
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),

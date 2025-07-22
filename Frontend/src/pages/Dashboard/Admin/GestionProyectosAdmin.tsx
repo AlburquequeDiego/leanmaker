@@ -270,20 +270,6 @@ export const GestionProyectosAdmin = () => {
       align: 'center' as const
     },
     {
-      key: 'applications_count',
-      label: 'Postulaciones',
-      render: (value: number) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <PeopleIcon fontSize="small" color="primary" />
-          <Typography variant="body2" fontWeight={600}>
-            {value}
-          </Typography>
-        </Box>
-      ),
-      width: '120px',
-      align: 'center' as const
-    },
-    {
       key: 'required_trl_level',
       label: 'Nivel TRL',
       render: (value: number) => (

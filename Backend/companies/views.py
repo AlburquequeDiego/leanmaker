@@ -8,11 +8,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
 from users.models import User
-from .models import Empresa
+from .models import Empresa, CalificacionEmpresa
 from core.views import verify_token
 import uuid
 import logging
 logger = logging.getLogger(__name__)
+from projects.models import Proyecto
+from django.db import IntegrityError
+from django.contrib.auth import get_user_model
 
 
 @csrf_exempt
@@ -490,3 +493,83 @@ def admin_activate_company(request, current_user, company_id):
         return JsonResponse({'success': True, 'status': 'active'})
     except User.DoesNotExist:
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404) 
+
+@csrf_exempt
+@require_http_methods(["POST", "GET"])
+def company_ratings(request):
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    user = None
+    if auth_header and auth_header.startswith('Bearer '):
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+    # Agregar log para depuración
+    print('Usuario autenticado en company_ratings:', user, getattr(user, 'role', None))
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            # Validar usuario autenticado y estudiante
+            if not user or not user.is_authenticated or getattr(user, 'role', None) != 'student':
+                return JsonResponse({'error': 'Solo estudiantes pueden calificar empresas.'}, status=403)
+            # Validar campos requeridos
+            project_id = data.get('project')
+            company_id = data.get('company')
+            puntuacion = int(data.get('rating', 0))
+            if not project_id or not company_id or not (1 <= puntuacion <= 5):
+                return JsonResponse({'error': 'Datos incompletos o inválidos.'}, status=400)
+            import uuid
+            try:
+                project_uuid = str(uuid.UUID(str(project_id)))
+                company_uuid = str(uuid.UUID(str(company_id)))
+            except Exception:
+                return JsonResponse({'error': 'project o company no tienen formato UUID válido.'}, status=400)
+            # Buscar empresa y proyecto
+            try:
+                empresa = Empresa.objects.get(id=company_uuid)
+                proyecto = Proyecto.objects.get(id=project_uuid)
+            except Empresa.DoesNotExist:
+                return JsonResponse({'error': 'Empresa no encontrada.'}, status=404)
+            except Proyecto.DoesNotExist:
+                return JsonResponse({'error': 'Proyecto no encontrado.'}, status=404)
+            # Validar que el proyecto pertenezca a la empresa
+            if proyecto.company != empresa:
+                return JsonResponse({'error': 'El proyecto no pertenece a la empresa seleccionada.'}, status=400)
+            # Validar que el proyecto esté completado
+            if proyecto.status != 'completed' and getattr(proyecto.status, 'name', None) != 'completed':
+                return JsonResponse({'error': 'Solo puedes calificar proyectos completados.'}, status=400)
+            # Validar que el estudiante haya participado en el proyecto
+            from applications.models import Aplicacion
+            participo = Aplicacion.objects.filter(project=proyecto, student=user, status='completed').exists()
+            if not participo:
+                return JsonResponse({'error': 'Solo puedes calificar proyectos en los que participaste y completaste.'}, status=400)
+            # Validar que no haya calificado este proyecto antes
+            if CalificacionEmpresa.objects.filter(empresa=empresa, estudiante=user, proyecto=proyecto).exists():
+                return JsonResponse({'error': 'Ya has calificado este proyecto para esta empresa.'}, status=400)
+            # Crear calificación
+            calificacion = CalificacionEmpresa.objects.create(
+                empresa=empresa,
+                estudiante=user,
+                proyecto=proyecto,
+                puntuacion=puntuacion
+            )
+            empresa.actualizar_calificacion(puntuacion)
+            return JsonResponse({'success': True, 'message': 'Calificación registrada', 'id': str(calificacion.id)})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    elif request.method == "GET":
+        # Admin y empresa pueden ver todas las calificaciones
+        if not user or not user.is_authenticated or user.role not in ['admin', 'company']:
+            return JsonResponse({'error': 'No autorizado'}, status=403)
+        calificaciones = CalificacionEmpresa.objects.all()
+        data = [
+            {
+                'id': str(c.id),
+                'empresa': c.empresa.company_name,
+                'estudiante': c.estudiante.full_name,
+                'proyecto': c.proyecto.title if hasattr(c, 'proyecto') else '',
+                'puntuacion': c.puntuacion,
+                'fecha': c.fecha_calificacion.isoformat()
+            }
+            for c in calificaciones
+        ]
+        return JsonResponse({'results': data, 'count': len(data)}) 

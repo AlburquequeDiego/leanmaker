@@ -24,6 +24,7 @@ import {
   Slider,
   Tabs,
   Tab,
+  Avatar,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -32,6 +33,8 @@ import {
   Visibility as VisibilityIcon,
   RateReview as RateReviewIcon,
   Warning as WarningIcon,
+  Person as PersonIcon,
+  Assignment as AssignmentIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptProjectList, adaptEvaluation } from '../../../utils/adapters';
@@ -60,6 +63,12 @@ interface StrikeReportFormState {
   description: string;
 }
 
+const tabStyles = {
+  minWidth: 120,
+  fontWeight: 700,
+  color: 'primary.main',
+};
+
 export const CompanyEvaluations: React.FC = () => {
   const api = useApi();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -67,7 +76,7 @@ export const CompanyEvaluations: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mainTab, setMainTab] = useState(0); // 0: Por Proyecto, 1: Recibidas, 2: Dadas
+  const [tab, setTab] = useState(0); // 0: Por Proyecto, 1: Recibidas, 2: Calificaciones Empresa
   const [selectedTab, setSelectedTab] = useState(0); // 0: Activos, 1: Completados, 2: Cancelados
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetalleOpen, setModalDetalleOpen] = useState(false);
@@ -84,17 +93,36 @@ export const CompanyEvaluations: React.FC = () => {
     reason: '',
     description: '',
   });
+  const [companyRatings, setCompanyRatings] = useState<any[]>([]);
+  // 1. Agrega la lista de estudiantes al estado
+  const [estudiantes, setEstudiantes] = useState<any[]>([]);
 
   useEffect(() => {
     loadData();
+    loadCompanyRatings();
   }, []);
 
+  // 2. Carga la lista de estudiantes desde el backend (en loadData)
   const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Obtener proyectos
-      const projectsResponse = await api.get('/api/projects/');
+      // Obtener proyectos (diferente endpoint para empresa)
+      let projectsResponse;
+      let userRole = null;
+      try {
+        // Intentar obtener el usuario desde localStorage o contexto
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const userObj = JSON.parse(userStr);
+          userRole = userObj.role;
+        }
+      } catch {}
+      if ((api.user && api.user.role === 'company') || userRole === 'company') {
+        projectsResponse = await api.get('/api/projects/company_projects/');
+      } else {
+        projectsResponse = await api.get('/api/projects/');
+      }
       let projectsData: any[] = [];
       if (projectsResponse?.data?.results) {
         projectsData = projectsResponse.data.results;
@@ -156,12 +184,40 @@ export const CompanyEvaluations: React.FC = () => {
         return;
       }
       setUsers(usersData.filter((user: any) => user.role === 'student'));
+
+      // Obtener estudiantes
+      const estudiantesResponse = await api.get('/api/students/');
+      let estudiantesData: any[] = [];
+      if (estudiantesResponse?.data?.results) {
+        estudiantesData = estudiantesResponse.data.results;
+      } else if (estudiantesResponse?.results) {
+        estudiantesData = estudiantesResponse.results;
+      } else if (Array.isArray(estudiantesResponse)) {
+        estudiantesData = estudiantesResponse;
+      } else if (estudiantesResponse?.data && Array.isArray(estudiantesResponse.data)) {
+        estudiantesData = estudiantesResponse.data;
+      } else {
+        estudiantesData = [];
+      }
+      setEstudiantes(estudiantesData);
     } catch (err: any) {
       setError('Error al cargar datos');
       setProjects([]);
       setUsers([]);
+      setEstudiantes([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Nueva función para cargar calificaciones recibidas por la empresa
+  const loadCompanyRatings = async () => {
+    try {
+      const response = await api.get('/api/company-ratings/');
+      const data = response.data?.results || response.results || [];
+      setCompanyRatings(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setCompanyRatings([]);
     }
   };
 
@@ -188,12 +244,18 @@ export const CompanyEvaluations: React.FC = () => {
     );
   };
 
-  const handleOpenEvaluar = (student: any, project: Project) => {
-    setSelectedStudent(student);
+  // 3. handleOpenEvaluar: buscar el estudiante correcto
+  const handleOpenEvaluar = (user, project) => {
+    const estudiante = estudiantes.find(e => e.user && (e.user.id === user.id));
+    if (!estudiante) {
+      alert('No se encontró el estudiante relacionado a este usuario.');
+      return;
+    }
+    setSelectedStudent(estudiante);
     setSelectedProject(project);
     
     // Cargar evaluación existente si existe
-    const existingEvaluation = getExistingEvaluation(student.id, project.id);
+    const existingEvaluation = getExistingEvaluation(estudiante.id, project.id);
     if (existingEvaluation) {
       setEvaluationForm({
         score: existingEvaluation.score,
@@ -219,51 +281,49 @@ export const CompanyEvaluations: React.FC = () => {
     setModalDetalleOpen(true);
   };
 
+  // 4. handleSaveEvaluation: usa selectedStudent.id (Integer)
   const handleSaveEvaluation = async () => {
     if (!selectedStudent || !selectedProject) return;
 
-    try {
-      const evaluationData = {
-        project: selectedProject.id,
-        student: selectedStudent.id,
-        score: evaluationForm.score,
-        comments: evaluationForm.comments,
-        category: 'general', // Categoría por defecto
-      };
+    console.log('project_id:', selectedProject.id, typeof selectedProject.id);
+    console.log('student_id:', selectedStudent.id, typeof selectedStudent.id);
 
-      const existingEvaluation = selectedProject ? getExistingEvaluation(selectedStudent.id, selectedProject.id) : null;
-      
-      if (existingEvaluation) {
-        // Actualizar evaluación existente
-        const response = await api.patch(`/api/evaluations/${existingEvaluation.id}/`, evaluationData);
-        const updatedEvaluation = adaptEvaluation(response.data);
-                         setEvaluationsByProject(prev => ({
-          ...prev,
-          [selectedProject!.id]: prev[selectedProject!.id].map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
-        }));
-      } else {
-        // Crear nueva evaluación
-        const response = await api.post('/api/evaluations/', evaluationData);
-        const newEvaluation = adaptEvaluation(response.data);
-        setEvaluationsByProject(prev => ({
-          ...prev,
-          [selectedProject!.id]: [...prev[selectedProject!.id], newEvaluation]
-        }));
-      }
+    const evaluationData = {
+      project_id: selectedProject.id,      // UUID string
+      student_id: selectedStudent.id,      // Integer
+      score: evaluationForm.score,
+      // No enviar comentarios, solo score
+    };
 
-      setModalOpen(false);
-      setSelectedStudent(null);
-      setSelectedProject(null);
-      setEvaluationForm({
-        score: 0,
-        comments: '',
-        strengths: [],
-        improvement_areas: [],
-      });
-    } catch (error: any) {
-      console.error('Error guardando evaluación:', error);
-      setError(error.response?.data?.error || 'Error al guardar evaluación');
+    const existingEvaluation = selectedProject ? getExistingEvaluation(selectedStudent.id, selectedProject.id) : null;
+    
+    if (existingEvaluation) {
+      // Actualizar evaluación existente
+      const response = await api.patch(`/api/evaluations/${existingEvaluation.id}/`, evaluationData);
+      const updatedEvaluation = adaptEvaluation(response.data);
+                       setEvaluationsByProject(prev => ({
+        ...prev,
+        [selectedProject!.id]: prev[selectedProject!.id].map(evaluation => evaluation.id === existingEvaluation.id ? updatedEvaluation : evaluation)
+      }));
+    } else {
+      // Crear nueva evaluación
+      const response = await api.post('/api/evaluations/create/', evaluationData);
+      const newEvaluation = adaptEvaluation(response.data);
+      setEvaluationsByProject(prev => ({
+        ...prev,
+        [selectedProject!.id]: [...prev[selectedProject!.id], newEvaluation]
+      }));
     }
+
+    setModalOpen(false);
+    setSelectedStudent(null);
+    setSelectedProject(null);
+    setEvaluationForm({
+      score: 0,
+      comments: '',
+      strengths: [],
+      improvement_areas: [],
+    });
   };
 
   const handleDeleteEvaluation = async (evaluationId: string) => {
@@ -287,6 +347,7 @@ export const CompanyEvaluations: React.FC = () => {
     }
   };
 
+  // 5. handleSubmitStrikeReport: usa el id Integer del estudiante
   const handleOpenStrikeReport = (student: any, project: Project) => {
     setSelectedStudent(student);
     setSelectedProject(project);
@@ -300,10 +361,19 @@ export const CompanyEvaluations: React.FC = () => {
   const handleSubmitStrikeReport = async () => {
     if (!selectedStudent || !selectedProject) return;
 
+    // Buscar el estudiante por user.id si es necesario
+    let estudianteId = selectedStudent.id;
+    if (typeof estudianteId !== 'number' && selectedStudent.user_id) {
+      const estudiante = estudiantes.find(e => e.user && (e.user.id === selectedStudent.id || e.user_id === selectedStudent.id));
+      if (estudiante) {
+        estudianteId = estudiante.id;
+      }
+    }
+
     try {
       const reportData = {
         company_id: selectedProject.company, // Asumiendo que el proyecto tiene company_id
-        student_id: selectedStudent.id,
+        student_id: estudianteId,
         project_id: selectedProject.id,
         reason: strikeReportForm.reason,
         description: strikeReportForm.description,
@@ -395,8 +465,8 @@ export const CompanyEvaluations: React.FC = () => {
       {/* Tabs principales */}
       <Box sx={{ mb: 4 }}>
         <Tabs
-          value={mainTab}
-          onChange={(_, newValue) => setMainTab(newValue)}
+          value={tab}
+          onChange={(_, newValue) => setTab(newValue)}
           textColor="primary"
           indicatorColor="primary"
           sx={{
@@ -413,9 +483,9 @@ export const CompanyEvaluations: React.FC = () => {
             mb: 2
           }}
         >
-          <Tab label="Por Proyecto" />
-          <Tab label="Recibidas" />
-          <Tab label="Dadas" />
+          <Tab label="Por Proyecto" sx={tabStyles} />
+          <Tab label="Recibidas" sx={tabStyles} />
+          <Tab label="Calificaciones Empresa" sx={tabStyles} />
         </Tabs>
       </Box>
 
@@ -456,27 +526,25 @@ export const CompanyEvaluations: React.FC = () => {
 </Box>
 
       {/* Tabs secundarios y contenido */}
-      {mainTab === 0 && (
+      {tab === 0 && (
         <>
-          <Box sx={{ mb: 4 }}>
-            <Grid container spacing={1}>
-              {['Activos', 'Completados', 'Cancelados'].map((tab, index) => (
-                <Grid item key={index}>
-                  <Button
-                    variant={selectedTab === index ? 'contained' : 'outlined'}
-                    onClick={() => setSelectedTab(index)}
-                    sx={{ minWidth: 140, fontWeight: 600, fontSize: 16, borderRadius: 2, boxShadow: selectedTab === index ? 2 : 0 }}
-                  >
-                    {tab}
-                  </Button>
-                </Grid>
-              ))}
-            </Grid>
+          <Box sx={{ mb: 4, display: 'flex', gap: 1 }}>
+            {['Activos', 'Completados'].map((tab, index) => (
+              <Box key={index} sx={{ display: 'inline-block' }}>
+                <Button
+                  variant={selectedTab === index ? 'contained' : 'outlined'}
+                  onClick={() => setSelectedTab(index)}
+                  sx={{ minWidth: 140, fontWeight: 600, fontSize: 16, borderRadius: 2, boxShadow: selectedTab === index ? 2 : 0 }}
+                >
+                  {tab}
+                </Button>
+              </Box>
+            ))}
           </Box>
       {/* Lista de Proyectos */}
       <Box>
         {(() => {
-          const currentProjects = selectedTab === 0 ? activos : selectedTab === 1 ? completados : cancelados;
+          const currentProjects = selectedTab === 0 ? activos : completados;
               if (currentProjects.length === 0) {
                 return (
                   <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -487,9 +555,9 @@ export const CompanyEvaluations: React.FC = () => {
                 );
               }
               return (
-                <Grid container spacing={3}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
                   {currentProjects.map((project) => (
-                    <Grid item xs={12} md={6} key={project.id}>
+                    <Box key={project.id} sx={{ flex: '1 1 450px' }}>
                       <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white', transition: 'box-shadow 0.2s', '&:hover': { boxShadow: 6 } }}>
                         <CardContent>
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -551,23 +619,23 @@ export const CompanyEvaluations: React.FC = () => {
                   </Box>
                 </CardContent>
               </Card>
-                    </Grid>
+                    </Box>
                   ))}
-                    </Grid>
+                    </Box>
                   );
             })()}
           </Box>
         </>
       )}
-      {mainTab === 1 && (
+      {tab === 1 && (
         // Evaluaciones Recibidas de Estudiantes
         <Box>
           <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
             Evaluaciones Recibidas de Estudiantes
           </Typography>
-          <Grid container spacing={3}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
             {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_type === 'student').map((evalR, idx) => (
-              <Grid item xs={12} md={6} key={evalR.id || idx}>
+              <Box key={evalR.id || idx} sx={{ flex: '1 1 450px' }}>
                 <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white' }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -592,48 +660,52 @@ export const CompanyEvaluations: React.FC = () => {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Box>
       )}
-      {mainTab === 2 && (
+      {tab === 2 && (
         // Evaluaciones Realizadas a Estudiantes
         <Box>
           <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-            Evaluaciones Realizadas a Estudiantes
+            Calificaciones Recibidas por la Empresa
           </Typography>
-          <Grid container spacing={3}>
-            {Object.values(evaluationsByProject).flat().filter(e => e.evaluator_type === 'company').map((evalD, idx) => (
-              <Grid item xs={12} md={6} key={evalD.id || idx}>
-                <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white' }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
-                        {evalD.student_name || 'Sin nombre'}
-                      </Typography>
-                      <Chip label="Dada" color="success" size="small" sx={{ fontWeight: 600 }} />
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Rating value={evalD.score} readOnly />
-                      <Typography variant="body1" sx={{ ml: 2 }}>
-                        {evalD.score}/5
-                </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+            {companyRatings.length === 0 ? (
+              <Box sx={{ flex: '1 1 450px' }}>
+                <Alert severity="info">Aún no hay calificaciones recibidas.</Alert>
               </Box>
-                    {evalD.comments && (
+            ) : (
+              companyRatings.map((rating, idx) => (
+                <Box key={rating.id || idx} sx={{ flex: '1 1 450px' }}>
+                  <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, bgcolor: 'white' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1, color: 'primary.main' }}>
+                          {rating.estudiante || 'Sin nombre'}
+                        </Typography>
+                        <Chip label="Recibida" color="info" size="small" sx={{ fontWeight: 600 }} />
+                      </Box>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        <strong>Comentarios:</strong> {evalD.comments}
+                        Proyecto: {rating.proyecto || 'Sin proyecto'}
                       </Typography>
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      Evaluado el: {new Date(evalD.evaluation_date).toLocaleDateString()}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Rating value={rating.puntuacion} readOnly />
+                        <Typography variant="body1" sx={{ ml: 2 }}>
+                          {rating.puntuacion}/5
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Fecha: {rating.fecha ? new Date(rating.fecha).toLocaleDateString() : ''}
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 </Box>
+              ))
+            )}
+          </Box>
+        </Box>
       )}
 
       {/* Modal de Evaluación */}
@@ -664,16 +736,7 @@ export const CompanyEvaluations: React.FC = () => {
                 {evaluationForm.score}/5
               </Typography>
             </Box>
-            
-              <TextField
-                fullWidth
-              label="Comentarios"
-              value={evaluationForm.comments}
-              onChange={(e) => setEvaluationForm(prev => ({ ...prev, comments: e.target.value }))}
-              multiline
-              rows={4}
-              sx={{ mb: 3 }}
-            />
+            {/* Eliminar el campo de comentarios */}
           </Box>
         </DialogContent>
         <DialogActions>

@@ -12,58 +12,6 @@ FinanPlus	      contacto@finanplus.com    Empresa1234!
 Juan Pérez        juan.perez@uchile.cl      Estudiante1234!
 
 
-#####################################
-########ESTADO DEL SISTEMA###########
-#####################################
-REGISTRO DE EMPRESA             OK 
-REGISTRO DE ESTUDIANTE          OK 
-BLOG (CARTA DE PRECENTACION)    OK
-#####################################
-ADMIN LE FUNCIONAN BIEN EL : 
-DASHBOARD                       OK
-PERFIL                          OK
-NOTIFICACIONES                  OK
-GESTION DE USUARIOS             OK
-GESTION DE ESTUDIANTES          OK
-GESTION DE EMPRESAS             OK
-CONFIGURACION DE LA PLATAFORMA  OK   
-GESTION DE PROYECTOS            OK
-VALIDACION DE HORAS             OK
-GESTION DE EVALUACIONES---------OK
-#####################################
-EMPRESA LE FUNCIONA EL : 
-DASHBOARD                       OK
-PERFIL                          OK
-NOTIFICACIONES                  OK
-PROYECTOS                       OK
-POSTULACIONES                   OK 
-BUSCAR ESTUDIANTES--------------OK
-EVALUACIONES--------------------OK
-ENTREVISTAS---------------------OK 
-CALENDARIO                      OK 
-STRIKES-------------------------OK
-#####################################
-ESTUDIANTE LE FUNCIONA EL :
-DASHBOARD             OK
-PERFIL                OK
-NOTIFICACIONES        OK
-PROYECTOS DISPONIBLES OK
-MIS APLICACIONES      OK
-MIS PROYECTOS         OK
-EVALUACIONES----------OK          
-CALENDARIO            OK
-CUESTIONARIO API      OK
-RESULTADOS API        OK
-
-
-
-
-
-
-
-
-
-
 use leanmaker_db;
  SELECT * FROM users;
  select * from students;

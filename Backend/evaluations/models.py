@@ -28,7 +28,7 @@ class Evaluation(models.Model):
     # Campos básicos - coinciden con frontend
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='evaluations')
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_received')  # Campo renombrado para coincidir con frontend
+    student = models.ForeignKey('students.Estudiante', on_delete=models.CASCADE, related_name='evaluations_received')
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_done')
     category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE, related_name='evaluations')  # Campo agregado para coincidir con frontend
     
@@ -60,7 +60,7 @@ class Evaluation(models.Model):
         ordering = ['-date', '-created_at']
 
     def __str__(self):
-        return f"{self.student.full_name} - {self.project.title} ({self.get_type_display()})"
+        return f"{self.student.user.full_name} - {self.project.title} ({self.get_type_display()})"
     
     def save(self, *args, **kwargs):
         # Sincronizar campos para compatibilidad

@@ -270,29 +270,29 @@ def send_company_message(request):
         
         # Verificar que sea una empresa
         if current_user.role != 'company':
-            return JsonResponse({'error': 'Solo las empresas pueden enviar mensajes'}, status=403)
+            return JsonResponse({'success': False, 'error': 'Solo las empresas pueden enviar mensajes'}, status=403)
         
         # Parsear datos
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Datos JSON inválidos'}, status=400)
         
         # Validar datos requeridos
         student_id = data.get('student_id')
         message = data.get('message', '').strip()
         
         if not student_id:
-            return JsonResponse({'error': 'El ID del estudiante es requerido'}, status=400)
+            return JsonResponse({'success': False, 'error': 'El ID del estudiante es requerido'}, status=400)
         if not message:
-            return JsonResponse({'error': 'El mensaje es requerido'}, status=400)
+            return JsonResponse({'success': False, 'error': 'El mensaje es requerido'}, status=400)
         
         # Obtener el estudiante
         from students.models import Estudiante
         try:
             student = Estudiante.objects.select_related('user').get(id=student_id)
         except Estudiante.DoesNotExist:
-            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+            return JsonResponse({'success': False, 'error': 'Estudiante no encontrado'}, status=404)
         
         # Obtener datos de la empresa
         from companies.models import Empresa
@@ -324,7 +324,7 @@ def send_company_message(request):
         }, status=201)
         
     except Exception as e:
-        return JsonResponse({'error': f'Error al enviar mensaje: {str(e)}'}, status=500)
+        return JsonResponse({'success': False, 'error': f'Error al enviar mensaje: {str(e)}'}, status=500)
 
 @csrf_exempt
 @require_http_methods(["POST"])

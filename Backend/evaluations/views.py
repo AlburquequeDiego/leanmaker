@@ -41,7 +41,12 @@ def evaluations_list(request):
         # Aplicar filtros según el rol del usuario
         if current_user.role == 'student':
             # Estudiantes solo ven sus propias evaluaciones
-            queryset = queryset.filter(student=current_user)
+            from students.models import Estudiante
+            try:
+                estudiante = Estudiante.objects.get(user=current_user)
+                queryset = queryset.filter(student=estudiante)
+            except Estudiante.DoesNotExist:
+                return JsonResponse({'results': [], 'error': 'No existe perfil de estudiante para este usuario.'}, status=404)
         elif current_user.role == 'company':
             # Empresas ven evaluaciones de sus proyectos
             queryset = queryset.filter(project__company__user=current_user)
@@ -174,6 +179,23 @@ def evaluations_create(request):
         # Procesar datos
         data = json.loads(request.body)
         
+        # Validar que los IDs sean correctos
+        project_id = data.get('project_id')
+        student_id = data.get('student_id')
+        if not project_id or not student_id:
+            return JsonResponse({'error': 'project_id y student_id son requeridos.'}, status=400)
+        try:
+            project_uuid = str(project_id)  # Si el proyecto es UUID, mantenerlo
+            student_int = int(student_id)   # Ahora el estudiante es Integer
+        except Exception:
+            return JsonResponse({'error': 'project_id o student_id no tienen formato válido.'}, status=400)
+        # Buscar estudiante por Integer
+        from students.models import Estudiante
+        try:
+            estudiante = Estudiante.objects.get(id=student_int)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado.'}, status=404)
+        
         # Determinar el evaluador y el evaluador_role
         if current_user.role == 'company':
             evaluator_role = 'company'
@@ -182,13 +204,31 @@ def evaluations_create(request):
         else:
             evaluator_role = data.get('evaluator_role', 'admin')
         
+        # Validar que la empresa solo pueda calificar a estudiantes de proyectos completados donde ambos participaron
+        if current_user.role == 'company':
+            from projects.models import Proyecto
+            from applications.models import Aplicacion
+            try:
+                proyecto = Proyecto.objects.get(id=project_uuid)
+            except Proyecto.DoesNotExist:
+                return JsonResponse({'error': 'Proyecto no encontrado.'}, status=404)
+            # Validar que el proyecto pertenezca a la empresa
+            if proyecto.company.user != current_user:
+                return JsonResponse({'error': 'El proyecto no pertenece a tu empresa.'}, status=400)
+            # Validar que el proyecto esté completado
+            if proyecto.status != 'completed' and getattr(proyecto.status, 'name', None) != 'completed':
+                return JsonResponse({'error': 'Solo puedes calificar proyectos completados.'}, status=400)
+            # Validar que el estudiante haya participado y completado el proyecto
+            participo = Aplicacion.objects.filter(project=proyecto, student_id=student_int, status='completed').exists()
+            if not participo:
+                return JsonResponse({'error': 'Solo puedes calificar estudiantes que hayan completado el proyecto.'}, status=400)
+        
         # Crear evaluación
         evaluation = Evaluation.objects.create(
-            project_id=data.get('project_id'),
-            student_id=data.get('student_id'),
+            project_id=project_uuid,
+            student=estudiante,
             evaluator=current_user,
             score=data.get('score'),
-            comments=data.get('comments', ''),
             evaluation_date=data.get('evaluation_date'),
             status=data.get('status', 'completed'),
             evaluator_role=evaluator_role,

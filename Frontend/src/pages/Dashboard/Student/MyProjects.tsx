@@ -269,7 +269,6 @@ export const MyProjects = () => {
 
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="caption" color="text.secondary">
-                          {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
                         <IconButton size="small" color="primary">
@@ -349,7 +348,6 @@ export const MyProjects = () => {
 
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="caption" color="text.secondary">
-                          {typeof project.hoursWorked === 'number' && !isNaN(project.hoursWorked) ? project.hoursWorked : 0}/
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
                         <IconButton size="small" color="primary">

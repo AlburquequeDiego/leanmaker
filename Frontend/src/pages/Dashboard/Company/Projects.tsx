@@ -34,6 +34,7 @@ import {
   TaskAlt as TaskAltIcon,
   Restore as RestoreIcon,
 } from '@mui/icons-material';
+import Tooltip from '@mui/material/Tooltip';
 import { useApi } from '../../../hooks/useApi';
 import { adaptProjectList } from '../../../utils/adapters';
 import type { Project } from '../../../types';
@@ -63,6 +64,8 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [updatingProject, setUpdatingProject] = useState<string | null>(null);
+  const [projectDetails, setProjectDetails] = useState<any | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   // Sincronizar tab con location.state.initialTab si cambia
   useEffect(() => {
@@ -135,6 +138,63 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         return 'info';
     }
   };
+
+  const statusConfig = {
+    published: {
+      label: 'Publicado',
+      color: '#1976d2',
+      icon: <PublishIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />,
+      tooltip: 'El proyecto está publicado y visible para los estudiantes.'
+    },
+    active: {
+      label: 'Activo',
+      color: '#388e3c',
+      icon: <PlayArrowIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />,
+      tooltip: 'El proyecto está en curso y los estudiantes están trabajando en él.'
+    },
+    completed: {
+      label: 'Completado',
+      color: '#fbc02d',
+      icon: <CheckCircleIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />,
+      tooltip: 'El proyecto ha sido finalizado.'
+    },
+    deleted: {
+      label: 'Eliminado',
+      color: '#d32f2f',
+      icon: <DeleteIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />,
+      tooltip: 'El proyecto ha sido eliminado.'
+    }
+  };
+
+  /**
+   * StatusBadge
+   * Componente visual para mostrar el estado de un proyecto con color, icono y tooltip.
+   * Uso: <StatusBadge status={project.status} />
+   * Estados soportados: published, active, completed, deleted
+   * Traduce y estiliza el estado para hacerlo más visual e intuitivo.
+   */
+  function StatusBadge({ status }) {
+    const config = statusConfig[status] || statusConfig['published'];
+    return (
+      <Tooltip title={config.tooltip} arrow>
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          background: config.color,
+          color: '#fff',
+          borderRadius: 12,
+          padding: '2px 10px',
+          fontWeight: 600,
+          fontSize: '0.95em',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+          marginLeft: 4
+        }}>
+          {config.icon}
+          <span style={{ marginLeft: 6 }}>{config.label}</span>
+        </span>
+      </Tooltip>
+    );
+  }
 
   const handleDeleteClick = (project: Project) => {
     setSelectedProject(project);
@@ -287,14 +347,24 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
     setSelectedProject(null);
   };
 
-  const handleViewClick = (project: Project) => {
+  const handleViewClick = async (project: Project) => {
     setSelectedProject(project);
     setViewDialogOpen(true);
+    setLoadingDetails(true);
+    try {
+      const response = await api.get(`/api/projects/${project.id}/`);
+      setProjectDetails(response.data || response);
+    } catch (e) {
+      setProjectDetails(null);
+    } finally {
+      setLoadingDetails(false);
+    }
   };
 
   const handleViewClose = () => {
     setViewDialogOpen(false);
     setSelectedProject(null);
+    setProjectDetails(null);
   };
 
   if (loading) {
@@ -416,12 +486,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                   <Typography variant="h6" fontWeight={700} sx={{ mr: 1, color: 'primary.main' }}>
                     {project.title}
                   </Typography>
-                  <Chip 
-                    label={getStatusLabel(project.status)} 
-                    color={getStatusColor(project.status) as any} 
-                    size="small"
-                    sx={{ fontWeight: 600 }}
-                  />
+                  <StatusBadge status={project.status} />
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
                   {project.description && project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description || 'Sin descripción'}
@@ -672,8 +737,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
           <Typography variant="body1" gutterBottom>
             ¿Seguro que deseas marcar el proyecto <strong>"{selectedProject?.title}"</strong> como completado?
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Esta acción no se puede deshacer y el proyecto pasará al estado de completado.
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            <b>Una vez que completes el proyecto:</b><br/>
+            - Se asignarán automáticamente las horas correspondientes de proyecto a todos los integrantes.<br/>
+            - Esta acción es irreversible y no se podrá modificar ni corregir posteriormente.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
@@ -804,6 +871,27 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                   </Grid>
                 )}
               </Grid>
+              {projectDetails && projectDetails.estudiantes && (
+                <Grid item xs={12}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Estudiantes participantes
+                  </Typography>
+                  {projectDetails.estudiantes.length === 0 ? (
+                    <Typography variant="body2" color="text.secondary">
+                      No hay estudiantes asignados a este proyecto.
+                    </Typography>
+                  ) : (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      {projectDetails.estudiantes.map((est: any) => (
+                        <Box key={est.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1, bgcolor: '#f8f9fa', borderRadius: 1 }}>
+                          <Chip label={est.nombre} color="primary" />
+                          <Typography variant="body2" color="text.secondary">{est.email}</Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+                </Grid>
+              )}
             </Box>
           )}
         </DialogContent>
