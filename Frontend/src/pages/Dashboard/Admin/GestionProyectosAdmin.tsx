@@ -190,16 +190,7 @@ export const GestionProyectosAdmin = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'success';
-      case 'suspended': return 'warning';
-      case 'completed': return 'info';
-      case 'cancelled': return 'error';
-      default: return 'default';
-    }
-  };
-
+  // Reemplazar getStatusText y getStatusColor para que usen español y colores llamativos
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active': return 'Activo';
@@ -207,6 +198,16 @@ export const GestionProyectosAdmin = () => {
       case 'completed': return 'Completado';
       case 'cancelled': return 'Eliminados';
       default: return status;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'success';
+      case 'suspended': return 'warning';
+      case 'completed': return 'info';
+      case 'cancelled': return 'error';
+      default: return 'default';
     }
   };
 
