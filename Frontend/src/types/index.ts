@@ -318,12 +318,13 @@ export interface CalendarEvent {
   end: Date;   // <-- AGREGADO
   all_day: boolean;
   location?: string;
-  attendees: string[]; // Array de UUIDs de usuarios
+  attendees: string[]; // Array de UUIDs de usuarios o nombres
   created_by: string; // UUID del creador
   created_at: string;
   updated_at: string;
   project?: string; // UUID del proyecto
   project_title?: string; // Título del proyecto (opcional)
+  status?: string; // Estado del evento (scheduled, completed, etc.)
 }
 
 // Tipos de cuestionario - Coinciden con el modelo Cuestionario del backend

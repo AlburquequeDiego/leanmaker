@@ -305,24 +305,6 @@ export const SearchStudents: React.FC = () => {
                 </Select>
               </FormControl>
             </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <Typography variant="subtitle2" gutterBottom>
-                <FilterIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-                Filtros por habilidades:
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {allSkills.map((skill) => (
-                  <Chip
-                    key={skill}
-                    label={skill}
-                    onClick={() => handleSkillToggle(skill)}
-                    color={selectedSkills.includes(skill) ? 'primary' : 'default'}
-                    variant={selectedSkills.includes(skill) ? 'filled' : 'outlined'}
-                    size="small"
-                  />
-                ))}
-              </Box>
-            </Box>
           </Box>
         </CardContent>
       </Card>

@@ -1,7 +1,7 @@
 Nombre del servidor:servidortesis.database.windows.net
 autenticacion : SQL Server Autentication
-login : administradortesiss
-password: Admin@tesis
+login : administradortesisss
+password: Admin@tesisss
 
 IP  :   https://www.whatismyip.com/ 
 

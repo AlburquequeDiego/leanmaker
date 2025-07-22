@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
 from users.models import User
-from .models import Proyecto
+from .models import Proyecto, MiembroProyecto
 from core.views import verify_token
 from django.db.models import F
 
@@ -731,5 +731,40 @@ def activate_project(request, project_id):
         # Contar estudiantes activos (active o completed)
         active_count = Aplicacion.objects.filter(project=project, status__in=['active', 'completed']).count()
         return JsonResponse({'success': True, 'active_students': active_count, 'updated': updated_count})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def project_participants(request, project_id):
+    """Devuelve solo los nombres y correos de los estudiantes participantes de un proyecto."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        # Permitir solo admin, empresa o staff
+        if current_user.role not in ['admin', 'company', 'staff']:
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Buscar el proyecto
+        try:
+            project = Proyecto.objects.get(id=project_id)
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        # Buscar miembros activos con rol estudiante
+        miembros = MiembroProyecto.objects.filter(proyecto=project, rol='estudiante', esta_activo=True).select_related('usuario')
+        participantes = []
+        for miembro in miembros:
+            user = miembro.usuario
+            participantes.append({
+                'id': str(user.id),
+                'nombre': f"{user.first_name} {user.last_name}".strip() or user.email,
+                'email': user.email,
+            })
+        return JsonResponse({'participantes': participantes})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

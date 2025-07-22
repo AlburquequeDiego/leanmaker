@@ -36,7 +36,10 @@ import {
   FilterList as FilterListIcon,
   Business as BusinessIcon,
   Schedule as ScheduleIcon,
+  Assignment as AssignmentIcon,
 } from '@mui/icons-material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
 
@@ -149,8 +152,8 @@ export const GestionProyectosAdmin = () => {
   const fetchProjectStudents = async (projectId: string) => {
     try {
       setLoadingStudents(true);
-      const response = await apiService.get(`/api/projects/${projectId}/`);
-      setProjectStudents(response.estudiantes || []);
+      const response = await apiService.get(`/api/projects/${projectId}/participants/`);
+      setProjectStudents(response.participantes || []);
     } catch (error) {
       console.error('Error fetching project students:', error);
       setProjectStudents([]);
@@ -193,21 +196,70 @@ export const GestionProyectosAdmin = () => {
   // Reemplazar getStatusText y getStatusColor para que usen español y colores llamativos
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return 'Activo';
-      case 'suspended': return 'Suspendido';
-      case 'completed': return 'Completado';
-      case 'cancelled': return 'Eliminados';
-      default: return status;
+      case 'published':
+        return 'Publicado';
+      case 'active':
+        return 'Activo';
+      case 'completed':
+        return 'Completado';
+      case 'pending':
+        return 'Pendiente';
+      case 'accepted':
+        return 'Aceptado';
+      case 'rejected':
+        return 'Rechazado';
+      case 'cancelled':
+        return 'Eliminado';
+      case 'suspended':
+        return 'Suspendido';
+      default:
+        return status;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'success';
-      case 'suspended': return 'warning';
-      case 'completed': return 'info';
-      case 'cancelled': return 'error';
-      default: return 'default';
+      case 'published':
+        return 'info'; // Azul
+      case 'active':
+        return 'success'; // Verde
+      case 'completed':
+        return 'primary'; // Azul fuerte
+      case 'pending':
+        return 'warning'; // Amarillo
+      case 'accepted':
+        return 'success'; // Verde
+      case 'rejected':
+        return 'error'; // Rojo
+      case 'cancelled':
+        return 'error'; // Rojo
+      case 'suspended':
+        return 'warning'; // Amarillo
+      default:
+        return 'default';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <ScheduleIcon />;
+      case 'accepted':
+        return <CheckCircleIcon />;
+      case 'rejected':
+        return <CancelIcon />;
+      case 'completed':
+        return <TrendingUpIcon />;
+      case 'active':
+        return <CheckCircleIcon />;
+      case 'published':
+        return <ScheduleIcon />;
+      case 'cancelled':
+        return <CancelIcon />;
+      case 'suspended':
+        return <ScheduleIcon />;
+      default:
+        return <AssignmentIcon />;
     }
   };
 
@@ -244,13 +296,7 @@ export const GestionProyectosAdmin = () => {
       key: 'status',
       label: 'Estado',
       render: (value: string) => (
-        <Chip 
-          label={getStatusText(value)} 
-          color={getStatusColor(value) as any}
-          variant="filled"
-          size="small"
-          sx={{ fontWeight: 600 }}
-        />
+        <Chip icon={getStatusIcon(value)} label={getStatusText(value)} color={getStatusColor(value) as any} size="small" sx={{ fontWeight: 600 }} />
       ),
       width: '100px',
       align: 'center' as const
@@ -296,20 +342,6 @@ export const GestionProyectosAdmin = () => {
         </Box>
       ),
       width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'rating',
-      label: 'Promedio General de Proyecto',
-      render: (value: number) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Rating value={value} readOnly size="small" />
-          <Typography variant="caption" color="text.secondary">
-            ({value.toFixed(1)})
-          </Typography>
-        </Box>
-      ),
-      width: '120px',
       align: 'center' as const
     },
     {

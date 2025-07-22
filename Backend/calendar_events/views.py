@@ -608,7 +608,13 @@ def company_events(request):
                 'color': event.color,
                 'icon': event.icon,
                 'created_by': str(event.created_by.id) if event.created_by else None,
-                'attendees': [str(att.id) for att in event.attendees.all()],
+                'attendees': [
+                    {
+                        'id': str(att.id),
+                        'full_name': att.get_full_name(),
+                        'email': att.email
+                    } for att in event.attendees.all()
+                ],
                 'project': {
                     'id': str(event.project.id),
                     'title': event.project.title,
@@ -626,6 +632,6 @@ def company_events(request):
         for e in queryset:
             print('Evento:', e.id, e.title, 'project:', e.project_id)
 
-        return JsonResponse(events_data, safe=False)
+        return JsonResponse({'results': events_data}, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

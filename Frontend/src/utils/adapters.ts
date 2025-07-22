@@ -373,25 +373,76 @@ export const adaptInterview = (backendInterview: any): Interview => ({
 /**
  * Adapta un evento de calendario del backend al formato del frontend
  */
-export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => ({
-  id: String(backendEvent.id),
-  title: backendEvent.title,
-  description: backendEvent.description,
-  event_type: backendEvent.event_type,
-  priority: backendEvent.priority || 'normal',
-  start: backendEvent.start_date ? new Date(backendEvent.start_date) : null,
-  end: backendEvent.end_date ? new Date(backendEvent.end_date) : null,
-  start_date: backendEvent.start_date,
-  end_date: backendEvent.end_date,
-  all_day: backendEvent.all_day,
-  location: backendEvent.location,
-  attendees: backendEvent.attendees?.map((id: any) => String(id)) || [],
-  created_by: String(backendEvent.created_by),
-  created_at: backendEvent.created_at,
-  updated_at: backendEvent.updated_at,
-  project: backendEvent.project ? String(backendEvent.project) : undefined,
-  project_title: backendEvent.project_title || (backendEvent.project && backendEvent.project.title) || undefined,
-});
+export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
+  try {
+    if (!backendEvent) {
+      console.warn('[adaptCalendarEvent] Evento vacío o undefined:', backendEvent);
+      return {
+        id: 'sin-id',
+        title: 'Sin título',
+        description: '',
+        event_type: 'interview',
+        priority: 'normal',
+        start_date: '',
+        end_date: '',
+        start: new Date(),
+        end: new Date(),
+        all_day: false,
+        attendees: [],
+        created_by: '',
+        created_at: '',
+        updated_at: '',
+      };
+    }
+    const event: CalendarEvent = {
+      id: String(backendEvent.id || 'sin-id'),
+      title: backendEvent.title || 'Sin título',
+      description: backendEvent.description || '',
+      event_type: backendEvent.event_type || 'interview',
+      priority: backendEvent.priority || 'normal',
+      start_date: backendEvent.start_date || '',
+      end_date: backendEvent.end_date || '',
+      start: backendEvent.start_date ? new Date(backendEvent.start_date) : new Date(),
+      end: backendEvent.end_date ? new Date(backendEvent.end_date) : new Date(),
+      all_day: !!backendEvent.all_day,
+      location: backendEvent.location || '',
+      attendees: Array.isArray(backendEvent.attendees)
+        ? backendEvent.attendees.map((att: any) =>
+            typeof att === 'object' ? (att.full_name || att.email || att.id) : String(att)
+          )
+        : [],
+      created_by: String(backendEvent.created_by || ''),
+      created_at: backendEvent.created_at || '',
+      updated_at: backendEvent.updated_at || '',
+      project: backendEvent.project && backendEvent.project.id ? String(backendEvent.project.id) : undefined,
+      project_title: backendEvent.project && backendEvent.project.title ? backendEvent.project.title : backendEvent.project_title || undefined,
+      status: backendEvent.status || 'scheduled',
+    };
+    // Log de depuración
+    if (!event.start_date || !event.end_date) {
+      console.warn('[adaptCalendarEvent] Evento con fechas faltantes:', backendEvent);
+    }
+    return event;
+  } catch (e) {
+    console.error('[adaptCalendarEvent] Error adaptando evento:', backendEvent, e);
+    return {
+      id: 'sin-id',
+      title: 'Sin título',
+      description: '',
+      event_type: 'interview',
+      priority: 'normal',
+      start_date: '',
+      end_date: '',
+      start: new Date(),
+      end: new Date(),
+      all_day: false,
+      attendees: [],
+      created_by: '',
+      created_at: '',
+      updated_at: '',
+    };
+  }
+};
 
 /**
  * Adapta estadísticas del dashboard del backend al formato del frontend
