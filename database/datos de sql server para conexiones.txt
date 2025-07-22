@@ -12,13 +12,13 @@ FinanPlus	      contacto@finanplus.com    Empresa1234!
 Juan Pérez        juan.perez@uchile.cl      Estudiante1234!
 
 
-
---------ESTADO DEL SISTEMA-------- 
-------------------------------
+#####################################
+########ESTADO DEL SISTEMA###########
+#####################################
 REGISTRO DE EMPRESA             OK 
 REGISTRO DE ESTUDIANTE          OK 
 BLOG (CARTA DE PRECENTACION)    OK
-------------------------------
+#####################################
 ADMIN LE FUNCIONAN BIEN EL : 
 DASHBOARD                       OK
 PERFIL                          OK
@@ -29,28 +29,47 @@ GESTION DE EMPRESAS             OK
 CONFIGURACION DE LA PLATAFORMA  OK   
 GESTION DE PROYECTOS            OK
 VALIDACION DE HORAS             OK
---GESTION DE EVALUACIONES       OK -
--------------------------------
+GESTION DE EVALUACIONES---------OK
+#####################################
 EMPRESA LE FUNCIONA EL : 
 DASHBOARD                       OK
 PERFIL                          OK
 NOTIFICACIONES                  OK
-PROYECTOS                       OK -
-POSTULACIONES                   OK - 
-BUSCAR ESTUDIANTES              OK -
-EVALUACIONES                    OK -
-ENTREVISTAS                     OK - 
+PROYECTOS                       OK
+POSTULACIONES                   OK 
+BUSCAR ESTUDIANTES--------------OK
+EVALUACIONES--------------------OK
+ENTREVISTAS---------------------OK 
 CALENDARIO                      OK 
-STRIKES                         OK -
--------------------------------
+STRIKES-------------------------OK
+#####################################
 ESTUDIANTE LE FUNCIONA EL :
 DASHBOARD             OK
 PERFIL                OK
 NOTIFICACIONES        OK
+PROYECTOS DISPONIBLES OK
+MIS APLICACIONES      OK
+MIS PROYECTOS         OK
+EVALUACIONES----------OK          
+CALENDARIO            OK
 CUESTIONARIO API      OK
 RESULTADOS API        OK
-PROYECTOS DISPONIBLES ok
-MIS APLICACIONES      OK
-MISPROYECTOS          OK
-EVALUACIONES          OK          - 
-CALENDARIO            OK
+
+
+
+
+
+
+
+
+
+
+use leanmaker_db;
+ SELECT * FROM users;
+ select * from students;
+ SELECT * FROM companies;
+ SELECT * FROM projects;
+ SELECT * FROM calendar_events;
+ SELECT * FROM calendar_events_attendees;
+
+

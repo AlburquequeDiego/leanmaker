@@ -35,6 +35,7 @@ class WorkHour(models.Model):
     validador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='horas_validadas')
     fecha_validacion = models.DateTimeField(null=True, blank=True)
     comentario_validacion = models.TextField(null=True, blank=True)
+    is_project_completion = models.BooleanField(default=False, help_text='Horas generadas automáticamente al completar un proyecto')
     
     # Campos de fechas - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)

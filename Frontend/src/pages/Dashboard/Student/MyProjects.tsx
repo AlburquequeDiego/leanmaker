@@ -21,6 +21,7 @@ import {
   Tabs,
   Tab,
   Divider,
+  Grid,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -29,6 +30,7 @@ import {
   Visibility as VisibilityIcon,
   Schedule as ScheduleIcon,
   TrendingUp as TrendingUpIcon,
+  Science as ScienceIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { ShowLatestFilter } from '../../../components/common/ShowLatestFilter';
@@ -51,6 +53,14 @@ interface Project {
   deliverables: string[];
   nextMilestone: string;
   nextMilestoneDate: string;
+  modality?: string;
+  hoursPerWeek?: number;
+  maxStudents?: number;
+  currentStudents?: number;
+  trlLevel?: string;
+  apiLevel?: string;
+  createdAt?: string;
+  requirements?: string;
 }
 
 export const MyProjects = () => {
@@ -82,6 +92,14 @@ export const MyProjects = () => {
     deliverables: Array.isArray(backend.deliverables) ? backend.deliverables : [],
     nextMilestone: backend.nextMilestone || '',
     nextMilestoneDate: backend.nextMilestoneDate || '',
+    modality: backend.modality,
+    hoursPerWeek: backend.hours_per_week,
+    maxStudents: backend.max_students,
+    currentStudents: backend.current_students,
+    trlLevel: backend.trl_level,
+    apiLevel: backend.api_level,
+    createdAt: backend.created_at,
+    requirements: backend.requirements,
   });
 
   useEffect(() => {
@@ -113,9 +131,9 @@ export const MyProjects = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'success';
+        return 'secondary'; // Morado
       case 'completed':
-        return 'info';
+        return 'primary'; // Azul
       case 'paused':
         return 'warning';
       default:
@@ -126,7 +144,7 @@ export const MyProjects = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active':
-        return 'Activo';
+        return 'Activado'; // Cambiar el texto a 'Activado'
       case 'completed':
         return 'Completado';
       case 'paused':
@@ -239,20 +257,6 @@ export const MyProjects = () => {
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                         {project.description.substring(0, 100)}...
                       </Typography>
-
-                      <Box sx={{ mb: 2 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="body2">Progreso</Typography>
-                          <Typography variant="body2" fontWeight="bold">
-                            {project.progress}%
-                          </Typography>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={typeof project.progress === 'number' && !isNaN(project.progress) ? Math.max(0, Math.min(100, project.progress)) : 0}
-                          sx={{ height: 8, borderRadius: 4 }}
-                        />
-                      </Box>
 
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
                         {project.technologies.slice(0, 3).map((tech) => (
@@ -379,33 +383,47 @@ export const MyProjects = () => {
         </DialogTitle>
         <DialogContent>
           {selectedProject && (
-            <Card sx={{ borderRadius: 3, boxShadow: 3, bgcolor: 'white', border: '1px solid #e0e0e0', p: 3, maxWidth: 600, mx: 'auto' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Avatar sx={{ mr: 2, bgcolor: 'primary.main', width: 56, height: 56 }}>
-                    <AssignmentIcon sx={{ fontSize: 28 }} />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h5" fontWeight={700}>{selectedProject.title}</Typography>
-                    <Typography variant="body2" color="text.secondary" fontWeight={500}>
-                      Empresa: {selectedProject.company}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Divider sx={{ mb: 2 }} />
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {selectedProject.description}
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    <strong>Duración:</strong> {selectedProject.startDate} - {selectedProject.endDate}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <strong>Ubicación:</strong> {selectedProject.location}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+            <Paper sx={{ p: 4, borderRadius: 3, bgcolor: '#f8fafc' }}>
+              <Typography variant="h4" fontWeight={700} gutterBottom color="primary.main">{selectedProject.title}</Typography>
+              <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                <b>Empresa:</b> {selectedProject.company} &nbsp;|&nbsp; <b>Estado:</b> <Chip label={getStatusText(selectedProject.status)} color={getStatusColor(selectedProject.status)} size="small" sx={{ fontWeight: 600 }} />
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                {selectedProject.modality && <Chip label={`Modalidad: ${selectedProject.modality}`} color="info" />}
+                {selectedProject.location && <Chip label={`Ubicación: ${selectedProject.location}`} color="default" />}
+                {selectedProject.difficulty && <Chip label={`Dificultad: ${selectedProject.difficulty}`} color="secondary" />}
+                {selectedProject.totalHours && <Chip label={`Horas totales: ${selectedProject.totalHours}`} color="default" />}
+                {selectedProject.hoursPerWeek && <Chip label={`Horas/semana: ${selectedProject.hoursPerWeek}`} color="default" />}
+                {selectedProject.teamMembers && <Chip label={`Miembros del equipo: ${selectedProject.teamMembers}`} color="success" />}
+                {selectedProject.maxStudents && <Chip label={`Máx. estudiantes: ${selectedProject.maxStudents}`} color="success" />}
+                {selectedProject.currentStudents !== undefined && <Chip label={`Actualmente: ${selectedProject.currentStudents}`} color="warning" />}
+                {selectedProject.trlLevel && <Chip label={`TRL: ${selectedProject.trlLevel}`} color="primary" icon={<ScienceIcon />} />}
+                {selectedProject.apiLevel && <Chip label={`API Level: ${selectedProject.apiLevel}`} color="primary" icon={<TrendingUpIcon />} />}
+              </Box>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid item xs={12} md={8}>
+                  <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
+                    <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Descripción</Typography>
+                    <Typography variant="body1">{selectedProject.description}</Typography>
+                  </Paper>
+                  {selectedProject.requirements && (
+                    <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
+                      <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Requisitos</Typography>
+                      <Typography variant="body2">{selectedProject.requirements}</Typography>
+                    </Paper>
+                  )}
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Paper sx={{ p: 2, bgcolor: '#f1f8e9' }} elevation={1}>
+                    <Typography variant="subtitle2" color="text.secondary">Creado:</Typography>
+                    <Typography variant="body2" sx={{ mb: 2 }}>{selectedProject.createdAt ? new Date(selectedProject.createdAt).toLocaleString() : '-'}</Typography>
+                    <Typography variant="subtitle2" color="text.secondary">Estado actual:</Typography>
+                    <Typography variant="body2" sx={{ mb: 2 }}>{getStatusText(selectedProject.status)}</Typography>
+                    <Button onClick={() => setDialogOpen(false)} color="secondary" variant="outlined" sx={{ mt: 2, mr: 1 }}>Cerrar</Button>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Paper>
           )}
         </DialogContent>
         <DialogActions>

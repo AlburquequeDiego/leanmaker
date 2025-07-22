@@ -248,6 +248,8 @@ export const MyApplications: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'active':
+        return 'secondary'; // Morado
       case 'pending':
       case 'reviewing':
         return 'warning';
@@ -256,7 +258,7 @@ export const MyApplications: React.FC = () => {
       case 'rejected':
         return 'error';
       case 'completed':
-        return 'info';
+        return 'primary'; // Azul
       default:
         return 'default';
     }
@@ -264,6 +266,8 @@ export const MyApplications: React.FC = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
+      case 'active':
+        return 'Activado';
       case 'pending':
         return 'Pendiente';
       case 'reviewing':

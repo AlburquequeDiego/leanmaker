@@ -193,14 +193,8 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
       const response = await api.post(`/api/projects/${selectedProject.id}/activate/`);
       console.log('Respuesta del backend (activar proyecto):', response);
       if (response && response.success) {
-        // Actualizar el estado del proyecto a 'active'
-        setProjects(projects.map(p =>
-          p.id === selectedProject.id ? {
-            ...p,
-            status: 'active',
-            active_students: response.active_students // si quieres mostrar el contador
-          } : p
-        ));
+        // Recargar la lista de proyectos desde el backend
+        await loadProjects();
         setActivateDialogOpen(false);
         setSelectedProject(null);
       } else {
@@ -509,7 +503,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     {updatingProject === project.id ? <CircularProgress size={16} /> : <RestoreIcon />}
                   </IconButton>
                 )}
-                {tab !== 1 && (
+                {project.status !== 'active' && tab !== 1 && (
                   <IconButton 
                     color="error" 
                     size="small" 
@@ -632,10 +626,17 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
           <Typography variant="body1" gutterBottom>
-            ¿Seguro que deseas activar el proyecto <strong>"{selectedProject?.title}"</strong>?
+            ¿Estás seguro de que deseas activar el proyecto <strong>"{selectedProject?.title}"</strong>?
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            El proyecto pasará a estado "Activo" y los estudiantes podrán comenzar a trabajar.
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            - El proyecto cambiará a estado "Activo".<br/>
+            - Los estudiantes aceptados pasarán a "Proyectos Activos" y podrán comenzar a trabajar.<br/>
+            - Los estudiantes recibirán una notificación de que el proyecto está en curso.<br/>
+            - Ya no podrás modificar los estudiantes asignados a este proyecto.<br/>
+            - El avance y las entregas de los estudiantes comenzarán a registrarse desde este momento.<br/>
+          </Typography>
+          <Typography variant="body2" color="error">
+            Esta acción no se puede deshacer.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
@@ -748,6 +749,9 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                   </Typography>
                   <Typography variant="body1">
                     {selectedProject.duration_weeks} semanas • {selectedProject.hours_per_week} horas/semana
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Horas totales del proyecto: <b>{selectedProject.duration_weeks * selectedProject.hours_per_week}</b>
                   </Typography>
                 </Grid>
                 

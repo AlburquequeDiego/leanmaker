@@ -209,9 +209,17 @@ class Proyecto(models.Model):
         self.applications_count += 1
         self.save(update_fields=['applications_count'])
     
-    def agregar_estudiante(self):
-        """Agrega un estudiante al proyecto"""
+    def agregar_estudiante(self, estudiante):
+        """Agrega un estudiante al proyecto y lo registra como miembro"""
+        from .models import MiembroProyecto  # Importa aquí para evitar ciclos
         if self.current_students < self.max_students:
+            # Verifica si ya es miembro
+            if not MiembroProyecto.objects.filter(proyecto=self, usuario=estudiante.user).exists():
+                MiembroProyecto.objects.create(
+                    proyecto=self,
+                    usuario=estudiante.user,
+                    rol='estudiante'
+                )
             self.current_students += 1
             self.save(update_fields=['current_students'])
             return True
@@ -272,7 +280,8 @@ class Proyecto(models.Model):
                 description=f"Horas automáticas del proyecto completado: {self.title}",
                 approved=False,  # Pendiente de validación del admin
                 approved_by=None,
-                approved_at=None
+                approved_at=None,
+                is_project_completion=True
             )
             
             # Finalizar la asignación
@@ -375,7 +384,7 @@ class AplicacionProyecto(models.Model):
         self.save(update_fields=['estado', 'responded_at'])
         
         # Agregar estudiante al proyecto
-        self.proyecto.agregar_estudiante()
+        self.proyecto.agregar_estudiante(self.estudiante)
     
     def rechazar(self, notas=None):
         """Rechaza la aplicación"""

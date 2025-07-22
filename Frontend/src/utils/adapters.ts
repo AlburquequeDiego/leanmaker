@@ -138,16 +138,19 @@ export const adaptProject = (backendProject: any): Project => {
   if (statusValue) {
     switch (statusValue.toLowerCase()) {
       case 'publicado':
+      case 'published':
         status = 'published'; break;
       case 'activo':
-      status = 'active'; break;
-    case 'completado':
-      status = 'completed'; break;
+      case 'active':
+        status = 'active'; break;
+      case 'completado':
+      case 'completed':
+        status = 'completed'; break;
       case 'deleted':
         status = 'deleted'; break;
-    default:
+      default:
         status = 'published'; // Por defecto publicado
-      }
+    }
   }
   
   return {

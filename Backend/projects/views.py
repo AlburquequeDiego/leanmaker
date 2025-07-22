@@ -349,19 +349,9 @@ def projects_update(request, project_id):
             try:
                 # Buscar el estado por nombre
                 status_name = data['status']
-                if status_name in ['published', 'active', 'completed', 'deleted']:
-                    # Mapear nombres del frontend a nombres del backend
-                    status_mapping = {
-                        'published': 'Publicado',
-                        'active': 'Activo', 
-                        'completed': 'Completado',
-                        'deleted': 'deleted',
-                        'cancelled': 'cancelled'
-                    }
-                    backend_status_name = status_mapping[status_name]
-                    status_obj = ProjectStatus.objects.get(name=backend_status_name)
+                if status_name in ['published', 'active', 'completed', 'deleted', 'cancelled']:
+                    status_obj = ProjectStatus.objects.get(name=status_name)
                     project.status = status_obj
-                    
                     # Si se está marcando como completado, ejecutar lógica especial
                     if status_name == 'completed':
                         project.marcar_como_completado(current_user)
@@ -486,7 +476,7 @@ def projects_restore(request, project_id):
         # Restaurar: cambiar de deleted a publicado y activar
         from project_status.models import ProjectStatus
         try:
-            published_status = ProjectStatus.objects.filter(name__in=['Publicado', 'published']).first()
+            published_status = ProjectStatus.objects.filter(name='published').first()
             if published_status:
                 published_status.is_active = True
                 published_status.save()
@@ -672,7 +662,7 @@ def company_projects(request):
                 'id': str(project.id),
                 'title': project.title,
                 'description': project.description,
-                'status': project.status.name if project.status else 'Sin estado',
+                'status': project.status.name.lower() if project.status else 'Sin estado',
                 'status_id': project.status.id if project.status else None,
                 'area': project.area.name if project.area else 'Sin área',
                 'area_id': project.area.id if project.area else None,
@@ -733,6 +723,11 @@ def activate_project(request, project_id):
             app.status = 'active'
             app.save(update_fields=['status'])
             updated_count += 1
+        # Cambiar el estado del proyecto a 'active' (en inglés)
+        from project_status.models import ProjectStatus
+        status_activo = ProjectStatus.objects.get(name='active')
+        project.status = status_activo
+        project.save(update_fields=['status'])
         # Contar estudiantes activos (active o completed)
         active_count = Aplicacion.objects.filter(project=project, status__in=['active', 'completed']).count()
         return JsonResponse({'success': True, 'active_students': active_count, 'updated': updated_count})
