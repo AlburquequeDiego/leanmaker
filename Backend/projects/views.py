@@ -11,6 +11,8 @@ from users.models import User
 from .models import Proyecto, MiembroProyecto
 from core.views import verify_token
 from django.db.models import F
+from work_hours.models import WorkHour
+from django.utils import timezone
 
 
 @csrf_exempt
@@ -133,23 +135,17 @@ def projects_detail(request, project_id):
         if hasattr(project, 'budget'):
             project_data['budget'] = project.budget
 
-        # Obtener estudiantes asignados (aceptados) al proyecto
+        # Obtener estudiantes asignados (miembros activos con rol estudiante)
+        from .models import MiembroProyecto
+        miembros = MiembroProyecto.objects.filter(proyecto=project, rol='estudiante', esta_activo=True).select_related('usuario')
         estudiantes = []
-        try:
-            from .models import AplicacionProyecto
-            aplicaciones_aceptadas = AplicacionProyecto.objects.filter(proyecto=project, estado='accepted').select_related('estudiante')
-            for app in aplicaciones_aceptadas:
-                user = app.estudiante
-                estudiantes.append({
-                    'id': str(user.id),
-                    'nombre': f"{user.first_name} {user.last_name}".strip() or user.email,
-                    'email': user.email,
-                })
-        except Exception as e:
-            # Si hay error al obtener estudiantes, continuar sin ellos
-            print(f"Error obteniendo estudiantes del proyecto: {e}")
-            estudiantes = []
-        
+        for miembro in miembros:
+            user = miembro.usuario
+            estudiantes.append({
+                'id': str(user.id),
+                'nombre': f"{user.first_name} {user.last_name}".strip() or user.email,
+                'email': user.email,
+            })
         project_data['estudiantes'] = estudiantes
 
         return JsonResponse(project_data)
@@ -769,5 +765,110 @@ def project_participants(request, project_id):
                 'email': user.email,
             })
         return JsonResponse({'participantes': participantes})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def completed_pending_hours(request):
+    """Lista proyectos completados pendientes de validación de horas."""
+    try:
+        # Verificar autenticación y permisos de admin
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Buscar proyectos completados
+        proyectos = Proyecto.objects.filter(status__name__in=['completed', 'completado'])
+        data = []
+        for p in proyectos:
+            # Verificar si ya hay horas validadas para este proyecto
+            horas_validadas = WorkHour.objects.filter(project=p, is_project_completion=True).exists()
+            if horas_validadas:
+                continue  # Ya validadas, no mostrar
+            # Participantes activos
+            miembros = MiembroProyecto.objects.filter(proyecto=p, rol='estudiante', esta_activo=True).select_related('usuario')
+            participantes = []
+            for miembro in miembros:
+                user = miembro.usuario
+                participantes.append({
+                    'id': str(user.id),
+                    'nombre': f"{user.first_name} {user.last_name}".strip() or user.email,
+                    'email': user.email,
+                })
+            data.append({
+                'id': str(p.id),
+                'title': p.title,
+                'company': p.company.company_name if p.company else '',
+                'required_hours': p.required_hours or 0,
+                'participantes': participantes,
+            })
+        return JsonResponse({'results': data, 'count': len(data)})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def validate_project_hours(request, project_id):
+    """Valida horas de todos los estudiantes de un proyecto completado."""
+    try:
+        # Verificar autenticación y permisos de admin
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        # Buscar proyecto
+        try:
+            proyecto = Proyecto.objects.get(id=project_id)
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        if not proyecto.required_hours:
+            return JsonResponse({'error': 'El proyecto no tiene horas ofrecidas definidas.'}, status=400)
+        # Participantes activos
+        miembros = MiembroProyecto.objects.filter(proyecto=proyecto, rol='estudiante', esta_activo=True).select_related('usuario')
+        count = 0
+        for miembro in miembros:
+            user = miembro.usuario
+            print(f"[VALIDAR HORAS] Proyecto: {proyecto.id} - {proyecto.title}")
+            print(f"[VALIDAR HORAS] Usuario: {user.id} - {user.email}")
+            # Obtener perfil de estudiante
+            estudiante = getattr(user, 'estudiante_profile', None)
+            if not estudiante:
+                print(f"[VALIDAR HORAS] Usuario {user.email} sin perfil de estudiante, se omite.")
+                continue  # Saltar si no hay perfil de estudiante
+            # Buscar asignación correctamente
+            from applications.models import Asignacion
+            asignacion = Asignacion.objects.filter(application__student=estudiante, application__project=proyecto).first()
+            if not asignacion:
+                print(f"[VALIDAR HORAS] No se encontró asignación para estudiante {estudiante.id} en proyecto {proyecto.id}")
+                continue  # Saltar si no hay asignación
+            # Evitar duplicados
+            if WorkHour.objects.filter(project=proyecto, student=estudiante, is_project_completion=True).exists():
+                print(f"[VALIDAR HORAS] Ya existe WorkHour para estudiante {estudiante.id} en proyecto {proyecto.id}")
+                continue
+            workhour = WorkHour.objects.create(
+                assignment=asignacion,
+                student=estudiante,
+                project=proyecto,
+                company=proyecto.company,
+                date=proyecto.real_end_date or proyecto.estimated_end_date or timezone.now().date(),
+                hours_worked=proyecto.required_hours,
+                description=f"Horas validadas por finalización del proyecto: {proyecto.title}",
+                approved=True,
+                approved_by=current_user,
+                approved_at=timezone.now(),
+                is_project_completion=True
+            )
+            workhour.aprobar_horas(current_user)
+            print(f"[VALIDAR HORAS] Se sumaron {workhour.hours_worked} horas al estudiante {estudiante.id}. Total ahora: {estudiante.total_hours}")
+            count += 1
+        print(f"[VALIDAR HORAS] Total horas validadas: {count}")
+        return JsonResponse({'success': True, 'horas_validadas': count})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

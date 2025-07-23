@@ -206,7 +206,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
     
     try {
       setUpdatingProject(selectedProject.id);
-      const response = await api.patch(`/api/projects/${selectedProject.id}/`, {
+      const response = await api.patch(`/api/projects/${selectedProject.id}/update/`, {
         status: 'deleted'
       });
       
@@ -283,7 +283,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
     
     try {
       setUpdatingProject(selectedProject.id);
-      const response = await api.patch(`/api/projects/${selectedProject.id}/`, {
+      const response = await api.patch(`/api/projects/${selectedProject.id}/update/`, {
         status: 'completed'
       });
       
@@ -739,7 +739,8 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
             <b>Una vez que completes el proyecto:</b><br/>
-            - Se asignarán automáticamente las horas correspondientes de proyecto a todos los integrantes.<br/>
+            - El soporte del sistema validará y asignará las horas correspondientes de proyecto a los integrantes.<br/>
+            - Si algún estudiante no completó los trabajos asignados, el soporte podrá asignarle un strike como penalización.<br/>
             - Esta acción es irreversible y no se podrá modificar ni corregir posteriormente.
           </Typography>
         </DialogContent>

@@ -17,6 +17,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -69,15 +72,23 @@ export default function ValidacionHorasAdmin() {
   const [successMsg, setSuccessMsg] = useState('');
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [reportHour, setReportHour] = useState<WorkHour | null>(null);
+  const [pendingProjects, setPendingProjects] = useState<any[]>([]);
+  const [pendingLoading, setPendingLoading] = useState(true);
+  const [pendingError, setPendingError] = useState<string | null>(null);
+  const [validatingProjectId, setValidatingProjectId] = useState<string | null>(null);
+  const [openIntegrantes, setOpenIntegrantes] = useState(false);
+  const [integrantes, setIntegrantes] = useState<any[]>([]);
+  const [integrantesProyecto, setIntegrantesProyecto] = useState<string>('');
 
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number | 'todos'>(20); // Por defecto 20
+  const [pageSize, setPageSize] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
 
   useEffect(() => {
     loadWorkHours();
+    loadPendingProjects();
   }, [pageSize, currentPage, filters]);
 
   const loadWorkHours = async () => {
@@ -118,6 +129,34 @@ export default function ValidacionHorasAdmin() {
     }
   };
 
+  const loadPendingProjects = async () => {
+    try {
+      setPendingLoading(true);
+      setPendingError(null);
+      const response = await apiService.get('/api/projects/completed_pending_hours/');
+      setPendingProjects(response.results || []);
+    } catch (err: any) {
+      setPendingError(err.response?.data?.error || 'Error al cargar proyectos pendientes');
+      setPendingProjects([]);
+    } finally {
+      setPendingLoading(false);
+    }
+  };
+
+  const handleValidateProject = async (projectId: string) => {
+    setValidatingProjectId(projectId);
+    try {
+      await apiService.post(`/api/projects/${projectId}/validate_hours/`);
+      setSuccessMsg('Horas validadas correctamente para el proyecto');
+      loadPendingProjects();
+      loadWorkHours();
+    } catch (err: any) {
+      setPendingError(err.response?.data?.error || 'Error al validar horas del proyecto');
+    } finally {
+      setValidatingProjectId(null);
+    }
+  };
+
   const handleOpenModal = (hour: WorkHour) => {
     setSelectedHour(hour);
     setAdminComment('');
@@ -147,6 +186,16 @@ export default function ValidacionHorasAdmin() {
     }
   };
 
+  const handleVerIntegrantes = (row: any) => {
+    // Busca la lista de integrantes en el row (puede ser row.estudiantes, row.participantes, etc.)
+    const lista = row.estudiantes || row.participantes || [];
+    setIntegrantes(lista);
+    setIntegrantesProyecto(row.project_title || row.title || 'Proyecto');
+    setOpenIntegrantes(true);
+  };
+
+  const handleCloseIntegrantes = () => setOpenIntegrantes(false);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved': return 'success';
@@ -165,118 +214,74 @@ export default function ValidacionHorasAdmin() {
     }
   };
 
+  // Unifico los datos: proyectos pendientes + horas validadas
+  const unifiedRows = [
+    // Proyectos pendientes de validación
+    ...pendingProjects.map((project) => ({
+      id: `pending-${project.id}`,
+      student_name: '—',
+      student_email: '—',
+      project_title: project.title || project.project_title || project.nombre || project.name || '-',
+      company_name: project.company_name || project.empresa || project.company || project.empresa_nombre || '-',
+      hours: project.offered_hours || project.horas || project.required_hours || project.project_required_hours || '-',
+      project_details: project.description || project.detalles || project.project_details || '-',
+      status: 'Pendiente',
+      isPending: true,
+      projectId: project.id,
+      estudiantes: project.estudiantes || project.participantes || [],
+    })),
+    // Horas ya validadas
+    ...workHours.map((row) => ({
+      ...row,
+      isPending: false,
+    })),
+  ];
+
+  // Modifico la columna Acciones para mostrar el botón solo en filas pendientes
   const columns = [
-    {
-      key: 'student_name',
-      label: 'Estudiante',
-      render: (value: string, row: WorkHour) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-            <PersonIcon fontSize="small" />
-          </Avatar>
-          <Box>
-            <Typography variant="body2" fontWeight={600}>{value}</Typography>
-            <Typography variant="caption" color="text.secondary">{row.student_email}</Typography>
-          </Box>
-        </Box>
-      ),
-      width: '250px'
-    },
     {
       key: 'project_title',
       label: 'Proyecto',
-      render: (value: string, row: WorkHour) => (
-        <Box>
-          <Typography variant="body2" fontWeight={600} color="primary">
-            {value}
-          </Typography>
-          {row.is_project_completion && (
-            <Chip 
-              label="Completado" 
-              color="success" 
-              size="small" 
-              sx={{ mt: 0.5 }}
-            />
-          )}
-        </Box>
-      ),
+      render: (value: string, row: any) => <b>{value}</b>,
       width: '200px'
     },
     {
-      key: 'empresa_nombre',
+      key: 'company_name',
       label: 'Empresa',
-      render: (value: string, row: WorkHour) => (
-        <Typography variant="body2" fontWeight={600}>
-          {value && row.empresa_email ? `${value} (${row.empresa_email})` : '-'}
-        </Typography>
-      ),
-      width: '200px'
+      render: (value: string, row: any) => value || row.company || row.empresa || row.company_name || row.empresa_nombre || '-',
+      width: '180px',
     },
     {
-      key: 'student_api_level',
-      label: 'Nivel API Est.',
-      render: (value: number) => (
-        <Chip label={`API ${value || '-'}`} color="info" size="small" />
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'hours_worked',
+      key: 'hours',
       label: 'Horas',
-      render: (value: number) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <ScheduleIcon fontSize="small" color="primary" />
-          <Typography variant="body2" fontWeight={600}>{value} hrs</Typography>
-        </Box>
-      ),
+      render: (value: any, row: any) => value || row.offered_hours || row.horas || row.required_hours || row.project_required_hours || '-',
       width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'empresa_gpa',
-      label: 'GPA Empresa',
-      render: (value: number) => (
-        <Chip label={typeof value === 'number' ? `${value.toFixed(2)} ★` : '-'} color="primary" size="small" />
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'estudiante_gpa',
-      label: 'GPA Estudiante',
-      render: (value: number) => (
-        <Chip label={typeof value === 'number' ? `${value.toFixed(2)} ★` : '-'} color="success" size="small" />
-      ),
-      width: '100px',
-      align: 'center' as const
-    },
-    {
-      key: 'project_details',
-      label: 'Detalles Proyecto',
-      render: (_: any, row: WorkHour) => (
-        <Box sx={{ textAlign: 'center' }}>
-          {row.project_required_hours && (
-            <Typography variant="caption" display="block">
-              {row.project_required_hours}h requeridas
-            </Typography>
-          )}
-          {row.project_duration_weeks && (
-            <Typography variant="caption" display="block" color="text.secondary">
-              {row.project_duration_weeks} semanas
-            </Typography>
-          )}
-        </Box>
-      ),
-      width: '120px',
-      align: 'center' as const
     },
     {
       key: 'acciones',
       label: 'Acciones',
-      render: (_: any, row: WorkHour) => actions(row),
-      width: '120px',
-      align: 'center' as const
+      render: (_: any, row: any) => row.isPending ? (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="contained"
+            color="info"
+            size="small"
+            onClick={() => handleVerIntegrantes(row)}
+          >
+            Ver Integrantes
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            size="small"
+            disabled={validatingProjectId === row.projectId}
+            onClick={() => handleValidateProject(row.projectId)}
+          >
+            {validatingProjectId === row.projectId ? 'Validando...' : 'Validar Horas'}
+          </Button>
+        </Box>
+      ) : null,
+      width: '220px',
     },
   ];
 
@@ -372,215 +377,56 @@ export default function ValidacionHorasAdmin() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>
-          VALIDACIÓN DE HORAS DE PROYECTOS
-        </Typography>
-        
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Mostrar</InputLabel>
-          <Select
-            value={pageSize}
-            label="Mostrar"
-            onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
-          >
-            <MenuItem value={20}>20 últimos</MenuItem>
-            <MenuItem value={50}>50 últimos</MenuItem>
-            <MenuItem value={100}>100 últimos</MenuItem>
-            <MenuItem value={150}>150 últimos</MenuItem>
-            <MenuItem value={200}>200 últimos</MenuItem>
-            <MenuItem value={'todos'}>Todos</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      <DataTable
-        data={pageSize === 'todos' ? workHours : workHours.slice(0, pageSize)}
-        columns={columns}
-        loading={loading}
-        error={error}
-        filters={tableFilters}
-        onFilterChange={handleFilterChange}
-        emptyMessage="No hay horas trabajadas registradas"
-        showPagination={false}
-        showPageSizeSelector={false}
-      />
-
-      {/* Modal de validación */}
-      <Dialog 
-        open={modalOpen} 
-        onClose={handleCloseModal}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CheckCircleIcon color="success" />
-            <Typography variant="h6" color="success.main">
-              Validar Horas de Proyecto
-            </Typography>
-          </Box>
-        </DialogTitle>
-        
+      <Paper sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h4" fontWeight={700}>
+            VALIDACIÓN DE HORAS DE PROYECTOS
+          </Typography>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Mostrar</InputLabel>
+            <Select
+              value={pageSize}
+              label="Mostrar"
+              onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
+            >
+              <MenuItem value={15}>15 últimos</MenuItem>
+              <MenuItem value={50}>50 últimos</MenuItem>
+              <MenuItem value={100}>100 últimos</MenuItem>
+              <MenuItem value={150}>150 últimos</MenuItem>
+              <MenuItem value={'todos'}>Todos</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+        <DataTable
+          data={pageSize === 'todos' ? unifiedRows : unifiedRows.slice(0, pageSize)}
+          columns={columns}
+          loading={loading || pendingLoading}
+          error={error || pendingError}
+          filters={[]}
+          onFilterChange={() => {}}
+          showPageSizeSelector={false}
+        />
+      </Paper>
+      {/* Modal para ver integrantes */}
+      <Dialog open={openIntegrantes} onClose={handleCloseIntegrantes} maxWidth="sm" fullWidth>
+        <DialogTitle>Integrantes de {integrantesProyecto}</DialogTitle>
         <DialogContent>
-          {selectedHour && (
-            <Box sx={{ mt: 2 }}>
-              <Paper sx={{ p: 2, mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Detalles de la Hora Trabajada
-                </Typography>
-                
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Estudiante:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{selectedHour.student_name}</Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Proyecto:</Typography>
-                    <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="body1" fontWeight={600} color="primary">
-                        {selectedHour.project_title}
-                      </Typography>
-                      {selectedHour.is_project_completion && (
-                        <Chip label="Proyecto Completado" color="success" size="small" sx={{ mt: 0.5 }} />
-                      )}
-                    </Box>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Fecha:</Typography>
-                    <Typography variant="body1">{new Date(selectedHour.date).toLocaleDateString()}</Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Horas Trabajadas:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{selectedHour.hours_worked} hrs</Typography>
-                  </Box>
-                  
-                  {selectedHour.project_required_hours && (
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Horas Requeridas del Proyecto:</Typography>
-                      <Typography variant="body1">{selectedHour.project_required_hours} hrs</Typography>
-                    </Box>
-                  )}
-                  
-                  {selectedHour.project_duration_weeks && (
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Duración del Proyecto:</Typography>
-                      <Typography variant="body1">{selectedHour.project_duration_weeks} semanas</Typography>
-                    </Box>
-                  )}
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Descripción:</Typography>
-                    <Typography variant="body1" sx={{ maxWidth: 300, textAlign: 'right' }}>
-                      {selectedHour.description}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Empresa:</Typography>
-                    <Typography variant="body1" fontWeight={600}>
-                      {selectedHour.empresa_nombre && selectedHour.empresa_email
-                        ? `${selectedHour.empresa_nombre} (${selectedHour.empresa_email})`
-                        : '-'}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
-
-              <TextField
-                label="Comentario del administrador (opcional)"
-                value={adminComment}
-                onChange={e => setAdminComment(e.target.value)}
-                fullWidth
-                multiline
-                minRows={3}
-                placeholder="Agregue un comentario sobre la validación..."
-              />
-            </Box>
-          )}
-        </DialogContent>
-        
-        <DialogActions>
-          <Button onClick={handleCloseModal}>
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleValidate}
-            disabled={actionLoading}
-            startIcon={<CheckCircleIcon />}
-            sx={{ fontWeight: 600 }}
-          >
-            {actionLoading ? 'Procesando...' : 'Validar Horas'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Modal de reporte de hora validada */}
-      <Dialog
-        open={reportModalOpen}
-        onClose={() => setReportModalOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Reporte de Hora Validada</DialogTitle>
-        <DialogContent>
-          {reportHour && (
-            <Box sx={{ mt: 2 }}>
-              <Paper sx={{ p: 2, mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Detalles de la Hora Validada
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Estudiante:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{reportHour.student_name}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Empresa:</Typography>
-                    <Typography variant="body1" fontWeight={600}>
-                      {reportHour.empresa_nombre && reportHour.empresa_email
-                        ? `${reportHour.empresa_nombre} (${reportHour.empresa_email})`
-                        : '-'}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Nivel API Est.:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{reportHour.student_api_level || '-'}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Horas validadas:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{reportHour.hours_worked} hrs</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">GPA Empresa:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{typeof reportHour.empresa_gpa === 'number' ? `${reportHour.empresa_gpa.toFixed(2)} ★` : '-'}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">GPA Estudiante:</Typography>
-                    <Typography variant="body1" fontWeight={600}>{typeof reportHour.estudiante_gpa === 'number' ? `${reportHour.estudiante_gpa.toFixed(2)} ★` : '-'}</Typography>
-                  </Box>
-                </Box>
-              </Paper>
-            </Box>
-          )}
+          <List>
+            {integrantes.length === 0 ? (
+              <ListItem>
+                <ListItemText primary="No hay integrantes registrados" />
+              </ListItem>
+            ) : integrantes.map((est, idx) => (
+              <ListItem key={idx}>
+                <ListItemText primary={est.nombre || est.name || est.full_name || est.email} secondary={est.email} />
+              </ListItem>
+            ))}
+          </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setReportModalOpen(false)}>
-            Cerrar
-          </Button>
+          <Button onClick={handleCloseIntegrantes}>Cerrar</Button>
         </DialogActions>
       </Dialog>
-
-      {/* Mensaje de éxito */}
-      {successMsg && (
-        <Alert severity="success" sx={{ mt: 2 }}>
-          {successMsg}
-        </Alert>
-      )}
     </Box>
   );
 } 
