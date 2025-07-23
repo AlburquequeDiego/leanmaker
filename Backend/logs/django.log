@@ -33399,3 +33399,107 @@ INFO 2025-07-23 11:00:28,007 basehttp 7308 6388 "GET /work-hours/?limit=15&offse
 INFO 2025-07-23 11:00:29,021 basehttp 7308 8424 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1256
 INFO 2025-07-23 11:00:33,128 basehttp 7308 5732 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 2691
 INFO 2025-07-23 11:00:41,111 basehttp 7308 6388 - Broken pipe from ('127.0.0.1', 63642)
+INFO 2025-07-23 12:28:52,984 autoreload 21252 21260 Watching for file changes with StatReloader
+INFO 2025-07-23 12:29:23,747 basehttp 21252 16996 "OPTIONS /api/token/ HTTP/1.1" 200 0
+WARNING 2025-07-23 12:29:29,125 log 21252 16996 Bad Request: /api/token/
+WARNING 2025-07-23 12:29:29,126 basehttp 21252 16996 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-23 12:29:42,805 basehttp 21252 16996 "POST /api/token/ HTTP/1.1" 200 1050
+INFO 2025-07-23 12:29:42,805 basehttp 21252 16996 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:29:45,168 basehttp 21252 16996 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-23 12:29:45,232 basehttp 21252 16996 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:29:50,295 basehttp 21252 16996 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 269
+INFO 2025-07-23 12:30:14,963 basehttp 21252 15732 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:30:14,965 basehttp 21252 2684 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-23 12:30:15,006 log 21252 2684 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 12:30:15,015 basehttp 21252 2684 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-23 12:30:15,025 basehttp 21252 15732 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-23 12:30:15,085 log 21252 2684 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 12:30:15,087 basehttp 21252 2684 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-23 12:30:16,711 basehttp 21252 15732 "POST /api/token/refresh/ HTTP/1.1" 200 271
+WARNING 2025-07-23 12:32:34,668 log 21252 2492 Unauthorized: /api/users/profile/
+INFO 2025-07-23 12:32:34,672 basehttp 21252 2492 - Broken pipe from ('127.0.0.1', 49345)
+ERROR 2025-07-23 12:32:34,680 log 21252 2684 Internal Server Error: /api/token/refresh/
+INFO 2025-07-23 12:32:34,684 basehttp 21252 2684 - Broken pipe from ('127.0.0.1', 49343)
+WARNING 2025-07-23 12:32:34,757 log 21252 15732 Unauthorized: /api/users/profile/
+INFO 2025-07-23 12:32:34,757 basehttp 21252 15732 - Broken pipe from ('127.0.0.1', 49342)
+INFO 2025-07-23 12:32:35,157 basehttp 21252 12532 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:32:35,158 basehttp 21252 13292 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:32:35,472 basehttp 21252 12532 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-23 12:32:35,518 basehttp 21252 13292 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-23 12:32:56,507 basehttp 21252 13292 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:32:59,097 basehttp 21252 20296 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-23 12:33:14,851 basehttp 21252 12628 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-23 12:34:10,287 basehttp 21252 13292 "POST /api/token/ HTTP/1.1" 200 1145
+WARNING 2025-07-23 12:34:58,215 log 21252 13292 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 12:34:58,215 basehttp 21252 13292 "GET /api/users/profile/ HTTP/1.1" 401 32
+ERROR 2025-07-23 12:35:28,364 log 21252 13292 Internal Server Error: /api/token/refresh/
+ERROR 2025-07-23 12:35:28,365 basehttp 21252 13292 "POST /api/token/refresh/ HTTP/1.1" 500 691
+INFO 2025-07-23 12:35:28,382 basehttp 21252 13292 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-23 12:36:09,337 basehttp 21252 17468 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:36:09,337 basehttp 21252 20812 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-23 12:36:09,352 log 21252 20812 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 12:36:09,353 basehttp 21252 20812 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-23 12:36:09,356 basehttp 21252 17468 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-23 12:36:09,374 log 21252 20812 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 12:36:09,375 basehttp 21252 20812 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-23 12:36:12,974 basehttp 21252 20812 - Broken pipe from ('127.0.0.1', 51022)
+INFO 2025-07-23 12:36:13,203 basehttp 21252 17468 - Broken pipe from ('127.0.0.1', 51021)
+ERROR 2025-07-23 12:36:41,157 log 21252 12628 Internal Server Error: /api/token/
+ERROR 2025-07-23 12:36:41,163 basehttp 21252 12628 "POST /api/token/ HTTP/1.1" 500 53
+WARNING 2025-07-23 12:37:40,265 log 21252 20516 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 12:37:40,272 basehttp 21252 20516 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-23 12:37:42,639 basehttp 21252 15788 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-23 12:38:00,472 log 21252 18092 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 12:38:00,473 basehttp 21252 18092 "GET /api/users/profile/ HTTP/1.1" 401 32
+ERROR 2025-07-23 12:38:12,877 log 21252 15788 Internal Server Error: /api/token/refresh/
+ERROR 2025-07-23 12:38:12,877 basehttp 21252 15788 "POST /api/token/refresh/ HTTP/1.1" 500 439
+INFO 2025-07-23 12:38:13,188 basehttp 21252 1228 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:38:13,201 basehttp 21252 1228 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-23 12:38:13,268 basehttp 21252 1228 - Broken pipe from ('127.0.0.1', 63627)
+ERROR 2025-07-23 12:38:30,992 log 21252 5344 Internal Server Error: /api/token/refresh/
+INFO 2025-07-23 12:38:30,993 basehttp 21252 5344 - Broken pipe from ('127.0.0.1', 63525)
+INFO 2025-07-23 12:38:47,429 autoreload 13232 20740 Watching for file changes with StatReloader
+INFO 2025-07-23 12:40:15,303 autoreload 11220 17048 Watching for file changes with StatReloader
+INFO 2025-07-23 12:40:59,547 autoreload 18160 9904 Watching for file changes with StatReloader
+INFO 2025-07-23 12:43:36,917 autoreload 13960 14728 Watching for file changes with StatReloader
+INFO 2025-07-23 12:47:09,696 autoreload 13716 5992 Watching for file changes with StatReloader
+ERROR 2025-07-23 12:49:42,516 log 13716 10148 Internal Server Error: /api/token/
+ERROR 2025-07-23 12:49:42,516 basehttp 13716 10148 "POST /api/token/ HTTP/1.1" 500 691
+ERROR 2025-07-23 12:49:52,184 log 13716 2280 Internal Server Error: /api/token/
+ERROR 2025-07-23 12:49:52,185 basehttp 13716 2280 "POST /api/token/ HTTP/1.1" 500 691
+ERROR 2025-07-23 12:55:20,367 log 13716 8852 Internal Server Error: /api/token/
+ERROR 2025-07-23 12:55:20,367 basehttp 13716 8852 "POST /api/token/ HTTP/1.1" 500 1101
+INFO 2025-07-23 12:56:08,027 autoreload 1648 17908 Watching for file changes with StatReloader
+INFO 2025-07-23 12:56:41,983 autoreload 12452 18356 Watching for file changes with StatReloader
+INFO 2025-07-23 12:57:49,509 autoreload 14352 2080 Watching for file changes with StatReloader
+INFO 2025-07-23 12:58:16,504 basehttp 14352 15448 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:58:26,059 basehttp 14352 15448 "POST /api/token/ HTTP/1.1" 200 1145
+INFO 2025-07-23 12:58:26,064 basehttp 14352 15448 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:58:28,076 basehttp 14352 15448 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 12:58:28,158 basehttp 14352 15448 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:58:32,646 basehttp 14352 15448 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 220
+INFO 2025-07-23 12:58:55,145 basehttp 14352 7540 "OPTIONS /api/token/ HTTP/1.1" 200 0
+WARNING 2025-07-23 12:59:00,350 log 14352 7540 Bad Request: /api/token/
+WARNING 2025-07-23 12:59:00,350 basehttp 14352 7540 "POST /api/token/ HTTP/1.1" 400 40
+WARNING 2025-07-23 12:59:10,374 log 14352 7540 Bad Request: /api/token/
+WARNING 2025-07-23 12:59:10,374 basehttp 14352 7540 "POST /api/token/ HTTP/1.1" 400 40
+WARNING 2025-07-23 12:59:22,672 log 14352 7540 Bad Request: /api/token/
+WARNING 2025-07-23 12:59:22,672 basehttp 14352 7540 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-23 12:59:49,790 basehttp 14352 4996 "POST /api/token/ HTTP/1.1" 200 1037
+INFO 2025-07-23 12:59:49,796 basehttp 14352 4996 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:59:51,960 basehttp 14352 4996 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 12:59:52,216 basehttp 14352 4996 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-23 12:59:55,471 basehttp 14352 4996 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 154
+INFO 2025-07-23 13:00:14,270 basehttp 14352 14720 "OPTIONS /api/projects/completed_pending_hours/ HTTP/1.1" 200 0
+INFO 2025-07-23 13:00:14,271 basehttp 14352 4996 "OPTIONS /work-hours/?limit=15&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-23 13:00:14,275 basehttp 14352 4996 "OPTIONS /api/projects/completed_pending_hours/ HTTP/1.1" 200 0
+INFO 2025-07-23 13:00:14,275 basehttp 14352 14720 "OPTIONS /work-hours/?limit=15&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-23 13:00:23,229 basehttp 14352 4996 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 2691
+INFO 2025-07-23 13:00:28,094 basehttp 14352 14720 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1256
+INFO 2025-07-23 13:00:29,155 basehttp 14352 19584 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 2691
+INFO 2025-07-23 13:00:40,737 basehttp 14352 4996 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1256
+INFO 2025-07-23 13:05:54,872 autoreload 14352 2080 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-23 13:05:55,912 autoreload 10096 12648 Watching for file changes with StatReloader
+INFO 2025-07-23 13:05:59,035 autoreload 10096 12648 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-07-23 13:06:00,021 autoreload 2992 16016 Watching for file changes with StatReloader
+INFO 2025-07-23 13:10:10,552 autoreload 8692 10844 Watching for file changes with StatReloader

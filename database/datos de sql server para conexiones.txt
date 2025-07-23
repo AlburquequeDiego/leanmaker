@@ -1,15 +1,18 @@
-Nombre del servidor:servidortesis.database.windows.net
+
+Nombre del servidor: tesisservidor.database.windows.net
 autenticacion : SQL Server Autentication
-login : administradortesisss
-password: Admin@tesisss
+login : tesisadministrador
+password: Admin@tesis
+base ded atos : leanmaker_db
+
 
 IP  :   https://www.whatismyip.com/ 
 
 Lista de cuentas
 Nombre	          Correo	                Contraseña
-Laura Martínez	  admin1@leanmaker.com	    Admin1234!
-FinanPlus	      contacto@finanplus.com    Empresa1234!
-Juan Pérez        juan.perez@uchile.cl      Estudiante1234!
+Laura Martínez	  admin1@leanmaker.com	    Admin123!
+FinanPlus	      contacto@finanplus.com    Empresa123!
+Juan Pérez        juan.perez@uchile.cl      Estudiante123!
 
 
 use leanmaker_db;
