@@ -32812,3 +32812,376 @@ INFO 2025-07-23 03:31:47,357 basehttp 3068 2592 "GET /api/calendar/events/compan
 INFO 2025-07-23 03:32:09,152 basehttp 3068 12716 "GET /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 11817
 INFO 2025-07-23 03:32:57,702 basehttp 3068 2592 "GET /api/company-ratings/ HTTP/1.1" 200 27
 INFO 2025-07-23 03:32:59,586 basehttp 3068 2592 "GET /api/company-ratings/ HTTP/1.1" 200 27
+INFO 2025-07-23 08:54:58,297 autoreload 13196 15612 Watching for file changes with StatReloader
+INFO 2025-07-23 08:55:23,450 basehttp 13196 20588 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-23 08:55:23,450 basehttp 13196 15264 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-07-23 08:55:23,515 log 13196 15264 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 08:55:23,516 basehttp 13196 15264 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-23 08:55:23,521 basehttp 13196 20588 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-07-23 08:55:23,532 log 13196 15264 Unauthorized: /api/users/profile/
+WARNING 2025-07-23 08:55:23,533 basehttp 13196 15264 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-23 08:55:26,206 basehttp 13196 20588 "POST /api/token/refresh/ HTTP/1.1" 200 274
+INFO 2025-07-23 08:55:26,219 basehttp 13196 15264 "POST /api/token/refresh/ HTTP/1.1" 200 274
+INFO 2025-07-23 08:55:28,415 basehttp 13196 20588 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-23 08:55:30,562 basehttp 13196 20588 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-23 09:00:20,195 basehttp 13196 17624 "OPTIONS /api/token/ HTTP/1.1" 200 0
+WARNING 2025-07-23 09:00:23,866 log 13196 17624 Bad Request: /api/token/
+WARNING 2025-07-23 09:00:23,868 basehttp 13196 17624 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-23 09:01:08,742 basehttp 13196 17244 "POST /api/token/ HTTP/1.1" 200 1037
+INFO 2025-07-23 09:01:10,179 basehttp 13196 17244 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:01:10,381 basehttp 13196 17244 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:01:13,395 basehttp 13196 17244 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 154
+INFO 2025-07-23 09:02:41,303 basehttp 13196 2784 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:02:49,105 basehttp 13196 2784 "POST /api/token/ HTTP/1.1" 200 1145
+INFO 2025-07-23 09:02:49,112 basehttp 13196 2784 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:02:50,777 basehttp 13196 2784 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:02:50,938 basehttp 13196 2784 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:02:55,158 basehttp 13196 2784 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 218
+INFO 2025-07-23 09:03:22,640 basehttp 13196 18512 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:03:22,656 basehttp 13196 18512 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:03:22,719 basehttp 13196 18636 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:03:22,754 basehttp 13196 2240 "OPTIONS /api/companies/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:03:22,762 basehttp 13196 15872 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:03:22,770 basehttp 13196 18724 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:03:25,956 basehttp 13196 18636 "GET /api/companies/ HTTP/1.1" 200 1133
+INFO 2025-07-23 09:03:26,364 basehttp 13196 2240 "GET /api/projects/my_projects/ HTTP/1.1" 200 4096
+INFO 2025-07-23 09:03:27,094 basehttp 13196 18512 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-23 09:03:27,958 basehttp 13196 18636 "GET /api/companies/ HTTP/1.1" 200 1133
+INFO 2025-07-23 09:03:28,475 basehttp 13196 15208 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 218
+INFO 2025-07-23 09:03:29,680 basehttp 13196 2240 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-23 09:03:29,929 basehttp 13196 8668 "GET /api/projects/my_projects/ HTTP/1.1" 200 4096
+INFO 2025-07-23 09:03:32,629 basehttp 13196 18636 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 218
+INFO 2025-07-23 09:03:56,844 basehttp 13196 18648 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:03:56,894 basehttp 13196 20400 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:03:58,248 basehttp 13196 20400 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:03:58,439 basehttp 13196 20184 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:04:01,577 basehttp 13196 4904 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 154
+INFO 2025-07-23 09:04:02,607 basehttp 13196 18648 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 218
+INFO 2025-07-23 09:04:16,454 basehttp 13196 6824 "OPTIONS /work-hours/?limit=15&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-23 09:04:16,454 basehttp 13196 13944 "OPTIONS /api/projects/completed_pending_hours/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:04:16,454 basehttp 13196 13568 "OPTIONS /work-hours/?limit=15&offset=0 HTTP/1.1" 200 0
+INFO 2025-07-23 09:04:16,454 basehttp 13196 15048 "OPTIONS /api/projects/completed_pending_hours/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:04:18,559 basehttp 13196 6824 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:04:20,382 basehttp 13196 6824 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:04:29,342 basehttp 13196 13568 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:04:41,692 basehttp 13196 13568 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:05:12,598 basehttp 13196 12020 "OPTIONS /api/projects/eddf73da-384d-4998-a6f1-e76bc0850867/validate_hours/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:05:15,812 basehttp 13196 12020 "POST /api/projects/eddf73da-384d-4998-a6f1-e76bc0850867/validate_hours/ HTTP/1.1" 200 39
+INFO 2025-07-23 09:05:19,342 basehttp 13196 19784 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:05:28,158 basehttp 13196 12020 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:05:36,156 basehttp 13196 7464 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:05:37,526 basehttp 13196 7464 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:05:42,020 basehttp 13196 12972 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 218
+INFO 2025-07-23 09:06:58,814 basehttp 13196 9768 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:07:09,276 basehttp 13196 13160 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:07:13,334 basehttp 13196 13160 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:07:14,663 basehttp 13196 13160 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:07:16,377 basehttp 13196 9768 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:07:18,145 basehttp 13196 9768 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:07:27,817 basehttp 13196 10268 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:07:31,737 basehttp 13196 9768 "POST /api/projects/eddf73da-384d-4998-a6f1-e76bc0850867/validate_hours/ HTTP/1.1" 200 39
+INFO 2025-07-23 09:07:34,181 basehttp 13196 9768 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:07:40,714 basehttp 13196 10268 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:07:52,919 basehttp 13196 10268 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:08:12,682 basehttp 13196 10268 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:08:14,023 basehttp 13196 10268 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:08:14,675 basehttp 13196 9768 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:08:16,430 basehttp 13196 9768 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:08:24,996 basehttp 13196 13160 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:08:37,153 basehttp 13196 13160 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:10:54,593 autoreload 13196 15612 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-23 09:10:55,688 autoreload 12612 4164 Watching for file changes with StatReloader
+INFO 2025-07-23 09:11:10,785 basehttp 12612 2864 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:11:12,158 basehttp 12612 2864 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:11:14,346 basehttp 12612 5200 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:11:16,063 basehttp 12612 5200 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:11:20,503 basehttp 12612 15948 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:11:22,079 basehttp 12612 2044 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:11:25,030 basehttp 12612 14648 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:11:26,073 basehttp 12612 15948 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 218
+INFO 2025-07-23 09:11:30,411 basehttp 12612 19124 "POST /api/projects/eddf73da-384d-4998-a6f1-e76bc0850867/validate_hours/ HTTP/1.1" 200 39
+INFO 2025-07-23 09:11:32,136 basehttp 12612 19124 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:11:38,277 basehttp 12612 14648 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:11:50,455 basehttp 12612 14648 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:20:12,660 autoreload 12612 4164 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-23 09:20:14,608 autoreload 10140 5896 Watching for file changes with StatReloader
+INFO 2025-07-23 09:20:31,974 basehttp 10140 3912 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:20:34,060 basehttp 10140 3912 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:20:35,535 basehttp 10140 20300 - Broken pipe from ('127.0.0.1', 54990)
+INFO 2025-07-23 09:20:54,785 basehttp 10140 17352 "POST /api/token/ HTTP/1.1" 200 1037
+INFO 2025-07-23 09:20:56,670 basehttp 10140 17352 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:21:00,856 basehttp 10140 18580 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 154
+INFO 2025-07-23 09:21:19,171 basehttp 10140 18580 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:21:20,957 basehttp 10140 18580 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-23 09:21:31,342 basehttp 10140 11340 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:21:45,290 basehttp 10140 11340 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 2063
+INFO 2025-07-23 09:21:47,244 basehttp 10140 18580 "POST /api/projects/eddf73da-384d-4998-a6f1-e76bc0850867/validate_hours/ HTTP/1.1" 200 39
+ERROR 2025-07-23 09:21:49,340 log 10140 11340 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:21:49,340 basehttp 10140 11340 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 73
+INFO 2025-07-23 09:22:01,176 basehttp 10140 18580 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:22:33,513 basehttp 10140 18580 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:22:34,943 basehttp 10140 18580 "GET /api/users/profile/ HTTP/1.1" 200 602
+ERROR 2025-07-23 09:22:35,570 log 10140 11340 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:22:35,570 basehttp 10140 11340 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 73
+ERROR 2025-07-23 09:22:37,501 log 10140 11340 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:22:37,501 basehttp 10140 11340 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 73
+INFO 2025-07-23 09:22:48,124 basehttp 10140 7512 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:22:48,944 autoreload 10140 5896 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\serializers.py changed, reloading.
+INFO 2025-07-23 09:22:50,446 autoreload 7164 18208 Watching for file changes with StatReloader
+INFO 2025-07-23 09:23:11,260 basehttp 7164 8560 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:23:12,770 basehttp 7164 8560 "GET /api/users/profile/ HTTP/1.1" 200 602
+ERROR 2025-07-23 09:23:14,860 log 7164 20336 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:23:14,860 basehttp 7164 20336 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 78
+ERROR 2025-07-23 09:23:18,059 log 7164 20336 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:23:18,060 basehttp 7164 20336 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 78
+INFO 2025-07-23 09:23:26,291 basehttp 7164 12712 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:23:39,865 basehttp 7164 12712 - Broken pipe from ('127.0.0.1', 55331)
+INFO 2025-07-23 09:23:42,390 basehttp 7164 20336 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:23:43,792 basehttp 7164 20336 "GET /api/users/profile/ HTTP/1.1" 200 602
+ERROR 2025-07-23 09:23:45,243 log 7164 18092 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:23:45,245 basehttp 7164 18092 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 78
+ERROR 2025-07-23 09:23:47,031 log 7164 18092 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:23:47,032 basehttp 7164 18092 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 78
+INFO 2025-07-23 09:23:56,351 basehttp 7164 17712 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:24:09,160 basehttp 7164 17712 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:24:15,593 autoreload 7164 18208 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\serializers.py changed, reloading.
+INFO 2025-07-23 09:24:16,740 autoreload 7428 12940 Watching for file changes with StatReloader
+INFO 2025-07-23 09:24:29,524 basehttp 7428 8668 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:24:31,001 basehttp 7428 8668 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:24:33,951 basehttp 7428 2516 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:24:36,283 basehttp 7428 2516 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:24:44,545 basehttp 7428 5268 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:24:52,835 basehttp 7428 2516 "OPTIONS /api/projects/3a167485-5346-49ba-9577-8ccf37e79839/validate_hours/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:24:55,159 basehttp 7428 2516 "POST /api/projects/3a167485-5346-49ba-9577-8ccf37e79839/validate_hours/ HTTP/1.1" 200 39
+INFO 2025-07-23 09:24:57,889 basehttp 7428 5268 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:24:57,911 basehttp 7428 2516 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:25:10,098 basehttp 7428 15872 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:25:11,626 basehttp 7428 5268 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:25:11,821 basehttp 7428 20832 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:25:14,943 basehttp 7428 15872 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 220
+INFO 2025-07-23 09:26:07,972 basehttp 7428 9772 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:26:09,544 basehttp 7428 13748 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:26:12,252 basehttp 7428 9772 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 220
+INFO 2025-07-23 09:26:13,908 basehttp 7428 20776 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:26:15,241 basehttp 7428 20776 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:26:16,502 basehttp 7428 7336 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:26:18,734 basehttp 7428 7336 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:26:27,705 basehttp 7428 13588 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:26:41,333 basehttp 7428 13588 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:29:13,533 basehttp 7428 3016 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:29:24,220 basehttp 7428 9176 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:30:11,978 basehttp 7428 14592 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:30:14,634 basehttp 7428 14592 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:30:16,801 basehttp 7428 14592 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:30:23,528 basehttp 7428 7136 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:30:35,890 basehttp 7428 7136 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:30:44,544 basehttp 7428 3364 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:31:29,505 basehttp 7428 2044 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:31:31,703 basehttp 7428 2044 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:31:33,948 basehttp 7428 2044 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:31:38,208 basehttp 7428 9864 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:31:51,178 basehttp 7428 9864 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:32:01,417 basehttp 7428 2044 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:33:18,985 basehttp 7428 11780 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:33:21,197 basehttp 7428 11780 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:33:28,759 basehttp 7428 12116 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:33:42,630 basehttp 7428 12116 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:34:51,197 basehttp 7428 16400 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:34:52,909 basehttp 7428 16400 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:36:07,606 basehttp 7428 9720 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:36:09,017 basehttp 7428 9720 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:36:11,364 basehttp 7428 11580 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:36:13,713 basehttp 7428 11580 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:36:22,012 basehttp 7428 10060 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:36:25,608 basehttp 7428 18028 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:36:26,943 basehttp 7428 18028 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:36:28,146 basehttp 7428 20516 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:36:30,410 basehttp 7428 20516 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:36:34,127 basehttp 7428 10060 - Broken pipe from ('127.0.0.1', 56737)
+INFO 2025-07-23 09:36:39,938 basehttp 7428 5048 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:36:54,468 basehttp 7428 5048 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:38:41,726 basehttp 7428 8008 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:38:51,927 basehttp 7428 12168 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:40:44,596 basehttp 7428 11288 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:40:46,001 basehttp 7428 11288 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:41:08,232 basehttp 7428 18596 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:41:09,880 basehttp 7428 18596 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:41:51,347 basehttp 7428 19096 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:41:52,775 basehttp 7428 19096 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:42:16,462 basehttp 7428 16188 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:42:18,376 basehttp 7428 16188 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:43:17,555 basehttp 7428 21048 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:43:18,898 basehttp 7428 21048 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:43:21,089 basehttp 7428 12344 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:43:23,383 basehttp 7428 12344 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:43:30,599 basehttp 7428 14640 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:43:31,062 basehttp 7428 6148 - Broken pipe from ('127.0.0.1', 57580)
+INFO 2025-07-23 09:43:31,971 basehttp 7428 14640 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:43:34,352 basehttp 7428 9160 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:43:37,357 basehttp 7428 9160 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 807
+INFO 2025-07-23 09:43:41,324 basehttp 7428 12344 - Broken pipe from ('127.0.0.1', 57563)
+INFO 2025-07-23 09:43:44,802 basehttp 7428 16952 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:43:58,796 basehttp 7428 16952 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:45:31,556 autoreload 7428 12940 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\serializers.py changed, reloading.
+INFO 2025-07-23 09:45:32,958 autoreload 8048 9984 Watching for file changes with StatReloader
+INFO 2025-07-23 09:45:51,381 basehttp 8048 7508 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:45:53,026 basehttp 8048 7508 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:45:56,371 basehttp 8048 144 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 941
+INFO 2025-07-23 09:46:01,179 basehttp 8048 144 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 941
+INFO 2025-07-23 09:46:07,088 basehttp 8048 10564 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:46:20,664 basehttp 8048 10564 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:47:27,910 basehttp 8048 10564 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 941
+INFO 2025-07-23 09:47:37,144 basehttp 8048 144 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:47:49,290 basehttp 8048 144 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:47:50,718 basehttp 8048 144 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:47:54,876 basehttp 8048 21368 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 941
+INFO 2025-07-23 09:47:58,737 basehttp 8048 21368 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 941
+INFO 2025-07-23 09:48:04,885 basehttp 8048 16380 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:48:18,784 basehttp 8048 16380 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:49:40,777 autoreload 8048 9984 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\serializers.py changed, reloading.
+INFO 2025-07-23 09:49:41,979 autoreload 20216 16988 Watching for file changes with StatReloader
+INFO 2025-07-23 09:49:49,915 basehttp 20216 9476 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:49:51,286 basehttp 20216 9476 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:49:56,048 basehttp 20216 15180 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 941
+INFO 2025-07-23 09:49:59,957 basehttp 20216 15180 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 941
+INFO 2025-07-23 09:50:05,490 basehttp 20216 2116 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:50:19,844 basehttp 20216 2116 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1794
+INFO 2025-07-23 09:51:53,443 basehttp 20216 2116 "OPTIONS /api/projects/894807e2-6d4d-4f70-a6ca-dca492598691/validate_hours/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:52:06,716 basehttp 20216 2116 "POST /api/projects/894807e2-6d4d-4f70-a6ca-dca492598691/validate_hours/ HTTP/1.1" 200 39
+INFO 2025-07-23 09:52:14,579 basehttp 20216 368 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 09:52:19,346 basehttp 20216 2116 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 09:52:33,954 basehttp 20216 21220 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:52:35,818 basehttp 20216 2992 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:52:40,038 basehttp 20216 21220 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 220
+INFO 2025-07-23 09:55:04,399 basehttp 20216 21220 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:55:04,399 basehttp 20216 2992 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:55:04,403 basehttp 20216 2992 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:55:04,403 basehttp 20216 21220 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:55:08,496 basehttp 20216 2992 "GET /api/students/api-level-requests/ HTTP/1.1" 200 737
+INFO 2025-07-23 09:55:08,540 basehttp 20216 21220 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 09:55:11,163 basehttp 20216 12328 "GET /api/students/api-level-requests/ HTTP/1.1" 200 737
+INFO 2025-07-23 09:55:12,289 basehttp 20216 2992 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 09:55:29,663 basehttp 20216 12328 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:55:29,663 basehttp 20216 21220 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:55:31,483 basehttp 20216 2992 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 09:55:34,137 basehttp 20216 12328 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 09:55:34,224 autoreload 20216 16988 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\models.py changed, reloading.
+INFO 2025-07-23 09:55:35,907 autoreload 13328 12940 Watching for file changes with StatReloader
+INFO 2025-07-23 09:55:51,076 basehttp 13328 14632 "GET /api/companies/ HTTP/1.1" 200 1133
+INFO 2025-07-23 09:55:51,443 basehttp 13328 7340 "GET /api/projects/my_projects/ HTTP/1.1" 200 3195
+INFO 2025-07-23 09:55:51,823 basehttp 13328 4464 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-07-23 09:55:52,765 autoreload 13328 12940 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-23 09:55:53,888 autoreload 20532 9520 Watching for file changes with StatReloader
+INFO 2025-07-23 09:56:03,747 autoreload 20532 9520 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\serializers.py changed, reloading.
+INFO 2025-07-23 09:56:04,866 autoreload 19360 7048 Watching for file changes with StatReloader
+INFO 2025-07-23 09:56:24,927 basehttp 19360 5308 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:56:26,535 basehttp 19360 13180 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:56:28,622 basehttp 19360 5308 "GET /api/projects/my_projects/ HTTP/1.1" 200 3195
+INFO 2025-07-23 09:56:30,954 basehttp 19360 13180 "GET /api/projects/my_projects/ HTTP/1.1" 200 3195
+INFO 2025-07-23 09:56:45,962 basehttp 19360 10712 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:56:47,092 basehttp 19360 13180 - Broken pipe from ('127.0.0.1', 59062)
+INFO 2025-07-23 09:56:47,386 basehttp 19360 10712 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 09:56:53,700 basehttp 19360 9904 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 8124
+INFO 2025-07-23 09:56:55,642 basehttp 19360 9288 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 09:56:57,172 basehttp 19360 9288 "GET /api/users/profile/ HTTP/1.1" 200 602
+ERROR 2025-07-23 09:56:59,355 log 19360 6132 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:56:59,355 basehttp 19360 6132 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 156
+INFO 2025-07-23 09:57:01,146 basehttp 19360 10712 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 8124
+ERROR 2025-07-23 09:57:01,649 log 19360 6132 Internal Server Error: /work-hours/
+ERROR 2025-07-23 09:57:01,651 basehttp 19360 6132 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 156
+INFO 2025-07-23 09:57:10,723 basehttp 19360 14900 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 09:57:23,703 basehttp 19360 14900 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 09:57:54,555 basehttp 19360 10736 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 220
+INFO 2025-07-23 09:59:42,951 basehttp 19360 17812 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:59:42,955 basehttp 19360 16992 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:59:42,956 basehttp 19360 2888 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:59:42,956 basehttp 19360 12600 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-23 09:59:46,949 basehttp 19360 17300 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 09:59:49,366 basehttp 19360 17300 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 10:00:00,584 basehttp 19360 12600 "GET /api/applications/ HTTP/1.1" 200 8280
+INFO 2025-07-23 10:00:14,879 basehttp 19360 12600 "GET /api/applications/ HTTP/1.1" 200 8280
+INFO 2025-07-23 10:00:23,051 basehttp 19360 17812 "GET /api/projects/ HTTP/1.1" 200 15396
+INFO 2025-07-23 10:00:32,645 basehttp 19360 17324 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:00:33,996 basehttp 19360 17324 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:00:39,633 basehttp 19360 2520 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:00:41,839 basehttp 19360 20308 "GET /api/projects/ HTTP/1.1" 200 15396
+INFO 2025-07-23 10:00:44,679 basehttp 19360 2520 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:00:47,291 basehttp 19360 10552 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:01:00,442 basehttp 19360 10552 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:02:21,021 autoreload 19360 7048 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-23 10:02:22,232 autoreload 1504 11684 Watching for file changes with StatReloader
+INFO 2025-07-23 10:02:40,734 basehttp 1504 17416 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:02:42,551 basehttp 1504 17416 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:02:48,751 basehttp 1504 20680 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:02:53,943 basehttp 1504 20680 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:02:57,064 basehttp 1504 20888 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:03:09,648 basehttp 1504 20888 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:03:35,047 basehttp 1504 10644 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:03:36,594 basehttp 1504 10644 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:03:41,200 basehttp 1504 21188 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:03:45,816 basehttp 1504 21188 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:03:47,844 basehttp 1504 18192 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:03:59,774 basehttp 1504 18192 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:04:57,221 basehttp 1504 20848 "OPTIONS /api/projects/cfcbf9b2-53eb-4d20-aa6a-1451768a2a9e/validate_hours/ HTTP/1.1" 200 0
+ERROR 2025-07-23 10:04:59,570 log 1504 20848 Internal Server Error: /api/projects/cfcbf9b2-53eb-4d20-aa6a-1451768a2a9e/validate_hours/
+ERROR 2025-07-23 10:04:59,570 basehttp 1504 20848 "POST /api/projects/cfcbf9b2-53eb-4d20-aa6a-1451768a2a9e/validate_hours/ HTTP/1.1" 500 99
+INFO 2025-07-23 10:05:12,032 basehttp 1504 752 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:05:13,356 basehttp 1504 752 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:05:18,684 basehttp 1504 15300 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:05:23,397 basehttp 1504 15300 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:05:25,148 basehttp 1504 19944 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:05:38,230 basehttp 1504 19944 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+ERROR 2025-07-23 10:05:58,117 log 1504 19944 Internal Server Error: /api/projects/cfcbf9b2-53eb-4d20-aa6a-1451768a2a9e/validate_hours/
+ERROR 2025-07-23 10:05:58,117 basehttp 1504 19944 "POST /api/projects/cfcbf9b2-53eb-4d20-aa6a-1451768a2a9e/validate_hours/ HTTP/1.1" 500 99
+INFO 2025-07-23 10:06:57,072 autoreload 1504 11684 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-07-23 10:06:58,691 autoreload 7308 15816 Watching for file changes with StatReloader
+INFO 2025-07-23 10:07:07,338 basehttp 7308 1812 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:07:08,750 basehttp 7308 1812 "GET /api/users/profile/ HTTP/1.1" 200 602
+INFO 2025-07-23 10:07:13,900 basehttp 7308 18820 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:07:20,236 basehttp 7308 18820 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 1812
+INFO 2025-07-23 10:07:22,173 basehttp 7308 10152 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+INFO 2025-07-23 10:07:34,599 basehttp 7308 10152 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1527
+WARNING 2025-07-23 10:07:46,203 log 7308 18620 Unauthorized: /api/dashboard/student_stats/
+WARNING 2025-07-23 10:07:46,210 basehttp 7308 18620 "GET /api/dashboard/student_stats/ HTTP/1.1" 401 32
+INFO 2025-07-23 10:07:46,215 basehttp 7308 18620 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:07:46,820 basehttp 7308 18820 "POST /api/projects/cfcbf9b2-53eb-4d20-aa6a-1451768a2a9e/validate_hours/ HTTP/1.1" 200 39
+INFO 2025-07-23 10:07:48,201 basehttp 7308 18620 "POST /api/token/refresh/ HTTP/1.1" 200 271
+INFO 2025-07-23 10:07:52,487 basehttp 7308 10152 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 2691
+INFO 2025-07-23 10:07:53,443 basehttp 7308 18620 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 220
+INFO 2025-07-23 10:07:58,910 basehttp 7308 18820 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 1256
+INFO 2025-07-23 10:08:27,523 basehttp 7308 13196 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:08:27,539 basehttp 7308 13196 "POST /api/auth/logout/ HTTP/1.1" 200 47
+WARNING 2025-07-23 10:08:34,590 log 7308 13196 Bad Request: /api/token/
+WARNING 2025-07-23 10:08:34,590 basehttp 7308 13196 "POST /api/token/ HTTP/1.1" 400 40
+WARNING 2025-07-23 10:09:05,541 log 7308 8660 Bad Request: /api/token/
+WARNING 2025-07-23 10:09:05,550 basehttp 7308 8660 "POST /api/token/ HTTP/1.1" 400 40
+INFO 2025-07-23 10:09:26,467 basehttp 7308 14472 "POST /api/token/ HTTP/1.1" 200 1050
+INFO 2025-07-23 10:09:28,920 basehttp 7308 14472 "GET /api/users/profile/ HTTP/1.1" 200 2075
+INFO 2025-07-23 10:09:29,203 basehttp 7308 14472 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:09:34,277 basehttp 7308 14472 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 269
+INFO 2025-07-23 10:10:09,321 basehttp 7308 14472 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:10:09,330 basehttp 7308 14472 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:10:41,191 basehttp 7308 10880 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:10:41,209 basehttp 7308 10880 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-23 10:10:51,252 basehttp 7308 10880 "POST /api/token/ HTTP/1.1" 200 1145
+INFO 2025-07-23 10:10:52,909 basehttp 7308 10880 "GET /api/users/profile/ HTTP/1.1" 200 694
+INFO 2025-07-23 10:10:52,979 basehttp 7308 10880 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:10:57,424 basehttp 7308 10880 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 220
+INFO 2025-07-23 10:11:09,179 basehttp 7308 14472 "GET /api/projects/company_projects/ HTTP/1.1" 200 23133
+INFO 2025-07-23 10:11:31,228 basehttp 7308 11152 "GET /api/projects/company_projects/ HTTP/1.1" 200 23133
+INFO 2025-07-23 10:11:35,024 basehttp 7308 11632 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:35,024 basehttp 7308 10880 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:37,779 basehttp 7308 11632 "GET /api/projects/my_projects/ HTTP/1.1" 200 2731
+INFO 2025-07-23 10:11:40,212 basehttp 7308 11632 "GET /api/projects/my_projects/ HTTP/1.1" 200 2731
+INFO 2025-07-23 10:11:41,189 basehttp 7308 11632 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:41,189 basehttp 7308 10880 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:41,189 basehttp 7308 10880 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:41,193 basehttp 7308 11632 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:41,195 basehttp 7308 11632 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:41,195 basehttp 7308 10880 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-07-23 10:11:43,826 basehttp 7308 10880 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 10:11:46,259 basehttp 7308 10880 "GET /api/students/me/ HTTP/1.1" 200 1961
+INFO 2025-07-23 10:11:57,338 basehttp 7308 7520 "GET /api/applications/ HTTP/1.1" 200 8279
+INFO 2025-07-23 10:12:13,981 basehttp 7308 7520 "GET /api/applications/ HTTP/1.1" 200 8279
+INFO 2025-07-23 10:12:23,466 basehttp 7308 11632 "GET /api/projects/ HTTP/1.1" 200 15396
+INFO 2025-07-23 10:12:44,130 basehttp 7308 10880 "GET /api/projects/ HTTP/1.1" 200 15396

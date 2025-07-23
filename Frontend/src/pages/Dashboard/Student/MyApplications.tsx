@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { adaptApplication } from '../../../utils/adapters';
+import { MODALIDADES } from '../../../modalidades';
 
 interface Application {
   id: string;
@@ -84,7 +85,7 @@ const areas = [
   'Servicios y Atención al Cliente',
   'Sostenibilidad y Medio Ambiente'
 ];
-const modalidades = ['Remoto', 'Presencial', 'Híbrido'];
+const modalidades = MODALIDADES;
 const ubicaciones = ['Santiago', 'Bogotá', 'CDMX', 'Buenos Aires'];
 const niveles = ['Básico', 'Intermedio', 'Avanzado'];
 const duraciones = ['1 mes', '3 meses', '6 meses', '12 meses'];

@@ -35,6 +35,7 @@ import {
 import { apiService } from '../../../../services/api.service';
 import { ShowLatestFilter } from '../../../../components/common/ShowLatestFilter';
 import { translateDifficulty } from '../../../../utils/adapters';
+import { MODALIDADES } from '../../../../modalidades';
 
 interface Project {
   id: string;
@@ -73,7 +74,6 @@ const areas = [
   'Servicios y Atención al Cliente',
   'Sostenibilidad y Medio Ambiente'
 ];
-const modalidades = ['Remoto', 'Presencial', 'Híbrido'];
 const duraciones = ['1 mes', '2 meses', '3 meses', '6 meses', '12 meses'];
 const tecnologias = ['React', 'Node.js', 'MongoDB', 'Python', 'Pandas', 'Power BI', 'Figma', 'Adobe XD', 'UI/UX'];
 
@@ -270,6 +270,26 @@ export default function AvailableProjects() {
             <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
               <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Descripción</Typography>
               <Typography variant="body1">{project.description}</Typography>
+              {project.requirements && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle1" fontWeight={600} gutterBottom color="primary">Requisitos del Proyecto</Typography>
+                  <Typography variant="body2">{project.requirements}</Typography>
+                </Box>
+              )}
+              <Box sx={{ mt: 2 }}>
+                <Chip label={`Dificultad: ${translateDifficulty(project.difficulty)}`} color="secondary" size="small" sx={{ mr: 1 }} />
+                <Chip label={`API ${project.api_level || 1}`} color={getApiLevelColor(project.api_level || 1)} size="small" icon={<TrendingUpIcon />} sx={{ mr: 1 }} />
+                <Chip label={project.modality === 'remote' ? 'Remoto' : project.modality === 'onsite' ? 'Presencial' : project.modality === 'hybrid' ? 'Híbrido' : project.modality} color="info" size="small" sx={{ mr: 1 }} />
+                {project.hours_per_week && <Chip label={`Horas/sem: ${project.hours_per_week}`} color="default" size="small" sx={{ mr: 1 }} />}
+                {project.required_hours && <Chip label={`Horas totales: ${project.required_hours}`} color="default" size="small" sx={{ mr: 1 }} />}
+                {project.max_students && <Chip label={`Máx. estudiantes: ${project.max_students}`} color="success" size="small" sx={{ mr: 1 }} />}
+              </Box>
+              <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 1.2, mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ScienceIcon sx={{ color: '#1976d2', fontSize: 20 }} />
+                <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
+                  {project.trl_level ? getTrlDescriptionOnly(project.trl_level) : 'Sin TRL'}
+                </Typography>
+              </Box>
             </Paper>
           </Grid>
           <Grid item xs={12} md={4}>
@@ -281,10 +301,10 @@ export default function AvailableProjects() {
               <Button onClick={handleCloseDetail} color="secondary" variant="outlined" sx={{ mt: 2, mr: 1 }}>Cerrar</Button>
               <Button
                 variant="contained"
-                color="primary"
+                color="success"
                 disabled={applied.includes(project.id)}
                 onClick={() => handleApply(project.id)}
-                sx={{ mt: 2 }}
+                sx={{ mt: 2, fontWeight: 600 }}
               >
                 {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
               </Button>
@@ -341,7 +361,7 @@ export default function AvailableProjects() {
             size="small"
           >
             <MenuItem key="todas-modalidades" value="">Todas</MenuItem>
-            {modalidades.map((m, index) => <MenuItem key={`modalidad-${index}-${m}`} value={m}>{m}</MenuItem>)}
+            {MODALIDADES.map((m, index) => <MenuItem key={`modalidad-${index}-${m}`} value={m}>{m}</MenuItem>)}
           </TextField>
           {/* <TextField
             select
@@ -354,7 +374,8 @@ export default function AvailableProjects() {
             <MenuItem key="todas-duraciones" value="">Todas</MenuItem>
             {duraciones.map((d, index) => <MenuItem key={`duracion-${index}-${d}`} value={d}>{d}</MenuItem>)}
           </TextField> */}
-          <Autocomplete
+          {/* Eliminar el filtro de tecnologías (Autocomplete) */}
+          {/* <Autocomplete
             multiple
             options={tecnologias}
             value={tecs}
@@ -363,7 +384,7 @@ export default function AvailableProjects() {
             sx={{ minWidth: 180 }}
             getOptionLabel={(option) => option}
             isOptionEqualToValue={(option, value) => option === value}
-          />
+          /> */}
           {/* Eliminar estado y lógica de empresa */}
           {/* <TextField
             select
@@ -432,53 +453,25 @@ export default function AvailableProjects() {
                     <b>Área:</b> {project.area}
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                  <Chip label={`Dificultad: ${translateDifficulty(project.difficulty)}`} color="secondary" size="small" />
-                  <Chip label={`API ${project.api_level || 1}`} color={getApiLevelColor(project.api_level || 1)} size="small" icon={<TrendingUpIcon />} />
-                  <Chip label={project.modality === 'remote' ? 'Remoto' : project.modality === 'onsite' ? 'Presencial' : project.modality === 'hybrid' ? 'Híbrido' : project.modality} color="info" size="small" />
-                  {project.hours_per_week && <Chip label={`Horas/sem: ${project.hours_per_week}`} color="default" size="small" />}
-                  {project.max_students && <Chip label={`Máx. estudiantes: ${project.max_students}`} color="success" size="small" />}
-                </Box>
-                <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 1.2, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <ScienceIcon sx={{ color: '#1976d2', fontSize: 20 }} />
-                  <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
-                    {project.trl_level ? getTrlDescriptionOnly(project.trl_level) : 'Sin TRL'}
-                  </Typography>
-                </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic' }}>
                   {project.description.slice(0, 120)}...
                 </Typography>
-                {!canApply && (
-                  <Alert severity="warning" sx={{ mb: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <WarningIcon />
-                      <Typography variant="body2">
-                        Requieres nivel API {requiredApiLevel} (tienes nivel {studentApiLevel})
-                      </Typography>
-                    </Box>
-                  </Alert>
-                )}
-              </CardContent>
-              <CardActions sx={{ pt: 0, pb: 2, px: 2, justifyContent: 'space-between' }}>
-                <Button size="small" variant="outlined" color="primary" onClick={() => handleOpenDetail(project)} sx={{ fontWeight: 600 }}>
-                  Ver Detalles
-                </Button>
-                <Tooltip title={!canApply ? `Necesitas nivel API ${requiredApiLevel} para postularte` : ''} placement="top">
-                  <span>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="success"
-                      disabled={applied.includes(project.id) || !canApply}
-                      onClick={() => handleApply(project.id)}
-                      startIcon={!canApply ? <BlockIcon /> : undefined}
-                      sx={{ fontWeight: 600 }}
-                    >
-                      {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
+                <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                  <Button size="small" variant="outlined" color="primary" onClick={() => handleOpenDetail(project)} sx={{ fontWeight: 600 }}>
+                    Ver Detalles
+                  </Button>
+                  {!applied.includes(project.id) && (
+                    <Button size="small" variant="contained" color="success" onClick={() => handleApply(project.id)} sx={{ fontWeight: 600 }}>
+                      Postularme
                     </Button>
-                  </span>
-                </Tooltip>
-              </CardActions>
+                  )}
+                  {applied.includes(project.id) && (
+                    <Button size="small" variant="contained" color="inherit" disabled sx={{ fontWeight: 600 }}>
+                      Postulado
+                    </Button>
+                  )}
+                </Box>
+              </CardContent>
             </Card>
           );
         })}

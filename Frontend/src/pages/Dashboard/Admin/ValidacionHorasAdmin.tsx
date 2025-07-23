@@ -20,6 +20,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -30,6 +32,8 @@ import {
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 interface WorkHour {
   id: string;
@@ -59,6 +63,7 @@ interface WorkHour {
   project_required_hours?: number;
   company_rating?: number;
   student_rating?: number;
+  approved?: boolean; // Added for filtering
 }
 
 export default function ValidacionHorasAdmin() {
@@ -79,12 +84,21 @@ export default function ValidacionHorasAdmin() {
   const [openIntegrantes, setOpenIntegrantes] = useState(false);
   const [integrantes, setIntegrantes] = useState<any[]>([]);
   const [integrantesProyecto, setIntegrantesProyecto] = useState<string>('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMsg, setSnackbarMsg] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   // Estados para paginación y filtros
   const [pageSize, setPageSize] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
+  // NUEVOS ESTADOS PARA CANTIDAD DE REGISTROS EN CADA TABLA
+  const [pendingPageSize, setPendingPageSize] = useState(15);
+  const [validatedPageSize, setValidatedPageSize] = useState(15);
+
+  // Opciones para el selector
+  const pageSizeOptions = [15, 50, 100, 150, 'Todos'];
 
   useEffect(() => {
     loadWorkHours();
@@ -146,12 +160,21 @@ export default function ValidacionHorasAdmin() {
   const handleValidateProject = async (projectId: string) => {
     setValidatingProjectId(projectId);
     try {
-      await apiService.post(`/api/projects/${projectId}/validate_hours/`);
+      console.log('[DEBUG] Enviando petición de validación de horas para proyecto:', projectId);
+      const response = await apiService.post(`/api/projects/${projectId}/validate_hours/`);
+      console.log('[DEBUG] Respuesta de validación:', response);
+      setSnackbarMsg('Horas validadas correctamente para el proyecto');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
       setSuccessMsg('Horas validadas correctamente para el proyecto');
       loadPendingProjects();
       loadWorkHours();
     } catch (err: any) {
+      console.error('[DEBUG] Error al validar horas:', err);
       setPendingError(err.response?.data?.error || 'Error al validar horas del proyecto');
+      setSnackbarMsg(err.response?.data?.error || 'Error al validar horas del proyecto');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     } finally {
       setValidatingProjectId(null);
     }
@@ -187,8 +210,8 @@ export default function ValidacionHorasAdmin() {
   };
 
   const handleVerIntegrantes = (row: any) => {
-    // Busca la lista de integrantes en el row (puede ser row.estudiantes, row.participantes, etc.)
-    const lista = row.estudiantes || row.participantes || [];
+    // Usa row.integrantes si existe, si no, busca en row.estudiantes o row.participantes
+    const lista = row.integrantes || row.estudiantes || row.participantes || [];
     setIntegrantes(lista);
     setIntegrantesProyecto(row.project_title || row.title || 'Proyecto');
     setOpenIntegrantes(true);
@@ -237,7 +260,50 @@ export default function ValidacionHorasAdmin() {
     })),
   ];
 
-  // Modifico la columna Acciones para mostrar el botón solo en filas pendientes
+  // Definir pendingRows correctamente justo después de unifiedRows
+  const pendingRows = unifiedRows.filter(row => row.isPending);
+
+  // Construir diccionario de proyectos {id: {nombre, integrantes}} usando los pendientes
+  const projectInfoMap: Record<string, { title: string; integrantes?: any[] }> = {};
+  unifiedRows.forEach(row => {
+    const id = row.project_id || row.project || row.id;
+    if (!id) return;
+    projectInfoMap[id] = {
+      title: row.project_title || row.title || row.nombre || row.name || '-',
+      integrantes: row.estudiantes || row.participantes || [],
+    };
+  });
+
+  // Adaptador para work hours validadas (historial)
+  function adaptValidatedRow(row: any) {
+    const id = row.project_id || row.project || row.id;
+    const info = projectInfoMap[id] || {};
+    return {
+      id: row.id,
+      project_title: info.title || row.project_title || row.project?.title || row.project || '-',
+      company_name: row.company_name || row.empresa_nombre || row.company?.company_name || '-',
+      hours: row.hours_worked || row.horas || row.project_required_hours || '-',
+      status: row.status || (row.approved ? 'approved' : 'pending'),
+      approved: row.approved,
+      integrantes: info.integrantes || [],
+      isPending: false,
+      // Puedes agregar más campos si la tabla los necesita
+    };
+  }
+  // Filtrar y adaptar proyectos validados
+  const validatedRows = unifiedRows
+    .filter(row => !row.isPending && (row.approved === true || row.status === 'approved' || row.status === 'Aprobada'))
+    .map(adaptValidatedRow);
+
+  // Conteos
+  const countPendientes = pendingRows.length;
+  const countValidados = validatedRows.length;
+
+  // FILTRADO POR CANTIDAD SELECCIONADA
+  const displayedPendingRows = pendingPageSize === 'Todos' ? pendingRows : pendingRows.slice(0, Number(pendingPageSize));
+  const displayedValidatedRows = validatedPageSize === 'Todos' ? validatedRows : validatedRows.slice(0, Number(validatedPageSize));
+
+  // Definir columns antes de cualquier uso
   const columns = [
     {
       key: 'project_title',
@@ -280,125 +346,109 @@ export default function ValidacionHorasAdmin() {
             {validatingProjectId === row.projectId ? 'Validando...' : 'Validar Horas'}
           </Button>
         </Box>
-      ) : null,
+      ) : (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="contained"
+            color="info"
+            size="small"
+            onClick={() => handleVerIntegrantes(row)}
+          >
+            Ver Integrantes
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            color="primary"
+            disabled
+            sx={{ fontWeight: 600 }}
+          >
+            VALIDADO
+          </Button>
+        </Box>
+      ),
       width: '220px',
     },
   ];
 
-  const tableFilters = [
-    {
-      key: 'search',
-      label: 'Buscar por estudiante o proyecto',
-      type: 'text' as const
-    },
-    {
-      key: 'status',
-      label: 'Estado',
-      type: 'select' as const,
-      options: [
-        { value: 'pending', label: 'Pendiente' },
-        { value: 'approved', label: 'Aprobada' },
-        { value: 'rejected', label: 'Rechazada' }
-      ]
-    },
-    {
-      key: 'project',
-      label: 'Proyecto',
-      type: 'select' as const,
-      options: [
-        { value: '1', label: 'Proyecto A' },
-        { value: '2', label: 'Proyecto B' },
-        { value: '3', label: 'Proyecto C' }
-      ]
-    },
-    {
-      key: 'date_from',
-      label: 'Fecha desde',
-      type: 'text' as const
-    },
-    {
-      key: 'date_to',
-      label: 'Fecha hasta',
-      type: 'text' as const
-    }
-  ];
-
-  const handleFilterChange = (newFilters: any) => {
-    if (newFilters.pageSize) {
-      setPageSize(Number(newFilters.pageSize));
-      setCurrentPage(1);
-    }
-    setFilters(newFilters);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handlePageSizeChange = (newPageSize: number | 'ultimos') => {
-    setPageSize(newPageSize);
-    setCurrentPage(1); // Resetear a la primera página
-  };
-
-  const actions = (row: WorkHour) => (
-    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-      {row.status === 'pending' ? (
-        <Button
-          variant="contained"
-          size="small"
-          color="success"
-          onClick={() => handleOpenModal(row)}
-          startIcon={<CheckCircleIcon />}
-          sx={{ 
-            fontWeight: 600,
-            '&:hover': { 
-              bgcolor: 'success.dark',
-              transform: 'translateY(-1px)',
-              boxShadow: 2
-            }
-          }}
-        >
-          Validar Horas
-        </Button>
-      ) : (
-        <Button
-          variant="outlined"
-          size="small"
-          color="success"
-          disabled
-          sx={{ fontWeight: 600 }}
-        >
-          ✅ Validada
-        </Button>
-      )}
-    </Box>
-  );
-
   return (
     <Box sx={{ p: 3 }}>
-      <Paper sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" fontWeight={700}>
-            VALIDACIÓN DE HORAS DE PROYECTOS
+      {/* TÍTULO Y DESCRIPCIÓN */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
+          Validación de Horas
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary">
+          En esta sección puedes validar las horas reportadas por los estudiantes en sus proyectos y consultar el historial de validaciones.
+        </Typography>
+      </Box>
+      {/* Tarjetas de conteo usando Box en vez de Grid */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+        <Card sx={{ bgcolor: '#1976d2', color: 'white', minWidth: 200, flex: '1 1 200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 3 }}>
+            <Typography variant="h6" align="center">Pendientes</Typography>
+            <Typography variant="h3" fontWeight={700} align="center">{countPendientes}</Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ bgcolor: '#43a047', color: 'white', minWidth: 200, flex: '1 1 200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 3 }}>
+            <Typography variant="h6" align="center">Validados</Typography>
+            <Typography variant="h3" fontWeight={700} align="center">{countValidados}</Typography>
+          </CardContent>
+        </Card>
+      </Box>
+      {/* Tabla de pendientes */}
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5" fontWeight={700}>
+            Proyectos pendientes de validación
           </Typography>
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Mostrar</InputLabel>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel id="pending-page-size-label">Mostrar</InputLabel>
             <Select
-              value={pageSize}
+              labelId="pending-page-size-label"
+              value={pendingPageSize}
               label="Mostrar"
-              onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
+              onChange={e => setPendingPageSize(e.target.value as any)}
             >
-              <MenuItem value={15}>15 últimos</MenuItem>
-              <MenuItem value={50}>50 últimos</MenuItem>
-              <MenuItem value={100}>100 últimos</MenuItem>
-              <MenuItem value={150}>150 últimos</MenuItem>
-              <MenuItem value={'todos'}>Todos</MenuItem>
+              {pageSizeOptions.map(opt => (
+                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>
         <DataTable
-          data={pageSize === 'todos' ? unifiedRows : unifiedRows.slice(0, pageSize)}
+          data={displayedPendingRows}
+          columns={columns}
+          loading={loading || pendingLoading}
+          error={error || pendingError}
+          filters={[]}
+          onFilterChange={() => {}}
+          showPageSizeSelector={false}
+        />
+      </Paper>
+      {/* Historial de validados */}
+      <Paper sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5" fontWeight={700}>
+            Historial de proyectos validados
+          </Typography>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel id="validated-page-size-label">Mostrar</InputLabel>
+            <Select
+              labelId="validated-page-size-label"
+              value={validatedPageSize}
+              label="Mostrar"
+              onChange={e => setValidatedPageSize(e.target.value as any)}
+            >
+              {pageSizeOptions.map(opt => (
+                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <DataTable
+          data={displayedValidatedRows}
           columns={columns}
           loading={loading || pendingLoading}
           error={error || pendingError}
@@ -427,6 +477,16 @@ export default function ValidacionHorasAdmin() {
           <Button onClick={handleCloseIntegrantes}>Cerrar</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <MuiAlert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMsg}
+        </MuiAlert>
+      </Snackbar>
     </Box>
   );
 } 

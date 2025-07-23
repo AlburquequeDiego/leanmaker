@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Typography, TextField, Button, Stepper, Step, StepLabel, FormControl, MenuItem, Select, Alert, Radio, RadioGroup, FormControlLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper as MuiPaper
+  Box, Typography, TextField, Button, Stepper, Step, StepLabel, FormControl, MenuItem, Select, Alert, Radio, RadioGroup, FormControlLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper as MuiPaper, InputLabel
 } from '@mui/material';
 import { projectService } from '../../../services/project.service';
 import { authService } from '../../../services/auth.service';
 import { useNavigate } from 'react-router-dom';
+import { MODALIDADES } from '../../../modalidades';
 
 const steps = ['Información Básica', 'TRL y Horas', 'General', 'Resumen'];
 const trlToApi = { 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 4 } as const;
@@ -260,7 +261,7 @@ export const PublishProjects: React.FC = () => {
             </Select>
           </FormControl>
           <TextField label="Objetivo del Proyecto" name="objetivo" value={form.objetivo} onChange={handleChange} fullWidth required />
-          <TextField label="Requisitos del Proyecto" name="requirements" value={form.requirements} onChange={handleChange} fullWidth required helperText="Mínimo 10 caracteres" />
+          <TextField label="Requisitos del Proyecto" name="requirements" value={form.requirements} onChange={handleChange} fullWidth required helperText="Mínimo 10 caracteres" placeholder="Ejemplo: Conocimientos en Python, trabajo en equipo, responsabilidad, disponibilidad de 20 horas semanales, etc." />
         </Box>
       )}
       {activeStep === 1 && (
@@ -385,7 +386,22 @@ export const PublishProjects: React.FC = () => {
       )}
       {activeStep === 2 && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField label="Modalidad" name="modalidad" value={form.modalidad} onChange={handleChange} fullWidth required placeholder="Presencial, Remoto, Híbrido" />
+          <FormControl fullWidth required>
+            <InputLabel id="modalidad-label" shrink>Modalidad</InputLabel>
+            <Select
+              labelId="modalidad-label"
+              name="modalidad"
+              value={form.modalidad}
+              label="Modalidad"
+              onChange={e => setForm({ ...form, modalidad: e.target.value })}
+              displayEmpty
+            >
+              <MenuItem value=""><em>Selecciona la modalidad</em></MenuItem>
+              {MODALIDADES.map((m) => (
+                <MenuItem key={m} value={m}>{m}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <FormControl fullWidth required>
             <Select
               name="dificultad"

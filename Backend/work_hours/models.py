@@ -6,6 +6,7 @@ from companies.models import Empresa
 from django.conf import settings
 import uuid
 from django.utils import timezone
+from django.db.models import JSONField
 
 class WorkHour(models.Model):
     """
@@ -40,6 +41,9 @@ class WorkHour(models.Model):
     # Campos de fechas - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Nuevo campo para snapshot de integrantes
+    integrantes_snapshot = JSONField(null=True, blank=True, help_text='Lista de integrantes del proyecto al momento de validar')
 
     class Meta:
         db_table = 'work_hours'

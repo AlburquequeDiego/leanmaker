@@ -814,6 +814,7 @@ def completed_pending_hours(request):
 @require_http_methods(["POST"])
 def validate_project_hours(request, project_id):
     """Valida horas de todos los estudiantes de un proyecto completado."""
+    from projects.models import MiembroProyecto  # Importar al inicio de la función
     try:
         # Verificar autenticación y permisos de admin
         auth_header = request.headers.get('Authorization')
@@ -830,8 +831,8 @@ def validate_project_hours(request, project_id):
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
         if not proyecto.required_hours:
             return JsonResponse({'error': 'El proyecto no tiene horas ofrecidas definidas.'}, status=400)
-        # Participantes activos
-        miembros = MiembroProyecto.objects.filter(proyecto=proyecto, rol='estudiante', esta_activo=True).select_related('usuario')
+        # Participantes del proyecto (sin importar si esta_activo)
+        miembros = MiembroProyecto.objects.filter(proyecto=proyecto, rol='estudiante').select_related('usuario')
         count = 0
         for miembro in miembros:
             user = miembro.usuario
@@ -843,15 +844,41 @@ def validate_project_hours(request, project_id):
                 print(f"[VALIDAR HORAS] Usuario {user.email} sin perfil de estudiante, se omite.")
                 continue  # Saltar si no hay perfil de estudiante
             # Buscar asignación correctamente
-            from applications.models import Asignacion
+            from applications.models import Asignacion, Aplicacion
             asignacion = Asignacion.objects.filter(application__student=estudiante, application__project=proyecto).first()
             if not asignacion:
-                print(f"[VALIDAR HORAS] No se encontró asignación para estudiante {estudiante.id} en proyecto {proyecto.id}")
-                continue  # Saltar si no hay asignación
+                # Crear aplicación y asignación si no existen
+                print(f"[VALIDAR HORAS] No se encontró asignación para estudiante {estudiante.id} en proyecto {proyecto.id}, creando...")
+                # Buscar o crear aplicación aceptada
+                aplicacion, _ = Aplicacion.objects.get_or_create(
+                    student=estudiante,
+                    project=proyecto,
+                    defaults={'status': 'accepted', 'cover_letter': 'Generada automáticamente para validación de horas'}
+                )
+                if aplicacion.status != 'accepted':
+                    aplicacion.status = 'accepted'
+                    aplicacion.save(update_fields=['status'])
+                # Crear asignación
+                from django.utils import timezone
+                asignacion = Asignacion.objects.create(
+                    application=aplicacion,
+                    fecha_inicio=proyecto.start_date or timezone.now().date(),
+                    estado='en curso'
+                )
             # Evitar duplicados
             if WorkHour.objects.filter(project=proyecto, student=estudiante, is_project_completion=True).exists():
                 print(f"[VALIDAR HORAS] Ya existe WorkHour para estudiante {estudiante.id} en proyecto {proyecto.id}")
                 continue
+            # Obtener snapshot de integrantes (todos los estudiantes, activos o no)
+            integrantes_snapshot = []
+            from projects.models import MiembroProyecto
+            miembros_qs = MiembroProyecto.objects.filter(proyecto=proyecto, rol='estudiante')  # sin filtrar por esta_activo
+            for miembro in miembros_qs:
+                user = miembro.usuario
+                integrantes_snapshot.append({
+                    'nombre': user.full_name,
+                    'email': user.email
+                })
             workhour = WorkHour.objects.create(
                 assignment=asignacion,
                 student=estudiante,
@@ -863,7 +890,8 @@ def validate_project_hours(request, project_id):
                 approved=True,
                 approved_by=current_user,
                 approved_at=timezone.now(),
-                is_project_completion=True
+                is_project_completion=True,
+                integrantes_snapshot=integrantes_snapshot
             )
             workhour.aprobar_horas(current_user)
             print(f"[VALIDAR HORAS] Se sumaron {workhour.hours_worked} horas al estudiante {estudiante.id}. Total ahora: {estudiante.total_hours}")
