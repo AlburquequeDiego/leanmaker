@@ -286,7 +286,7 @@ export const CompanyApplications: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <ScheduleIcon sx={{ mr: 2, fontSize: 32 }} />
               <Box>
-                <Typography variant="h3" fontWeight={700}>{stats.pending + stats.reviewing}</Typography>
+                <Typography variant="h3" fontWeight={700}>{stats.pending}</Typography>
                 <Typography variant="body1" fontWeight={600}>Pendientes</Typography>
               </Box>
             </Box>

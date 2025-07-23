@@ -245,12 +245,7 @@ export const CompanyEvaluations: React.FC = () => {
   };
 
   // 3. handleOpenEvaluar: buscar el estudiante correcto
-  const handleOpenEvaluar = (user, project) => {
-    const estudiante = estudiantes.find(e => e.user && (e.user.id === user.id));
-    if (!estudiante) {
-      alert('No se encontró el estudiante relacionado a este usuario.');
-      return;
-    }
+  const handleOpenEvaluar = (estudiante, project) => {
     setSelectedStudent(estudiante);
     setSelectedProject(project);
     
@@ -275,8 +270,8 @@ export const CompanyEvaluations: React.FC = () => {
     setModalOpen(true);
   };
 
-  const handleOpenDetalle = (student: any, project: Project) => {
-    setSelectedStudent(student);
+  const handleOpenDetalle = (estudiante, project) => {
+    setSelectedStudent(estudiante);
     setSelectedProject(project);
     setModalDetalleOpen(true);
   };
@@ -348,8 +343,8 @@ export const CompanyEvaluations: React.FC = () => {
   };
 
   // 5. handleSubmitStrikeReport: usa el id Integer del estudiante
-  const handleOpenStrikeReport = (student: any, project: Project) => {
-    setSelectedStudent(student);
+  const handleOpenStrikeReport = (estudiante, project) => {
+    setSelectedStudent(estudiante);
     setSelectedProject(project);
     setStrikeReportForm({
       reason: '',
@@ -361,26 +356,19 @@ export const CompanyEvaluations: React.FC = () => {
   const handleSubmitStrikeReport = async () => {
     if (!selectedStudent || !selectedProject) return;
 
-    // Buscar el estudiante por user.id si es necesario
-    let estudianteId = selectedStudent.id;
-    if (typeof estudianteId !== 'number' && selectedStudent.user_id) {
-      const estudiante = estudiantes.find(e => e.user && (e.user.id === selectedStudent.id || e.user_id === selectedStudent.id));
-      if (estudiante) {
-        estudianteId = estudiante.id;
-      }
-    }
+    // Usar siempre el id numérico del estudiante
+    const estudianteId = selectedStudent.id;
 
     try {
       const reportData = {
         company_id: selectedProject.company, // Asumiendo que el proyecto tiene company_id
-        student_id: estudianteId,
+        student_id: estudianteId, // <-- id numérico
         project_id: selectedProject.id,
         reason: strikeReportForm.reason,
         description: strikeReportForm.description,
       };
 
       await api.post('/api/strikes/reports/create/', reportData);
-      
       setStrikeReportModalOpen(false);
       setSelectedStudent(null);
       setSelectedProject(null);
@@ -388,10 +376,7 @@ export const CompanyEvaluations: React.FC = () => {
         reason: '',
         description: '',
       });
-      
-      // Mostrar mensaje de éxito
       setError(null);
-      // Aquí podrías mostrar un mensaje de éxito
     } catch (error: any) {
       console.error('Error enviando reporte de strike:', error);
       setError(error.response?.data?.error || 'Error al enviar reporte de strike');
@@ -589,15 +574,47 @@ export const CompanyEvaluations: React.FC = () => {
                             />
           </Box>
                           <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                            <Button
-                              size="small"
-                              variant="contained"
-                              color="primary"
-                              onClick={() => handleOpenEvaluar(users[0], project)}
-                              sx={{ borderRadius: 2 }}
-                            >
-                              Evaluar
-                            </Button>
+                            {/* Solo mostrar los botones Evaluar y Reportar si el tab es Completados (selectedTab === 1) */}
+                            {selectedTab === 1 && (
+                              <>
+                                {getProjectStudents(project.id).map((user) => {
+                                  const estudiante = estudiantes.find(e => e.user && (e.user.id === user.id));
+                                  if (!estudiante) return null;
+                                  return (
+                                    <Box key={user.id} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                      <Chip label={user.full_name || user.email || 'Sin nombre'} color="primary" />
+                                      <Button
+                                        size="small"
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleOpenEvaluar(estudiante, project)}
+                                        sx={{ borderRadius: 2 }}
+                                      >
+                                        Evaluar
+                                      </Button>
+                                      <Button
+                                        size="small"
+                                        variant="outlined"
+                                        color="warning"
+                                        onClick={() => handleOpenStrikeReport(estudiante, project)}
+                                        sx={{ borderRadius: 2 }}
+                                      >
+                                        Reportar
+                                      </Button>
+                                      <Button
+                                        size="small"
+                                        variant="outlined"
+                                        color="info"
+                                        onClick={() => handleOpenDetalle(estudiante, project)}
+                                        sx={{ borderRadius: 2 }}
+                                      >
+                                        Ver
+                                      </Button>
+                                    </Box>
+                                  );
+                                })}
+                              </>
+                            )}
                             <Button
                               size="small"
                               variant="outlined"
@@ -606,15 +623,6 @@ export const CompanyEvaluations: React.FC = () => {
                               sx={{ borderRadius: 2 }}
                             >
                               Ver
-                            </Button>
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              color="warning"
-                              onClick={() => handleOpenStrikeReport(users[0], project)}
-                              sx={{ borderRadius: 2 }}
-                            >
-                              Reportar
                             </Button>
                   </Box>
                 </CardContent>
