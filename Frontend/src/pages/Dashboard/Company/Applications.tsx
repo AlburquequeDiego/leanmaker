@@ -112,8 +112,9 @@ export const CompanyApplications: React.FC = () => {
     switch (tabIdx) {
       case 0: return undefined; // Todas
       case 1: return 'pending';
-      case 2: return 'accepted';
-      case 3: return 'rejected';
+      case 2: return 'reviewing';
+      case 3: return 'accepted';
+      case 4: return 'rejected';
       default: return undefined;
     }
   };
@@ -327,7 +328,8 @@ export const CompanyApplications: React.FC = () => {
             }}
           >
             <Tab label={`Todas (${stats.total})`} />
-            <Tab label={`Pendientes (${stats.pending + stats.reviewing})`} />
+            <Tab label={`Pendientes (${stats.pending})`} />
+            <Tab label={`En Revisión (${stats.reviewing})`} />
             <Tab label={`Aceptadas (${stats.accepted})`} />
             <Tab label={`Rechazadas (${stats.rejected})`} />
           </Tabs>

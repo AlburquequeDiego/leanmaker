@@ -5,6 +5,8 @@ from students.models import Estudiante
 from users.models import User
 import uuid
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Aplicacion(models.Model):
     """
@@ -78,21 +80,31 @@ class Aplicacion(models.Model):
         self.save(update_fields=['status', 'reviewed_at'])
     
     def aceptar(self, notas_empresa=None):
-        """Acepta la aplicación"""
+        """Acepta la aplicación y asegura la membresía activa del estudiante en el proyecto"""
         from django.utils import timezone
+        from projects.models import MiembroProyecto
         if self.puede_ser_aceptada:
             self.status = 'accepted'
             self.responded_at = timezone.now()
             if notas_empresa:
                 self.company_notes = notas_empresa
             self.save(update_fields=['status', 'responded_at', 'company_notes'])
-            
-            # Incrementar contador de aplicaciones del proyecto
             self.project.incrementar_aplicaciones()
-            
-            # Agregar estudiante al proyecto
-            self.project.agregar_estudiante()
-            
+            # Crear o reactivar miembro del proyecto
+            miembro, creado = MiembroProyecto.objects.get_or_create(
+                proyecto=self.project,
+                usuario=self.student.user,
+                defaults={'rol': 'estudiante', 'esta_activo': True}
+            )
+            if not creado and not miembro.esta_activo:
+                miembro.esta_activo = True
+                miembro.rol = 'estudiante'
+                miembro.save(update_fields=['esta_activo', 'rol'])
+            # Actualizar contador de estudiantes activos
+            self.project.current_students = MiembroProyecto.objects.filter(
+                proyecto=self.project, rol='estudiante', esta_activo=True
+            ).count()
+            self.project.save(update_fields=['current_students'])
             return True
         return False
     
@@ -211,3 +223,22 @@ class Asignacion(models.Model):
         
         # Remover estudiante del proyecto
         self.application.project.remover_estudiante()
+
+# Señal para crear miembro automáticamente al aceptar una aplicación
+@receiver(post_save, sender=Aplicacion)
+def crear_miembro_al_aceptar_aplicacion(sender, instance, created, **kwargs):
+    if instance.status in ['accepted', 'active']:
+        from projects.models import MiembroProyecto
+        # Verifica si ya existe el miembro
+        if not MiembroProyecto.objects.filter(proyecto=instance.project, usuario=instance.student.user, rol='estudiante').exists():
+            MiembroProyecto.objects.create(
+                proyecto=instance.project,
+                usuario=instance.student.user,
+                rol='estudiante',
+                esta_activo=True
+            )
+        else:
+            miembro = MiembroProyecto.objects.get(proyecto=instance.project, usuario=instance.student.user, rol='estudiante')
+            if not miembro.esta_activo:
+                miembro.esta_activo = True
+                miembro.save(update_fields=['esta_activo'])

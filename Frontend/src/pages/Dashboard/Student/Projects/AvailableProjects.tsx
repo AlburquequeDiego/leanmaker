@@ -271,21 +271,6 @@ export default function AvailableProjects() {
               <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Descripción</Typography>
               <Typography variant="body1">{project.description}</Typography>
             </Paper>
-            <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
-              <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Requisitos</Typography>
-              <Typography variant="body2">{project.requirements}</Typography>
-            </Paper>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              <Chip label={`Modalidad: ${project.modality}`} color="info" />
-              <Chip label={`Ubicación: ${project.location}`} color="default" />
-              <Chip label={`Dificultad: ${translateDifficulty(project.difficulty)}`} color="secondary" />
-              <Chip label={`Horas totales: ${project.required_hours || (project.hours_per_week && project.duration_weeks ? project.hours_per_week * project.duration_weeks : '-')}`} color="default" />
-              <Chip label={`Horas/semana: ${project.hours_per_week || '-'}`} color="default" />
-              <Chip label={`Máx. estudiantes: ${project.max_students}`} color="success" />
-              <Chip label={`Actualmente: ${project.current_students}`} color="warning" />
-              <Chip label={`TRL: ${project.trl_level}`} color="primary" icon={<ScienceIcon />} />
-              <Chip label={`API Level: ${project.api_level}`} color="primary" icon={<TrendingUpIcon />} />
-            </Box>
           </Grid>
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 2, bgcolor: '#f1f8e9' }} elevation={1}>
@@ -421,21 +406,48 @@ export default function AvailableProjects() {
           const canApply = canApplyToProject(project);
           const requiredApiLevel = project.api_level || 1;
           return (
-            <Card key={project.id} sx={{ minWidth: 320, maxWidth: 400, flex: 1 }}>
-              <CardContent>
-                <Typography variant="h6">{project.title}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Empresa: {project.company_name} | Área: {project.area}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1 }}>
+            <Card key={project.id} sx={{
+              minWidth: 340,
+              maxWidth: 420,
+              flex: 1,
+              borderRadius: 3,
+              boxShadow: 4,
+              bgcolor: '#f9fafb',
+              border: '1.5px solid #e3e3e3',
+              transition: 'transform 0.15s',
+              '&:hover': { transform: 'scale(1.025)', boxShadow: 8, borderColor: '#1976d2' }
+            }}>
+              <CardContent sx={{ pb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ flex: 1, color: '#1976d2' }}>{project.title}</Typography>
+                  <Chip label={translateProjectStatus(project.status)} color={project.status === 'Activo' ? 'success' : 'default'} size="small" sx={{ fontWeight: 600 }} />
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <TrendingUpIcon sx={{ color: '#43a047', fontSize: 20 }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    <b>Empresa:</b> {project.company_name}
+                  </Typography>
+                  <ScienceIcon sx={{ color: '#1976d2', fontSize: 20, ml: 2 }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    <b>Área:</b> {project.area}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                  <Chip label={`Dificultad: ${translateDifficulty(project.difficulty)}`} color="secondary" size="small" />
+                  <Chip label={`API ${project.api_level || 1}`} color={getApiLevelColor(project.api_level || 1)} size="small" icon={<TrendingUpIcon />} />
+                  <Chip label={project.modality === 'remote' ? 'Remoto' : project.modality === 'onsite' ? 'Presencial' : project.modality === 'hybrid' ? 'Híbrido' : project.modality} color="info" size="small" />
+                  {project.hours_per_week && <Chip label={`Horas/sem: ${project.hours_per_week}`} color="default" size="small" />}
+                  {project.max_students && <Chip label={`Máx. estudiantes: ${project.max_students}`} color="success" size="small" />}
+                </Box>
+                <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 1.2, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ScienceIcon sx={{ color: '#1976d2', fontSize: 20 }} />
+                  <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
+                    {project.trl_level ? getTrlDescriptionOnly(project.trl_level) : 'Sin TRL'}
+                  </Typography>
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic' }}>
                   {project.description.slice(0, 120)}...
                 </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                  <Chip label={project.status} color={project.status === 'Activo' ? 'success' : 'default'} size="small" />
-                  <Chip label={`Dificultad: ${translateDifficulty(project.difficulty)}`} size="small" />
-                  <Chip label={`API ${project.api_level || 1}`} color={getApiLevelColor(project.api_level || 1)} size="small" icon={<TrendingUpIcon />} />
-                  <Chip label={`TRL ${project.trl_level || 1}`} color={getTrlLevelColor(project.trl_level || 1)} size="small" icon={<ScienceIcon />} />
-                </Box>
                 {!canApply && (
                   <Alert severity="warning" sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -447,8 +459,8 @@ export default function AvailableProjects() {
                   </Alert>
                 )}
               </CardContent>
-              <CardActions>
-                <Button size="small" onClick={() => handleOpenDetail(project)}>
+              <CardActions sx={{ pt: 0, pb: 2, px: 2, justifyContent: 'space-between' }}>
+                <Button size="small" variant="outlined" color="primary" onClick={() => handleOpenDetail(project)} sx={{ fontWeight: 600 }}>
                   Ver Detalles
                 </Button>
                 <Tooltip title={!canApply ? `Necesitas nivel API ${requiredApiLevel} para postularte` : ''} placement="top">
@@ -456,10 +468,11 @@ export default function AvailableProjects() {
                     <Button
                       size="small"
                       variant="contained"
-                      color="primary"
+                      color="success"
                       disabled={applied.includes(project.id) || !canApply}
                       onClick={() => handleApply(project.id)}
                       startIcon={!canApply ? <BlockIcon /> : undefined}
+                      sx={{ fontWeight: 600 }}
                     >
                       {applied.includes(project.id) ? 'Postulado' : 'Postularme'}
                     </Button>
@@ -492,3 +505,32 @@ export default function AvailableProjects() {
     </Box>
   );
 } 
+
+// Al final del archivo, agregar la función para obtener la descripción del TRL
+function getTrlDescriptionOnly(trlLevel: number) {
+  const descriptions = [
+    'Este proyecto está en fase de idea, sin una definición clara y no cuenta con desarrollo previo.',
+    'Este proyecto cuenta con una definición clara y antecedentes de lo que se desea desarrollar.',
+    'Hemos desarrollados pruebas y validaciones de concepto. Algunos componentes del proyecto se han evaluado por separado.',
+    'Contamos con un prototipo mínimo viable que ha sido probado en condiciones controladas simples.',
+    'Contamos con un prototipo mínimo viable que ha sido probado en condiciones similares al entorno real.',
+    'Contamos con un prototipo que ha sido probado mediante un piloto en condiciones reales.',
+    'Contamos con un desarrollo que ha sido probado en condiciones reales, por un periodo de tiempo prolongado.',
+    'Contamos con un producto validado en lo técnico y lo comercial.',
+    'Contamos con un producto completamente desarrollado y disponible para la sociedad.'
+  ];
+  return descriptions[trlLevel - 1] || '';
+}
+
+// Agregar función para traducir el estado del proyecto a español
+function translateProjectStatus(status: string) {
+  switch (status) {
+    case 'published': return 'Publicado';
+    case 'pending': return 'Pendiente';
+    case 'reviewing': return 'En Revisión';
+    case 'accepted': return 'Aceptado';
+    case 'rejected': return 'Rechazado';
+    case 'completed': return 'Completado';
+    default: return status;
+  }
+}

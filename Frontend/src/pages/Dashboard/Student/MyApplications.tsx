@@ -21,6 +21,8 @@ import {
   MenuItem,
   Autocomplete,
   Grid,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -241,7 +243,11 @@ export const MyApplications: React.FC = () => {
       );
     }
     if (filters.estado) {
-      filtered = filtered.filter(app => app.status === filters.estado);
+      if (filters.estado === 'pending') {
+        filtered = filtered.filter(app => app.status === 'pending' || app.status === 'reviewing');
+      } else {
+        filtered = filtered.filter(app => app.status === filters.estado);
+      }
     }
     setFilteredApplications(filtered);
   };
@@ -304,10 +310,23 @@ export const MyApplications: React.FC = () => {
     return 'error';
   };
 
+  // Cambiar la lógica de tabs y agrupación:
   const pendingApplications = filteredApplications.filter(app => app.status === 'pending');
+  const reviewingApplications = filteredApplications.filter(app => app.status === 'reviewing');
   const acceptedApplications = filteredApplications.filter(app => app.status === 'accepted');
   const completedApplications = filteredApplications.filter(app => app.status === 'completed');
   const rejectedApplications = filteredApplications.filter(app => app.status === 'rejected');
+
+  // Agregar tabs visuales:
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const tabContents = [
+    { label: `Todas (${filteredApplications.length})`, data: filteredApplications },
+    { label: `Pendientes (${pendingApplications.length})`, data: pendingApplications },
+    { label: `En Revisión (${reviewingApplications.length})`, data: reviewingApplications },
+    { label: `Aceptadas (${acceptedApplications.length})`, data: acceptedApplications },
+    { label: `Rechazadas (${rejectedApplications.length})`, data: rejectedApplications },
+  ];
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -359,102 +378,81 @@ export const MyApplications: React.FC = () => {
       </Box>
 
       {/* Tabla de aplicaciones */}
-      <Paper sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
-          <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
-            Historial de Aplicaciones ({filteredApplications.length})
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+        <Tabs value={selectedTab} onChange={(_, v) => setSelectedTab(v)}>
+          {tabContents.map((tab, idx) => (
+            <Tab key={tab.label} label={tab.label} />
+          ))}
+        </Tabs>
+      </Box>
+
+      {/* Renderizar la lista correspondiente a la pestaña seleccionada */}
+      {tabContents[selectedTab].data.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="h6" color="text.secondary">
+            No se encontraron aplicaciones en esta categoría
           </Typography>
-          <Box>
-            <TextField
-              select
-              size="small"
-              label="Mostrar"
-              value={historyLimit}
-              onChange={e => setHistoryLimit(Number(e.target.value))}
-              sx={{ minWidth: 110 }}
-            >
-              <MenuItem value={25}>Últimos 25</MenuItem>
-              <MenuItem value={50}>Últimos 50</MenuItem>
-              <MenuItem value={100}>Últimos 100</MenuItem>
-              <MenuItem value={200}>Últimos 200</MenuItem>
-              <MenuItem value={filteredApplications.length}>Todos</MenuItem>
-            </TextField>
-          </Box>
         </Box>
-        {filteredApplications.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="h6" color="text.secondary">
-              No se encontraron aplicaciones con los filtros seleccionados
-            </Typography>
-            <Button 
-              variant="outlined" 
-              onClick={() => setFilteredApplications(applications)}
-              sx={{ mt: 2 }}
-            >
-              Mostrar todas las aplicaciones
-            </Button>
-          </Box>
-        ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Proyecto</TableCell>
-                  <TableCell>Empresa</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Fecha Aplicación</TableCell>
-                  <TableCell>Acciones</TableCell>
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Proyecto</TableCell>
+                <TableCell>Empresa</TableCell>
+                <TableCell>Estado</TableCell>
+                <TableCell>Fecha Aplicación</TableCell>
+                <TableCell>Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tabContents[selectedTab].data.slice(0, historyLimit).map((application) => (
+                <TableRow key={application.id} hover>
+                  <TableCell>
+                    <Box>
+                      <Typography variant="body1" fontWeight="bold">
+                        {application.projectTitle}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {application.description.substring(0, 60)}...
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                        <BusinessIcon fontSize="small" />
+                      </Avatar>
+                      {application.company}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      icon={getStatusIcon(application.status)}
+                      label={getStatusText(application.status)}
+                      color={getStatusColor(application.status) as any}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {new Date(application.appliedDate).toLocaleDateString('es-ES')}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => handleViewDetails(application)}
+                      title="Ver detalles"
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredApplications.slice(0, historyLimit).map((application) => (
-                  <TableRow key={application.id} hover>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body1" fontWeight="bold">
-                          {application.projectTitle}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {application.description.substring(0, 60)}...
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                          <BusinessIcon fontSize="small" />
-                        </Avatar>
-                        {application.company}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        icon={getStatusIcon(application.status)}
-                        label={getStatusText(application.status)}
-                        color={getStatusColor(application.status) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {new Date(application.appliedDate).toLocaleDateString('es-ES')}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleViewDetails(application)}
-                        title="Ver detalles"
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </Paper>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       {/* Dialog para detalles */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
@@ -464,6 +462,22 @@ export const MyApplications: React.FC = () => {
             <Typography variant="subtitle1" color="text.secondary" gutterBottom>
               <b>Empresa:</b> {selectedApplication.company} &nbsp;|&nbsp; <b>Área:</b> {selectedApplication.area || 'Sin área'} &nbsp;|&nbsp; <b>Estado:</b> {getStatusText(selectedApplication.status)}
             </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+              {selectedApplication.difficulty && <Chip label={`Dificultad: ${selectedApplication.difficulty}`} color="secondary" />}
+              {selectedApplication.api_level && <Chip label={`API ${selectedApplication.api_level}`} color="success" />}
+              {selectedApplication.modality && <Chip label={selectedApplication.modality} color="info" />}
+              {selectedApplication.required_hours && <Chip label={`Horas/sem: ${selectedApplication.hours_per_week}`} color="default" />}
+              {selectedApplication.max_students && <Chip label={`Máx. estudiantes: ${selectedApplication.max_students}`} color="success" />}
+            </Box>
+            {/* Descripción TRL en azul */}
+            {selectedApplication.trl_level && (
+              <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 1.2, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TrendingUpIcon sx={{ color: '#1976d2', fontSize: 20 }} />
+                <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
+                  {getTrlDescriptionOnly(Number(selectedApplication.trl_level))}
+                </Typography>
+              </Box>
+            )}
             <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item xs={12} md={8}>
                 <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
@@ -480,17 +494,6 @@ export const MyApplications: React.FC = () => {
                     </Box>
                   </Paper>
                 )}
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                  {selectedApplication.modality && <Chip label={`Modalidad: ${selectedApplication.modality}`} color="info" />}
-                  {selectedApplication.location && <Chip label={`Ubicación: ${selectedApplication.location}`} color="default" />}
-                  {selectedApplication.difficulty && <Chip label={`Dificultad: ${selectedApplication.difficulty}`} color="secondary" />}
-                  {selectedApplication.required_hours && <Chip label={`Horas totales: ${selectedApplication.required_hours}`} color="default" />}
-                  {selectedApplication.hours_per_week && <Chip label={`Horas/semana: ${selectedApplication.hours_per_week}`} color="default" />}
-                  {selectedApplication.max_students && <Chip label={`Máx. estudiantes: ${selectedApplication.max_students}`} color="success" />}
-                  {selectedApplication.current_students !== undefined && <Chip label={`Actualmente: ${selectedApplication.current_students}`} color="warning" />}
-                  {selectedApplication.trl_level && <Chip label={`TRL: ${selectedApplication.trl_level}`} color="primary" />}
-                  {selectedApplication.api_level && <Chip label={`API Level: ${selectedApplication.api_level}`} color="primary" />}
-                </Box>
               </Grid>
               <Grid item xs={12} md={4}>
                 <Paper sx={{ p: 2, bgcolor: '#f1f8e9' }} elevation={1}>

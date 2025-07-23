@@ -82,14 +82,24 @@ export const PublishProjects: React.FC = () => {
   // Elimina el useEffect que cargaba áreas desde la API
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    let value = e.target.value;
     if (e.target.name === 'horas') {
-      if (Number(e.target.value) < minHours) {
+      let numValue = Number(value);
+      if (numValue > 350) {
+        numValue = 350;
+        value = '350';
+      }
+      setForm({ ...form, [e.target.name]: value });
+      if (numValue < minHours) {
         setHoursError(`El mínimo para este TRL es ${minHours} horas.`);
+      } else if (numValue > 350) {
+        setHoursError('El máximo permitido por proyecto es 350 horas.');
       } else {
         setHoursError(null);
       }
+      return;
     }
+    setForm({ ...form, [e.target.name]: value });
   };
 
   const handleTrlChange = (e: any) => {
@@ -235,7 +245,7 @@ export const PublishProjects: React.FC = () => {
           <TextField label="Nombre del Proyecto" name="title" value={form.title} onChange={handleChange} fullWidth required helperText="Mínimo 5 caracteres" />
           <TextField label="Descripción del Proyecto" name="description" value={form.description} onChange={handleChange} fullWidth required multiline minRows={2} helperText="Mínimo 20 caracteres" />
           <TextField label="Descripción Pública" name="publicDescription" value={form.publicDescription} onChange={handleChange} fullWidth required />
-          <TextField label="Tipo de Actividad" name="tipo" value={form.tipo} onChange={handleChange} fullWidth required placeholder="Formación, Curricular, Co-curricular, Otro" />
+          <TextField label="Tipo de Actividad" name="tipo" value={form.tipo} onChange={handleChange} fullWidth required placeholder="FINANCIERO, ADMINISTRATIVO, SOPORTE, etc. (no opcional)" />
           <FormControl fullWidth required disabled={loadingAreas}>
             <Select
               name="area"
@@ -257,14 +267,34 @@ export const PublishProjects: React.FC = () => {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1" sx={{ mb: 1 }}>¿En qué etapa TRL se encuentra tu proyecto?</Typography>
           <RadioGroup value={trlSelected} onChange={handleTrlChange}>
-            {TRL_QUESTIONS.map((q, idx) => (
-              <FormControlLabel
-                key={idx + 1}
-                value={idx + 1}
-                control={<Radio />}
-                label={<span><b>TRL {idx + 1}:</b> {q}</span>}
-              />
-            ))}
+            {TRL_QUESTIONS.map((q, idx) => {
+              // Determinar el color según el grupo API
+              let hoverColor = '';
+              if (idx + 1 <= 2) hoverColor = '#43a047'; // Verde (API 1)
+              else if (idx + 1 <= 4) hoverColor = '#fbc02d'; // Amarillo (API 2)
+              else if (idx + 1 <= 6) hoverColor = '#fb8c00'; // Naranja (API 3)
+              else hoverColor = '#1976d2'; // Azul (API 4)
+              return (
+                <Box
+                  key={idx + 1}
+                  sx={{
+                    borderRadius: 2,
+                    transition: 'background 0.2s',
+                    '&:hover': {
+                      background: hoverColor,
+                      color: '#fff',
+                    },
+                    mb: 1,
+                  }}
+                >
+                  <FormControlLabel
+                    value={idx + 1}
+                    control={<Radio />}
+                    label={<span><b>TRL {idx + 1}:</b> {q}</span>}
+                  />
+                </Box>
+              );
+            })}
           </RadioGroup>
           <TextField
             label={`Horas ofrecidas (mínimo ${minHours} horas)`}
@@ -276,7 +306,7 @@ export const PublishProjects: React.FC = () => {
             required
             error={!!hoursError}
             helperText={hoursError}
-            inputProps={{ min: minHours }}
+            inputProps={{ min: minHours, max: 350 }}
           />
           
           {/* Visualización del cálculo en tiempo real */}
@@ -384,7 +414,9 @@ export const PublishProjects: React.FC = () => {
           <Typography variant="subtitle2">Tipo: {form.tipo}</Typography>
           <Typography variant="subtitle2">Objetivo: {form.objetivo}</Typography>
           <Typography variant="subtitle2">Estudiantes requeridos: {form.studentsNeeded}</Typography>
-          <Typography variant="subtitle2">TRL Seleccionado: TRL {trlSelected}</Typography>
+          <Typography variant="subtitle2">
+            TRL Seleccionado: TRL {trlSelected} - {TRL_QUESTIONS[trlSelected - 1]}
+          </Typography>
           <Typography variant="subtitle2">Horas ofrecidas: {form.horas}</Typography>
           <Typography variant="subtitle2">Duración: {form.meses} mes(es) = {(Number(form.meses) || 1) * 4} semanas</Typography>
           <Typography variant="subtitle2">Horas por semana: {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4))} horas/semana</Typography>

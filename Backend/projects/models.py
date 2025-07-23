@@ -210,20 +210,30 @@ class Proyecto(models.Model):
         self.save(update_fields=['applications_count'])
     
     def agregar_estudiante(self, estudiante):
-        """Agrega un estudiante al proyecto y lo registra como miembro"""
-        from .models import MiembroProyecto  # Importa aquí para evitar ciclos
-        if self.current_students < self.max_students:
-            # Verifica si ya es miembro
-            if not MiembroProyecto.objects.filter(proyecto=self, usuario=estudiante.user).exists():
-                MiembroProyecto.objects.create(
-                    proyecto=self,
-                    usuario=estudiante.user,
-                    rol='estudiante'
-                )
-            self.current_students += 1
-            self.save(update_fields=['current_students'])
-            return True
-        return False
+        """Agrega o reactiva un estudiante como miembro activo del proyecto."""
+        from .models import MiembroProyecto
+        from students.models import Estudiante
+        # Si recibe un Estudiante, obtener el User
+        if hasattr(estudiante, 'user'):
+            user = estudiante.user
+        else:
+            user = estudiante
+        miembro, creado = MiembroProyecto.objects.get_or_create(
+            proyecto=self,
+            usuario=user,
+            defaults={'rol': 'estudiante', 'esta_activo': True}
+        )
+        if not creado:
+            if miembro.rol != 'estudiante' or not miembro.esta_activo:
+                miembro.rol = 'estudiante'
+                miembro.esta_activo = True
+                miembro.save(update_fields=['rol', 'esta_activo'])
+        # Recalcula el número de estudiantes activos
+        self.current_students = MiembroProyecto.objects.filter(
+            proyecto=self, rol='estudiante', esta_activo=True
+        ).count()
+        self.save(update_fields=['current_students'])
+        return True
     
     def remover_estudiante(self):
         """Remueve un estudiante del proyecto"""

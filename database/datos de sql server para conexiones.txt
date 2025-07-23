@@ -19,5 +19,43 @@ use leanmaker_db;
  SELECT * FROM projects;
  SELECT * FROM calendar_events;
  SELECT * FROM calendar_events_attendees;
+ select * from project_members;
 
+SELECT 
+    p.id AS proyecto_id,
+    p.title AS nombre_proyecto,
+    u.id AS estudiante_id,
+    u.first_name,
+    u.last_name,
+    u.email
+FROM 
+    projects p
+JOIN 
+    project_members pm ON pm.proyecto_id = p.id
+JOIN 
+    users u ON u.id = pm.usuario_id
+WHERE 
+    pm.rol = 'estudiante'
+    AND pm.esta_activo = 1
+ORDER BY 
+    p.title, u.last_name, u.first_name;
 
+--¿Quieres ver todos los proyectos con sus participantes?
+SELECT 
+    p.id AS proyecto_id,
+    p.title AS nombre_proyecto,
+    u.id AS estudiante_id,
+    u.first_name,
+    u.last_name,
+    u.email
+FROM 
+    projects p
+JOIN 
+    project_members pm ON pm.proyecto_id = p.id
+JOIN 
+    users u ON u.id = pm.usuario_id
+WHERE 
+    pm.rol = 'estudiante'
+    AND pm.esta_activo = 1
+ORDER BY 
+    p.title, u.last_name, u.first_name;

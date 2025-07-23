@@ -579,27 +579,58 @@ def student_me(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def student_projects(request, student_id):
-    """Proyectos de un estudiante."""
+    """Proyectos de un estudiante (donde es miembro activo)."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return JsonResponse({'error': 'Token requerido'}, status=401)
-        
         token = auth_header.split(' ')[1]
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
-        
         # Solo admins, empresas o el propio estudiante pueden ver sus proyectos
         if current_user.role not in ['admin', 'company'] and str(current_user.id) != student_id:
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
-        
-        # Por ahora retornamos una lista vacía, se implementará cuando tengamos el modelo de proyectos
+        # Buscar el estudiante
+        from students.models import Estudiante
+        from projects.models import MiembroProyecto
+        try:
+            estudiante = Estudiante.objects.get(id=student_id)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        membresias = MiembroProyecto.objects.filter(usuario=estudiante.user, rol='estudiante', esta_activo=True).select_related('proyecto', 'proyecto__company')
         projects_data = []
-        
-        return JsonResponse(projects_data, safe=False)
-        
+        for m in membresias:
+            p = m.proyecto
+            projects_data.append({
+                'id': str(p.id),
+                'title': p.title,
+                'company': p.company.company_name if p.company else 'Sin empresa',
+                'status': p.status.name.lower() if p.status and hasattr(p.status, 'name') else 'active',
+                'startDate': p.start_date.isoformat() if p.start_date else '',
+                'endDate': p.estimated_end_date.isoformat() if p.estimated_end_date else '',
+                'progress': 50,
+                'hoursWorked': 0,
+                'totalHours': p.required_hours or 0,
+                'location': p.location or '',
+                'description': p.description or '',
+                'technologies': [],
+                'teamMembers': p.current_students or 1,
+                'mentor': '',
+                'deliverables': [],
+                'nextMilestone': '',
+                'nextMilestoneDate': '',
+                'modality': p.modality,
+                'hoursPerWeek': p.hours_per_week,
+                'maxStudents': p.max_students,
+                'currentStudents': p.current_students,
+                'trlLevel': p.trl.level if p.trl else '',
+                'apiLevel': p.api_level,
+                'createdAt': p.created_at.isoformat() if p.created_at else '',
+                'requirements': p.requirements,
+            })
+        return JsonResponse({'success': True, 'data': projects_data, 'total': len(projects_data)})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 

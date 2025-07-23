@@ -658,6 +658,9 @@ def company_projects(request):
         projects = Proyecto.objects.filter(company=empresa)
         projects_data = []
         for project in projects:
+            # Recalcular current_students por si acaso
+            from .models import MiembroProyecto
+            current_students = MiembroProyecto.objects.filter(proyecto=project, rol='estudiante', esta_activo=True).count()
             projects_data.append({
                 'id': str(project.id),
                 'title': project.title,
@@ -670,7 +673,7 @@ def company_projects(request):
                 'trl_id': project.trl.id if project.trl else None,
                 'api_level': project.api_level or 1,
                 'max_students': project.max_students,
-                'current_students': project.current_students,
+                'current_students': current_students,
                 'applications_count': project.applications_count,
                 'start_date': project.start_date.isoformat() if project.start_date else None,
                 'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,

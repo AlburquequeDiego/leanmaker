@@ -163,7 +163,7 @@ export const adaptProject = (backendProject: any): Project => {
     requirements: backendProject.requirements || backendProject.requisitos || 'Sin requisitos especificados',
     min_api_level: backendProject.api_level || backendProject.min_api_level || 1,
     max_students: backendProject.max_students || backendProject.max_estudiantes || 1,
-    current_students: backendProject.current_students || 0,
+    current_students: Number(backendProject.current_students) || 0,
     applications_count: backendProject.applications_count || 0,
     modality: backendProject.modality || backendProject.modalidad || 'remote',
     duration_weeks: backendProject.duration_weeks || backendProject.duracion_semanas || 12,

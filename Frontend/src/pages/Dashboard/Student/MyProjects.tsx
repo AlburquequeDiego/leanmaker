@@ -230,34 +230,35 @@ export const MyProjects = () => {
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
               {activeProjects.slice(0, activeLimit).map((project) => (
                 <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
-                  <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleViewDetails(project)}>
+                  <Card sx={{ height: '100%', cursor: 'pointer', borderRadius: 3, boxShadow: 4, bgcolor: '#f9fafb', border: '1.5px solid #e3e3e3', transition: 'transform 0.15s', '&:hover': { transform: 'scale(1.025)', boxShadow: 8, borderColor: '#1976d2' } }} onClick={() => handleViewDetails(project)}>
                     <CardContent>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="h6" gutterBottom>
-                            {project.title}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
-                              <BusinessIcon fontSize="small" />
-                            </Avatar>
-                            <Typography variant="body2" color="text.secondary">
-                              {project.company}
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <Chip
-                          icon={getStatusIcon(project.status)}
-                          label={getStatusText(project.status)}
-                          color={getStatusColor(project.status) as any}
-                          size="small"
-                        />
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Typography variant="h6" fontWeight={700} sx={{ flex: 1, color: '#1976d2' }}>{project.title}</Typography>
+                        <Chip icon={getStatusIcon(project.status)} label={getStatusText(project.status)} color={getStatusColor(project.status) as any} size="small" sx={{ fontWeight: 600 }} />
                       </Box>
-                      
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        {project.description.substring(0, 100)}...
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <BusinessIcon sx={{ color: '#43a047', fontSize: 20 }} />
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}><b>Empresa:</b> {project.company}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                        {project.difficulty && <Chip label={`Dificultad: ${project.difficulty}`} color="secondary" size="small" />}
+                        {project.apiLevel && <Chip label={`API ${project.apiLevel}`} color="success" size="small" icon={<TrendingUpIcon />} />}
+                        {project.modality && <Chip label={project.modality} color="info" size="small" />}
+                        {project.hoursPerWeek && <Chip label={`Horas/sem: ${project.hoursPerWeek}`} color="default" size="small" />}
+                        {project.maxStudents && <Chip label={`Máx. estudiantes: ${project.maxStudents}`} color="success" size="small" />}
+                      </Box>
+                      {/* Descripción TRL en azul */}
+                      {project.trlLevel && (
+                        <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 1.2, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <ScienceIcon sx={{ color: '#1976d2', fontSize: 20 }} />
+                          <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
+                            {getTrlDescriptionOnly(Number(project.trlLevel))}
+                          </Typography>
+                        </Box>
+                      )}
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic' }}>
+                        {project.description.slice(0, 120)}...
                       </Typography>
-
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
                         {project.technologies.slice(0, 3).map((tech) => (
                           <Chip key={tech} label={tech} size="small" variant="outlined" />
@@ -266,7 +267,6 @@ export const MyProjects = () => {
                           <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
                         )}
                       </Box>
-
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="caption" color="text.secondary">
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
