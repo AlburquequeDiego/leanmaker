@@ -5,14 +5,23 @@ login : tesisadministrador
 password: Admin@tesis
 base ded atos : leanmaker_db
 
-
 IP  :   https://www.whatismyip.com/ 
+
 
 Lista de cuentas
 Nombre	          Correo	                Contraseña
-Laura Martínez	  admin1@leanmaker.com	    Admin123!
-FinanPlus	      contacto@finanplus.com    Empresa123!
+Laura Martínez	  admin@leanmaker.com	    Admin123!
+
+ESTUDIANTES:
+diego.alburqueque@inacapmail.cl     Estudiante123!
+joaquin@inacapmail.cl               Estudiante123!
+
 Juan Pérez        juan.perez@uchile.cl      Estudiante123!
+
+EMPRESA:
+FinanPlus	      contacto@finanplus.com    Empresa123!
+
+
 
 
 use leanmaker_db;
