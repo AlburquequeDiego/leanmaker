@@ -270,26 +270,50 @@ def projects_create(request):
             data['duration_weeks'] = data.get('duration_weeks', 12)
             data['difficulty'] = data.get('difficulty', 'intermediate')
         try:
+            # Procesar fechas si vienen como strings
+            start_date = data.get('start_date')
+            estimated_end_date = data.get('estimated_end_date')
+            
+            # Convertir strings de fecha a objetos Date si es necesario
+            if start_date and isinstance(start_date, str):
+                from datetime import datetime
+                try:
+                    start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                except ValueError:
+                    start_date = None
+            
+            if estimated_end_date and isinstance(estimated_end_date, str):
+                from datetime import datetime
+                try:
+                    estimated_end_date = datetime.strptime(estimated_end_date, '%Y-%m-%d').date()
+                except ValueError:
+                    estimated_end_date = None
+            
+            # Crear el proyecto con todos los campos necesarios
             project = Proyecto.objects.create(
                 title=data.get('title'),
                 description=data.get('description', ''),
+                requirements=data.get('requirements', ''),
                 company=empresa,  # Forzar empresa correcta
                 status_id=data.get('status_id'),
                 area_id=data.get('area_id'),
                 trl_id=data.get('trl_id'),
                 api_level=data.get('api_level', 1),
+                min_api_level=data.get('api_level', 1),  # Usar el mismo nivel como mínimo
                 max_students=data.get('max_students', 1),
-                current_students=data.get('current_students', 0),
-                applications_count=data.get('applications_count', 0),
-                start_date=data.get('start_date'),
-                estimated_end_date=data.get('estimated_end_date'),
+                current_students=0,  # Siempre empezar en 0
+                applications_count=0,  # Siempre empezar en 0
+                start_date=start_date,
+                estimated_end_date=estimated_end_date,
                 location=data.get('location', 'Remoto'),
-                modality=data.get('modality', 'remoto'),
-                difficulty=data.get('difficulty', 'intermedio'),
+                modality=data.get('modality', 'remote'),
+                difficulty=data.get('difficulty', 'intermediate'),
                 duration_weeks=data.get('duration_weeks', 12),
                 hours_per_week=data.get('hours_per_week', 10),
-                required_hours=data.get('required_hours', 120)
-                # budget=data.get('budget', 0),  # Eliminado porque el modelo no lo acepta
+                required_hours=data.get('required_hours', 120),
+                # Campos JSON como strings
+                technologies=data.get('technologies', '[]'),
+                tags=data.get('tags', '[]')
             )
         except Exception as e:
             print('--- ERROR AL CREAR PROYECTO ---')

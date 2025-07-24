@@ -7,67 +7,42 @@ base ded atos : leanmaker_db
 
 IP  :   https://www.whatismyip.com/ 
 
-
-Lista de cuentas
+##################### Lista de cuentas ########################
 Nombre	          Correo	                Contraseña
 Laura Martínez	  admin@leanmaker.com	    Admin123!
-
+###############################################################
 ESTUDIANTES:
 diego.alburqueque@inacapmail.cl     Estudiante123!
 joaquin@inacapmail.cl               Estudiante123!
+juan.perez@uchile.cl                Estudiante123!
+camila.rojas@inacapmail.cl          Estudiante123!
+matias.contreras@inacapmail.cl      Estudiante123!
+fernanda.torres@inacapmail.cl       Estudiante123!
+melisa.colana@uchile.cl             Estudiante123!
+diego.fariaz@uchile.cl              Estudiante123!
+loreto.alburqueque@uchile.cl        Estudiante123!
+soledad.garay@inacapmail.cl         Estudiante123!
 
-Juan Pérez        juan.perez@uchile.cl      Estudiante123!
-
+###############################################################
 EMPRESA:
-FinanPlus	      contacto@finanplus.com    Empresa123!
+informatica@contrucciones.cL    Empresa123!
+camila.rios@empresa.cl          Empresa123!
+martin.herrera@correo.cl        Empresa123!
+fernandasoto@empresa.com        Empresa123!
+jorge.alarcon@correo.cl         Empresa123!
+valespinoza@empresa.cl          Empresa123!
+nico.mendez@correo.cl           Empresa123!
+avargas@empresa.com             Empresa123!
+diego.morales@correo.cl         Empresa123!
+isileon@empresa.cl              Empresa123!
+ 
 
 
 
+Correo	                    Contraseña
+admin@leanmaker.com	        Admin123!
+juan.perez@uchile.cl        Estudiante123!
+diego.morales@correo.cl     Empresa123!
 
-use leanmaker_db;
- SELECT * FROM users;
- select * from students;
- SELECT * FROM companies;
- SELECT * FROM projects;
- SELECT * FROM calendar_events;
- SELECT * FROM calendar_events_attendees;
- select * from project_members;
 
-SELECT 
-    p.id AS proyecto_id,
-    p.title AS nombre_proyecto,
-    u.id AS estudiante_id,
-    u.first_name,
-    u.last_name,
-    u.email
-FROM 
-    projects p
-JOIN 
-    project_members pm ON pm.proyecto_id = p.id
-JOIN 
-    users u ON u.id = pm.usuario_id
-WHERE 
-    pm.rol = 'estudiante'
-    AND pm.esta_activo = 1
-ORDER BY 
-    p.title, u.last_name, u.first_name;
 
---¿Quieres ver todos los proyectos con sus participantes?
-SELECT 
-    p.id AS proyecto_id,
-    p.title AS nombre_proyecto,
-    u.id AS estudiante_id,
-    u.first_name,
-    u.last_name,
-    u.email
-FROM 
-    projects p
-JOIN 
-    project_members pm ON pm.proyecto_id = p.id
-JOIN 
-    users u ON u.id = pm.usuario_id
-WHERE 
-    pm.rol = 'estudiante'
-    AND pm.esta_activo = 1
-ORDER BY 
-    p.title, u.last_name, u.first_name;

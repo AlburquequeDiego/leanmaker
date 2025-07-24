@@ -201,7 +201,7 @@ export const PublishProjects: React.FC = () => {
         required_hours: Number(form.horas) || 0,
         api_level: trlToApi[trlKey],
         company_id,
-        status_id: 4, // ID del estado "Publicado" (no 9)
+        status_id: 1, // ID del estado "published" (publicado)
         max_students: Number(form.studentsNeeded) || 1,
         duration_weeks: Number(form.meses) || 1,
         // Calcular hours_per_week de forma coherente
