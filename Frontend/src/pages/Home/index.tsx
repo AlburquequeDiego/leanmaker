@@ -121,7 +121,7 @@ export default function Home() {
               }} 
               onClick={() => navigate('/register')}
             >
-              Regístrate
+            Regístrate
             </Button>
           </Box>
         </Container>

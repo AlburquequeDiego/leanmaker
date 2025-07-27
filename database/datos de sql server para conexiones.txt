@@ -1,10 +1,4 @@
 
-Nombre del servidor: tesisservidor.database.windows.net
-autenticacion : SQL Server Autentication
-login : tesisadministrador
-password: Admin@tesis
-base ded atos : leanmaker_db
-
 IP  :   https://www.whatismyip.com/ 
 
 ##################### Lista de cuentas ########################
@@ -22,7 +16,6 @@ melisa.colana@uchile.cl             Estudiante123!
 diego.fariaz@uchile.cl              Estudiante123!
 loreto.alburqueque@uchile.cl        Estudiante123!
 soledad.garay@inacapmail.cl         Estudiante123!
-
 ###############################################################
 EMPRESA:
 informatica@contrucciones.cL    Empresa123!
@@ -36,13 +29,6 @@ avargas@empresa.com             Empresa123!
 diego.morales@correo.cl         Empresa123!
 isileon@empresa.cl              Empresa123!
  
-
-
-
-Correo	                    Contraseña
-admin@leanmaker.com	        Admin123!
-juan.perez@uchile.cl        Estudiante123!
-diego.morales@correo.cl     Empresa123!
 
 
 

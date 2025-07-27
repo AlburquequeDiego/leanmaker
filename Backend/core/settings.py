@@ -70,6 +70,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',  # Solo en desarrollo
+    
+    # Middleware personalizado para monitoreo y seguridad
+    'core.middleware.TrafficMonitoringMiddleware',
+    'core.middleware.SecurityMiddleware',
+    'core.middleware.PerformanceMiddleware',
+    'core.middleware.LoggingMiddleware',
+    'core.middleware.DatabaseQueryMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -228,11 +235,39 @@ LOGGING = {
     },
 }
 
-# Cache
+# Cache - Redis para alta carga
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 100,
+                'retry_on_timeout': True,
+            },
+            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+        },
+        'KEY_PREFIX': 'leanmaker',
+        'TIMEOUT': 300,  # 5 minutos por defecto
+    },
+    'sessions': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/2'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'session',
+    },
+    'long_term': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/3'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'long_term',
+        'TIMEOUT': 86400,  # 24 horas
     }
 }
 
@@ -259,16 +294,24 @@ if DEBUG:
         'localhost',
     ]
 
-# Session Configuration
-SESSION_COOKIE_AGE = 86400  # 24 horas
-SESSION_COOKIE_SECURE = False  # True en producción con HTTPS
+# Session Configuration - Optimizada para producción
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'sessions'
+SESSION_COOKIE_AGE = 3600  # 1 hora
+SESSION_COOKIE_SECURE = True  # True en producción con HTTPS
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
 
-# CSRF Configuration
-CSRF_COOKIE_SECURE = False  # True en producción con HTTPS
+# CSRF Configuration - Optimizada para producción
+CSRF_COOKIE_SECURE = True  # True en producción con HTTPS
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Strict'
+CSRF_TRUSTED_ORIGINS = [
+    'https://leanmaker.com',
+    'https://www.leanmaker.com',
+]
 
 # CSRF Exempt URLs for API endpoints
 CSRF_EXEMPT_URLS = [
@@ -289,4 +332,36 @@ CSRF_EXEMPT_URLS = [
 # Login URLs
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/' 
+LOGOUT_REDIRECT_URL = '/'
+
+# Configuraciones adicionales para producción
+TRAFFIC_MONITOR_ENABLED = True
+DETAILED_LOGGING = True
+DB_QUERY_MONITORING = True
+RATE_LIMIT_ENABLED = True
+
+# Configuración de Celery
+CELERY_BROKER_URL = config('REDIS_URL', default='redis://127.0.0.1:6379/0')
+CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://127.0.0.1:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Santiago'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutos
+CELERY_WORKER_CONCURRENCY = 4
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
+
+# Configuración de seguridad adicional
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_HSTS_SECONDS = 31536000  # 1 año
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Configuración de archivos
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+FILE_UPLOAD_TEMP_DIR = BASE_DIR / 'temp'
+FILE_UPLOAD_PERMISSIONS = 0o644 
