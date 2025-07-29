@@ -105,22 +105,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #Admin@tesis
 
 
-# Database - SQL Server Azure
+# Database - SQLite para desarrollo local
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': config('DB_NAME', default='leanmaker_db'),
-        'USER': config('DB_USER', default='tesisadministrador'),
-        'PASSWORD': config('DB_PASSWORD', default='Admin@tesis'),
-        'HOST': config('DB_HOST', default='tesisservidor.database.windows.net'),
-        'PORT': config('DB_PORT', default='1433'),
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'TrustServerCertificate': 'yes',
-            'Encrypt': 'yes',
-            'connection_timeout': 30,
-            'command_timeout': 30,
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -235,39 +224,11 @@ LOGGING = {
     },
 }
 
-# Cache - Redis para alta carga
+# Cache - Configuración simple para desarrollo local
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'CONNECTION_POOL_KWARGS': {
-                'max_connections': 100,
-                'retry_on_timeout': True,
-            },
-            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
-            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
-        },
-        'KEY_PREFIX': 'leanmaker',
-        'TIMEOUT': 300,  # 5 minutos por defecto
-    },
-    'sessions': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/2'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-        'KEY_PREFIX': 'session',
-    },
-    'long_term': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/3'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-        'KEY_PREFIX': 'long_term',
-        'TIMEOUT': 86400,  # 24 horas
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
     }
 }
 
@@ -294,23 +255,24 @@ if DEBUG:
         'localhost',
     ]
 
-# Session Configuration - Optimizada para producción
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'sessions'
+# Session Configuration - Configurada para desarrollo local
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Cambiado a DB para local
 SESSION_COOKIE_AGE = 3600  # 1 hora
-SESSION_COOKIE_SECURE = True  # True en producción con HTTPS
+SESSION_COOKIE_SECURE = False  # False para desarrollo local (HTTP)
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_SAMESITE = 'Lax'  # Más permisivo para desarrollo
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
-# CSRF Configuration - Optimizada para producción
-CSRF_COOKIE_SECURE = True  # True en producción con HTTPS
+# CSRF Configuration - Configurada para desarrollo local
+CSRF_COOKIE_SECURE = False  # False para desarrollo local (HTTP)
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_SAMESITE = 'Lax'  # Más permisivo para desarrollo
 CSRF_TRUSTED_ORIGINS = [
-    'https://leanmaker.com',
-    'https://www.leanmaker.com',
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
 ]
 
 # CSRF Exempt URLs for API endpoints
@@ -340,25 +302,25 @@ DETAILED_LOGGING = True
 DB_QUERY_MONITORING = True
 RATE_LIMIT_ENABLED = True
 
-# Configuración de Celery
-CELERY_BROKER_URL = config('REDIS_URL', default='redis://127.0.0.1:6379/0')
-CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://127.0.0.1:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'America/Santiago'
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutos
-CELERY_WORKER_CONCURRENCY = 4
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
+# Configuración de Celery - Deshabilitado para desarrollo local
+# CELERY_BROKER_URL = config('REDIS_URL', default='redis://127.0.0.1:6379/0')
+# CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://127.0.0.1:6379/0')
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'America/Santiago'
+# CELERY_TASK_TRACK_STARTED = True
+# CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutos
+# CELERY_WORKER_CONCURRENCY = 4
+# CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
 
-# Configuración de seguridad adicional
+# Configuración de seguridad adicional - Ajustada para desarrollo local
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
-SECURE_HSTS_SECONDS = 31536000  # 1 año
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+X_FRAME_OPTIONS = 'SAMEORIGIN'  # Más permisivo para desarrollo
+# SECURE_HSTS_SECONDS = 31536000  # Comentado para desarrollo local
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Comentado para desarrollo local
+# SECURE_HSTS_PRELOAD = True  # Comentado para desarrollo local
 
 # Configuración de archivos
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB

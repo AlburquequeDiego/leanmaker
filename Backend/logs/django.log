@@ -37879,3 +37879,27 @@ INFO 2025-07-24 08:33:04,841 basehttp 20992 20012 "POST /api/token/ HTTP/1.1" 20
 INFO 2025-07-24 08:33:05,205 basehttp 20992 20012 "GET /api/users/profile/ HTTP/1.1" 200 885
 INFO 2025-07-24 08:33:07,085 basehttp 20992 20012 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 217
 INFO 2025-07-24 08:33:15,464 basehttp 20992 20012 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-29 12:25:15,512 autoreload 4084 20264 Watching for file changes with StatReloader
+INFO 2025-07-29 12:25:18,206 middleware 4084 20152 Petición: GET / - IP: 127.0.0.1
+INFO 2025-07-29 12:25:18,208 middleware 4084 20152 Respuesta: 200 - GET /
+INFO 2025-07-29 12:25:18,914 basehttp 4084 20152 "GET / HTTP/1.1" 200 15325
+INFO 2025-07-29 12:25:18,939 basehttp 4084 20152 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 304 0
+INFO 2025-07-29 12:25:18,940 basehttp 4084 15844 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 304 0
+INFO 2025-07-29 12:25:18,952 basehttp 4084 15844 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 304 0
+INFO 2025-07-29 12:25:19,094 basehttp 4084 15844 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 304 0
+INFO 2025-07-29 12:25:19,114 middleware 4084 15844 Petición: GET /favicon.ico - IP: 127.0.0.1
+INFO 2025-07-29 12:25:19,114 middleware 4084 15844 Respuesta: 302 - GET /favicon.ico
+INFO 2025-07-29 12:25:19,131 basehttp 4084 15844 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-07-29 12:25:19,171 basehttp 4084 15844 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-07-29 12:25:38,977 basehttp 4084 20392 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-29 12:25:38,988 middleware 4084 20392 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-29 12:25:40,671 middleware 4084 20392 Respuesta: 200 - POST /api/token/
+INFO 2025-07-29 12:25:40,817 basehttp 4084 20392 "POST /api/token/ HTTP/1.1" 200 982
+INFO 2025-07-29 12:25:40,823 basehttp 4084 20392 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-29 12:25:40,836 middleware 4084 20392 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-29 12:25:40,859 middleware 4084 20392 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-29 12:25:40,926 basehttp 4084 20392 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-29 12:25:41,021 basehttp 4084 20392 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-07-29 12:25:41,029 middleware 4084 20392 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-07-29 12:25:41,058 middleware 4084 20392 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-07-29 12:25:41,144 basehttp 4084 20392 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153

@@ -1,0 +1,37 @@
+# ========================================
+# LEANMAKER BACKEND - REQUIREMENTS LOCAL
+# ========================================
+# Python 3.12+ | Django 4.2+ | SQLite para desarrollo
+# ========================================
+
+# Core Django
+Django==4.2.7
+django-cors-headers==4.3.1
+
+# Development & Testing
+django-debug-toolbar==4.2.0
+pytest==7.4.3
+pytest-django==4.7.0
+
+# Utilities
+python-decouple==3.8
+Pillow==10.1.0
+
+# Date & JSON
+python-dateutil==2.8.2
+simplejson==3.18.4
+
+# Static Files
+whitenoise==6.6.0
+
+# Environment Management
+python-dotenv==1.0.0
+
+# Code Quality
+black==23.11.0
+flake8==6.1.0
+isort==5.12.0
+
+# Additional Utilities
+requests==2.31.0
+urllib3==2.0.7 
