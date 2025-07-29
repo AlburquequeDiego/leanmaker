@@ -24,7 +24,7 @@ class Estudiante(models.Model):
     )
     
     # Campos básicos (coinciden exactamente con interface Student del frontend)
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='estudiante_profile')
     
     # Campos opcionales (NULL permitido) - coinciden con frontend
@@ -330,7 +330,7 @@ class ApiLevelRequest(models.Model):
         ('approved', 'Aprobada'),
         ('rejected', 'Rechazada'),
     )
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='api_level_requests')
     requested_level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(4)])
     current_level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(4)])
@@ -352,14 +352,14 @@ def student_cv_path(instance, filename):
     # Ruta por defecto para guardar CVs
     return f'students/cvs/{instance.estudiante.user.id}/{filename}'
 
-@receiver(post_save, sender=User)
-def crear_perfil_estudiante(sender, instance, created, **kwargs):
-    if created and instance.role == 'student':
-        from .models import Estudiante
-        if not hasattr(instance, 'estudiante_profile'):
-            estudiante = Estudiante.objects.create(user=instance)
-            # Calcular TRL automáticamente al crear
-            estudiante.actualizar_trl_segun_api()
+# @receiver(post_save, sender=User)
+# def crear_perfil_estudiante(sender, instance, created, **kwargs):
+#     if created and instance.role == 'student':
+#         from .models import Estudiante
+#         if not hasattr(instance, 'estudiante_profile'):
+#             estudiante = Estudiante.objects.create(user=instance)
+#             # Calcular TRL automáticamente al crear
+#             estudiante.actualizar_trl_segun_api()
 
 @receiver(post_save, sender=Estudiante)
 def actualizar_trl_automaticamente(sender, instance, **kwargs):

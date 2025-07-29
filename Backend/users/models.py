@@ -71,6 +71,8 @@ class User(AbstractUser):
     department = models.CharField(max_length=100, null=True, blank=True)
     career = models.CharField(max_length=100, null=True, blank=True)
     company_name = models.CharField(max_length=200, null=True, blank=True)
+    birthdate = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=20, null=True, blank=True)
     
     # Status fields
     is_verified = models.BooleanField(default=False)

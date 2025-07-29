@@ -12,6 +12,10 @@ export interface User {
   bio?: string;
   position?: string;         // <--- INCLUIDO
   department?: string;       // <--- INCLUIDO
+  birthdate?: string;        // <--- AGREGADO
+  gender?: string;           // <--- AGREGADO
+  career?: string;           // <--- AGREGADO
+  company_name?: string;     // <--- AGREGADO
   role: UserRole;
   is_active: boolean;
   is_verified: boolean;
@@ -459,6 +463,10 @@ export interface RegisterData {
   role: UserRole;
   username?: string;
   phone?: string;
+  birthdate?: string;
+  gender?: string;
+  career?: string;
+  company_name?: string;
 }
 
 // Tipos de formulario de login

@@ -300,7 +300,7 @@ LOGOUT_REDIRECT_URL = '/'
 TRAFFIC_MONITOR_ENABLED = True
 DETAILED_LOGGING = True
 DB_QUERY_MONITORING = True
-RATE_LIMIT_ENABLED = True
+RATE_LIMIT_ENABLED = False  # Deshabilitado para desarrollo local
 
 # Configuración de Celery - Deshabilitado para desarrollo local
 # CELERY_BROKER_URL = config('REDIS_URL', default='redis://127.0.0.1:6379/0')

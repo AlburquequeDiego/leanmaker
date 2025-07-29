@@ -200,12 +200,12 @@ class CalificacionEmpresa(models.Model):
         super().save(*args, **kwargs)
         self.empresa.actualizar_calificacion(self.puntuacion)
 
-@receiver(post_save, sender=User)
-def crear_perfil_empresa(sender, instance, created, **kwargs):
-    if created and instance.role == 'company':
-        from .models import Empresa
-        if not hasattr(instance, 'empresa_profile'):
-            Empresa.objects.create(user=instance, company_name=instance.email)
+# @receiver(post_save, sender=User)
+# def crear_perfil_empresa(sender, instance, created, **kwargs):
+#     if created and instance.role == 'company':
+#         from .models import Empresa
+#         if not hasattr(instance, 'empresa_profile'):
+#             Empresa.objects.create(user=instance, company_name=instance.email)
 
 @receiver(post_save, sender=CalificacionEmpresa)
 def actualizar_rating_empresa_post_save(sender, instance, **kwargs):

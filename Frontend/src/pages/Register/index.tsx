@@ -68,21 +68,11 @@ const initialValues = {
   responsible_birthdate: '',
   responsible_gender: '',
   responsible_password: '',
-  responsible_password_confirm: '',
 };
 
 // Lista de instituciones permitidas y dominios
 const INSTITUTIONS = [
   { name: 'INACAP', domain: 'inacapmail.cl' },
-  { name: 'Universidad de Chile', domain: 'uchile.cl' },
-  { name: 'Pontificia Universidad Católica de Chile', domain: 'uc.cl' },
-  { name: 'Universidad de Concepción', domain: 'udec.cl' },
-  { name: 'Universidad Técnica Federico Santa María', domain: 'usm.cl' },
-  { name: 'Universidad de Santiago de Chile', domain: 'usach.cl' },
-  { name: 'Universidad Austral de Chile', domain: 'uach.cl' },
-  { name: 'Universidad de Valparaíso', domain: 'uv.cl' },
-  { name: 'Universidad de La Frontera', domain: 'ufro.cl' },
-  { name: 'Universidad de Talca', domain: 'utalca.cl' },
 ];
 
 // Función para obtener el placeholder de email basado en la institución

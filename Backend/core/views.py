@@ -329,6 +329,12 @@ def api_login(request):
                     'phone': user.phone,
                     'avatar': user.avatar,
                     'bio': user.bio,
+                    'position': user.position,
+                    'department': user.department,
+                    'birthdate': user.birthdate.isoformat() if user.birthdate else None,
+                    'gender': user.gender,
+                    'career': user.career,
+                    'company_name': user.company_name,
                     'role': user.role,
                     'is_active': user.is_active,
                     'is_verified': user.is_verified,
@@ -399,14 +405,60 @@ def api_register(request):
         
         # Crear usuario
         username = email.split('@')[0]  # Usar parte del email como username
+        
+        # Procesar fecha de nacimiento
+        birthdate = None
+        if data.get('birthdate'):
+            try:
+                from datetime import datetime
+                birthdate = datetime.strptime(data.get('birthdate'), '%Y-%m-%d').date()
+            except:
+                birthdate = None
+        
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password,
             first_name=first_name,
             last_name=last_name,
-            role=role
+            role=role,
+            phone=data.get('phone', ''),
+            career=data.get('career', ''),
+            company_name=data.get('company_name', ''),
+            birthdate=birthdate,
+            gender=data.get('gender', ''),
         )
+        
+        # Crear perfil específico según el rol
+        if role == 'student':
+            from students.models import Estudiante
+            estudiante = Estudiante.objects.create(
+                user=user,
+                career=data.get('career', ''),
+                university=data.get('university', ''),
+                education_level=data.get('education_level', ''),
+            )
+            # Actualizar TRL automáticamente
+            estudiante.actualizar_trl_segun_api()
+            
+        elif role == 'company':
+            from companies.models import Empresa
+            empresa = Empresa.objects.create(
+                user=user,
+                company_name=data.get('company_name', ''),
+                rut=data.get('rut', ''),
+                personality=data.get('personality', ''),
+                business_name=data.get('business_name', ''),
+                company_address=data.get('company_address', ''),
+                company_phone=data.get('company_phone', ''),
+                company_email=data.get('company_email', ''),
+                industry=data.get('industry', ''),
+                size=data.get('size', ''),
+                website=data.get('website', ''),
+                address=data.get('address', ''),
+                city=data.get('city', ''),
+                country=data.get('country', 'Chile'),
+            )
         
         return JsonResponse({
             'message': 'Usuario registrado exitosamente',
@@ -416,6 +468,11 @@ def api_register(request):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'username': user.username,
+                'phone': user.phone,
+                'birthdate': user.birthdate.isoformat() if user.birthdate else None,
+                'gender': user.gender,
+                'career': user.career,
+                'company_name': user.company_name,
                 'role': user.role,
                 'is_verified': user.is_verified,
                 'full_name': user.full_name
@@ -475,8 +532,12 @@ def api_user_profile(request):
                 'phone': user.phone,
                 'avatar': user.avatar,
                 'bio': user.bio,
-                'position': user.position,         # <--- INCLUIDO
-                'department': user.department,     # <--- INCLUIDO
+                'position': user.position,
+                'department': user.department,
+                'birthdate': user.birthdate.isoformat() if user.birthdate else None,
+                'gender': user.gender,
+                'career': user.career,
+                'company_name': user.company_name,
                 'role': user.role,
                 'is_active': user.is_active,
                 'is_verified': user.is_verified,
@@ -537,6 +598,18 @@ def api_user_profile(request):
                 user.position = data['position']
             if 'department' in data:
                 user.department = data['department']
+            if 'birthdate' in data:
+                try:
+                    from datetime import datetime
+                    user.birthdate = datetime.strptime(data['birthdate'], '%Y-%m-%d').date()
+                except:
+                    user.birthdate = None
+            if 'gender' in data:
+                user.gender = data['gender']
+            if 'career' in data:
+                user.career = data['career']
+            if 'company_name' in data:
+                user.company_name = data['company_name']
             
             user.save()
             
@@ -552,6 +625,10 @@ def api_user_profile(request):
                 'bio': user.bio,
                 'position': user.position,
                 'department': user.department,
+                'birthdate': user.birthdate.isoformat() if user.birthdate else None,
+                'gender': user.gender,
+                'career': user.career,
+                'company_name': user.company_name,
                 'role': user.role,
                 'is_active': user.is_active,
                 'is_verified': user.is_verified,

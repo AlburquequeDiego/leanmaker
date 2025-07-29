@@ -91,17 +91,17 @@ class SecurityMiddleware(MiddlewareMixin):
         client_ip = self._get_client_ip(request)
         user_id = getattr(request.user, 'id', None) if request.user.is_authenticated else None
         
-        # Determinar límites según tipo de usuario
+        # Determinar límites según tipo de usuario (aumentados para desarrollo)
         if user_id:
             if request.user.is_staff:
                 limit_key = f"rate_limit:admin:{client_ip}"
-                max_requests = 200
+                max_requests = 1000  # Aumentado de 200 a 1000
             else:
                 limit_key = f"rate_limit:user:{client_ip}"
-                max_requests = 100
+                max_requests = 500   # Aumentado de 100 a 500
         else:
             limit_key = f"rate_limit:anon:{client_ip}"
-            max_requests = 20
+            max_requests = 100       # Aumentado de 20 a 100
             
         # Verificar límite
         current_requests = cache.get(limit_key, 0)

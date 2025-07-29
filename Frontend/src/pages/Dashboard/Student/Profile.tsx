@@ -386,20 +386,18 @@ export const Profile = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      // Obtener datos del estudiante (que incluye datos del usuario)
+      // Obtener datos del usuario (que incluye birthdate y gender)
+      const userResponse = await apiService.get('/api/users/profile/');
+      const userData = userResponse as any;
+      
+      // Obtener datos del estudiante
       const studentResponse = await apiService.get('/api/students/me/');
-      const studentData = studentResponse as any; // Usar any para acceder a user_data
+      const studentData = studentResponse as any;
       
-      console.log('📄 [StudentProfile] Datos completos recibidos:', studentData);
-      console.log('📄 [StudentProfile] Tipo de studentData:', typeof studentData);
-      console.log('📄 [StudentProfile] studentData.cv_link:', studentData.cv_link);
-      console.log('📄 [StudentProfile] studentData.certificado_link:', studentData.certificado_link);
-      console.log('📄 [StudentProfile] studentData.portfolio_url:', studentData.portfolio_url);
-      console.log('📄 [StudentProfile] studentData.github_url:', studentData.github_url);
-      console.log('📄 [StudentProfile] studentData.linkedin_url:', studentData.linkedin_url);
-      
-      // Extraer datos del usuario desde user_data
-      const userData = studentData.user_data || {};
+      console.log('📄 [StudentProfile] Datos de usuario recibidos:', userData);
+      console.log('📄 [StudentProfile] Datos de estudiante recibidos:', studentData);
+      console.log('📄 [StudentProfile] userData.birthdate:', userData.birthdate);
+      console.log('📄 [StudentProfile] userData.gender:', userData.gender);
       
       // Mapear y unir los datos
       const safeData: ProfileData = {
@@ -407,10 +405,10 @@ export const Profile = () => {
         apellido: userData.last_name || '',
         email: userData.email || '',
         telefono: userData.phone || '',
-        fechaNacimiento: studentData.perfil_detallado?.fecha_nacimiento || '',
-        genero: studentData.perfil_detallado?.genero || '',
+        fechaNacimiento: userData.birthdate || '',
+        genero: userData.gender || '',
         institucion: '', // No disponible
-        carrera: studentData.career || '',
+        carrera: userData.career || studentData.career || '',
         nivel: studentData.api_level?.toString() || '1',
         habilidades: Array.isArray(studentData.skills) ? studentData.skills.map((skill: string) => ({ nombre: skill, nivel: 'Intermedio' })) : [],
         biografia: userData.bio || '', // Carta de presentación
@@ -543,8 +541,23 @@ export const Profile = () => {
     setIsLoading(true);
     
     try {
-      // Mapear datos del frontend (español) al formato del backend (inglés)
-      const backendData = {
+      // Primero actualizar los datos del usuario (incluyendo birthdate y gender)
+      const userUpdateData = {
+        first_name: editData.nombre,
+        last_name: editData.apellido,
+        email: editData.email,
+        phone: editData.telefono,
+        bio: editData.biografia,
+        birthdate: editData.fechaNacimiento || null,
+        gender: editData.genero || null,
+        career: editData.carrera,
+      };
+
+      console.log('🔍 [StudentProfile] Actualizando datos de usuario:', userUpdateData);
+      await apiService.patch('/api/users/profile/', userUpdateData);
+
+      // Luego actualizar los datos del estudiante
+      const studentUpdateData = {
         career: editData.carrera,
         api_level: parseInt(editData.nivel) || 1,
         skills: editData.habilidades.map(h => h.nombre),
@@ -556,28 +569,15 @@ export const Profile = () => {
         certificado_link: editData.certificado_link,
         availability: editData.modalidadesDisponibles?.[0] || 'flexible',
         location: '', // Por ahora vacío
-        area: editData.area, // <-- AÑADIDO
+        area: editData.area,
         experience_years: parseInt(editData.experienciaPrevia || '0') || 0,
-        // También actualizar datos del usuario
-        user_data: {
-          first_name: editData.nombre,
-          last_name: editData.apellido,
-          email: editData.email,
-          phone: editData.telefono,
-          bio: editData.biografia, // Carta de presentación
-        },
-        // Datos del perfil detallado
-        perfil_detallado: {
-          fecha_nacimiento: editData.fechaNacimiento || null,
-          genero: editData.genero || null,
-        }
       };
 
-      console.log('🔍 [StudentProfile] Enviando datos al backend:', backendData);
-      console.log('📄 [StudentProfile] CV Link a enviar:', backendData.cv_link);
-      console.log('📄 [StudentProfile] Certificado Link a enviar:', backendData.certificado_link);
+      console.log('🔍 [StudentProfile] Enviando datos de estudiante al backend:', studentUpdateData);
+      console.log('📄 [StudentProfile] CV Link a enviar:', studentUpdateData.cv_link);
+      console.log('📄 [StudentProfile] Certificado Link a enviar:', studentUpdateData.certificado_link);
       
-      await apiService.put(`/api/students/${userId}/update/`, backendData);
+      await apiService.put(`/api/students/${userId}/update/`, studentUpdateData);
       
       // Recargar el perfil para obtener los datos actualizados
       await fetchProfile();

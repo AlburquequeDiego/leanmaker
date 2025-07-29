@@ -142,16 +142,15 @@ export const useProjects = () => {
 export const useApplications = () => {
   return useRealTimeData({
     endpoint: API_ENDPOINTS.PROJECT_APPLICATIONS_MY_APPLICATIONS,
-    interval: 30000, // Actualizar cada 30 segundos
+    interval: 0, // Sin polling automático para evitar rate limiting
     enabled: true
   });
 };
 
 // Hook específico para eventos del calendario
 export const useCalendarEvents = (userRole: 'student' | 'company') => {
-  const endpoint = userRole === 'student' 
-    ? API_ENDPOINTS.CALENDAR_STUDENT_EVENTS 
-    : API_ENDPOINTS.CALENDAR_COMPANY_EVENTS;
+  // Usar el endpoint general de eventos del calendario
+  const endpoint = API_ENDPOINTS.CALENDAR_EVENTS;
   
   return useRealTimeData({
     endpoint,

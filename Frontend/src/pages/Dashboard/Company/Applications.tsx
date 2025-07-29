@@ -52,7 +52,12 @@ export const CompanyApplications: React.FC = () => {
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    loadApplications();
+    // Agregar un pequeño delay para evitar múltiples llamadas simultáneas
+    const timer = setTimeout(() => {
+      loadApplications();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const loadApplications = async () => {

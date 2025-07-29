@@ -37,6 +37,10 @@ export const adaptUser = (backendUser: any): User => ({
   bio: backendUser.bio,
   position: backendUser.position,         // <--- INCLUIDO
   department: backendUser.department,     // <--- INCLUIDO
+  birthdate: backendUser.birthdate,       // <--- AGREGADO
+  gender: backendUser.gender,             // <--- AGREGADO
+  career: backendUser.career,             // <--- AGREGADO
+  company_name: backendUser.company_name, // <--- AGREGADO
   role: backendUser.role,
   is_active: backendUser.is_active,
   is_verified: backendUser.is_verified,
