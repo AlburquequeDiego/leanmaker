@@ -1,7 +1,10 @@
 esto es una prueba de versiones
 
 
+diego joaquin alexander alburqueque amaya 
 
+python 
+typescript
 
 
 GIT GIT GIT 
