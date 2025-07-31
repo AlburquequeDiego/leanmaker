@@ -7,6 +7,19 @@ import { useAuth } from '../../../hooks/useAuth';
 export default function AdminDashboard() {
   const { user } = useAuth();
 
+  // Obtener el nombre del usuario para personalizar el dashboard
+  const getUserDisplayName = () => {
+    if (user?.full_name) {
+      return user.full_name;
+    }
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    }
+    if (user?.first_name) {
+      return user.first_name;
+    }
+    return 'Administrador';
+  };
   
   // Usar hook de tiempo real para estadísticas
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('admin');
@@ -24,7 +37,7 @@ export default function AdminDashboard() {
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>
-          Dashboard de Administrador
+          Dashboard de Administrador - {getUserDisplayName()}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ConnectionStatus

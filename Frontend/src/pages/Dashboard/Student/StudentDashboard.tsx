@@ -55,6 +55,20 @@ export default function StudentDashboard() {
   const { user } = useAuth();
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('student');
 
+  // Obtener el nombre del usuario para personalizar el dashboard
+  const getUserDisplayName = () => {
+    if (user?.full_name) {
+      return user.full_name;
+    }
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    }
+    if (user?.first_name) {
+      return user.first_name;
+    }
+    return 'Estudiante';
+  };
+
   // Eliminar simulación de checklist y entregas
   // const checklist = [...];
   // const entregas = ...;
@@ -98,7 +112,7 @@ export default function StudentDashboard() {
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>
-          Bienvenido a tu Dashboard (Estudiante)
+          Bienvenido a tu Dashboard, {getUserDisplayName()}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ConnectionStatus
@@ -108,7 +122,7 @@ export default function StudentDashboard() {
             error={error}
           />
         </Box>
-                </Box>
+      </Box>
       {/* Tarjetas principales */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
         {/* Horas Acumuladas */}

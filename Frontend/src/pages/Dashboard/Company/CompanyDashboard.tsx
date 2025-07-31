@@ -23,6 +23,20 @@ export default function CompanyDashboard() {
   // Usar hook de tiempo real para estadísticas
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('company');
 
+  // Obtener el nombre del usuario para personalizar el dashboard
+  const getUserDisplayName = () => {
+    if (user?.full_name) {
+      return user.full_name;
+    }
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    }
+    if (user?.first_name) {
+      return user.first_name;
+    }
+    return 'Empresa';
+  };
+
   // Detectar cambios en las estadísticas
   useEffect(() => {
     console.log('[CompanyDashboard] Stats changed:', stats);
@@ -58,7 +72,7 @@ export default function CompanyDashboard() {
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>
-          Dashboard de Empresa
+          Dashboard de Empresa - {getUserDisplayName()}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ConnectionStatus

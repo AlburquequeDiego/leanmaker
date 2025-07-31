@@ -1,5 +1,5 @@
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -8,8 +8,11 @@ import {
   Link,
   Paper,
   Alert,
-  Button
+  Button,
+  InputAdornment,
+  IconButton
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import LoadingButton from '../../components/common/LoadingButton';
@@ -28,11 +31,20 @@ const validationSchema = yup.object({
 export const Login = () => {
   const navigate = useNavigate();
   const { login, loading, error, clearError } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   // useEffect para hacer scroll hacia arriba al montar el componente
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -166,7 +178,7 @@ export const Login = () => {
                   fullWidth
                   name="password"
                   label="Contraseña"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   autoComplete="current-password"
                   value={formik.values.password}
@@ -174,6 +186,20 @@ export const Login = () => {
                   error={formik.touched.password && Boolean(formik.errors.password)}
                   helperText={formik.touched.password && formik.errors.password}
                   disabled={loading}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 <LoadingButton
                   type="submit"
