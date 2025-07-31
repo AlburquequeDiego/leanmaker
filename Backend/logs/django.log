@@ -619,3 +619,168 @@ INFO 2025-07-30 20:11:33,327 basehttp 14840 12748 "GET /api/dashboard/admin_stat
 INFO 2025-07-30 20:11:35,043 middleware 14840 12748 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
 INFO 2025-07-30 20:11:35,046 middleware 14840 12748 Respuesta: 200 - POST /api/auth/logout/
 INFO 2025-07-30 20:11:35,084 basehttp 14840 12748 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-30 20:58:06,017 middleware 14840 9264 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:06,483 middleware 14840 9264 Respuesta: 200 - POST /api/token/
+INFO 2025-07-30 20:58:06,534 basehttp 14840 9264 "POST /api/token/ HTTP/1.1" 200 1093
+INFO 2025-07-30 20:58:06,548 middleware 14840 9264 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:06,559 middleware 14840 9264 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-30 20:58:06,576 basehttp 14840 9264 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-30 20:58:06,666 middleware 14840 9264 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:06,834 middleware 14840 9264 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-07-30 20:58:06,866 basehttp 14840 9264 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-07-30 20:58:14,006 middleware 14840 9264 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:14,023 middleware 14840 9264 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:58:14,045 log 14840 9264 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:58:14,045 basehttp 14840 9264 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:58:14,049 middleware 14840 9264 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:14,057 middleware 14840 9264 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:58:14,081 log 14840 9264 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:58:14,081 basehttp 14840 9264 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:58:14,083 middleware 14840 9264 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:14,094 middleware 14840 9264 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:58:14,123 log 14840 9264 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:58:14,125 basehttp 14840 9264 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:58:19,558 middleware 14840 17752 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:19,565 middleware 14840 17752 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-30 20:58:19,590 basehttp 14840 17752 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-30 20:58:19,593 middleware 14840 17752 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:19,599 middleware 14840 17752 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-30 20:58:19,621 basehttp 14840 17752 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-30 20:58:19,727 middleware 14840 17752 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:19,737 middleware 14840 17752 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:58:19,759 log 14840 17752 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:58:19,761 basehttp 14840 17752 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:58:19,763 middleware 14840 17752 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:19,777 middleware 14840 17752 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:58:19,806 log 14840 17752 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:58:19,806 basehttp 14840 17752 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:58:19,821 middleware 14840 17752 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:19,834 middleware 14840 17752 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:58:19,854 log 14840 17752 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:58:19,854 basehttp 14840 17752 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:58:25,043 middleware 14840 17752 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:25,049 middleware 14840 17752 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:58:25,073 basehttp 14840 17752 "GET /api/users/ HTTP/1.1" 200 3689
+INFO 2025-07-30 20:58:25,076 middleware 14840 17752 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:25,087 middleware 14840 17752 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:58:25,110 basehttp 14840 17752 "GET /api/users/ HTTP/1.1" 200 3689
+INFO 2025-07-30 20:58:48,698 basehttp 14840 16400 "OPTIONS /api/users/9ac0813c-990c-4a04-90ed-8d04e0d63e4b/unblock/ HTTP/1.1" 200 0
+INFO 2025-07-30 20:58:48,714 middleware 14840 16400 Petición: POST /api/users/9ac0813c-990c-4a04-90ed-8d04e0d63e4b/unblock/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:48,729 middleware 14840 16400 Respuesta: 500 - POST /api/users/9ac0813c-990c-4a04-90ed-8d04e0d63e4b/unblock/
+ERROR 2025-07-30 20:58:48,774 log 14840 16400 Internal Server Error: /api/users/9ac0813c-990c-4a04-90ed-8d04e0d63e4b/unblock/
+ERROR 2025-07-30 20:58:48,774 basehttp 14840 16400 "POST /api/users/9ac0813c-990c-4a04-90ed-8d04e0d63e4b/unblock/ HTTP/1.1" 500 49
+INFO 2025-07-30 20:58:50,840 basehttp 14840 16400 "OPTIONS /api/users/f6baacbe-2a60-431e-bfaa-7c21db75a959/unblock/ HTTP/1.1" 200 0
+INFO 2025-07-30 20:58:50,846 middleware 14840 16400 Petición: POST /api/users/f6baacbe-2a60-431e-bfaa-7c21db75a959/unblock/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:50,863 middleware 14840 16400 Respuesta: 200 - POST /api/users/f6baacbe-2a60-431e-bfaa-7c21db75a959/unblock/
+INFO 2025-07-30 20:58:50,889 basehttp 14840 16400 "POST /api/users/f6baacbe-2a60-431e-bfaa-7c21db75a959/unblock/ HTTP/1.1" 200 195
+INFO 2025-07-30 20:58:50,889 middleware 14840 16400 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:50,899 middleware 14840 16400 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:58:50,921 basehttp 14840 16400 "GET /api/users/ HTTP/1.1" 200 3687
+INFO 2025-07-30 20:58:53,278 basehttp 14840 16400 "OPTIONS /api/users/4b855a06-d711-4723-bd7e-a29db1674ed8/unblock/ HTTP/1.1" 200 0
+INFO 2025-07-30 20:58:53,280 middleware 14840 16400 Petición: POST /api/users/4b855a06-d711-4723-bd7e-a29db1674ed8/unblock/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:53,304 middleware 14840 16400 Respuesta: 200 - POST /api/users/4b855a06-d711-4723-bd7e-a29db1674ed8/unblock/
+INFO 2025-07-30 20:58:53,329 basehttp 14840 16400 "POST /api/users/4b855a06-d711-4723-bd7e-a29db1674ed8/unblock/ HTTP/1.1" 200 201
+INFO 2025-07-30 20:58:53,346 middleware 14840 16400 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:53,359 middleware 14840 16400 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:58:53,381 basehttp 14840 16400 "GET /api/users/ HTTP/1.1" 200 3686
+INFO 2025-07-30 20:58:55,166 basehttp 14840 16400 "OPTIONS /api/users/f5a5e309-46e4-4968-a169-ddbb3ee72e00/unblock/ HTTP/1.1" 200 0
+INFO 2025-07-30 20:58:55,173 middleware 14840 16400 Petición: POST /api/users/f5a5e309-46e4-4968-a169-ddbb3ee72e00/unblock/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:55,193 middleware 14840 16400 Respuesta: 200 - POST /api/users/f5a5e309-46e4-4968-a169-ddbb3ee72e00/unblock/
+INFO 2025-07-30 20:58:55,294 basehttp 14840 16400 "POST /api/users/f5a5e309-46e4-4968-a169-ddbb3ee72e00/unblock/ HTTP/1.1" 200 205
+INFO 2025-07-30 20:58:55,302 middleware 14840 16400 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:55,316 middleware 14840 16400 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:58:55,337 basehttp 14840 16400 "GET /api/users/ HTTP/1.1" 200 3685
+INFO 2025-07-30 20:58:57,102 basehttp 14840 7764 "OPTIONS /api/users/be88423b-9936-4f97-b85a-1f9218af0db0/unblock/ HTTP/1.1" 200 0
+INFO 2025-07-30 20:58:57,113 middleware 14840 7764 Petición: POST /api/users/be88423b-9936-4f97-b85a-1f9218af0db0/unblock/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:57,135 middleware 14840 7764 Respuesta: 200 - POST /api/users/be88423b-9936-4f97-b85a-1f9218af0db0/unblock/
+INFO 2025-07-30 20:58:57,190 basehttp 14840 7764 "POST /api/users/be88423b-9936-4f97-b85a-1f9218af0db0/unblock/ HTTP/1.1" 200 203
+INFO 2025-07-30 20:58:57,196 middleware 14840 7764 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:58:57,210 middleware 14840 7764 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:58:57,234 basehttp 14840 7764 "GET /api/users/ HTTP/1.1" 200 3684
+INFO 2025-07-30 20:59:17,813 middleware 14840 11824 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:17,815 middleware 14840 11824 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-07-30 20:59:17,834 basehttp 14840 11824 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-30 20:59:19,727 middleware 14840 11824 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:20,125 middleware 14840 11824 Respuesta: 200 - POST /api/token/
+INFO 2025-07-30 20:59:20,156 basehttp 14840 11824 "POST /api/token/ HTTP/1.1" 200 1093
+INFO 2025-07-30 20:59:20,165 middleware 14840 11824 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:20,168 middleware 14840 11824 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-30 20:59:20,188 basehttp 14840 11824 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-30 20:59:20,257 middleware 14840 11824 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:20,273 middleware 14840 11824 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-07-30 20:59:20,304 basehttp 14840 11824 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-07-30 20:59:22,004 middleware 14840 11824 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:22,014 middleware 14840 11824 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:59:22,034 log 14840 11824 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:59:22,049 basehttp 14840 11824 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:59:22,053 middleware 14840 11824 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:22,065 middleware 14840 11824 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:59:22,080 log 14840 11824 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:59:22,080 basehttp 14840 11824 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:59:22,088 middleware 14840 11824 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:22,098 middleware 14840 11824 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:59:22,120 log 14840 11824 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:59:22,122 basehttp 14840 11824 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:59:24,525 middleware 14840 11824 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:24,543 middleware 14840 11824 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-07-30 20:59:24,561 basehttp 14840 11824 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 513
+INFO 2025-07-30 20:59:24,563 middleware 14840 11824 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:24,577 middleware 14840 11824 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-07-30 20:59:24,596 basehttp 14840 11824 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 513
+INFO 2025-07-30 20:59:24,917 middleware 14840 11824 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:24,923 middleware 14840 11824 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:59:24,941 basehttp 14840 11824 "GET /api/users/ HTTP/1.1" 200 3684
+INFO 2025-07-30 20:59:24,942 middleware 14840 9680 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:24,953 middleware 14840 9680 Respuesta: 200 - GET /api/users/
+INFO 2025-07-30 20:59:24,966 basehttp 14840 9680 "GET /api/users/ HTTP/1.1" 200 3684
+INFO 2025-07-30 20:59:25,818 middleware 14840 11824 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:25,818 middleware 14840 9680 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:25,832 middleware 14840 11824 Respuesta: 200 - GET /api/projects/completed_pending_hours/
+INFO 2025-07-30 20:59:25,853 middleware 14840 9680 Respuesta: 200 - GET /work-hours/
+INFO 2025-07-30 20:59:25,857 basehttp 14840 11824 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-07-30 20:59:25,865 middleware 14840 11824 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:25,876 middleware 14840 11824 Respuesta: 200 - GET /api/projects/completed_pending_hours/
+INFO 2025-07-30 20:59:25,887 basehttp 14840 9680 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-30 20:59:25,891 middleware 14840 9680 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:25,915 middleware 14840 9680 Respuesta: 200 - GET /work-hours/
+INFO 2025-07-30 20:59:25,921 basehttp 14840 11824 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-07-30 20:59:25,944 basehttp 14840 9680 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-30 20:59:27,392 middleware 14840 9680 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:27,409 middleware 14840 9680 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-07-30 20:59:27,426 basehttp 14840 9680 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 513
+INFO 2025-07-30 20:59:27,428 middleware 14840 9680 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:27,437 middleware 14840 9680 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-07-30 20:59:27,463 basehttp 14840 9680 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 513
+INFO 2025-07-30 20:59:31,793 middleware 14840 9680 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:31,803 middleware 14840 9680 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:59:31,831 log 14840 9680 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:59:31,831 basehttp 14840 9680 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:59:31,831 middleware 14840 9680 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:31,847 middleware 14840 9680 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:59:31,865 log 14840 9680 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:59:31,865 basehttp 14840 9680 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:59:31,871 middleware 14840 9680 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:31,880 middleware 14840 9680 Respuesta: 500 - GET /api/students/
+ERROR 2025-07-30 20:59:31,899 log 14840 9680 Internal Server Error: /api/students/
+ERROR 2025-07-30 20:59:31,899 basehttp 14840 9680 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 500 49
+INFO 2025-07-30 20:59:33,037 middleware 14840 9680 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:33,045 middleware 14840 9680 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-07-30 20:59:33,073 basehttp 14840 9680 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-30 20:59:33,085 middleware 14840 9680 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:33,093 middleware 14840 9680 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-07-30 20:59:33,107 basehttp 14840 9680 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-30 20:59:33,114 middleware 14840 9680 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:33,125 middleware 14840 9680 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-07-30 20:59:33,140 basehttp 14840 9680 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 69
+INFO 2025-07-30 20:59:34,573 middleware 14840 9680 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:34,578 middleware 14840 9680 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-30 20:59:34,595 basehttp 14840 9680 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-30 20:59:34,599 middleware 14840 9680 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:34,604 middleware 14840 9680 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-30 20:59:34,621 basehttp 14840 9680 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-30 20:59:35,357 middleware 14840 9680 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:35,375 middleware 14840 9680 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-07-30 20:59:35,391 basehttp 14840 9680 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-07-30 20:59:38,693 middleware 14840 9680 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-07-30 20:59:38,694 middleware 14840 9680 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-07-30 20:59:38,714 basehttp 14840 9680 "POST /api/auth/logout/ HTTP/1.1" 200 47
