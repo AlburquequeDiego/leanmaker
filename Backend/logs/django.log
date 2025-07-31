@@ -2094,3 +2094,49 @@ INFO 2025-07-31 14:51:36,256 basehttp 17124 13348 "GET /api/users/ HTTP/1.1" 200
 INFO 2025-07-31 14:51:46,732 middleware 17124 13348 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
 INFO 2025-07-31 14:51:46,732 middleware 17124 13348 Respuesta: 200 - POST /api/auth/logout/
 INFO 2025-07-31 14:51:46,763 basehttp 17124 13348 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-31 14:54:46,179 middleware 17124 10532 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-31 14:54:46,582 middleware 17124 10532 Respuesta: 200 - POST /api/token/
+INFO 2025-07-31 14:54:46,619 basehttp 17124 10532 "POST /api/token/ HTTP/1.1" 200 1093
+INFO 2025-07-31 14:54:46,630 middleware 17124 10532 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 14:54:46,631 middleware 17124 10532 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 14:54:46,649 basehttp 17124 10532 "GET /api/users/profile/ HTTP/1.1" 200 540
+INFO 2025-07-31 14:54:46,730 middleware 17124 10532 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-07-31 14:54:46,748 middleware 17124 10532 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-07-31 14:54:46,781 basehttp 17124 10532 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 155
+INFO 2025-07-31 14:54:51,352 middleware 17124 5224 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-07-31 14:54:51,352 middleware 17124 5224 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-07-31 14:54:51,371 basehttp 17124 5224 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-31 14:54:56,882 middleware 17124 5224 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-31 14:54:57,290 middleware 17124 5224 Respuesta: 200 - POST /api/token/
+INFO 2025-07-31 14:54:57,320 basehttp 17124 5224 "POST /api/token/ HTTP/1.1" 200 1192
+INFO 2025-07-31 14:54:57,326 middleware 17124 5224 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 14:54:57,341 middleware 17124 5224 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 14:54:57,356 basehttp 17124 5224 "GET /api/users/profile/ HTTP/1.1" 200 1913
+INFO 2025-07-31 14:54:57,415 middleware 17124 5224 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-07-31 14:54:57,432 middleware 17124 5224 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-07-31 14:54:57,454 basehttp 17124 5224 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 265
+INFO 2025-07-31 14:55:43,554 middleware 17124 16168 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-07-31 14:55:43,554 middleware 17124 16168 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-07-31 14:55:43,600 basehttp 17124 16168 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-31 14:55:46,389 middleware 17124 16168 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-31 14:55:47,592 middleware 17124 16168 Respuesta: 200 - POST /api/token/
+INFO 2025-07-31 14:55:47,693 basehttp 17124 16168 "POST /api/token/ HTTP/1.1" 200 1143
+INFO 2025-07-31 14:55:47,701 middleware 17124 16168 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 14:55:47,720 middleware 17124 16168 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 14:55:47,793 basehttp 17124 16168 "GET /api/users/profile/ HTTP/1.1" 200 573
+INFO 2025-07-31 14:55:47,849 basehttp 17124 16168 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-07-31 14:55:47,853 middleware 17124 16168 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-07-31 14:55:47,924 middleware 17124 16168 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-07-31 14:55:48,067 basehttp 17124 16168 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 215
+INFO 2025-07-31 14:55:54,040 middleware 17124 21056 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-07-31 14:55:54,040 middleware 17124 21056 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-07-31 14:55:54,073 basehttp 17124 21056 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-31 15:00:49,220 middleware 17124 5352 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-31 15:00:49,620 middleware 17124 5352 Respuesta: 200 - POST /api/token/
+INFO 2025-07-31 15:00:49,656 basehttp 17124 5352 "POST /api/token/ HTTP/1.1" 200 1143
+INFO 2025-07-31 15:00:49,660 middleware 17124 5352 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 15:00:49,668 middleware 17124 5352 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 15:00:49,680 basehttp 17124 5352 "GET /api/users/profile/ HTTP/1.1" 200 573
+INFO 2025-07-31 15:00:49,743 middleware 17124 5352 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-07-31 15:00:49,906 middleware 17124 5352 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-07-31 15:00:49,933 basehttp 17124 5352 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 215

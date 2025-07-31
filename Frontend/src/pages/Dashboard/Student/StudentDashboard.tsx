@@ -112,7 +112,7 @@ export default function StudentDashboard() {
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>
-          Bienvenido a tu Dashboard, {getUserDisplayName()}
+          Bienvenido a tu Dashboard - {getUserDisplayName()}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ConnectionStatus
