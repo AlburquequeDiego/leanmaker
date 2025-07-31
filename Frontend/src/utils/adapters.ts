@@ -173,6 +173,15 @@ export const adaptProject = (backendProject: any): Project => {
     area: String(backendProject.area_name || backendProject.area || ''),
     status,
     requirements: backendProject.requirements || backendProject.requisitos || 'Sin requisitos especificados',
+    // Campos adicionales del formulario de creación
+    tipo: backendProject.tipo || '',
+    objetivo: backendProject.objetivo || '',
+    encargado: backendProject.encargado || '',
+    contacto: backendProject.contacto || '',
+    // Campos TRL
+    trl_id: backendProject.trl_id || null,
+    trl_name: backendProject.trl_name || '',
+    trl_level: backendProject.trl_level || 1,
     min_api_level: backendProject.api_level || backendProject.min_api_level || 1,
     max_students: backendProject.max_students || backendProject.max_estudiantes || 1,
     current_students: Number(backendProject.current_students) || 0,

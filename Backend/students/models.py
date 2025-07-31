@@ -37,7 +37,7 @@ class Estudiante(models.Model):
     education_level = models.CharField(max_length=50, null=True, blank=True)
     
     # Campos de estado con valores por defecto - coinciden con frontend
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='approved')
     api_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
     trl_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(9)], help_text="Nivel TRL del 1 al 9 según el estado del proyecto")
     strikes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])

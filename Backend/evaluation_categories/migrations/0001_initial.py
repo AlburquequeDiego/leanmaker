@@ -3,6 +3,56 @@
 from django.db import migrations, models
 
 
+def create_initial_evaluation_categories(apps, schema_editor):
+    """Crear las categorías de evaluación iniciales"""
+    EvaluationCategory = apps.get_model('evaluation_categories', 'EvaluationCategory')
+    
+    # Categorías de evaluación
+    categories = [
+        {
+            'name': 'Habilidades Técnicas',
+            'description': 'Evaluación de conocimientos técnicos y habilidades específicas del área'
+        },
+        {
+            'name': 'Habilidades Blandas',
+            'description': 'Evaluación de comunicación, trabajo en equipo, liderazgo y adaptabilidad'
+        },
+        {
+            'name': 'Calidad del Trabajo',
+            'description': 'Evaluación de la calidad, precisión y atención al detalle en el trabajo realizado'
+        },
+        {
+            'name': 'Cumplimiento de Plazos',
+            'description': 'Evaluación de la puntualidad y cumplimiento de fechas de entrega'
+        },
+        {
+            'name': 'Iniciativa y Proactividad',
+            'description': 'Evaluación de la capacidad de tomar iniciativa y ser proactivo en el proyecto'
+        },
+        {
+            'name': 'Resolución de Problemas',
+            'description': 'Evaluación de la capacidad para identificar y resolver problemas de manera efectiva'
+        },
+        {
+            'name': 'Aprendizaje y Adaptación',
+            'description': 'Evaluación de la capacidad de aprender nuevas tecnologías y adaptarse a cambios'
+        },
+        {
+            'name': 'Responsabilidad',
+            'description': 'Evaluación de la responsabilidad y compromiso con el proyecto'
+        }
+    ]
+    
+    for category_data in categories:
+        EvaluationCategory.objects.create(**category_data)
+
+
+def reverse_create_initial_evaluation_categories(apps, schema_editor):
+    """Eliminar las categorías de evaluación iniciales"""
+    EvaluationCategory = apps.get_model('evaluation_categories', 'EvaluationCategory')
+    EvaluationCategory.objects.all().delete()
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -25,4 +75,6 @@ class Migration(migrations.Migration):
                 'ordering': ['name'],
             },
         ),
+        # Agregar los datos iniciales
+        migrations.RunPython(create_initial_evaluation_categories, reverse_create_initial_evaluation_categories),
     ]

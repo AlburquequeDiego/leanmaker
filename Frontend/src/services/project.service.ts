@@ -70,6 +70,11 @@ export class ProjectService {
       title: projectData.title,
       description: projectData.description,
       requirements: Array.isArray(projectData.requirements) ? projectData.requirements.join(', ') : projectData.requirements,
+      // Campos adicionales del formulario
+      tipo: projectData.tipo || '',
+      objetivo: projectData.objetivo || '',
+      encargado: projectData.encargado || '',
+      contacto: projectData.contacto || '',
       benefits: Array.isArray(projectData.benefits) ? projectData.benefits.join(', ') : projectData.benefits,
       modality: projectData.modalidad || projectData.modality,
       difficulty: projectData.dificultad || projectData.difficulty,

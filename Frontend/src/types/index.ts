@@ -163,6 +163,15 @@ export interface Project {
   area: string; // Nombre del área (ej: "Tecnología", "Marketing", etc.)
   status: string; // Estado del proyecto (open, active, completed, etc.)
   requirements: string;
+  // Campos adicionales del formulario de creación
+  tipo?: string; // Tipo de actividad del proyecto
+  objetivo?: string; // Objetivo del proyecto
+  encargado?: string; // Responsable del proyecto de la empresa
+  contacto?: string; // Contacto de la empresa
+  // Campos TRL
+  trl_id?: number; // ID del nivel TRL
+  trl_name?: string; // Nombre del nivel TRL
+  trl_level?: number; // Nivel TRL
   min_api_level: number;
   max_students: number;
   current_students: number;

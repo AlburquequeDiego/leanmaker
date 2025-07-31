@@ -44,6 +44,12 @@ class Proyecto(models.Model):
     description = models.TextField()
     requirements = models.TextField()  # Campo agregado para coincidir con frontend
     
+    # Campos adicionales del formulario de creación
+    tipo = models.CharField(max_length=100, blank=True, null=True, help_text="Tipo de actividad del proyecto")
+    objetivo = models.TextField(blank=True, null=True, help_text="Objetivo del proyecto")
+    encargado = models.CharField(max_length=200, blank=True, null=True, help_text="Responsable del proyecto de la empresa")
+    contacto = models.CharField(max_length=200, blank=True, null=True, help_text="Contacto de la empresa")
+    
     # Campos opcionales (NULL permitido) - coinciden con frontend
     trl = models.ForeignKey(TRLLevel, on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
     api_level = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(4)])

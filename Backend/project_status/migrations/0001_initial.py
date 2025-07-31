@@ -3,6 +3,49 @@
 from django.db import migrations, models
 
 
+def create_initial_project_statuses(apps, schema_editor):
+    """Crear los estados iniciales de proyectos"""
+    ProjectStatus = apps.get_model('project_status', 'ProjectStatus')
+    
+    # Estados de proyectos
+    statuses = [
+        {
+            'name': 'published',
+            'description': 'El proyecto está publicado y visible para los estudiantes',
+            'color': '#1976d2'
+        },
+        {
+            'name': 'active',
+            'description': 'El proyecto está en curso y los estudiantes están trabajando en él',
+            'color': '#388e3c'
+        },
+        {
+            'name': 'completed',
+            'description': 'El proyecto ha sido finalizado exitosamente',
+            'color': '#fbc02d'
+        },
+        {
+            'name': 'deleted',
+            'description': 'El proyecto ha sido eliminado',
+            'color': '#d32f2f'
+        },
+        {
+            'name': 'draft',
+            'description': 'El proyecto está en borrador',
+            'color': '#757575'
+        }
+    ]
+    
+    for status_data in statuses:
+        ProjectStatus.objects.create(**status_data)
+
+
+def reverse_create_initial_project_statuses(apps, schema_editor):
+    """Eliminar los estados iniciales de proyectos"""
+    ProjectStatus = apps.get_model('project_status', 'ProjectStatus')
+    ProjectStatus.objects.filter(name__in=['published', 'active', 'completed', 'deleted', 'draft']).delete()
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -40,4 +83,6 @@ class Migration(migrations.Migration):
                 'db_table': 'project_status_history',
             },
         ),
+        # Agregar los datos iniciales
+        migrations.RunPython(create_initial_project_statuses, reverse_create_initial_project_statuses),
     ]

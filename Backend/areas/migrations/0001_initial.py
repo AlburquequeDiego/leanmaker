@@ -3,6 +3,90 @@
 from django.db import migrations, models
 
 
+def create_initial_areas(apps, schema_editor):
+    """Crear las áreas iniciales"""
+    Area = apps.get_model('areas', 'Area')
+    
+    # Áreas de conocimiento
+    areas = [
+        {
+            'name': 'Tecnología y Sistemas',
+            'description': 'Proyectos relacionados con desarrollo de software, sistemas informáticos, aplicaciones móviles, web, etc.',
+            'color': '#2196F3',
+            'icon': 'computer'
+        },
+        {
+            'name': 'Administración y Gestión',
+            'description': 'Proyectos de administración de empresas, gestión de recursos, finanzas, marketing, etc.',
+            'color': '#4CAF50',
+            'icon': 'business'
+        },
+        {
+            'name': 'Comunicación y Marketing',
+            'description': 'Proyectos de comunicación, publicidad, marketing digital, redes sociales, etc.',
+            'color': '#FF9800',
+            'icon': 'campaign'
+        },
+        {
+            'name': 'Salud y Ciencias',
+            'description': 'Proyectos relacionados con ciencias de la salud, investigación médica, biotecnología, etc.',
+            'color': '#E91E63',
+            'icon': 'health_and_safety'
+        },
+        {
+            'name': 'Ingeniería y Construcción',
+            'description': 'Proyectos de ingeniería civil, construcción, arquitectura, diseño estructural, etc.',
+            'color': '#795548',
+            'icon': 'engineering'
+        },
+        {
+            'name': 'Educación y Formación',
+            'description': 'Proyectos educativos, desarrollo de contenido, plataformas de aprendizaje, etc.',
+            'color': '#9C27B0',
+            'icon': 'school'
+        },
+        {
+            'name': 'Arte y Diseño',
+            'description': 'Proyectos de diseño gráfico, artes visuales, diseño industrial, multimedia, etc.',
+            'color': '#F44336',
+            'icon': 'palette'
+        },
+        {
+            'name': 'Investigación y Desarrollo',
+            'description': 'Proyectos de investigación científica, desarrollo de nuevas tecnologías, innovación, etc.',
+            'color': '#607D8B',
+            'icon': 'science'
+        },
+        {
+            'name': 'Servicios y Atención al Cliente',
+            'description': 'Proyectos de mejora de servicios, atención al cliente, experiencia de usuario, etc.',
+            'color': '#00BCD4',
+            'icon': 'support_agent'
+        },
+        {
+            'name': 'Sostenibilidad y Medio Ambiente',
+            'description': 'Proyectos relacionados con medio ambiente, sostenibilidad, energías renovables, etc.',
+            'color': '#8BC34A',
+            'icon': 'eco'
+        },
+        {
+            'name': 'Otro',
+            'description': 'Otras áreas de conocimiento no categorizadas',
+            'color': '#9E9E9E',
+            'icon': 'more_horiz'
+        }
+    ]
+    
+    for area_data in areas:
+        Area.objects.create(**area_data)
+
+
+def reverse_create_initial_areas(apps, schema_editor):
+    """Eliminar las áreas iniciales"""
+    Area = apps.get_model('areas', 'Area')
+    Area.objects.all().delete()
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -30,4 +114,6 @@ class Migration(migrations.Migration):
                 'ordering': ['name'],
             },
         ),
+        # Agregar los datos iniciales
+        migrations.RunPython(create_initial_areas, reverse_create_initial_areas),
     ]

@@ -16,6 +16,11 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError('El email es obligatorio')
         email = self.normalize_email(email)
+        
+        # Establecer valores por defecto para usuarios activos
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_verified', True)
+        
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         
