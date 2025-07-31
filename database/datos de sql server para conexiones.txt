@@ -1,8 +1,9 @@
+
 ADMINISTRADOS:
 admin@gmail.com
 admin
+
 estudiantes:
-juan.perez@uchile.cl              Estudiante123!
 daniel.perez@inacapmail.cl        Estudiante123!
 alonso.alburqueque@inacapmail.cl  Estudiante123!
 jose.linares@inacapmail.cl        Estudiante123!
@@ -10,34 +11,10 @@ joaquin.maquena@inacapmail.cl     Estudiante123!
 jorge.samorano@inacapmail.cl      Estudiante123!
 sofia.lira@inacapmail.cl          Estudiante123!
 fabiola.vasquez@inacapmail.cl     Estudiante123!
+
 EMPRESAS:
 diego.morales@correo.cl          Empresa123!
 diegoamaya@gmail.com             Empresa123!
 julia.loretto@gmail.com          Empresa123!
 fernandadelascasas@gmail.com     Empresa123!
-
-
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-
-
-PRUEBA DE VERSIONES GIT
-
-
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-##############################################
-
-
 
