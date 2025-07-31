@@ -2140,6 +2140,7 @@ INFO 2025-07-31 15:00:49,680 basehttp 17124 5352 "GET /api/users/profile/ HTTP/1
 INFO 2025-07-31 15:00:49,743 middleware 17124 5352 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
 INFO 2025-07-31 15:00:49,906 middleware 17124 5352 Respuesta: 200 - GET /api/dashboard/student_stats/
 INFO 2025-07-31 15:00:49,933 basehttp 17124 5352 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 215
+<<<<<<< HEAD
 INFO 2025-07-31 15:01:47,294 middleware 17124 10660 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
 INFO 2025-07-31 15:01:47,294 middleware 17124 10660 Respuesta: 200 - POST /api/auth/logout/
 INFO 2025-07-31 15:01:47,318 basehttp 17124 10660 "POST /api/auth/logout/ HTTP/1.1" 200 47
@@ -2204,3 +2205,54 @@ INFO 2025-07-31 15:06:37,854 basehttp 17124 2404 "GET /api/projects/company_proj
 INFO 2025-07-31 15:06:37,854 middleware 17124 2404 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
 INFO 2025-07-31 15:06:37,867 middleware 17124 2404 Respuesta: 200 - GET /api/projects/company_projects/
 INFO 2025-07-31 15:06:37,878 basehttp 17124 2404 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+=======
+INFO 2025-07-31 15:56:35,371 autoreload 19976 3924 Watching for file changes with StatReloader
+INFO 2025-07-31 15:58:03,888 middleware 19976 25000 Petición: GET / - IP: 127.0.0.1
+INFO 2025-07-31 15:58:04,929 middleware 19976 25000 Respuesta: 200 - GET /
+INFO 2025-07-31 15:58:05,025 basehttp 19976 25000 "GET / HTTP/1.1" 200 15360
+INFO 2025-07-31 15:58:29,721 middleware 19976 21092 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 15:58:29,728 middleware 19976 21092 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 15:58:29,751 basehttp 19976 21092 "GET /api/users/profile/ HTTP/1.1" 200 593
+INFO 2025-07-31 15:58:29,754 middleware 19976 21092 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 15:58:29,760 middleware 19976 21092 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 15:58:29,773 basehttp 19976 21092 "GET /api/users/profile/ HTTP/1.1" 200 593
+>>>>>>> 5a2d3ceef11d215ab75fb42a6c671177a12e6702
+INFO 2025-07-31 16:14:20,098 autoreload 17384 16388 Watching for file changes with StatReloader
+INFO 2025-07-31 16:14:41,987 basehttp 17384 22196 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-31 16:14:41,987 basehttp 17384 18204 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-07-31 16:14:42,011 middleware 17384 18204 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:42,015 middleware 17384 18204 Respuesta: 401 - GET /api/users/profile/
+WARNING 2025-07-31 16:14:42,119 log 17384 18204 Unauthorized: /api/users/profile/
+WARNING 2025-07-31 16:14:42,120 basehttp 17384 18204 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-31 16:14:42,123 basehttp 17384 22196 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-07-31 16:14:42,125 middleware 17384 18204 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:42,130 middleware 17384 18204 Respuesta: 401 - GET /api/users/profile/
+INFO 2025-07-31 16:14:42,132 middleware 17384 22196 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+WARNING 2025-07-31 16:14:42,163 log 17384 18204 Unauthorized: /api/users/profile/
+WARNING 2025-07-31 16:14:42,166 basehttp 17384 18204 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-07-31 16:14:42,172 middleware 17384 18204 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:42,466 middleware 17384 18204 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-07-31 16:14:42,466 middleware 17384 22196 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-07-31 16:14:42,514 basehttp 17384 18204 "POST /api/token/refresh/ HTTP/1.1" 200 277
+INFO 2025-07-31 16:14:42,526 basehttp 17384 22196 "POST /api/token/refresh/ HTTP/1.1" 200 277
+INFO 2025-07-31 16:14:42,527 middleware 17384 18204 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:42,537 middleware 17384 18204 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 16:14:42,578 basehttp 17384 18204 "GET /api/users/profile/ HTTP/1.1" 200 1913
+INFO 2025-07-31 16:14:42,581 middleware 17384 18204 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:42,594 middleware 17384 18204 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 16:14:42,618 basehttp 17384 18204 "GET /api/users/profile/ HTTP/1.1" 200 1913
+INFO 2025-07-31 16:14:44,597 basehttp 17384 18204 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-07-31 16:14:44,602 middleware 17384 18204 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:45,645 middleware 17384 18204 Respuesta: 200 - POST /api/token/
+INFO 2025-07-31 16:14:45,746 basehttp 17384 18204 "POST /api/token/ HTTP/1.1" 200 1192
+INFO 2025-07-31 16:14:45,756 middleware 17384 18204 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:45,772 middleware 17384 18204 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 16:14:45,815 basehttp 17384 18204 "GET /api/users/profile/ HTTP/1.1" 200 1913
+INFO 2025-07-31 16:14:46,017 basehttp 17384 18204 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-07-31 16:14:46,021 middleware 17384 18204 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:46,067 middleware 17384 18204 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-07-31 16:14:46,155 basehttp 17384 18204 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 265
+INFO 2025-07-31 16:14:57,700 basehttp 17384 1864 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-07-31 16:14:57,707 middleware 17384 1864 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-07-31 16:14:57,713 middleware 17384 1864 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-07-31 16:14:57,748 basehttp 17384 1864 "POST /api/auth/logout/ HTTP/1.1" 200 47
