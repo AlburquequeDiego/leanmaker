@@ -210,18 +210,6 @@ Una plataforma completa que gestiona todo el proceso desde la publicación de pr
 - **Mejora continua** de programas académicos
 - **Diferenciación** en el mercado educativo
 
-## 📞 Contacto y Soporte
-
-Este proyecto demuestra competencias avanzadas en:
-- **Desarrollo Full-Stack** con tecnologías modernas
-- **Arquitectura de software** escalable
-- **Gestión de bases de datos** complejas
-- **Implementación de sistemas** de autenticación seguros
-- **Desarrollo de APIs** RESTful
-- **Interfaces de usuario** modernas y responsivas
-- **Integración de servicios** externos
-- **DevOps** y despliegue de aplicaciones
-
 ---
 
 **LeanMaker** representa una solución completa e innovadora para la vinculación académica-profesional, demostrando habilidades técnicas avanzadas y comprensión profunda de las necesidades del mercado educativo y empresarial. 
