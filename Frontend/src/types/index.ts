@@ -92,6 +92,9 @@ export interface Student {
     telefono_emergencia?: string;
     contacto_emergencia?: string;
   };
+  // Campos adicionales del registro
+  university?: string;
+  education_level?: string;
 }
 
 // Tipos de empresa - Coinciden con el modelo Empresa del backend
@@ -127,6 +130,28 @@ export interface Company {
   rut?: string;
   personality?: string;
   business_name?: string;
+  // Campos específicos del registro de empresa
+  company_address?: string;
+  company_phone?: string;
+  company_email?: string;
+  // Datos del usuario incluidos en la respuesta
+  user_data?: {
+    id: string;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
+    phone?: string;
+    avatar?: string;
+    bio?: string;
+    birthdate?: string;
+    gender?: string;
+    is_active: boolean;
+    is_verified: boolean;
+    date_joined: string;
+    last_login?: string;
+    full_name?: string;
+  };
 }
 
 // Tipos de proyecto - Coinciden con el modelo Proyecto del backend
@@ -467,6 +492,31 @@ export interface RegisterData {
   gender?: string;
   career?: string;
   company_name?: string;
+  // Campos específicos para estudiantes
+  university?: string;
+  education_level?: string;
+  // Campos específicos para empresas
+  rut?: string;
+  personality?: string;
+  business_name?: string;
+  company_address?: string;
+  company_phone?: string;
+  company_email?: string;
+  industry?: string;
+  size?: string;
+  website?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  // Campos del usuario responsable
+  responsible_first_name?: string;
+  responsible_last_name?: string;
+  responsible_email?: string;
+  responsible_phone?: string;
+  responsible_birthdate?: string;
+  responsible_gender?: string;
+  responsible_password?: string;
+  responsible_password_confirm?: string;
 }
 
 // Tipos de formulario de login

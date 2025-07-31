@@ -73,6 +73,25 @@ class ApiService {
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
         
+        // DEBUG: Log datos recibidos para endpoints específicos
+        if (endpoint.includes('/api/users/profile/') || endpoint.includes('/api/students/me/')) {
+          console.log(`🔍 [API] Datos recibidos de ${endpoint}:`, data);
+        }
+        
+        // DEBUG: Log datos de empresa
+        if (endpoint.includes('/api/companies/company_me/')) {
+          console.log(`🔍 [API] Datos de empresa recibidos de ${endpoint}:`, data);
+          console.log(`🔍 [API] Campos específicos de empresa:`);
+          console.log(`  - company_address: ${data?.company_address}`);
+          console.log(`  - company_phone: ${data?.company_phone}`);
+          console.log(`  - company_email: ${data?.company_email}`);
+          console.log(`  - rut: ${data?.rut}`);
+          console.log(`  - personality: ${data?.personality}`);
+          console.log(`  - business_name: ${data?.business_name}`);
+          console.log(`  - user_data.birthdate: ${data?.user_data?.birthdate}`);
+          console.log(`  - user_data.gender: ${data?.user_data?.gender}`);
+        }
+        
         // Aplicar adaptadores según el endpoint
         return this.applyAdapter(data, endpoint) as T;
       }

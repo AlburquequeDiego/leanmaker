@@ -87,6 +87,13 @@ interface ChangePasswordData {
   confirm_password: string;
 }
 
+// Opciones de nivel educativo
+const EDUCATION_LEVELS = [
+  { value: 'CFT', label: 'CFT' },
+  { value: 'IP', label: 'Instituto Profesional' },
+  { value: 'Universidad', label: 'Universidad' },
+];
+
 // Habilidades técnicas organizadas por área
 const HABILIDADES_POR_AREA = {
   'Tecnología y Sistemas': [
@@ -398,6 +405,11 @@ export const Profile = () => {
       console.log('📄 [StudentProfile] Datos de estudiante recibidos:', studentData);
       console.log('📄 [StudentProfile] userData.birthdate:', userData.birthdate);
       console.log('📄 [StudentProfile] userData.gender:', userData.gender);
+      console.log('📄 [StudentProfile] studentData.education_level:', studentData.education_level);
+      console.log('📄 [StudentProfile] studentData.university:', studentData.university);
+      console.log('📄 [StudentProfile] studentData.user_data:', studentData.user_data);
+      console.log('📄 [StudentProfile] studentData.user_data?.birthdate:', studentData.user_data?.birthdate);
+      console.log('📄 [StudentProfile] studentData.user_data?.gender:', studentData.user_data?.gender);
       
       // Mapear y unir los datos
       const safeData: ProfileData = {
@@ -405,11 +417,11 @@ export const Profile = () => {
         apellido: userData.last_name || '',
         email: userData.email || '',
         telefono: userData.phone || '',
-        fechaNacimiento: userData.birthdate || '',
-        genero: userData.gender || '',
-        institucion: '', // No disponible
+        fechaNacimiento: userData.birthdate || (studentData.perfil_detallado?.fecha_nacimiento || ''),
+        genero: userData.gender || (studentData.perfil_detallado?.genero || ''),
+        institucion: studentData.university || studentData.perfil_detallado?.universidad || 'INACAP',
         carrera: userData.career || studentData.career || '',
-        nivel: studentData.api_level?.toString() || '1',
+        nivel: studentData.education_level || 'CFT', // Usar valor por defecto válido
         habilidades: Array.isArray(studentData.skills) ? studentData.skills.map((skill: string) => ({ nombre: skill, nivel: 'Intermedio' })) : [],
         biografia: userData.bio || '', // Carta de presentación
         cv_link: studentData.cv_link || '',
@@ -559,6 +571,8 @@ export const Profile = () => {
       // Luego actualizar los datos del estudiante
       const studentUpdateData = {
         career: editData.carrera,
+        university: editData.institucion, // Campo del registro
+        education_level: editData.nivel, // Campo del registro
         api_level: parseInt(editData.nivel) || 1,
         skills: editData.habilidades.map(h => h.nombre),
         languages: [], // Por ahora vacío, se puede expandir después
@@ -571,13 +585,19 @@ export const Profile = () => {
         location: '', // Por ahora vacío
         area: editData.area,
         experience_years: parseInt(editData.experienciaPrevia || '0') || 0,
+        // Datos del perfil detallado para mantener sincronizados birthdate y gender
+        perfil_detallado: {
+          fecha_nacimiento: editData.fechaNacimiento || null,
+          genero: editData.genero || null,
+          universidad: editData.institucion || null,
+        }
       };
 
       console.log('🔍 [StudentProfile] Enviando datos de estudiante al backend:', studentUpdateData);
       console.log('📄 [StudentProfile] CV Link a enviar:', studentUpdateData.cv_link);
       console.log('📄 [StudentProfile] Certificado Link a enviar:', studentUpdateData.certificado_link);
       
-      await apiService.put(`/api/students/${userId}/update/`, studentUpdateData);
+      await apiService.put('/api/students/update/', studentUpdateData);
       
       // Recargar el perfil para obtener los datos actualizados
       await fetchProfile();
@@ -825,12 +845,18 @@ export const Profile = () => {
               fullWidth
             >
               <MenuItem value="">Selecciona el género</MenuItem>
-              <MenuItem value="Mujer">Mujer</MenuItem>
-              <MenuItem value="Hombre">Hombre</MenuItem>
+              <MenuItem value="Femenino">Femenino</MenuItem>
+              <MenuItem value="Masculino">Masculino</MenuItem>
               <MenuItem value="Otro">Otro</MenuItem>
             </TextField>
           </Box>
-          {/* Campo de institución removido ya que no es necesario */}
+          <TextField
+            label="Institución Educativa"
+            value={isEditing ? (editData.institucion || '') : (profileData.institucion || '')}
+            onChange={e => handleInputChange('institucion', e.target.value)}
+            disabled={true} // No editable, solo informativo
+            fullWidth
+          />
           <TextField
             label="Carrera"
             value={isEditing ? (editData.carrera || '') : (profileData.carrera || '')}
@@ -840,13 +866,21 @@ export const Profile = () => {
             error={!!validationErrors.carrera}
             helperText={validationErrors.carrera}
           />
-          <TextField
-            label="Nivel Educativo"
-            value={isEditing ? (editData.nivel || '') : (profileData.nivel || '')}
-            onChange={e => handleInputChange('nivel', e.target.value)}
-            disabled={!isEditing}
-            fullWidth
-          />
+          <FormControl fullWidth>
+            <InputLabel>Nivel Educativo</InputLabel>
+            <Select
+              value={isEditing ? (editData.nivel || '') : (profileData.nivel || '')}
+              onChange={e => handleInputChange('nivel', e.target.value)}
+              disabled={!isEditing}
+              label="Nivel Educativo"
+            >
+              {EDUCATION_LEVELS.map((level) => (
+                <MenuItem key={level.value} value={level.value}>
+                  {level.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* Habilidades */}
           <Divider sx={{ my: 2 }} />

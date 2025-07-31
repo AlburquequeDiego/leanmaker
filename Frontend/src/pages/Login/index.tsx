@@ -1,4 +1,5 @@
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useEffect } from 'react';
 import {
   Box,
   Container,
@@ -27,6 +28,11 @@ const validationSchema = yup.object({
 export const Login = () => {
   const navigate = useNavigate();
   const { login, loading, error, clearError } = useAuth();
+
+  // useEffect para hacer scroll hacia arriba al montar el componente
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const formik = useFormik({
     initialValues: {

@@ -229,12 +229,41 @@ export const CompanyProfile: React.FC = () => {
       
       console.log('🔍 [CompanyProfile] Datos de empresa recibidos:', companyData);
       
+      // DEBUG: Log campos específicos del registro
+      console.log('🔍 [CompanyProfile] company_address:', companyData.company_address);
+      console.log('🔍 [CompanyProfile] company_phone:', companyData.company_phone);
+      console.log('🔍 [CompanyProfile] company_email:', companyData.company_email);
+      console.log('🔍 [CompanyProfile] rut:', companyData.rut);
+      console.log('🔍 [CompanyProfile] personality:', companyData.personality);
+      console.log('🔍 [CompanyProfile] business_name:', companyData.business_name);
+      
+      // Combinar datos del usuario con los datos de user_data de la empresa
+      const combinedUserData = {
+        ...userData,
+        // Si userData no tiene birthdate/gender, usar los de companyData.user_data
+        birthdate: userData.birthdate || (companyData.user_data && companyData.user_data.birthdate),
+        gender: userData.gender || (companyData.user_data && companyData.user_data.gender),
+      };
+      
+      console.log('🔍 [CompanyProfile] Datos combinados del usuario:', combinedUserData);
+      console.log('🔍 [CompanyProfile] birthdate del usuario:', combinedUserData.birthdate);
+      console.log('🔍 [CompanyProfile] gender del usuario:', combinedUserData.gender);
+      console.log('🔍 [CompanyProfile] Datos de userData del backend:', userData);
+      console.log('🔍 [CompanyProfile] Datos de companyData.user_data del backend:', companyData.user_data);
+      console.log('🔍 [CompanyProfile] companyData completo:', companyData);
+      console.log('🔍 [CompanyProfile] userData.birthdate:', userData.birthdate);
+      console.log('🔍 [CompanyProfile] userData.gender:', userData.gender);
+      console.log('🔍 [CompanyProfile] companyData.user_data?.birthdate:', companyData.user_data?.birthdate);
+      console.log('🔍 [CompanyProfile] companyData.user_data?.gender:', companyData.user_data?.gender);
+      
       const profileData: CompanyProfileData = {
-        user: userData,
+        user: combinedUserData,
         company: companyData,
       };
+      
       setProfile(profileData);
       setEditData(companyData);
+      setEditUserData(combinedUserData);
     } catch (err: any) {
       console.error('Error cargando perfil:', err);
       setError(err.response?.data?.error || err.message || 'Error al cargar perfil');
@@ -275,23 +304,44 @@ export const CompanyProfile: React.FC = () => {
         industry: editData.industry,
         size: editData.size,
         description: editData.description,
+        // Campos específicos del registro
+        company_address: editData.company_address,
+        company_phone: editData.company_phone,
+        company_email: editData.company_email,
       };
 
-      console.log('Enviando datos de empresa:', payload);
+      // Preparar payload completo con datos de empresa y usuario
+      const completePayload = {
+        ...payload,
+        // Incluir datos del usuario si hay cambios
+        ...(Object.keys(editUserData).length > 0 && {
+          user_data: {
+            first_name: editUserData.first_name,
+            last_name: editUserData.last_name,
+            phone: editUserData.phone,
+            birthdate: editUserData.birthdate,
+            gender: editUserData.gender,
+          }
+        })
+      };
+
+      console.log('🔍 [CompanyProfile] Enviando datos completos:', completePayload);
+      console.log('🔍 [CompanyProfile] Campos específicos del registro:');
+      console.log('  - company_address:', payload.company_address);
+      console.log('  - company_phone:', payload.company_phone);
+      console.log('  - company_email:', payload.company_email);
+      console.log('  - rut:', payload.rut);
+      console.log('  - personality:', payload.personality);
+      console.log('  - business_name:', payload.business_name);
       
-      // Guardar datos de la empresa
-      await api.patch(`/api/companies/${profile.company.id}/update/`, payload);
-      
-      // Guardar datos del usuario si hay cambios
-      if (Object.keys(editUserData).length > 0) {
-        const userPayload = {
-          first_name: editUserData.first_name,
-          last_name: editUserData.last_name,
-          phone: editUserData.phone,
-        };
-        console.log('Enviando datos de usuario:', userPayload);
-        await api.patch('/api/users/profile/', userPayload);
+      if (completePayload.user_data) {
+        console.log('🔍 [CompanyProfile] Campos de usuario:');
+        console.log('  - birthdate:', completePayload.user_data.birthdate);
+        console.log('  - gender:', completePayload.user_data.gender);
       }
+      
+      // Guardar datos completos en una sola petición
+      await api.patch(`/api/companies/${profile.company.id}/update/`, completePayload);
       
       // Refrescar datos tras guardar
       await loadProfile();
@@ -496,21 +546,22 @@ export const CompanyProfile: React.FC = () => {
             </FormControl>
           </Box>
           
-            <TextField
-              label="Razón Social"
+          <TextField
+            label="Razón Social"
             value={isEditing ? (editData.business_name || '') : (profile.company.business_name || '')}
-              onChange={(e) => handleInputChange('business_name', e.target.value)}
+            onChange={(e) => handleInputChange('business_name', e.target.value)}
             disabled={!isEditing}
             fullWidth
-            />
+          />
           
-            <TextField
-              label="Dirección"
-            value={isEditing ? (editData.address || '') : (profile.company.address || '')}
-              onChange={(e) => handleInputChange('address', e.target.value)}
+          <TextField
+            label="Dirección de la Empresa"
+            value={isEditing ? (editData.company_address || '') : (profile.company.company_address || profile.company.address || '')}
+            onChange={(e) => handleInputChange('company_address', e.target.value)}
             disabled={!isEditing}
             fullWidth
-            />
+            placeholder="Dirección completa de la empresa"
+          />
           
           <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
@@ -531,31 +582,32 @@ export const CompanyProfile: React.FC = () => {
           
           <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
-              label="Teléfono"
-              value={isEditing ? (editData.contact_phone || '') : (profile.company.contact_phone || '')}
-              onChange={(e) => handleInputChange('contact_phone', e.target.value)}
+              label="Teléfono de la Empresa"
+              value={isEditing ? (editData.company_phone || '') : (profile.company.company_phone || profile.company.contact_phone || '')}
+              onChange={(e) => handleInputChange('company_phone', e.target.value)}
               disabled={!isEditing}
               fullWidth
               placeholder="+56 9 1234 5678"
             />
             <TextField
-              label="Email de Contacto"
-              value={isEditing ? (editData.contact_email || '') : (profile.company.contact_email || '')}
-              onChange={(e) => handleInputChange('contact_email', e.target.value)}
+              label="Email de la Empresa"
+              value={isEditing ? (editData.company_email || '') : (profile.company.company_email || profile.company.contact_email || '')}
+              onChange={(e) => handleInputChange('company_email', e.target.value)}
               disabled={!isEditing}
               fullWidth
               type="email"
+              placeholder="empresa@ejemplo.com"
             />
           </Box>
           
-            <TextField
-              label="Sitio Web"
+          <TextField
+            label="Sitio Web"
             value={isEditing ? (editData.website || '') : (profile.company.website || '')}
-              onChange={(e) => handleInputChange('website', e.target.value)}
+            onChange={(e) => handleInputChange('website', e.target.value)}
             disabled={!isEditing}
             fullWidth
-              placeholder="https://www.ejemplo.com"
-            />
+            placeholder="https://www.ejemplo.com"
+          />
           
           <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <TextField
@@ -564,6 +616,7 @@ export const CompanyProfile: React.FC = () => {
               onChange={(e) => handleInputChange('industry', e.target.value)}
               disabled={!isEditing}
               fullWidth
+              placeholder="Tecnología, Marketing, etc."
             />
             <FormControl fullWidth>
               <InputLabel>Tamaño</InputLabel>
@@ -631,6 +684,35 @@ export const CompanyProfile: React.FC = () => {
             disabled={!isEditing}
             fullWidth
           />
+          
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+            <TextField
+              label="Fecha de nacimiento"
+              value={isEditing ? (editUserData.birthdate || '') : (profile.user.birthdate || '')}
+              onChange={(e) => handleUserInputChange('birthdate', e.target.value)}
+              disabled={!isEditing}
+              fullWidth
+              type="date"
+              InputLabelProps={{ shrink: true }}
+            />
+            <FormControl fullWidth>
+              <InputLabel>Género</InputLabel>
+              <Select
+                value={isEditing ? (editUserData.gender || '') : (profile.user.gender || '')}
+                label="Género"
+                onChange={(e) => handleUserInputChange('gender', e.target.value)}
+                disabled={!isEditing}
+              >
+                <MenuItem value="Femenino">Femenino</MenuItem>
+                <MenuItem value="Masculino">Masculino</MenuItem>
+                <MenuItem value="Otro">Otro</MenuItem>
+              </Select>
+            </FormControl>
+            
+
+          </Box>
+          
+
         </Box>
       </Paper>
 

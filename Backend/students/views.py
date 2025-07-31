@@ -327,7 +327,7 @@ def student_update(request, student_id=None):
         
         # Actualizar campos del estudiante
         fields_to_update = [
-            'career', 'semester', 'graduation_year', 'status', 'api_level',
+            'career', 'semester', 'graduation_year', 'university', 'education_level', 'status', 'api_level',
             'strikes', 'gpa', 'completed_projects', 'total_hours', 'experience_years',
             'portfolio_url', 'github_url', 'linkedin_url', 'cv_link', 'certificado_link',
             'availability', 'location', 'area', 'rating', 'skills', 'languages'
@@ -382,7 +382,16 @@ def student_update(request, student_id=None):
             for field in perfil_fields:
                 if field in perfil_data:
                     print(f"[student_update] Actualizando campo '{field}': {perfil_data[field]}")
-                    setattr(perfil_detallado, field, perfil_data[field])
+                    if field == 'fecha_nacimiento' and perfil_data[field]:
+                        try:
+                            from datetime import datetime
+                            fecha_nacimiento = datetime.strptime(perfil_data[field], '%Y-%m-%d').date()
+                            setattr(perfil_detallado, field, fecha_nacimiento)
+                        except:
+                            print(f"[student_update] Error al procesar fecha de nacimiento: {perfil_data[field]}")
+                            setattr(perfil_detallado, field, None)
+                    else:
+                        setattr(perfil_detallado, field, perfil_data[field])
             
             # Campos JSON del perfil detallado
             json_fields = {
@@ -500,6 +509,8 @@ def student_me(request):
             'career': student.career,
             'semester': student.semester,
             'graduation_year': student.graduation_year,
+            'university': student.university,  # Campo del registro
+            'education_level': student.education_level,  # Campo del registro
             'status': student.status,
             'api_level': student.api_level,
             'trl_level': student.trl_permitido_segun_api,  # <-- Usar TRL calculado
@@ -551,6 +562,8 @@ def student_me(request):
                 'phone': student.user.phone,
                 'avatar': student.user.avatar,
                 'bio': student.user.bio,
+                'birthdate': student.user.birthdate.isoformat() if student.user.birthdate else None,
+                'gender': student.user.gender,
                 'is_active': student.user.is_active,
                 'is_verified': student.user.is_verified,
                 'date_joined': student.user.date_joined.isoformat(),

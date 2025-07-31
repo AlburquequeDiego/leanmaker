@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import {
   Box,
   Container,
@@ -21,6 +22,11 @@ import HelpIcon from '@mui/icons-material/Help';
 
 export default function Home() {
   const navigate = useNavigate();
+
+  // useEffect para hacer scroll hacia arriba al montar el componente
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Función para hacer scroll suave a una sección
   const scrollToSection = (sectionId: string) => {

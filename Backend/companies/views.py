@@ -236,6 +236,14 @@ def company_me(request):
             'business_name': company.business_name,
             'city': company.city,
             'country': company.country,
+            # Campos específicos del registro que deben mapearse correctamente
+            'company_address': company.company_address,  # Campo del registro
+            'company_phone': company.company_phone,      # Campo del registro
+            'company_email': company.company_email,      # Campo del registro
+            # Mapear campos del registro a campos del perfil para compatibilidad
+            'address': company.company_address or company.address,  # Priorizar company_address del registro
+            'contact_phone': company.company_phone or company.contact_phone,  # Priorizar company_phone del registro
+            'contact_email': company.company_email or company.contact_email,  # Priorizar company_email del registro
             # Datos del usuario
             'user_data': {
                 'id': str(company.user.id),
@@ -246,6 +254,8 @@ def company_me(request):
                 'phone': company.user.phone,
                 'avatar': company.user.avatar,
                 'bio': company.user.bio,
+                'birthdate': company.user.birthdate.isoformat() if company.user.birthdate else None,
+                'gender': company.user.gender,
                 'is_active': company.user.is_active,
                 'is_verified': company.user.is_verified,
                 'date_joined': company.user.date_joined.isoformat(),
@@ -255,6 +265,19 @@ def company_me(request):
         }
         
         print(f"🔍 [company_me] Datos enviados al frontend: {company_data}")
+        print(f"🔍 [company_me] Campos específicos del registro:")
+        print(f"  - company_address: {company_data.get('company_address')}")
+        print(f"  - company_phone: {company_data.get('company_phone')}")
+        print(f"  - company_email: {company_data.get('company_email')}")
+        print(f"  - rut: {company_data.get('rut')}")
+        print(f"  - personality: {company_data.get('personality')}")
+        print(f"  - business_name: {company_data.get('business_name')}")
+        print(f"  - user_data.birthdate: {company_data.get('user_data', {}).get('birthdate')}")
+        print(f"  - user_data.gender: {company_data.get('user_data', {}).get('gender')}")
+        print(f"🔍 [company_me] Datos del usuario desde la base de datos:")
+        print(f"  - user.birthdate: {company.user.birthdate}")
+        print(f"  - user.gender: {company.user.gender}")
+        print(f"  - company.personality: {company.personality}")
         
         return JsonResponse(company_data)
         
@@ -298,7 +321,9 @@ def companies_update(request, companies_id):
             'address', 'website', 'industry', 'size', 'verified', 'rating',
             'total_projects', 'projects_completed', 'total_hours_offered',
             # Campos adicionales del registro de empresa
-            'rut', 'personality', 'business_name', 'city', 'country'
+            'rut', 'personality', 'business_name', 'city', 'country',
+            # Campos específicos del registro
+            'company_address', 'company_phone', 'company_email'
         ]
         
         print(f"🔍 [companies_update] Campos a actualizar: {fields_to_update}")
@@ -314,6 +339,37 @@ def companies_update(request, companies_id):
         
         company.save()
         print(f"🔍 [companies_update] Empresa guardada: {company.company_name}")
+        print(f"🔍 [companies_update] Campos guardados:")
+        print(f"  - company_address: {company.company_address}")
+        print(f"  - company_phone: {company.company_phone}")
+        print(f"  - company_email: {company.company_email}")
+        print(f"  - rut: {company.rut}")
+        print(f"  - personality: {company.personality}")
+        print(f"  - business_name: {company.business_name}")
+        
+        # Actualizar datos del usuario si se proporcionan
+        user = company.user
+        user_updated = False
+        
+        if 'user_data' in data:
+            user_data = data['user_data']
+            if 'birthdate' in user_data and user_data['birthdate']:
+                try:
+                    from datetime import datetime
+                    user.birthdate = datetime.strptime(user_data['birthdate'], '%Y-%m-%d').date()
+                    user_updated = True
+                    print(f"🔍 [companies_update] Usuario birthdate actualizado: {user.birthdate}")
+                except:
+                    print(f"🔍 [companies_update] Error al parsear birthdate: {user_data['birthdate']}")
+            
+            if 'gender' in user_data:
+                user.gender = user_data['gender']
+                user_updated = True
+                print(f"🔍 [companies_update] Usuario gender actualizado: {user.gender}")
+        
+        if user_updated:
+            user.save()
+            print(f"🔍 [companies_update] Usuario guardado - birthdate: {user.birthdate}, gender: {user.gender}")
         
         # Retornar datos actualizados
         return JsonResponse({

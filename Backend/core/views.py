@@ -368,6 +368,16 @@ def api_register(request):
     try:
         data = json.loads(request.body)
         
+        # DEBUG: Log datos clave recibidos
+        print(f"[api_register] birthdate: {data.get('birthdate')}, gender: {data.get('gender')}, education_level: {data.get('education_level')}, university: {data.get('university')}")
+        print(f"[api_register] Campos específicos de empresa:")
+        print(f"  - personality: {data.get('personality')}")
+        print(f"  - rut: {data.get('rut')}")
+        print(f"  - business_name: {data.get('business_name')}")
+        print(f"  - company_address: {data.get('company_address')}")
+        print(f"  - company_phone: {data.get('company_phone')}")
+        print(f"  - company_email: {data.get('company_email')}")
+        
         # Validar campos requeridos
         required_fields = ['email', 'password', 'password_confirm', 'first_name', 'last_name', 'role']
         for field in required_fields:
@@ -412,9 +422,11 @@ def api_register(request):
             try:
                 from datetime import datetime
                 birthdate = datetime.strptime(data.get('birthdate'), '%Y-%m-%d').date()
-            except:
+            except Exception as e:
+                print(f"[api_register] Error procesando birthdate: {e}")
                 birthdate = None
         
+        print(f"[api_register] Creando usuario con birthdate: {birthdate}, gender: {data.get('gender', '')}")
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -428,21 +440,37 @@ def api_register(request):
             birthdate=birthdate,
             gender=data.get('gender', ''),
         )
+        print(f"[api_register] Usuario creado - birthdate: {user.birthdate}, gender: {user.gender}")
         
         # Crear perfil específico según el rol
         if role == 'student':
             from students.models import Estudiante
+            print(f"[api_register] Creando estudiante con university: {data.get('university', '')}, education_level: {data.get('education_level', '')}")
             estudiante = Estudiante.objects.create(
                 user=user,
                 career=data.get('career', ''),
                 university=data.get('university', ''),
                 education_level=data.get('education_level', ''),
             )
+            print(f"[api_register] Estudiante creado - university: {estudiante.university}, education_level: {estudiante.education_level}")
+            
             # Actualizar TRL automáticamente
             estudiante.actualizar_trl_segun_api()
             
+            # Crear perfil detallado del estudiante
+            from students.models import PerfilEstudiante
+            print(f"[api_register] Creando perfil detallado con fecha_nacimiento: {birthdate}, genero: {data.get('gender', '')}, universidad: {data.get('university', '')}")
+            perfil = PerfilEstudiante.objects.create(
+                estudiante=estudiante,
+                fecha_nacimiento=birthdate,
+                genero=data.get('gender', ''),
+                universidad=data.get('university', ''),
+            )
+            print(f"[api_register] Perfil detallado creado - fecha_nacimiento: {perfil.fecha_nacimiento}, genero: {perfil.genero}, universidad: {perfil.universidad}")
+            
         elif role == 'company':
             from companies.models import Empresa
+            print(f"[api_register] Creando empresa con company_name: {data.get('company_name', '')}, rut: {data.get('rut', '')}, personality: {data.get('personality', '')}")
             empresa = Empresa.objects.create(
                 user=user,
                 company_name=data.get('company_name', ''),
@@ -459,8 +487,18 @@ def api_register(request):
                 city=data.get('city', ''),
                 country=data.get('country', 'Chile'),
             )
+            print(f"[api_register] Empresa creada - company_name: {empresa.company_name}, rut: {empresa.rut}, personality: {empresa.personality}")
+            print(f"[api_register] Empresa creada - company_address: {empresa.company_address}, company_phone: {empresa.company_phone}, company_email: {empresa.company_email}")
+            print(f"[api_register] Empresa creada - business_name: {empresa.business_name}, industry: {empresa.industry}, size: {empresa.size}")
+            print(f"[api_register] Empresa creada - website: {empresa.website}, city: {empresa.city}, country: {empresa.country}")
+            print(f"[api_register] Usuario de empresa - birthdate: {user.birthdate}, gender: {user.gender}")
+            print(f"[api_register] Verificando datos guardados en la base de datos:")
+            print(f"  - empresa.personality: {empresa.personality}")
+            print(f"  - user.birthdate: {user.birthdate}")
+            print(f"  - user.gender: {user.gender}")
         
-        return JsonResponse({
+        # Preparar respuesta con datos del usuario creado
+        response_data = {
             'message': 'Usuario registrado exitosamente',
             'user': {
                 'id': str(user.id),
@@ -468,16 +506,47 @@ def api_register(request):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'username': user.username,
+                'role': user.role,
                 'phone': user.phone,
                 'birthdate': user.birthdate.isoformat() if user.birthdate else None,
                 'gender': user.gender,
                 'career': user.career,
                 'company_name': user.company_name,
-                'role': user.role,
+                'is_active': user.is_active,
                 'is_verified': user.is_verified,
-                'full_name': user.full_name
+                'full_name': user.full_name,
             }
-        })
+        }
+        
+        # Agregar datos específicos según el rol
+        if role == 'student':
+            response_data['student'] = {
+                'id': str(estudiante.id),
+                'career': estudiante.career,
+                'university': estudiante.university,
+                'education_level': estudiante.education_level,
+                'status': estudiante.status,
+                'api_level': estudiante.api_level,
+                'trl_level': estudiante.trl_level,
+            }
+        elif role == 'company':
+            response_data['company'] = {
+                'id': str(empresa.id),
+                'company_name': empresa.company_name,
+                'rut': empresa.rut,
+                'personality': empresa.personality,
+                'business_name': empresa.business_name,
+                'company_address': empresa.company_address,
+                'company_phone': empresa.company_phone,
+                'company_email': empresa.company_email,
+                'industry': empresa.industry,
+                'size': empresa.size,
+                'website': empresa.website,
+                'city': empresa.city,
+                'country': empresa.country,
+            }
+        
+        return JsonResponse(response_data, status=201)
         
     except json.JSONDecodeError:
         return JsonResponse({
@@ -611,7 +680,9 @@ def api_user_profile(request):
             if 'company_name' in data:
                 user.company_name = data['company_name']
             
+            print(f"[api_user_profile] Actualizando usuario - birthdate: {user.birthdate}, gender: {user.gender}")
             user.save()
+            print(f"[api_user_profile] Usuario guardado - birthdate: {user.birthdate}, gender: {user.gender}")
             
             # Retornar datos actualizados
             user_data = {

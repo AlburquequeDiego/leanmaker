@@ -91,6 +91,8 @@ export const adaptStudent = (backendStudent: any): Student => ({
   user_data: backendStudent.user_data, // <-- Añadido
   perfil_detallado: backendStudent.perfil_detallado, // <-- AÑADIDO
   bio: backendStudent.bio, // <-- AÑADIDO para carta de presentación
+  university: backendStudent.university, // <-- AÑADIDO
+  education_level: backendStudent.education_level, // <-- AÑADIDO
 });
 
 /**
@@ -128,6 +130,12 @@ export const adaptCompany = (backendCompany: any): Company => ({
   rut: backendCompany.rut,
   personality: backendCompany.personality,
   business_name: backendCompany.business_name,
+  // Campos específicos del registro de empresa
+  company_address: backendCompany.company_address,
+  company_phone: backendCompany.company_phone,
+  company_email: backendCompany.company_email,
+  // Datos del usuario incluidos en la respuesta
+  user_data: backendCompany.user_data,
 });
 
 /**

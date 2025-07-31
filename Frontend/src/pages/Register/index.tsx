@@ -16,7 +16,12 @@ import {
   FormControlLabel,
   Checkbox,
   InputAdornment,
+  IconButton,
 } from '@mui/material';
+import {
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+} from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import SchoolIcon from '@mui/icons-material/School';
@@ -74,6 +79,16 @@ const initialValues = {
 const INSTITUTIONS = [
   { name: 'INACAP', domain: 'inacapmail.cl' },
 ];
+
+// Función para generar el email automáticamente basado en nombre y apellido
+const generateEmail = (firstName: string, lastName: string) => {
+  if (firstName && lastName) {
+    const first = firstName.toLowerCase().trim();
+    const last = lastName.toLowerCase().trim();
+    return `${first}.${last}@inacapmail.cl`;
+  }
+  return '';
+};
 
 // Función para obtener el placeholder de email basado en la institución
 const getEmailPlaceholder = (university: string) => {
@@ -196,11 +211,19 @@ export const Register = () => {
   const { register, loading, error, clearError } = useAuth();
   const [userType, setUserType] = useState<UserType>('student');
   const [showConduct, setShowConduct] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({
+    password: false,
+    password_confirm: false,
+    responsible_password: false,
+    responsible_password_confirm: false,
+  });
+  const [formKey, setFormKey] = useState(Date.now());
 
   const formik = useFormik({
     initialValues,
     validationSchema: getValidationSchema(userType),
     enableReinitialize: true,
+    validateOnMount: false,
     onSubmit: async (values) => {
       try {
         clearError();
@@ -247,6 +270,10 @@ export const Register = () => {
         }
 
         console.log('Register data to send:', registerData);
+        console.log('🔍 [Register] Datos específicos de empresa:');
+        console.log('  - personality:', registerData.personality);
+        console.log('  - birthdate:', registerData.birthdate);
+        console.log('  - gender:', registerData.gender);
 
         await register(registerData);
         navigate('/dashboard');
@@ -258,7 +285,50 @@ export const Register = () => {
 
   const handleUserTypeChange = (type: UserType) => {
     setUserType(type);
-    formik.resetForm();
+    setFormKey(Date.now()); // Forzar re-renderizado
+    
+    // Función para limpiar completamente
+    const clearFormCompletely = () => {
+      // Reset de Formik
+      formik.resetForm();
+      
+      // Reset de estados
+      setShowPasswords({
+        password: false,
+        password_confirm: false,
+        responsible_password: false,
+        responsible_password_confirm: false,
+      });
+      setShowConduct(false);
+      
+      // Limpiar todos los campos del DOM
+      const inputs = document.querySelectorAll('input, select, textarea');
+      inputs.forEach((input: any) => {
+        if (input.type === 'checkbox') {
+          input.checked = false;
+        } else if (input.type === 'date') {
+          input.value = '';
+        } else {
+          input.value = '';
+        }
+        // Forzar el evento change
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      
+      // Reset del formulario HTML
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.reset();
+      });
+    };
+    
+    // Ejecutar limpieza inmediatamente
+    clearFormCompletely();
+    
+    // Ejecutar limpieza después de delays para asegurar que se ejecute
+    setTimeout(clearFormCompletely, 50);
+    setTimeout(clearFormCompletely, 200);
+    setTimeout(clearFormCompletely, 500);
   };
 
   // Función para manejar el cambio de institución
@@ -266,19 +336,94 @@ export const Register = () => {
     const newUniversity = event.target.value;
     formik.setFieldValue('university', newUniversity);
     
-    // Si hay un email ingresado, verificar si coincide con la nueva institución
-    const currentEmail = formik.values.email;
-    if (currentEmail) {
-      const institution = INSTITUTIONS.find(inst => inst.name === newUniversity);
-      if (institution) {
-        const currentDomain = currentEmail.split('@')[1];
-        if (currentDomain && currentDomain !== institution.domain) {
-          // Si el dominio no coincide, limpiar el email
-          formik.setFieldValue('email', '');
-        }
+    // Generar automáticamente el email basado en nombre y apellido
+    if (newUniversity === 'INACAP' && formik.values.first_name && formik.values.last_name) {
+      const generatedEmail = generateEmail(formik.values.first_name, formik.values.last_name);
+      formik.setFieldValue('email', generatedEmail);
+    }
+  };
+
+  // Función para manejar cambios en nombre y apellido
+  const handleNameChange = (field: string, value: string) => {
+    formik.setFieldValue(field, value);
+    
+    // Generar automáticamente el email si ya se seleccionó INACAP
+    if (formik.values.university === 'INACAP') {
+      const firstName = field === 'first_name' ? value : formik.values.first_name;
+      const lastName = field === 'last_name' ? value : formik.values.last_name;
+      
+      if (firstName && lastName) {
+        const generatedEmail = generateEmail(firstName, lastName);
+        formik.setFieldValue('email', generatedEmail);
       }
     }
   };
+
+  // Función para manejar la visibilidad de las contraseñas
+  const handleTogglePasswordVisibility = (field: keyof typeof showPasswords) => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
+
+  // useEffect para limpiar el formulario al montar el componente
+  useEffect(() => {
+    // Scroll hacia arriba al montar el componente
+    window.scrollTo(0, 0);
+    
+    // Función para limpiar completamente el formulario
+    const clearFormCompletely = () => {
+      // Reset de Formik
+      formik.resetForm();
+      
+      // Reset de estados
+      setShowPasswords({
+        password: false,
+        password_confirm: false,
+        responsible_password: false,
+        responsible_password_confirm: false,
+      });
+      setShowConduct(false);
+      
+      // Limpiar localStorage y sessionStorage
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (e) {
+        // Ignorar errores
+      }
+      
+      // Limpiar todos los campos del DOM
+      const inputs = document.querySelectorAll('input, select, textarea');
+      inputs.forEach((input: any) => {
+        if (input.type === 'checkbox') {
+          input.checked = false;
+        } else if (input.type === 'date') {
+          input.value = '';
+        } else {
+          input.value = '';
+        }
+        // Forzar el evento change
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      
+      // Reset del formulario HTML
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.reset();
+      });
+    };
+    
+    // Ejecutar limpieza inmediatamente
+    clearFormCompletely();
+    
+    // Ejecutar limpieza después de un delay para asegurar que se ejecute
+    setTimeout(clearFormCompletely, 100);
+    setTimeout(clearFormCompletely, 500);
+    setTimeout(clearFormCompletely, 1000);
+    
+  }, []);
 
   // useEffect para mostrar el recuadro de normas de conducta automáticamente
   useEffect(() => {
@@ -383,8 +528,10 @@ export const Register = () => {
             <Alert severity="info" sx={{ mb: 3 }}>
               <Typography variant="body2" component="div">
                 <strong>Reglas de registro para estudiantes:</strong>
-                <br />• Solo se permiten correos institucionales de las 10 universidades autorizadas
+                <br />• <strong>IMPORTANTE:</strong> El registro actualmente está disponible únicamente para estudiantes de INACAP
+                <br />• Solo se permiten correos institucionales de INACAP (@inacapmail.cl)
                 <br />• La contraseña debe tener al menos 8 caracteres, una mayúscula y un caracter especial
+                <br />• El correo electrónico se generará automáticamente con el formato: nombre.apellido@inacapmail.cl
               </Typography>
             </Alert>
           )}
@@ -393,14 +540,21 @@ export const Register = () => {
             <Alert severity="info" sx={{ mb: 3 }}>
               <Typography variant="body2" component="div">
                 <strong>Reglas de registro para empresas:</strong>
+                <br />• <strong>IMPORTANTE:</strong> El registro actualmente está disponible únicamente para empresas que trabajen con estudiantes de INACAP
                 <br />• Todos los campos son obligatorios
                 <br />• La contraseña debe tener al menos 8 caracteres, una mayúscula y un caracter especial
                 <br />• Los teléfonos deben tener 9 dígitos (se agrega automáticamente +56)
+                <br />• Solo se permiten empresas registradas en Chile
               </Typography>
             </Alert>
           )}
 
-          <Box component="form" onSubmit={formik.handleSubmit}>
+                     <Box 
+             component="form" 
+             onSubmit={formik.handleSubmit} 
+             autoComplete="off"
+             key={`form-${userType}-${formKey}`}
+           >
             <Box display="flex" flexDirection="column" gap={3}>
               {/* Campos específicos según tipo de usuario */}
               {userType === 'student' && (
@@ -418,10 +572,12 @@ export const Register = () => {
                         name="first_name"
                         label="Nombre"
                         value={formik.values.first_name}
-                        onChange={formik.handleChange}
+                        onChange={(e) => handleNameChange('first_name', e.target.value)}
                         error={formik.touched.first_name && Boolean(formik.errors.first_name)}
                         helperText={formik.touched.first_name && formik.errors.first_name}
                         disabled={loading}
+                        autoComplete="off"
+                        inputProps={{ autoComplete: 'off' }}
                       />
                     </Box>
 
@@ -431,36 +587,17 @@ export const Register = () => {
                         name="last_name"
                         label="Apellido"
                         value={formik.values.last_name}
-                        onChange={formik.handleChange}
+                        onChange={(e) => handleNameChange('last_name', e.target.value)}
                         error={formik.touched.last_name && Boolean(formik.errors.last_name)}
                         helperText={formik.touched.last_name && formik.errors.last_name}
                         disabled={loading}
+                        autoComplete="off"
+                        inputProps={{ autoComplete: 'off' }}
                       />
                     </Box>
                   </Box>
 
                   <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
-                    <Box flex={1} minWidth={200}>
-                      <TextField
-                        fullWidth
-                        name="email"
-                        label="Correo electrónico"
-                        type="email"
-                        placeholder={getEmailPlaceholder(formik.values.university)}
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={
-                          formik.touched.email && formik.errors.email 
-                            ? formik.errors.email 
-                            : formik.values.university 
-                              ? `Formato requerido: nombre.apellido@${INSTITUTIONS.find(inst => inst.name === formik.values.university)?.domain}`
-                              : 'Selecciona una institución para ver el formato de correo requerido'
-                        }
-                        disabled={loading}
-                      />
-                    </Box>
-
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
@@ -479,6 +616,25 @@ export const Register = () => {
                           inputMode: 'numeric',
                         }}
                       />
+                    </Box>
+
+                    <Box flex={1} minWidth={200}>
+                      <FormControl fullWidth>
+                        <InputLabel>Nivel educativo</InputLabel>
+                        <Select
+                          name="education_level"
+                          value={formik.values.education_level}
+                          onChange={formik.handleChange}
+                          error={formik.touched.education_level && Boolean(formik.errors.education_level)}
+                          disabled={loading}
+                        >
+                          {EDUCATION_LEVELS.map((level) => (
+                            <MenuItem key={level.value} value={level.value}>
+                              {level.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </Box>
                   </Box>
 
@@ -521,7 +677,7 @@ export const Register = () => {
                       Información Académica
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Selecciona tu institución educativa para ver el formato de correo requerido
+                      Selecciona tu institución educativa para generar automáticamente tu correo institucional
                     </Typography>
                   </Box>
 
@@ -548,6 +704,38 @@ export const Register = () => {
                     <Box flex={1} minWidth={200}>
                       <TextField
                         fullWidth
+                        name="email"
+                        label="Correo electrónico"
+                        type="email"
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        error={formik.touched.email && Boolean(formik.errors.email)}
+                        helperText={
+                          formik.touched.email && formik.errors.email 
+                            ? formik.errors.email 
+                            : formik.values.university === 'INACAP'
+                              ? 'Formato: nombre.apellido@inacapmail.cl'
+                              : 'Selecciona INACAP para generar tu correo automáticamente y corrige el formato real si es necesario'
+                        }
+                        disabled={loading}
+                        autoComplete="new-email"
+                        inputProps={{ autoComplete: 'new-email' }}
+                      />
+                    </Box>
+                  </Box>
+
+                  {/* Aviso informativo para estudiantes */}
+                  <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
+                    <Typography variant="body2">
+                      <strong>Importante:</strong> Este correo electrónico será tu usuario para iniciar sesión en la plataforma. 
+                      Podrás cambiar tus datos personales una vez estés dentro de tu cuenta.
+                    </Typography>
+                  </Alert>
+
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
+                    <Box flex={1} minWidth={200}>
+                      <TextField
+                        fullWidth
                         name="career"
                         label="Carrera"
                         value={formik.values.career}
@@ -559,56 +747,78 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2}>
-                    <Box flex={1} minWidth={200}>
-                      <FormControl fullWidth>
-                        <InputLabel>Nivel educativo</InputLabel>
-                        <Select
-                          name="education_level"
-                          value={formik.values.education_level}
+                  {/* Campos de contraseña solo para estudiantes */}
+                  {userType === 'student' && (
+                    <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
+                      <Box flex={1} minWidth={200}>
+                        <TextField
+                          fullWidth
+                          name="password"
+                          label="Contraseña"
+                          type={showPasswords.password ? 'text' : 'password'}
+                          value={formik.values.password}
                           onChange={formik.handleChange}
-                          error={formik.touched.education_level && Boolean(formik.errors.education_level)}
+                          error={formik.touched.password && Boolean(formik.errors.password)}
+                          helperText={formik.touched.password && formik.errors.password}
                           disabled={loading}
-                        >
-                          {EDUCATION_LEVELS.map((level) => (
-                            <MenuItem key={level.value} value={level.value}>
-                              {level.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Box>
+                          autoComplete="new-password"
+                          inputProps={{ autoComplete: 'new-password' }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  onClick={() => handleTogglePasswordVisibility('password')}
+                                  edge="end"
+                                  disabled={loading}
+                                >
+                                  {showPasswords.password ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </Box>
 
-                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
-                    <Box flex={1} minWidth={200}>
-                      <TextField
-                        fullWidth
-                        name="password"
-                        label="Contraseña"
-                        type="password"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        error={formik.touched.password && Boolean(formik.errors.password)}
-                        helperText={formik.touched.password && formik.errors.password}
-                        disabled={loading}
-                      />
+                      <Box flex={1} minWidth={200}>
+                        <TextField
+                          fullWidth
+                          name="password_confirm"
+                          label="Confirmar contraseña"
+                          type={showPasswords.password_confirm ? 'text' : 'password'}
+                          value={formik.values.password_confirm}
+                          onChange={formik.handleChange}
+                          error={formik.touched.password_confirm && Boolean(formik.errors.password_confirm)}
+                          helperText={formik.touched.password_confirm && formik.errors.password_confirm}
+                          disabled={loading}
+                          autoComplete="new-password"
+                          inputProps={{ autoComplete: 'new-password' }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  onClick={() => handleTogglePasswordVisibility('password_confirm')}
+                                  edge="end"
+                                  disabled={loading}
+                                >
+                                  {showPasswords.password_confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </Box>
                     </Box>
+                  )}
 
-                    <Box flex={1} minWidth={200}>
-                      <TextField
-                        fullWidth
-                        name="password_confirm"
-                        label="Confirmar contraseña"
-                        type="password"
-                        value={formik.values.password_confirm}
-                        onChange={formik.handleChange}
-                        error={formik.touched.password_confirm && Boolean(formik.errors.password_confirm)}
-                        helperText={formik.touched.password_confirm && formik.errors.password_confirm}
-                        disabled={loading}
-                      />
-                    </Box>
-                  </Box>
+                  {/* Aviso adicional para estudiantes sobre contraseñas */}
+                  {userType === 'student' && (
+                    <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
+                      <Typography variant="body2">
+                        <strong>Recordatorio:</strong> Esta contraseña será la que uses para iniciar sesión en la plataforma. 
+                        Guárdala en un lugar seguro.
+                      </Typography>
+                    </Alert>
+                  )}
 
                   <Box>
                     <FormControlLabel
@@ -650,7 +860,7 @@ export const Register = () => {
                 <>
                   <Box>
                     <Typography variant="h6" gutterBottom>
-                      Información Personal
+                      Información Personal (usuario responsable)
                     </Typography>
                   </Box>
 
@@ -752,36 +962,6 @@ export const Register = () => {
                     </Box>
                   </Box>
 
-                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
-                    <Box flex={1} minWidth={200}>
-                      <TextField
-                        fullWidth
-                        name="password"
-                        label="Contraseña"
-                        type="password"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        error={formik.touched.password && Boolean(formik.errors.password)}
-                        helperText={formik.touched.password && formik.errors.password}
-                        disabled={loading}
-                      />
-                    </Box>
-
-                    <Box flex={1} minWidth={200}>
-                      <TextField
-                        fullWidth
-                        name="password_confirm"
-                        label="Confirmar contraseña"
-                        type="password"
-                        value={formik.values.password_confirm}
-                        onChange={formik.handleChange}
-                        error={formik.touched.password_confirm && Boolean(formik.errors.password_confirm)}
-                        helperText={formik.touched.password_confirm && formik.errors.password_confirm}
-                        disabled={loading}
-                      />
-                    </Box>
-                  </Box>
-
                   <Box>
                     <Typography variant="h6" gutterBottom>
                       Información de la Empresa
@@ -811,9 +991,9 @@ export const Register = () => {
                           error={formik.touched.personality && Boolean(formik.errors.personality)} 
                           disabled={loading}
                         >
-                          <MenuItem value="juridica">Jurídica</MenuItem>
-                          <MenuItem value="natural">Natural</MenuItem>
-                          <MenuItem value="otra">Otra</MenuItem>
+                          <MenuItem value="Jurídica">Jurídica</MenuItem>
+                          <MenuItem value="Natural">Natural</MenuItem>
+                          <MenuItem value="Otra">Otra</MenuItem>
                         </Select>
                       </FormControl>
                     </Box>
@@ -829,7 +1009,9 @@ export const Register = () => {
                         onChange={formik.handleChange} 
                         error={formik.touched.business_name && Boolean(formik.errors.business_name)} 
                         helperText={formik.touched.business_name && formik.errors.business_name} 
-                        disabled={loading} 
+                        disabled={loading}
+                        autoComplete="off"
+                        inputProps={{ autoComplete: 'off' }}
                       />
                     </Box>
                     <Box flex={1} minWidth={200}>
@@ -841,7 +1023,9 @@ export const Register = () => {
                         onChange={formik.handleChange} 
                         error={formik.touched.company_name && Boolean(formik.errors.company_name)} 
                         helperText={formik.touched.company_name && formik.errors.company_name} 
-                        disabled={loading} 
+                        disabled={loading}
+                        autoComplete="off"
+                        inputProps={{ autoComplete: 'off' }}
                       />
                     </Box>
                   </Box>
@@ -856,7 +1040,9 @@ export const Register = () => {
                         onChange={formik.handleChange} 
                         error={formik.touched.company_address && Boolean(formik.errors.company_address)} 
                         helperText={formik.touched.company_address && formik.errors.company_address} 
-                        disabled={loading} 
+                        disabled={loading}
+                        autoComplete="off"
+                        inputProps={{ autoComplete: 'off' }}
                       />
                     </Box>
                     <Box flex={1} minWidth={200}>
@@ -871,7 +1057,12 @@ export const Register = () => {
                         }} 
                         error={formik.touched.company_phone && Boolean(formik.errors.company_phone)} 
                         helperText={formik.touched.company_phone && formik.errors.company_phone} 
-                        disabled={loading} 
+                        disabled={loading}
+                        autoComplete="off"
+                        inputProps={{ 
+                          autoComplete: 'off',
+                          inputMode: 'numeric' 
+                        }}
                         InputProps={{ 
                           startAdornment: <InputAdornment position="start">+56</InputAdornment>, 
                           inputMode: 'numeric' 
@@ -891,10 +1082,87 @@ export const Register = () => {
                         onChange={formik.handleChange} 
                         error={formik.touched.company_email && Boolean(formik.errors.company_email)} 
                         helperText={formik.touched.company_email && formik.errors.company_email} 
-                        disabled={loading} 
+                        disabled={loading}
+                        autoComplete="new-email"
+                        inputProps={{ autoComplete: 'new-email' }}
                       />
                     </Box>
                   </Box>
+
+                  {/* Aviso sobre email de empresa */}
+                  <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
+                    <Typography variant="body2">
+                      <strong>Nota:</strong> Este correo electrónico de la empresa será tu usuario para iniciar sesión en la plataforma.
+                    </Typography>
+                  </Alert>
+
+                  <Box display="flex" gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
+                    <Box flex={1} minWidth={200}>
+                                             <TextField
+                         fullWidth
+                         name="password"
+                         label="Contraseña"
+                         type={showPasswords.password ? 'text' : 'password'}
+                         value={formik.values.password}
+                         onChange={formik.handleChange}
+                         error={formik.touched.password && Boolean(formik.errors.password)}
+                         helperText={formik.touched.password && formik.errors.password}
+                         disabled={loading}
+                         autoComplete="new-password"
+                         inputProps={{ autoComplete: 'new-password' }}
+                         InputProps={{
+                           endAdornment: (
+                             <InputAdornment position="end">
+                               <IconButton
+                                 onClick={() => handleTogglePasswordVisibility('password')}
+                                 edge="end"
+                                 disabled={loading}
+                               >
+                                 {showPasswords.password ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                               </IconButton>
+                             </InputAdornment>
+                           ),
+                         }}
+                       />
+                    </Box>
+
+                    <Box flex={1} minWidth={200}>
+                                             <TextField
+                         fullWidth
+                         name="password_confirm"
+                         label="Confirmar contraseña"
+                         type={showPasswords.password_confirm ? 'text' : 'password'}
+                         value={formik.values.password_confirm}
+                         onChange={formik.handleChange}
+                         error={formik.touched.password_confirm && Boolean(formik.errors.password_confirm)}
+                         helperText={formik.touched.password_confirm && formik.errors.password_confirm}
+                         disabled={loading}
+                         autoComplete="new-password"
+                         inputProps={{ autoComplete: 'new-password' }}
+                         InputProps={{
+                           endAdornment: (
+                             <InputAdornment position="end">
+                               <IconButton
+                                 onClick={() => handleTogglePasswordVisibility('password_confirm')}
+                                 edge="end"
+                                 disabled={loading}
+                               >
+                                 {showPasswords.password_confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                               </IconButton>
+                             </InputAdornment>
+                           ),
+                         }}
+                       />
+                    </Box>
+                  </Box>
+
+                  {/* Aviso informativo para empresas */}
+                  <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
+                    <Typography variant="body2">
+                      <strong>Importante:</strong> El correo electrónico de la empresa y la contraseña serán tus credenciales para iniciar sesión en la plataforma. 
+                      Podrás cambiar tus datos una vez estés dentro de tu cuenta.
+                    </Typography>
+                  </Alert>
 
 
 
