@@ -813,6 +813,24 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 
                 <Grid item xs={12} md={6}>
                   <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Tipo de Actividad
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.tipo}
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Objetivo del Proyecto
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.objetivo}
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
                     Duración
                   </Typography>
                   <Typography variant="body1">
@@ -834,21 +852,42 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 
                 <Grid item xs={12} md={6}>
                   <Typography variant="h6" fontWeight={600} gutterBottom>
-                    Dificultad
+                    Responsable del Proyecto
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.difficulty}
+                    {selectedProject.encargado}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
                   <Typography variant="h6" fontWeight={600} gutterBottom>
-                    Nivel API Mínimo
+                    Contacto de la Empresa
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.min_api_level}
+                    {selectedProject.contacto}
                   </Typography>
                 </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Etapa de Desarrollo
+                  </Typography>
+                  <Typography variant="body1">
+                    Opción {selectedProject.trl_id} - {selectedProject.trl_name || 'Etapa de desarrollo'}
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Horas Ofrecidas
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedProject.required_hours} horas
+                  </Typography>
+                </Grid>
+                
+ 
+
                 
                 {selectedProject.start_date && (
                   <Grid item xs={12} md={6}>
