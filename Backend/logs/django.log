@@ -3238,3 +3238,15 @@ INFO 2025-07-31 19:30:41,523 basehttp 9020 13284 "GET /api/companies/company_me/
 INFO 2025-07-31 19:30:45,529 middleware 9020 8244 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
 INFO 2025-07-31 19:30:45,530 middleware 9020 8244 Respuesta: 200 - POST /api/auth/logout/
 INFO 2025-07-31 19:30:45,547 basehttp 9020 8244 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-07-31 20:01:08,832 middleware 9020 14124 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-07-31 20:01:09,484 middleware 9020 14124 Respuesta: 200 - POST /api/token/
+INFO 2025-07-31 20:01:09,559 basehttp 9020 14124 "POST /api/token/ HTTP/1.1" 200 1138
+INFO 2025-07-31 20:01:09,582 middleware 9020 14124 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-07-31 20:01:09,611 middleware 9020 14124 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-07-31 20:01:09,636 basehttp 9020 14124 "GET /api/users/profile/ HTTP/1.1" 200 1845
+INFO 2025-07-31 20:01:09,705 middleware 9020 14124 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-07-31 20:01:09,905 middleware 9020 14124 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-07-31 20:01:09,943 basehttp 9020 14124 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 265
+INFO 2025-07-31 20:01:25,492 middleware 9020 15636 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-07-31 20:01:25,494 middleware 9020 15636 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-07-31 20:01:25,514 basehttp 9020 15636 "POST /api/auth/logout/ HTTP/1.1" 200 47

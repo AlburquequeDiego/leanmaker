@@ -11,7 +11,9 @@ import {
   Avatar,
   TextField,
   Divider,
-  IconButton
+  IconButton,
+  Chip,
+  Stack
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SchoolIcon from '@mui/icons-material/School';
@@ -19,16 +21,22 @@ import BusinessIcon from '@mui/icons-material/Business';
 import GroupIcon from '@mui/icons-material/Group';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 import HelpIcon from '@mui/icons-material/Help';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import InnovationIcon from '@mui/icons-material/AutoAwesome';
+import CommunityIcon from '@mui/icons-material/People';
+import EventIcon from '@mui/icons-material/Event';
+import ToolIcon from '@mui/icons-material/Build';
+import NewsIcon from '@mui/icons-material/Article';
+import NetworkIcon from '@mui/icons-material/Share';
+import RocketIcon from '@mui/icons-material/RocketLaunch';
 
 export default function Home() {
   const navigate = useNavigate();
 
-  // useEffect para hacer scroll hacia arriba al montar el componente
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Función para hacer scroll suave a una sección
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -37,15 +45,9 @@ export default function Home() {
   };
 
   return (
-    <Box
-      sx={{
-        bgcolor: '#eaf1fb',
-        minHeight: '100vh',
-        width: '100vw',
-        overflowX: 'hidden',
-      }}
-    >
-      {/* Header fijo ) */}
+    <Box sx={{ bgcolor: '#eaf1fb', minHeight: '100vh', width: '100vw', overflowX: 'hidden' }}>
+      
+      {/* 1. Header con navegación futurista */}
       <Box sx={{ 
         bgcolor: '#0a2342', 
         color: 'white', 
@@ -57,56 +59,86 @@ export default function Home() {
         position: 'sticky',
         top: 0,
         zIndex: 1000,
-        width: '100%'
+        width: '100%',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.15)',
+        background: 'linear-gradient(135deg, #0a2342 0%, #1a365d 100%)'
       }}>
-        <Typography variant="h6" fontWeight={800} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>Leanmaker</Typography>
+        <Typography variant="h6" fontWeight={800} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+          Leanmaker
+        </Typography>
         <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 } }}>
+          <IconButton color="inherit" onClick={() => scrollToSection('crecimiento-estudiantil')} sx={{ p: { xs: 1, md: 1.5 } }}><SchoolIcon /></IconButton>
+          <IconButton color="inherit" onClick={() => scrollToSection('impacto-empresas')} sx={{ p: { xs: 1, md: 1.5 } }}><BusinessIcon /></IconButton>
+          <IconButton color="inherit" onClick={() => scrollToSection('innovacion')} sx={{ p: { xs: 1, md: 1.5 } }}><InnovationIcon /></IconButton>
           <IconButton color="inherit" onClick={() => scrollToSection('contacto')} sx={{ p: { xs: 1, md: 1.5 } }}><ContactSupportIcon /></IconButton>
-          <IconButton color="inherit" onClick={() => scrollToSection('por-que-leanmaker')} sx={{ p: { xs: 1, md: 1.5 } }}><HelpIcon /></IconButton>
         </Box>
       </Box>
 
-      {/* Hero principal */}
+      {/* 2. Hero Section - Futurista con efectos iridiscentes */}
       <Box sx={{ 
         bgcolor: '#0a2342', 
         color: 'white', 
-        py: { xs: 4, md: 8 }, 
+        py: { xs: 6, md: 12 }, 
         textAlign: 'center',
-        width: '100%'
+        width: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(45deg, rgba(25,118,210,0.1) 0%, rgba(156,39,176,0.1) 50%, rgba(255,193,7,0.1) 100%)',
+          zIndex: 1
+        }
       }}>
-        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
-          <Typography variant="h3" fontWeight={800} gutterBottom sx={{ 
-            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-            lineHeight: 1.2
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 }, position: 'relative', zIndex: 2 }}>
+          <Typography variant="h2" fontWeight={800} gutterBottom sx={{ 
+            fontSize: { xs: '2.5rem', sm: '3rem', md: '4rem' },
+            lineHeight: 1.1,
+            background: 'linear-gradient(45deg, #fff, #e3f2fd)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
           }}>
-            Conecta tu talento con el mundo real
+            Construyendo el Futuro de la Educación
           </Typography>
-          <Typography variant="h6" sx={{ 
-            mb: 3,
-            fontSize: { xs: '1rem', md: '1.25rem' },
-            lineHeight: 1.4
+          <Typography variant="h5" sx={{ 
+            mb: 4,
+            fontSize: { xs: '1.1rem', md: '1.4rem' },
+            lineHeight: 1.4,
+            opacity: 0.9
           }}>
-           Facilitamos la gestión de proyectos, prácticas y procesos de vinculación
-            entre estudiantes universitarios y empresas, promoviendo el 
-            crecimiento conjunto y el aprendizaje con propósito.
+            Conectamos estudiantes con empresas para crear impacto social positivo y transformar comunidades
           </Typography>
+          
+
+
           <Box sx={{ 
             display: 'flex', 
             justifyContent: 'center', 
-            gap: { xs: 1, md: 2 },
+            gap: { xs: 2, md: 3 },
             flexDirection: { xs: 'column', sm: 'row' },
             alignItems: 'center'
           }}>
             <Button 
               variant="contained" 
-              color="primary" 
               size="large" 
               sx={{ 
                 fontWeight: 700, 
-                px: { xs: 3, md: 5 },
-                py: { xs: 1.5, md: 2 },
-                fontSize: { xs: '0.9rem', md: '1rem' },
-                minWidth: { xs: '200px', sm: 'auto' }
+                px: { xs: 4, md: 6 },
+                py: { xs: 2, md: 2.5 },
+                fontSize: { xs: '1rem', md: '1.1rem' },
+                background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                boxShadow: '0 8px 25px rgba(25,118,210,0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #1565c0, #1976d2)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 12px 35px rgba(25,118,210,0.4)'
+                },
+                transition: 'all 0.3s ease'
               }} 
               onClick={() => navigate('/login')}
             >
@@ -114,16 +146,20 @@ export default function Home() {
             </Button>
             <Button 
               variant="outlined" 
-              color="secondary" 
               size="large" 
               sx={{ 
                 fontWeight: 700, 
-                px: { xs: 3, md: 5 },
-                py: { xs: 1.5, md: 2 },
-                bgcolor: 'white', 
-                color: 'primary.main', 
-                borderColor: 'primary.main',
-                minWidth: { xs: '200px', sm: 'auto' }
+                px: { xs: 4, md: 6 },
+                py: { xs: 2, md: 2.5 },
+                fontSize: { xs: '1rem', md: '1.1rem' },
+                borderColor: 'white',
+                color: 'white',
+                '&:hover': {
+                  borderColor: 'white',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  transform: 'translateY(-2px)'
+                },
+                transition: 'all 0.3s ease'
               }} 
               onClick={() => navigate('/register')}
             >
@@ -133,446 +169,667 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* Bloque de 3 tarjetas grandes */}
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', lg: 'row' }, 
-          gap: { xs: 3, md: 4 }, 
-          justifyContent: 'center',
-          alignItems: 'stretch'
-        }}>
-          {[{
-            title: 'Crecimiento Personal',
-            desc: 'Participa en proyectos con empresas y adquiere experiencia práctica.Desarrolla tu confianza, autonomía y habilidades blandas mientras participas en proyectos reales.',
-            img: '/imagenes/practica.png',
-          }, {
-            title: 'Experiencias Transformadoras',
-            desc: 'Vive desafíos que potencian tu desarrollo profesional y personal en entornos colaborativos.',
-            img: '/imagenes/filosofia.png',
-          }, {
-            title: 'Formación Integral',
-            desc: 'Integra conocimientos técnicos, mentoría y experiencia real para convertirte en un profesional completo.',
-            img: '/imagenes/vinculacion.png',
-          }].map((item, i) => (
-            <Card key={i} sx={{ 
-              flex: 1, 
-              minWidth: { xs: '100%', sm: 280, lg: 260 }, 
-              textAlign: 'center', 
-              boxShadow: 2,
-              display: 'flex',
-              flexDirection: 'column'
-            }}>
-              <CardMedia 
-                component="img" 
-                height="120" 
-                image={item.img} 
-                alt={item.title}
-                sx={{ objectFit: 'cover' }}
-              />
-              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>{item.title}</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1, lineHeight: 1.5 }}>{item.desc}</Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      </Container>
-
-      {/* Bloque: ¿Cómo funciona? (lista con íconos e imagen) */}
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 }, px: { xs: 2, md: 3 } }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', lg: 'row' }, 
-          alignItems: 'center', 
-          gap: { xs: 4, md: 6 }
-        }}>
-          <Box sx={{ flex: 1, width: '100%' }}>
-            <img 
-              src="/imagenes/filosofia.png" 
-              alt="Cómo funciona Leanmaker" 
-              style={{ 
-                width: '100%', 
-                maxWidth: '500px',
-                height: 'auto',
-                borderRadius: 12, 
-                boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                display: 'block',
-                margin: '0 auto'
-              }} 
-            />
-          </Box>
-          <Box sx={{ flex: 2, width: '100%' }}>
-            <Typography variant="h5" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
-              ¿Cómo funciona Leanmaker?
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-              {[{
-                icon: <CheckCircleIcon color="primary" />, text: 'Regístrate y crea tu perfil profesional.'
-              }, {
-                icon: <SchoolIcon color="primary" />, text: 'Explora proyectos y oportunidades de empresas.'
-              }, {
-                icon: <BusinessIcon color="primary" />, text: 'Conecta con empresas y mentores.'
-              }, {
-                icon: <GroupIcon color="primary" />, text: 'Participa en proyectos reales y crece profesionalmente.'
-              }].map((item, i) => (
-                <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                  <Box sx={{ mt: 0.5, flexShrink: 0 }}>{item.icon}</Box>
-                  <Typography variant="body1" sx={{ lineHeight: 1.5, fontSize: { xs: '0.9rem', md: '1rem' } }}>{item.text}</Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Bloque de 2 recuadros independientes con imagen y texto (proyectos destacados) */}
-      <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', lg: 'row' }, 
-          gap: { xs: 3, md: 4 },
-          alignItems: 'stretch'
-        }}>
-          {/* Card 1 */}
-          <Card sx={{ 
-            flex: 1, 
-            minWidth: { xs: '100%', sm: 280, lg: 260 }, 
-            boxShadow: 2, 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <CardMedia
-              component="img"
-              height="180"
-              image="/imagenes/portada.png"
-              alt="Red de Contactos"
-              sx={{ objectFit: 'cover' }}
-            />
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                Red de Contactos
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
-                Conecta de manera activa con empresas, mentores y otros estudiantes, 
-                creando una red de contactos que te permitirá potenciar tu desarrollo profesional.
-                Estas conexiones no solo facilitarán el acceso a oportunidades laborales, 
-                sino que también te brindarán valiosas perspectivas y consejos de expertos en el 
-                campo, favoreciendo tu crecimiento personal y académico.
-              </Typography>
-            </CardContent>
-          </Card>
-          {/* Card 2 */}
-          <Card sx={{ 
-            flex: 1, 
-            minWidth: { xs: '100%', sm: 280, lg: 260 }, 
-            boxShadow: 2, 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <CardMedia
-              component="img"
-              height="180"
-              image="/imagenes/portada.png"
-              alt="Crecimiento Profesional"
-              sx={{ objectFit: 'cover' }}
-            />
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                Crecimiento Profesional
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
-                Desarrolla las habilidades clave que te prepararán para los retos del mundo laboral, 
-                adquiriendo competencias técnicas, de comunicación y trabajo en equipo, esenciales 
-                para destacar en el mercado. A través de experiencias prácticas y de aprendizaje, 
-                estarás mejor preparado para afrontar los desafíos profesionales, con una sólida base 
-                que te permitirá adaptarte y sobresalir en cualquier entorno de trabajo.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-      </Container>
-
-      {/* Bloque: ¿Por qué Leanmaker? (tres cuadros independientes) */}
-      <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }} id="por-que-leanmaker">
-        <Typography variant="h5" fontWeight={700} align="center" sx={{ mb: 3, fontSize: { xs: '1.5rem', md: '2rem' } }}>
-          ¿Por qué Leanmaker?
-        </Typography>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', md: 'row' }, 
-          gap: { xs: 3, md: 3 }, 
-          justifyContent: 'center',
-          alignItems: 'stretch'
-        }}>
-          {/* Card 1 */}
-          <Card sx={{ 
-            flex: 1, 
-            minWidth: { xs: '100%', sm: 220 }, 
-            boxShadow: 2, 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                Inserción Laboral Temprana
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
-                Facilita la inserción de estudiantes en el mundo laboral a través de proyectos reales y prácticas profesionales.
-              </Typography>
-            </CardContent>
-          </Card>
-          {/* Card 2 */}
-          <Card sx={{ 
-            flex: 1, 
-            minWidth: { xs: '100%', sm: 220 }, 
-            boxShadow: 2, 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                Vinculación Empresa-Universidad
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
-                Conecta empresas con talento joven, promoviendo la innovación y el desarrollo de proyectos colaborativos.
-              </Typography>
-            </CardContent>
-          </Card>
-          {/* Card 3 */}
-          <Card sx={{ 
-            flex: 1, 
-            minWidth: { xs: '100%', sm: 220 }, 
-            boxShadow: 2, 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                Proyectos Reales
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
-                Participa en proyectos reales, guiados por expertos, que potencian el aprendizaje y la experiencia profesional.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-      </Container>
-
-      {/* Bloque de 3 tarjetas grandes */}
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, md: 3 } }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', lg: 'row' }, 
-          gap: { xs: 3, md: 4 }, 
-          justifyContent: 'center',
-          alignItems: 'stretch'
-        }}>
-          {[{
-            title: 'Impacto Social Positivo',
-            desc: 'El apoyo a empresas pequeñas fortalece la economía local y contribuye a la creación de empleos, lo que a su vez beneficia a la comunidad y la sociedad en general.',
-            img: '/imagenes/impacto.png',
-          }, {
-            title: 'Experiencia en Proyectos Reales',
-            desc: 'Los estudiantes pueden aplicar sus conocimientos en proyectos prácticos de empresas pequeñas, obteniendo horas de experiencia real que suman a su formación académica y profesional.',
-            img: '/imagenes/trabajando.png',
-          }, {
-            title: 'Fortalecimiento de Redes Locales',
-            desc: 'El trabajo con pequeñas empresas facilita la creación de una red de contactos y colaboraciones que favorece tanto a los estudiantes como a las empresas, contribuyendo al crecimiento de la comunidad empresarial local.',
-            img: '/imagenes/redes1.png',
-          }].map((item, i) => (
-            <Card key={i} sx={{ 
-              flex: 1, 
-              minWidth: { xs: '100%', sm: 280, lg: 260 }, 
-              textAlign: 'center', 
-              boxShadow: 2,
-              display: 'flex',
-              flexDirection: 'column'
-            }}>
-              <CardMedia 
-                component="img" 
-                height="120" 
-                image={item.img} 
-                alt={item.title}
-                sx={{ objectFit: 'cover' }}
-              />
-              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>{item.title}</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>{item.desc}</Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      </Container>
-
-      {/* Bloque: Te acompañamos en cada paso (solo texto) */}
-      <Box sx={{ bgcolor: '#dbeafe', py: { xs: 4, md: 8 }, width: '100%' }}>
-        <Container maxWidth="md" sx={{ px: { xs: 2, md: 3 } }}>
-          <Typography variant="h4" fontWeight={700} align="center" gutterBottom sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' } }}>
-            Te acompañamos en cada paso
-          </Typography>
-          <Typography variant="h6" align="center" color="text.secondary" sx={{ fontSize: { xs: '1rem', md: '1.25rem' }, lineHeight: 1.5 }}>
-            En Leanmaker, nuestro equipo y comunidad están siempre listos para apoyarte, resolver tus dudas y ayudarte a alcanzar tus metas profesionales.
-          </Typography>
-        </Container>
-      </Box>
-
-      {/* Bloque: ¿Listo para registrarte? (CTA grande) */}
-      <Box sx={{ bgcolor: 'primary.main', color: 'white', py: { xs: 4, md: 8 }, textAlign: 'center', width: '100%' }}>
-        <Container maxWidth="md" sx={{ px: { xs: 2, md: 3 } }}>
-          <Typography variant="h4" fontWeight={800} gutterBottom sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' } }}>
-            ¿Listo para registrarte y transformar tu futuro?
-          </Typography>
-          <Typography variant="h6" sx={{ 
-            mb: 4,
-            fontSize: { xs: '1rem', md: '1.25rem' },
-            lineHeight: 1.5
-          }}>
-            Únete a Leanmaker y accede a oportunidades únicas de crecimiento profesional personalizadas para ti.
-          </Typography>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            size="large" 
-            sx={{ 
-              fontWeight: 700, 
-              px: { xs: 3, md: 5 },
-              py: { xs: 1.5, md: 2 },
-              fontSize: { xs: '0.9rem', md: '1rem' }
-            }} 
-            onClick={() => navigate('/register')}
-          >
-            Regístrate!
-          </Button>
-        </Container>
-      </Box>
-
-      {/* Bloque de filosofía de Leanmaker */}
-      <Box sx={{ 
-        bgcolor: '#eaf1fb', 
-        py: { xs: 4, md: 8 }, 
-        display: 'flex', 
-        justifyContent: 'center',
-        width: '100%'
-      }} id="contacto">
+      {/* 3. Sección de Crecimiento Estudiantil */}
+      <Box id="crecimiento-estudiantil" sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
         <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Historias de Transformación Estudiantil
+          </Typography>
+          
           <Box sx={{ 
             display: 'flex', 
-            alignItems: 'center', 
-            gap: { xs: 3, md: 6 }, 
-            flexDirection: { xs: 'column', lg: 'row' }
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
           }}>
-            <Box sx={{ flex: 1, width: '100%', textAlign: 'center' }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
               <img 
-                src="/imagenes/filosofia.png" 
-                alt="Filosofía de Leanmaker" 
+                src="/imagenes/practica.png" 
+                alt="Crecimiento Estudiantil" 
                 style={{ 
                   width: '100%', 
-                  maxWidth: '400px',
+                  maxWidth: '500px',
                   height: 'auto',
-                  borderRadius: 12, 
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                   display: 'block',
                   margin: '0 auto'
                 }} 
               />
             </Box>
             <Box sx={{ flex: 1, width: '100%' }}>
-              <Typography variant="h4" fontWeight={700} gutterBottom sx={{ 
-                fontSize: { xs: '1.8rem', md: '2.2rem' },
-                color: '#0a2342',
-                mb: 3
-              }}>
-                Nuestra Filosofía
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                De Estudiante a Profesional
               </Typography>
-              
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Box>
-                  <Typography variant="h6" fontWeight={600} sx={{ 
-                    color: '#1976d2',
-                    mb: 1,
-                    fontSize: { xs: '1.1rem', md: '1.25rem' }
-                  }}>
-                    Misión
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
-                    lineHeight: 1.6,
-                    color: '#333',
-                    fontSize: { xs: '0.95rem', md: '1rem' }
-                  }}>
-                    Conectar el talento universitario con las necesidades reales del mercado laboral, 
-                    facilitando la inserción profesional de estudiantes a través de proyectos prácticos 
-                    y experiencias significativas con empresas.
-                  </Typography>
-                </Box>
-
-                <Box>
-                  <Typography variant="h6" fontWeight={600} sx={{ 
-                    color: '#1976d2',
-                    mb: 1,
-                    fontSize: { xs: '1.1rem', md: '1.25rem' }
-                  }}>
-                    Visión
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
-                    lineHeight: 1.6,
-                    color: '#333',
-                    fontSize: { xs: '0.95rem', md: '1rem' }
-                  }}>
-                    Ser la plataforma líder en CHILE que transforme la educación superior 
-                    mediante la vinculación efectiva entre universidades, estudiantes y empresas, 
-                    creando un ecosistema de aprendizaje y crecimiento profesional sostenible.
-                  </Typography>
-                </Box>
-
-                <Box>
-                  <Typography variant="h6" fontWeight={600} sx={{ 
-                    color: '#1976d2',
-                    mb: 1,
-                    fontSize: { xs: '1.1rem', md: '1.25rem' }
-                  }}>
-                    Valores Fundamentales
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
-                    lineHeight: 1.6,
-                    color: '#333',
-                    fontSize: { xs: '0.95rem', md: '1rem' }
-                  }}>
-                    <strong>Excelencia:</strong> Buscamos la calidad en cada proyecto y experiencia.<br/>
-                    <strong>Innovación:</strong> Fomentamos la creatividad y el pensamiento disruptivo.<br/>
-                    <strong>Colaboración:</strong> Creemos en el poder del trabajo en equipo.<br/>
-                    <strong>Impacto Social:</strong> Contribuimos al desarrollo de nuestra comunidad.
-                  </Typography>
-                </Box>
+                {[
+                  'Desarrollo de habilidades técnicas y blandas',
+                  'Experiencia en proyectos reales con empresas',
+                  'Mentoría personalizada de expertos',
+                  'Red de contactos profesionales'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <CheckCircleIcon sx={{ color: '#4caf50', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
               </Box>
             </Box>
           </Box>
         </Container>
       </Box>
 
-      {/* Footer */}
+      {/* 4. Sección de Impacto en Empresas */}
+      <Box id="impacto-empresas" sx={{ py: { xs: 6, md: 8 }, bgcolor: '#f8f9fa' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Empresas que Transforman Comunidades
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Impacto Social Positivo
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Apoyo a empresas pequeñas y medianas',
+                  'Innovación en procesos empresariales',
+                  'Desarrollo de soluciones tecnológicas',
+                  'Fortalecimiento de la economía local'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <BusinessIcon sx={{ color: '#ff9800', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/impacto.png" 
+                alt="Impacto en Empresas" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 5. Sección de Innovación Tecnológica */}
+      <Box id="innovacion" sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Innovación al Servicio de la Comunidad
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/filosofia.png" 
+                alt="Innovación Tecnológica" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Proyectos Tecnológicos Innovadores
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Desarrollo de aplicaciones móviles',
+                  'Sistemas de gestión empresarial',
+                  'Soluciones de automatización',
+                  'Plataformas de e-commerce'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <InnovationIcon sx={{ color: '#9c27b0', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 6. Sección de Colaboración Académica */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: '#f8f9fa' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Alianzas Estratégicas con INACAP y Más
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Colaboración Académica
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Programas de prácticas profesionales',
+                  'Proyectos de investigación conjuntos',
+                  'Eventos académicos y conferencias',
+                  'Intercambio de conocimientos'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <SchoolIcon sx={{ color: '#2196f3', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/Colaboración Académica.png" 
+                alt="Colaboración Académica" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 7. Sección de Proyectos Propios */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Proyectos Emblemáticos de Estudiantes Destacados
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex',
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/trabajando.png" 
+                alt="Proyectos Propios" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Innovación Estudiantil
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Aplicaciones móviles innovadoras',
+                  'Sistemas de gestión inteligentes',
+                  'Plataformas educativas digitales',
+                  'Soluciones de sostenibilidad'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <RocketIcon sx={{ color: '#f44336', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 8. Sección de Emprendimiento */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: '#f8f9fa' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            De Estudiante a Emprendedor
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Historias de Éxito
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Startups tecnológicas exitosas',
+                  'Empresas de consultoría',
+                  'Plataformas digitales',
+                  'Servicios innovadores'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <TrendingUpIcon sx={{ color: '#4caf50', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/Historias de Éxito.png" 
+                alt="Emprendimiento" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 9. Sección de Impacto Social */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Mejorando Comunidades a Través de la Tecnología
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex',
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/Mejorando Comunidades a Través de la Tecnología.png" 
+                alt="Impacto Social" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Beneficios Comunitarios
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Fortalecimiento de la economía local',
+                  'Creación de empleos sostenibles',
+                  'Mejora de servicios comunitarios',
+                  'Desarrollo de infraestructura digital'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <CommunityIcon sx={{ color: '#ff9800', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 10. Sección de Eventos y Conferencias */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: '#f8f9fa' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Conectando Mentes, Construyendo Futuros
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex',
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Eventos y Networking
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Conferencias de innovación tecnológica',
+                  'Workshops de desarrollo profesional',
+                  'Eventos de networking empresarial',
+                  'Hackathons y competencias'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <EventIcon sx={{ color: '#9c27b0', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/filosofia.png" 
+                alt="Eventos y Conferencias" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 11. Sección de Recursos y Herramientas */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Herramientas para el Crecimiento Profesional
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/Herramientas para el Crecimiento Profesional.png" 
+                alt="Recursos y Herramientas" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Recursos Educativos
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Tutoriales y guías prácticas',
+                  'Plantillas de proyectos',
+                  'Herramientas de desarrollo',
+                  'Biblioteca de recursos digitales'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <ToolIcon sx={{ color: '#607d8b', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+          ))}
+        </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 12. Sección de Noticias y Actualizaciones */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: '#f8f9fa' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Últimas Noticias y Actualizaciones
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Novedades de la Plataforma
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Nuevas funcionalidades disponibles',
+                  'Logros de estudiantes destacados',
+                  'Colaboraciones con nuevas empresas',
+                  'Eventos próximos en la agenda'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <NewsIcon sx={{ color: '#e91e63', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/vinculacion.png" 
+                alt="Noticias y Actualizaciones" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 13. Sección de Comunidad y Networking */}
+      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+            mb: 6, 
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            color: '#0a2342'
+          }}>
+            Únete a Nuestra Comunidad de Innovadores
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', lg: 'row' }, 
+            gap: { xs: 4, md: 6 }, 
+            alignItems: 'center'
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <img 
+                src="/imagenes/portada.png" 
+                alt="Comunidad y Networking" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '500px',
+                  height: 'auto',
+                  borderRadius: 16, 
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </Box>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
+                Conecta y Colabora
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {[
+                  'Grupos de interés especializados',
+                  'Mentorías personalizadas',
+                  'Redes de contactos profesionales',
+                  'Oportunidades de colaboración'
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <NetworkIcon sx={{ color: '#00bcd4', mt: 0.5, flexShrink: 0 }} />
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 14. CTA Final */}
       <Box sx={{ 
         bgcolor: '#0a2342', 
         color: 'white', 
-        py: { xs: 3, md: 4 }, 
-        mt: 6, 
+        py: { xs: 8, md: 12 }, 
         textAlign: 'center',
-        width: '100%'
+        background: 'linear-gradient(135deg, #0a2342 0%, #1a365d 100%)'
       }}>
+        <Container maxWidth="md" sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h3" fontWeight={800} gutterBottom sx={{ 
+            fontSize: { xs: '2rem', md: '3rem' },
+            mb: 3
+          }}>
+            ¿Listo para Transformar tu Futuro?
+          </Typography>
+          <Typography variant="h6" sx={{ 
+            mb: 6,
+            fontSize: { xs: '1.1rem', md: '1.3rem' },
+            lineHeight: 1.5,
+            opacity: 0.9
+          }}>
+            Únete a Leanmaker y accede a oportunidades únicas de crecimiento profesional y desarrollo de proyectos innovadores.
+          </Typography>
+          <Button 
+            variant="contained" 
+            size="large" 
+            sx={{ 
+              fontWeight: 700, 
+              px: { xs: 6, md: 8 },
+              py: { xs: 2.5, md: 3 },
+              fontSize: { xs: '1.1rem', md: '1.2rem' },
+              background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+              boxShadow: '0 8px 25px rgba(25,118,210,0.3)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #1565c0, #1976d2)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 12px 35px rgba(25,118,210,0.4)'
+              },
+              transition: 'all 0.3s ease'
+            }} 
+            onClick={() => navigate('/register')}
+          >
+            ¡Regístrate Ahora!
+          </Button>
+        </Container>
+      </Box>
+
+      {/* 15. Footer */}
+      <Box sx={{ 
+        bgcolor: '#0a2342', 
+        color: 'white', 
+        py: { xs: 4, md: 6 }, 
+        textAlign: 'center',
+        background: 'linear-gradient(135deg, #0a2342 0%, #1a365d 100%)'
+      }} id="contacto">
         <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+          <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, fontSize: { xs: '1.3rem', md: '1.5rem' } }}>
             Leanmaker
           </Typography>
-          <Typography variant="body2" color="rgba(255,255,255,0.7)" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
+          <Typography variant="body1" color="rgba(255,255,255,0.8)" sx={{ 
+            fontSize: { xs: '1rem', md: '1.1rem' },
+            mb: 3
+          }}>
             Plataforma de vinculación y gestión de proyectos para estudiantes y empresas.
           </Typography>
-          <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.1)' }} />
-          <Typography variant="body2" color="rgba(255,255,255,0.5)" sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>
+          <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.2)' }} />
+          <Typography variant="body2" color="rgba(255,255,255,0.6)" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
             © {new Date().getFullYear()} Leanmaker. Todos los derechos reservados 
           </Typography>
         </Container>
