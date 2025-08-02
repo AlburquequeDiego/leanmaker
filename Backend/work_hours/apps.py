@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class WorkHoursConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'work_hours'
+    verbose_name = 'Work Hours' 

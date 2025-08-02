@@ -1,0 +1,941 @@
+# Django Log File
+# Created: 2025-01-08
+# This file is used by Django for logging INFO 2025-08-02 00:02:37,041 autoreload 19224 4588 Watching for file changes with StatReloader
+INFO 2025-08-02 00:03:15,245 basehttp 19224 17620 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:03:15,245 basehttp 19224 17212 "OPTIONS /api/users/profile/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:03:15,278 middleware 19224 17212 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:15,287 middleware 19224 17212 Respuesta: 401 - GET /api/users/profile/
+WARNING 2025-08-02 00:03:16,115 log 19224 17212 Unauthorized: /api/users/profile/
+WARNING 2025-08-02 00:03:16,115 basehttp 19224 17212 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-08-02 00:03:16,115 middleware 19224 17212 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:16,122 basehttp 19224 17620 "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:03:16,123 middleware 19224 17620 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:16,123 middleware 19224 17212 Respuesta: 401 - GET /api/users/profile/
+WARNING 2025-08-02 00:03:16,139 log 19224 17212 Unauthorized: /api/users/profile/
+WARNING 2025-08-02 00:03:16,139 basehttp 19224 17212 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-08-02 00:03:16,147 middleware 19224 17212 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:16,425 middleware 19224 17212 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-08-02 00:03:16,425 middleware 19224 17620 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-08-02 00:03:16,524 basehttp 19224 17212 "POST /api/token/refresh/ HTTP/1.1" 200 277
+INFO 2025-08-02 00:03:16,532 basehttp 19224 17620 "POST /api/token/refresh/ HTTP/1.1" 200 277
+INFO 2025-08-02 00:03:16,540 middleware 19224 17212 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:16,573 middleware 19224 17212 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:03:16,648 basehttp 19224 17212 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:03:16,656 middleware 19224 17212 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:16,682 middleware 19224 17212 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:03:16,724 basehttp 19224 17212 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:03:56,527 basehttp 19224 17212 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:03:56,531 middleware 19224 17212 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:57,931 middleware 19224 17212 Respuesta: 200 - POST /api/token/
+INFO 2025-08-02 00:03:58,086 basehttp 19224 17212 "POST /api/token/ HTTP/1.1" 200 1167
+INFO 2025-08-02 00:03:58,087 middleware 19224 17212 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:58,121 middleware 19224 17212 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:03:58,170 basehttp 19224 17212 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:03:58,253 basehttp 19224 17212 "OPTIONS /api/dashboard/company_stats/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:03:58,260 middleware 19224 17212 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:03:58,300 middleware 19224 17212 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-02 00:03:58,383 basehttp 19224 17212 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 265
+INFO 2025-08-02 00:04:10,811 middleware 19224 17444 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:10,831 middleware 19224 17444 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:04:10,876 basehttp 19224 17444 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:04:10,882 middleware 19224 17444 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:10,902 middleware 19224 17444 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:04:10,950 basehttp 19224 17444 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:04:10,956 basehttp 19224 17444 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:10,959 basehttp 19224 17444 "OPTIONS /api/companies/company_me/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:10,962 middleware 19224 17444 Petición: GET /api/companies/company_me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:10,986 middleware 19224 17444 Respuesta: 200 - GET /api/companies/company_me/
+INFO 2025-08-02 00:04:11,080 basehttp 19224 17444 "GET /api/companies/company_me/ HTTP/1.1" 200 1171
+INFO 2025-08-02 00:04:11,082 middleware 19224 17444 Petición: GET /api/companies/company_me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:11,107 middleware 19224 17444 Respuesta: 200 - GET /api/companies/company_me/
+INFO 2025-08-02 00:04:11,146 basehttp 19224 17444 "GET /api/companies/company_me/ HTTP/1.1" 200 1171
+INFO 2025-08-02 00:04:12,187 basehttp 19224 17444 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:12,190 basehttp 19224 20156 "OPTIONS /api/notifications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:12,195 middleware 19224 20156 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:12,229 middleware 19224 20156 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:04:12,301 basehttp 19224 20156 "GET /api/notifications/ HTTP/1.1" 200 388
+INFO 2025-08-02 00:04:12,306 middleware 19224 20156 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:12,334 middleware 19224 20156 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:04:12,374 basehttp 19224 20156 "GET /api/notifications/ HTTP/1.1" 200 388
+INFO 2025-08-02 00:04:49,311 basehttp 19224 3936 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:49,311 basehttp 19224 13960 "OPTIONS /api/projects/company_projects/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:49,314 middleware 19224 13960 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:49,377 middleware 19224 13960 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:04:49,492 basehttp 19224 13960 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:04:49,497 middleware 19224 13960 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:49,524 middleware 19224 13960 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:04:49,557 basehttp 19224 13960 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:04:50,473 basehttp 19224 13960 "OPTIONS /api/applications/received_applications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:50,479 middleware 19224 13960 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:50,532 middleware 19224 13960 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-02 00:04:50,705 basehttp 19224 13960 "GET /api/applications/received_applications/ HTTP/1.1" 200 1613
+INFO 2025-08-02 00:04:51,424 middleware 19224 13960 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:51,466 middleware 19224 13960 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:04:51,504 basehttp 19224 13960 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:04:51,513 middleware 19224 13960 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:51,550 middleware 19224 13960 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:04:51,587 basehttp 19224 13960 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:04:53,200 middleware 19224 13960 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:53,234 middleware 19224 13960 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-02 00:04:53,279 basehttp 19224 13960 "GET /api/applications/received_applications/ HTTP/1.1" 200 1613
+INFO 2025-08-02 00:04:54,151 basehttp 19224 2600 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:54,151 basehttp 19224 19384 "OPTIONS /api/users/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:54,171 middleware 19224 19384 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:54,186 middleware 19224 19384 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:04:54,250 basehttp 19224 19384 "GET /api/users/ HTTP/1.1" 200 693
+INFO 2025-08-02 00:04:54,255 middleware 19224 19384 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:54,256 basehttp 19224 2600 "OPTIONS /api/students/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:54,258 middleware 19224 2600 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:54,274 middleware 19224 19384 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:04:54,291 middleware 19224 2600 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:04:54,324 basehttp 19224 19384 "GET /api/users/ HTTP/1.1" 200 693
+INFO 2025-08-02 00:04:54,397 basehttp 19224 2600 "GET /api/students/ HTTP/1.1" 200 1228
+INFO 2025-08-02 00:04:54,405 middleware 19224 2600 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:54,424 middleware 19224 2600 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:04:54,456 basehttp 19224 2600 "GET /api/students/ HTTP/1.1" 200 1228
+INFO 2025-08-02 00:04:56,600 middleware 19224 2600 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:56,632 middleware 19224 2600 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:04:56,680 basehttp 19224 2600 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:04:56,685 middleware 19224 2600 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:56,685 basehttp 19224 19384 "OPTIONS /api/evaluations/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:56,697 middleware 19224 19384 Petición: GET /api/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:56,729 middleware 19224 2600 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:04:56,750 middleware 19224 19384 Respuesta: 200 - GET /api/evaluations/
+INFO 2025-08-02 00:04:56,943 basehttp 19224 2600 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:04:56,954 basehttp 19224 19384 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-08-02 00:04:56,959 middleware 19224 19384 Petición: GET /api/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:56,959 middleware 19224 2600 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:56,984 middleware 19224 2600 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:04:56,994 middleware 19224 19384 Respuesta: 200 - GET /api/evaluations/
+INFO 2025-08-02 00:04:57,050 basehttp 19224 2600 "GET /api/users/ HTTP/1.1" 200 693
+INFO 2025-08-02 00:04:57,050 basehttp 19224 19384 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-08-02 00:04:57,058 middleware 19224 19384 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:57,061 middleware 19224 2600 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:57,079 middleware 19224 19384 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:04:57,083 middleware 19224 2600 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:04:57,152 basehttp 19224 19384 "GET /api/students/ HTTP/1.1" 200 1228
+INFO 2025-08-02 00:04:57,152 basehttp 19224 2600 "GET /api/users/ HTTP/1.1" 200 693
+INFO 2025-08-02 00:04:57,158 basehttp 19224 2600 "OPTIONS /api/company-ratings/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:57,164 middleware 19224 2600 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:57,166 middleware 19224 19384 Petición: GET /api/company-ratings/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:57,181 middleware 19224 19384 Respuesta: 200 - GET /api/company-ratings/
+INFO 2025-08-02 00:04:57,196 middleware 19224 2600 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:04:57,274 basehttp 19224 19384 "GET /api/company-ratings/ HTTP/1.1" 200 27
+INFO 2025-08-02 00:04:57,287 basehttp 19224 19384 "OPTIONS /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:57,294 basehttp 19224 2600 "GET /api/students/ HTTP/1.1" 200 1228
+INFO 2025-08-02 00:04:57,299 middleware 19224 2600 Petición: GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:57,301 middleware 19224 19384 Petición: GET /api/company-ratings/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:57,401 middleware 19224 2600 Respuesta: 200 - GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/
+INFO 2025-08-02 00:04:57,411 middleware 19224 19384 Respuesta: 200 - GET /api/company-ratings/
+INFO 2025-08-02 00:04:57,558 basehttp 19224 2600 "GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ HTTP/1.1" 200 129
+INFO 2025-08-02 00:04:57,566 basehttp 19224 19384 "GET /api/company-ratings/ HTTP/1.1" 200 27
+INFO 2025-08-02 00:04:57,602 middleware 19224 19384 Petición: GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:57,616 middleware 19224 19384 Respuesta: 200 - GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/
+INFO 2025-08-02 00:04:57,666 basehttp 19224 19384 "GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ HTTP/1.1" 200 129
+INFO 2025-08-02 00:04:59,221 basehttp 19224 19384 "OPTIONS /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:59,223 basehttp 19224 2600 "OPTIONS /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 0
+INFO 2025-08-02 00:04:59,225 middleware 19224 19384 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:59,306 middleware 19224 19384 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:04:59,537 basehttp 19224 19384 "GET /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 3462
+INFO 2025-08-02 00:04:59,540 middleware 19224 19384 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:04:59,643 middleware 19224 19384 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:04:59,699 basehttp 19224 19384 "GET /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 3462
+INFO 2025-08-02 00:05:01,751 basehttp 19224 19384 "OPTIONS /api/strikes/reports/company/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:05:01,752 basehttp 19224 2600 "OPTIONS /api/strikes/reports/company/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:05:01,753 middleware 19224 2600 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:01,794 middleware 19224 2600 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-02 00:05:02,000 basehttp 19224 2600 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-08-02 00:05:02,011 middleware 19224 2600 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:02,043 middleware 19224 2600 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-02 00:05:02,102 basehttp 19224 2600 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-08-02 00:05:02,548 basehttp 19224 19384 "OPTIONS /api/calendar/events/company_events/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:05:02,548 basehttp 19224 2600 "OPTIONS /api/calendar/events/company_events/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:05:02,560 middleware 19224 2600 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:02,672 middleware 19224 2600 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:05:02,857 basehttp 19224 2600 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 6239
+INFO 2025-08-02 00:05:02,860 middleware 19224 2600 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:02,870 middleware 19224 19384 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:02,942 middleware 19224 19384 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:03,033 middleware 19224 2600 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:05:03,064 basehttp 19224 19384 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:03,068 middleware 19224 19384 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:03,154 middleware 19224 19384 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-02 00:05:03,161 basehttp 19224 2600 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 6239
+INFO 2025-08-02 00:05:03,181 middleware 19224 2600 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:03,252 basehttp 19224 19384 "GET /api/applications/received_applications/ HTTP/1.1" 200 1613
+INFO 2025-08-02 00:05:03,256 middleware 19224 2600 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:03,289 basehttp 19224 2600 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:03,383 middleware 19224 2600 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:03,406 middleware 19224 2600 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-02 00:05:03,432 basehttp 19224 2600 "GET /api/applications/received_applications/ HTTP/1.1" 200 1613
+INFO 2025-08-02 00:05:04,608 middleware 19224 14412 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:04,640 middleware 19224 14412 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-02 00:05:04,673 basehttp 19224 14412 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-08-02 00:05:04,682 middleware 19224 14412 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:04,709 middleware 19224 14412 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-02 00:05:04,739 basehttp 19224 14412 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-08-02 00:05:41,134 middleware 19224 15508 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:41,156 middleware 19224 15508 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-02 00:05:41,179 basehttp 19224 15508 "GET /api/applications/received_applications/ HTTP/1.1" 200 1613
+INFO 2025-08-02 00:05:41,513 middleware 19224 15508 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:41,533 middleware 19224 15508 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:41,553 basehttp 19224 15508 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:41,555 middleware 19224 15508 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:41,582 middleware 19224 15508 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:41,601 basehttp 19224 15508 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:42,945 middleware 19224 15508 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:42,964 middleware 19224 15508 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:05:42,978 basehttp 19224 15508 "GET /api/notifications/ HTTP/1.1" 200 388
+INFO 2025-08-02 00:05:42,978 middleware 19224 15508 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:42,994 middleware 19224 15508 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:05:43,063 basehttp 19224 15508 "GET /api/notifications/ HTTP/1.1" 200 388
+INFO 2025-08-02 00:05:46,689 middleware 19224 15392 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:46,706 middleware 19224 15392 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:05:46,757 basehttp 19224 15392 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:05:46,757 middleware 19224 15392 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:46,774 middleware 19224 15392 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:05:46,805 basehttp 19224 15392 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:05:46,812 middleware 19224 15392 Petición: GET /api/companies/company_me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:46,829 middleware 19224 15392 Respuesta: 200 - GET /api/companies/company_me/
+INFO 2025-08-02 00:05:46,874 basehttp 19224 15392 "GET /api/companies/company_me/ HTTP/1.1" 200 1171
+INFO 2025-08-02 00:05:46,874 middleware 19224 15392 Petición: GET /api/companies/company_me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:46,895 middleware 19224 15392 Respuesta: 200 - GET /api/companies/company_me/
+INFO 2025-08-02 00:05:46,934 basehttp 19224 15392 "GET /api/companies/company_me/ HTTP/1.1" 200 1171
+INFO 2025-08-02 00:05:47,522 middleware 19224 15392 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:47,548 middleware 19224 15392 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:05:47,592 basehttp 19224 15392 "GET /api/notifications/ HTTP/1.1" 200 388
+INFO 2025-08-02 00:05:47,594 middleware 19224 15392 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:47,624 middleware 19224 15392 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:05:47,686 basehttp 19224 15392 "GET /api/notifications/ HTTP/1.1" 200 388
+INFO 2025-08-02 00:05:55,028 middleware 19224 7896 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:55,062 middleware 19224 7896 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-02 00:05:55,127 basehttp 19224 7896 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-08-02 00:05:55,139 middleware 19224 7896 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:55,209 middleware 19224 7896 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-02 00:05:55,261 basehttp 19224 7896 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-08-02 00:05:55,756 middleware 19224 7896 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:55,876 middleware 19224 7896 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:05:55,942 basehttp 19224 7896 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 6239
+INFO 2025-08-02 00:05:55,950 middleware 19224 7896 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:55,958 middleware 19224 16872 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:56,016 middleware 19224 16872 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:56,116 middleware 19224 7896 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:05:56,122 basehttp 19224 16872 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:56,126 middleware 19224 16872 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:56,212 basehttp 19224 7896 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 6239
+INFO 2025-08-02 00:05:56,218 middleware 19224 16872 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-02 00:05:56,229 middleware 19224 7896 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:56,294 basehttp 19224 16872 "GET /api/applications/received_applications/ HTTP/1.1" 200 1613
+INFO 2025-08-02 00:05:56,298 middleware 19224 7896 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:56,351 basehttp 19224 7896 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:56,376 middleware 19224 7896 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:56,405 middleware 19224 7896 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-02 00:05:56,450 basehttp 19224 7896 "GET /api/applications/received_applications/ HTTP/1.1" 200 1613
+INFO 2025-08-02 00:05:57,285 middleware 19224 7896 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:57,352 middleware 19224 7896 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:05:57,418 basehttp 19224 7896 "GET /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 3462
+INFO 2025-08-02 00:05:57,420 middleware 19224 7896 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:57,484 middleware 19224 7896 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-02 00:05:57,532 basehttp 19224 7896 "GET /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 3462
+INFO 2025-08-02 00:05:58,436 middleware 19224 7896 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,474 middleware 19224 7896 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:58,507 basehttp 19224 7896 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:58,518 middleware 19224 7896 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,518 middleware 19224 16872 Petición: GET /api/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,562 middleware 19224 16872 Respuesta: 200 - GET /api/evaluations/
+INFO 2025-08-02 00:05:58,578 middleware 19224 7896 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-02 00:05:58,622 basehttp 19224 16872 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-08-02 00:05:58,647 middleware 19224 16872 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,663 basehttp 19224 7896 "GET /api/projects/company_projects/ HTTP/1.1" 200 799
+INFO 2025-08-02 00:05:58,675 middleware 19224 7896 Petición: GET /api/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,680 middleware 19224 16872 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:05:58,711 middleware 19224 7896 Respuesta: 200 - GET /api/evaluations/
+INFO 2025-08-02 00:05:58,745 basehttp 19224 16872 "GET /api/users/ HTTP/1.1" 200 693
+INFO 2025-08-02 00:05:58,761 middleware 19224 16872 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,786 basehttp 19224 7896 "GET /api/evaluations/ HTTP/1.1" 200 69
+INFO 2025-08-02 00:05:58,799 middleware 19224 7896 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,807 middleware 19224 16872 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:05:58,819 middleware 19224 7896 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:05:58,851 basehttp 19224 16872 "GET /api/students/ HTTP/1.1" 200 1228
+INFO 2025-08-02 00:05:58,868 middleware 19224 16872 Petición: GET /api/company-ratings/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,899 basehttp 19224 7896 "GET /api/users/ HTTP/1.1" 200 693
+INFO 2025-08-02 00:05:58,901 middleware 19224 7896 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:58,909 middleware 19224 16872 Respuesta: 200 - GET /api/company-ratings/
+INFO 2025-08-02 00:05:58,944 middleware 19224 7896 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:05:58,959 basehttp 19224 16872 "GET /api/company-ratings/ HTTP/1.1" 200 27
+INFO 2025-08-02 00:05:58,967 middleware 19224 16872 Petición: GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:59,008 middleware 19224 16872 Respuesta: 200 - GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/
+INFO 2025-08-02 00:05:59,020 basehttp 19224 7896 "GET /api/students/ HTTP/1.1" 200 1228
+INFO 2025-08-02 00:05:59,027 middleware 19224 7896 Petición: GET /api/company-ratings/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:59,051 middleware 19224 7896 Respuesta: 200 - GET /api/company-ratings/
+INFO 2025-08-02 00:05:59,077 basehttp 19224 16872 "GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ HTTP/1.1" 200 129
+INFO 2025-08-02 00:05:59,112 basehttp 19224 7896 "GET /api/company-ratings/ HTTP/1.1" 200 27
+INFO 2025-08-02 00:05:59,118 middleware 19224 7896 Petición: GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ - IP: 127.0.0.1
+INFO 2025-08-02 00:05:59,136 middleware 19224 7896 Respuesta: 200 - GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/
+INFO 2025-08-02 00:05:59,162 basehttp 19224 7896 "GET /api/projects/f6d102c5-afc3-4ee2-8cd5-e4358e3b0cbc/participants/ HTTP/1.1" 200 129
+INFO 2025-08-02 00:06:48,785 middleware 19224 4356 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:06:48,826 middleware 19224 4356 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-02 00:06:48,868 basehttp 19224 4356 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 265
+INFO 2025-08-02 00:06:51,651 middleware 19224 4356 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:06:51,680 middleware 19224 4356 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:06:51,724 basehttp 19224 4356 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:06:51,727 middleware 19224 4356 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:06:51,767 middleware 19224 4356 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:06:51,791 basehttp 19224 4356 "GET /api/users/profile/ HTTP/1.1" 200 1858
+INFO 2025-08-02 00:06:51,830 middleware 19224 4356 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:06:51,885 middleware 19224 4356 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-02 00:06:51,912 basehttp 19224 4356 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 265
+INFO 2025-08-02 00:08:06,451 basehttp 19224 16784 "OPTIONS /api/auth/logout/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:06,455 middleware 19224 16784 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:06,455 middleware 19224 16784 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-08-02 00:08:06,467 basehttp 19224 16784 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-02 00:08:08,506 middleware 19224 16784 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:08,909 middleware 19224 16784 Respuesta: 200 - POST /api/token/
+INFO 2025-08-02 00:08:08,942 basehttp 19224 16784 "POST /api/token/ HTTP/1.1" 200 1166
+INFO 2025-08-02 00:08:08,951 middleware 19224 16784 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:08,959 middleware 19224 16784 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:08:08,976 basehttp 19224 16784 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-02 00:08:09,041 basehttp 19224 16784 "OPTIONS /api/dashboard/student_stats/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:09,041 middleware 19224 16784 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:09,065 middleware 19224 16784 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-02 00:08:09,175 basehttp 19224 16784 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 216
+INFO 2025-08-02 00:08:13,008 middleware 19224 16784 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:13,047 middleware 19224 16784 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:08:13,108 basehttp 19224 16784 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-02 00:08:13,115 middleware 19224 16784 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:13,128 middleware 19224 16784 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:08:13,158 basehttp 19224 16784 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-02 00:08:13,198 middleware 19224 16784 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:13,250 middleware 19224 16784 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-02 00:08:13,288 basehttp 19224 16784 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 216
+INFO 2025-08-02 00:08:14,890 middleware 19224 16784 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:14,902 middleware 19224 16784 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:08:14,941 basehttp 19224 16784 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-02 00:08:14,948 middleware 19224 16784 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:14,949 basehttp 19224 12300 "OPTIONS /api/students/me/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:14,961 middleware 19224 12300 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:14,970 middleware 19224 16784 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:08:15,003 middleware 19224 12300 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:15,031 basehttp 19224 16784 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-02 00:08:15,120 basehttp 19224 12300 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:15,134 middleware 19224 16784 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:15,168 middleware 19224 16784 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:15,210 basehttp 19224 16784 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:17,244 middleware 19224 16784 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:17,267 middleware 19224 16784 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:08:17,321 basehttp 19224 16784 "GET /api/notifications/ HTTP/1.1" 200 1666
+INFO 2025-08-02 00:08:17,325 middleware 19224 16784 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:17,346 middleware 19224 16784 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-02 00:08:17,381 basehttp 19224 16784 "GET /api/notifications/ HTTP/1.1" 200 1666
+INFO 2025-08-02 00:08:19,309 basehttp 19224 16784 "OPTIONS /api/notifications/195ca40d-53eb-4732-b1e1-3e5251454741/mark-read/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:19,315 middleware 19224 16784 Petición: POST /api/notifications/195ca40d-53eb-4732-b1e1-3e5251454741/mark-read/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:19,353 middleware 19224 16784 Respuesta: 200 - POST /api/notifications/195ca40d-53eb-4732-b1e1-3e5251454741/mark-read/
+INFO 2025-08-02 00:08:19,398 basehttp 19224 16784 "POST /api/notifications/195ca40d-53eb-4732-b1e1-3e5251454741/mark-read/ HTTP/1.1" 200 73
+INFO 2025-08-02 00:08:20,989 basehttp 19224 16784 "OPTIONS /api/notifications/96368997-ac41-42f7-a664-8b7a0c03df55/mark-read/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:20,993 middleware 19224 16784 Petición: POST /api/notifications/96368997-ac41-42f7-a664-8b7a0c03df55/mark-read/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:21,029 middleware 19224 16784 Respuesta: 200 - POST /api/notifications/96368997-ac41-42f7-a664-8b7a0c03df55/mark-read/
+INFO 2025-08-02 00:08:21,099 basehttp 19224 16784 "POST /api/notifications/96368997-ac41-42f7-a664-8b7a0c03df55/mark-read/ HTTP/1.1" 200 73
+INFO 2025-08-02 00:08:25,193 basehttp 19224 12300 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:25,193 basehttp 19224 16784 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:25,198 middleware 19224 16784 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:25,198 basehttp 19224 12300 "OPTIONS /api/projects/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:25,204 basehttp 19224 12300 "OPTIONS /api/applications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:25,206 middleware 19224 12300 Petición: GET /api/applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:25,226 middleware 19224 16784 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:25,242 middleware 19224 12300 Respuesta: 200 - GET /api/applications/
+INFO 2025-08-02 00:08:25,308 basehttp 19224 12300 "GET /api/applications/ HTTP/1.1" 200 302
+INFO 2025-08-02 00:08:25,322 basehttp 19224 16784 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:25,326 middleware 19224 12300 Petición: GET /api/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:25,332 middleware 19224 16784 Petición: GET /api/applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:25,348 middleware 19224 12300 Respuesta: 200 - GET /api/projects/
+INFO 2025-08-02 00:08:25,358 middleware 19224 16784 Respuesta: 200 - GET /api/applications/
+INFO 2025-08-02 00:08:25,463 basehttp 19224 12300 "GET /api/projects/ HTTP/1.1" 200 27
+INFO 2025-08-02 00:08:25,463 basehttp 19224 16784 "GET /api/applications/ HTTP/1.1" 200 302
+INFO 2025-08-02 00:08:25,475 middleware 19224 16784 Petición: GET /api/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:25,475 middleware 19224 12300 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:25,495 middleware 19224 16784 Respuesta: 200 - GET /api/projects/
+INFO 2025-08-02 00:08:25,516 middleware 19224 12300 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:25,561 basehttp 19224 16784 "GET /api/projects/ HTTP/1.1" 200 27
+INFO 2025-08-02 00:08:25,589 basehttp 19224 12300 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:27,886 basehttp 19224 16784 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:27,886 basehttp 19224 12300 "OPTIONS /api/applications/my_applications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:27,901 middleware 19224 12300 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:27,925 middleware 19224 12300 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-02 00:08:28,032 basehttp 19224 12300 "GET /api/applications/my_applications/ HTTP/1.1" 200 881
+INFO 2025-08-02 00:08:28,035 middleware 19224 12300 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:28,066 middleware 19224 12300 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-02 00:08:28,123 basehttp 19224 12300 "GET /api/applications/my_applications/ HTTP/1.1" 200 881
+INFO 2025-08-02 00:08:29,953 basehttp 19224 16784 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:29,953 basehttp 19224 12300 "OPTIONS /api/projects/my_projects/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:29,967 middleware 19224 12300 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:29,991 middleware 19224 12300 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-02 00:08:30,098 basehttp 19224 12300 "GET /api/projects/my_projects/ HTTP/1.1" 200 64
+INFO 2025-08-02 00:08:30,103 middleware 19224 12300 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:30,123 middleware 19224 12300 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-02 00:08:30,156 basehttp 19224 12300 "GET /api/projects/my_projects/ HTTP/1.1" 200 64
+INFO 2025-08-02 00:08:33,138 basehttp 19224 12300 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:33,138 basehttp 19224 16784 "OPTIONS /api/calendar/events/student_events/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:33,142 middleware 19224 16784 Petición: GET /api/calendar/events/student_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:33,175 middleware 19224 16784 Respuesta: 200 - GET /api/calendar/events/student_events/
+INFO 2025-08-02 00:08:33,342 basehttp 19224 16784 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 1695
+INFO 2025-08-02 00:08:33,357 middleware 19224 16784 Petición: GET /api/calendar/events/student_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:33,395 middleware 19224 16784 Respuesta: 200 - GET /api/calendar/events/student_events/
+INFO 2025-08-02 00:08:33,433 basehttp 19224 16784 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 1695
+INFO 2025-08-02 00:08:34,439 middleware 19224 16784 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:34,465 middleware 19224 16784 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:34,501 basehttp 19224 16784 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:34,508 middleware 19224 16784 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:34,522 middleware 19224 16784 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:34,555 basehttp 19224 16784 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:35,206 middleware 19224 18592 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:35,206 basehttp 19224 16784 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:35,206 basehttp 19224 12300 "OPTIONS /api/students/api-level-requests/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:08:35,214 middleware 19224 12300 Petición: GET /api/students/api-level-requests/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:35,246 middleware 19224 18592 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:35,250 middleware 19224 12300 Respuesta: 200 - GET /api/students/api-level-requests/
+INFO 2025-08-02 00:08:35,340 basehttp 19224 12300 "GET /api/students/api-level-requests/ HTTP/1.1" 200 234
+INFO 2025-08-02 00:08:35,340 basehttp 19224 18592 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:35,363 middleware 19224 18592 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:35,365 middleware 19224 12300 Petición: GET /api/students/api-level-requests/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:35,398 middleware 19224 12300 Respuesta: 200 - GET /api/students/api-level-requests/
+INFO 2025-08-02 00:08:35,401 middleware 19224 18592 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-02 00:08:35,467 basehttp 19224 12300 "GET /api/students/api-level-requests/ HTTP/1.1" 200 234
+INFO 2025-08-02 00:08:35,475 basehttp 19224 18592 "GET /api/students/me/ HTTP/1.1" 200 1558
+INFO 2025-08-02 00:08:57,675 middleware 19224 18592 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:08:57,700 middleware 19224 18592 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-02 00:08:57,717 basehttp 19224 18592 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 216
+INFO 2025-08-02 00:09:00,750 middleware 19224 18592 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-08-02 00:09:00,754 middleware 19224 18592 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-08-02 00:09:00,801 basehttp 19224 18592 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-02 00:09:05,482 middleware 19224 18592 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-02 00:09:07,104 middleware 19224 18592 Respuesta: 200 - POST /api/token/
+INFO 2025-08-02 00:09:07,208 basehttp 19224 18592 "POST /api/token/ HTTP/1.1" 200 1092
+INFO 2025-08-02 00:09:07,210 middleware 19224 18592 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:09:07,226 middleware 19224 18592 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:09:07,275 basehttp 19224 18592 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:09:07,339 basehttp 19224 18592 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:09:07,351 middleware 19224 18592 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:09:07,389 middleware 19224 18592 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:09:07,454 basehttp 19224 18592 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:09:13,455 middleware 19224 18592 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:09:13,496 middleware 19224 18592 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:09:13,531 basehttp 19224 18592 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:09:13,542 middleware 19224 18592 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:09:13,554 middleware 19224 18592 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:09:13,599 basehttp 19224 18592 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:09:13,637 middleware 19224 18592 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:09:13,727 middleware 19224 18592 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:09:13,769 basehttp 19224 18592 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:12:24,283 middleware 19224 18592 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:24,299 middleware 19224 18592 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:12:24,331 basehttp 19224 18592 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:12:24,334 middleware 19224 18592 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:24,340 middleware 19224 18592 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:12:24,369 basehttp 19224 18592 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:12:25,519 basehttp 19224 12300 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:25,526 basehttp 19224 18592 "OPTIONS /api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:25,537 middleware 19224 18592 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:25,544 middleware 19224 18592 Respuesta: 302 - GET /api/mass-notifications/
+INFO 2025-08-02 00:12:25,616 basehttp 19224 18592 "GET /api/mass-notifications/ HTTP/1.1" 302 0
+INFO 2025-08-02 00:12:25,622 middleware 19224 18592 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:25,623 basehttp 19224 12300 "OPTIONS /login/?next=/api/mass-notifications/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:25,625 middleware 19224 18592 Respuesta: 302 - GET /api/mass-notifications/
+INFO 2025-08-02 00:12:25,629 middleware 19224 12300 Petición: GET /login/ - IP: 127.0.0.1
+ERROR 2025-08-02 00:12:25,638 middleware 19224 12300 Excepción en /login/: login.html
+INFO 2025-08-02 00:12:25,663 basehttp 19224 18592 "GET /api/mass-notifications/ HTTP/1.1" 302 0
+ERROR 2025-08-02 00:12:26,059 log 19224 12300 Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\core\views.py", line 254, in login_view
+    return render(request, 'login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: login.html
+INFO 2025-08-02 00:12:26,065 middleware 19224 12300 Respuesta: 500 - GET /login/
+ERROR 2025-08-02 00:12:26,107 basehttp 19224 12300 "GET /login/?next=/api/mass-notifications/ HTTP/1.1" 500 98555
+INFO 2025-08-02 00:12:26,109 middleware 19224 18592 Petición: GET /login/ - IP: 127.0.0.1
+ERROR 2025-08-02 00:12:26,109 middleware 19224 18592 Excepción en /login/: login.html
+ERROR 2025-08-02 00:12:26,202 log 19224 18592 Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\core\views.py", line 254, in login_view
+    return render(request, 'login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: login.html
+INFO 2025-08-02 00:12:26,207 middleware 19224 18592 Respuesta: 500 - GET /login/
+ERROR 2025-08-02 00:12:26,252 basehttp 19224 18592 "GET /login/?next=/api/mass-notifications/ HTTP/1.1" 500 98555
+INFO 2025-08-02 00:12:28,821 middleware 19224 18592 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:28,836 middleware 19224 18592 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:12:28,888 basehttp 19224 18592 "GET /api/users/ HTTP/1.1" 200 2497
+INFO 2025-08-02 00:12:28,894 middleware 19224 18592 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:28,908 middleware 19224 18592 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:12:28,935 basehttp 19224 18592 "GET /api/users/ HTTP/1.1" 200 2497
+INFO 2025-08-02 00:12:30,414 basehttp 19224 12300 "OPTIONS /api/projects/completed_pending_hours/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:30,414 basehttp 19224 18592 "OPTIONS /work-hours/?limit=15&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:30,414 basehttp 19224 16784 "OPTIONS /work-hours/?limit=15&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:30,429 middleware 19224 16784 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:30,429 basehttp 19224 12300 "OPTIONS /api/projects/completed_pending_hours/ HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:30,429 middleware 19224 18592 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:30,435 middleware 19224 18592 Respuesta: 302 - GET /work-hours/
+INFO 2025-08-02 00:12:30,454 middleware 19224 16784 Respuesta: 500 - GET /api/projects/completed_pending_hours/
+INFO 2025-08-02 00:12:30,493 basehttp 19224 18592 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 302 0
+INFO 2025-08-02 00:12:30,526 basehttp 19224 12300 "OPTIONS /login/?next=/work-hours/%3Flimit%3D15%26offset%3D0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:30,526 middleware 19224 18592 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:30,530 middleware 19224 12300 Petición: GET /login/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:30,533 middleware 19224 18592 Respuesta: 302 - GET /work-hours/
+ERROR 2025-08-02 00:12:30,534 middleware 19224 12300 Excepción en /login/: login.html
+ERROR 2025-08-02 00:12:30,575 log 19224 16784 Internal Server Error: /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:12:30,575 basehttp 19224 16784 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 500 186
+INFO 2025-08-02 00:12:30,591 middleware 19224 16784 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+ERROR 2025-08-02 00:12:30,693 log 19224 12300 Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\core\views.py", line 254, in login_view
+    return render(request, 'login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: login.html
+INFO 2025-08-02 00:12:30,699 middleware 19224 12300 Respuesta: 500 - GET /login/
+INFO 2025-08-02 00:12:30,707 middleware 19224 16784 Respuesta: 500 - GET /api/projects/completed_pending_hours/
+INFO 2025-08-02 00:12:30,731 basehttp 19224 18592 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 302 0
+ERROR 2025-08-02 00:12:30,788 log 19224 16784 Internal Server Error: /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:12:30,797 basehttp 19224 12300 "GET /login/?next=/work-hours/%3Flimit%3D15%26offset%3D0 HTTP/1.1" 500 98691
+ERROR 2025-08-02 00:12:30,803 basehttp 19224 16784 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 500 186
+INFO 2025-08-02 00:12:30,805 middleware 19224 18592 Petición: GET /login/ - IP: 127.0.0.1
+ERROR 2025-08-02 00:12:30,810 middleware 19224 18592 Excepción en /login/: login.html
+ERROR 2025-08-02 00:12:30,910 log 19224 18592 Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\Desktop\leanmaker\Backend\core\views.py", line 254, in login_view
+    return render(request, 'login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\albur\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: login.html
+INFO 2025-08-02 00:12:30,910 middleware 19224 18592 Respuesta: 500 - GET /login/
+ERROR 2025-08-02 00:12:30,952 basehttp 19224 18592 "GET /login/?next=/work-hours/%3Flimit%3D15%26offset%3D0 HTTP/1.1" 500 98691
+INFO 2025-08-02 00:12:32,190 basehttp 19224 12300 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:32,190 basehttp 19224 18592 "OPTIONS /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:32,193 middleware 19224 12300 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:32,262 middleware 19224 12300 Respuesta: 404 - GET /api/admin/companies/
+WARNING 2025-08-02 00:12:32,297 log 19224 12300 Not Found: /api/admin/companies/
+WARNING 2025-08-02 00:12:32,298 basehttp 19224 12300 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 404 19203
+INFO 2025-08-02 00:12:32,303 middleware 19224 18592 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:32,344 middleware 19224 18592 Respuesta: 404 - GET /api/admin/companies/
+WARNING 2025-08-02 00:12:32,369 log 19224 18592 Not Found: /api/admin/companies/
+WARNING 2025-08-02 00:12:32,369 basehttp 19224 18592 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 404 19203
+INFO 2025-08-02 00:12:33,159 basehttp 19224 12300 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:33,159 basehttp 19224 18592 "OPTIONS /api/students/?limit=20&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:33,176 middleware 19224 18592 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:33,192 middleware 19224 18592 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:12:33,268 basehttp 19224 18592 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:12:33,272 middleware 19224 18592 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:33,290 middleware 19224 18592 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:12:33,324 basehttp 19224 18592 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:12:33,330 middleware 19224 18592 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:33,347 middleware 19224 18592 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:12:33,372 basehttp 19224 18592 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:12:33,823 basehttp 19224 12300 "OPTIONS /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:33,823 basehttp 19224 18592 "OPTIONS /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:33,837 middleware 19224 18592 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:33,873 middleware 19224 18592 Respuesta: 404 - GET /api/admin/projects/
+WARNING 2025-08-02 00:12:33,905 log 19224 18592 Not Found: /api/admin/projects/
+WARNING 2025-08-02 00:12:33,905 basehttp 19224 18592 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 404 19199
+INFO 2025-08-02 00:12:33,912 middleware 19224 18592 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:33,950 middleware 19224 18592 Respuesta: 404 - GET /api/admin/projects/
+WARNING 2025-08-02 00:12:33,982 log 19224 18592 Not Found: /api/admin/projects/
+WARNING 2025-08-02 00:12:33,984 basehttp 19224 18592 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 404 19199
+INFO 2025-08-02 00:12:33,986 middleware 19224 18592 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:34,027 middleware 19224 18592 Respuesta: 404 - GET /api/admin/projects/
+WARNING 2025-08-02 00:12:34,063 log 19224 18592 Not Found: /api/admin/projects/
+WARNING 2025-08-02 00:12:34,063 basehttp 19224 18592 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 404 19199
+INFO 2025-08-02 00:12:34,486 basehttp 19224 18592 "OPTIONS /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:34,488 basehttp 19224 12300 "OPTIONS /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:34,491 basehttp 19224 16784 "OPTIONS /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:34,491 basehttp 19224 20060 "OPTIONS /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 0
+INFO 2025-08-02 00:12:34,505 middleware 19224 20060 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:34,505 middleware 19224 16784 Petición: GET /api/strikes/reports/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:34,566 middleware 19224 20060 Respuesta: 404 - GET /api/admin/evaluations/
+INFO 2025-08-02 00:12:34,587 middleware 19224 16784 Respuesta: 200 - GET /api/strikes/reports/
+WARNING 2025-08-02 00:12:34,792 log 19224 20060 Not Found: /api/admin/evaluations/
+WARNING 2025-08-02 00:12:34,808 basehttp 19224 20060 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 404 19210
+INFO 2025-08-02 00:12:34,808 basehttp 19224 16784 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-08-02 00:12:34,817 middleware 19224 20060 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:34,820 middleware 19224 16784 Petición: GET /api/strikes/reports/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:34,887 middleware 19224 20060 Respuesta: 404 - GET /api/admin/evaluations/
+INFO 2025-08-02 00:12:34,909 middleware 19224 16784 Respuesta: 200 - GET /api/strikes/reports/
+WARNING 2025-08-02 00:12:34,959 log 19224 20060 Not Found: /api/admin/evaluations/
+WARNING 2025-08-02 00:12:34,971 basehttp 19224 20060 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 404 19210
+INFO 2025-08-02 00:12:34,971 basehttp 19224 16784 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-08-02 00:12:52,783 middleware 19224 16784 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:52,998 middleware 19224 16784 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:12:53,056 basehttp 19224 16784 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:12:58,520 middleware 19224 16784 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:58,558 middleware 19224 16784 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:12:58,638 basehttp 19224 16784 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:12:58,644 middleware 19224 16784 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:58,672 middleware 19224 16784 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:12:58,756 middleware 19224 20060 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:12:58,758 basehttp 19224 16784 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:12:58,809 middleware 19224 20060 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:12:58,867 basehttp 19224 20060 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:13:35,116 autoreload 19224 4588 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-08-02 00:13:36,386 autoreload 13844 12776 Watching for file changes with StatReloader
+INFO 2025-08-02 00:14:16,062 autoreload 13844 12776 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\views.py changed, reloading.
+INFO 2025-08-02 00:14:17,034 autoreload 19736 13360 Watching for file changes with StatReloader
+INFO 2025-08-02 00:15:02,952 autoreload 19736 13360 C:\Users\albur\Desktop\leanmaker\Backend\projects\models.py changed, reloading.
+INFO 2025-08-02 00:15:03,981 autoreload 14116 15200 Watching for file changes with StatReloader
+INFO 2025-08-02 00:16:43,821 autoreload 14116 15200 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\views.py changed, reloading.
+INFO 2025-08-02 00:16:44,711 autoreload 13288 9648 Watching for file changes with StatReloader
+INFO 2025-08-02 00:18:15,360 autoreload 13288 9648 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-08-02 00:18:16,243 autoreload 14324 15304 Watching for file changes with StatReloader
+INFO 2025-08-02 00:19:55,462 autoreload 14324 15304 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\views.py changed, reloading.
+INFO 2025-08-02 00:19:56,366 autoreload 19184 15688 Watching for file changes with StatReloader
+INFO 2025-08-02 00:21:00,715 middleware 19184 19600 Petición: GET /api/test-simple/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:00,715 middleware 19184 19600 Respuesta: 200 - GET /api/test-simple/
+INFO 2025-08-02 00:21:00,876 basehttp 19184 19600 "GET /api/test-simple/ HTTP/1.1" 200 114
+INFO 2025-08-02 00:21:02,931 middleware 19184 14088 Petición: GET /api/test-communication/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:02,931 middleware 19184 14088 Respuesta: 401 - GET /api/test-communication/
+WARNING 2025-08-02 00:21:02,944 log 19184 14088 Unauthorized: /api/test-communication/
+WARNING 2025-08-02 00:21:02,944 basehttp 19184 14088 "GET /api/test-communication/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:21:04,976 middleware 19184 19084 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:04,979 middleware 19184 19084 Respuesta: 401 - GET /api/calendar/events/company_events/
+WARNING 2025-08-02 00:21:04,991 log 19184 19084 Unauthorized: /api/calendar/events/company_events/
+WARNING 2025-08-02 00:21:04,993 basehttp 19184 19084 "GET /api/calendar/events/company_events/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:21:07,018 middleware 19184 12380 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:07,026 middleware 19184 12380 Respuesta: 401 - GET /api/projects/company_projects/
+WARNING 2025-08-02 00:21:07,035 log 19184 12380 Unauthorized: /api/projects/company_projects/
+WARNING 2025-08-02 00:21:07,035 basehttp 19184 12380 "GET /api/projects/company_projects/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:21:09,066 middleware 19184 2108 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:09,066 middleware 19184 2108 Respuesta: 401 - GET /api/applications/received_applications/
+WARNING 2025-08-02 00:21:09,081 log 19184 2108 Unauthorized: /api/applications/received_applications/
+WARNING 2025-08-02 00:21:09,081 basehttp 19184 2108 "GET /api/applications/received_applications/ HTTP/1.1" 401 32
+INFO 2025-08-02 00:21:11,127 middleware 19184 4312 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:11,127 middleware 19184 4312 Respuesta: 401 - GET /api/users/
+WARNING 2025-08-02 00:21:11,142 log 19184 4312 Unauthorized: /api/users/
+WARNING 2025-08-02 00:21:11,142 basehttp 19184 4312 "GET /api/users/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:21:13,170 middleware 19184 2508 Petición: GET /api/companies/company_me/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:13,171 middleware 19184 2508 Respuesta: 401 - GET /api/companies/company_me/
+WARNING 2025-08-02 00:21:13,176 log 19184 2508 Unauthorized: /api/companies/company_me/
+WARNING 2025-08-02 00:21:13,176 basehttp 19184 2508 "GET /api/companies/company_me/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:21:15,220 middleware 19184 2576 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:15,220 middleware 19184 2576 Respuesta: 401 - GET /api/students/
+WARNING 2025-08-02 00:21:15,236 log 19184 2576 Unauthorized: /api/students/
+WARNING 2025-08-02 00:21:15,236 basehttp 19184 2576 "GET /api/students/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:21:17,297 middleware 19184 17732 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:17,297 middleware 19184 17732 Respuesta: 401 - GET /api/notifications/
+WARNING 2025-08-02 00:21:17,304 log 19184 17732 Unauthorized: /api/notifications/
+WARNING 2025-08-02 00:21:17,304 basehttp 19184 17732 "GET /api/notifications/ HTTP/1.1" 401 66
+INFO 2025-08-02 00:21:19,347 middleware 19184 15184 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-02 00:21:19,347 middleware 19184 15184 Respuesta: 401 - GET /api/strikes/reports/company/
+WARNING 2025-08-02 00:21:19,355 log 19184 15184 Unauthorized: /api/strikes/reports/company/
+WARNING 2025-08-02 00:21:19,364 basehttp 19184 15184 "GET /api/strikes/reports/company/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:22:45,921 middleware 19184 20280 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:22:45,922 middleware 19184 20280 Respuesta: 401 - GET /api/mass-notifications/
+WARNING 2025-08-02 00:22:45,963 log 19184 20280 Unauthorized: /api/mass-notifications/
+WARNING 2025-08-02 00:22:45,963 basehttp 19184 20280 "GET /api/mass-notifications/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:22:47,986 middleware 19184 10020 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:22:47,994 middleware 19184 10020 Respuesta: 401 - GET /work-hours/
+WARNING 2025-08-02 00:22:48,034 log 19184 10020 Unauthorized: /work-hours/
+WARNING 2025-08-02 00:22:48,034 basehttp 19184 10020 "GET /work-hours/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:22:50,086 middleware 19184 8756 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:22:50,088 middleware 19184 8756 Respuesta: 401 - GET /api/admin/companies/
+WARNING 2025-08-02 00:22:50,133 log 19184 8756 Unauthorized: /api/admin/companies/
+WARNING 2025-08-02 00:22:50,133 basehttp 19184 8756 "GET /api/admin/companies/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:22:52,185 middleware 19184 19484 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:22:52,185 middleware 19184 19484 Respuesta: 401 - GET /api/admin/projects/
+WARNING 2025-08-02 00:22:52,240 log 19184 19484 Unauthorized: /api/admin/projects/
+WARNING 2025-08-02 00:22:52,240 basehttp 19184 19484 "GET /api/admin/projects/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:22:54,285 middleware 19184 12156 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:22:54,287 middleware 19184 12156 Respuesta: 401 - GET /api/admin/evaluations/
+WARNING 2025-08-02 00:22:54,328 log 19184 12156 Unauthorized: /api/admin/evaluations/
+WARNING 2025-08-02 00:22:54,328 basehttp 19184 12156 "GET /api/admin/evaluations/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:22:56,371 middleware 19184 19908 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:22:56,371 middleware 19184 19908 Respuesta: 401 - GET /api/projects/completed_pending_hours/
+WARNING 2025-08-02 00:22:56,419 log 19184 19908 Unauthorized: /api/projects/completed_pending_hours/
+WARNING 2025-08-02 00:22:56,431 basehttp 19184 19908 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:24:57,832 autoreload 19184 15688 C:\Users\albur\Desktop\leanmaker\Backend\custom_admin\urls.py changed, reloading.
+INFO 2025-08-02 00:24:58,973 autoreload 18564 16164 Watching for file changes with StatReloader
+INFO 2025-08-02 00:26:22,037 middleware 18564 3248 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:22,310 middleware 18564 3248 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:26:22,398 basehttp 18564 3248 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:26:22,404 middleware 18564 3248 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:22,411 middleware 18564 3248 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:26:22,435 basehttp 18564 3248 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:26:22,503 middleware 18564 3248 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:22,541 middleware 18564 3248 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:26:22,584 basehttp 18564 3248 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:26:35,429 middleware 18564 3248 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:35,442 middleware 18564 3248 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:26:35,487 basehttp 18564 3248 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:26:35,490 middleware 18564 3248 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:35,496 middleware 18564 3248 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:26:35,539 basehttp 18564 3248 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:26:36,691 middleware 18564 3248 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:36,708 middleware 18564 3248 Respuesta: 500 - GET /api/mass-notifications/
+ERROR 2025-08-02 00:26:36,741 log 18564 3248 Internal Server Error: /api/mass-notifications/
+ERROR 2025-08-02 00:26:36,743 basehttp 18564 3248 "GET /api/mass-notifications/ HTTP/1.1" 500 63
+INFO 2025-08-02 00:26:36,746 middleware 18564 3248 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:36,763 middleware 18564 3248 Respuesta: 500 - GET /api/mass-notifications/
+ERROR 2025-08-02 00:26:36,796 log 18564 3248 Internal Server Error: /api/mass-notifications/
+ERROR 2025-08-02 00:26:36,796 basehttp 18564 3248 "GET /api/mass-notifications/ HTTP/1.1" 500 63
+INFO 2025-08-02 00:26:41,054 middleware 18564 3248 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:41,085 middleware 18564 3248 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:26:41,125 basehttp 18564 3248 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:26:43,562 middleware 18564 3248 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:43,601 middleware 18564 3248 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:26:43,630 basehttp 18564 3248 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:26:43,643 middleware 18564 3248 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:43,666 middleware 18564 3248 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:26:43,699 basehttp 18564 3248 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:26:43,755 middleware 18564 3248 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:26:43,794 middleware 18564 3248 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:26:43,842 basehttp 18564 3248 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:28:04,077 middleware 18564 13368 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:04,086 middleware 18564 13368 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:28:04,107 basehttp 18564 13368 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:28:04,111 middleware 18564 13368 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:04,115 middleware 18564 13368 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:28:04,131 basehttp 18564 13368 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:28:04,871 middleware 18564 13368 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:04,898 middleware 18564 13368 Respuesta: 500 - GET /api/mass-notifications/
+ERROR 2025-08-02 00:28:04,917 log 18564 13368 Internal Server Error: /api/mass-notifications/
+ERROR 2025-08-02 00:28:04,917 basehttp 18564 13368 "GET /api/mass-notifications/ HTTP/1.1" 500 63
+INFO 2025-08-02 00:28:04,919 middleware 18564 13368 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:04,927 middleware 18564 13368 Respuesta: 500 - GET /api/mass-notifications/
+ERROR 2025-08-02 00:28:04,946 log 18564 13368 Internal Server Error: /api/mass-notifications/
+ERROR 2025-08-02 00:28:04,946 basehttp 18564 13368 "GET /api/mass-notifications/ HTTP/1.1" 500 63
+INFO 2025-08-02 00:28:05,667 middleware 18564 13368 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:05,667 middleware 18564 13368 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:28:05,692 basehttp 18564 13368 "GET /api/users/ HTTP/1.1" 200 2497
+INFO 2025-08-02 00:28:05,692 middleware 18564 13368 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:05,701 middleware 18564 13368 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:28:05,717 basehttp 18564 13368 "GET /api/users/ HTTP/1.1" 200 2497
+INFO 2025-08-02 00:28:06,672 middleware 18564 13368 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:06,672 middleware 18564 18728 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:06,689 middleware 18564 13368 Respuesta: 500 - GET /work-hours/
+INFO 2025-08-02 00:28:06,697 middleware 18564 18728 Respuesta: 500 - GET /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:28:06,730 log 18564 13368 Internal Server Error: /work-hours/
+ERROR 2025-08-02 00:28:06,730 basehttp 18564 13368 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 47
+ERROR 2025-08-02 00:28:06,740 log 18564 18728 Internal Server Error: /api/projects/completed_pending_hours/
+INFO 2025-08-02 00:28:06,742 middleware 18564 13368 Petición: GET /work-hours/ - IP: 127.0.0.1
+ERROR 2025-08-02 00:28:06,745 basehttp 18564 18728 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 500 186
+INFO 2025-08-02 00:28:06,748 middleware 18564 18728 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:06,750 middleware 18564 13368 Respuesta: 500 - GET /work-hours/
+INFO 2025-08-02 00:28:06,757 middleware 18564 18728 Respuesta: 500 - GET /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:28:06,790 log 18564 13368 Internal Server Error: /work-hours/
+ERROR 2025-08-02 00:28:06,795 log 18564 18728 Internal Server Error: /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:28:06,795 basehttp 18564 13368 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 47
+ERROR 2025-08-02 00:28:06,795 basehttp 18564 18728 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 500 186
+INFO 2025-08-02 00:28:08,975 middleware 18564 18728 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:08,981 middleware 18564 18728 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-08-02 00:28:09,020 basehttp 18564 18728 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 1582
+INFO 2025-08-02 00:28:09,022 middleware 18564 18728 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:09,030 middleware 18564 18728 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-08-02 00:28:09,052 basehttp 18564 18728 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 1582
+INFO 2025-08-02 00:28:09,691 middleware 18564 18728 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:09,699 middleware 18564 18728 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:28:09,735 basehttp 18564 18728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:28:09,742 middleware 18564 18728 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:09,752 middleware 18564 18728 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:28:09,765 basehttp 18564 18728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:28:09,765 middleware 18564 18728 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:09,772 middleware 18564 18728 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:28:09,790 basehttp 18564 18728 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:28:10,359 middleware 18564 18728 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:10,371 middleware 18564 18728 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-02 00:28:10,421 basehttp 18564 18728 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 959
+INFO 2025-08-02 00:28:10,421 middleware 18564 18728 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:10,438 middleware 18564 18728 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-02 00:28:10,457 basehttp 18564 18728 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 959
+INFO 2025-08-02 00:28:10,462 middleware 18564 18728 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:10,475 middleware 18564 18728 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-02 00:28:10,495 basehttp 18564 18728 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 959
+INFO 2025-08-02 00:28:10,932 middleware 18564 18728 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:10,932 middleware 18564 13368 Petición: GET /api/strikes/reports/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:10,957 middleware 18564 18728 Respuesta: 200 - GET /api/admin/evaluations/
+INFO 2025-08-02 00:28:10,959 middleware 18564 13368 Respuesta: 200 - GET /api/strikes/reports/
+INFO 2025-08-02 00:28:11,087 basehttp 18564 13368 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-08-02 00:28:11,095 basehttp 18564 18728 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 94
+INFO 2025-08-02 00:28:11,100 middleware 18564 13368 Petición: GET /api/strikes/reports/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:11,103 middleware 18564 18728 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:11,119 middleware 18564 13368 Respuesta: 200 - GET /api/strikes/reports/
+INFO 2025-08-02 00:28:11,129 middleware 18564 18728 Respuesta: 200 - GET /api/admin/evaluations/
+INFO 2025-08-02 00:28:11,160 basehttp 18564 13368 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-08-02 00:28:11,168 basehttp 18564 18728 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 94
+INFO 2025-08-02 00:28:13,119 middleware 18564 18728 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:28:13,149 middleware 18564 18728 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:28:13,159 basehttp 18564 18728 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:29:17,552 autoreload 18564 16164 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\models.py changed, reloading.
+INFO 2025-08-02 00:29:18,849 autoreload 16320 1060 Watching for file changes with StatReloader
+INFO 2025-08-02 00:30:18,693 autoreload 16320 1060 C:\Users\albur\Desktop\leanmaker\Backend\work_hours\models.py changed, reloading.
+INFO 2025-08-02 00:30:19,647 autoreload 19804 18116 Watching for file changes with StatReloader
+INFO 2025-08-02 00:31:43,276 autoreload 19804 18116 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\admin.py changed, reloading.
+INFO 2025-08-02 00:31:44,233 autoreload 8616 784 Watching for file changes with StatReloader
+INFO 2025-08-02 00:54:58,063 autoreload 8616 784 C:\Users\albur\Desktop\leanmaker\Backend\mass_notifications\migrations\0001_initial.py changed, reloading.
+INFO 2025-08-02 00:54:59,317 autoreload 18732 15828 Watching for file changes with StatReloader
+INFO 2025-08-02 00:56:43,842 middleware 18732 20028 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:56:43,846 middleware 18732 20028 Respuesta: 401 - GET /api/mass-notifications/
+WARNING 2025-08-02 00:56:43,919 log 18732 20028 Unauthorized: /api/mass-notifications/
+WARNING 2025-08-02 00:56:43,919 basehttp 18732 20028 "GET /api/mass-notifications/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:56:45,951 middleware 18732 19424 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:56:45,951 middleware 18732 19424 Respuesta: 401 - GET /work-hours/
+WARNING 2025-08-02 00:56:45,968 log 18732 19424 Unauthorized: /work-hours/
+WARNING 2025-08-02 00:56:45,968 basehttp 18732 19424 "GET /work-hours/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:56:47,999 middleware 18732 6056 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:56:47,999 middleware 18732 6056 Respuesta: 401 - GET /api/admin/companies/
+WARNING 2025-08-02 00:56:48,008 log 18732 6056 Unauthorized: /api/admin/companies/
+WARNING 2025-08-02 00:56:48,015 basehttp 18732 6056 "GET /api/admin/companies/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:56:50,042 middleware 18732 7828 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:56:50,042 middleware 18732 7828 Respuesta: 401 - GET /api/admin/projects/
+WARNING 2025-08-02 00:56:50,058 log 18732 7828 Unauthorized: /api/admin/projects/
+WARNING 2025-08-02 00:56:50,058 basehttp 18732 7828 "GET /api/admin/projects/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:56:52,083 middleware 18732 20156 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:56:52,083 middleware 18732 20156 Respuesta: 401 - GET /api/admin/evaluations/
+WARNING 2025-08-02 00:56:52,091 log 18732 20156 Unauthorized: /api/admin/evaluations/
+WARNING 2025-08-02 00:56:52,091 basehttp 18732 20156 "GET /api/admin/evaluations/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:56:54,137 middleware 18732 19388 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:56:54,137 middleware 18732 19388 Respuesta: 401 - GET /api/projects/completed_pending_hours/
+WARNING 2025-08-02 00:56:54,148 log 18732 19388 Unauthorized: /api/projects/completed_pending_hours/
+WARNING 2025-08-02 00:56:54,148 basehttp 18732 19388 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 401 28
+INFO 2025-08-02 00:57:15,132 middleware 18732 13564 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-08-02 00:57:15,132 middleware 18732 13564 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-08-02 00:57:15,152 basehttp 18732 13564 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-02 00:57:24,616 middleware 18732 13564 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-02 00:57:26,613 middleware 18732 13564 Respuesta: 200 - POST /api/token/
+INFO 2025-08-02 00:57:26,752 basehttp 18732 13564 "POST /api/token/ HTTP/1.1" 200 1092
+INFO 2025-08-02 00:57:26,759 middleware 18732 13564 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:57:26,777 middleware 18732 13564 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:57:26,843 basehttp 18732 13564 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:57:26,917 middleware 18732 13564 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:57:27,078 middleware 18732 13564 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:57:27,149 basehttp 18732 13564 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:58:47,748 middleware 18732 13564 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:47,764 middleware 18732 13564 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:58:47,797 basehttp 18732 13564 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:58:47,819 middleware 18732 13564 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:47,843 middleware 18732 13564 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:58:47,887 basehttp 18732 13564 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:58:47,914 middleware 18732 13564 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:48,067 middleware 18732 13564 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-02 00:58:48,112 basehttp 18732 13564 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 153
+INFO 2025-08-02 00:58:50,379 middleware 18732 13564 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:50,414 middleware 18732 13564 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:58:50,451 basehttp 18732 13564 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:58:50,457 middleware 18732 13564 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:50,468 middleware 18732 13564 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-02 00:58:50,497 basehttp 18732 13564 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-02 00:58:51,757 middleware 18732 13564 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:51,773 middleware 18732 13564 Respuesta: 500 - GET /api/mass-notifications/
+ERROR 2025-08-02 00:58:51,814 log 18732 13564 Internal Server Error: /api/mass-notifications/
+ERROR 2025-08-02 00:58:51,816 basehttp 18732 13564 "GET /api/mass-notifications/ HTTP/1.1" 500 63
+INFO 2025-08-02 00:58:51,821 middleware 18732 13564 Petición: GET /api/mass-notifications/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:51,833 middleware 18732 13564 Respuesta: 500 - GET /api/mass-notifications/
+ERROR 2025-08-02 00:58:51,871 log 18732 13564 Internal Server Error: /api/mass-notifications/
+ERROR 2025-08-02 00:58:51,872 basehttp 18732 13564 "GET /api/mass-notifications/ HTTP/1.1" 500 63
+INFO 2025-08-02 00:58:53,206 middleware 18732 13564 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:53,218 middleware 18732 13564 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:58:53,278 basehttp 18732 13564 "GET /api/users/ HTTP/1.1" 200 2497
+INFO 2025-08-02 00:58:53,284 middleware 18732 13564 Petición: GET /api/users/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:53,302 middleware 18732 13564 Respuesta: 200 - GET /api/users/
+INFO 2025-08-02 00:58:53,375 basehttp 18732 13564 "GET /api/users/ HTTP/1.1" 200 2497
+INFO 2025-08-02 00:58:54,262 middleware 18732 13564 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:54,273 middleware 18732 13564 Respuesta: 500 - GET /work-hours/
+ERROR 2025-08-02 00:58:54,322 log 18732 13564 Internal Server Error: /work-hours/
+ERROR 2025-08-02 00:58:54,322 basehttp 18732 13564 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 47
+INFO 2025-08-02 00:58:54,331 middleware 18732 13564 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:54,353 middleware 18732 13564 Respuesta: 500 - GET /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:58:54,419 log 18732 13564 Internal Server Error: /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:58:54,419 basehttp 18732 13564 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 500 241
+INFO 2025-08-02 00:58:54,428 middleware 18732 13564 Petición: GET /work-hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:54,441 middleware 18732 13564 Respuesta: 500 - GET /work-hours/
+ERROR 2025-08-02 00:58:54,476 log 18732 13564 Internal Server Error: /work-hours/
+ERROR 2025-08-02 00:58:54,476 basehttp 18732 13564 "GET /work-hours/?limit=15&offset=0 HTTP/1.1" 500 47
+INFO 2025-08-02 00:58:54,483 middleware 18732 13564 Petición: GET /api/projects/completed_pending_hours/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:54,503 middleware 18732 13564 Respuesta: 500 - GET /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:58:54,539 log 18732 13564 Internal Server Error: /api/projects/completed_pending_hours/
+ERROR 2025-08-02 00:58:54,543 basehttp 18732 13564 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 500 241
+INFO 2025-08-02 00:58:55,597 middleware 18732 13564 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:55,625 middleware 18732 13564 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-08-02 00:58:55,720 basehttp 18732 13564 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 1582
+INFO 2025-08-02 00:58:55,721 middleware 18732 13564 Petición: GET /api/admin/companies/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:55,745 middleware 18732 13564 Respuesta: 200 - GET /api/admin/companies/
+INFO 2025-08-02 00:58:55,797 basehttp 18732 13564 "GET /api/admin/companies/?limit=20&offset=0 HTTP/1.1" 200 1582
+INFO 2025-08-02 00:58:56,368 middleware 18732 13564 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:56,388 middleware 18732 13564 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:58:56,476 basehttp 18732 13564 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:58:56,480 middleware 18732 13564 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:56,501 middleware 18732 13564 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:58:56,535 basehttp 18732 13564 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:58:56,540 middleware 18732 13564 Petición: GET /api/students/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:56,560 middleware 18732 13564 Respuesta: 200 - GET /api/students/
+INFO 2025-08-02 00:58:56,629 basehttp 18732 13564 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 1228
+INFO 2025-08-02 00:58:57,300 middleware 18732 13564 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:57,330 middleware 18732 13564 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-02 00:58:57,470 basehttp 18732 13564 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 959
+INFO 2025-08-02 00:58:57,473 middleware 18732 13564 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:57,501 middleware 18732 13564 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-02 00:58:57,545 basehttp 18732 13564 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 959
+INFO 2025-08-02 00:58:57,549 middleware 18732 13564 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:57,573 middleware 18732 13564 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-02 00:58:57,624 basehttp 18732 13564 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 959
+INFO 2025-08-02 00:58:57,881 middleware 18732 13564 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:57,881 middleware 18732 16640 Petición: GET /api/strikes/reports/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:57,920 middleware 18732 13564 Respuesta: 200 - GET /api/admin/evaluations/
+INFO 2025-08-02 00:58:57,947 middleware 18732 16640 Respuesta: 200 - GET /api/strikes/reports/
+INFO 2025-08-02 00:58:58,328 basehttp 18732 13564 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 94
+INFO 2025-08-02 00:58:58,334 basehttp 18732 16640 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70
+INFO 2025-08-02 00:58:58,338 middleware 18732 13564 Petición: GET /api/admin/evaluations/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:58,347 middleware 18732 16640 Petición: GET /api/strikes/reports/ - IP: 127.0.0.1
+INFO 2025-08-02 00:58:58,374 middleware 18732 13564 Respuesta: 200 - GET /api/admin/evaluations/
+INFO 2025-08-02 00:58:58,393 middleware 18732 16640 Respuesta: 200 - GET /api/strikes/reports/
+INFO 2025-08-02 00:58:58,442 basehttp 18732 13564 "GET /api/admin/evaluations/?page=1&limit=100 HTTP/1.1" 200 94
+INFO 2025-08-02 00:58:58,475 basehttp 18732 16640 "GET /api/strikes/reports/?page=1&limit=100 HTTP/1.1" 200 70

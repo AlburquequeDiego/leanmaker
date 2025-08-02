@@ -73,6 +73,8 @@ urlpatterns = [
     path('api/test-projects/', views.api_test_projects, name='api_test_projects'),
     path('api/test-admin-stats/', views.api_test_admin_stats, name='api_test_admin_stats'),
     path('api/test-auth-admin-stats/', views.api_test_auth_admin_stats, name='api_test_auth_admin_stats'),
+    path('api/test-communication/', views.test_communication, name='test_communication'),
+    path('api/test-simple/', views.test_simple, name='test_simple'),
     path('api/company-ratings/', company_ratings, name='company_ratings'),
     
     # Redirección por defecto

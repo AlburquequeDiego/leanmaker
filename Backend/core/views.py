@@ -17,6 +17,7 @@ from django.conf import settings
 from companies.serializers import EmpresaSerializer
 from projects.models import Proyecto
 from django.db.models import F
+from django.utils import timezone
 
 def home(request):
     """Vista principal de la aplicación."""
@@ -1246,6 +1247,46 @@ def api_test_projects(request):
     except Exception as e:
         print(f"Error en api_test_projects: {e}")
         return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def test_communication(request):
+    """Endpoint de prueba para verificar comunicación frontend-backend"""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Comunicación exitosa',
+            'user': {
+                'id': str(current_user.id),
+                'email': current_user.email,
+                'role': current_user.role,
+                'first_name': current_user.first_name,
+                'last_name': current_user.last_name
+            },
+            'timestamp': timezone.now().isoformat()
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def test_simple(request):
+    """Endpoint de prueba simple sin autenticación"""
+    return JsonResponse({
+        'success': True,
+        'message': 'Backend funcionando correctamente',
+        'timestamp': timezone.now().isoformat()
+    })
 
 # Funciones auxiliares para JWT
 def generate_access_token(user):

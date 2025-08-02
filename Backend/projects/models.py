@@ -89,6 +89,7 @@ class Proyecto(models.Model):
     # Campos de estado
     is_featured = models.BooleanField(default=False)
     is_urgent = models.BooleanField(default=False)
+    is_project_completion = models.BooleanField(default=False, help_text="Indica si el proyecto está completado")
     
     # Campos de fechas - coinciden con frontend
     published_at = models.DateTimeField(null=True, blank=True)

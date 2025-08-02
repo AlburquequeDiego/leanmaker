@@ -53,5 +53,6 @@ Gestión de Calificaciones                 ok
 Configuración de Plataforma               ok
 #####################################
 
-
+ARREGLAR AL ADMIN , SE ME ROMPIO UNAS COSITAS 
+XQ ELIMINE ARCHIVOS IMPORTANTES POR ACXIDENTE
 
