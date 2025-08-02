@@ -14,10 +14,10 @@ import type {
   Strike, 
   WorkHour, 
   Interview, 
-  CalendarEvent,
   DashboardStats,
   StrikeReport 
 } from '../types';
+import type { CalendarEvent } from '../types/calendar';
 
 // ============================================================================
 // ADAPTADORES PRINCIPALES
@@ -415,6 +415,39 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
         updated_at: '',
       };
     }
+    console.log('[adaptCalendarEvent] Procesando evento:', backendEvent.id, backendEvent.title);
+    console.log('[adaptCalendarEvent] Start date original:', backendEvent.start_date);
+    console.log('[adaptCalendarEvent] End date original:', backendEvent.end_date);
+    
+    // Validar y parsear fechas con mejor manejo de errores
+    let startDate: Date;
+    let endDate: Date;
+    
+    try {
+      startDate = backendEvent.start_date ? new Date(backendEvent.start_date) : new Date();
+      if (isNaN(startDate.getTime())) {
+        console.warn('[adaptCalendarEvent] Fecha de inicio inválida, usando fecha actual:', backendEvent.start_date);
+        startDate = new Date();
+      }
+    } catch (error) {
+      console.warn('[adaptCalendarEvent] Error parseando fecha de inicio, usando fecha actual:', error);
+      startDate = new Date();
+    }
+    
+    try {
+      endDate = backendEvent.end_date ? new Date(backendEvent.end_date) : new Date(startDate.getTime() + 60 * 60 * 1000);
+      if (isNaN(endDate.getTime())) {
+        console.warn('[adaptCalendarEvent] Fecha de fin inválida, usando fecha de inicio + 1 hora:', backendEvent.end_date);
+        endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+      }
+    } catch (error) {
+      console.warn('[adaptCalendarEvent] Error parseando fecha de fin, usando fecha de inicio + 1 hora:', error);
+      endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+    }
+    
+    console.log('[adaptCalendarEvent] Start date parsed:', startDate);
+    console.log('[adaptCalendarEvent] End date parsed:', endDate);
+    
     const event: CalendarEvent = {
       id: String(backendEvent.id || 'sin-id'),
       title: backendEvent.title || 'Sin título',
@@ -423,11 +456,17 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       priority: backendEvent.priority || 'normal',
       start_date: backendEvent.start_date || '',
       end_date: backendEvent.end_date || '',
-      start: backendEvent.start_date ? new Date(backendEvent.start_date) : new Date(),
-      end: backendEvent.end_date ? new Date(backendEvent.end_date) : new Date(),
+      start: startDate,
+      end: endDate,
       all_day: !!backendEvent.all_day,
       location: backendEvent.location || '',
+      room: backendEvent.room || backendEvent.meeting_room || '',
       attendees: Array.isArray(backendEvent.attendees)
+        ? backendEvent.attendees.map((att: any) =>
+            typeof att === 'object' ? att.id : String(att)
+          )
+        : [],
+      attendee_names: Array.isArray(backendEvent.attendees)
         ? backendEvent.attendees.map((att: any) =>
             typeof att === 'object' ? (att.full_name || att.email || att.id) : String(att)
           )
@@ -435,14 +474,33 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       created_by: String(backendEvent.created_by || ''),
       created_at: backendEvent.created_at || '',
       updated_at: backendEvent.updated_at || '',
-      project: backendEvent.project && backendEvent.project.id ? String(backendEvent.project.id) : undefined,
+      project: backendEvent.project && backendEvent.project.id && typeof backendEvent.project.id !== 'undefined' ? String(backendEvent.project.id) : undefined,
       project_title: backendEvent.project && backendEvent.project.title ? backendEvent.project.title : backendEvent.project_title || undefined,
       status: backendEvent.status || 'scheduled',
+      meeting_type: backendEvent.meeting_type,
+      meeting_link: backendEvent.meeting_link,
+      meeting_room: backendEvent.meeting_room,
+      duration: backendEvent.duration || '1 hora',
+      representative_name: backendEvent.representative_name,
+      representative_position: backendEvent.representative_position,
     };
     // Log de depuración
     if (!event.start_date || !event.end_date) {
       console.warn('[adaptCalendarEvent] Evento con fechas faltantes:', backendEvent);
     }
+    
+    // Verificación final del evento adaptado
+    console.log('[adaptCalendarEvent] Evento adaptado final:', {
+      id: event.id,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      start_date: event.start_date,
+      end_date: event.end_date,
+      isValidStart: !isNaN(event.start.getTime()),
+      isValidEnd: !isNaN(event.end.getTime())
+    });
+    
     return event;
   } catch (e) {
     console.error('[adaptCalendarEvent] Error adaptando evento:', backendEvent, e);

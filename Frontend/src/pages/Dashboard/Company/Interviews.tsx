@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Paper,
@@ -9,10 +9,6 @@ import {
   Button,
   Chip,
   Avatar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   FormControl,
   InputLabel,
@@ -20,52 +16,100 @@ import {
   MenuItem,
   Tabs,
   Tab,
-  Rating,
   Alert,
-  List,
-  ListItem,
-  ListItemText,
   Divider,
   CircularProgress,
   Grid,
+  IconButton,
+  Tooltip,
+  Badge,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
-  Person as PersonIcon,
   Schedule as ScheduleIcon,
   CheckCircle as CheckCircleIcon,
   Event as EventIcon,
-  LocationOn as LocationIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
   Work as WorkIcon,
   Info as InfoIcon,
+  Search as SearchIcon,
+  CalendarToday as CalendarIcon,
+  Assessment as AssessmentIcon,
+  Group as GroupIcon,
+  AccessTime as AccessTimeIcon,
+  Visibility as VisibilityIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
-import { adaptInterviewList, adaptCalendarEvent } from '../../../utils/adapters';
-import type { Interview, Application } from '../../../types';
-
-const cantidadOpciones = [5, 10, 20, 50, 'todas'];
+import { adaptCalendarEvent } from '../../../utils/adapters';
 
 export const CompanyInterviews: React.FC = () => {
   const api = useApi();
-  const [events, setEvents] = useState<any[]>([]); // Solo eventos tipo 'interview'
+  const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editDate, setEditDate] = useState<string>('');
-  const [editEndDate, setEditEndDate] = useState<string>('');
+  const [activeTab, setActiveTab] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [showCompleted, setShowCompleted] = useState(true);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+
   const now = new Date();
-  const pendingInterviews = events.filter(ev =>
+  
+  // Filtros y datos procesados
+  const filteredEvents = useMemo(() => {
+    let filtered = events;
+    
+    // Filtro por búsqueda
+    if (searchTerm) {
+      filtered = filtered.filter(event => 
+        event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.attendees?.some((attendee: string) => 
+          attendee.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        event.project_title?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Filtro por estado
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(event => event.status === statusFilter);
+    }
+    
+    return filtered;
+  }, [events, searchTerm, statusFilter]);
+
+  const pendingInterviews = filteredEvents.filter(ev =>
     ev.status === 'scheduled' && new Date(ev.start_date) > now
   );
-  const completedInterviews = events.filter(ev =>
+  
+  const completedInterviews = filteredEvents.filter(ev =>
     ev.status === 'completed' || (ev.status === 'scheduled' && new Date(ev.start_date) <= now)
   );
-  const [sectionCount, setSectionCount] = useState(10);
-  const allInterviews = [...pendingInterviews, ...completedInterviews].sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
-  const allInterviewsToShow = allInterviews.slice(0, sectionCount);
 
+  // Estadísticas
+  const stats = useMemo(() => {
+    const total = events.length;
+    const pending = pendingInterviews.length;
+    const completed = completedInterviews.length;
+    const thisWeek = pendingInterviews.filter(ev => {
+      const eventDate = new Date(ev.start_date);
+      const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return eventDate <= weekFromNow;
+    }).length;
+    
+    return { total, pending, completed, thisWeek };
+  }, [events, pendingInterviews, completedInterviews]);
 
   useEffect(() => {
     loadInterviewEvents();
@@ -76,7 +120,6 @@ export const CompanyInterviews: React.FC = () => {
       setLoading(true);
       setError(null);
       console.log('[Entrevistas] Iniciando carga de entrevistas...');
-      // Usar el endpoint específico para empresas
       const response = await api.get('/api/calendar/events/company_events/?event_type=interview');
       console.log('[Entrevistas] Respuesta recibida:', response);
       const data = response.results && Array.isArray(response.results)
@@ -96,263 +139,920 @@ export const CompanyInterviews: React.FC = () => {
     }
   };
 
-  // Eliminar el botón y lógica de edición de entrevistas (handleOpenEdit, handleSaveEdit, etc). Solo mostrar los datos.
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'scheduled': return '#1976d2';
+      case 'completed': return '#388e3c';
+      case 'cancelled': return '#d32f2f';
+      default: return '#757575';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'scheduled': return 'Programada';
+      case 'completed': return 'Completada';
+      case 'cancelled': return 'Cancelada';
+      default: return status;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getTimeUntil = (dateString: string) => {
+    const eventDate = new Date(dateString);
+    const diff = eventDate.getTime() - now.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    
+    if (days > 0) return `${days} día${days > 1 ? 's' : ''}`;
+    if (hours > 0) return `${hours} hora${hours > 1 ? 's' : ''}`;
+    return 'Menos de 1 hora';
+  };
+
+  const handleViewDetails = (event: any) => {
+    setSelectedEvent(event);
+    setDetailDialogOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setDetailDialogOpen(false);
+    setSelectedEvent(null);
+  };
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress size={60} />
+        <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>
+          Cargando entrevistas...
+        </Typography>
       </Box>
     );
   }
 
-  // Mostrar la interfaz SIEMPRE, aunque haya error, con mensaje arriba
-  // Si hay error, mostrar alerta arriba y permitir reintentar
-
   return (
-    <Box sx={{ flexGrow: 1, p: { xs: 1, md: 3 }, bgcolor: '#f7fafd', minHeight: '100vh' }}>
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-          <Button onClick={loadInterviewEvents} variant="contained" sx={{ ml: 2 }} size="small">Reintentar</Button>
-        </Alert>
-      )}
+    <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, bgcolor: '#f8fafc', minHeight: '100vh' }}>
+      {/* Header con título y acciones */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          Entrevistas Pendientes
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box>
+            <Typography variant="h3" fontWeight={800} sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 1
+            }}>
+              Gestión de Entrevistas
         </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Visualiza y gestiona las entrevistas agendadas con estudiantes. Solo puedes cambiar la fecha/hora.
+            <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>
+              Administra y supervisa todas las entrevistas con estudiantes
         </Typography>
-        {/* Cuadros de conteo */}
-        <Box sx={{ display: 'flex', gap: 4, mt: 3, mb: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Paper elevation={3} sx={{ bgcolor: '#e3f2fd', borderRadius: 3, p: 3, minWidth: 200, textAlign: 'center' }}>
-            <Typography variant="h6" color="#1976d2" fontWeight={700}>Pendientes</Typography>
-            <Typography variant="h2" color="#1976d2" fontWeight={700}>{pendingInterviews.length}</Typography>
-          </Paper>
-          <Paper elevation={3} sx={{ bgcolor: '#e8f5e9', borderRadius: 3, p: 3, minWidth: 200, textAlign: 'center' }}>
-            <Typography variant="h6" color="#388e3c" fontWeight={700}>Completadas</Typography>
-            <Typography variant="h2" color="#388e3c" fontWeight={700}>{completedInterviews.length}</Typography>
-          </Paper>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Tooltip title="Actualizar datos">
+              <IconButton onClick={loadInterviewEvents} sx={{ bgcolor: 'white', boxShadow: 2 }}>
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} action={
+            <Button color="inherit" size="small" onClick={loadInterviewEvents}>
+              Reintentar
+            </Button>
+          }>
+            {error}
+          </Alert>
+        )}
       </Box>
 
-      {/* Eliminar cualquier Card o Box que muestre solo el conteo de entrevistas pendientes antes de las tarjetas principales. Solo dejar el Box con display flex que contiene las dos tarjetas grandes (pendientes y completadas). */}
-      <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap', mt: 6 }}>
-        {/* Tarjeta de entrevistas pendientes */}
-        <Box sx={{ minWidth: 320, maxWidth: 1200, width: '100%' }}>
-          <Typography variant="h5" fontWeight={700} color="#1976d2" gutterBottom>
-            Entrevistas Pendientes
+      {/* Estadísticas principales */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+            borderRadius: 3
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
+                  <GroupIcon sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+              <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
+                {stats.total}
+              </Typography>
+              <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                Total Entrevistas
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+            color: 'white',
+            boxShadow: '0 8px 25px rgba(255, 107, 107, 0.3)',
+            borderRadius: 3
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
+                  <ScheduleIcon sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+              <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
+                {stats.pending}
+              </Typography>
+              <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                Pendientes
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+            color: 'white',
+            boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)',
+            borderRadius: 3
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
+                  <CheckCircleIcon sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+              <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
+                {stats.completed}
+              </Typography>
+              <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                Completadas
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            color: '#2c3e50',
+            boxShadow: '0 8px 25px rgba(168, 237, 234, 0.3)',
+            borderRadius: 3
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: 'rgba(44, 62, 80, 0.2)', width: 56, height: 56 }}>
+                  <AccessTimeIcon sx={{ fontSize: 28 }} />
+                </Avatar>
+              </Box>
+              <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
+                {stats.thisWeek}
+              </Typography>
+              <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                Esta Semana
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Tabs de navegación */}
+      <Paper sx={{ p: 2, mb: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={(e, newValue) => setActiveTab(newValue)}
+          sx={{ 
+            '& .MuiTab-root': { 
+              fontWeight: 600,
+              textTransform: 'none',
+              fontSize: '1rem',
+              minHeight: 48,
+              px: 3,
+              py: 1.5,
+              '&.Mui-selected': {
+                color: '#1976d2',
+                '& .MuiSvgIcon-root': {
+                  color: '#1976d2'
+                }
+              },
+              '&:not(.Mui-selected)': {
+                color: '#666',
+                '& .MuiSvgIcon-root': {
+                  color: '#666'
+                }
+              }
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#1976d2',
+              height: 3,
+              borderRadius: '2px 2px 0 0'
+            }
+          }}
+        >
+          <Tab 
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+                <ScheduleIcon sx={{ fontSize: 20 }} />
+                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                  Próximas Entrevistas
+                </Typography>
+                <Badge 
+                  badgeContent={pendingInterviews.length} 
+                  color="error" 
+                  sx={{ 
+                    '& .MuiBadge-badge': {
+                      fontSize: '0.75rem',
+                      height: 20,
+                      minWidth: 20,
+                      borderRadius: 10
+                    }
+                  }}
+                />
+              </Box>
+            } 
+          />
+          <Tab 
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+                <CheckCircleIcon sx={{ fontSize: 20 }} />
+                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                  Completadas
+                </Typography>
+                <Badge 
+                  badgeContent={completedInterviews.length} 
+                  color="success" 
+                  sx={{ 
+                    '& .MuiBadge-badge': {
+                      fontSize: '0.75rem',
+                      height: 20,
+                      minWidth: 20,
+                      borderRadius: 10
+                    }
+                  }}
+                />
+              </Box>
+            } 
+          />
+          <Tab 
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+                <AssessmentIcon sx={{ fontSize: 20 }} />
+                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                  Historial Completo
+                </Typography>
+              </Box>
+            } 
+          />
+        </Tabs>
+      </Paper>
+
+      {/* Contenido de las tabs */}
+      <Box sx={{ mt: 3 }}>
+        {activeTab === 0 && (
+          <Box>
+            <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#1976d2' }}>
+              Próximas Entrevistas
           </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            
             {pendingInterviews.length === 0 ? (
-              <Typography variant="body1" color="text.secondary" align="center">
+              <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
+                <ScheduleIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary" gutterBottom>
                 No hay entrevistas pendientes
               </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Todas las entrevistas han sido completadas o no hay nuevas programadas.
+                </Typography>
+              </Paper>
             ) : (
-              pendingInterviews.map((event, idx) => {
-                const nombre = event.attendees[0] || 'Estudiante no asignado';
-                const iniciales = nombre.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+              <Grid container spacing={3}>
+                {pendingInterviews.map((event) => {
+                  const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                  const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
+                  const timeUntil = getTimeUntil(event.start_date);
+                  
                 return (
-                  <Paper key={event.id} elevation={4} sx={{
-                    bgcolor: '#fff',
+                    <Grid item xs={12} md={6} lg={4} key={event.id}>
+                      <Card sx={{ 
+                        height: '100%',
                     borderRadius: 3,
-                    p: 2,
-                    minWidth: 280,
-                    maxWidth: 340,
-                    flex: '1 1 320px',
-                    boxShadow: 3,
-                    transition: 'transform 0.15s, box-shadow 0.15s',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+                        transition: 'all 0.3s ease',
                     '&:hover': {
-                      transform: 'scale(1.03)',
-                      boxShadow: 8,
+                          transform: 'translateY(-5px)',
+                          boxShadow: '0 15px 35px rgba(0,0,0,0.15)',
                     },
                     position: 'relative',
-                    overflow: 'hidden',
-                    wordBreak: 'break-word',
-                    overflowWrap: 'break-word',
-                  }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Avatar sx={{ mr: 2, bgcolor: '#1976d2', fontWeight: 700 }}>{iniciales}</Avatar>
-                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                        <Typography variant="subtitle1" fontWeight={700} color="#1976d2" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180 }}>
+                        overflow: 'hidden'
+                      }}>
+                        <Box sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: 4,
+                          background: 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)'
+                        }} />
+                        
+                        <CardContent sx={{ p: 3 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <Avatar sx={{ 
+                              mr: 2, 
+                              bgcolor: '#ff6b6b',
+                              width: 50,
+                              height: 50,
+                              fontSize: '1.2rem',
+                              fontWeight: 700
+                            }}>
+                              {iniciales}
+                            </Avatar>
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Typography variant="h6" fontWeight={700} color="#1976d2">
                           {nombre}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                              <Typography variant="body2" color="text.secondary">
                           {event.title}
                         </Typography>
                       </Box>
-                      <Chip label="Pendiente" color="info" size="small" sx={{ fontWeight: 600 }} icon={<EventIcon />} />
+                            <Chip 
+                              label="Pendiente" 
+                              color="warning" 
+                              size="small" 
+                              sx={{ fontWeight: 600 }}
+                            />
+                          </Box>
+
+                          <Divider sx={{ my: 2 }} />
+
+                          <Box sx={{ space: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                              <CalendarIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20 }} />
+                              <Box>
+                                <Typography variant="body2" fontWeight={600}>
+                                  {formatDate(event.start_date)}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  En {timeUntil}
+                                </Typography>
+                              </Box>
+                            </Box>
+
+                            {event.project_title && (
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                <WorkIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20 }} />
+                                <Typography variant="body2">
+                                  <strong>Proyecto:</strong> {event.project_title}
+                                </Typography>
                     </Box>
-                    <Divider sx={{ mb: 1 }} />
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                      <EventIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}><strong>Fecha:</strong> {event.start_date ? new Date(event.start_date).toLocaleString() : '-'}</Typography>
+                            )}
+
+                                                         {event.description && (
+                               <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1.5 }}>
+                                 <InfoIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20, mt: 0.2 }} />
+                                 <Typography variant="body2">
+                                   <strong>Motivo:</strong> {event.description}
+                                 </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                      <WorkIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}><strong>Proyecto:</strong> {event.project_title || '-'}</Typography>
+                             )}
+
+                             {event.location && (
+                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                 <WorkIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20 }} />
+                                 <Typography variant="body2">
+                                   <strong>Ubicación:</strong> {event.location}
+                                 </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                      <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}><strong>Motivo:</strong> {event.description || '-'}</Typography>
+                             )}
                     </Box>
-                  </Paper>
-                );
-              })
+                        </CardContent>
+
+                        <CardActions sx={{ p: 3, pt: 0 }}>
+                          <Button 
+                            size="small" 
+                            startIcon={<VisibilityIcon />}
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleViewDetails(event)}
+                          >
+                            Ver Detalles
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  );
+                })}
+              </Grid>
             )}
           </Box>
-        </Box>
+        )}
 
-        {/* Tarjeta de entrevistas completadas */}
-        <Box sx={{ minWidth: 320, maxWidth: 1200, width: '100%', mt: 6 }}>
-          <Typography variant="h5" fontWeight={700} color="#388e3c" gutterBottom>
+        {activeTab === 1 && (
+          <Box>
+            <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#388e3c' }}>
             Entrevistas Completadas
           </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            
             {completedInterviews.length === 0 ? (
-              <Typography variant="body1" color="text.secondary" align="center">
+              <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
+                <CheckCircleIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary" gutterBottom>
                 No hay entrevistas completadas
               </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Las entrevistas completadas aparecerán aquí.
+                </Typography>
+              </Paper>
             ) : (
-              completedInterviews.map((event, idx) => {
-                const nombre = event.attendees[0] || 'Estudiante no asignado';
-                const iniciales = nombre.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+              <Grid container spacing={3}>
+                {completedInterviews.map((event) => {
+                  const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                  const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
+                  
                 return (
-                  <Paper key={event.id} elevation={4} sx={{
-                    bgcolor: '#fff',
+                    <Grid item xs={12} md={6} lg={4} key={event.id}>
+                      <Card sx={{ 
+                        height: '100%',
                     borderRadius: 3,
-                    p: 2,
-                    minWidth: 280,
-                    maxWidth: 340,
-                    flex: '1 1 320px',
-                    boxShadow: 3,
-                    transition: 'transform 0.15s, box-shadow 0.15s',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+                        transition: 'all 0.3s ease',
                     '&:hover': {
-                      transform: 'scale(1.03)',
-                      boxShadow: 8,
+                          transform: 'translateY(-5px)',
+                          boxShadow: '0 15px 35px rgba(0,0,0,0.15)',
                     },
                     position: 'relative',
-                    overflow: 'hidden',
-                    wordBreak: 'break-word',
-                    overflowWrap: 'break-word',
-                  }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Avatar sx={{ mr: 2, bgcolor: '#388e3c', fontWeight: 700 }}>{iniciales}</Avatar>
-                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                        <Typography variant="subtitle1" fontWeight={700} color="#388e3c" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180 }}>
+                        overflow: 'hidden'
+                      }}>
+                        <Box sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: 4,
+                          background: 'linear-gradient(90deg, #4ecdc4 0%, #44a08d 100%)'
+                        }} />
+                        
+                        <CardContent sx={{ p: 3 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <Avatar sx={{ 
+                              mr: 2, 
+                              bgcolor: '#4ecdc4',
+                              width: 50,
+                              height: 50,
+                              fontSize: '1.2rem',
+                              fontWeight: 700
+                            }}>
+                              {iniciales}
+                            </Avatar>
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Typography variant="h6" fontWeight={700} color="#388e3c">
                           {nombre}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                              <Typography variant="body2" color="text.secondary">
                           {event.title}
                         </Typography>
                       </Box>
-                      <Chip label="Completada" color="success" size="small" sx={{ fontWeight: 600 }} icon={<EventIcon />} />
+                            <Chip 
+                              label="Completada" 
+                              color="success" 
+                              size="small" 
+                              sx={{ fontWeight: 600 }}
+                            />
+                          </Box>
+
+                          <Divider sx={{ my: 2 }} />
+
+                          <Box sx={{ space: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                              <CalendarIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20 }} />
+                              <Typography variant="body2" fontWeight={600}>
+                                {formatDate(event.start_date)}
+                              </Typography>
+                            </Box>
+
+                            {event.project_title && (
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                <WorkIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20 }} />
+                                <Typography variant="body2">
+                                  <strong>Proyecto:</strong> {event.project_title}
+                                </Typography>
                     </Box>
-                    <Divider sx={{ mb: 1 }} />
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                      <EventIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}><strong>Fecha:</strong> {event.start_date ? new Date(event.start_date).toLocaleString() : '-'}</Typography>
+                            )}
+
+                                                         {event.description && (
+                               <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1.5 }}>
+                                 <InfoIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20, mt: 0.2 }} />
+                                 <Typography variant="body2">
+                                   <strong>Motivo:</strong> {event.description}
+                                 </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                      <WorkIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}><strong>Proyecto:</strong> {event.project_title || '-'}</Typography>
+                             )}
+
+                             {event.location && (
+                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                 <WorkIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20 }} />
+                                 <Typography variant="body2">
+                                   <strong>Ubicación:</strong> {event.location}
+                                 </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                      <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}><strong>Motivo:</strong> {event.description || '-'}</Typography>
+                             )}
                     </Box>
-                  </Paper>
-                );
-              })
+                        </CardContent>
+
+                        <CardActions sx={{ p: 3, pt: 0 }}>
+                          <Button 
+                            size="small" 
+                            startIcon={<VisibilityIcon />}
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleViewDetails(event)}
+                          >
+                            Ver Detalles
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  );
+                })}
+              </Grid>
             )}
           </Box>
-        </Box>
-      </Box>
+        )}
 
-      {/* Modal para editar fecha/hora */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Cambiar Fecha/Hora de Entrevista</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField
-              fullWidth
-              type="datetime-local"
-              label="Nueva Fecha y Hora de Inicio"
-              value={editDate}
-              onChange={e => setEditDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              fullWidth
-              type="datetime-local"
-              label="Nueva Fecha y Hora de Fin"
-              value={editEndDate}
-              onChange={e => setEditEndDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancelar</Button>
-          <Button onClick={() => setEditDialogOpen(false)} variant="contained" color="primary">Guardar Cambios</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Historial de Entrevistas */}
-      <Box sx={{ mt: 8 }}>
-        <Typography variant="h5" fontWeight={700} gutterBottom>
-          Historial de Entrevistas
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
-          <Typography variant="body2">Mostrar:</Typography>
-          <Select
-            size="small"
-            value={String(sectionCount)}
-            onChange={e => setSectionCount(Number(e.target.value))}
-            sx={{ minWidth: 100 }}
-          >
-            {[10, 50, 100, 200].map(val => (
-              <MenuItem key={val} value={val}>{`Últimas ${val}`}</MenuItem>
-            ))}
-          </Select>
-        </Box>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          {allInterviewsToShow.length === 0 ? (
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-              No hay entrevistas en el historial
+        {activeTab === 2 && (
+          <Box>
+            <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#2c3e50' }}>
+              Historial Completo
             </Typography>
-          ) : (
-            allInterviewsToShow.map(event => (
-              <Paper key={event.id} sx={{ p: 2, minWidth: 280, maxWidth: 400, flex: '1 1 320px', bgcolor: event.status === 'completed' ? '#e8f5e9' : '#e3f2fd', borderRadius: 2, boxShadow: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Avatar sx={{ mr: 2, bgcolor: event.status === 'completed' ? '#388e3c' : '#1976d2' }}>
-                    <PersonIcon />
+            
+            {viewMode === 'table' ? (
+              <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: '#f8fafc' }}>
+                      <TableCell sx={{ fontWeight: 700 }}>Estudiante</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Proyecto</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Fecha</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Estado</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredEvents.map((event) => {
+                      const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                      return (
+                        <TableRow key={event.id} hover>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Avatar sx={{ mr: 2, bgcolor: getStatusColor(event.status) }}>
+                                {nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase()}
+                              </Avatar>
+                              <Typography variant="body2" fontWeight={600}>
+                                {nombre}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell>{event.project_title || '-'}</TableCell>
+                          <TableCell>{formatDate(event.start_date)}</TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={getStatusLabel(event.status)} 
+                              color={event.status === 'completed' ? 'success' : event.status === 'scheduled' ? 'warning' : 'error'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Tooltip title="Ver detalles">
+                              <IconButton size="small" color="primary" onClick={() => handleViewDetails(event)}>
+                                <VisibilityIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Grid container spacing={3}>
+                {filteredEvents.map((event) => {
+                  const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                  const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
+                  
+                  return (
+                    <Grid item xs={12} md={6} lg={4} key={event.id}>
+                      <Card sx={{ 
+                        height: '100%',
+                        borderRadius: 3,
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-3px)',
+                          boxShadow: '0 8px 25px rgba(0,0,0,0.12)',
+                        }
+                      }}>
+                        <Box sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: 4,
+                          background: `linear-gradient(90deg, ${getStatusColor(event.status)} 0%, ${getStatusColor(event.status)}80 100%)`
+                        }} />
+                        
+                        <CardContent sx={{ p: 2.5 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                            <Avatar sx={{ 
+                              mr: 2, 
+                              bgcolor: getStatusColor(event.status),
+                              width: 40,
+                              height: 40,
+                              fontSize: '1rem'
+                            }}>
+                              {iniciales}
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="subtitle1" fontWeight={700} color={event.status === 'completed' ? '#388e3c' : '#1976d2'}>
-                      {event.attendees && event.attendees.length > 0 ? event.attendees.join(', ') : 'Estudiante no asignado'}
+                              <Typography variant="subtitle1" fontWeight={600}>
+                                {nombre}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {event.title}
                     </Typography>
                   </Box>
-                  <Chip label={event.status === 'completed' ? 'Completada' : 'Pendiente'} color={event.status === 'completed' ? 'success' : 'info'} size="small" sx={{ fontWeight: 600 }} />
+                            <Chip 
+                              label={getStatusLabel(event.status)} 
+                              color={event.status === 'completed' ? 'success' : event.status === 'scheduled' ? 'warning' : 'error'}
+                              size="small"
+                            />
+                          </Box>
+
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            {formatDate(event.start_date)}
+                          </Typography>
+
+                                                     {event.project_title && (
+                             <Typography variant="body2" sx={{ mb: 0.5 }}>
+                               <strong>Proyecto:</strong> {event.project_title}
+                             </Typography>
+                           )}
+                           
+                           {event.location && (
+                             <Typography variant="body2" sx={{ mb: 0.5 }}>
+                               <strong>Ubicación:</strong> {event.location}
+                             </Typography>
+                           )}
+                        </CardContent>
+                        
+                        <CardActions sx={{ p: 2, pt: 0 }}>
+                          <Button 
+                            size="small" 
+                            startIcon={<VisibilityIcon />}
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleViewDetails(event)}
+                          >
+                            Ver Detalles
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            )}
+          </Box>
+        )}
+      </Box>
+
+      {/* Modal de detalles de la entrevista */}
+      <Dialog 
+        open={detailDialogOpen} 
+        onClose={handleCloseDetails}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
+          }
+        }}
+      >
+        {selectedEvent && (
+          <>
+            <DialogTitle sx={{ 
+              pb: 1,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              borderRadius: '12px 12px 0 0'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Avatar sx={{ 
+                  bgcolor: 'rgba(255,255,255,0.2)', 
+                  width: 48, 
+                  height: 48,
+                  fontSize: '1.2rem',
+                  fontWeight: 700
+                }}>
+                  {selectedEvent.attendees?.[0]?.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase() || 'NA'}
+                </Avatar>
+                <Box>
+                  <Typography variant="h5" fontWeight={700}>
+                    {selectedEvent.title}
+                  </Typography>
+                  <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                    {selectedEvent.attendees?.[0] || 'Estudiante no asignado'}
+                  </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                  <strong>Fecha:</strong> {event.start_date ? new Date(event.start_date).toLocaleString() : '-'}
+              </Box>
+            </DialogTitle>
+
+            <DialogContent sx={{ p: 4 }}>
+              <Grid container spacing={3}>
+                {/* Información básica */}
+                <Grid item xs={12} md={6}>
+                  <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
+                    <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
+                      Información General
+                    </Typography>
+                    
+                    <Box sx={{ space: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <CalendarIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                        <Box>
+                          <Typography variant="body2" fontWeight={600}>
+                            Fecha y Hora
+                          </Typography>
+                          <Typography variant="body1">
+                            {formatDate(selectedEvent.start_date)}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <AccessTimeIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                        <Box>
+                          <Typography variant="body2" fontWeight={600}>
+                            Duración
+                          </Typography>
+                          <Typography variant="body1">
+                            {selectedEvent.duration || '1 hora'}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Chip 
+                          label={getStatusLabel(selectedEvent.status)} 
+                          color={selectedEvent.status === 'completed' ? 'success' : selectedEvent.status === 'scheduled' ? 'warning' : 'error'}
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </Box>
+                    </Box>
+                  </Paper>
+                </Grid>
+
+                {/* Detalles del proyecto */}
+                <Grid item xs={12} md={6}>
+                  <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
+                    <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
+                      Detalles del Proyecto
+                    </Typography>
+                    
+                    {selectedEvent.project_title ? (
+                      <Box sx={{ space: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <WorkIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="body2" fontWeight={600}>
+                              Proyecto
+                            </Typography>
+                            <Typography variant="body1">
+                              {selectedEvent.project_title}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {selectedEvent.description && (
+                          <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                            <InfoIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24, mt: 0.2 }} />
+                            <Box>
+                              <Typography variant="body2" fontWeight={600}>
+                                Motivo de la Entrevista
+                              </Typography>
+                              <Typography variant="body1">
+                                {selectedEvent.description}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        )}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No hay información del proyecto disponible
+                      </Typography>
+                    )}
+                  </Paper>
+                </Grid>
+
+                {/* Información adicional */}
+                <Grid item xs={12}>
+                  <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
+                    <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
+                      Información Adicional
+                    </Typography>
+                    
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="body2" fontWeight={600}>
+                          ID del Evento:
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                          {selectedEvent.id}
+                        </Typography>
+                      </Grid>
+                      
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="body2" fontWeight={600}>
+                          Tipo de Evento:
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Entrevista
+                        </Typography>
+                      </Grid>
+                      
+                                             {selectedEvent.location && (
+                         <Grid item xs={12} sm={6}>
+                           <Typography variant="body2" fontWeight={600}>
+                             Ubicación:
+                           </Typography>
+                           <Typography variant="body2" color="text.secondary">
+                             {selectedEvent.location}
+                           </Typography>
+                         </Grid>
+                       )}
+                       
+                       <Grid item xs={12} sm={6}>
+                         <Typography variant="body2" fontWeight={600}>
+                           Sala:
+                         </Typography>
+                                                  <Typography variant="body2" color="text.secondary">
+                           {selectedEvent.room || 'No especificada'}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                  <strong>Proyecto:</strong> {event.project_title || '-'}
+                       </Grid>
+                      
+                      {selectedEvent.attendees && selectedEvent.attendees.length > 1 && (
+                        <Grid item xs={12} sm={6}>
+                          <Typography variant="body2" fontWeight={600}>
+                            Participantes:
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <strong>Motivo:</strong> {event.description || '-'}
+                            {selectedEvent.attendees.join(', ')}
                 </Typography>
+                        </Grid>
+                      )}
+                    </Grid>
               </Paper>
-            ))
-          )}
-        </Box>
-      </Box>
+                </Grid>
+              </Grid>
+            </DialogContent>
+
+            <DialogActions sx={{ p: 3, pt: 0 }}>
+              <Button 
+                onClick={handleCloseDetails}
+                variant="contained"
+                sx={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
+                  }
+                }}
+              >
+                Cerrar
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
     </Box>
   );
 };

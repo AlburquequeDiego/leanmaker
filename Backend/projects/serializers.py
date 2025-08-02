@@ -16,9 +16,9 @@ class ProyectoSerializer:
     """Serializer para el modelo Proyecto"""
     
     @staticmethod
-    def to_dict(proyecto):
+    def to_dict(proyecto, user=None):
         """Convierte un objeto Proyecto a diccionario"""
-        return {
+        data = {
             'id': str(proyecto.id),
             'company_id': str(proyecto.company.id) if proyecto.company else None,
             'company_name': proyecto.company.company_name if proyecto.company else None,
@@ -30,7 +30,6 @@ class ProyectoSerializer:
             'description': proyecto.description,
             'requirements': proyecto.requirements,
             'trl_id': proyecto.trl.id if proyecto.trl else None,
-            'trl_name': proyecto.trl.name if proyecto.trl else None,
             'api_level': proyecto.api_level,
             'required_hours': proyecto.required_hours,
             'min_api_level': proyecto.min_api_level,
@@ -58,6 +57,12 @@ class ProyectoSerializer:
             'created_at': proyecto.created_at.isoformat(),
             'updated_at': proyecto.updated_at.isoformat()
         }
+        
+        # Solo incluir trl_name si el usuario NO es una empresa
+        if user is None or user.role != 'company':
+            data['trl_name'] = proyecto.trl.name if proyecto.trl else None
+            
+        return data
     
     @staticmethod
     def validate_data(data):
@@ -211,7 +216,7 @@ class AplicacionProyectoSerializer:
     """Serializer para el modelo AplicacionProyecto"""
     
     @staticmethod
-    def to_dict(aplicacion):
+    def to_dict(aplicacion, user=None):
         return {
             'id': str(aplicacion.id),
             'estado': aplicacion.estado,
@@ -222,7 +227,7 @@ class AplicacionProyectoSerializer:
             'portfolio_url': aplicacion.portfolio_url,
             'github_url': aplicacion.github_url,
             'linkedin_url': aplicacion.linkedin_url,
-            'proyecto': ProyectoSerializer.to_dict(aplicacion.proyecto),
+            'proyecto': ProyectoSerializer.to_dict(aplicacion.proyecto, user),
             'empresa': {
                 'id': str(aplicacion.proyecto.company.id),
                 'nombre': aplicacion.proyecto.company.company_name,

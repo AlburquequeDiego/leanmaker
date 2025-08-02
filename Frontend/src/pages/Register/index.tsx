@@ -493,7 +493,21 @@ export const Register = () => {
             bgcolor: 'white',
           }}
         >
-          <Typography component="h1" variant="h4" align="center" gutterBottom>
+          <Typography 
+            component="h1" 
+            variant="h4" 
+            align="center" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 700,
+              background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '0.5px',
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+          >
             Registro
           </Typography>
 
@@ -503,7 +517,20 @@ export const Register = () => {
               variant={userType === 'student' ? 'contained' : 'outlined'}
               startIcon={<SchoolIcon />}
               onClick={() => handleUserTypeChange('student')}
-              sx={{ px: 3, py: 1.5 }}
+              sx={{ 
+                px: 4, 
+                py: 2,
+                borderRadius: '25px',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '16px',
+                transition: 'all 0.3s ease',
+                boxShadow: userType === 'student' ? '0 4px 12px rgba(25, 118, 210, 0.3)' : 'none',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)'
+                }
+              }}
             >
               Estudiante
             </Button>
@@ -511,7 +538,20 @@ export const Register = () => {
               variant={userType === 'company' ? 'contained' : 'outlined'}
               startIcon={<BusinessIcon sx={{ color: userType === 'company' ? '#8e24aa' : undefined }} />}
               onClick={() => handleUserTypeChange('company')}
-              sx={{ px: 3, py: 1.5 }}
+              sx={{ 
+                px: 4, 
+                py: 2,
+                borderRadius: '25px',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '16px',
+                transition: 'all 0.3s ease',
+                boxShadow: userType === 'company' ? '0 4px 12px rgba(25, 118, 210, 0.3)' : 'none',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)'
+                }
+              }}
             >
               Empresa
             </Button>
@@ -1208,7 +1248,24 @@ export const Register = () => {
                   color="primary"
                   fullWidth
                   disabled={loading || !formik.values.acceptTerms}
-                  sx={{ mt: 2, borderRadius: 2, fontWeight: 600 }}
+                  sx={{ 
+                    mt: 2, 
+                    borderRadius: '30px',
+                    height: '50px',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
+                      transform: 'translateY(-2px)'
+                    },
+                    '&:active': {
+                      transform: 'translateY(0)',
+                      boxShadow: '0 2px 8px rgba(25, 118, 210, 0.3)'
+                    }
+                  }}
                 >
                   Crear Cuenta
                 </LoadingButton>
@@ -1232,7 +1289,20 @@ export const Register = () => {
                   <Button
                     variant="outlined"
                     onClick={() => navigate('/')}
-                    sx={{ mt: 1 }}
+                    sx={{ 
+                      mt: 1,
+                      borderRadius: '25px',
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      fontSize: '14px',
+                      px: 3,
+                      py: 1.5,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }
+                    }}
                   >
                     Volver al inicio
                   </Button>

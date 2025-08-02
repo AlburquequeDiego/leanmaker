@@ -104,7 +104,7 @@ export const Login = () => {
           {/* Imagen centrada, cambia la ruta por la que desees */}
           <Box
             component="img"
-            src="/imagenes/login.png"
+            src="/imagenes/FOTITO.png"
             alt="Ilustración Login"
             sx={{
               width: { xs: '80%', md: '95%' },
@@ -144,7 +144,21 @@ export const Login = () => {
                 bgcolor: 'white',
               }}
             >
-              <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+              <Typography 
+                component="h1" 
+                variant="h4" 
+                sx={{ 
+                  mb: 3,
+                  fontWeight: 700,
+                  background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  textAlign: 'center',
+                  letterSpacing: '0.5px',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
                 Iniciar Sesión
               </Typography>
               {error && (
@@ -159,7 +173,6 @@ export const Login = () => {
               >
                 <TextField
                   margin="normal"
-                  required
                   fullWidth
                   id="email"
                   label="Correo electrónico"
@@ -174,7 +187,6 @@ export const Login = () => {
                 />
                 <TextField
                   margin="normal"
-                  required
                   fullWidth
                   name="password"
                   label="Contraseña"
@@ -206,7 +218,27 @@ export const Login = () => {
                   fullWidth
                   variant="contained"
                   loading={loading}
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ 
+                    mt: 3, 
+                    mb: 2,
+                    borderRadius: '30px',
+                    bgcolor: '#1976d2',
+                    height: '50px',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      bgcolor: '#1565c0',
+                      boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
+                      transform: 'translateY(-2px)'
+                    },
+                    '&:active': {
+                      transform: 'translateY(0)',
+                      boxShadow: '0 2px 8px rgba(25, 118, 210, 0.3)'
+                    }
+                  }}
                 >
                   Iniciar Sesión
                 </LoadingButton>

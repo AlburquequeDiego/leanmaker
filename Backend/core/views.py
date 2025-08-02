@@ -298,16 +298,22 @@ def api_login(request):
                 'error': 'Email y contraseña son requeridos'
             }, status=400)
         
-        # Buscar usuario por email
+        # Buscar usuario por email o company_email
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return JsonResponse({
-                'error': 'Usuario no encontrado'
-            }, status=404)
+            # Si no encuentra por email personal, buscar por company_email
+            try:
+                from companies.models import Empresa
+                empresa = Empresa.objects.get(company_email=email)
+                user = empresa.user
+            except Empresa.DoesNotExist:
+                return JsonResponse({
+                    'error': 'Usuario no encontrado'
+                }, status=404)
         
-        # Autenticar usuario (usar email ya que es el USERNAME_FIELD)
-        user = authenticate(request, username=email, password=password)
+        # Autenticar usuario (usar el email del usuario, no el email de entrada)
+        user = authenticate(request, username=user.email, password=password)
         
         if user is not None:
             # Generar tokens JWT

@@ -42,15 +42,15 @@ import type { Project } from '../../../types';
 
 // TRL options
 const trlOptions = [
-  { value: 1, label: 'TRL 1', desc: 'Fase de idea, sin definición clara ni desarrollo previo.' },
-  { value: 2, label: 'TRL 2', desc: 'Definición clara y antecedentes de lo que se desea desarrollar.' },
-  { value: 3, label: 'TRL 3', desc: 'Pruebas y validaciones de concepto. Componentes evaluados por separado.' },
-  { value: 4, label: 'TRL 4', desc: 'Prototipo mínimo viable probado en condiciones controladas simples.' },
-  { value: 5, label: 'TRL 5', desc: 'Prototipo mínimo viable probado en condiciones similares al entorno real.' },
-  { value: 6, label: 'TRL 6', desc: 'Prototipo probado mediante un piloto en condiciones reales.' },
-  { value: 7, label: 'TRL 7', desc: 'Desarrollo probado en condiciones reales, por un periodo prolongado.' },
-  { value: 8, label: 'TRL 8', desc: 'Producto validado en lo técnico y lo comercial.' },
-  { value: 9, label: 'TRL 9', desc: 'Producto completamente desarrollado y disponible para la sociedad.' },
+  { value: 1, label: 'Opción 1', desc: 'Fase de idea, sin definición clara ni desarrollo previo.' },
+  { value: 2, label: 'Opción 2', desc: 'Definición clara y antecedentes de lo que se desea desarrollar.' },
+  { value: 3, label: 'Opción 3', desc: 'Pruebas y validaciones de concepto. Componentes evaluados por separado.' },
+  { value: 4, label: 'Opción 4', desc: 'Prototipo mínimo viable probado en condiciones controladas simples.' },
+  { value: 5, label: 'Opción 5', desc: 'Prototipo mínimo viable probado en condiciones similares al entorno real.' },
+  { value: 6, label: 'Opción 6', desc: 'Prototipo probado mediante un piloto en condiciones reales.' },
+  { value: 7, label: 'Opción 7', desc: 'Desarrollo probado en condiciones reales, por un periodo prolongado.' },
+  { value: 8, label: 'Opción 8', desc: 'Producto validado en lo técnico y lo comercial.' },
+  { value: 9, label: 'Opción 9', desc: 'Producto completamente desarrollado y disponible para la sociedad.' },
 ];
 
 const studentAreas = [

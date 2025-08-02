@@ -105,6 +105,12 @@ def calendar_events_list(request):
                 'project': str(event.project.id) if event.project else None,
                 'created_at': event.created_at.isoformat(),
                 'updated_at': event.updated_at.isoformat(),
+                # Nuevos campos para reuniones/entrevistas
+                'meeting_type': event.meeting_type,
+                'meeting_link': event.meeting_link,
+                'meeting_room': event.meeting_room,
+                'representative_name': event.representative_name,
+                'representative_position': event.representative_position,
             })
         
         print('Eventos encontrados tras filtro:', queryset.count())
@@ -181,6 +187,12 @@ def calendar_events_detail(request, calendar_events_id):
             } if event.project else None,
             'created_at': event.created_at.isoformat(),
             'updated_at': event.updated_at.isoformat(),
+            # Nuevos campos para reuniones/entrevistas
+            'meeting_type': event.meeting_type,
+            'meeting_link': event.meeting_link,
+            'meeting_room': event.meeting_room,
+            'representative_name': event.representative_name,
+            'representative_position': event.representative_position,
         }
         
         return JsonResponse(event_data)
@@ -215,6 +227,29 @@ def calendar_events_create(request):
         if start_date >= end_date:
             return JsonResponse({'error': 'La fecha de inicio debe ser anterior a la fecha de fin'}, status=400)
         
+        # Validar que los eventos estén dentro del horario permitido (8:00 AM - 19:00 PM)
+        # Convertir a zona horaria local para la validación
+        from django.utils import timezone
+        import pytz
+        
+        # Obtener la zona horaria del usuario (asumir Chile por defecto)
+        user_timezone = pytz.timezone('America/Santiago')
+        
+        # Convertir las fechas a la zona horaria local
+        start_date_local = start_date.astimezone(user_timezone)
+        end_date_local = end_date.astimezone(user_timezone)
+        
+        start_hour = start_date_local.hour
+        end_hour = end_date_local.hour
+        
+        print(f'Validando horario - UTC: {start_date.hour}:{start_date.minute}, Local: {start_hour}:{start_date_local.minute}')
+        
+        if start_hour < 8 or start_hour >= 19:
+            return JsonResponse({'error': f'Los eventos solo pueden programarse entre las 8:00 AM y las 19:00 PM (7:00 PM). Hora seleccionada: {start_hour}:{start_date_local.minute:02d}'}, status=400)
+        
+        if end_hour > 19:
+            return JsonResponse({'error': f'Los eventos no pueden extenderse más allá de las 19:00 PM (7:00 PM). Hora de fin: {end_hour}:{end_date_local.minute:02d}'}, status=400)
+        
         # Crear evento
         project_instance = None
         if data.get('project'):
@@ -241,7 +276,13 @@ def calendar_events_create(request):
             icon=data.get('icon'),
             created_by=current_user,
             user=current_user,
-            project=project_instance
+            project=project_instance,
+            # Nuevos campos para reuniones/entrevistas
+            meeting_type=data.get('meeting_type'),
+            meeting_link=data.get('meeting_link'),
+            meeting_room=data.get('meeting_room'),
+            representative_name=data.get('representative_name'),
+            representative_position=data.get('representative_position')
         )
         
         # Establecer reglas de recurrencia si aplica
@@ -282,6 +323,12 @@ def calendar_events_create(request):
             'attendees': [attendee.get_full_name() for attendee in event.attendees.all()],
             'created_at': event.created_at.isoformat(),
             'updated_at': event.updated_at.isoformat(),
+            # Nuevos campos para reuniones/entrevistas
+            'meeting_type': event.meeting_type,
+            'meeting_link': event.meeting_link,
+            'meeting_room': event.meeting_room,
+            'representative_name': event.representative_name,
+            'representative_position': event.representative_position,
         }
         
         return JsonResponse(event_data, status=201)
@@ -316,7 +363,8 @@ def calendar_events_update(request, calendar_events_id):
         # Actualizar campos permitidos
         allowed_fields = ['title', 'description', 'event_type', 'start_date', 'end_date', 
                          'all_day', 'location', 'priority', 'status', 'is_online', 
-                         'meeting_url', 'is_public', 'color', 'icon', 'recurrence_rule']
+                         'meeting_url', 'is_public', 'color', 'icon', 'recurrence_rule',
+                         'meeting_type', 'meeting_link', 'meeting_room', 'representative_name', 'representative_position']
         
         for field in allowed_fields:
             if field in data:
@@ -364,6 +412,12 @@ def calendar_events_update(request, calendar_events_id):
             'attendees': [attendee.get_full_name() for attendee in event.attendees.all()],
             'created_at': event.created_at.isoformat(),
             'updated_at': event.updated_at.isoformat(),
+            # Nuevos campos para reuniones/entrevistas
+            'meeting_type': event.meeting_type,
+            'meeting_link': event.meeting_link,
+            'meeting_room': event.meeting_room,
+            'representative_name': event.representative_name,
+            'representative_position': event.representative_position,
         }
         
         return JsonResponse(event_data)
@@ -544,13 +598,20 @@ def student_events(request):
                     'empresa': {
                         'nombre': event.project.company.company_name if event.project.company else 'Sin empresa'
                     }
-                } if event.project else None,
+                } if event.project and hasattr(event.project, 'id') else None,
                 'created_at': event.created_at.isoformat(),
                 'updated_at': event.updated_at.isoformat(),
+                # Nuevos campos para reuniones/entrevistas
+                'meeting_type': event.meeting_type,
+                'meeting_link': event.meeting_link,
+                'meeting_room': event.meeting_room,
+                'representative_name': event.representative_name,
+                'representative_position': event.representative_position,
             })
         
-        return JsonResponse(events_data, safe=False)
+        return JsonResponse({'results': events_data}, safe=False)
     except Exception as e:
+        print(f'Error en student_events: {str(e)}')
         return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
@@ -621,9 +682,15 @@ def company_events(request):
                     'empresa': {
                         'nombre': event.project.company.company_name if event.project and event.project.company else 'Sin empresa'
                     }
-                } if event.project else None,
+                } if event.project and hasattr(event.project, 'id') else None,
                 'created_at': event.created_at.isoformat(),
                 'updated_at': event.updated_at.isoformat(),
+                # Nuevos campos para reuniones/entrevistas
+                'meeting_type': event.meeting_type,
+                'meeting_link': event.meeting_link,
+                'meeting_room': event.meeting_room,
+                'representative_name': event.representative_name,
+                'representative_position': event.representative_position,
             })
 
         # Depuración: mostrar usuario autenticado y eventos encontrados
@@ -634,4 +701,5 @@ def company_events(request):
 
         return JsonResponse({'results': events_data}, safe=False)
     except Exception as e:
+        print(f'Error en company_events: {str(e)}')
         return JsonResponse({'error': str(e)}, status=500)

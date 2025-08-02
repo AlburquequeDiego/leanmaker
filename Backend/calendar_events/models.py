@@ -62,6 +62,17 @@ class CalendarEvent(models.Model):
     meeting_url = models.URLField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
     
+    # Campos adicionales para reuniones/entrevistas
+    meeting_type = models.CharField(max_length=10, choices=(
+        ('online', 'Online'),
+        ('cowork', 'Cowork'),
+        ('fablab', 'FabLab'),
+    ), null=True, blank=True)
+    meeting_link = models.URLField(blank=True, null=True)  # Link para reuniones online
+    meeting_room = models.CharField(max_length=50, blank=True, null=True)  # Sala para reuniones en sede
+    representative_name = models.CharField(max_length=100, blank=True, null=True)  # Nombre del representante
+    representative_position = models.CharField(max_length=100, blank=True, null=True)  # Cargo del representante
+    
     # Relaciones opcionales
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)
     related_application = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, related_name='calendar_events', null=True, blank=True)

@@ -1,20 +1,57 @@
 
 ADMINISTRADOS:
-admin@gmail.com
-admin
+admin@gmail.com                 admin
 
 estudiantes:
-daniel.perez@inacapmail.cl        Estudiante123!
-alonso.alburqueque@inacapmail.cl  Estudiante123!
-jose.linares@inacapmail.cl        Estudiante123!
-joaquin.maquena@inacapmail.cl     Estudiante123!
-jorge.samorano@inacapmail.cl      Estudiante123!
-sofia.lira@inacapmail.cl          Estudiante123!
-fabiola.vasquez@inacapmail.cl     Estudiante123!
+juan.perez@inacapmail.cl        Estudiante123!
 
 EMPRESAS:
-diego.morales@correo.cl          Empresa123!
-diegoamaya@gmail.com             Empresa123!
-julia.loretto@gmail.com          Empresa123!
-fernandadelascasas@gmail.com     Empresa123!
+lucia.amaya@gmail.com            Empresa123!
+
+#####################################
+INTERFACES FUNCIONALES POR USUARIOS:#
+#####################################
+BLOG                               OK 
+LOGIN                              OK
+REGISTRO DE ESTUDAINTES Y EMPRESA  OK 
+LOGIN DE ADMIN,ESTUDIANTE,EMPRESA  OK
+#####################################
+ESTUDIANTE:
+Dashboard                      ok
+perfil                         ok
+Notificaciones                 ok 
+Proyectos Disponibles          ok
+Mis Aplicaciones               ok
+Mis Proyectos                  ok
+Mis Evaluaciones                    ok
+Calendario                     ok
+Cuestionario de Nivelación API ok 
+Resultados del Nivel API       OK
+#####################################
+EMPRESA:
+Dashboard                      ok
+perfil                         ok
+Notificaciones                 ok 
+Gestión de Proyectos           ok
+Postulaciones                  ok
+Estudiantes                    ok
+Evaluaciones                     ok
+Entrevistas                      ok
+Calendario                       ok
+Strikes                          ok
+#####################################
+ADMIN:
+Dashboard de Administrador                ok 
+Perfil de Administrador                   ok
+Gestión de Notificaciones Masivas         ok
+Gestión de Usuarios                       ok      
+Validación de Horas                       ok
+Gestión de Empresas                       ok
+Gestión de Estudiantes                    ok
+Gestión de Proyectos                      ok
+Gestión de Calificaciones                 ok
+Configuración de Plataforma               ok
+#####################################
+
+
 

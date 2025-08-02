@@ -61,6 +61,7 @@ interface Project {
   apiLevel?: string;
   createdAt?: string;
   requirements?: string;
+  objetivo?: string;
 }
 
 export const MyProjects = () => {
@@ -241,7 +242,6 @@ export const MyProjects = () => {
                         <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}><b>Empresa:</b> {project.company}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                        {project.difficulty && <Chip label={`Dificultad: ${project.difficulty}`} color="secondary" size="small" />}
                         {project.apiLevel && <Chip label={`API ${project.apiLevel}`} color="success" size="small" icon={<TrendingUpIcon />} />}
                         {project.modality && <Chip label={project.modality} color="info" size="small" />}
                         {project.hoursPerWeek && <Chip label={`Horas/sem: ${project.hoursPerWeek}`} color="default" size="small" />}
@@ -389,7 +389,6 @@ export const MyProjects = () => {
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                 {selectedProject.modality && <Chip label={`Modalidad: ${selectedProject.modality}`} color="info" />}
                 {selectedProject.location && <Chip label={`Ubicación: ${selectedProject.location}`} color="default" />}
-                {selectedProject.difficulty && <Chip label={`Dificultad: ${selectedProject.difficulty}`} color="secondary" />}
                 {selectedProject.totalHours && <Chip label={`Horas totales: ${selectedProject.totalHours}`} color="default" />}
                 {selectedProject.hoursPerWeek && <Chip label={`Horas/semana: ${selectedProject.hoursPerWeek}`} color="default" />}
                 {selectedProject.teamMembers && <Chip label={`Miembros del equipo: ${selectedProject.teamMembers}`} color="success" />}
@@ -404,6 +403,14 @@ export const MyProjects = () => {
                     <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Descripción</Typography>
                     <Typography variant="body1">{selectedProject.description}</Typography>
                   </Paper>
+                  
+                  {selectedProject.objetivo && (
+                    <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
+                      <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Objetivos del Proyecto</Typography>
+                      <Typography variant="body2">{selectedProject.objetivo}</Typography>
+                    </Paper>
+                  )}
+                  
                   {selectedProject.requirements && (
                     <Paper sx={{ p: 2, bgcolor: '#fff', mb: 2 }} elevation={2}>
                       <Typography variant="h6" fontWeight={600} gutterBottom color="primary">Requisitos</Typography>

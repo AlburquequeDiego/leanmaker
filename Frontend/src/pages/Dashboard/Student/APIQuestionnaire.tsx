@@ -145,17 +145,27 @@ export const APIQuestionnaire = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [currentApiLevel, setCurrentApiLevel] = useState<number>(1);
+  const [currentApiLevel, setCurrentApiLevel] = useState<number | null>(null);
+  const [loadingApiLevel, setLoadingApiLevel] = useState(true);
 
   // Obtener el nivel API actual del estudiante al cargar el componente
   useEffect(() => {
     const fetchCurrentApiLevel = async () => {
       try {
+        setLoadingApiLevel(true);
         const data = await apiService.get('/api/students/me/');
-        setCurrentApiLevel(Number(data.api_level) || 1);
+        const apiLevel = Number(data.api_level);
+        if (apiLevel && apiLevel > 0) {
+          setCurrentApiLevel(apiLevel);
+        } else {
+          console.error('Nivel API no válido recibido:', data.api_level);
+          setCurrentApiLevel(null);
+        }
       } catch (error) {
         console.error('Error fetching current API level:', error);
-        setCurrentApiLevel(1);
+        setCurrentApiLevel(null);
+      } finally {
+        setLoadingApiLevel(false);
       }
     };
     fetchCurrentApiLevel();
@@ -194,7 +204,7 @@ export const APIQuestionnaire = () => {
 
   const handleSubmit = async () => {
     const level = calculateAPILevel();
-    if (level) {
+    if (level && currentApiLevel !== null) {
       setCalculatedLevel(level);
       setShowResults(true);
       setPendingApproval(false); // Inicialmente no está pendiente hasta confirmar
@@ -238,12 +248,105 @@ export const APIQuestionnaire = () => {
   };
 
   const progress = (Object.keys(answers).length / questions.length) * 100;
-  const canSubmit = Object.keys(answers).length === questions.length && !pendingApproval;
+  const canSubmit = Object.keys(answers).length === questions.length && !pendingApproval && currentApiLevel !== null;
 
+  // Mostrar loading mientras se obtiene el nivel API
+  if (loadingApiLevel) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Si no se pudo obtener el nivel API, mostrar error
+  if (currentApiLevel === null) {
+    return (
+      <Box sx={{ flexGrow: 1, p: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+          <QuizIcon sx={{ mr: 2, color: 'error.main' }} />
+          Cuestionario de Nivelación API
+        </Typography>
+
+        <Alert severity="error" sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Error al cargar tu nivel API
+          </Typography>
+          <Typography variant="body1">
+            No se pudo obtener tu nivel API actual. Por favor, recarga la página o contacta al administrador si el problema persiste.
+          </Typography>
+        </Alert>
+      </Box>
+    );
+  }
+
+  // Mostrar loading mientras se procesa el cuestionario
   if (loading && !showResults) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Si el estudiante ya tiene el nivel máximo (API 4), mostrar mensaje de que no puede hacer el cuestionario
+  if (currentApiLevel >= 4) {
+    return (
+      <Box sx={{ flexGrow: 1, p: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+          <QuizIcon sx={{ mr: 2, color: 'grey.500' }} />
+          Cuestionario de Nivelación API
+        </Typography>
+
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            🎉 ¡Felicidades! Ya has alcanzado el nivel máximo
+          </Typography>
+          <Typography variant="body1">
+            Tu nivel actual es <strong>API {currentApiLevel}</strong>, que es el nivel máximo disponible. 
+            Ya no puedes realizar este cuestionario porque has alcanzado la máxima competencia en el sistema.
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
+            Puedes continuar participando en proyectos y mejorando tus habilidades, pero tu nivel API ya está en su máximo.
+          </Typography>
+        </Alert>
+
+        <Paper sx={{ p: 4, maxWidth: 800, mx: 'auto', bgcolor: 'grey.100' }}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <EmojiEventsIcon sx={{ fontSize: 64, color: 'warning.main', mb: 2 }} />
+            <Typography variant="h4" gutterBottom color="text.secondary">
+              Nivel Máximo Alcanzado
+            </Typography>
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              API Nivel {currentApiLevel}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Has demostrado competencia máxima en todas las áreas evaluadas por el cuestionario.
+            </Typography>
+          </Box>
+
+          <Card sx={{ mb: 4, bgcolor: 'warning.light', color: 'warning.contrastText' }}>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                {apiLevelDescriptions[4].title}
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {apiLevelDescriptions[4].description}
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {apiLevelDescriptions[4].capabilities.map((capability, index) => (
+                  <Chip key={index} label={capability} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              El cuestionario está deshabilitado porque ya tienes el nivel máximo.
+            </Typography>
+          </Box>
+        </Paper>
       </Box>
     );
   }
@@ -270,6 +373,18 @@ export const APIQuestionnaire = () => {
       <Alert severity="info" sx={{ mb: 3 }}>
         "Recuerda que no hay respuestas correctas o incorrectas, lo importante es que respondas con sinceridad y reflexión."
       </Alert>
+
+      {currentApiLevel !== null && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <Typography variant="body1">
+            Tu nivel actual es <strong>API {currentApiLevel}</strong>. 
+            {currentApiLevel < 4 ? 
+              ` Puedes subir hasta el nivel máximo (API 4) completando este cuestionario.` : 
+              ' Ya tienes el nivel máximo disponible.'
+            }
+          </Typography>
+        </Alert>
+      )}
 
       {pendingApproval && (
         <Alert severity="info" sx={{ mb: 3 }}>

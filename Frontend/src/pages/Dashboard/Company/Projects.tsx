@@ -778,15 +778,15 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <Box>
                 <Typography variant="h5" fontWeight={700} color="primary" gutterBottom>
-                  {selectedProject.title}
+                  {projectDetails?.title || selectedProject.title}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                  <Chip label={getStatusLabel(selectedProject.status)} color={getStatusColor(selectedProject.status) as any} size="medium" />
-                  <Chip label={`${selectedProject.current_students}/${selectedProject.max_students} estudiantes`} size="medium" color="success" />
-                  {selectedProject.is_paid && (
+                  <Chip label={getStatusLabel(projectDetails?.status || selectedProject.status)} color={getStatusColor(projectDetails?.status || selectedProject.status) as any} size="medium" />
+                  <Chip label={`${projectDetails?.current_students || selectedProject.current_students}/${projectDetails?.max_students || selectedProject.max_students} estudiantes`} size="medium" color="success" />
+                  {(projectDetails?.is_paid || selectedProject.is_paid) && (
                     <Chip label="Remunerado" size="medium" color="warning" />
                   )}
-                  {selectedProject.is_featured && (
+                  {(projectDetails?.is_featured || selectedProject.is_featured) && (
                     <Chip label="Destacado" size="medium" color="secondary" />
                   )}
                 </Box>
@@ -798,7 +798,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Descripción
                   </Typography>
                   <Typography variant="body1" sx={{ bgcolor: '#f8f9fa', p: 2, borderRadius: 2 }}>
-                    {selectedProject.description}
+                    {projectDetails?.description || selectedProject.description || 'Sin descripción'}
                   </Typography>
                 </Grid>
                 
@@ -807,7 +807,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Requerimientos
                   </Typography>
                   <Typography variant="body1" sx={{ bgcolor: '#f8f9fa', p: 2, borderRadius: 2 }}>
-                    {selectedProject.requirements}
+                    {projectDetails?.requirements || selectedProject.requirements || 'Sin requisitos especificados'}
                   </Typography>
                 </Grid>
                 
@@ -816,7 +816,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Tipo de Actividad
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.tipo}
+                    {projectDetails?.tipo || selectedProject.tipo || 'No especificado'}
                   </Typography>
                 </Grid>
                 
@@ -825,7 +825,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Objetivo del Proyecto
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.objetivo}
+                    {projectDetails?.objetivo || selectedProject.objetivo || 'No especificado'}
                   </Typography>
                 </Grid>
                 
@@ -834,10 +834,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Duración
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.duration_weeks} semanas • {selectedProject.hours_per_week} horas/semana
+                    {(projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0} semanas • {(projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0} horas/semana
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Horas totales del proyecto: <b>{selectedProject.duration_weeks * selectedProject.hours_per_week}</b>
+                    Horas totales del proyecto: <b>{((projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0) * ((projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0)}</b>
                   </Typography>
                 </Grid>
                 
@@ -846,7 +846,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Modalidad
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.modality}
+                    {projectDetails?.modality || selectedProject.modality || 'No especificada'}
                   </Typography>
                 </Grid>
                 
@@ -855,7 +855,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Responsable del Proyecto
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.encargado}
+                    {projectDetails?.encargado || selectedProject.encargado || 'No especificado'}
                   </Typography>
                 </Grid>
                 
@@ -864,7 +864,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Contacto de la Empresa
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.contacto}
+                    {projectDetails?.contacto || selectedProject.contacto || 'No especificado'}
                   </Typography>
                 </Grid>
                 
@@ -873,7 +873,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Etapa de Desarrollo
                   </Typography>
                   <Typography variant="body1">
-                    Opción {selectedProject.trl_id} - {selectedProject.trl_name || 'Etapa de desarrollo'}
+                    Opción {projectDetails?.trl_id || selectedProject.trl_id}
                   </Typography>
                 </Grid>
                 
@@ -882,31 +882,31 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Horas Ofrecidas
                   </Typography>
                   <Typography variant="body1">
-                    {selectedProject.required_hours} horas
+                    {projectDetails?.required_hours || selectedProject.required_hours} horas
                   </Typography>
                 </Grid>
                 
  
 
                 
-                {selectedProject.start_date && (
+                {(projectDetails?.start_date || selectedProject.start_date) && (
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontWeight={600} gutterBottom>
                       Fecha de Inicio
                     </Typography>
                     <Typography variant="body1">
-                      {new Date(selectedProject.start_date).toLocaleDateString()}
+                      {new Date(projectDetails?.start_date || selectedProject.start_date).toLocaleDateString()}
                     </Typography>
                   </Grid>
                 )}
                 
-                {selectedProject.estimated_end_date && (
+                {(projectDetails?.estimated_end_date || selectedProject.estimated_end_date) && (
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontWeight={600} gutterBottom>
                       Fecha Estimada de Fin
                     </Typography>
                     <Typography variant="body1">
-                      {new Date(selectedProject.estimated_end_date).toLocaleDateString()}
+                      {new Date(projectDetails?.estimated_end_date || selectedProject.estimated_end_date).toLocaleDateString()}
                     </Typography>
                   </Grid>
                 )}

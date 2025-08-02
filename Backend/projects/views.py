@@ -51,7 +51,7 @@ def projects_list(request):
         # Serializar proyectos
         projects_data = []
         for project in proyectos:
-            projects_data.append({
+            project_data = {
                 'id': str(project.id),
                 'title': project.title,
                 'description': project.description,
@@ -67,7 +67,6 @@ def projects_list(request):
                 'area': project.area.name if project.area else 'Sin área',
                 'trl_level': project.trl.level if project.trl else 1,
                 'trl_id': project.trl.id if project.trl else None,
-                'trl_name': project.trl.name if project.trl else 'Sin TRL',
                 'api_level': project.api_level or 1,
                 'max_students': project.max_students,
                 'current_students': project.current_students,
@@ -84,7 +83,13 @@ def projects_list(request):
                 'is_urgent': getattr(project, 'is_urgent', False),
                 'created_at': project.created_at.isoformat() if project.created_at else None,
                 'updated_at': project.updated_at.isoformat() if project.updated_at else None,
-            })
+            }
+            
+            # Solo incluir trl_name si el usuario NO es una empresa
+            if current_user.role != 'company':
+                project_data['trl_name'] = project.trl.name if project.trl else 'Sin TRL'
+                
+            projects_data.append(project_data)
         return JsonResponse({'results': projects_data, 'count': len(projects_data)})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -129,7 +134,6 @@ def projects_detail(request, project_id):
             'area': project.area.name if project.area else 'Sin área',
             'trl_level': project.trl.level if project.trl else 1,
             'trl_id': project.trl.id if project.trl else None,
-            'trl_name': project.trl.name if project.trl else 'Sin TRL',
             'api_level': project.api_level or 1,
             'max_students': project.max_students,
             'current_students': project.current_students,
@@ -145,6 +149,10 @@ def projects_detail(request, project_id):
             'created_at': project.created_at.isoformat(),
             'updated_at': project.updated_at.isoformat(),
         }
+        
+        # Solo incluir trl_name si el usuario NO es una empresa
+        if current_user.role != 'company':
+            project_data['trl_name'] = project.trl.name if project.trl else 'Sin TRL'
         
         # Agregar budget solo si existe el campo
         if hasattr(project, 'budget'):

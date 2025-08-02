@@ -260,7 +260,7 @@ export default function Home() {
             </Box>
             <Box sx={{ flex: 1, width: '100%' }}>
               <img 
-                src="/imagenes/impacto.png" 
+                src="/imagenes/Empresas que Transforman Comunidades.png" 
                 alt="Impacto en Empresas" 
                 style={{ 
                   width: '100%', 

@@ -5,6 +5,7 @@ import { es } from 'date-fns/locale';
 import {
   Box,
   Typography,
+  Paper,
   Button,
   Dialog,
   DialogTitle,
@@ -32,39 +33,300 @@ import {
   Schedule as ScheduleIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+// Estilos adicionales para asegurar que los eventos sean visibles
+const additionalStyles = `
+  .rbc-event {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: #1976d2 !important;
+    color: white !important;
+    border: 1px solid #1976d2 !important;
+    border-radius: 4px !important;
+    padding: 2px 4px !important;
+    margin: 1px 0 !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    min-height: 20px !important;
+    z-index: 10 !important;
+    position: relative !important;
+  }
+  
+  .rbc-event-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .rbc-month-view .rbc-event {
+    position: relative !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: #1976d2 !important;
+    color: white !important;
+    border: 1px solid #1976d2 !important;
+    border-radius: 4px !important;
+    padding: 2px 4px !important;
+    margin: 1px 0 !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    min-height: 20px !important;
+    z-index: 10 !important;
+  }
+  
+  .rbc-month-view .rbc-event-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: white !important;
+    font-weight: bold !important;
+  }
+  
+  .rbc-day-slot .rbc-event {
+    position: absolute !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .rbc-month-row .rbc-event {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .rbc-date-cell .rbc-event {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+`;
+
+// Agregar estilos al documento
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = additionalStyles;
+  document.head.appendChild(styleElement);
+}
 import { useApi } from '../../../hooks/useApi';
 import { adaptCalendarEvent } from '../../../utils/adapters';
-import type { CalendarEvent } from '../../../types';
+import type { CalendarEvent } from '../../../types/calendar';
+
+const locales = { es };
+const localizer = dateFnsLocalizer({ 
+  format, 
+  parse, 
+  startOfWeek, 
+  getDay, 
+  locales 
+});
 
 const calendarStyles = `
-  .rbc-calendar { font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-  .rbc-header { background-color: #f5f5f5; border-bottom: 2px solid #e0e0e0; font-weight: 600; color: #333; padding: 12px 8px; }
-  .rbc-toolbar { background-color: #fafafa; border-bottom: 1px solid #e0e0e0; padding: 16px; margin-bottom: 0; }
-  .rbc-toolbar button { background-color: #fff; border: 1px solid #ddd; color: #666; border-radius: 4px; padding: 8px 16px; font-weight: 500; transition: all 0.2s ease; }
-  .rbc-toolbar button:hover { background-color: #f5f5f5; border-color: #1976d2; color: #1976d2; }
-  .rbc-toolbar button.rbc-active { background-color: #1976d2; border-color: #1976d2; color: white; }
-  .rbc-month-view { border: 1px solid #e0e0e0; }
-  .rbc-month-row { border-bottom: 1px solid #e0e0e0; }
-  .rbc-date-cell { padding: 8px; border-right: 1px solid #e0e0e0; }
-  .rbc-off-range-bg { background-color: #fafafa; }
-  .rbc-today { background-color: rgba(25, 118, 210, 0.08); }
-  .rbc-event { border-radius: 4px; font-weight: 600; font-size: 12px; padding: 2px 6px; margin: 1px; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-  .rbc-event:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.3); transform: translateY(-1px); transition: all 0.2s ease; }
-  .rbc-event-content { font-weight: 600; }
+  .rbc-calendar { 
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; 
+    border-radius: 16px; 
+    overflow: hidden; 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12); 
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  
+  .rbc-header { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    border-bottom: 2px solid #e0e0e0; 
+    font-weight: 700; 
+    color: white; 
+    padding: 16px 12px; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+  }
+  
+  .rbc-toolbar { 
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%); 
+    border-bottom: 2px solid #e0e0e0; 
+    padding: 20px; 
+    margin-bottom: 0; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .rbc-toolbar button { 
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%); 
+    border: 2px solid #e0e0e0; 
+    color: #555; 
+    border-radius: 12px; 
+    padding: 10px 20px; 
+    font-weight: 600; 
+    transition: all 0.3s ease; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+  }
+  
+  .rbc-toolbar button:hover { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    border-color: #667eea; 
+    color: white; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  }
+  
+  .rbc-toolbar button.rbc-active { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    border-color: #667eea; 
+    color: white; 
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  }
+  
+  .rbc-month-view { 
+    border: 2px solid #e0e0e0; 
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+  }
+  
+  .rbc-month-row { 
+    border-bottom: 2px solid #f0f0f0; 
+    transition: background-color 0.2s ease;
+  }
+  
+  .rbc-month-row:hover {
+    background-color: rgba(102, 126, 234, 0.02);
+  }
+  
+  .rbc-date-cell { 
+    padding: 12px; 
+    border-right: 2px solid #f0f0f0; 
+    position: relative;
+    min-height: 120px;
+    background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+    transition: all 0.2s ease;
+  }
+  
+  .rbc-date-cell:hover {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+    transform: scale(1.02);
+    z-index: 1;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  
+  .rbc-off-range-bg { 
+    background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%); 
+    opacity: 0.6;
+  }
+  
+  .rbc-today { 
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); 
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    position: relative;
+  }
+  
+  .rbc-today::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 6px;
+    pointer-events: none;
+  }
+  
+  .rbc-event { 
+    border-radius: 8px; 
+    font-weight: 700; 
+    font-size: 12px; 
+    padding: 4px 8px; 
+    margin: 2px; 
+    border: none; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .rbc-event::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    pointer-events: none;
+  }
+  
+  .rbc-event:hover { 
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25); 
+    transform: translateY(-2px) scale(1.05); 
+    transition: all 0.3s ease; 
+  }
+  
+  .rbc-event-content { 
+    font-weight: 700; 
+    position: relative;
+    z-index: 1;
+  }
+  
+  .rbc-show-more {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-weight: 600;
+    font-size: 11px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+  
+  .rbc-show-more:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  
+  .rbc-time-view {
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+  }
+  
+  .rbc-time-header {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+    border-bottom: 2px solid #e0e0e0;
+  }
+  
+  .rbc-time-content {
+    background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+  }
+  
+  .rbc-timeslot-group {
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .rbc-time-slot {
+    border-bottom: 1px solid #f8f8f8;
+  }
 `;
+
 if (typeof document !== 'undefined') {
   const styleElement = document.createElement('style');
   styleElement.textContent = calendarStyles;
   document.head.appendChild(styleElement);
 }
 
-const locales = { es };
-const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
-
 export const CompanyCalendar = forwardRef((_, ref) => {
   const api = useApi();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  
+
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,16 +335,22 @@ export const CompanyCalendar = forwardRef((_, ref) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [view, setView] = useState('month');
+  const [date, setDate] = useState(new Date());
   const [newEvent, setNewEvent] = useState<any>({
     title: '',
     description: '',
-    event_type: 'meeting',
+    event_type: 'interview',
     start_date: '',
     end_date: '',
     location: '',
     attendees: [],
     is_public: false,
     priority: 'medium',
+    meeting_type: 'online', // 'online' o 'onsite'
+    meeting_link: '', // Para reuniones online
+    meeting_room: '', // Para reuniones en sede
+    representative_name: '', // Nombre del representante
+    representative_position: '', // Cargo del representante
   });
 
   // Estado para el proyecto seleccionado
@@ -93,6 +361,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     loadCalendarData();
   }, []);
 
+
+
   const loadCalendarData = async () => {
       try {
       setLoading(true);
@@ -100,17 +370,56 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       
       // Obtener eventos de calendario
       const eventsResponse = await api.get('/api/calendar/events/company_events/');
-      // El backend devuelve un array plano, no un objeto con .data
+      console.log('Raw company events response:', eventsResponse);
+      
+      // El backend devuelve {'results': events_data}, no un array plano
       const eventsArray = Array.isArray(eventsResponse)
         ? eventsResponse
         : Array.isArray(eventsResponse.data)
           ? eventsResponse.data
           : Array.isArray(eventsResponse.results)
             ? eventsResponse.results
-            : [];
-      console.log('Eventos recibidos del backend:', eventsArray);
-      const adaptedEvents = eventsArray.map(adaptCalendarEvent);
-      console.log('Eventos adaptados:', adaptedEvents);
+            : eventsResponse?.results || [];
+      
+      // Validar que eventsArray sea un array válido
+      if (!Array.isArray(eventsArray)) {
+        console.error('eventsArray no es un array válido:', eventsArray);
+        setEvents([]);
+        return;
+      }
+      console.log('Company events array:', eventsArray);
+      
+      console.log('Events array length:', eventsArray.length);
+      console.log('First event in array:', eventsArray[0]);
+      
+      const adaptedEvents = eventsArray.map((event: any) => {
+        try {
+          const adapted = adaptCalendarEvent(event);
+          console.log('Adapted company event:', adapted);
+          
+          // Verificar que las fechas sean válidas
+          if (adapted.start && adapted.end) {
+            console.log('Evento con fechas válidas:', adapted.title, adapted.start, adapted.end);
+          } else {
+            console.warn('Evento con fechas inválidas:', adapted.title, adapted.start, adapted.end);
+          }
+          
+          return adapted;
+        } catch (error) {
+          console.error('Error adaptando evento:', event, error);
+          return null;
+        }
+      }).filter(Boolean); // Filtrar eventos nulos
+      
+      console.log('All adapted company events:', adaptedEvents);
+      console.log('Company Calendar - Formatted events details:', adaptedEvents.map(e => ({
+        id: e.id,
+        title: e.title,
+        start: e.start,
+        end: e.end,
+        isValidStart: !isNaN(e.start.getTime()),
+        isValidEnd: !isNaN(e.end.getTime())
+      })));
       setEvents(adaptedEvents);
 
       // Obtener proyectos de la empresa
@@ -131,6 +440,22 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const messages = {
+    allDay: 'Todo el día', 
+    previous: 'Anterior', 
+    next: 'Siguiente', 
+    today: 'Hoy', 
+    month: 'Mes', 
+    week: 'Semana', 
+    day: 'Día', 
+    agenda: 'Agenda', 
+    date: 'Fecha', 
+    time: 'Hora', 
+    event: 'Evento', 
+    noEventsInRange: 'No hay eventos en este rango', 
+    showMore: (total: number) => `+ Ver más (${total})`,
   };
 
   const getEventIcon = (type: string) => {
@@ -164,48 +489,103 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         display: 'block',
         fontSize: '12px',
         fontWeight: 'bold',
+        minHeight: '20px',
+        padding: '2px 4px',
+        margin: '1px 0',
       },
     };
   };
 
   const handleSelectEvent = (event: CalendarEvent) => {
+    console.log('Evento seleccionado:', event);
     setSelectedEvent(event);
     setDialogOpen(true);
   };
 
   const handleSelectSlot = (slotInfo: any) => {
+    // Validar que el slot seleccionado esté dentro del horario permitido
+    const startHour = slotInfo.start.getHours();
+    const endHour = slotInfo.end.getHours();
+    
+    if (startHour < 8 || startHour >= 19 || endHour > 19) {
+      alert('Solo se pueden crear eventos entre las 8:00 AM y las 19:00 PM (7:00 PM)');
+      return;
+    }
+    
     setShowAddDialog(true);
     setNewEvent({
       ...newEvent,
       start_date: format(slotInfo.start, "yyyy-MM-dd'T'HH:mm"),
       end_date: format(slotInfo.end, "yyyy-MM-dd'T'HH:mm"),
+      title: 'Entrevista - [Selecciona un proyecto]', // Título sugerido
     });
   };
 
   const handleAddEvent = async () => {
     try {
+      console.log('Fecha de inicio original:', newEvent.start_date);
       const startDate = new Date(newEvent.start_date);
+      console.log('Fecha de inicio parseada:', startDate);
+      console.log('Hora de inicio (local):', startDate.getHours());
+      console.log('Hora de inicio (UTC):', startDate.getUTCHours());
+      
       const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 hora
+      console.log('Fecha de fin calculada:', endDate);
+      console.log('Hora de fin (local):', endDate.getHours());
+      console.log('Hora de fin (UTC):', endDate.getUTCHours());
+      
+      // Validar que el evento esté dentro del horario permitido (8:00 AM - 19:00 PM)
+      // Usar hora local para la validación
+      const startHour = startDate.getHours();
+      const endHour = endDate.getHours();
+      
+      console.log('Validando horario - Inicio:', startHour, 'Fin:', endHour);
+      
+      if (startHour < 8 || startHour >= 19) {
+        alert(`Los eventos solo pueden programarse entre las 8:00 AM y las 19:00 PM (7:00 PM). Hora seleccionada: ${startHour}:00`);
+        return;
+      }
+      
+      if (endHour > 19) {
+        alert(`Los eventos no pueden extenderse más allá de las 19:00 PM (7:00 PM). Hora de fin: ${endHour}:00`);
+        return;
+      }
       // Asegurar que si hay un participante seleccionado, se agregue como attendee
       let attendees = Array.isArray(newEvent.attendees) ? [...newEvent.attendees] : [];
       // Si solo se permite seleccionar un estudiante, asegúrate de que sea un array con un solo ID
       if (typeof attendees === 'string') {
         attendees = [attendees];
       }
+      // Convertir a zona horaria local para evitar problemas de UTC
+      const startDateLocal = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
+      const endDateLocal = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
+      
       const eventData = {
         title: newEvent.title,
         description: newEvent.description,
         event_type: newEvent.event_type,
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
+        start_date: startDateLocal.toISOString(),
+        end_date: endDateLocal.toISOString(),
         location: newEvent.location,
         attendees: attendees, // Siempre enviar el array de IDs
         is_public: newEvent.is_public,
         priority: newEvent.priority,
         project: selectedProject || undefined, // Enviar el proyecto seleccionado
+        meeting_type: newEvent.meeting_type,
+        meeting_link: newEvent.meeting_link,
+        meeting_room: newEvent.meeting_room,
+        representative_name: newEvent.representative_name,
+        representative_position: newEvent.representative_position,
       };
 
+      console.log('Datos enviados al backend:', eventData);
+      console.log('start_date original:', startDate.toISOString());
+      console.log('start_date local:', startDateLocal.toISOString());
+      console.log('end_date original:', endDate.toISOString());
+      console.log('end_date local:', endDateLocal.toISOString());
+      console.log('Zona horaria offset:', startDate.getTimezoneOffset(), 'minutos');
       const createdEventResponse = await api.post('/api/calendar/events/', eventData);
+      console.log('Respuesta del backend:', createdEventResponse);
       // Soportar ambos formatos de respuesta
       const createdEvent = createdEventResponse?.data?.id ? createdEventResponse.data : createdEventResponse;
 
@@ -221,6 +601,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         event_type: createdEvent.event_type,
         start_date: createdEvent.start_date,
         end_date: createdEvent.end_date,
+        start: new Date(createdEvent.start_date),
+        end: new Date(createdEvent.end_date),
         all_day: createdEvent.all_day,
         location: createdEvent.location,
         attendees: createdEvent.attendees || [],
@@ -228,6 +610,11 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         created_at: createdEvent.created_at,
         updated_at: createdEvent.updated_at,
         priority: createdEvent.priority || 'normal',
+        meeting_type: createdEvent.meeting_type,
+        meeting_link: createdEvent.meeting_link,
+        meeting_room: createdEvent.meeting_room,
+        representative_name: createdEvent.representative_name,
+        representative_position: createdEvent.representative_position,
       };
 
       setEvents(prev => [...prev, adaptedEvent]);
@@ -235,34 +622,23 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       setNewEvent({
         title: '',
         description: '',
-        event_type: 'meeting',
+        event_type: 'interview',
         start_date: '',
         end_date: '',
         location: '',
         attendees: [],
         is_public: false,
         priority: 'medium',
+        meeting_type: 'online',
+        meeting_link: '',
+        meeting_room: '',
+        representative_name: '',
+        representative_position: '',
       });
     } catch (error: any) {
       console.error('Error creando evento:', error);
       setError(error.response?.data?.error || 'Error al crear evento');
     }
-  };
-
-  const messages = {
-    allDay: 'Todo el día', 
-    previous: 'Anterior', 
-    next: 'Siguiente', 
-    today: 'Hoy', 
-    month: 'Mes', 
-    week: 'Semana', 
-    day: 'Día', 
-    agenda: 'Agenda', 
-    date: 'Fecha', 
-    time: 'Hora', 
-    event: 'Evento', 
-    noEventsInRange: 'No hay eventos en este rango', 
-    showMore: (total: number) => `+ Ver más (${total})`,
   };
 
   useImperativeHandle(ref, () => ({
@@ -290,70 +666,679 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     );
   }
 
+
+
+  // Log temporal para debug
+  console.log('Renderizando calendario con', events.length, 'eventos');
+  if (events.length > 0) {
+    console.log('Primer evento:', events[0]);
+    console.log('Fecha del primer evento:', events[0].start);
+  }
+
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Calendario</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setShowAddDialog(true)}>
+      {/* Sección de estadísticas y resumen - ARRIBA DE TODO */}
+      {events.length > 0 && (
+        <Box sx={{ 
+          background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+          borderRadius: 3,
+          p: 3,
+          mb: 3,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+          border: '1px solid rgba(102, 126, 234, 0.1)'
+        }}>
+          <Typography variant="h6" fontWeight={600} color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            📊 Resumen de Actividad
+          </Typography>
+          
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, gap: 2 }}>
+            <Box sx={{ 
+              background: 'white', 
+              borderRadius: 2, 
+              p: 2, 
+              textAlign: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid rgba(102, 126, 234, 0.1)'
+            }}>
+              <Typography variant="h4" fontWeight={700} color="primary">
+                {events.filter(e => e.event_type === 'interview').length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Entrevistas
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              background: 'white', 
+              borderRadius: 2, 
+              p: 2, 
+              textAlign: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid rgba(102, 126, 234, 0.1)'
+            }}>
+              <Typography variant="h4" fontWeight={700} color="primary">
+                {events.filter(e => e.event_type === 'meeting').length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Reuniones
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              background: 'white', 
+              borderRadius: 2, 
+              p: 2, 
+              textAlign: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid rgba(102, 126, 234, 0.1)'
+            }}>
+              <Typography variant="h4" fontWeight={700} color="primary">
+                {events.filter(e => e.meeting_type === 'online').length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Online
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              background: 'white', 
+              borderRadius: 2, 
+              p: 2, 
+              textAlign: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid rgba(102, 126, 234, 0.1)'
+            }}>
+              <Typography variant="h4" fontWeight={700} color="primary">
+                {events.filter(e => e.meeting_type === 'cowork' || e.meeting_type === 'fablab').length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                En Sede
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      {/* Header mejorado con gradiente y estadísticas */}
+      <Box sx={{ 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 3,
+        p: 3,
+        mb: 3,
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ 
+          position: 'absolute', 
+          top: 0, 
+          right: 0, 
+          width: '200px', 
+          height: '200px', 
+          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          transform: 'translate(50px, -50px)'
+        }} />
+        <Box sx={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          left: 0, 
+          width: '150px', 
+          height: '150px', 
+          background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+          transform: 'translate(-50px, 50px)'
+        }} />
+        
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+          <Box>
+            <Typography variant="h3" fontWeight={700} sx={{ mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+              📅 Calendario Empresarial
+            </Typography>
+            <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
+              Gestiona tus entrevistas y reuniones de proyecto
+            </Typography>
+          </Box>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* Estadísticas rápidas */}
+            <Box sx={{ 
+              background: 'rgba(255,255,255,0.15)', 
+              borderRadius: 2, 
+              p: 2, 
+              textAlign: 'center',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
+              <Typography variant="h4" fontWeight={700}>
+                {events.length}
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                Eventos
+              </Typography>
+            </Box>
+            
+            <Button 
+              variant="contained" 
+              startIcon={<AddIcon />} 
+              onClick={() => setShowAddDialog(true)}
+              sx={{ 
+                background: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
+                borderRadius: 3,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+                '&:hover': {
+                  background: 'rgba(255,255,255,0.3)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.2)'
+                }
+              }}
+            >
           Agregar Evento
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-        <Tooltip title="Vista de mes"><IconButton color={view === 'month' ? 'primary' : 'default'} onClick={() => setView('month')}><ViewModuleIcon /></IconButton></Tooltip>
-        <Tooltip title="Vista de semana"><IconButton color={view === 'week' ? 'primary' : 'default'} onClick={() => setView('week')}><ViewWeekIcon /></IconButton></Tooltip>
-        <Tooltip title="Vista de día"><IconButton color={view === 'day' ? 'primary' : 'default'} onClick={() => setView('day')}><ViewDayIcon /></IconButton></Tooltip>
-        <Tooltip title="Vista de agenda"><IconButton color={view === 'agenda' ? 'primary' : 'default'} onClick={() => setView('agenda')}><TodayIcon /></IconButton></Tooltip>
       </Box>
-      <Box sx={{ height: 600 }}>
+      </Box>
+
+      {/* Controles de vista mejorados */}
+      <Box sx={{ 
+        background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+        borderRadius: 3,
+        p: 2,
+        mb: 3,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(102, 126, 234, 0.1)'
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6" fontWeight={600} color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <ViewModuleIcon /> Vistas del Calendario
+          </Typography>
+          
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Tooltip title="Vista de mes">
+              <IconButton 
+                onClick={() => setView('month')} 
+                sx={{ 
+                  background: view === 'month' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
+                  color: view === 'month' ? 'white' : '#666',
+                  borderRadius: 2,
+                  p: 1.5,
+                  '&:hover': {
+                    background: view === 'month' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
+                    transform: 'translateY(-1px)'
+                  }
+                }}
+              >
+                <ViewModuleIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Vista de semana">
+              <IconButton 
+                onClick={() => setView('week')} 
+                sx={{ 
+                  background: view === 'week' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
+                  color: view === 'week' ? 'white' : '#666',
+                  borderRadius: 2,
+                  p: 1.5,
+                  '&:hover': {
+                    background: view === 'week' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
+                    transform: 'translateY(-1px)'
+                  }
+                }}
+              >
+                <ViewWeekIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Vista de día">
+              <IconButton 
+                onClick={() => setView('day')} 
+                sx={{ 
+                  background: view === 'day' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
+                  color: view === 'day' ? 'white' : '#666',
+                  borderRadius: 2,
+                  p: 1.5,
+                  '&:hover': {
+                    background: view === 'day' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
+                    transform: 'translateY(-1px)'
+                  }
+                }}
+              >
+                <ViewDayIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Vista de agenda">
+              <IconButton 
+                onClick={() => setView('agenda')} 
+                sx={{ 
+                  background: view === 'agenda' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
+                  color: view === 'agenda' ? 'white' : '#666',
+                  borderRadius: 2,
+                  p: 1.5,
+                  '&:hover': {
+                    background: view === 'agenda' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
+                    transform: 'translateY(-1px)'
+                  }
+                }}
+              >
+                <TodayIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+      </Box>
+
+
+
+
+
+            {/* Calendario principal - VERSIÓN PERSONALIZADA */}
+      <Paper sx={{ p: 3, mb: 4, backgroundColor: 'white' }}>
+        <Box sx={{ border: '1px solid #ddd', borderRadius: 1, overflow: 'hidden' }}>
+          {/* Navegación del calendario */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, borderBottom: '1px solid #ddd' }}>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button onClick={() => setDate(new Date())} variant="outlined" size="small">
+                HOY
+              </Button>
+              <Button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))} variant="outlined" size="small">
+                ANTERIOR
+              </Button>
+              <Button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))} variant="outlined" size="small">
+                SIGUIENTE
+              </Button>
+            </Box>
+            <Typography variant="h6">
+              {date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button 
+                onClick={() => setView('month')} 
+                variant={view === 'month' ? 'contained' : 'outlined'} 
+                size="small"
+              >
+                MES
+              </Button>
+              <Button 
+                onClick={() => setView('week')} 
+                variant={view === 'week' ? 'contained' : 'outlined'} 
+                size="small"
+              >
+                SEMANA
+              </Button>
+              <Button 
+                onClick={() => setView('day')} 
+                variant={view === 'day' ? 'contained' : 'outlined'} 
+                size="small"
+              >
+                DÍA
+              </Button>
+              <Button 
+                onClick={() => setView('agenda')} 
+                variant={view === 'agenda' ? 'contained' : 'outlined'} 
+                size="small"
+              >
+                AGENDA
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Vista de mes personalizada */}
+          {view === 'month' && (
+            <Box sx={{ height: 750, p: 2, overflow: 'hidden' }}>
+              {/* Días de la semana */}
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, mb: 1 }}>
+                {['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'].map(day => (
+                  <Box key={day} sx={{ 
+                    p: 1, 
+                    textAlign: 'center', 
+                    fontWeight: 'bold', 
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    borderRadius: '4px 4px 0 0',
+                    boxShadow: '0 2px 4px rgba(102, 126, 234, 0.2)'
+                  }}>
+                    {day}
+                  </Box>
+                ))}
+              </Box>
+              
+              {/* Días del mes */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(7, 1fr)', 
+                gap: 1, 
+                height: 'calc(100% - 60px)',
+                overflow: 'hidden'
+              }}>
+                {(() => {
+                  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+                  const startDate = new Date(firstDay);
+                  startDate.setDate(startDate.getDate() - firstDay.getDay());
+                  
+                  const days = [];
+                  for (let i = 0; i < 42; i++) {
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(startDate.getDate() + i);
+                    
+                    // Encontrar eventos para este día
+                    const dayEvents = events.filter(event => {
+                      const eventDate = new Date(event.start);
+                      return eventDate.toDateString() === currentDate.toDateString();
+                    });
+                    
+                    const isCurrentMonth = currentDate.getMonth() === date.getMonth();
+                    const isToday = currentDate.toDateString() === new Date().toDateString();
+                    
+                    days.push(
+                      <Box 
+                        key={i} 
+                        sx={{ 
+                          height: '100%',
+                          p: 1, 
+                          border: '1px solid #ddd',
+                          backgroundColor: isToday ? '#e3f2fd' : isCurrentMonth ? 'white' : '#f9f9f9',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          display: 'flex',
+                          flexDirection: 'column'
+                        }}
+                      >
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            fontWeight: isToday ? 'bold' : 'normal',
+                            color: isCurrentMonth ? 'text.primary' : 'text.secondary',
+                            mb: 0.5
+                          }}
+                        >
+                          {currentDate.getDate()}
+                        </Typography>
+                        
+                        {/* Eventos del día */}
+                        <Box sx={{ 
+                          flex: 1, 
+                          overflow: 'hidden',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 0.5
+                        }}>
+                          {dayEvents.slice(0, 3).map((event, index) => (
+                            <Box
+                              key={event.id}
+                              onClick={() => handleSelectEvent(event)}
+                              sx={{
+                                backgroundColor: event.event_type === 'interview' ? '#1976d2' : 
+                                               event.event_type === 'deadline' ? '#d32f2f' : 
+                                               event.event_type === 'meeting' ? '#0288d1' : '#3174ad',
+                                color: 'white',
+                                p: 0.5,
+                                borderRadius: 1,
+                                fontSize: '9px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                minHeight: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                '&:hover': {
+                                  opacity: 0.8
+                                }
+                              }}
+                            >
+                              {event.title}
+                            </Box>
+                          ))}
+                          {dayEvents.length > 3 && (
+                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '8px' }}>
+                              +{dayEvents.length - 3} más
+                            </Typography>
+                          )}
+                        </Box>
+                      </Box>
+                    );
+                  }
+                  return days;
+                })()}
+              </Box>
+            </Box>
+          )}
+
+          {/* Vista de agenda */}
+          {view === 'agenda' && (
+            <Box sx={{ height: 'calc(100% - 80px)', p: 2 }}>
         <BigCalendar
           localizer={localizer}
           events={events}
-          startAccessor="start"
-          endAccessor="end"
+                startAccessor="start"
+                endAccessor="end"
+                titleAccessor="title"
           style={{ height: '100%' }}
-          view={view as any}
-          onView={(newView) => setView(newView)}
+                eventPropGetter={eventStyleGetter}
           onSelectEvent={handleSelectEvent}
           onSelectSlot={handleSelectSlot}
           selectable
+                view="agenda"
+                date={date}
+                onNavigate={(newDate) => setDate(newDate)}
+                culture="es"
+                toolbar={false}
           messages={messages}
-          eventPropGetter={eventStyleGetter}
-          culture="es"
-          defaultView="month"
-          min={new Date(0, 0, 0, 8, 0, 0)}
-          max={new Date(0, 0, 0, 20, 0, 0)}
+              />
+            </Box>
+          )}
+
+          {/* Vista de semana */}
+          {view === 'week' && (
+            <Box sx={{ height: 'calc(100% - 80px)', p: 2 }}>
+              <BigCalendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                titleAccessor="title"
+                style={{ height: '100%' }}
+                eventPropGetter={eventStyleGetter}
+                onSelectEvent={handleSelectEvent}
+                onSelectSlot={handleSelectSlot}
+                selectable
+                view="week"
+          date={date}
+          onNavigate={(newDate) => setDate(newDate)}
           step={30}
           timeslots={2}
-          tooltipAccessor={(event) => `${event.title} - ${event.location || 'Sin ubicación'}`}
-        />
+                min={new Date(0, 0, 0, 8, 0, 0)}
+                max={new Date(0, 0, 0, 19, 0, 0)}
+                culture="es"
+                toolbar={false}
+                messages={{
+                  next: "Siguiente",
+                  previous: "Anterior",
+                  today: "Hoy",
+                  noEventsInRange: "No hay eventos en este rango de fechas.",
+                  week: "Semana",
+                  work_week: "Semana Laboral",
+                  day: "Día",
+                  month: "Mes",
+                  yesterday: "Ayer",
+                  tomorrow: "Mañana",
+                }}
+                formats={{
+                  dayHeaderFormat: (date) => date.toLocaleDateString('es-ES', { 
+                    weekday: 'short', 
+                    day: 'numeric',
+                    month: 'short'
+                  }),
+                  dayRangeHeaderFormat: ({ start, end }) => {
+                    const startDate = new Date(start);
+                    const endDate = new Date(end);
+                    return `${startDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })} - ${endDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+                  }
+                }}
+              />
+            </Box>
+          )}
+
+          {/* Vista de día */}
+          {view === 'day' && (
+            <Box sx={{ height: 'calc(100% - 80px)', p: 2 }}>
+              <BigCalendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                titleAccessor="title"
+                style={{ height: '100%' }}
+                eventPropGetter={eventStyleGetter}
+                onSelectEvent={handleSelectEvent}
+                onSelectSlot={handleSelectSlot}
+                selectable
+                view="day"
+                date={date}
+                onNavigate={(newDate) => setDate(newDate)}
+                step={30}
+                timeslots={2}
+                min={new Date(0, 0, 0, 8, 0, 0)}
+                max={new Date(0, 0, 0, 19, 0, 0)}
+                culture="es"
+                toolbar={false}
+                messages={{
+                  next: "Siguiente",
+                  previous: "Anterior",
+                  today: "Hoy",
+                  noEventsInRange: "No hay eventos en este rango de fechas.",
+                  week: "Semana",
+                  work_week: "Semana Laboral",
+                  day: "Día",
+                  month: "Mes",
+                  yesterday: "Ayer",
+                  tomorrow: "Mañana",
+                }}
+                formats={{
+                  dayHeaderFormat: (date) => date.toLocaleDateString('es-ES', { 
+                    weekday: 'long', 
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })
+                }}
+              />
       </Box>
+          )}
+        </Box>
+      </Paper>
       
-      {/* Modal para agregar evento */}
-      <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Agregar Nuevo Evento</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+      {/* Mensaje cuando no hay eventos */}
+      {events.length === 0 && !loading && (
+        <Box sx={{ 
+          background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+          borderRadius: 3,
+          p: 4,
+          mt: 3,
+          textAlign: 'center',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+          border: '1px solid rgba(102, 126, 234, 0.1)'
+        }}>
+          <Typography variant="h5" fontWeight={600} color="primary" gutterBottom>
+            🎯 ¡Comienza a programar eventos!
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            No tienes eventos programados aún. Haz clic en "Agregar Evento" para crear tu primera entrevista o reunión.
+          </Typography>
+          <Button 
+            variant="contained" 
+            startIcon={<AddIcon />} 
+            onClick={() => setShowAddDialog(true)}
+            sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              borderRadius: 3,
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
+              }
+            }}
+          >
+            Crear Primer Evento
+          </Button>
+        </Box>
+      )}
+      
+      {/* Modal para agregar evento mejorado */}
+      <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="md" fullWidth>
+        {console.log('Estado actual de newEvent:', newEvent)}
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 600
+        }}>
+          Programar Entrevista/Reunión
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Información del Representante */}
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: '#f8f9fa', 
+              borderRadius: 2, 
+              border: '1px solid #e0e0e0' 
+            }}>
+              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                Información del Representante
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             <TextField 
               fullWidth 
-              label="Título del Evento" 
-              value={newEvent.title} 
-              onChange={(e) => setNewEvent((prev: any) => ({ ...prev, title: e.target.value }))} 
+                  label="Nombre del Representante" 
+                  value={newEvent.representative_name} 
+                  onChange={(e) => setNewEvent((prev: any) => ({ ...prev, representative_name: e.target.value }))} 
+                  placeholder="Ej: María González López"
             />
             <TextField 
               fullWidth 
-              multiline 
-              rows={3} 
-              label="Descripción" 
-              value={newEvent.description} 
-              onChange={(e) => setNewEvent((prev: any) => ({ ...prev, description: e.target.value }))} 
-            />
-            <FormControl fullWidth sx={{ mb: 2 }}>
+                  label="Cargo" 
+                  value={newEvent.representative_position} 
+                  onChange={(e) => setNewEvent((prev: any) => ({ ...prev, representative_position: e.target.value }))} 
+                  placeholder="Ej: Directora de Recursos Humanos"
+                />
+              </Box>
+            </Box>
+
+            {/* Selección de Proyecto y Participante */}
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: '#f0f8ff', 
+              borderRadius: 2, 
+              border: '1px solid #bbdefb' 
+            }}>
+              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                Proyecto y Participante
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <FormControl fullWidth>
               <InputLabel>Proyecto</InputLabel>
               <Select
                 value={selectedProject}
                 onChange={e => {
-                  setSelectedProject(e.target.value);
-                  setNewEvent((prev: any) => ({ ...prev, attendees: [] })); // Limpiar selección de participantes
+                      const projectId = e.target.value;
+                      setSelectedProject(projectId);
+                      setNewEvent((prev: any) => ({ 
+                        ...prev, 
+                        attendees: [],
+                        title: projectId ? `Entrevista - ${companyProjects.find(p => p.id === projectId)?.title || 'Proyecto'}` : 'Entrevista - [Selecciona un proyecto]'
+                      }));
                 }}
                 label="Proyecto"
               >
@@ -363,49 +1348,223 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 ))}
               </Select>
             </FormControl>
+                
             <FormControl fullWidth>
-              <InputLabel>Participantes</InputLabel>
+                  <InputLabel>Participante</InputLabel>
               <Select
-                multiple
-                value={newEvent.attendees}
-                onChange={e => setNewEvent((prev: any) => ({ ...prev, attendees: e.target.value }))}
-                label="Participantes"
-                renderValue={(selected) => (selected as string[]).map(id => {
-                  const user = users.find(u => u.student?.user === id && u.project === selectedProject);
-                  return user?.student?.name || 'Usuario no encontrado';
-                }).join(', ')}
+                    value={newEvent.attendees.length > 0 ? newEvent.attendees[0] : ''}
+                    onChange={e => setNewEvent((prev: any) => ({ ...prev, attendees: [e.target.value] }))}
+                    label="Participante"
                 disabled={!selectedProject}
               >
+                    <MenuItem value="">Selecciona un participante</MenuItem>
                 {users.filter(u => u.project === selectedProject).map(user => (
-                  <MenuItem key={user.student?.user} value={user.student?.user}>
+                      <MenuItem key={user.student?.user || user.id} value={user.student?.user || user.id}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                       <Typography variant="body2" fontWeight={600}>
-                        {user.student?.name}
+                            {user.student?.name || user.student?.user_data?.full_name || 'Estudiante'}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        Estado: {user.status}
+                            Estado: {user.status === 'pending' ? 'Pendiente' : 
+                                   user.status === 'accepted' ? 'Aceptado' : 
+                                   user.status === 'rejected' ? 'Rechazado' : user.status}
                       </Typography>
                     </Box>
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr' }, gap: 2 }}>
+              </Box>
+            </Box>
+
+            {/* Detalles del Evento */}
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: '#fff3e0', 
+              borderRadius: 2, 
+              border: '1px solid #ffcc02' 
+            }}>
+              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                Detalles del Evento
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TextField 
+                  fullWidth 
+                  label="Título del Evento" 
+                  value={newEvent.title} 
+                  onChange={(e) => setNewEvent((prev: any) => ({ ...prev, title: e.target.value }))} 
+                  placeholder="Ej: Entrevista - Desarrollo de Aplicación Móvil"
+                />
+                <TextField 
+                  fullWidth 
+                  multiline 
+                  rows={3} 
+                  label="Descripción" 
+                  value={newEvent.description} 
+                  onChange={(e) => setNewEvent((prev: any) => ({ ...prev, description: e.target.value }))} 
+                  placeholder="Ej: Reunión para discutir los detalles del proyecto, revisar el cronograma y establecer los próximos pasos de desarrollo."
+                />
               <TextField 
                 fullWidth 
                 type="datetime-local" 
                 label="Fecha y hora de inicio" 
                 value={newEvent.start_date} 
-                onChange={(e) => setNewEvent((prev: any) => ({ ...prev, start_date: e.target.value }))} 
+                onChange={(e) => {
+                  const selectedDate = new Date(e.target.value);
+                  const hour = selectedDate.getHours();
+                  
+                  // Validar que la hora esté entre 8:00 AM y 19:00 PM
+                  if (hour < 8 || hour >= 19) {
+                    alert('Los eventos solo pueden programarse entre las 8:00 AM y las 19:00 PM (7:00 PM)');
+                    return;
+                  }
+                  
+                  setNewEvent((prev: any) => ({ ...prev, start_date: e.target.value }));
+                }} 
                 InputLabelProps={{ shrink: true }} 
+                helperText="Solo se permiten eventos entre las 8:00 AM y las 19:00 PM"
               />
             </Box>
+            </Box>
+
+            {/* Tipo de Reunión */}
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: '#e8f5e8', 
+              borderRadius: 2, 
+              border: '1px solid #4caf50' 
+            }}>
+              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                Tipo de Reunión
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <FormControl fullWidth>
+                  <InputLabel>Tipo de Reunión</InputLabel>
+                  <Select 
+                    value={newEvent.meeting_type} 
+                    label="Tipo de Reunión" 
+                    onChange={(e) => {
+                      const meetingType = e.target.value;
+                      console.log('Tipo de reunión seleccionado:', meetingType);
+                      setNewEvent((prev: any) => ({ 
+                        ...prev, 
+                        meeting_type: meetingType,
+                        location: meetingType === 'online' ? 'Videollamada' : 'Sede',
+                        meeting_room: '' // Reset sala cuando cambia el tipo
+                      }));
+                    }}
+                  >
+                    <MenuItem value="online">Online (Videollamada)</MenuItem>
+                    <MenuItem value="cowork">En Sede - Cowork</MenuItem>
+                    <MenuItem value="fablab">En Sede - FabLab</MenuItem>
+                  </Select>
+                </FormControl>
+
+                {/* Campos condicionales según el tipo de reunión */}
+                {newEvent.meeting_type === 'online' ? (
             <TextField 
               fullWidth 
-              label="Ubicación" 
-              value={newEvent.location} 
-              onChange={(e) => setNewEvent((prev: any) => ({ ...prev, location: e.target.value }))} 
-            />
+                    label="Link de la Videollamada" 
+                    value={newEvent.meeting_link} 
+                    onChange={(e) => setNewEvent((prev: any) => ({ ...prev, meeting_link: e.target.value }))} 
+                    placeholder="Ej: https://meet.google.com/abc-defg-hij"
+                  />
+                ) : (newEvent.meeting_type === 'cowork' || newEvent.meeting_type === 'fablab') ? (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      Selecciona una sala:
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {newEvent.meeting_type === 'cowork' && (
+                        <>
+                          <Button
+                            variant={newEvent.meeting_room === 'cowork-sala1' ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              console.log('Sala seleccionada: cowork-sala1');
+                              setNewEvent((prev: any) => ({ ...prev, meeting_room: 'cowork-sala1' }));
+                            }}
+                          >
+                            Sala 1 - Cowork
+                          </Button>
+                          <Button
+                            variant={newEvent.meeting_room === 'cowork-sala2' ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              console.log('Sala seleccionada: cowork-sala2');
+                              setNewEvent((prev: any) => ({ ...prev, meeting_room: 'cowork-sala2' }));
+                            }}
+                          >
+                            Sala 2 - Cowork
+                          </Button>
+                          <Button
+                            variant={newEvent.meeting_room === 'cowork-sala3' ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              console.log('Sala seleccionada: cowork-sala3');
+                              setNewEvent((prev: any) => ({ ...prev, meeting_room: 'cowork-sala3' }));
+                            }}
+                          >
+                            Sala 3 - Cowork
+                          </Button>
+                        </>
+                      )}
+                      {newEvent.meeting_type === 'fablab' && (
+                        <>
+                          <Button
+                            variant={newEvent.meeting_room === 'fablab-sala1' ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              console.log('Sala seleccionada: fablab-sala1');
+                              setNewEvent((prev: any) => ({ ...prev, meeting_room: 'fablab-sala1' }));
+                            }}
+                          >
+                            Sala 1 - FabLab
+                          </Button>
+                          <Button
+                            variant={newEvent.meeting_room === 'fablab-sala2' ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              console.log('Sala seleccionada: fablab-sala2');
+                              setNewEvent((prev: any) => ({ ...prev, meeting_room: 'fablab-sala2' }));
+                            }}
+                          >
+                            Sala 2 - FabLab
+                          </Button>
+                          <Button
+                            variant={newEvent.meeting_room === 'fablab-sala3' ? 'contained' : 'outlined'}
+                            size="small"
+                            onClick={() => {
+                              console.log('Sala seleccionada: fablab-sala3');
+                              setNewEvent((prev: any) => ({ ...prev, meeting_room: 'fablab-sala3' }));
+                            }}
+                          >
+                            Sala 3 - FabLab
+                          </Button>
+                        </>
+                      )}
+                    </Box>
+                    {newEvent.meeting_room && (
+                      <Typography variant="caption" color="success.main" sx={{ mt: 1, display: 'block' }}>
+                        ✅ Sala seleccionada: {newEvent.meeting_room}
+                      </Typography>
+                    )}
+                  </Box>
+                ) : null}
+              </Box>
+            </Box>
+
+            {/* Configuración Adicional */}
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: '#f3e5f5', 
+              borderRadius: 2, 
+              border: '1px solid #9c27b0' 
+            }}>
+              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                Configuración Adicional
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             <FormControl fullWidth>
               <InputLabel>Tipo de Evento</InputLabel>
               <Select 
@@ -413,10 +1572,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 label="Tipo de Evento" 
                 onChange={(e) => setNewEvent((prev: any) => ({ ...prev, event_type: e.target.value }))}
               >
-                <MenuItem value="meeting">Reunión</MenuItem>
                 <MenuItem value="interview">Entrevista</MenuItem>
-                <MenuItem value="deadline">Fecha Límite</MenuItem>
-                <MenuItem value="reminder">Recordatorio</MenuItem>
+                    <MenuItem value="meeting">Reunión de Proyecto</MenuItem>
                 <MenuItem value="other">Otro</MenuItem>
               </Select>
             </FormControl>
@@ -434,61 +1591,296 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 <MenuItem value="urgent">Urgente</MenuItem>
               </Select>
             </FormControl>
+              </Box>
+            </Box>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowAddDialog(false)}>Cancelar</Button>
-          <Button onClick={handleAddEvent} variant="contained">Agregar Evento</Button>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button 
+            onClick={() => setShowAddDialog(false)} 
+            variant="outlined"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleAddEvent} 
+            variant="contained"
+            sx={{ 
+              borderRadius: 2, 
+              px: 3,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Programar Evento
+          </Button>
         </DialogActions>
       </Dialog>
       
-      {/* Modal de detalle de evento */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
+      {/* Modal de detalle de evento mejorado */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 600
+        }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {selectedEvent && getEventIcon(selectedEvent.event_type)}
             <Typography variant="h6">Detalles del Evento</Typography>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ mt: 2 }}>
           {selectedEvent && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* Header del evento */}
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: '#f8f9fa', 
+                borderRadius: 2, 
+                border: '1px solid #e0e0e0' 
+              }}>
+                <Typography variant="h5" gutterBottom color="primary" fontWeight={600}>
+                  {selectedEvent.title}
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  {selectedEvent.description || 'Sin descripción'}
+                </Typography>
+              </Box>
+
+              {/* Información del representante */}
+              {(selectedEvent.representative_name || selectedEvent.representative_position) && (
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#e3f2fd', 
+                  borderRadius: 2, 
+                  border: '1px solid #bbdefb' 
+                }}>
+                  <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                    Representante de la Empresa
+                  </Typography>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                   <Box>
-                    <Typography variant="h5" gutterBottom color="primary">{selectedEvent.title}</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 1 }}>
-                      <Box sx={{ minWidth: 300 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Tipo:</strong> {selectedEvent.event_type}
+                      <Typography variant="body2" color="text.secondary">Nombre:</Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {selectedEvent.representative_name || 'No especificado'}
                   </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Fecha:</strong> {selectedEvent.start_date ? format(new Date(selectedEvent.start_date), 'EEEE, d MMMM yyyy', { locale: es }) : '-'}
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">Cargo:</Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {selectedEvent.representative_position || 'No especificado'}
                   </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Hora:</strong> {selectedEvent.start_date && selectedEvent.end_date ? 
+                    </Box>
+                  </Box>
+                </Box>
+              )}
+
+              {/* Detalles de la reunión */}
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: '#fff3e0', 
+                borderRadius: 2, 
+                border: '1px solid #ffcc02' 
+              }}>
+                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                  Detalles de la Reunión
+                </Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Tipo de Evento:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.event_type === 'interview' ? 'Entrevista' : 
+                       selectedEvent.event_type === 'meeting' ? 'Reunión de Proyecto' : 
+                       selectedEvent.event_type}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Tipo de Reunión:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.meeting_type === 'online' ? 'Online (Videollamada)' : 
+                       selectedEvent.meeting_type === 'onsite' ? 'En Sede' : 
+                       selectedEvent.meeting_type || 'No especificado'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Fecha:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.start_date ? format(new Date(selectedEvent.start_date), 'EEEE, d MMMM yyyy', { locale: es }) : '-'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Hora:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.start_date && selectedEvent.end_date ? 
                       `${format(new Date(selectedEvent.start_date), 'HH:mm')} - ${format(new Date(selectedEvent.end_date), 'HH:mm')}` : '-'}
                   </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Ubicación:</strong> {selectedEvent.location || '-'}
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Ubicación específica */}
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: '#e8f5e8', 
+                borderRadius: 2, 
+                border: '1px solid #4caf50' 
+              }}>
+                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                  Ubicación
                   </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Creado por:</strong> {selectedEvent.created_by || '-'}
+                {selectedEvent.meeting_type === 'online' ? (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Link de Videollamada:</Typography>
+                    <Typography variant="body1" fontWeight={600} sx={{ wordBreak: 'break-all' }}>
+                      {selectedEvent.meeting_link ? (
+                        <a href={selectedEvent.meeting_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+                          {selectedEvent.meeting_link}
+                        </a>
+                      ) : 'No especificado'}
                   </Typography>
-                  {selectedEvent.attendees && selectedEvent.attendees.length > 0 && (
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Participantes:</strong> {selectedEvent.attendees.join(', ')}
+                  </Box>
+                ) : (selectedEvent.meeting_type === 'cowork' || selectedEvent.meeting_type === 'fablab') ? (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Ubicación:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.meeting_type === 'cowork' ? 'Cowork' : 'FabLab'}
                     </Typography>
-                        )}
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>Sala:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.meeting_room || 'No especificado'}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Ubicación:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.location || 'No especificado'}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              {/* Participantes */}
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: '#f3e5f5', 
+                borderRadius: 2, 
+                border: '1px solid #9c27b0' 
+              }}>
+                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                  Participantes
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {selectedEvent.attendee_names && selectedEvent.attendee_names.length > 0 ? (
+                    selectedEvent.attendee_names.map((attendeeName: string, index: number) => (
+                      <Box key={index} sx={{ 
+                        p: 1, 
+                        bgcolor: 'white', 
+                        borderRadius: 1, 
+                        border: '1px solid #e0e0e0',
+                        minWidth: 200
+                      }}>
+                        <Typography variant="body2" fontWeight={600}>
+                          {attendeeName}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Participante
+                        </Typography>
                       </Box>
-                      <Box sx={{ minWidth: 300 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Descripción:</strong> {selectedEvent.description || 'Sin descripción'}
+                    ))
+                  ) : selectedEvent.attendees && selectedEvent.attendees.length > 0 ? (
+                    selectedEvent.attendees.map((attendee: any, index: number) => (
+                      <Box key={index} sx={{ 
+                        p: 1, 
+                        bgcolor: 'white', 
+                        borderRadius: 1, 
+                        border: '1px solid #e0e0e0',
+                        minWidth: 200
+                      }}>
+                        <Typography variant="body2" fontWeight={600}>
+                          {typeof attendee === 'object' ? attendee.full_name || attendee.email || attendee.id : String(attendee)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Participante
+                        </Typography>
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No hay participantes registrados
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+
+              {/* Información del proyecto */}
+              {selectedEvent.project_title && (
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: '#e8f5e8', 
+                  borderRadius: 2, 
+                  border: '1px solid #4caf50' 
+                }}>
+                  <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                    Proyecto
                   </Typography>
-                      </Box>
-                    </Box>
+                  <Typography variant="body1" fontWeight={600}>
+                    {selectedEvent.project_title}
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Información adicional */}
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: '#fafafa', 
+                borderRadius: 2, 
+                border: '1px solid #e0e0e0' 
+              }}>
+                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                  Información Adicional
+                </Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Prioridad:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.priority === 'low' ? 'Baja' : 
+                       selectedEvent.priority === 'normal' ? 'Normal' : 
+                       selectedEvent.priority === 'medium' ? 'Media' : 
+                       selectedEvent.priority === 'high' ? 'Alta' : 
+                       selectedEvent.priority === 'urgent' ? 'Urgente' : 
+                       selectedEvent.priority}
+                  </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Creado por:</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {selectedEvent.created_by || 'No especificado'}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
                   </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button 
+            onClick={() => setDialogOpen(false)} 
+            variant="contained"
+            sx={{ 
+              borderRadius: 2, 
+              px: 3,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

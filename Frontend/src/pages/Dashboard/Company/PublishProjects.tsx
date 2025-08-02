@@ -11,15 +11,15 @@ const steps = ['Información Básica', 'Etapa y Duración', 'General', 'Resumen'
 const trlToApi = { 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 4 } as const;
 const apiToHours = { 1: 20, 2: 40, 3: 80, 4: 160 } as const;
 const trlOptions = [
-  { value: 1, label: 'TRL 1', desc: 'Fase de idea, sin definición clara ni desarrollo previo.' },
-  { value: 2, label: 'TRL 2', desc: 'Definición clara y antecedentes de lo que se desea desarrollar.' },
-  { value: 3, label: 'TRL 3', desc: 'Pruebas y validaciones de concepto. Componentes evaluados por separado.' },
-  { value: 4, label: 'TRL 4', desc: 'Prototipo mínimo viable probado en condiciones controladas simples.' },
-  { value: 5, label: 'TRL 5', desc: 'Prototipo mínimo viable probado en condiciones similares al entorno real.' },
-  { value: 6, label: 'TRL 6', desc: 'Prototipo probado mediante un piloto en condiciones reales.' },
-  { value: 7, label: 'TRL 7', desc: 'Desarrollo probado en condiciones reales, por un periodo prolongado.' },
-  { value: 8, label: 'TRL 8', desc: 'Producto validado en lo técnico y lo comercial.' },
-  { value: 9, label: 'TRL 9', desc: 'Producto completamente desarrollado y disponible para la sociedad.' },
+  { value: 1, label: 'Opción 1', desc: 'Fase de idea, sin definición clara ni desarrollo previo.' },
+  { value: 2, label: 'Opción 2', desc: 'Definición clara y antecedentes de lo que se desea desarrollar.' },
+  { value: 3, label: 'Opción 3', desc: 'Pruebas y validaciones de concepto. Componentes evaluados por separado.' },
+  { value: 4, label: 'Opción 4', desc: 'Prototipo mínimo viable probado en condiciones controladas simples.' },
+  { value: 5, label: 'Opción 5', desc: 'Prototipo mínimo viable probado en condiciones similares al entorno real.' },
+  { value: 6, label: 'Opción 6', desc: 'Prototipo probado mediante un piloto en condiciones reales.' },
+  { value: 7, label: 'Opción 7', desc: 'Desarrollo probado en condiciones reales, por un periodo prolongado.' },
+  { value: 8, label: 'Opción 8', desc: 'Producto validado en lo técnico y lo comercial.' },
+  { value: 9, label: 'Opción 9', desc: 'Producto completamente desarrollado y disponible para la sociedad.' },
 ];
 
 const TRL_QUESTIONS = [
@@ -98,7 +98,7 @@ export const PublishProjects: React.FC = () => {
     return meses.toString();
   };
 
-  // Efecto para validación y avance automático
+  // Efecto para validación (sin avance automático)
   useEffect(() => {
     const currentStepErrors = validateCurrentStep();
     console.log('🔍 Debug - Paso:', activeStep, 'Errores:', currentStepErrors.length, 'Validado:', validatedSteps.has(activeStep), 'Modificado:', modifiedSteps.has(activeStep));
@@ -109,39 +109,43 @@ export const PublishProjects: React.FC = () => {
       setValidatedSteps(prev => new Set([...prev, activeStep]));
     }
     
-    // Si el paso está validado (con o sin modificaciones), avanzar automáticamente (solo pasos 0, 1, 2)
-    if (validatedSteps.has(activeStep) && activeStep < 3) {
-      console.log('🚀 Avanzando automáticamente del paso', activeStep);
-      const timer = setTimeout(() => {
-        setError(null);
-        setSuccess(null);
-        setActiveStep((s) => Math.min(s + 1, steps.length - 1));
-      }, 2000); // Avance automático después de 2 segundos
-      
-      return () => clearTimeout(timer);
-    }
+    // El avance automático ha sido eliminado - ahora es completamente manual
   }, [form, trlSelected, activeStep]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     let value = e.target.value;
+    
+    // Limpiar errores generales cuando el usuario está editando
+    if (error) {
+      setError(null);
+    }
+    
     if (e.target.name === 'horas') {
       let numValue = Number(value);
+      
+      // Validar y corregir el valor si es necesario
       if (numValue > 350) {
         numValue = 350;
         value = '350';
       }
+      
+      // Actualizar el formulario
       setForm({ ...form, [e.target.name]: value });
+      
       // Marcar el paso actual como modificado
       setModifiedSteps(prev => new Set([...prev, activeStep]));
-             if (numValue < minHours) {
-         setHoursError(`El mínimo para esta etapa de desarrollo es ${minHours} horas.`);
-       } else if (numValue > 350) {
+      
+      // Validar y mostrar errores apropiados
+      if (numValue < minHours) {
+        setHoursError(`El mínimo para esta etapa de desarrollo es ${minHours} horas.`);
+      } else if (numValue > 350) {
         setHoursError('El máximo permitido por proyecto es 350 horas.');
       } else {
         setHoursError(null);
       }
       return;
     }
+    
     setForm({ ...form, [e.target.name]: value });
     // Marcar el paso actual como modificado
     setModifiedSteps(prev => new Set([...prev, activeStep]));
@@ -151,12 +155,22 @@ export const PublishProjects: React.FC = () => {
     const value = Number(e.target.value) as keyof typeof trlToApi;
     setTrlSelected(value);
     setForm({ ...form, trl: value });
+    
+    // Limpiar errores generales
+    if (error) {
+      setError(null);
+    }
+    
     // Marcar el paso actual como modificado
     setModifiedSteps(prev => new Set([...prev, activeStep]));
-         const min = apiToHours[trlToApi[value]];
-     if (Number(form.horas) < min) {
-       setHoursError(`El mínimo para esta etapa de desarrollo es ${min} horas.`);
-     } else {
+    
+    // Validar las horas actuales contra el nuevo mínimo
+    const min = apiToHours[trlToApi[value]];
+    const currentHours = Number(form.horas);
+    
+    if (currentHours > 0 && currentHours < min) {
+      setHoursError(`El mínimo para esta etapa de desarrollo es ${min} horas.`);
+    } else {
       setHoursError(null);
     }
   };
@@ -265,17 +279,20 @@ export const PublishProjects: React.FC = () => {
        errors.push(`Debes ingresar las horas ofrecidas (mínimo ${minHours} para esta etapa de desarrollo).`);
      }
     
-    // Validar coherencia entre horas totales y duración
+    // Validar coherencia entre horas totales y duración (solo si hay datos válidos)
     const horasTotales = Number(form.horas) || 0;
     const duracionMeses = Number(form.meses) || 1;
-    const duracionSemanas = duracionMeses * 4;
-    const horasPorSemana = Math.ceil(horasTotales / duracionSemanas);
     
-    if (horasPorSemana > 40) {
-      errors.push(`Las horas por semana (${horasPorSemana}) son muy altas. Considera aumentar la duración del proyecto.`);
-    }
-    if (horasPorSemana < 5) {
-      errors.push(`Las horas por semana (${horasPorSemana}) son muy bajas. Considera reducir la duración del proyecto.`);
+    if (horasTotales > 0 && duracionMeses > 0) {
+      const duracionSemanas = duracionMeses * 4;
+      const horasPorSemana = Math.ceil(horasTotales / duracionSemanas);
+      
+      if (horasPorSemana > 40) {
+        errors.push(`Las horas por semana (${horasPorSemana}) son muy altas. Considera aumentar la duración del proyecto.`);
+      }
+      if (horasPorSemana < 5) {
+        errors.push(`Las horas por semana (${horasPorSemana}) son muy bajas. Considera reducir la duración del proyecto.`);
+      }
     }
     
     return errors;
@@ -358,11 +375,7 @@ export const PublishProjects: React.FC = () => {
       </Stepper>
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {validatedSteps.has(activeStep) && activeStep < 3 && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Paso completado. Avanzando automáticamente al siguiente paso...
-        </Alert>
-      )}
+
              {activeStep === 0 && (
          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                                                                                <TextField 
@@ -626,7 +639,7 @@ export const PublishProjects: React.FC = () => {
            <Typography variant="subtitle2">Objetivo: {form.objetivo}</Typography>
            <Typography variant="subtitle2">Estudiantes requeridos: 1</Typography>
            <Typography variant="subtitle2">
-             Etapa de desarrollo: Opción {trlSelected} - {TRL_QUESTIONS[trlSelected - 1]}
+             Etapa de desarrollo: Opción {trlSelected}
            </Typography>
            <Typography variant="subtitle2">Horas ofrecidas: {form.horas}</Typography>
            <Typography variant="subtitle2">Duración: {form.meses} mes(es) = {(Number(form.meses) || 1) * 4} semanas</Typography>
@@ -642,7 +655,7 @@ export const PublishProjects: React.FC = () => {
             onClick={nextStep} 
             disabled={activeStep === 2 && !!hoursError}
           >
-            {validatedSteps.has(activeStep) && activeStep < 3 ? 'Avanzando automáticamente...' : 'Siguiente'}
+            Siguiente
           </Button>
         ) : (
           <Button variant="contained" color="success" onClick={handleSubmit} disabled={!!hoursError}>Publicar Proyecto</Button>
