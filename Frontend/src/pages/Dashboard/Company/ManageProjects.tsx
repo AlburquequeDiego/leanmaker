@@ -183,18 +183,7 @@ export const ManageProjects: React.FC = () => {
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner':
-        return 'success';
-      case 'intermediate':
-        return 'warning';
-      case 'advanced':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
+  
 
   const handleDelete = async (projectId: string) => {
     try {
@@ -252,7 +241,7 @@ export const ManageProjects: React.FC = () => {
         description: newProject.description,
         requirements: newProject.skills.join(', '),
         duration_weeks: parseInt(newProject.duration),
-        difficulty: 'intermediate',
+
         modality: newProject.modality || 'remote',
         min_api_level: 1,
         max_students: 1,
@@ -367,8 +356,7 @@ export const ManageProjects: React.FC = () => {
 
                   <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                     <Chip
-                      label={project.difficulty || 'intermediate'}
-                      color={getDifficultyColor(project.difficulty || 'intermediate') as any}
+                      
                       size="small"
                     />
                     <Chip

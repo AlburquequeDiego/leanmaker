@@ -1,11 +1,14 @@
-import { useEffect } from 'react';
-import { Box, Paper, Typography, LinearProgress } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Box, Paper, Typography, LinearProgress, Tooltip, IconButton } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SchoolIcon from '@mui/icons-material/School';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
+import InfoIcon from '@mui/icons-material/Info';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import CodeIcon from '@mui/icons-material/Code';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
@@ -51,6 +54,105 @@ function CircularProgressWithLabel({ value, label, subtitle }: { value: number, 
   );
 }
 
+// Componente de tarjeta KPI reutilizable
+interface KPICardProps {
+  title: string;
+  value: string | number;
+  description: string;
+  icon: React.ReactNode;
+  bgColor: string;
+  textColor: string;
+}
+
+const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICardProps) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <Paper sx={{
+      p: 2.5,
+      width: '100%',
+      height: 160,
+      minHeight: 160,
+      maxHeight: 160,
+      display: 'flex',
+      flexDirection: 'column',
+      bgcolor: bgColor,
+      color: textColor,
+      boxShadow: 2,
+      borderRadius: 3,
+      justifyContent: 'space-between',
+      cursor: 'pointer',
+      transition: 'transform 0.2s, box-shadow 0.2s',
+      flexShrink: 0,
+      flexGrow: 0,
+      '&:hover': {
+        transform: 'translateY(-2px)',
+        boxShadow: 4
+      }
+    }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            flexShrink: 0
+          }}>
+            {icon}
+          </Box>
+          <Typography variant="h6" fontWeight={700} sx={{ 
+            ml: 1,
+            fontSize: 'clamp(0.8rem, 2vw, 1.25rem)',
+            lineHeight: 1.1,
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word'
+          }}>
+            {title}
+          </Typography>
+        </Box>
+        <Tooltip
+          title={description}
+          open={showTooltip}
+          onClose={() => setShowTooltip(false)}
+          placement="top"
+          arrow
+          sx={{
+            '& .MuiTooltip-tooltip': {
+              bgcolor: 'rgba(0, 0, 0, 0.9)',
+              color: 'white',
+              fontSize: '14px',
+              padding: '8px 12px',
+              borderRadius: '6px'
+            }
+          }}
+        >
+          <IconButton
+            size="small"
+            onClick={() => setShowTooltip(!showTooltip)}
+            sx={{
+              color: textColor,
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            <InfoIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      <Typography variant="h3" fontWeight={700} sx={{ 
+        textAlign: 'center', 
+        my: 2,
+        fontSize: 'clamp(1.5rem, 4vw, 3rem)',
+        lineHeight: 1.1,
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word'
+      }}>
+        {value}
+      </Typography>
+    </Paper>
+  );
+};
+
 export default function StudentDashboard() {
   const { user } = useAuth();
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('student');
@@ -69,12 +171,6 @@ export default function StudentDashboard() {
     return 'Estudiante';
   };
 
-  // Eliminar simulación de checklist y entregas
-  // const checklist = [...];
-  // const entregas = ...;
-  // const actividades = ...;
-  // const porcentajeEntregas = ...;
-  // Solo usar stats del backend para mostrar información
   // Datos de ejemplo para strikes y GPA (ajusta según tu modelo real)
   const strikes = stats?.strikes ?? 0;
   const maxStrikes = 3;
@@ -84,6 +180,11 @@ export default function StudentDashboard() {
   const activeProjects = stats?.active_projects ?? 0;
   const totalApplications = stats?.total_applications ?? 0;
   const availableProjects = stats?.available_projects ?? 0;
+  
+  // Nuevos datos para las 3 tarjetas adicionales
+  const completedProjects = stats?.completed_projects ?? 0;
+  const apiLevel = stats?.api_level ?? 1;
+  const unreadNotifications = stats?.unread_notifications ?? 0;
 
   if (loading) {
     return (
@@ -123,63 +224,107 @@ export default function StudentDashboard() {
           />
         </Box>
       </Box>
-      {/* Tarjetas principales */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+      
+      {/* Tarjetas principales con diseño fijo - 3 filas × 3 columnas */}
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(3, 1fr)', 
+        gridTemplateRows: 'repeat(3, 160px)',
+        gap: 3, 
+        mb: 3,
+        maxWidth: '100%',
+        width: '100%'
+      }}>
         {/* Horas Acumuladas */}
-        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#2196f3', color: 'white', p: 2, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <TrendingUpIcon sx={{ mr: 1, fontSize: 28 }} />
-            <Typography variant="subtitle1" fontWeight={700}>Horas Acumuladas</Typography>
-              </Box>
-          <Typography variant="h4" fontWeight={700}>{totalHours}</Typography>
-          <Typography variant="body2">Horas de experiencia en proyectos</Typography>
-            </Paper>
+        <KPICard
+          title="Horas Acumuladas"
+          value={totalHours}
+          description="Total de horas de experiencia acumuladas trabajando en proyectos. Cada hora registrada y validada contribuye a tu experiencia profesional y desarrollo de habilidades técnicas."
+          icon={<TrendingUpIcon sx={{ fontSize: 28 }} />}
+          bgColor="#1565c0"
+          textColor="white"
+        />
+        
         {/* Proyectos Disponibles */}
-        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#2196f3', color: 'white', p: 2, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <AssignmentIcon sx={{ mr: 1, fontSize: 28 }} />
-            <Typography variant="subtitle1" fontWeight={700}>Proyectos Disponibles</Typography>
-                </Box>
-          <Typography variant="h4" fontWeight={700}>{availableProjects}</Typography>
-          <Typography variant="body2">Nuevas oportunidades para ti</Typography>
-            </Paper>
+        <KPICard
+          title="Proyectos Disponibles"
+          value={availableProjects}
+          description="Número de proyectos activos que están abiertos para aplicaciones. Estos proyectos representan nuevas oportunidades para desarrollar tus habilidades y ganar experiencia profesional."
+          icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
+          bgColor="#42a5f5"
+          textColor="white"
+        />
+        
         {/* Mis Aplicaciones */}
-        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#9c27b0', color: 'white', p: 2, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <AssignmentIcon sx={{ mr: 1, fontSize: 28 }} />
-            <Typography variant="subtitle1" fontWeight={700}>Mis Aplicaciones</Typography>
-                </Box>
-          <Typography variant="h4" fontWeight={700}>{totalApplications}</Typography>
-          <Typography variant="body2">Aplicaciones en proceso</Typography>
-            </Paper>
+        <KPICard
+          title="Mis Aplicaciones"
+          value={totalApplications}
+          description="Total de aplicaciones que has enviado a proyectos. Incluye aplicaciones pendientes de revisión, aceptadas y rechazadas. Monitorea el estado de tus aplicaciones activas."
+          icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
+          bgColor="#8e24aa"
+          textColor="white"
+        />
+        
         {/* Strikes */}
-        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#ff9800', color: 'white', p: 2, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <WarningAmberIcon sx={{ mr: 1, fontSize: 28, color: '#d32f2f' }} />
-            <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white' }}>Strikes</Typography>
-                </Box>
-          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{strikes} / {maxStrikes}</Typography>
-          <Typography variant="body2" sx={{ color: 'white' }}>Tienes {strikes} de {maxStrikes} strikes asignados por no entregar proyectos.</Typography>
-            </Paper>
+        <KPICard
+          title="Strikes"
+          value={`${strikes} / ${maxStrikes}`}
+          description="Sistema de advertencias por incumplimiento de entregas. Tienes un máximo de 3 strikes antes de restricciones. Los strikes se asignan cuando no entregas proyectos en tiempo y forma."
+          icon={<WarningAmberIcon sx={{ fontSize: 28, color: '#d32f2f' }} />}
+          bgColor="#ff9800"
+          textColor="white"
+        />
+        
         {/* Proyectos Activos */}
-        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#4caf50', color: 'white', p: 2, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <CheckCircleIcon sx={{ mr: 1, fontSize: 28 }} />
-            <Typography variant="subtitle1" fontWeight={700}>Proyectos Activos</Typography>
-          </Box>
-          <Typography variant="h4" fontWeight={700}>{activeProjects}</Typography>
-          <Typography variant="body2">Proyectos en curso</Typography>
-        </Paper>
+        <KPICard
+          title="Proyectos Activos"
+          value={activeProjects}
+          description="Proyectos en los que actualmente estás participando y trabajando activamente. Estos son proyectos donde has sido aceptado y estás registrando horas de trabajo."
+          icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
+          bgColor="#2e7d32"
+          textColor="white"
+        />
+        
         {/* GPA Actual */}
-        <Paper elevation={3} sx={{ flex: '1 1 260px', minWidth: 220, bgcolor: '#ffc107', color: 'white', p: 2, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <TrendingUpIcon sx={{ mr: 1, fontSize: 28, color: 'white' }} />
-            <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white' }}>GPA Actual</Typography>
-          </Box>
-          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{gpa && gpa > 0 ? gpa : 'Sin calificaciones'}</Typography>
-          <Typography variant="body2" sx={{ color: 'white' }}>Promedio académico actual</Typography>
-        </Paper>
-        </Box>
+        <KPICard
+          title="GPA Actual"
+          value={gpa && gpa > 0 ? gpa : 'Sin GPA'}
+          description="Promedio académico actual basado en las calificaciones recibidas por tu trabajo en proyectos. Refleja tu rendimiento académico y profesional en la plataforma."
+          icon={<TrendingUpIcon sx={{ fontSize: 28, color: 'white' }} />}
+          bgColor="#f57c00"
+          textColor="white"
+        />
+         
+         {/* Proyectos Completados */}
+         <KPICard
+           title="Proyectos Completados"
+           value={completedProjects}
+           description="Número total de proyectos que has terminado exitosamente. Cada proyecto completado representa una experiencia valiosa y contribuye a tu portafolio profesional."
+           icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
+           bgColor="#4caf50"
+           textColor="white"
+         />
+         
+         {/* Nivel de API */}
+         <KPICard
+           title="Nivel de API"
+           value={apiLevel}
+           description="Tu nivel actual de API que determina qué proyectos puedes aplicar. Los niveles más altos desbloquean proyectos más complejos y mejor pagados."
+           icon={<CodeIcon sx={{ fontSize: 28 }} />}
+           bgColor="#673ab7"
+           textColor="white"
+         />
+         
+         {/* Notificaciones Nuevas */}
+         <KPICard
+           title="Notificaciones Nuevas"
+           value={unreadNotifications}
+           description="Número de notificaciones no leídas que requieren tu atención. Incluye actualizaciones de proyectos, evaluaciones y mensajes importantes del sistema."
+           icon={<NotificationsIcon sx={{ fontSize: 28 }} />}
+           bgColor="#f44336"
+           textColor="white"
+         />
+      </Box>
     </Box>
   );
 } 

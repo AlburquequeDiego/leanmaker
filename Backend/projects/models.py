@@ -19,12 +19,7 @@ class Proyecto(models.Model):
         ('hybrid', 'Híbrido'),
     )
     
-    DIFFICULTY_CHOICES = (
-        ('beginner', 'Principiante'),
-        ('intermediate', 'Intermedio'),
-        ('intermediate-advanced', 'Intermedio-Avanzado'),
-        ('advanced', 'Avanzado'),
-    )
+
     
     STATUS_CHOICES = (
         ('open', 'Abierto'),
@@ -71,7 +66,7 @@ class Proyecto(models.Model):
     # Campos adicionales - coinciden con frontend
     modality = models.CharField(max_length=20, choices=MODALITY_CHOICES, default='remote')
     location = models.CharField(max_length=200, null=True, blank=True)
-    difficulty = models.CharField(max_length=25, choices=DIFFICULTY_CHOICES, default='intermediate')
+
     
     # Campos JSON (se almacenan como texto en SQL Server) - coinciden con frontend
     required_skills = models.TextField(null=True, blank=True)  # JSON array
@@ -218,15 +213,12 @@ class Proyecto(models.Model):
     
     def agregar_estudiante(self, estudiante):
         """Agrega o reactiva un estudiante como miembro activo del proyecto."""
-        from .models import MiembroProyecto
-        from students.models import Estudiante
         # Si recibe un Estudiante, obtener el User
         if hasattr(estudiante, 'user'):
             user = estudiante.user
         else:
             user = estudiante
-        miembro, creado = MiembroProyecto.objects.get_or_create(
-            proyecto=self,
+        miembro, creado = self.miembros.get_or_create(
             usuario=user,
             defaults={'rol': 'estudiante', 'esta_activo': True}
         )
@@ -236,8 +228,8 @@ class Proyecto(models.Model):
                 miembro.esta_activo = True
                 miembro.save(update_fields=['rol', 'esta_activo'])
         # Recalcula el número de estudiantes activos
-        self.current_students = MiembroProyecto.objects.filter(
-            proyecto=self, rol='estudiante', esta_activo=True
+        self.current_students = self.miembros.filter(
+            rol='estudiante', esta_activo=True
         ).count()
         self.save(update_fields=['current_students'])
         return True
@@ -466,3 +458,44 @@ class MiembroProyecto(models.Model):
     
     def __str__(self):
         return f"{self.usuario.full_name} - {self.proyecto.title} ({self.get_rol_display()})"
+
+
+# Señales para mantener actualizado el conteo de proyectos de las empresas
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Proyecto)
+def update_company_projects_count_on_save(sender, instance, **kwargs):
+    """Actualizar conteo de proyectos cuando se crea o actualiza un proyecto"""
+    if instance.company:
+        # Contar proyectos totales
+        total_projects = Proyecto.objects.filter(company=instance.company).count()
+        
+        # Contar proyectos completados
+        completed_projects = Proyecto.objects.filter(
+            company=instance.company, 
+            status__name='completed'
+        ).count()
+        
+        # Actualizar empresa
+        instance.company.total_projects = total_projects
+        instance.company.projects_completed = completed_projects
+        instance.company.save(update_fields=['total_projects', 'projects_completed'])
+
+@receiver(post_delete, sender=Proyecto)
+def update_company_projects_count_on_delete(sender, instance, **kwargs):
+    """Actualizar conteo de proyectos cuando se elimina un proyecto"""
+    if instance.company:
+        # Contar proyectos totales
+        total_projects = Proyecto.objects.filter(company=instance.company).count()
+        
+        # Contar proyectos completados
+        completed_projects = Proyecto.objects.filter(
+            company=instance.company, 
+            status__name='completed'
+        ).count()
+        
+        # Actualizar empresa
+        instance.company.total_projects = total_projects
+        instance.company.projects_completed = completed_projects
+        instance.company.save(update_fields=['total_projects', 'projects_completed'])

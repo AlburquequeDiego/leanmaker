@@ -127,10 +127,32 @@ export const GestionEmpresasAdmin = () => {
       const response = await apiService.get(`/api/admin/companies/?${params.toString()}`);
       console.log('📊 Datos recibidos del backend:', response.results);
       
-      // Mapear user correctamente si viene como objeto
+      // Mapear datos del backend al formato esperado por el frontend
       const mappedCompanies = (response.results || []).map((c: any) => ({
-        ...c,
-        user: typeof c.user === 'object' ? c.user.id : c.user
+        id: c.id,
+        user: typeof c.user === 'object' ? c.user.id : c.user,
+        name: c.company_name || 'Sin nombre',
+        email: c.user_data?.email || c.contact_email || 'Sin email',
+        status: c.status || 'active',
+        projects_count: c.total_projects || 0,
+        gpa: c.rating || 0,
+        join_date: c.created_at || '',
+        last_activity: c.updated_at || '',
+        description: c.description || '',
+        phone: c.contact_phone || c.user_data?.phone || '',
+        address: c.address || '',
+        website: c.website || '',
+        industry: c.industry || '',
+        size: c.size || '',
+        verified: c.verified || false,
+        // Datos adicionales del backend
+        company_name: c.company_name,
+        contact_email: c.contact_email,
+        contact_phone: c.contact_phone,
+        total_projects: c.total_projects,
+        projects_completed: c.projects_completed,
+        total_hours_offered: c.total_hours_offered,
+        user_data: c.user_data
       }));
       
       console.log('🔄 Empresas mapeadas:', mappedCompanies);
@@ -242,7 +264,7 @@ export const GestionEmpresasAdmin = () => {
               {value}
             </Typography>
             <Typography variant="caption" color="text.secondary" noWrap>
-              Última actividad: {new Date(row.last_activity).toLocaleDateString()}
+              Última actividad: {row.last_activity ? new Date(row.last_activity).toLocaleDateString() : 'Sin datos'}
             </Typography>
           </Box>
         </Box>
@@ -289,7 +311,7 @@ export const GestionEmpresasAdmin = () => {
       align: 'center' as const
     },
     {
-      key: 'rating', // El backend entrega 'rating', lo mostramos como GPA
+      key: 'gpa', // Usamos 'gpa' que es el campo mapeado
       label: 'GPA promedio',
       render: (value: number) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -307,7 +329,7 @@ export const GestionEmpresasAdmin = () => {
       label: 'Fecha Registro',
       render: (value: string) => (
         <Typography variant="body2">
-          {new Date(value).toLocaleDateString()}
+          {value ? new Date(value).toLocaleDateString() : 'Sin datos'}
         </Typography>
       ),
       width: '120px',

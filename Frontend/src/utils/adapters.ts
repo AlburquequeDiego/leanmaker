@@ -139,7 +139,20 @@ export const adaptCompany = (backendCompany: any): Company => ({
 });
 
 /**
+ * Traduce la modalidad del inglés al español
+ */
+export const translateModality = (modality: string): string => {
+  const modalityMap: { [key: string]: string } = {
+    'remote': 'Remoto',
+    'onsite': 'Presencial',
+    'hybrid': 'Híbrido',
+  };
+  return modalityMap[modality] || modality;
+};
+
+/**
  * Adapta un proyecto del backend al formato del frontend
+ * Maneja la estructura anidada que devuelve el backend Django
  */
 export const adaptProject = (backendProject: any): Project => {
   // Mapeo de status_name del backend a status del frontend
@@ -186,7 +199,7 @@ export const adaptProject = (backendProject: any): Project => {
     max_students: backendProject.max_students || backendProject.max_estudiantes || 1,
     current_students: Number(backendProject.current_students) || 0,
     applications_count: backendProject.applications_count || 0,
-    modality: backendProject.modality || backendProject.modalidad || 'remote',
+    modality: translateModality(backendProject.modality || backendProject.modalidad || 'remote'),
     duration_weeks: backendProject.duration_weeks || backendProject.duracion_semanas || 12,
     hours_per_week: backendProject.hours_per_week || backendProject.horas_por_semana || 20,
     required_hours: backendProject.required_hours || 0,
@@ -198,7 +211,7 @@ export const adaptProject = (backendProject: any): Project => {
     start_date: backendProject.start_date || backendProject.fecha_inicio || null,
     estimated_end_date: backendProject.estimated_end_date || backendProject.end_date || backendProject.fecha_fin_estimado || null,
     location: backendProject.location || 'No especificada',
-    difficulty: translateDifficulty(backendProject.difficulty || 'intermediate'),
+    
     is_featured: backendProject.is_featured || false,
     is_urgent: backendProject.is_urgent || false,
     created_by: String(backendProject.created_by || ''),
@@ -241,7 +254,7 @@ export const adaptApplication = (backendApplication: any): Application => {
     projectDuration: project.duration_weeks ? `${project.duration_weeks} semanas` : '',
     location: project.location || '',
     modality: project.modality || '',
-    difficulty: project.difficulty || '',
+    
     required_hours: project.required_hours || '',
     hours_per_week: project.hours_per_week || '',
     max_students: project.max_students || '',
@@ -524,7 +537,7 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
 };
 
 /**
- * Adapta estadísticas del dashboard del backend al formato del frontend
+ * Adapta las estadísticas del dashboard del backend
  */
 export const adaptDashboardStats = (backendStats: any): DashboardStats => ({
   total_users: backendStats.total_users || 0,
@@ -537,6 +550,7 @@ export const adaptDashboardStats = (backendStats: any): DashboardStats => ({
   total_applications: backendStats.total_applications || 0,
   pending_applications: backendStats.pending_applications || 0,
   strikes_alerts: backendStats.strikes_alerts || 0, // Agregado para coincidir con el backend
+  top_students: Array.isArray(backendStats.top_students) ? backendStats.top_students : [], // Nuevo campo
 });
 
 // ============================================================================
@@ -627,15 +641,4 @@ export const adaptPaginatedResponse = <T>(
   };
 }; 
 
-export const translateDifficulty = (difficulty: string): string => {
-  switch (difficulty) {
-    case 'intermediate':
-      return 'Intermedio';
-    case 'intermediate-advanced':
-      return 'Intermedio-Avanzado';
-    case 'advanced':
-      return 'Avanzado';
-    default:
-      return difficulty;
-  }
-}; 
+ 

@@ -341,7 +341,7 @@ export const PublishProjects: React.FC = () => {
         // Calcular hours_per_week de forma coherente
         hours_per_week: Math.ceil((Number(form.horas) || 0) / (Number(form.meses) * 4 || 1)),
         modality: (form.modalidad || '').toLowerCase() === 'remoto' ? 'remote' : (form.modalidad || '').toLowerCase() === 'presencial' ? 'onsite' : (form.modalidad || '').toLowerCase() === 'híbrido' || (form.modalidad || '').toLowerCase() === 'hibrido' ? 'hybrid' : 'remote',
-        difficulty: form.dificultad || 'intermediate',
+
       };
       console.log('Datos enviados al backend:', datosAEnviar);
       const response = await projectService.createProject(datosAEnviar);

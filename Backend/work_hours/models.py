@@ -40,11 +40,12 @@ class WorkHour(models.Model):
         verbose_name='Verificado por'
     )
     verified_at = models.DateTimeField(null=True, blank=True, verbose_name='Fecha de verificación')
+    is_project_completion = models.BooleanField(default=False, verbose_name='Horas de completación de proyecto')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creación')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Fecha de actualización')
     
     class Meta:
-        db_table = 'work_hours_workhour'
+        db_table = 'work_hours'
         verbose_name = 'Hora de trabajo'
         verbose_name_plural = 'Horas de trabajo'
         ordering = ['-date', '-created_at']

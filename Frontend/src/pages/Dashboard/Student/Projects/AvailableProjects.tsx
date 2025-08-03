@@ -61,7 +61,7 @@ interface Project {
   api_level?: number;
   max_students?: number;
   current_students?: number;
-  difficulty?: string;
+  
   modality?: string;
   location?: string;
   duration_weeks?: number;

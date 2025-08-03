@@ -196,7 +196,7 @@ def my_applications(request):
                     'duration_weeks': getattr(app.project, 'duration_weeks', None),
                     'location': getattr(app.project, 'location', ''),
                     'modality': getattr(app.project, 'modality', ''),
-                    'difficulty': getattr(app.project, 'difficulty', ''),
+        
                     'required_hours': getattr(app.project, 'required_hours', None),
                     'hours_per_week': getattr(app.project, 'hours_per_week', None),
                     'max_students': getattr(app.project, 'max_students', None),

@@ -52,17 +52,37 @@ def notification_list(request):
         
         notifications_data = []
         for notification in notifications_page:
+            # Mapear notification_type del backend al frontend
+            type_mapping = {
+                'email': 'announcement',
+                'sms': 'alert',
+                'push': 'update',
+                'in_app': 'announcement'
+            }
+            
+            # Mapear target_audience del backend al frontend
+            target_all_students = notification.target_audience in ['students', 'all']
+            target_all_companies = notification.target_audience in ['companies', 'all']
+            
             notifications_data.append({
                 'id': notification.id,
                 'title': notification.title,
                 'message': notification.message,
-                'notification_type': notification.notification_type,
-                'target_audience': notification.target_audience,
-                'is_sent': notification.is_sent,
+                'notification_type': type_mapping.get(notification.notification_type, 'announcement'),
+                'priority': 'normal',  # Valor por defecto
+                'status': 'sent' if notification.is_sent else 'draft',
+                'target_all_students': target_all_students,
+                'target_all_companies': target_all_companies,
+                'target_students': [],
+                'target_companies': [],
                 'scheduled_at': notification.scheduled_at.isoformat() if notification.scheduled_at else None,
                 'sent_at': notification.sent_at.isoformat() if notification.sent_at else None,
                 'created_at': notification.created_at.isoformat(),
-                'sent_by': str(notification.sent_by.id) if notification.sent_by else None,
+                'created_by_name': notification.sent_by.first_name if notification.sent_by else 'Admin',
+                'total_recipients': 0,  # Valor por defecto
+                'sent_count': 1 if notification.is_sent else 0,
+                'failed_count': 0,
+                'read_count': 0,
             })
         
         return JsonResponse({
@@ -99,11 +119,30 @@ def notification_create(request):
         
         data = json.loads(request.body)
         
+        # Mapear notification_type del frontend al backend
+        type_mapping = {
+            'announcement': 'in_app',
+            'reminder': 'in_app',
+            'alert': 'push',
+            'update': 'push',
+            'event': 'in_app',
+            'deadline': 'in_app'
+        }
+        
+        # Mapear target_audience del frontend al backend
+        target_audience = 'all'
+        if data.get('target_all_students') and not data.get('target_all_companies'):
+            target_audience = 'students'
+        elif data.get('target_all_companies') and not data.get('target_all_students'):
+            target_audience = 'companies'
+        elif data.get('target_all_students') and data.get('target_all_companies'):
+            target_audience = 'all'
+        
         notification = MassNotification.objects.create(
             title=data['title'],
             message=data['message'],
-            notification_type=data.get('notification_type', 'in_app'),
-            target_audience=data.get('target_audience', 'all'),
+            notification_type=type_mapping.get(data.get('notification_type', 'announcement'), 'in_app'),
+            target_audience=target_audience,
             sent_by=current_user,
             scheduled_at=data.get('scheduled_at'),
         )

@@ -860,8 +860,17 @@ def api_dashboard_company_stats(request):
             # Rating promedio (real)
             rating = company.rating
             
-            # Horas totales (placeholder)
-            total_hours_offered = 0  # Por ahora 0
+            # Calcular horas ofrecidas totales con datos reales
+            from django.db.models import Sum, F, Case, When, Value, IntegerField
+            total_hours_offered = Proyecto.objects.filter(company=company).aggregate(
+                total_hours=Sum(
+                    Case(
+                        When(required_hours__isnull=False, then=F('required_hours')),
+                        default=F('hours_per_week') * F('duration_weeks'),
+                        output_field=IntegerField()
+                    )
+                )
+            )['total_hours'] or 0
             
             # Proyectos este mes (placeholder)
             projects_this_month = 0  # Por ahora 0
@@ -944,15 +953,27 @@ def api_dashboard_student_stats(request):
         
         # Obtener estadísticas básicas
         try:
+            print(f"🔍 [STUDENT DASHBOARD] Calculando estadísticas para estudiante: {student.user.email}")
+            
             total_applications = Aplicacion.objects.filter(student=student).count()
+            print(f"📝 [STUDENT DASHBOARD] Total aplicaciones: {total_applications}")
+            
             pending_applications = Aplicacion.objects.filter(student=student, status='pending').count()
+            print(f"⏳ [STUDENT DASHBOARD] Aplicaciones pendientes: {pending_applications}")
+            
             accepted_applications = Aplicacion.objects.filter(student=student, status='accepted').count()
+            print(f"✅ [STUDENT DASHBOARD] Aplicaciones aceptadas: {accepted_applications}")
             
             # Obtener proyectos del estudiante a través de aplicaciones aceptadas
             accepted_applications_objs = Aplicacion.objects.filter(student=student, status='accepted')
+            print(f"🔗 [STUDENT DASHBOARD] Objetos de aplicaciones aceptadas: {accepted_applications_objs.count()}")
+            
             student_projects = Proyecto.objects.filter(application_project__in=accepted_applications_objs)
+            print(f"💼 [STUDENT DASHBOARD] Proyectos del estudiante: {student_projects.count()}")
+            
             total_projects = student_projects.count()
             active_projects = student_projects.filter(status__name='active').count()
+            print(f"🔄 [STUDENT DASHBOARD] Proyectos activos: {active_projects}")
             
             # Calcular proyectos disponibles (proyectos abiertos, no postulados, cumple nivel API)
             open_projects = Proyecto.objects.filter(status__name='open')
@@ -967,6 +988,34 @@ def api_dashboard_student_stats(request):
                 'details': str(e)
             }, status=500)
         
+        # Obtener notificaciones no leídas
+        try:
+            from notifications.models import Notification
+            unread_notifications = Notification.objects.filter(user=user, read=False).count()
+        except Exception as e:
+            print(f"Error obteniendo notificaciones: {e}")
+            unread_notifications = 0
+        
+        # Calcular proyectos completados del estudiante
+        completed_projects = student_projects.filter(status__name='completed').count()
+        print(f"🏁 [STUDENT DASHBOARD] Proyectos completados: {completed_projects}")
+        
+        # Obtener nivel de API del estudiante
+        api_level = student.api_level
+        print(f"🔧 [STUDENT DASHBOARD] Nivel API: {api_level}")
+        
+        # Obtener horas totales del estudiante
+        total_hours = student.total_hours
+        print(f"⏰ [STUDENT DASHBOARD] Horas totales: {total_hours}")
+        
+        # Obtener strikes del estudiante
+        strikes = student.strikes
+        print(f"⚠️ [STUDENT DASHBOARD] Strikes: {strikes}")
+        
+        # Obtener GPA del estudiante
+        gpa = float(student.gpa)
+        print(f"📊 [STUDENT DASHBOARD] GPA: {gpa}")
+        
         # Preparar respuesta
         response_data = {
             'total_applications': total_applications,
@@ -974,10 +1023,13 @@ def api_dashboard_student_stats(request):
             'accepted_applications': accepted_applications,
             'total_projects': total_projects,
             'active_projects': active_projects,
-            'total_hours': student.total_hours,
-            'strikes': student.strikes,
-            'gpa': float(student.gpa),
+            'completed_projects': completed_projects,
+            'api_level': api_level,
+            'total_hours': total_hours,
+            'strikes': strikes,
+            'gpa': gpa,
             'available_projects': available_projects,
+            'unread_notifications': unread_notifications,
             'recent_activity': []  # Placeholder para actividad reciente
         }
         
@@ -1057,6 +1109,70 @@ def api_dashboard_admin_stats(request):
         from strikes.models import StrikeReport
         strikes_alerts = StrikeReport.objects.filter(status='pending').count()
         print(f"⚠️ [ADMIN DASHBOARD] Alertas de strikes (reportes pendientes): {strikes_alerts}")
+        
+        # Obtener top 10 estudiantes con más horas registradas
+        from work_hours.models import WorkHour
+        from django.db.models import Sum
+        
+        top_students = []
+        try:
+            print("🔍 [ADMIN DASHBOARD] Verificando datos de work hours...")
+            
+            # Verificar si hay work hours en la base de datos
+            total_work_hours = WorkHour.objects.count()
+            print(f"📊 [ADMIN DASHBOARD] Total work hours en BD: {total_work_hours}")
+            
+            # Verificar estudiantes con work hours
+            students_with_any_hours = Estudiante.objects.filter(work_hours__isnull=False).distinct().count()
+            print(f"👥 [ADMIN DASHBOARD] Estudiantes con work hours: {students_with_any_hours}")
+            
+            # Consulta para obtener estudiantes con más horas trabajadas
+            students_with_hours = Estudiante.objects.annotate(
+                calculated_total_hours=Sum('work_hours__hours_worked')
+            ).filter(
+                calculated_total_hours__isnull=False
+            ).order_by('-calculated_total_hours')[:10]
+            
+            print(f"🏆 [ADMIN DASHBOARD] Estudiantes encontrados con horas: {students_with_hours.count()}")
+            
+            for student in students_with_hours:
+                # Obtener datos del usuario asociado
+                user_data = None
+                if hasattr(student, 'user') and student.user:
+                    user = student.user
+                    user_data = {
+                        'id': str(user.id),
+                        'email': user.email,
+                        'first_name': user.first_name or '',
+                        'last_name': user.last_name or '',
+                        'full_name': f"{user.first_name or ''} {user.last_name or ''}".strip() or user.email
+                    }
+                
+                # Calcular proyectos únicos en los que ha trabajado el estudiante
+                unique_projects = student.work_hours.values('project').distinct().count()
+                
+                top_students.append({
+                    'student_id': str(student.id),
+                    'user_data': user_data,
+                    'total_hours': float(student.calculated_total_hours or 0),
+                    'completed_projects': unique_projects,
+                    'api_level': student.api_level or 1,
+                    'strikes': student.strikes or 0,
+                    'gpa': float(student.gpa or 0.0),
+                    'career': student.career or 'No especificada',
+                    'university': getattr(student, 'university', 'No especificada') or 'No especificada'
+                })
+            
+            print(f"🏆 [ADMIN DASHBOARD] Top 10 estudiantes obtenidos: {len(top_students)}")
+            if top_students:
+                print(f"🏆 [ADMIN DASHBOARD] Primer estudiante: {top_students[0]}")
+            
+        except Exception as e:
+            print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo top estudiantes: {str(e)}")
+            import traceback
+            print(f"⚠️ [ADMIN DASHBOARD] Traceback: {traceback.format_exc()}")
+            top_students = []
+        
         # Preparar respuesta
         response_data = {
             'total_users': total_users,
@@ -1065,6 +1181,7 @@ def api_dashboard_admin_stats(request):
             'total_projects': total_projects,
             'pending_applications': pending_applications,
             'strikes_alerts': strikes_alerts,
+            'top_students': top_students,
             'recent_activity': []  # Placeholder para actividad reciente
         }
         

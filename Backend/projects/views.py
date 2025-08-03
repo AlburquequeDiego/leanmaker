@@ -75,7 +75,6 @@ def projects_list(request):
                 'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
                 'location': project.location or 'Remoto',
                 'modality': project.modality,
-                'difficulty': project.difficulty,
                 'duration_weeks': project.duration_weeks,
                 'hours_per_week': project.hours_per_week,
                 'required_hours': project.required_hours,
@@ -127,40 +126,58 @@ def projects_detail(request, project_id):
             'objetivo': project.objetivo,
             'encargado': project.encargado,
             'contacto': project.contacto,
-            'company': str(project.company.id) if project.company else None,
-            'company_name': project.company.company_name if project.company else 'Sin empresa',
-            'status': project.status.name if project.status else 'Sin estado',
-            'status_id': project.status.id if project.status else None,
-            'area': project.area.name if project.area else 'Sin área',
-            'trl_level': project.trl.level if project.trl else 1,
-            'trl_id': project.trl.id if project.trl else None,
             'api_level': project.api_level or 1,
-            'max_students': project.max_students,
-            'current_students': project.current_students,
-            'applications_count': project.applications_count,
-            'start_date': project.start_date.isoformat() if project.start_date else None,
-            'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
-            'location': project.location or 'Remoto',
-            'modality': project.modality,
-            'difficulty': project.difficulty,
+            'required_hours': project.required_hours,
             'duration_weeks': project.duration_weeks,
             'hours_per_week': project.hours_per_week,
-            'required_hours': project.required_hours,
+            'min_api_level': project.api_level or 1,
+            'max_students': 1,  # Según lógica de negocio: un proyecto solo puede tener un participante
+            'current_students': 1,  # Según lógica de negocio: siempre debe ser 1/1
+            'modality': project.modality,
+            'location': project.location if project.location else ('Remoto' if project.modality == 'remote' else 'Presencial'),
+            'start_date': project.start_date.isoformat() if project.start_date else None,
+            'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
+            'real_end_date': project.real_end_date.isoformat() if project.real_end_date else None,
+            'application_deadline': project.application_deadline.isoformat() if project.application_deadline else None,
+            'is_featured': getattr(project, 'is_featured', False),
+            'is_urgent': getattr(project, 'is_urgent', False),
+            'is_project_completion': getattr(project, 'is_project_completion', False),
+            'published_at': project.published_at.isoformat() if project.published_at else None,
             'created_at': project.created_at.isoformat(),
             'updated_at': project.updated_at.isoformat(),
+            # Información de la empresa
+            'company': {
+                'id': str(project.company.id) if project.company else None,
+                'name': project.company.company_name if project.company else 'Sin empresa',
+                'email': project.company.user.email if project.company and project.company.user else None,
+                'phone': project.company.company_phone if project.company else None,
+                'website': project.company.website if project.company else None,
+                'description': project.company.description if project.company else None,
+                'industry': project.company.industry if project.company else None,
+                'size': project.company.size if project.company else None,
+                'location': f"{project.company.city}, {project.company.country}" if project.company and project.company.city and project.company.country else (project.company.city or project.company.country or 'No especificada') if project.company else 'No especificada',
+            } if project.company else None,
+            # Información del área
+            'area': {
+                'id': str(project.area.id) if project.area else None,
+                'name': project.area.name if project.area else 'Sin área',
+                'description': project.area.description if project.area else None,
+            } if project.area else None,
+            # Información del TRL
+            'trl': {
+                'id': str(project.trl.id) if project.trl else None,
+                'name': project.trl.name if project.trl else 'Sin TRL',
+                'description': project.trl.description if project.trl else None,
+                'level': project.trl.level if project.trl else 1,
+            } if project.trl else None,
         }
-        
-        # Solo incluir trl_name si el usuario NO es una empresa
-        if current_user.role != 'company':
-            project_data['trl_name'] = project.trl.name if project.trl else 'Sin TRL'
         
         # Agregar budget solo si existe el campo
         if hasattr(project, 'budget'):
             project_data['budget'] = project.budget
 
         # Obtener estudiantes asignados (miembros activos con rol estudiante)
-        from .models import MiembroProyecto
-        miembros = MiembroProyecto.objects.filter(proyecto=project, rol='estudiante', esta_activo=True).select_related('usuario')
+        miembros = project.miembros.filter(rol='estudiante', esta_activo=True).select_related('usuario')
         estudiantes = []
         for miembro in miembros:
             user = miembro.usuario
@@ -270,28 +287,18 @@ def projects_create(request):
                     # Si es muy largo, aumentar horas por semana
                     data['hours_per_week'] = min(40, data['required_hours'] // 52)
             
-            # Configurar dificultad según TRL
-            if not data.get('difficulty'):
-                if trl_level <= 2:
-                    data['difficulty'] = 'beginner'
-                elif trl_level <= 5:
-                    data['difficulty'] = 'intermediate'
-                else:
-                    data['difficulty'] = 'advanced'
-            
             print(f"📋 Configuración automática para TRL {trl_level}:")
             print(f"   • API Level: {data['api_level']}")
             print(f"   • Horas requeridas: {data['required_hours']}")
             print(f"   • Horas por semana: {data['hours_per_week']}")
             print(f"   • Duración semanas: {data['duration_weeks']}")
-            print(f"   • Dificultad: {data['difficulty']}")
         else:
             # Valores por defecto para proyectos sin TRL
             data['api_level'] = data.get('api_level', 1)
             data['required_hours'] = data.get('required_hours', 40)
             data['hours_per_week'] = data.get('hours_per_week', 10)
             data['duration_weeks'] = data.get('duration_weeks', 12)
-            data['difficulty'] = data.get('difficulty', 'intermediate')
+
         try:
             # Procesar fechas si vienen como strings
             start_date = data.get('start_date')
@@ -335,7 +342,7 @@ def projects_create(request):
                 estimated_end_date=estimated_end_date,
                 location=data.get('location', 'Remoto'),
                 modality=data.get('modality', 'remote'),
-                difficulty=data.get('difficulty', 'intermediate'),
+
                 duration_weeks=data.get('duration_weeks', 12),
                 hours_per_week=data.get('hours_per_week', 10),
                 required_hours=data.get('required_hours', 120),
@@ -414,7 +421,7 @@ def projects_update(request, project_id):
         fields_to_update = [
             'title', 'description', 'company_id', 'status_id', 'area_id', 'trl_id',
             'api_level', 'max_students', 'current_students', 'applications_count',
-            'start_date', 'estimated_end_date', 'location', 'modality', 'difficulty',
+            'start_date', 'estimated_end_date', 'location', 'modality',
             'duration_weeks', 'hours_per_week', 'required_hours', 'budget'
         ]
         
@@ -707,8 +714,7 @@ def company_projects(request):
         projects_data = []
         for project in projects:
             # Recalcular current_students por si acaso
-            from .models import MiembroProyecto
-            current_students = MiembroProyecto.objects.filter(proyecto=project, rol='estudiante', esta_activo=True).count()
+            current_students = project.miembros.filter(rol='estudiante', esta_activo=True).count()
             projects_data.append({
                 'id': str(project.id),
                 'title': project.title,
@@ -727,7 +733,6 @@ def company_projects(request):
                 'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
                 'location': project.location or 'Remoto',
                 'modality': project.modality,
-                'difficulty': project.difficulty,
                 'duration_weeks': project.duration_weeks,
                 'hours_per_week': project.hours_per_week,
                 'required_hours': project.required_hours,
@@ -866,7 +871,6 @@ def completed_pending_hours(request):
 @require_http_methods(["POST"])
 def validate_project_hours(request, project_id):
     """Valida horas de todos los estudiantes de un proyecto completado."""
-    from projects.models import MiembroProyecto  # Importar al inicio de la función
     try:
         # Verificar autenticación y permisos de admin
         auth_header = request.headers.get('Authorization')
@@ -884,7 +888,7 @@ def validate_project_hours(request, project_id):
         if not proyecto.required_hours:
             return JsonResponse({'error': 'El proyecto no tiene horas ofrecidas definidas.'}, status=400)
         # Participantes del proyecto (sin importar si esta_activo)
-        miembros = MiembroProyecto.objects.filter(proyecto=proyecto, rol='estudiante').select_related('usuario')
+        miembros = proyecto.miembros.filter(rol='estudiante').select_related('usuario')
         count = 0
         for miembro in miembros:
             user = miembro.usuario
@@ -923,8 +927,7 @@ def validate_project_hours(request, project_id):
                 continue
             # Obtener snapshot de integrantes (todos los estudiantes, activos o no)
             integrantes_snapshot = []
-            from projects.models import MiembroProyecto
-            miembros_qs = MiembroProyecto.objects.filter(proyecto=proyecto, rol='estudiante')  # sin filtrar por esta_activo
+            miembros_qs = proyecto.miembros.filter(rol='estudiante')  # sin filtrar por esta_activo
             for miembro in miembros_qs:
                 user = miembro.usuario
                 integrantes_snapshot.append({

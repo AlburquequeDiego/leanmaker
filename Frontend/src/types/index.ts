@@ -188,7 +188,7 @@ export interface Project {
   start_date?: string;
   estimated_end_date?: string; // Fecha estimada de fin
   location?: string; // Ubicación del proyecto
-  difficulty?: string; // Dificultad del proyecto
+  
   is_featured?: boolean; // Si el proyecto está destacado
   is_urgent?: boolean; // Si el proyecto es urgente
   created_by: string; // UUID del creador
@@ -522,6 +522,24 @@ export interface ChangePasswordData {
 }
 
 // Tipos de estadísticas del dashboard
+export interface TopStudent {
+  student_id: string;
+  user_data: {
+    id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+  };
+  total_hours: number;
+  completed_projects: number;
+  api_level: number;
+  strikes: number;
+  gpa: number;
+  career: string;
+  university: string;
+}
+
 export interface DashboardStats {
   total_users: number;
   active_users: number;
@@ -533,6 +551,7 @@ export interface DashboardStats {
   total_applications: number;
   pending_applications: number;
   strikes_alerts: number; // Agregado para coincidir con el backend
+  top_students: TopStudent[]; // Nuevo campo para top 10 estudiantes
 }
 
 // Universidades disponibles

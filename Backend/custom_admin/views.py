@@ -100,13 +100,11 @@ def admin_companies_list(request):
         
         return JsonResponse({
             'success': True,
-            'data': companies_data,
-            'pagination': {
-                'page': page,
-                'limit': limit,
-                'total': total_count,
-                'pages': (total_count + limit - 1) // limit
-            }
+            'results': companies_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
         })
         
     except Exception as e:
@@ -185,7 +183,7 @@ def admin_projects_list(request):
                 'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
                 'location': project.location or 'Remoto',
                 'modality': project.modality,
-                'difficulty': project.difficulty,
+    
                 'duration_weeks': project.duration_weeks,
                 'hours_per_week': project.hours_per_week,
                 'required_hours': project.required_hours,
@@ -198,13 +196,11 @@ def admin_projects_list(request):
         
         return JsonResponse({
             'success': True,
-            'data': projects_data,
-            'pagination': {
-                'page': page,
-                'limit': limit,
-                'total': total_count,
-                'pages': (total_count + limit - 1) // limit
-            }
+            'results': projects_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
         })
         
     except Exception as e:

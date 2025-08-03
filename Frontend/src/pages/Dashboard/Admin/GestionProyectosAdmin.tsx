@@ -123,7 +123,44 @@ export const GestionProyectosAdmin = () => {
 
       const response = await apiService.get(`/api/admin/projects/?${params.toString()}`);
       
-      setProjects(response.results || []);
+      // Mapear datos del backend al formato esperado por el frontend
+      const mappedProjects = (response.results || []).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        company_name: p.company_name || 'Sin empresa',
+        company_id: p.company_id || '',
+        description: p.description || '',
+        status: p.status || 'active',
+        required_api_level: p.api_level || 1,
+        required_trl_level: p.trl_level || 1,
+        students_needed: p.max_students || 1,
+        students_assigned: p.current_students || 0,
+        applications_count: p.applications_count || 0,
+        start_date: p.start_date || '',
+        end_date: p.estimated_end_date || '',
+        location: p.location || 'Remoto',
+        rating: p.rating || 0,
+        hours_offered: p.required_hours || 0,
+        created_at: p.created_at || '',
+        // Datos adicionales del backend
+        requirements: p.requirements,
+        tipo: p.tipo,
+        objetivo: p.objetivo,
+        encargado: p.encargado,
+        contacto: p.contacto,
+        modality: p.modality,
+
+        duration_weeks: p.duration_weeks,
+        hours_per_week: p.hours_per_week,
+        is_featured: p.is_featured,
+        is_urgent: p.is_urgent,
+        is_project_completion: p.is_project_completion
+      }));
+      
+      console.log('📊 Datos recibidos del backend:', response.results);
+      console.log('🔄 Proyectos mapeados:', mappedProjects);
+      
+      setProjects(mappedProjects);
       setTotalCount(response.count || 0);
     } catch (error) {
       console.error('Error fetching data:', error);

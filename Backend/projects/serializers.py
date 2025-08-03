@@ -43,7 +43,7 @@ class ProyectoSerializer:
             'application_deadline': proyecto.application_deadline.isoformat() if proyecto.application_deadline else None,
             'modality': proyecto.modality,
             'location': proyecto.location,
-            'difficulty': proyecto.difficulty,
+    
             'required_skills': proyecto.get_required_skills_list(),
             'preferred_skills': proyecto.get_preferred_skills_list(),
             'tags': proyecto.get_tags_list(),
@@ -170,7 +170,7 @@ class ProyectoSerializer:
                 application_deadline=data.get('application_deadline'),
                 modality=data.get('modality', 'presencial'),
                 location=data.get('location', ''),
-                difficulty=data.get('difficulty', 'intermedio'),
+        
                 required_skills=data.get('required_skills', '[]'),
                 preferred_skills=data.get('preferred_skills', '[]'),
                 tags=data.get('tags', '[]'),
@@ -191,7 +191,7 @@ class ProyectoSerializer:
                 'title', 'description', 'requirements', 'api_level', 'required_hours',
                 'min_api_level', 'max_students', 'duration_weeks', 'hours_per_week',
                 'start_date', 'estimated_end_date', 'application_deadline', 'modality',
-                'location', 'difficulty', 'required_skills', 'preferred_skills',
+                'location', 'required_skills', 'preferred_skills',
                 'tags', 'technologies', 'benefits', 'is_featured', 'is_urgent'
             ]
             
@@ -233,7 +233,7 @@ class AplicacionProyectoSerializer:
                 'nombre': aplicacion.proyecto.company.company_name,
                 'email': aplicacion.proyecto.company.user.email,
                 'descripcion': aplicacion.proyecto.company.description,
-                'telefono': aplicacion.proyecto.company.phone,
+                'telefono': aplicacion.proyecto.company.company_phone,
             } if aplicacion.proyecto.company else None
         }
     

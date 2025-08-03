@@ -56,11 +56,13 @@ def work_hours_list(request):
         work_hours_data = []
         for work_hour in work_hours_page:
             work_hours_data.append({
-                'id': work_hour.id,
+                'id': str(work_hour.id),
                 'student_id': str(work_hour.student.id),
                 'student_name': f"{work_hour.student.user.first_name} {work_hour.student.user.last_name}",
+                'student_email': work_hour.student.user.email,
                 'project_id': str(work_hour.project.id),
                 'project_title': work_hour.project.title,
+                'company_name': work_hour.project.company.company_name if work_hour.project.company else 'Sin empresa',
                 'date': work_hour.date.strftime('%Y-%m-%d'),
                 'hours_worked': float(work_hour.hours_worked),
                 'description': work_hour.description,
@@ -134,7 +136,7 @@ def work_hours_create(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def work_hours_detail(request, pk):
-    """Detalle de una hora de trabajo"""
+    """Detalle de una hora de trabajo con información completa del proyecto y estudiante"""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -146,22 +148,106 @@ def work_hours_detail(request, pk):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        work_hour = get_object_or_404(WorkHour, pk=pk)
+        work_hour = get_object_or_404(WorkHour.objects.select_related(
+            'student', 'student__user', 'project', 'project__company', 'project__area', 'project__trl'
+        ), pk=pk)
+        
+        # Información del estudiante
+        student_data = {
+            'id': str(work_hour.student.id),
+            'name': f"{work_hour.student.user.first_name} {work_hour.student.user.last_name}",
+            'email': work_hour.student.user.email,
+            'career': work_hour.student.career,
+            'university': work_hour.student.university,
+            'semester': work_hour.student.semester,
+            'api_level': work_hour.student.api_level,
+            'trl_level': work_hour.student.trl_level,
+            'gpa': float(work_hour.student.gpa),
+            'total_hours': work_hour.student.total_hours,
+            'completed_projects': work_hour.student.completed_projects,
+            'strikes': work_hour.student.strikes,
+            'status': work_hour.student.status,
+            'portfolio_url': work_hour.student.portfolio_url,
+            'github_url': work_hour.student.github_url,
+            'linkedin_url': work_hour.student.linkedin_url,
+        }
+        
+        # Información del proyecto
+        project_data = {
+            'id': str(work_hour.project.id),
+            'title': work_hour.project.title,
+            'description': work_hour.project.description,
+            'requirements': work_hour.project.requirements,
+            'tipo': work_hour.project.tipo,
+            'objetivo': work_hour.project.objetivo,
+            'encargado': work_hour.project.encargado,
+            'contacto': work_hour.project.contacto,
+            'api_level': work_hour.project.api_level,
+            'required_hours': work_hour.project.required_hours,
+            'duration_weeks': work_hour.project.duration_weeks,
+            'hours_per_week': work_hour.project.hours_per_week,
+            'min_api_level': work_hour.project.min_api_level,
+            'max_students': work_hour.project.max_students,
+            'current_students': work_hour.project.current_students,
+            'modality': work_hour.project.modality,
+            'location': work_hour.project.location,
+
+            'start_date': work_hour.project.start_date.strftime('%Y-%m-%d') if work_hour.project.start_date else None,
+            'estimated_end_date': work_hour.project.estimated_end_date.strftime('%Y-%m-%d') if work_hour.project.estimated_end_date else None,
+            'real_end_date': work_hour.project.real_end_date.strftime('%Y-%m-%d') if work_hour.project.real_end_date else None,
+            'application_deadline': work_hour.project.application_deadline.strftime('%Y-%m-%d') if work_hour.project.application_deadline else None,
+            'is_featured': work_hour.project.is_featured,
+            'is_urgent': work_hour.project.is_urgent,
+            'is_project_completion': work_hour.project.is_project_completion,
+            'published_at': work_hour.project.published_at.isoformat() if work_hour.project.published_at else None,
+            'created_at': work_hour.project.created_at.isoformat(),
+            'updated_at': work_hour.project.updated_at.isoformat(),
+        }
+        
+        # Información de la empresa
+        company_data = {
+            'id': str(work_hour.project.company.id),
+            'name': work_hour.project.company.company_name,
+            'email': work_hour.project.company.user.email if work_hour.project.company.user else None,
+            'phone': work_hour.project.company.company_phone,
+            'website': work_hour.project.company.website,
+            'description': work_hour.project.company.description,
+            'industry': work_hour.project.company.industry,
+            'size': work_hour.project.company.size,
+            'location': f"{work_hour.project.company.city}, {work_hour.project.company.country}" if work_hour.project.company.city and work_hour.project.company.country else (work_hour.project.company.city or work_hour.project.company.country or 'No especificada'),
+        } if work_hour.project.company else None
+        
+        # Información del área
+        area_data = {
+            'id': str(work_hour.project.area.id),
+            'name': work_hour.project.area.name,
+            'description': work_hour.project.area.description,
+        } if work_hour.project.area else None
+        
+        # Información del TRL
+        trl_data = {
+            'id': str(work_hour.project.trl.id),
+            'name': work_hour.project.trl.name,
+            'description': work_hour.project.trl.description,
+            'level': work_hour.project.trl.level,
+        } if work_hour.project.trl else None
         
         work_hour_data = {
             'id': work_hour.id,
-            'student_id': str(work_hour.student.id),
-            'student_name': f"{work_hour.student.user.first_name} {work_hour.student.user.last_name}",
-            'project_id': str(work_hour.project.id),
-            'project_title': work_hour.project.title,
             'date': work_hour.date.strftime('%Y-%m-%d'),
             'hours_worked': float(work_hour.hours_worked),
             'description': work_hour.description,
             'is_verified': work_hour.is_verified,
             'verified_by': str(work_hour.verified_by.id) if work_hour.verified_by else None,
             'verified_at': work_hour.verified_at.isoformat() if work_hour.verified_at else None,
+            'is_project_completion': work_hour.is_project_completion,
             'created_at': work_hour.created_at.isoformat(),
             'updated_at': work_hour.updated_at.isoformat(),
+            'student': student_data,
+            'project': project_data,
+            'company': company_data,
+            'area': area_data,
+            'trl': trl_data,
         }
         
         return JsonResponse({

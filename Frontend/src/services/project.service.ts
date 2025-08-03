@@ -77,7 +77,7 @@ export class ProjectService {
       contacto: projectData.contacto || '',
       benefits: Array.isArray(projectData.benefits) ? projectData.benefits.join(', ') : projectData.benefits,
       modality: projectData.modalidad || projectData.modality,
-      difficulty: projectData.dificultad || projectData.difficulty,
+      
       duration_weeks: projectData.duration_weeks,
       hours_per_week: projectData.hours_per_week,
       max_students: projectData.max_students,

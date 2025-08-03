@@ -1008,7 +1008,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               </Box>
               
               {/* Días del mes */}
-              <Box sx={{ 
+      <Box sx={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(7, 1fr)', 
                 gap: 1, 
@@ -1044,7 +1044,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                           border: '1px solid #ddd',
                           backgroundColor: isToday ? '#e3f2fd' : isCurrentMonth ? 'white' : '#f9f9f9',
                           position: 'relative',
-                          overflow: 'hidden',
+        overflow: 'hidden',
                           display: 'flex',
                           flexDirection: 'column'
                         }}

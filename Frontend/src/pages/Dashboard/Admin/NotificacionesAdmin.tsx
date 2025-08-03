@@ -128,7 +128,10 @@ export default function NotificacionesAdmin() {
       const response = await apiService.get('/api/mass-notifications/');
       console.log('Respuesta notificaciones masivas:', response);
       
-      const data = response.data ? response.data : response;
+      // El backend devuelve los datos en response.data.results
+      const data = response.data?.results || response.results || [];
+      console.log('Datos extraídos:', data);
+      
       const formattedNotifications = Array.isArray(data) ? data.map((notification: any) => ({
         id: String(notification.id),
         title: notification.title,

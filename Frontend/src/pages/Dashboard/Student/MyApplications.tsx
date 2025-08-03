@@ -51,7 +51,7 @@ interface Application {
   compatibility: number;
   notes?: string;
   modality?: string;
-  difficulty?: string;
+  
   required_hours?: string;
   hours_per_week?: string;
   max_students?: string;
@@ -176,7 +176,7 @@ const adaptApplicationData = (backendData: any): Application => {
     compatibility: backendData.compatibility || 0,
     notes: backendData.student_notes || backendData.cover_letter || undefined,
     modality: backendData.modality,
-    difficulty: backendData.difficulty,
+    
     required_hours: backendData.required_hours,
     hours_per_week: backendData.hours_per_week,
     max_students: backendData.max_students,
