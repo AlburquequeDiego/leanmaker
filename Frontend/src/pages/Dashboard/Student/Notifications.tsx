@@ -232,10 +232,68 @@ export const Notifications = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      {/* Header */}
+      {/* Header principal mejorado */}
+      <Box sx={{ 
+        mb: 4,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 4,
+        p: 4,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+      }}>
+        {/* Elementos decorativos */}
+        <Box sx={{
+          position: 'absolute',
+          top: -20,
+          right: -20,
+          width: 100,
+          height: 100,
+          background: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '50%',
+          zIndex: 1
+        }} />
+        <Box sx={{
+          position: 'absolute',
+          bottom: -30,
+          left: -30,
+          width: 80,
+          height: 80,
+          background: 'rgba(255, 255, 255, 0.08)',
+          borderRadius: '50%',
+          zIndex: 1
+        }} />
+        
+        {/* Contenido del header */}
+        <Box sx={{ position: 'relative', zIndex: 2 }}>
+          <Typography 
+            variant="h3" 
+            fontWeight={700} 
+            sx={{ 
+              color: 'white', 
+              mb: 1,
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+            }}
+          >
+            🔔 Centro de Notificaciones
+          </Typography>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontWeight: 400,
+              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+            }}
+          >
+            Mantente informado sobre tus aplicaciones, proyectos y actualizaciones importantes
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Header con controles */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h4">
+          <Typography variant="h4" fontWeight={600} color="primary">
             Notificaciones
             {unreadCount > 0 && (
               <Badge badgeContent={unreadCount} color="error" sx={{ ml: 2 }}>
@@ -262,94 +320,216 @@ export const Notifications = () => {
         </Box>
       </Box>
 
-      {/* Filtros */}
-      <Paper sx={{ p: 3, mb: 3, bgcolor: '#f8f9fa' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <FilterIcon color="action" />
-          <Typography variant="h6">Filtros</Typography>
+      {/* Filtros mejorados */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 3, 
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+        borderRadius: 3,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.05)'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            p: 1,
+            borderRadius: 2,
+            bgcolor: 'primary.main',
+            color: 'white'
+          }}>
+            <FilterIcon fontSize="small" />
+            <Typography variant="h6" fontWeight={600}>Filtros de Búsqueda</Typography>
+          </Box>
           {hasActiveFilters && (
             <Button
               size="small"
               onClick={clearFilters}
               startIcon={<ClearIcon />}
               variant="outlined"
+              sx={{ 
+                borderRadius: 2,
+                borderColor: 'error.main',
+                color: 'error.main',
+                '&:hover': {
+                  borderColor: 'error.dark',
+                  bgcolor: 'error.light',
+                  color: 'error.dark'
+                }
+              }}
             >
               Limpiar filtros
             </Button>
           )}
         </Box>
         
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 3, 
+          alignItems: 'center',
+          p: 2,
+          borderRadius: 2,
+          bgcolor: 'rgba(255,255,255,0.7)'
+        }}>
           <TextField
             size="small"
-            placeholder="Buscar notificaciones..."
+            placeholder="🔍 Buscar notificaciones..."
             value={filters.search}
             onChange={e => handleFilterChange('search', e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <SearchIcon color="primary" />
                 </InputAdornment>
               ),
             }}
-            sx={{ minWidth: 250 }}
+            sx={{ 
+              minWidth: 280,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
+              }
+            }}
           />
           
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Prioridad</InputLabel>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>🎯 Prioridad</InputLabel>
             <Select
               value={filters.priority}
-              label="Prioridad"
+              label="🎯 Prioridad"
               onChange={e => handleFilterChange('priority', e.target.value)}
+              sx={{
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
+              }}
             >
-              <MenuItem value="all">Todas</MenuItem>
-              <MenuItem value="urgent">Urgente</MenuItem>
-              <MenuItem value="high">Alta</MenuItem>
-              <MenuItem value="medium">Media</MenuItem>
-              <MenuItem value="normal">Normal</MenuItem>
-              <MenuItem value="low">Baja</MenuItem>
+              <MenuItem value="all">Todas las prioridades</MenuItem>
+              <MenuItem value="urgent">🚨 Urgente</MenuItem>
+              <MenuItem value="high">🔴 Alta</MenuItem>
+              <MenuItem value="medium">🟡 Media</MenuItem>
+              <MenuItem value="normal">🟢 Normal</MenuItem>
+              <MenuItem value="low">🔵 Baja</MenuItem>
             </Select>
           </FormControl>
           
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Estado</InputLabel>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>📖 Estado</InputLabel>
             <Select
               value={filters.readStatus}
-              label="Estado"
+              label="📖 Estado"
               onChange={e => handleFilterChange('readStatus', e.target.value)}
+              sx={{
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
+              }}
             >
-              <MenuItem value="all">Todos</MenuItem>
-              <MenuItem value="unread">No leídas</MenuItem>
-              <MenuItem value="read">Leídas</MenuItem>
+              <MenuItem value="all">Todos los estados</MenuItem>
+              <MenuItem value="unread">📬 No leídas</MenuItem>
+              <MenuItem value="read">📭 Leídas</MenuItem>
             </Select>
           </FormControl>
         </Box>
       </Paper>
 
-      {/* Lista de notificaciones */}
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, display: 'flex', alignItems: 'center' }}>
-        <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-        Historial de Notificaciones
-      </Typography>
+      {/* Lista de notificaciones mejorada */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 2, 
+        mb: 3,
+        p: 2,
+        borderRadius: 3,
+        background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+        border: '1px solid #90caf9'
+      }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1,
+          p: 1,
+          borderRadius: 2,
+          bgcolor: 'primary.main',
+          color: 'white'
+        }}>
+          <HistoryIcon fontSize="small" />
+          <Typography variant="h5" fontWeight={600}>Historial de Notificaciones</Typography>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {filteredNotifications.length} notificación{filteredNotifications.length !== 1 ? 'es' : ''} encontrada{filteredNotifications.length !== 1 ? 's' : ''}
+        </Typography>
+      </Box>
       
-      <Paper sx={{ maxHeight: 600, overflow: 'auto' }}>
+      <Paper sx={{ 
+        maxHeight: 600, 
+        overflow: 'auto',
+        borderRadius: 3,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.05)'
+      }}>
         {filteredNotifications.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="h6" color="text.secondary">
-              {hasActiveFilters 
-                ? 'No se encontraron notificaciones con los filtros seleccionados'
-                : 'No hay notificaciones'
-              }
-            </Typography>
-            {hasActiveFilters && (
-              <Button 
-                variant="outlined" 
-                onClick={clearFilters}
-                sx={{ mt: 2 }}
-              >
-                Limpiar filtros
-              </Button>
-            )}
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 6,
+            px: 3,
+            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              gap: 2 
+            }}>
+              <Box sx={{ 
+                width: 80, 
+                height: 80, 
+                borderRadius: '50%', 
+                bgcolor: 'primary.light',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mb: 2
+              }}>
+                <NotificationsIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+              </Box>
+              <Typography variant="h5" fontWeight={600} color="text.primary">
+                {hasActiveFilters 
+                  ? '🔍 No se encontraron notificaciones'
+                  : '📭 No hay notificaciones'
+                }
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
+                {hasActiveFilters 
+                  ? 'No se encontraron notificaciones con los filtros seleccionados. Intenta ajustar tus criterios de búsqueda.'
+                  : '¡Perfecto! No tienes notificaciones pendientes. Cuando recibas nuevas notificaciones aparecerán aquí.'
+                }
+              </Typography>
+              {hasActiveFilters && (
+                <Button 
+                  variant="contained" 
+                  onClick={clearFilters}
+                  sx={{ 
+                    mt: 2,
+                    borderRadius: 2,
+                    px: 3,
+                    py: 1
+                  }}
+                  startIcon={<ClearIcon />}
+                >
+                  Limpiar filtros
+                </Button>
+              )}
+            </Box>
           </Box>
         ) : (
           <List>
@@ -424,22 +604,43 @@ export const Notifications = () => {
         )}
       </Paper>
 
-      {/* Dialog para mostrar detalles de la notificación */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+      {/* Dialog para mostrar detalles de la notificación mejorado */}
+      <Dialog 
+        open={dialogOpen} 
+        onClose={() => setDialogOpen(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+          }
+        }}
+      >
         {selectedNotification && (
-          <Box sx={{ p: 2, pt: 3, pb: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Box sx={{ p: 3 }}>
+            {/* Header del diálogo */}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 3, 
+              mb: 3,
+              p: 2,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              border: '1px solid rgba(0,0,0,0.05)'
+            }}>
               <Avatar sx={{ 
                 bgcolor: selectedNotification.read ? 'background.paper' : 'primary.light',
-                width: 56, 
-                height: 56, 
-                boxShadow: 2,
-                border: selectedNotification.read ? '1px solid #e0e0e0' : 'none',
+                width: 64, 
+                height: 64, 
+                boxShadow: 3,
+                border: selectedNotification.read ? '2px solid #e0e0e0' : '2px solid #1976d2',
               }}>
                 {getNotificationIcon(selectedNotification.type)}
               </Avatar>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" fontWeight={700} sx={{ mb: 0.5 }}>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 1, color: 'text.primary' }}>
                   {selectedNotification.title}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -447,44 +648,71 @@ export const Notifications = () => {
                     label={getTypeLabel(selectedNotification.type)}
                     size="small"
                     variant="outlined"
+                    sx={{ borderRadius: 1 }}
                   />
                   <Chip
                     label={getPriorityLabel(selectedNotification.priority)}
                     size="small"
                     color={getPriorityColor(selectedNotification.priority) as any}
+                    sx={{ borderRadius: 1 }}
                   />
                 </Box>
               </Box>
             </Box>
             
-            <Typography variant="body1" sx={{ mb: 2, color: 'text.primary', lineHeight: 1.6 }} component="div">
-              {selectedNotification.message}
-            </Typography>
+            {/* Contenido del mensaje */}
+            <Box sx={{ 
+              p: 3, 
+              mb: 3, 
+              borderRadius: 2,
+              bgcolor: 'grey.50',
+              border: '1px solid rgba(0,0,0,0.05)'
+            }}>
+              <Typography variant="body1" sx={{ color: 'text.primary', lineHeight: 1.7 }} component="div">
+                {selectedNotification.message}
+              </Typography>
+            </Box>
             
+            {/* Información adicional */}
             <Box
               sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
                 gap: 2,
-                background: 'rgba(0,0,0,0.03)',
+                background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
                 borderRadius: 2,
-                p: 2,
-                mb: 2,
+                p: 3,
+                mb: 3,
                 alignItems: { sm: 'center' },
                 flexWrap: 'wrap',
+                border: '1px solid #90caf9'
               }}
             >
               {selectedNotification.company && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 1,
+                  p: 1,
+                  borderRadius: 1,
+                  bgcolor: 'rgba(255,255,255,0.7)'
+                }}>
                   <BusinessIcon fontSize="small" color="info" />
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" fontWeight={500}>
                     {selectedNotification.company}
                   </Typography>
                 </Box>
               )}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                p: 1,
+                borderRadius: 1,
+                bgcolor: 'rgba(255,255,255,0.7)'
+              }}>
                 <InfoIcon fontSize="small" color="action" />
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" fontWeight={500}>
                   {new Date(selectedNotification.date).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'long',
@@ -494,21 +722,41 @@ export const Notifications = () => {
                   })}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                p: 1,
+                borderRadius: 1,
+                bgcolor: 'rgba(255,255,255,0.7)'
+              }}>
                 <WarningIcon fontSize="small" color={getPriorityColor(selectedNotification.priority) as any} />
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" fontWeight={500}>
                   Prioridad: {getPriorityLabel(selectedNotification.priority)}
                 </Typography>
               </Box>
             </Box>
             
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+            {/* Botones de acción */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end', 
+              gap: 2, 
+              pt: 2,
+              borderTop: '1px solid rgba(0,0,0,0.1)'
+            }}>
               <Button
                 onClick={() => setDialogOpen(false)}
                 variant="contained"
-                sx={{ minWidth: 120, borderRadius: 2 }}
+                sx={{ 
+                  minWidth: 120, 
+                  borderRadius: 2,
+                  px: 3,
+                  py: 1,
+                  boxShadow: 2
+                }}
               >
-                Cerrar
+                ✅ Cerrar
               </Button>
             </Box>
           </Box>

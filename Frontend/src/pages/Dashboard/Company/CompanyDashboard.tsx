@@ -108,7 +108,7 @@ export default function CompanyDashboard() {
   const { user } = useAuth();
 
   // Usar hook de tiempo real para estadísticas
-  const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('company');
+  const { data: stats, loading, error, lastUpdate, isPolling, refresh } = useDashboardStats('company');
 
   // Obtener el nombre del usuario para personalizar el dashboard
   const getUserDisplayName = () => {
@@ -129,7 +129,15 @@ export default function CompanyDashboard() {
     console.log('[CompanyDashboard] Stats changed:', stats);
     if (stats) {
       console.log('[CompanyDashboard] Stats received:', stats);
-
+      console.log('[CompanyDashboard] Detailed stats:');
+      console.log('  - active_projects:', stats.active_projects);
+      console.log('  - completed_projects:', stats.completed_projects);
+      console.log('  - total_projects:', stats.total_projects);
+      console.log('  - pending_applications:', stats.pending_applications);
+      console.log('  - total_applications:', stats.total_applications);
+      console.log('  - active_students:', stats.active_students);
+      console.log('  - rating:', stats.rating);
+      console.log('  - total_hours_offered:', stats.total_hours_offered);
     }
   }, [stats]);
 
@@ -146,6 +154,7 @@ export default function CompanyDashboard() {
 
   // KPIs usando datos reales
   const activeProjects = stats?.active_projects || 0;
+  const publishedProjects = stats?.published_projects || 0;
   const completedProjects = stats?.completed_projects || 0;
   const totalProjects = stats?.total_projects || 0;
   const pendingApplications = stats?.pending_applications || 0;
@@ -163,6 +172,18 @@ export default function CompanyDashboard() {
           Dashboard de Empresa - {getUserDisplayName()}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Tooltip title="Actualizar datos">
+            <IconButton
+              onClick={refresh}
+              disabled={loading}
+              sx={{ 
+                color: 'primary.main',
+                '&:hover': { bgcolor: 'primary.light' }
+              }}
+            >
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
           <ConnectionStatus
             isConnected={!error}
             isPolling={isPolling}
@@ -183,107 +204,124 @@ export default function CompanyDashboard() {
           No se pudo cargar la información.
         </Typography>
       )}
-      {/* KPIs principales: 9 tarjetas en grid 3×3 */}
+      {/* KPIs principales: 9 tarjetas en grid 3×3 + 1 tarjeta debajo */}
       {!loading && !error && (
-        <Box sx={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gridTemplateRows: 'repeat(3, 160px)',
-          gap: 3,
-          mb: 4,
-          maxWidth: '100%',
-          width: '100%'
-        }}>
-          {/* Proyectos Activos - Azul */}
-          <KPICard
-            title="Proyectos Activos"
-            value={activeProjects}
-            description="Proyectos que están actualmente en desarrollo y siendo trabajados activamente por estudiantes. Representa la actividad actual de la empresa en la plataforma."
-            icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
-            bgColor="#1976d2"
-            textColor="white"
-          />
+        <>
+          {/* Grid principal 3x3 */}
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+            gap: 3,
+            mb: 3,
+            maxWidth: '100%',
+            width: '100%'
+          }}>
+                         {/* Proyectos Publicados - Azul vibrante */}
+             <KPICard
+               title="Proyectos Publicados"
+               value={publishedProjects}
+               description="Proyectos que están publicados y disponibles para que los estudiantes se postulen. Representa las oportunidades activas que la empresa ofrece."
+               icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
+               bgColor="#2196F3"
+               textColor="white"
+             />
+             
+             {/* Proyectos Activos - Verde esmeralda vibrante */}
+             <KPICard
+               title="Proyectos Activos"
+               value={activeProjects}
+               description="Proyectos que están actualmente en desarrollo y siendo trabajados activamente por estudiantes. Representa la actividad actual de la empresa en la plataforma."
+               icon={<PlayArrowIcon sx={{ fontSize: 28 }} />}
+               bgColor="#00BCD4"
+               textColor="white"
+             />
+             
+             {/* Proyectos Completados - Verde brillante */}
+             <KPICard
+               title="Proyectos Completados"
+               value={completedProjects}
+               description="Proyectos que han sido finalizados exitosamente. Muestra el historial de proyectos completados y la capacidad de la empresa para llevar proyectos a término."
+               icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
+               bgColor="#4CAF50"
+               textColor="white"
+             />
+             
+             {/* Proyectos Creados - Azul cielo vibrante */}
+             <KPICard
+               title="Proyectos Creados"
+               value={totalProjects}
+               description="Total de proyectos creados por la empresa en la plataforma. Incluye proyectos activos, completados y cancelados."
+               icon={<BusinessIcon sx={{ fontSize: 28 }} />}
+               bgColor="#03A9F4"
+               textColor="white"
+             />
+             
+             {/* Postulantes Pendientes - Púrpura vibrante */}
+             <KPICard
+               title="Postulantes Pendientes"
+               value={pendingApplications}
+               description="Solicitudes de estudiantes que están esperando revisión por parte de la empresa. Representa nuevas oportunidades de colaboración."
+               icon={<PeopleIcon sx={{ fontSize: 28 }} />}
+               bgColor="#9C27B0"
+               textColor="white"
+             />
+             
+             {/* Solicitudes Totales - Naranja brillante */}
+             <KPICard
+               title="Solicitudes Totales"
+               value={totalApplications}
+               description="Total de solicitudes recibidas de estudiantes para todos los proyectos de la empresa. Muestra el interés generado por los proyectos."
+               icon={<AssignmentTurnedInIcon sx={{ fontSize: 28 }} />}
+               bgColor="#FF9800"
+               textColor="white"
+             />
+             
+             {/* Estudiantes Activos - Verde lima vibrante */}
+             <KPICard
+               title="Estudiantes Activos"
+               value={activeStudents}
+               description="Estudiantes que están actualmente participando en proyectos de la empresa. Representa la colaboración activa con talento universitario."
+               icon={<SchoolIcon sx={{ fontSize: 28 }} />}
+               bgColor="#8BC34A"
+               textColor="white"
+             />
+             
+             {/* GPA Empresa - Azul índigo vibrante */}
+             <KPICard
+               title="GPA Empresa"
+               value={averageRating && averageRating > 0 ? averageRating : 'Sin calificaciones'}
+               description="Calificación promedio que la empresa ha recibido de los estudiantes. Refleja la satisfacción y calidad de la experiencia proporcionada."
+               icon={<StarIcon sx={{ fontSize: 28 }} />}
+               bgColor="#3F51B5"
+               textColor="white"
+             />
+             
+             {/* Tasa de Éxito - Verde esmeralda brillante */}
+             <KPICard
+               title="Tasa de Éxito"
+               value={`${successRate}%`}
+               description="Porcentaje de proyectos que han sido completados exitosamente. Muestra la eficiencia y capacidad de la empresa para finalizar proyectos."
+               icon={<TrendingUpIcon sx={{ fontSize: 28 }} />}
+               bgColor="#00E676"
+               textColor="black"
+             />
+          </Box>
           
-          {/* Proyectos Completados - Verde */}
-          <KPICard
-            title="Proyectos Completados"
-            value={completedProjects}
-            description="Proyectos que han sido finalizados exitosamente. Muestra el historial de proyectos completados y la capacidad de la empresa para llevar proyectos a término."
-            icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
-            bgColor="#388e3c"
-            textColor="white"
-          />
-          
-          {/* Proyectos Creados - Azul claro */}
-          <KPICard
-            title="Proyectos Creados"
-            value={totalProjects}
-            description="Total de proyectos creados por la empresa en la plataforma. Incluye proyectos activos, completados y cancelados."
-            icon={<BusinessIcon sx={{ fontSize: 28 }} />}
-            bgColor="#42a5f5"
-            textColor="white"
-          />
-          
-          {/* Postulantes Pendientes - Morado */}
-          <KPICard
-            title="Postulantes Pendientes"
-            value={pendingApplications}
-            description="Solicitudes de estudiantes que están esperando revisión por parte de la empresa. Representa nuevas oportunidades de colaboración."
-            icon={<PeopleIcon sx={{ fontSize: 28 }} />}
-            bgColor="#8e24aa"
-            textColor="white"
-          />
-          
-          {/* Solicitudes Totales - Naranja */}
-          <KPICard
-            title="Solicitudes Totales"
-            value={totalApplications}
-            description="Total de solicitudes recibidas de estudiantes para todos los proyectos de la empresa. Muestra el interés generado por los proyectos."
-            icon={<AssignmentTurnedInIcon sx={{ fontSize: 28 }} />}
-            bgColor="#fb8c00"
-            textColor="white"
-          />
-          
-          {/* Estudiantes Activos - Verde oscuro */}
-          <KPICard
-            title="Estudiantes Activos"
-            value={activeStudents}
-            description="Estudiantes que están actualmente participando en proyectos de la empresa. Representa la colaboración activa con talento universitario."
-            icon={<SchoolIcon sx={{ fontSize: 28 }} />}
-            bgColor="#2e7d32"
-            textColor="white"
-          />
-          
-          {/* GPA Empresa - Azul marino */}
-          <KPICard
-            title="GPA Empresa"
-            value={averageRating && averageRating > 0 ? averageRating : 'Sin calificaciones'}
-            description="Calificación promedio que la empresa ha recibido de los estudiantes. Refleja la satisfacción y calidad de la experiencia proporcionada."
-            icon={<StarIcon sx={{ fontSize: 28 }} />}
-            bgColor="#1565c0"
-            textColor="white"
-          />
-          
-          {/* Tasa de Éxito - Verde lima */}
-          <KPICard
-            title="Tasa de Éxito"
-            value={`${successRate}%`}
-            description="Porcentaje de proyectos que han sido completados exitosamente. Muestra la eficiencia y capacidad de la empresa para finalizar proyectos."
-            icon={<TrendingUpIcon sx={{ fontSize: 28 }} />}
-            bgColor="#7cb342"
-            textColor="white"
-          />
-          
-          {/* Horas Ofrecidas - Rojo */}
-          <KPICard
-            title="Horas Ofrecidas"
-            value={totalHoursOffered}
-            description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
-            icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
-            bgColor="#d32f2f"
-            textColor="white"
-          />
-        </Box>
+          {/* Tarjeta adicional debajo centrada */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+            <Box sx={{ width: { xs: '100%', sm: '50%', md: '33%' } }}>
+                             {/* Horas Ofrecidas - Rojo vibrante */}
+               <KPICard
+                 title="Horas Ofrecidas"
+                 value={totalHoursOffered}
+                 description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
+                 icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
+                 bgColor="#F44336"
+                 textColor="white"
+               />
+            </Box>
+          </Box>
+        </>
       )}
     </Box>
   );

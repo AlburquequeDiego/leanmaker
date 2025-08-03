@@ -1,4 +1,4 @@
-import { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
+import { useEffect, useState, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -20,6 +20,7 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Chip,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -359,18 +360,16 @@ export const CompanyCalendar = forwardRef((_, ref) => {
 
   useEffect(() => {
     loadCalendarData();
-  }, []);
+  }, []); // Empty dependency array to run only once
 
-
-
-  const loadCalendarData = async () => {
+  const loadCalendarData = useCallback(async () => {
       try {
       setLoading(true);
       setError(null);
       
       // Obtener eventos de calendario
       const eventsResponse = await api.get('/api/calendar/events/company_events/');
-      console.log('Raw company events response:', eventsResponse);
+      // console.log('Raw company events response:', eventsResponse);
       
       // El backend devuelve {'results': events_data}, no un array plano
       const eventsArray = Array.isArray(eventsResponse)
@@ -387,19 +386,19 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         setEvents([]);
         return;
       }
-      console.log('Company events array:', eventsArray);
+      // console.log('Company events array:', eventsArray);
       
-      console.log('Events array length:', eventsArray.length);
-      console.log('First event in array:', eventsArray[0]);
+      // console.log('Events array length:', eventsArray.length);
+      // console.log('First event in array:', eventsArray[0]);
       
       const adaptedEvents = eventsArray.map((event: any) => {
         try {
           const adapted = adaptCalendarEvent(event);
-          console.log('Adapted company event:', adapted);
+          // console.log('Adapted company event:', adapted);
           
           // Verificar que las fechas sean válidas
           if (adapted.start && adapted.end) {
-            console.log('Evento con fechas válidas:', adapted.title, adapted.start, adapted.end);
+            // console.log('Evento con fechas válidas:', adapted.title, adapted.start, adapted.end);
           } else {
             console.warn('Evento con fechas inválidas:', adapted.title, adapted.start, adapted.end);
           }
@@ -411,15 +410,15 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         }
       }).filter(Boolean); // Filtrar eventos nulos
       
-      console.log('All adapted company events:', adaptedEvents);
-      console.log('Company Calendar - Formatted events details:', adaptedEvents.map(e => ({
-        id: e.id,
-        title: e.title,
-        start: e.start,
-        end: e.end,
-        isValidStart: !isNaN(e.start.getTime()),
-        isValidEnd: !isNaN(e.end.getTime())
-      })));
+      // console.log('All adapted company events:', adaptedEvents);
+      // console.log('Company Calendar - Formatted events details:', adaptedEvents.map(e => ({
+      //   id: e.id,
+      //   title: e.title,
+      //   start: e.start,
+      //   end: e.end,
+      //   isValidStart: !isNaN(e.start.getTime()),
+      //   isValidEnd: !isNaN(e.end.getTime())
+      // })));
       setEvents(adaptedEvents);
 
       // Obtener proyectos de la empresa
@@ -440,7 +439,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Remove api dependency to prevent infinite re-renders
 
   const messages = {
     allDay: 'Todo el día', 
@@ -550,22 +549,21 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         alert(`Los eventos no pueden extenderse más allá de las 19:00 PM (7:00 PM). Hora de fin: ${endHour}:00`);
         return;
       }
+      
       // Asegurar que si hay un participante seleccionado, se agregue como attendee
       let attendees = Array.isArray(newEvent.attendees) ? [...newEvent.attendees] : [];
       // Si solo se permite seleccionar un estudiante, asegúrate de que sea un array con un solo ID
       if (typeof attendees === 'string') {
         attendees = [attendees];
       }
-      // Convertir a zona horaria local para evitar problemas de UTC
-      const startDateLocal = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
-      const endDateLocal = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
       
+      // Enviar las fechas en UTC al backend para evitar problemas de zona horaria
       const eventData = {
         title: newEvent.title,
         description: newEvent.description,
         event_type: newEvent.event_type,
-        start_date: startDateLocal.toISOString(),
-        end_date: endDateLocal.toISOString(),
+        start_date: startDate.toISOString(), // Enviar en UTC
+        end_date: endDate.toISOString(), // Enviar en UTC
         location: newEvent.location,
         attendees: attendees, // Siempre enviar el array de IDs
         is_public: newEvent.is_public,
@@ -579,11 +577,10 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       };
 
       console.log('Datos enviados al backend:', eventData);
-      console.log('start_date original:', startDate.toISOString());
-      console.log('start_date local:', startDateLocal.toISOString());
-      console.log('end_date original:', endDate.toISOString());
-      console.log('end_date local:', endDateLocal.toISOString());
+      console.log('start_date UTC:', startDate.toISOString());
+      console.log('end_date UTC:', endDate.toISOString());
       console.log('Zona horaria offset:', startDate.getTimezoneOffset(), 'minutos');
+      
       const createdEventResponse = await api.post('/api/calendar/events/', eventData);
       console.log('Respuesta del backend:', createdEventResponse);
       // Soportar ambos formatos de respuesta
@@ -669,11 +666,11 @@ export const CompanyCalendar = forwardRef((_, ref) => {
 
 
   // Log temporal para debug
-  console.log('Renderizando calendario con', events.length, 'eventos');
-  if (events.length > 0) {
-    console.log('Primer evento:', events[0]);
-    console.log('Fecha del primer evento:', events[0].start);
-  }
+  // console.log('Renderizando calendario con', events.length, 'eventos');
+  // if (events.length > 0) {
+  //   console.log('Primer evento:', events[0]);
+  //   console.log('Fecha del primer evento:', events[0].start);
+  // }
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -1114,24 +1111,133 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           {/* Vista de agenda */}
           {view === 'agenda' && (
             <Box sx={{ height: 'calc(100% - 80px)', p: 2 }}>
-        <BigCalendar
-          localizer={localizer}
-          events={events}
-                startAccessor="start"
-                endAccessor="end"
-                titleAccessor="title"
-          style={{ height: '100%' }}
-                eventPropGetter={eventStyleGetter}
-          onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          selectable
-                view="agenda"
-                date={date}
-                onNavigate={(newDate) => setDate(newDate)}
-                culture="es"
-                toolbar={false}
-          messages={messages}
-              />
+              {events.length === 0 ? (
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  height: '100%',
+                  background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+                  borderRadius: 3,
+                  p: 4
+                }}>
+                  <Typography variant="h6" color="primary" gutterBottom>
+                    📅 No hay eventos programados
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    No tienes eventos en tu agenda. Crea tu primer evento para comenzar.
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    startIcon={<AddIcon />} 
+                    onClick={() => setShowAddDialog(true)}
+                    sx={{ 
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      fontWeight: 600
+                    }}
+                  >
+                    Crear Evento
+                  </Button>
+                </Box>
+              ) : (
+                <Box sx={{ height: '100%', overflow: 'auto' }}>
+                  {/* Vista de agenda personalizada */}
+                  <Typography variant="h5" fontWeight={600} color="primary" gutterBottom sx={{ mb: 3 }}>
+                    📅 Agenda de Eventos ({events.length} eventos)
+                  </Typography>
+                  
+                  {events
+                    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+                    .map((event, index) => (
+                      <Paper
+                        key={event.id || index}
+                        sx={{
+                          p: 3,
+                          mb: 2,
+                          borderRadius: 3,
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                          border: '1px solid rgba(102, 126, 234, 0.1)',
+                          background: 'linear-gradient(135deg, #ffffff 0%, #fafbff 100%)',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
+                            borderColor: 'rgba(102, 126, 234, 0.3)'
+                          }
+                        }}
+                        onClick={() => handleSelectEvent(event)}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                          {/* Icono del tipo de evento */}
+                          <Box sx={{ 
+                            p: 1, 
+                            borderRadius: 2, 
+                            bgcolor: 'primary.main', 
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: 40,
+                            height: 40
+                          }}>
+                            {getEventIcon(event.event_type)}
+                          </Box>
+                          
+                          {/* Contenido del evento */}
+                          <Box sx={{ flex: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                              <Typography variant="h6" fontWeight={600} color="primary">
+                                {event.title}
+                              </Typography>
+                              <Chip 
+                                label={event.event_type === 'interview' ? 'Entrevista' : 
+                                       event.event_type === 'meeting' ? 'Reunión' : 
+                                       event.event_type === 'deadline' ? 'Fecha Límite' : 'Otro'}
+                                size="small"
+                                color={event.event_type === 'interview' ? 'primary' : 
+                                       event.event_type === 'meeting' ? 'info' : 
+                                       event.event_type === 'deadline' ? 'error' : 'default'}
+                              />
+                            </Box>
+                            
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              📅 {new Date(event.start).toLocaleDateString('es-ES', { 
+                                weekday: 'long', 
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                              })}
+                            </Typography>
+                            
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              🕐 {new Date(event.start).toLocaleTimeString('es-ES', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })} - {new Date(event.end).toLocaleTimeString('es-ES', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </Typography>
+                            
+                            {event.location && (
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                📍 {event.location}
+                              </Typography>
+                            )}
+                            
+                            {event.description && (
+                              <Typography variant="body2" color="text.secondary">
+                                {event.description}
+                              </Typography>
+                            )}
+                          </Box>
+                        </Box>
+                      </Paper>
+                    ))}
+                </Box>
+              )}
             </Box>
           )}
 
@@ -1424,6 +1530,31 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 InputLabelProps={{ shrink: true }} 
                 helperText="Solo se permiten eventos entre las 8:00 AM y las 19:00 PM"
               />
+              
+              {/* Alerta informativa sobre la duración */}
+              <Alert 
+                severity="info" 
+                sx={{ 
+                  mt: 2, 
+                  borderRadius: 2,
+                  background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                  border: '1px solid #2196f3',
+                  '& .MuiAlert-icon': {
+                    color: '#1976d2'
+                  }
+                }}
+                icon={<ScheduleIcon />}
+              >
+                <Box>
+                  <Typography variant="subtitle2" fontWeight={600} sx={{ color: '#1976d2', mb: 0.5 }}>
+                    ⏰ Duración automática
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#1565c0' }}>
+                    La reunión durará exactamente <strong>1 hora</strong> desde la hora seleccionada. 
+                    Por ejemplo: si seleccionas las 9:00 AM, la reunión terminará a las 10:00 AM.
+                  </Typography>
+                </Box>
+              </Alert>
             </Box>
             </Box>
 

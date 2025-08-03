@@ -42,7 +42,7 @@ import { projectService } from '../../../services/project.service';
 import { PublishProjects } from './PublishProjects';
 import { useLocation } from 'react-router-dom';
 
-const COUNT_OPTIONS = [20, 50, 100, 150, 200, 250, -1];
+const COUNT_OPTIONS = [5, 20, 50, 100, 150, 200, 250, -1];
 
 const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const location = useLocation();
@@ -52,10 +52,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sectionCounts, setSectionCounts] = useState({
-    published: 20,
-    active: 20,
-    completed: 20,
-    deleted: 20,
+    published: 5,
+    active: 5,
+    completed: 5,
+    deleted: 5,
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -390,25 +390,30 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
 
   const renderDashboard = () => (
     <Grid container spacing={3} sx={{ mb: 4, justifyContent: 'center', alignItems: 'stretch' }}>
-      <Grid item xs={12} sm={6} md={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ bgcolor: '#fff3e0', color: '#f57c00', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
-          <Typography variant="h4" fontWeight={700} sx={{ color: '#f57c00' }}>{statusCounts.published}</Typography>
-          <Typography variant="subtitle1" sx={{ color: '#f57c00' }}>Proyectos Publicados</Typography>
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#ff9800', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.published}</Typography>
+          <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Publicados</Typography>
         </Card>
       </Grid>
-      <Grid item xs={12} sm={6} md={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ bgcolor: '#e8f5e9', color: '#388e3c', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
-          <Typography variant="h4" fontWeight={700} sx={{ color: '#388e3c' }}>{statusCounts.active}</Typography>
-          <Typography variant="subtitle1" sx={{ color: '#388e3c' }}>Proyectos Activos</Typography>
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#4caf50', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.active}</Typography>
+          <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Activos</Typography>
         </Card>
       </Grid>
-      <Grid item xs={12} sm={6} md={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ bgcolor: '#e3f2fd', color: '#1976d2', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
-          <Typography variant="h4" fontWeight={700} sx={{ color: '#1976d2' }}>{statusCounts.completed}</Typography>
-          <Typography variant="subtitle1" sx={{ color: '#1976d2' }}>Proyectos Completados</Typography>
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#2196f3', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.completed}</Typography>
+          <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Completados</Typography>
         </Card>
       </Grid>
-      
+      <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ bgcolor: '#f44336', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+          <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.deleted}</Typography>
+          <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Eliminados</Typography>
+        </Card>
+      </Grid>
     </Grid>
   );
 

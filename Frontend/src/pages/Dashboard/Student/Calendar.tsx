@@ -557,29 +557,122 @@ export const Calendar = () => {
           {/* Vista de agenda */}
           {view === 'agenda' && (
             <Box sx={{ height: 600, p: 2 }}>
-              <BigCalendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                titleAccessor="title"
-                style={{ height: '100%' }}
-                eventPropGetter={eventStyleGetter}
-                onSelectEvent={handleSelectEvent}
-                onSelectSlot={handleSelectSlot}
-                selectable
-                view="agenda"
-                date={date}
-                onNavigate={(newDate) => setDate(newDate)}
-                culture="es"
-                toolbar={false}
-                messages={{
-                  next: "Siguiente",
-                  previous: "Anterior",
-                  today: "Hoy",
-                  noEventsInRange: "No hay eventos en este rango de fechas.",
-                }}
-              />
+              {events.length === 0 ? (
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  height: '100%',
+                  background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+                  borderRadius: 3,
+                  p: 4
+                }}>
+                  <Typography variant="h6" color="primary" gutterBottom>
+                    📅 No hay eventos programados
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    No tienes eventos en tu agenda. Los eventos aparecerán aquí cuando sean programados.
+                  </Typography>
+                </Box>
+              ) : (
+                <Box sx={{ height: '100%', overflow: 'auto' }}>
+                  {/* Vista de agenda personalizada */}
+                  <Typography variant="h5" fontWeight={600} color="primary" gutterBottom sx={{ mb: 3 }}>
+                    📅 Agenda de Eventos ({events.length} eventos)
+                  </Typography>
+                  
+                  {events
+                    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+                    .map((event, index) => (
+                      <Paper
+                        key={event.id || index}
+                        sx={{
+                          p: 3,
+                          mb: 2,
+                          borderRadius: 3,
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                          border: '1px solid rgba(102, 126, 234, 0.1)',
+                          background: 'linear-gradient(135deg, #ffffff 0%, #fafbff 100%)',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
+                            borderColor: 'rgba(102, 126, 234, 0.3)'
+                          }
+                        }}
+                        onClick={() => handleSelectEvent(event)}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                          {/* Icono del tipo de evento */}
+                          <Box sx={{ 
+                            p: 1, 
+                            borderRadius: 2, 
+                            bgcolor: 'primary.main', 
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: 40,
+                            height: 40
+                          }}>
+                            {getEventIcon(event.event_type)}
+                          </Box>
+                          
+                          {/* Contenido del evento */}
+                          <Box sx={{ flex: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                              <Typography variant="h6" fontWeight={600} color="primary">
+                                {event.title}
+                              </Typography>
+                              <Chip 
+                                label={event.event_type === 'interview' ? 'Entrevista' : 
+                                       event.event_type === 'meeting' ? 'Reunión' : 
+                                       event.event_type === 'deadline' ? 'Fecha Límite' : 'Otro'}
+                                size="small"
+                                color={event.event_type === 'interview' ? 'primary' : 
+                                       event.event_type === 'meeting' ? 'info' : 
+                                       event.event_type === 'deadline' ? 'error' : 'default'}
+                              />
+                            </Box>
+                            
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              📅 {new Date(event.start).toLocaleDateString('es-ES', { 
+                                weekday: 'long', 
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                              })}
+                            </Typography>
+                            
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              🕐 {new Date(event.start).toLocaleTimeString('es-ES', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })} - {new Date(event.end).toLocaleTimeString('es-ES', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </Typography>
+                            
+                            {event.location && (
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                📍 {event.location}
+                              </Typography>
+                            )}
+                            
+                            {event.description && (
+                              <Typography variant="body2" color="text.secondary">
+                                {event.description}
+                              </Typography>
+                            )}
+                          </Box>
+                        </Box>
+                      </Paper>
+                    ))}
+                </Box>
+              )}
             </Box>
           )}
 

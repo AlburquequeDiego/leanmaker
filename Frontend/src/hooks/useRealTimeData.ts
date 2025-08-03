@@ -67,14 +67,23 @@ export const useRealTimeData = <T = any>({
     }
   }, [endpoint, enabled, fetchData]);
 
-  // Sin polling automático - solo carga inicial
+  // Configurar polling automático si está habilitado
   useEffect(() => {
     // Limpiar cualquier intervalo existente
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-  }, []);
+    
+    // Configurar nuevo intervalo si está habilitado y el intervalo es mayor a 0
+    if (enabled && interval > 0) {
+      intervalRef.current = window.setInterval(() => {
+        if (isMountedRef.current) {
+          fetchData();
+        }
+      }, interval);
+    }
+  }, [enabled, interval, fetchData]);
 
   // Cleanup al desmontar
   useEffect(() => {
@@ -100,8 +109,14 @@ export const useRealTimeData = <T = any>({
   }, []);
 
   const startPolling = useCallback(() => {
-    // No hacer nada - polling deshabilitado
-  }, [endpoint]);
+    if (enabled && interval > 0 && !intervalRef.current) {
+      intervalRef.current = window.setInterval(() => {
+        if (isMountedRef.current) {
+          fetchData();
+        }
+      }, interval);
+    }
+  }, [enabled, interval, fetchData]);
 
   return {
     data,
@@ -111,7 +126,7 @@ export const useRealTimeData = <T = any>({
     refresh,
     stopPolling,
     startPolling,
-    isPolling: false // Siempre false - sin polling automático
+    isPolling: intervalRef.current !== null
   };
 };
 
@@ -124,7 +139,7 @@ export const useDashboardStats = (userRole: 'student' | 'company' | 'admin') => 
   
   return useRealTimeData({
     endpoint,
-    interval: 0, // Sin polling automático
+    interval: 0, // Sin polling automático - solo se actualiza al cargar y con refresh manual
     enabled: true
   });
 };

@@ -47,6 +47,8 @@ import {
   AccessTime as AccessTimeIcon,
   Visibility as VisibilityIcon,
   Refresh as RefreshIcon,
+  Person as PersonIcon,
+  MailOutline as MailOutlineIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptCalendarEvent } from '../../../utils/adapters';
@@ -125,9 +127,7 @@ export const CompanyInterviews: React.FC = () => {
       const data = response.results && Array.isArray(response.results)
         ? response.results
         : [];
-      console.log('[Entrevistas] Data cruda antes de adaptar:', data);
       const adaptedEvents = data.map(adaptCalendarEvent);
-      console.log('[Entrevistas] Eventos adaptados:', adaptedEvents);
       setEvents(adaptedEvents);
     } catch (err: any) {
       console.error('[Entrevistas] Error al cargar entrevistas:', err);
@@ -446,7 +446,7 @@ export const CompanyInterviews: React.FC = () => {
             ) : (
               <Grid container spacing={3}>
                 {pendingInterviews.map((event) => {
-                  const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                  const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   const timeUntil = getTimeUntil(event.start_date);
                   
@@ -490,7 +490,7 @@ export const CompanyInterviews: React.FC = () => {
                           {nombre}
                         </Typography>
                               <Typography variant="body2" color="text.secondary">
-                          {event.title}
+                          {event.project_title || event.title}
                         </Typography>
                       </Box>
                             <Chip 
@@ -584,7 +584,7 @@ export const CompanyInterviews: React.FC = () => {
             ) : (
               <Grid container spacing={3}>
                 {completedInterviews.map((event) => {
-                  const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                  const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   
                 return (
@@ -627,7 +627,7 @@ export const CompanyInterviews: React.FC = () => {
                           {nombre}
                         </Typography>
                               <Typography variant="body2" color="text.secondary">
-                          {event.title}
+                          {event.project_title || event.title}
                         </Typography>
                       </Box>
                             <Chip 
@@ -717,7 +717,7 @@ export const CompanyInterviews: React.FC = () => {
                   </TableHead>
                   <TableBody>
                     {filteredEvents.map((event) => {
-                      const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                      const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                       return (
                         <TableRow key={event.id} hover>
                           <TableCell>
@@ -754,8 +754,8 @@ export const CompanyInterviews: React.FC = () => {
               </TableContainer>
             ) : (
               <Grid container spacing={3}>
-                {filteredEvents.map((event) => {
-                  const nombre = event.attendees?.[0] || 'Estudiante no asignado';
+                                    {filteredEvents.map((event) => {
+                      const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   
                   return (
@@ -795,7 +795,7 @@ export const CompanyInterviews: React.FC = () => {
                                 {nombre}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {event.title}
+                      {event.project_title || event.title}
                     </Typography>
                   </Box>
                             <Chip 
@@ -872,14 +872,14 @@ export const CompanyInterviews: React.FC = () => {
                   fontSize: '1.2rem',
                   fontWeight: 700
                 }}>
-                  {selectedEvent.attendees?.[0]?.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase() || 'NA'}
+                  {(selectedEvent.attendees?.[0]?.full_name || selectedEvent.attendees?.[0]?.email || 'NA').split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase()}
                 </Avatar>
                 <Box>
                   <Typography variant="h5" fontWeight={700}>
-                    {selectedEvent.title}
+                    {selectedEvent.project_title || selectedEvent.title}
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    {selectedEvent.attendees?.[0] || 'Estudiante no asignado'}
+                    {selectedEvent.attendees?.[0]?.full_name || selectedEvent.attendees?.[0]?.email || 'Estudiante no asignado'}
                   </Typography>
                 </Box>
               </Box>
@@ -973,22 +973,97 @@ export const CompanyInterviews: React.FC = () => {
                   </Paper>
                 </Grid>
 
+                {/* Información del Estudiante */}
+                {selectedEvent.attendees && selectedEvent.attendees.length > 0 && selectedEvent.attendees[0] && (
+                  <Grid item xs={12} md={6}>
+                    <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
+                        Información del Estudiante
+                      </Typography>
+                      
+                      <Box sx={{ space: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <PersonIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="body2" fontWeight={600}>
+                              Nombre Completo
+                            </Typography>
+                            <Typography variant="body1">
+                              {selectedEvent.attendees[0].full_name || 'No disponible'}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <MailOutlineIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="body2" fontWeight={600}>
+                              Email
+                            </Typography>
+                            <Typography variant="body1">
+                              {selectedEvent.attendees[0].email || 'No disponible'}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {selectedEvent.attendees[0].phone && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <PersonIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                            <Box>
+                              <Typography variant="body2" fontWeight={600}>
+                                Teléfono
+                              </Typography>
+                              <Typography variant="body1">
+                                {selectedEvent.attendees[0].phone}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        )}
+
+                        {selectedEvent.attendees[0].career && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <WorkIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                            <Box>
+                              <Typography variant="body2" fontWeight={600}>
+                                Carrera
+                              </Typography>
+                              <Typography variant="body1">
+                                {selectedEvent.attendees[0].career}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        )}
+
+                        {selectedEvent.attendees[0].role && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <PersonIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
+                            <Box>
+                              <Typography variant="body2" fontWeight={600}>
+                                Rol
+                              </Typography>
+                              <Typography variant="body1">
+                                {selectedEvent.attendees[0].role === 'student' ? 'Estudiante' : 
+                                 selectedEvent.attendees[0].role === 'company' ? 'Empresa' : 
+                                 selectedEvent.attendees[0].role === 'admin' ? 'Administrador' : 
+                                 selectedEvent.attendees[0].role}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        )}
+                      </Box>
+                    </Paper>
+                  </Grid>
+                )}
+
                 {/* Información adicional */}
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                   <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
                     <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
                       Información Adicional
                     </Typography>
                     
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="body2" fontWeight={600}>
-                          ID del Evento:
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                          {selectedEvent.id}
-                        </Typography>
-                      </Grid>
+
                       
                       <Grid item xs={12} sm={6}>
                         <Typography variant="body2" fontWeight={600}>
@@ -1025,7 +1100,7 @@ export const CompanyInterviews: React.FC = () => {
                             Participantes:
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                            {selectedEvent.attendees.join(', ')}
+                            {selectedEvent.attendees.map((att: any) => att.full_name || att.email || att.id).join(', ')}
                 </Typography>
                         </Grid>
                       )}

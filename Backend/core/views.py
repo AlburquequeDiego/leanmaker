@@ -845,22 +845,65 @@ def api_dashboard_company_stats(request):
                 'exception': str(e)
             }, status=404)
         
-        # Obtener estadísticas básicas
+        # Obtener estadísticas básicas con filtros correctos
         try:
+            # Importar modelos adicionales necesarios
+            from projects.models import MiembroProyecto
+            from django.utils import timezone
+            from datetime import datetime, timedelta
+            
+            # Log para depuración
+            print(f'🔍 [COMPANY STATS] Calculando estadísticas para empresa: {company.company_name}')
+            print(f'🔍 [COMPANY STATS] Usuario: {user.email}')
+            
+            # 1. Total de proyectos creados por esta empresa
             total_projects = Proyecto.objects.filter(company=company).count()
-            # Simplificar la consulta de proyectos activos
-            active_projects = Proyecto.objects.filter(company=company).count()  # Por ahora, todos los proyectos
+            print(f'📊 [COMPANY STATS] Total proyectos: {total_projects}')
+            
+            # 2. Proyectos activos (solo active, no published)
+            active_projects = Proyecto.objects.filter(
+                company=company,
+                status__name='active'
+            ).count()
+            print(f'📊 [COMPANY STATS] Proyectos activos: {active_projects}')
+            
+            # 2.1. Proyectos publicados (separado de activos)
+            published_projects = Proyecto.objects.filter(
+                company=company,
+                status__name='published'
+            ).count()
+            print(f'📊 [COMPANY STATS] Proyectos publicados: {published_projects}')
+            
+            # 3. Proyectos completados
+            completed_projects = Proyecto.objects.filter(
+                company=company, 
+                status__name='completed'
+            ).count()
+            print(f'📊 [COMPANY STATS] Proyectos completados: {completed_projects}')
+            
+            # 4. Total de aplicaciones recibidas
             total_applications = Aplicacion.objects.filter(project__company=company).count()
-            pending_applications = Aplicacion.objects.filter(project__company=company, status='pending').count()
+            print(f'📊 [COMPANY STATS] Total aplicaciones: {total_applications}')
             
-            # Calcular estadísticas adicionales
-            completed_projects = Proyecto.objects.filter(company=company, status__name='completed').count()
-            active_students = Aplicacion.objects.filter(project__company=company, status='accepted').count()
+            # 5. Aplicaciones pendientes
+            pending_applications = Aplicacion.objects.filter(
+                project__company=company, 
+                status='pending'
+            ).count()
+            print(f'📊 [COMPANY STATS] Aplicaciones pendientes: {pending_applications}')
             
-            # Rating promedio (real)
-            rating = company.rating
+            # 6. Estudiantes activos (todos los que han participado en proyectos de la empresa)
+            active_students = MiembroProyecto.objects.filter(
+                proyecto__company=company,
+                rol='estudiante'
+            ).values('usuario').distinct().count()
+            print(f'📊 [COMPANY STATS] Estudiantes activos: {active_students}')
             
-            # Calcular horas ofrecidas totales con datos reales
+            # 7. Rating promedio de la empresa
+            rating = float(company.rating) if company.rating else 0.0
+            print(f'📊 [COMPANY STATS] Rating: {rating}')
+            
+            # 8. Calcular horas ofrecidas totales
             from django.db.models import Sum, F, Case, When, Value, IntegerField
             total_hours_offered = Proyecto.objects.filter(company=company).aggregate(
                 total_hours=Sum(
@@ -871,12 +914,22 @@ def api_dashboard_company_stats(request):
                     )
                 )
             )['total_hours'] or 0
+            print(f'📊 [COMPANY STATS] Horas ofrecidas: {total_hours_offered}')
             
-            # Proyectos este mes (placeholder)
-            projects_this_month = 0  # Por ahora 0
+            # 9. Proyectos creados este mes
+            first_day_month = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            projects_this_month = Proyecto.objects.filter(
+                company=company,
+                created_at__gte=first_day_month
+            ).count()
+            print(f'📊 [COMPANY STATS] Proyectos este mes: {projects_this_month}')
             
-            # Aplicaciones este mes (placeholder)
-            applications_this_month = 0  # Por ahora 0
+            # 10. Aplicaciones recibidas este mes
+            applications_this_month = Aplicacion.objects.filter(
+                project__company=company,
+                applied_at__gte=first_day_month
+            ).count()
+            print(f'📊 [COMPANY STATS] Aplicaciones este mes: {applications_this_month}')
             
         except Exception as e:
             print('❌ Error calculando estadísticas:', e)
@@ -890,6 +943,7 @@ def api_dashboard_company_stats(request):
         response_data = {
             'total_projects': total_projects,
             'active_projects': active_projects,
+            'published_projects': published_projects,
             'total_applications': total_applications,
             'pending_applications': pending_applications,
             'completed_projects': completed_projects,
@@ -939,7 +993,7 @@ def api_dashboard_student_stats(request):
         
         # Importar modelos necesarios
         from applications.models import Aplicacion
-        from projects.models import Proyecto
+        from projects.models import Proyecto, MiembroProyecto
         
         # Obtener el perfil de estudiante del usuario
         try:
@@ -971,16 +1025,28 @@ def api_dashboard_student_stats(request):
             student_projects = Proyecto.objects.filter(application_project__in=accepted_applications_objs)
             print(f"💼 [STUDENT DASHBOARD] Proyectos del estudiante: {student_projects.count()}")
             
-            total_projects = student_projects.count()
-            active_projects = student_projects.filter(status__name='active').count()
+            # También obtener proyectos a través de membresías activas
+            active_memberships = MiembroProyecto.objects.filter(usuario=user, esta_activo=True, rol='estudiante')
+            projects_from_memberships = Proyecto.objects.filter(miembros__in=active_memberships)
+            print(f"👥 [STUDENT DASHBOARD] Proyectos desde membresías: {projects_from_memberships.count()}")
+            
+            # Combinar ambos conjuntos de proyectos
+            all_student_projects = (student_projects | projects_from_memberships).distinct()
+            print(f"📊 [STUDENT DASHBOARD] Total proyectos únicos del estudiante: {all_student_projects.count()}")
+            
+            total_projects = all_student_projects.count()
+            active_projects = all_student_projects.filter(status__name='active').count()
             print(f"🔄 [STUDENT DASHBOARD] Proyectos activos: {active_projects}")
             
-            # Calcular proyectos disponibles (proyectos abiertos, no postulados, cumple nivel API)
-            open_projects = Proyecto.objects.filter(status__name='open')
-            applied_project_ids = Aplicacion.objects.filter(student=student).values_list('project_id', flat=True)
-            available_projects = open_projects.exclude(id__in=applied_project_ids).filter(
+            # Calcular proyectos disponibles (proyectos publicados, no postulados, cumple nivel API)
+            published_projects = Proyecto.objects.filter(status__name='published')
+            applied_project_ids = Aplicacion.objects.filter(student=student).values_list('project', flat=True)
+            available_projects = published_projects.exclude(id__in=applied_project_ids).filter(
                 min_api_level__lte=student.api_level
             ).count()
+            print(f"📋 [STUDENT DASHBOARD] Proyectos publicados: {published_projects.count()}")
+            print(f"📋 [STUDENT DASHBOARD] Proyectos ya aplicados: {applied_project_ids.count()}")
+            print(f"📋 [STUDENT DASHBOARD] Proyectos disponibles: {available_projects}")
         except Exception as e:
             print(f"Error calculando estadísticas: {e}")
             return JsonResponse({
@@ -997,7 +1063,7 @@ def api_dashboard_student_stats(request):
             unread_notifications = 0
         
         # Calcular proyectos completados del estudiante
-        completed_projects = student_projects.filter(status__name='completed').count()
+        completed_projects = all_student_projects.filter(status__name='completed').count()
         print(f"🏁 [STUDENT DASHBOARD] Proyectos completados: {completed_projects}")
         
         # Obtener nivel de API del estudiante

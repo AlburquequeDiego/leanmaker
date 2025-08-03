@@ -428,9 +428,9 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
         updated_at: '',
       };
     }
-    console.log('[adaptCalendarEvent] Procesando evento:', backendEvent.id, backendEvent.title);
-    console.log('[adaptCalendarEvent] Start date original:', backendEvent.start_date);
-    console.log('[adaptCalendarEvent] End date original:', backendEvent.end_date);
+    // console.log('[adaptCalendarEvent] Procesando evento:', backendEvent.id, backendEvent.title);
+    // console.log('[adaptCalendarEvent] Start date original:', backendEvent.start_date);
+    // console.log('[adaptCalendarEvent] End date original:', backendEvent.end_date);
     
     // Validar y parsear fechas con mejor manejo de errores
     let startDate: Date;
@@ -458,9 +458,6 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
     }
     
-    console.log('[adaptCalendarEvent] Start date parsed:', startDate);
-    console.log('[adaptCalendarEvent] End date parsed:', endDate);
-    
     const event: CalendarEvent = {
       id: String(backendEvent.id || 'sin-id'),
       title: backendEvent.title || 'Sin título',
@@ -476,7 +473,7 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       room: backendEvent.room || backendEvent.meeting_room || '',
       attendees: Array.isArray(backendEvent.attendees)
         ? backendEvent.attendees.map((att: any) =>
-            typeof att === 'object' ? att.id : String(att)
+            typeof att === 'object' ? att : { id: String(att), full_name: String(att), email: String(att) }
           )
         : [],
       attendee_names: Array.isArray(backendEvent.attendees)
@@ -488,7 +485,7 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       created_at: backendEvent.created_at || '',
       updated_at: backendEvent.updated_at || '',
       project: backendEvent.project && backendEvent.project.id && typeof backendEvent.project.id !== 'undefined' ? String(backendEvent.project.id) : undefined,
-      project_title: backendEvent.project && backendEvent.project.title ? backendEvent.project.title : backendEvent.project_title || undefined,
+      project_title: backendEvent.project && backendEvent.project.title ? backendEvent.project.title : backendEvent.project_title || 'Sin proyecto asociado',
       status: backendEvent.status || 'scheduled',
       meeting_type: backendEvent.meeting_type,
       meeting_link: backendEvent.meeting_link,
@@ -503,16 +500,16 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
     }
     
     // Verificación final del evento adaptado
-    console.log('[adaptCalendarEvent] Evento adaptado final:', {
-      id: event.id,
-      title: event.title,
-      start: event.start,
-      end: event.end,
-      start_date: event.start_date,
-      end_date: event.end_date,
-      isValidStart: !isNaN(event.start.getTime()),
-      isValidEnd: !isNaN(event.end.getTime())
-    });
+    // console.log('[adaptCalendarEvent] Evento adaptado final:', {
+    //   id: event.id,
+    //   title: event.title,
+    //   start: event.start,
+    //   end: event.end,
+    //   start_date: event.start_date,
+    //   end_date: event.end_date,
+    //   isValidStart: !isNaN(event.start.getTime()),
+    //   isValidEnd: !isNaN(event.end.getTime())
+    // });
     
     return event;
   } catch (e) {

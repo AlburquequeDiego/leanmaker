@@ -90,16 +90,17 @@ class Aplicacion(models.Model):
                 self.company_notes = notas_empresa
             self.save(update_fields=['status', 'responded_at', 'company_notes'])
             self.project.incrementar_aplicaciones()
-            # Crear o reactivar miembro del proyecto
+            # Crear o reactivar miembro del proyecto (inicialmente NO activo)
             miembro, creado = MiembroProyecto.objects.get_or_create(
                 proyecto=self.project,
                 usuario=self.student.user,
-                defaults={'rol': 'estudiante', 'esta_activo': True}
+                defaults={'rol': 'estudiante', 'esta_activo': False}
             )
-            if not creado and not miembro.esta_activo:
-                miembro.esta_activo = True
+            if not creado:
+                # Si ya existe, asegurar que esté como estudiante pero NO activo
                 miembro.rol = 'estudiante'
-                miembro.save(update_fields=['esta_activo', 'rol'])
+                miembro.esta_activo = False
+                miembro.save(update_fields=['rol', 'esta_activo'])
             # Actualizar contador de estudiantes activos
             self.project.current_students = MiembroProyecto.objects.filter(
                 proyecto=self.project, rol='estudiante', esta_activo=True
@@ -224,10 +225,10 @@ class Asignacion(models.Model):
         # Remover estudiante del proyecto
         self.application.project.remover_estudiante()
 
-# Señal para crear miembro automáticamente al aceptar una aplicación
+# Señal para crear miembro automáticamente al aceptar una aplicación (SOLO para accepted, NO para active)
 @receiver(post_save, sender=Aplicacion)
 def crear_miembro_al_aceptar_aplicacion(sender, instance, created, **kwargs):
-    if instance.status in ['accepted', 'active']:
+    if instance.status == 'accepted':
         from projects.models import MiembroProyecto
         # Verifica si ya existe el miembro
         if not MiembroProyecto.objects.filter(proyecto=instance.project, usuario=instance.student.user, rol='estudiante').exists():
@@ -235,10 +236,11 @@ def crear_miembro_al_aceptar_aplicacion(sender, instance, created, **kwargs):
                 proyecto=instance.project,
                 usuario=instance.student.user,
                 rol='estudiante',
-                esta_activo=True
+                esta_activo=False  # Inicialmente NO activo
             )
         else:
             miembro = MiembroProyecto.objects.get(proyecto=instance.project, usuario=instance.student.user, rol='estudiante')
-            if not miembro.esta_activo:
-                miembro.esta_activo = True
-                miembro.save(update_fields=['esta_activo'])
+            # Asegurar que esté como estudiante pero NO activo
+            miembro.rol = 'estudiante'
+            miembro.esta_activo = False
+            miembro.save(update_fields=['rol', 'esta_activo'])

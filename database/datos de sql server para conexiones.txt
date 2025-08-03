@@ -9,39 +9,38 @@ EMPRESAS:
 lucia.amaya@gmail.com            Empresa123!
 
 
-
 ++++++++++++++++++++++++++++++++++++++++++++++
 ----INTERFACES FUNCIONALES POR USUARIOS-------
 ++++++++++++++++++++++++++++++++++++++++++++++
 ---------------PRINCIPALES--------------------
-BLOG                               OK 
-LOGIN                              OK
-REGISTRO DE ESTUDAINTES Y EMPRESA  OK 
-LOGIN DE ADMIN,ESTUDIANTE,EMPRESA  OK
+BLOG--------------------------------------#OK 
+LOGIN                             $OK
+REGISTRO DE ESTUDAINTES Y EMPRESA $OK 
+LOGIN DE ADMIN,ESTUDIANTE,EMPRESA $OK
 ++++++++++++++++++++++++++++++++++++++++++++++
 -----------------ESTUDIANTE-------------------
-Dashboard                          ok
-perfil                             ok
-Notificaciones                     ok 
-Proyectos Disponibles              ok
-Mis Aplicaciones                   ok
-Mis Proyectos                      ok
-Mis Evaluaciones                      #ok
-Calendario                         ok
-Cuestionario de Nivelación API     ok 
-Resultados del Nivel API           OK
+Dashboard                         $ok
+perfil                            $ok
+Notificaciones                    $ok 
+Proyectos Disponibles             $ok
+Mis Aplicaciones                                             $ok
+Mis Proyectos                                                 ok
+Mis Evaluaciones------------------------------falta#ok
+Calendario                         $ok
+Cuestionario de Nivelación API     $ok 
+Resultados del Nivel API           $OK
 ++++++++++++++++++++++++++++++++++++++++++++++
 -----------------EMPRESA----------------------
-Dashboard                          ok
-perfil                             ok
-Notificaciones                     ok 
-Gestión de Proyectos               ok
-Postulaciones                      ok
-Estudiantes                        ok
-Evaluaciones                          #ok
-Entrevistas                        ok
-Calendario                         ok
-Strikes                               #ok
+Dashboard                         $ok
+perfil                            $ok
+Notificaciones                    $ok
+Proyectos                                                   $ok
+Postulaciones                                               $ok
+Estudiantes                       $ok
+Evaluaciones------------------------------falta  $ok
+Entrevistas                       $ok
+Calendario                        $ok
+Strikes-----------------------------------falta  $ok
 ++++++++++++++++++++++++++++++++++++++++++++++
 ------------------ADMIN-----------------------
 Dashboard de Administrador         ok 
@@ -52,7 +51,7 @@ Validación de Horas                ok
 Gestión de Empresas                ok
 Gestión de Estudiantes             ok
 Gestión de Proyectos               ok
-Gestión de Calificaciones             #ok
-Configuración de Plataforma           #ok
+Gestión de Calificaciones          ok
+Configuración de Plataforma        ok
 
 

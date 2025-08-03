@@ -22,6 +22,9 @@ import {
   Paper,
   Tooltip,
   Grid,
+  Divider,
+  Avatar,
+  Badge,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { 
@@ -41,6 +44,15 @@ import {
   Schedule as ScheduleIcon,
   Group as GroupIcon,
   CalendarToday as CalendarTodayIcon,
+  FilterList as FilterListIcon,
+  WorkOutline as WorkOutlineIcon,
+  LocationOn as LocationOnIcon,
+  Computer as ComputerIcon,
+  People as PeopleIcon,
+  School as SchoolIcon,
+  Lightbulb as LightbulbIcon,
+  Star as StarIcon,
+  TrendingDown as TrendingDownIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../../services/api.service';
 import { ShowLatestFilter } from '../../../../components/common/ShowLatestFilter';
@@ -108,8 +120,10 @@ export default function AvailableProjects() {
   const [modalidad, setModalidad] = useState('');
   const [duracion, setDuracion] = useState('');
   const [tecs, setTecs] = useState<string[]>([]);
-  const [ordenFecha, setOrdenFecha] = useState('recientes');
   const [showLatest, setShowLatest] = useState(50);
+
+  // Estado para mostrar alertas de modalidad
+  const [showModalidadAlert, setShowModalidadAlert] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -214,6 +228,58 @@ export default function AvailableProjects() {
     return 'warning';
   };
 
+  // Función para obtener la descripción de la modalidad
+  const getModalidadDescription = (modalidad: string) => {
+    switch (modalidad.toLowerCase()) {
+      case 'remoto':
+        return 'Trabajo desde cualquier ubicación. Flexibilidad total de horarios y ubicación. Ideal para estudiantes que prefieren trabajar desde casa o necesitan compatibilidad con otros compromisos.';
+      case 'presencial':
+        return 'Trabajo en las instalaciones de la empresa. Interacción directa con el equipo y acceso a recursos físicos. Perfecto para quienes buscan experiencia en entorno corporativo real.';
+      case 'híbrido':
+        return 'Combinación de trabajo remoto y presencial. Flexibilidad con momentos de colaboración en persona. Balance ideal entre autonomía y trabajo en equipo.';
+      default:
+        return '';
+    }
+  };
+
+  // Función para obtener el icono de la modalidad
+  const getModalidadIcon = (modalidad: string) => {
+    switch (modalidad.toLowerCase()) {
+      case 'remoto':
+        return <ComputerIcon />;
+      case 'presencial':
+        return <LocationOnIcon />;
+      case 'híbrido':
+        return <WorkOutlineIcon />;
+      default:
+        return <InfoIcon />;
+    }
+  };
+
+  // Función para obtener el color de la modalidad
+  const getModalidadColor = (modalidad: string) => {
+    switch (modalidad.toLowerCase()) {
+      case 'remoto':
+        return '#2196f3';
+      case 'presencial':
+        return '#4caf50';
+      case 'híbrido':
+        return '#ff9800';
+      default:
+        return '#757575';
+    }
+  };
+
+  // Función helper para traducir modalidades del backend al frontend
+  const translateModality = (backendModality: string): string => {
+    const modalityMap: { [key: string]: string } = {
+      'remote': 'Remoto',
+      'onsite': 'Presencial', 
+      'hybrid': 'Híbrido'
+    };
+    return modalityMap[backendModality?.toLowerCase()] || backendModality;
+  };
+
   let filteredProjects = projects.filter(project =>
     project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (project.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
@@ -227,20 +293,16 @@ export default function AvailableProjects() {
   }
   
   if (modalidad) {
-    filteredProjects = filteredProjects.filter(project => 
-      project.modality?.toLowerCase() === modalidad.toLowerCase()
-    );
+    filteredProjects = filteredProjects.filter(project => {
+      if (!project.modality) return false;
+      return translateModality(project.modality) === modalidad;
+    });
   }
   
-  if (ordenFecha === 'recientes') {
-    filteredProjects = filteredProjects.sort((a, b) => 
-      new Date(b.created_at || b.updated_at || '').getTime() - new Date(a.created_at || a.updated_at || '').getTime()
-    );
-  } else {
-    filteredProjects = filteredProjects.sort((a, b) => 
-      new Date(a.created_at || a.updated_at || '').getTime() - new Date(b.created_at || b.updated_at || '').getTime()
-    );
-  }
+  // Ordenar por fecha más reciente por defecto
+  filteredProjects = filteredProjects.sort((a, b) => 
+    new Date(b.created_at || b.updated_at || '').getTime() - new Date(a.created_at || a.updated_at || '').getTime()
+  );
 
   filteredProjects = filteredProjects.slice(0, showLatest);
 
@@ -457,7 +519,7 @@ export default function AvailableProjects() {
                   }} 
                 />
                 <Chip 
-                  label={project.modality === 'remote' ? 'Remoto' : project.modality === 'onsite' ? 'Presencial' : project.modality === 'hybrid' ? 'Híbrido' : project.modality} 
+                  label={translateModality(project.modality)} 
                   color="info" 
                   size="small" 
                   sx={{ 
@@ -530,10 +592,10 @@ export default function AvailableProjects() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" fontWeight={600} color="primary.main">
-                    Nivel TRL
+                    Estado del Proyecto
                   </Typography>
                 <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
-                  {project.trl_level ? getTrlDescriptionOnly(project.trl_level) : 'Sin TRL'}
+                  {project.trl_level ? getTrlDescriptionOnly(project.trl_level) : 'Estado no definido'}
                 </Typography>
                 </Box>
               </Box>
@@ -658,66 +720,286 @@ export default function AvailableProjects() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Proyectos Disponibles
-      </Typography>
+      {/* Header mejorado con diseño más atractivo */}
+      <Box sx={{ 
+        mb: 4,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 4,
+        p: 4,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+      }}>
+        {/* Elementos decorativos de fondo */}
+        <Box sx={{ 
+          position: 'absolute', 
+          top: -50, 
+          right: -50, 
+          width: 200, 
+          height: 200, 
+          borderRadius: '50%', 
+          background: 'rgba(255,255,255,0.1)',
+          zIndex: 0
+        }} />
+        <Box sx={{ 
+          position: 'absolute', 
+          bottom: -30, 
+          left: -30, 
+          width: 150, 
+          height: 150, 
+          borderRadius: '50%', 
+          background: 'rgba(255,255,255,0.05)',
+          zIndex: 0
+        }} />
+        
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Avatar sx={{ 
+              bgcolor: 'rgba(255,255,255,0.2)', 
+              width: 60, 
+              height: 60,
+              border: '2px solid rgba(255,255,255,0.3)'
+            }}>
+              <SchoolIcon sx={{ fontSize: 30, color: 'white' }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h3" fontWeight={700} sx={{ 
+                color: 'white', 
+                textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                mb: 0.5
+              }}>
+                Proyectos Disponibles
+              </Typography>
+              <Typography variant="h6" sx={{ 
+                color: 'rgba(255,255,255,0.9)',
+                fontWeight: 400
+              }}>
+                Encuentra tu próxima oportunidad de aprendizaje
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Estadísticas rápidas */}
+          <Grid container spacing={3} sx={{ mt: 2 }}>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                p: 2,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <Badge badgeContent={filteredProjects.length} color="error">
+                  <WorkOutlineIcon sx={{ color: 'white', fontSize: 30 }} />
+                </Badge>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
+                    {filteredProjects.length}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Proyectos Disponibles
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                p: 2,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <TrendingUpIcon sx={{ color: 'white', fontSize: 30 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
+                    {studentApiLevel}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Tu Nivel API
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                p: 2,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <LightbulbIcon sx={{ color: 'white', fontSize: 30 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
+                    {applied.length}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Postulaciones Enviadas
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
       )}
       
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
-          <TextField
-            variant="outlined"
-            placeholder="Buscar proyectos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ minWidth: 300, flex: 1 }}
-          />
-          <TextField
-            select
-            label="Área"
-            value={area}
-            onChange={e => setArea(e.target.value)}
-            sx={{ minWidth: 140 }}
-            size="small"
-          >
-            <MenuItem key="todas-areas" value="">Todas</MenuItem>
-            {areas.map((a, index) => <MenuItem key={`area-${index}-${a}`} value={a}>{a}</MenuItem>)}
-            <MenuItem key="otro-area" value="Otro">Otro</MenuItem>
-          </TextField>
-          <TextField
-            select
-            label="Modalidad"
-            value={modalidad}
-            onChange={e => setModalidad(e.target.value)}
-            sx={{ minWidth: 140 }}
-            size="small"
-          >
-            <MenuItem key="todas-modalidades" value="">Todas</MenuItem>
-            {MODALIDADES.map((m, index) => <MenuItem key={`modalidad-${index}-${m}`} value={m}>{m}</MenuItem>)}
-          </TextField>
-          <ShowLatestFilter
-            value={showLatest}
-            onChange={setShowLatest}
-            options={[50, 100, 200, 250, -1]}
-            label="Mostrar"
-          />
+      {/* Panel de filtros mejorado */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 4, 
+        borderRadius: 3,
+        background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(255,255,255,0.8)'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+          <FilterListIcon sx={{ color: 'primary.main', fontSize: 24 }} />
+          <Typography variant="h6" fontWeight={600} color="primary.main">
+            Filtros de Búsqueda
+          </Typography>
         </Box>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={5}>
+            <TextField
+              variant="outlined"
+              placeholder="Buscar proyectos por título, empresa o descripción..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'primary.main' }} />
+                  </InputAdornment>
+                ),
+              }}
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                }
+              }}
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={2.5}>
+            <FormControl fullWidth>
+              <InputLabel>Área de Conocimiento</InputLabel>
+              <Select
+                value={area}
+                onChange={e => setArea(e.target.value)}
+                label="Área de Conocimiento"
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todas las áreas</MenuItem>
+                {areas.map((a, index) => (
+                  <MenuItem key={`area-${index}-${a}`} value={a}>{a}</MenuItem>
+                ))}
+                <MenuItem value="Otro">Otro</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={2.5}>
+            <FormControl fullWidth>
+              <InputLabel>Modalidad de Trabajo</InputLabel>
+              <Select
+                value={modalidad}
+                onChange={e => {
+                  setModalidad(e.target.value);
+                  setShowModalidadAlert(e.target.value !== '');
+                }}
+                label="Modalidad de Trabajo"
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todas las modalidades</MenuItem>
+                {MODALIDADES.map((m, index) => (
+                  <MenuItem key={`modalidad-${index}-${m}`} value={m}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {getModalidadIcon(m)}
+                      {m}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={2}>
+            <ShowLatestFilter
+              value={showLatest}
+              onChange={setShowLatest}
+              options={[50, 100, 200, 250, -1]}
+              label="Mostrar"
+            />
+          </Grid>
+        </Grid>
+
+        {/* Alerta explicativa de modalidad */}
+        {showModalidadAlert && modalidad && (
+          <Alert 
+            severity="info" 
+            sx={{ 
+              mt: 3, 
+              borderRadius: 2,
+              background: `linear-gradient(135deg, ${getModalidadColor(modalidad)}15 0%, ${getModalidadColor(modalidad)}25 100%)`,
+              border: `1px solid ${getModalidadColor(modalidad)}30`
+            }}
+            icon={getModalidadIcon(modalidad)}
+          >
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ color: getModalidadColor(modalidad), mb: 0.5 }}>
+                Modalidad: {modalidad}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {getModalidadDescription(modalidad)}
+              </Typography>
+            </Box>
+          </Alert>
+        )}
       </Paper>
 
-      <Typography variant="h6" gutterBottom>
-        {filteredProjects.length} proyecto{filteredProjects.length !== 1 ? 's' : ''} encontrado{filteredProjects.length !== 1 ? 's' : ''}
-      </Typography>
+      {/* Contador de resultados mejorado */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 2, 
+        mb: 3,
+        p: 2,
+        bgcolor: 'rgba(25, 118, 210, 0.05)',
+        borderRadius: 2,
+        border: '1px solid rgba(25, 118, 210, 0.1)'
+      }}>
+        <StarIcon sx={{ color: 'primary.main' }} />
+        <Typography variant="h6" fontWeight={600} color="primary.main">
+          {filteredProjects.length} proyecto{filteredProjects.length !== 1 ? 's' : ''} encontrado{filteredProjects.length !== 1 ? 's' : ''}
+        </Typography>
+        {filteredProjects.length > 0 && (
+          <Chip 
+            label={`Nivel API requerido: ${Math.min(...filteredProjects.map(p => p.api_level || 1))} - ${Math.max(...filteredProjects.map(p => p.api_level || 1))}`}
+            color="info"
+            size="small"
+            icon={<TrendingUpIcon />}
+          />
+        )}
+      </Box>
 
-             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fill, minmax(320px, 1fr))' }, gap: 2 }}>
+            {/* Grid de proyectos */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fill, minmax(320px, 1fr))' }, gap: 2 }}>
         {filteredProjects.map(project => {
           const canApply = canApplyToProject(project);
           const requiredApiLevel = project.api_level || 1;
@@ -845,7 +1127,7 @@ export default function AvailableProjects() {
                    />
                    {project.modality && (
                      <Chip 
-                       label={project.modality === 'remote' ? 'Remoto' : project.modality === 'onsite' ? 'Presencial' : project.modality === 'hybrid' ? 'Híbrido' : project.modality} 
+                       label={translateModality(project.modality)} 
                        color="info" 
                        size="small" 
                        sx={{ 
@@ -967,15 +1249,15 @@ export default function AvailableProjects() {
 
 function getTrlDescriptionOnly(trlLevel: number) {
   const descriptions = [
-    'Este proyecto está en fase de idea, sin una definición clara y no cuenta con desarrollo previo.',
-    'Este proyecto cuenta con una definición clara y antecedentes de lo que se desea desarrollar.',
-    'Hemos desarrollados pruebas y validaciones de concepto. Algunos componentes del proyecto se han evaluado por separado.',
-    'Contamos con un prototipo mínimo viable que ha sido probado en condiciones controladas simples.',
-    'Contamos con un prototipo mínimo viable que ha sido probado en condiciones similares al entorno real.',
-    'Contamos con un prototipo que ha sido probado mediante un piloto en condiciones reales.',
-    'Contamos con un desarrollo que ha sido probado en condiciones reales, por un periodo de tiempo prolongado.',
-    'Contamos con un producto validado en lo técnico y lo comercial.',
-    'Contamos con un producto completamente desarrollado y disponible para la sociedad.'
+    'El proyecto está en fase de idea inicial. Aún no hay desarrollo previo y se está definiendo qué se quiere lograr.',
+    'El proyecto tiene una definición clara de lo que se quiere lograr y se conocen los antecedentes del problema a resolver.',
+    'Se han realizado pruebas iniciales y validaciones de concepto. Algunas partes del proyecto ya han sido evaluadas por separado.',
+    'Existe un prototipo básico que ha sido probado en condiciones controladas y simples.',
+    'Existe un prototipo que ha sido probado en condiciones similares a las reales donde funcionará.',
+    'El prototipo ha sido probado en un entorno real mediante un piloto o prueba inicial.',
+    'El proyecto ha sido probado en condiciones reales durante un tiempo prolongado, demostrando su funcionamiento.',
+    'El proyecto está validado tanto técnicamente como comercialmente, listo para su implementación.',
+    'El proyecto está completamente desarrollado y disponible para ser utilizado por la sociedad.'
   ];
   return descriptions[trlLevel - 1] || '';
 }

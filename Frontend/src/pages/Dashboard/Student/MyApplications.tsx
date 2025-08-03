@@ -23,6 +23,8 @@ import {
   Grid,
   Tabs,
   Tab,
+  Divider,
+  Badge,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -32,6 +34,11 @@ import {
   Cancel as CancelIcon,
   Visibility as VisibilityIcon,
   TrendingUp as TrendingUpIcon,
+  FilterList as FilterListIcon,
+  School as SchoolIcon,
+  WorkOutline as WorkOutlineIcon,
+  Star as StarIcon,
+  Lightbulb as LightbulbIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { adaptApplication } from '../../../utils/adapters';
@@ -95,9 +102,12 @@ const tecnologias = ['React', 'Node.js', 'Python', 'Java', 'Figma'];
 // Componente de filtros (ahora separado y tipado)
 interface FiltrosProyectosDisponiblesProps {
   onFilter?: (filters: FilterOptions) => void;
+  historyLimit: number;
+  setHistoryLimit: (limit: number) => void;
 }
 
-const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter }) => {
+// Componente de filtros mejorado
+const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter, historyLimit, setHistoryLimit }) => {
   const [busqueda, setBusqueda] = useState('');
   const [area, setArea] = useState('');
   const [estado, setEstado] = useState('');
@@ -114,49 +124,99 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
   };
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3, alignItems: 'center' }}>
-      {/* Búsqueda por texto */}
-      <TextField
-        label="Buscar"
-        value={busqueda}
-        onChange={e => setBusqueda(e.target.value)}
-        sx={{ minWidth: 220, flex: 1 }}
-        size="small"
-      />
-      {/* Área */}
-      <TextField
-        select
-        label="Área"
-        value={area}
-        onChange={e => setArea(e.target.value)}
-        sx={{ minWidth: 140 }}
-        size="small"
-      >
-        <MenuItem value="">Todas</MenuItem>
-        {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
-      </TextField>
-      {/* Estado */}
-      <TextField
-        select
-        label="Estado"
-        value={estado}
-        onChange={e => setEstado(e.target.value)}
-        sx={{ minWidth: 140 }}
-        size="small"
-      >
-        <MenuItem value="">Todos</MenuItem>
-        <MenuItem value="pending">Pendiente</MenuItem>
-        <MenuItem value="accepted">Aceptada</MenuItem>
-        <MenuItem value="rejected">Rechazada</MenuItem>
-      </TextField>
-      {/* Botones */}
-      <Button variant="contained" color="primary" onClick={handleFiltrar}>
-        Filtrar
-      </Button>
-      <Button variant="outlined" color="secondary" onClick={handleLimpiar}>
-        Limpiar
-      </Button>
-    </Box>
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={4}>
+        <TextField
+          label="Buscar aplicaciones"
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          fullWidth
+          size="small"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              '&:hover fieldset': {
+                borderColor: 'primary.main',
+              },
+            }
+          }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6} md={2}>
+        <TextField
+          select
+          label="Área"
+          value={area}
+          onChange={e => setArea(e.target.value)}
+          fullWidth
+          size="small"
+          sx={{ borderRadius: 2 }}
+        >
+          <MenuItem value="">Todas</MenuItem>
+          {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+        </TextField>
+      </Grid>
+      <Grid item xs={12} sm={6} md={2}>
+        <TextField
+          select
+          label="Estado"
+          value={estado}
+          onChange={e => setEstado(e.target.value)}
+          fullWidth
+          size="small"
+          sx={{ borderRadius: 2 }}
+        >
+          <MenuItem value="">Todos</MenuItem>
+          <MenuItem value="pending">Pendiente</MenuItem>
+          <MenuItem value="accepted">Aceptada</MenuItem>
+          <MenuItem value="rejected">Rechazada</MenuItem>
+        </TextField>
+      </Grid>
+      <Grid item xs={12} sm={6} md={2}>
+        <TextField
+          select
+          label="Mostrar últimas"
+          value={historyLimit}
+          onChange={(e) => setHistoryLimit(Number(e.target.value))}
+          fullWidth
+          size="small"
+          sx={{ borderRadius: 2 }}
+        >
+          <MenuItem value={15}>15 últimas</MenuItem>
+          <MenuItem value={50}>50 últimas</MenuItem>
+          <MenuItem value={100}>100 últimas</MenuItem>
+          <MenuItem value={-1}>Todas</MenuItem>
+        </TextField>
+      </Grid>
+      <Grid item xs={12} sm={6} md={1}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleFiltrar}
+          fullWidth
+          sx={{ 
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+            }
+          }}
+        >
+          Filtrar
+        </Button>
+      </Grid>
+      <Grid item xs={12} sm={6} md={1}>
+        <Button 
+          variant="outlined" 
+          color="secondary" 
+          onClick={handleLimpiar}
+          fullWidth
+          sx={{ borderRadius: 2 }}
+        >
+          Limpiar
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 
@@ -194,7 +254,7 @@ export const MyApplications: React.FC = () => {
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
-  const [historyLimit, setHistoryLimit] = useState(25); // Por defecto 25
+  const [historyLimit, setHistoryLimit] = useState(15); // Por defecto 15
 
   useEffect(() => {
     async function fetchApplications() {
@@ -332,74 +392,223 @@ export const MyApplications: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-        <AssignmentIcon sx={{ mr: 2, color: 'primary.main' }} />
-        Mis Aplicaciones
-      </Typography>
+      {/* Header mejorado */}
+      <Box sx={{ 
+        mb: 4,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 4,
+        p: 4,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+      }}>
+        {/* Elementos decorativos de fondo */}
+        <Box sx={{ 
+          position: 'absolute', 
+          top: -50, 
+          right: -50, 
+          width: 200, 
+          height: 200, 
+          borderRadius: '50%', 
+          background: 'rgba(255,255,255,0.1)',
+          zIndex: 0
+        }} />
+        <Box sx={{ 
+          position: 'absolute', 
+          bottom: -30, 
+          left: -30, 
+          width: 150, 
+          height: 150, 
+          borderRadius: '50%', 
+          background: 'rgba(255,255,255,0.05)',
+          zIndex: 0
+        }} />
+        
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Avatar sx={{ 
+              bgcolor: 'rgba(255,255,255,0.2)', 
+              width: 60, 
+              height: 60,
+              border: '2px solid rgba(255,255,255,0.3)'
+            }}>
+              <AssignmentIcon sx={{ fontSize: 30, color: 'white' }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h3" fontWeight={700} sx={{ 
+                color: 'white', 
+                textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                mb: 0.5
+              }}>
+                Mis Aplicaciones
+              </Typography>
+              <Typography variant="h6" sx={{ 
+                color: 'rgba(255,255,255,0.9)',
+                fontWeight: 400
+              }}>
+                Gestiona y revisa el estado de tus postulaciones
+              </Typography>
+            </Box>
+          </Box>
 
-      {/* Filtros */}
-      <Paper sx={{ p: 3, mb: 3, bgcolor: '#f8f9fa' }}>
-        <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-          Filtrar Aplicaciones
-        </Typography>
-        <FiltrosProyectosDisponibles onFilter={handleFilter} />
-      </Paper>
-
-      {/* Estadísticas */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
-        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#FFE082' }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" sx={{ color: '#FF6F00' }}>
-              {pendingApplications.length}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Pendientes
-            </Typography>
-          </CardContent>
-        </Card>
-        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#B9F6CA' }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" sx={{ color: '#00C853' }}>
-              {acceptedApplications.length}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Aceptadas
-            </Typography>
-          </CardContent>
-        </Card>
-        <Card sx={{ flex: '1 1 200px', minWidth: 0, bgcolor: '#FF8A80' }}>
-          <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" sx={{ color: '#D50000' }}>
-              {rejectedApplications.length}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Rechazadas
-            </Typography>
-          </CardContent>
-        </Card>
+          {/* Estadísticas rápidas */}
+          <Grid container spacing={3} sx={{ mt: 2 }}>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                p: 2,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <Badge badgeContent={pendingApplications.length} color="warning">
+                  <ScheduleIcon sx={{ color: 'white', fontSize: 30 }} />
+                </Badge>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
+                    {pendingApplications.length}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Pendientes
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                p: 2,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <Badge badgeContent={acceptedApplications.length} color="success">
+                  <CheckCircleIcon sx={{ color: 'white', fontSize: 30 }} />
+                </Badge>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
+                    {acceptedApplications.length}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Aceptadas
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                p: 2,
+                bgcolor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <Badge badgeContent={rejectedApplications.length} color="error">
+                  <CancelIcon sx={{ color: 'white', fontSize: 30 }} />
+                </Badge>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
+                    {rejectedApplications.length}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Rechazadas
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
       </Box>
 
-      {/* Tabla de aplicaciones */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-        <Tabs value={selectedTab} onChange={(_, v) => setSelectedTab(v)}>
+      {/* Filtros mejorados */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 4, 
+        borderRadius: 3,
+        background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(255,255,255,0.8)'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+          <FilterListIcon sx={{ color: 'primary.main', fontSize: 24 }} />
+          <Typography variant="h6" fontWeight={600} color="primary.main">
+            Filtros de Búsqueda
+          </Typography>
+        </Box>
+        <FiltrosProyectosDisponibles 
+          onFilter={handleFilter} 
+          historyLimit={historyLimit}
+          setHistoryLimit={setHistoryLimit}
+        />
+      </Paper>
+
+      {/* Tabs mejorados */}
+      <Box sx={{ 
+        borderBottom: 1, 
+        borderColor: 'divider', 
+        mb: 3,
+        background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+        borderRadius: 2,
+        p: 1
+      }}>
+        <Tabs 
+          value={selectedTab} 
+          onChange={(_, v) => setSelectedTab(v)}
+          sx={{
+            '& .MuiTab-root': {
+              fontWeight: 600,
+              borderRadius: 1.5,
+              mx: 0.5,
+              '&.Mui-selected': {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
+              }
+            }
+          }}
+        >
           {tabContents.map((tab, idx) => (
             <Tab key={tab.label} label={tab.label} />
           ))}
         </Tabs>
       </Box>
 
-      {/* Renderizar la lista correspondiente a la pestaña seleccionada */}
+      {/* Tabla mejorada */}
       {tabContents[selectedTab].data.length === 0 ? (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Box sx={{ 
+          textAlign: 'center', 
+          py: 6,
+          background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+          borderRadius: 3,
+          border: '1px solid rgba(0,0,0,0.05)'
+        }}>
+          <WorkOutlineIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="text.secondary">
             No se encontraron aplicaciones en esta categoría
           </Typography>
         </Box>
       ) : (
-        <TableContainer>
+        <TableContainer component={Paper} sx={{ 
+          borderRadius: 3,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          overflow: 'hidden'
+        }}>
           <Table>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                '& .MuiTableCell-head': {
+                  color: 'white',
+                  fontWeight: 600,
+                  fontSize: '0.9rem'
+                }
+              }}>
                 <TableCell>Proyecto</TableCell>
                 <TableCell>Empresa</TableCell>
                 <TableCell>Estado</TableCell>
@@ -408,11 +617,22 @@ export const MyApplications: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {tabContents[selectedTab].data.slice(0, historyLimit).map((application) => (
-                <TableRow key={application.id} hover>
+              {(historyLimit === -1 ? tabContents[selectedTab].data : tabContents[selectedTab].data.slice(0, historyLimit)).map((application) => (
+                <TableRow 
+                  key={application.id} 
+                  hover
+                  sx={{ 
+                    '&:hover': {
+                      background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      transition: 'all 0.2s'
+                    }
+                  }}
+                >
                   <TableCell>
                     <Box>
-                      <Typography variant="body1" fontWeight="bold">
+                      <Typography variant="body1" fontWeight="bold" sx={{ color: '#1a237e' }}>
                         {application.projectTitle}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -422,10 +642,18 @@ export const MyApplications: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                      <Avatar sx={{ 
+                        mr: 1, 
+                        bgcolor: 'primary.main', 
+                        width: 28, 
+                        height: 28,
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}>
                         <BusinessIcon fontSize="small" />
                       </Avatar>
-                      {application.company}
+                      <Typography variant="body2" fontWeight={500}>
+                        {application.company}
+                      </Typography>
                     </Box>
                   </TableCell>
                   <TableCell>
@@ -434,10 +662,20 @@ export const MyApplications: React.FC = () => {
                       label={getStatusText(application.status)}
                       color={getStatusColor(application.status) as any}
                       size="small"
+                      sx={{ 
+                        fontWeight: 600,
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                        '&:hover': { 
+                          transform: 'translateY(-1px)', 
+                          transition: 'transform 0.2s' 
+                        }
+                      }}
                     />
                   </TableCell>
                   <TableCell>
-                    {new Date(application.appliedDate).toLocaleDateString('es-ES')}
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      {new Date(application.appliedDate).toLocaleDateString('es-ES')}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <IconButton
@@ -445,6 +683,14 @@ export const MyApplications: React.FC = () => {
                       color="primary"
                       onClick={() => handleViewDetails(application)}
                       title="Ver detalles"
+                      sx={{ 
+                        bgcolor: 'rgba(102, 126, 234, 0.1)',
+                        '&:hover': {
+                          bgcolor: 'rgba(102, 126, 234, 0.2)',
+                          transform: 'scale(1.1)',
+                          transition: 'all 0.2s'
+                        }
+                      }}
                     >
                       <VisibilityIcon />
                     </IconButton>
@@ -744,7 +990,7 @@ export const MyApplications: React.FC = () => {
                         </Box>
                         <Box>
                           <Typography variant="subtitle1" fontWeight={600} color="primary.main">
-                            Nivel TRL
+                            Estado del Proyecto
                           </Typography>
                           <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
                             {getTrlDescriptionOnly(Number(selectedApplication.trl_level))}
@@ -881,15 +1127,15 @@ export const MyApplications: React.FC = () => {
 
 function getTrlDescriptionOnly(trlLevel: number) {
   const descriptions = [
-    'Este proyecto está en fase de idea, sin una definición clara y no cuenta con desarrollo previo.',
-    'Este proyecto cuenta con una definición clara y antecedentes de lo que se desea desarrollar.',
-    'Hemos desarrollados pruebas y validaciones de concepto. Algunos componentes del proyecto se han evaluado por separado.',
-    'Contamos con un prototipo mínimo viable que ha sido probado en condiciones controladas simples.',
-    'Contamos con un prototipo mínimo viable que ha sido probado en condiciones similares al entorno real.',
-    'Contamos con un prototipo que ha sido probado mediante un piloto en condiciones reales.',
-    'Contamos con un desarrollo que ha sido probado en condiciones reales, por un periodo de tiempo prolongado.',
-    'Contamos con un producto validado en lo técnico y lo comercial.',
-    'Contamos con un producto completamente desarrollado y disponible para la sociedad.'
+    'El proyecto está en fase de idea inicial. Aún no hay desarrollo previo y se está definiendo qué se quiere lograr.',
+    'El proyecto tiene una definición clara de lo que se quiere lograr y se conocen los antecedentes del problema a resolver.',
+    'Se han realizado pruebas iniciales y validaciones de concepto. Algunas partes del proyecto ya han sido evaluadas por separado.',
+    'Existe un prototipo básico que ha sido probado en condiciones controladas y simples.',
+    'Existe un prototipo que ha sido probado en condiciones similares a las reales donde funcionará.',
+    'El prototipo ha sido probado en un entorno real mediante un piloto o prueba inicial.',
+    'El proyecto ha sido probado en condiciones reales durante un tiempo prolongado, demostrando su funcionamiento.',
+    'El proyecto está validado tanto técnicamente como comercialmente, listo para su implementación.',
+    'El proyecto está completamente desarrollado y disponible para ser utilizado por la sociedad.'
   ];
   return descriptions[trlLevel - 1] || '';
 }

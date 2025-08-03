@@ -219,8 +219,18 @@ def calendar_events_create(request):
         
         # Validar fechas
         try:
-            start_date = datetime.fromisoformat(data['start_date'].replace('Z', '+00:00'))
-            end_date = datetime.fromisoformat(data['end_date'].replace('Z', '+00:00'))
+            # Parsear las fechas ISO y manejar timezone
+            start_date_str = data['start_date']
+            end_date_str = data['end_date']
+            
+            # Si las fechas terminan en 'Z', reemplazar con '+00:00' para timezone UTC
+            if start_date_str.endswith('Z'):
+                start_date_str = start_date_str.replace('Z', '+00:00')
+            if end_date_str.endswith('Z'):
+                end_date_str = end_date_str.replace('Z', '+00:00')
+            
+            start_date = datetime.fromisoformat(start_date_str)
+            end_date = datetime.fromisoformat(end_date_str)
         except ValueError:
             return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
         
@@ -236,6 +246,12 @@ def calendar_events_create(request):
         user_timezone = pytz.timezone('America/Santiago')
         
         # Convertir las fechas a la zona horaria local
+        # Si las fechas no tienen zona horaria, asumir que están en UTC
+        if start_date.tzinfo is None:
+            start_date = pytz.utc.localize(start_date)
+        if end_date.tzinfo is None:
+            end_date = pytz.utc.localize(end_date)
+            
         start_date_local = start_date.astimezone(user_timezone)
         end_date_local = end_date.astimezone(user_timezone)
         
@@ -551,7 +567,7 @@ def student_events(request):
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
         # Obtener eventos del estudiante
-        queryset = CalendarEvent.objects.select_related('created_by', 'project').prefetch_related('attendees').filter(
+        queryset = CalendarEvent.objects.select_related('created_by', 'user', 'project', 'project__company').prefetch_related('attendees').filter(
             models.Q(created_by=current_user) | 
             models.Q(attendees=current_user) | 
             models.Q(is_public=True)
@@ -591,14 +607,23 @@ def student_events(request):
                 'color': event.color,
                 'icon': event.icon,
                 'created_by': event.created_by.get_full_name() if event.created_by else None,
-                'attendees': [attendee.get_full_name() for attendee in event.attendees.all()],
+                'attendees': [
+                    {
+                        'id': str(att.id),
+                        'full_name': att.get_full_name(),
+                        'email': att.email,
+                        'phone': att.phone,
+                        'role': att.role,
+                        'career': att.career if att.role == 'student' else None,
+                    } for att in event.attendees.all()
+                ],
                 'project': {
                     'id': str(event.project.id),
                     'title': event.project.title,
                     'empresa': {
-                        'nombre': event.project.company.company_name if event.project.company else 'Sin empresa'
+                        'nombre': event.project.company.company_name if event.project and event.project.company else 'Sin empresa'
                     }
-                } if event.project and hasattr(event.project, 'id') else None,
+                } if event.project and hasattr(event.project, 'id') and event.project.id else None,
                 'created_at': event.created_at.isoformat(),
                 'updated_at': event.updated_at.isoformat(),
                 # Nuevos campos para reuniones/entrevistas
@@ -629,7 +654,7 @@ def company_events(request):
 
         from django.db import models
         # Mostrar todos los eventos relevantes para la empresa:
-        queryset = CalendarEvent.objects.filter(
+        queryset = CalendarEvent.objects.select_related('created_by', 'user', 'project', 'project__company').prefetch_related('attendees').filter(
             models.Q(project__company__user=current_user) |
             models.Q(created_by=current_user) |
             models.Q(attendees=current_user) |
@@ -682,7 +707,7 @@ def company_events(request):
                     'empresa': {
                         'nombre': event.project.company.company_name if event.project and event.project.company else 'Sin empresa'
                     }
-                } if event.project and hasattr(event.project, 'id') else None,
+                } if event.project and hasattr(event.project, 'id') and event.project.id else None,
                 'created_at': event.created_at.isoformat(),
                 'updated_at': event.updated_at.isoformat(),
                 # Nuevos campos para reuniones/entrevistas

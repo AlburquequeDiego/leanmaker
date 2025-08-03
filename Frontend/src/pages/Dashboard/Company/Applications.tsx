@@ -28,7 +28,7 @@ import {
   Person as PersonIcon,
   Schedule as ScheduleIcon,
   CheckCircle as CheckCircleIcon,
-
+  Cancel as CancelIcon,
   Language as LanguageIcon,
   GitHub as GitHubIcon,
   LinkedIn as LinkedInIcon,
@@ -46,9 +46,14 @@ export const CompanyApplications: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState(0);
+  
+  // Log cuando cambia el tab seleccionado
+  useEffect(() => {
+    console.log(`🔄 Tab cambiado a: ${selectedTab}, Filtro: ${getStatusFilter(selectedTab)}`);
+  }, [selectedTab]);
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
-  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5]);
+  const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5, 5]);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -126,8 +131,14 @@ export const CompanyApplications: React.FC = () => {
 
   const filteredApplications = applications.filter(app => {
     const status = getStatusFilter(selectedTab);
-    return status ? app.status === status : true;
+    const matches = status ? app.status === status : true;
+    if (selectedTab === 4) { // Tab de rechazadas
+      console.log(`🔍 Aplicación ${app.id} (${app.student_name}): status=${app.status}, matches=${matches}`);
+    }
+    return matches;
   });
+  
+  console.log(`📋 Tab seleccionado: ${selectedTab}, Filtro: ${getStatusFilter(selectedTab)}, Aplicaciones filtradas: ${filteredApplications.length}`);
 
   const cantidadActual = cantidadPorTab[selectedTab];
   const aplicacionesMostradas = cantidadActual === 'todas' ? filteredApplications : filteredApplications.slice(0, Number(cantidadActual));
@@ -212,6 +223,10 @@ export const CompanyApplications: React.FC = () => {
     setShowDetailDialog(true);
   };
 
+  // Logs de depuración para verificar estados
+  console.log('🔍 Aplicaciones cargadas:', applications.length);
+  console.log('🔍 Estados de aplicaciones:', applications.map(app => ({ id: app.id, status: app.status, student: app.student_name })));
+  
   const stats = {
     total: applications.length,
     pending: applications.filter(app => app.status === 'pending').length,
@@ -220,6 +235,8 @@ export const CompanyApplications: React.FC = () => {
     accepted: applications.filter(app => app.status === 'accepted').length,
     rejected: applications.filter(app => app.status === 'rejected').length,
   };
+  
+  console.log('📊 Estadísticas calculadas:', stats);
 
   if (loading) {
     return (
@@ -257,7 +274,7 @@ export const CompanyApplications: React.FC = () => {
       {/* Estadísticas mejoradas */}
       <Box sx={{ 
         display: 'grid', 
-        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, 
         gap: 3, 
         mb: 4 
       }}>
@@ -311,6 +328,24 @@ export const CompanyApplications: React.FC = () => {
               <Box>
                 <Typography variant="h3" fontWeight={700}>{stats.accepted}</Typography>
                 <Typography variant="body1" fontWeight={600}>Aceptadas</Typography>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ 
+          bgcolor: '#f44336', 
+          color: 'white',
+          borderRadius: 3,
+          boxShadow: 3,
+          transition: 'transform 0.2s',
+          '&:hover': { transform: 'translateY(-4px)' }
+        }}>
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <CancelIcon sx={{ mr: 2, fontSize: 32 }} />
+              <Box>
+                <Typography variant="h3" fontWeight={700}>{stats.rejected}</Typography>
+                <Typography variant="body1" fontWeight={600}>Rechazadas</Typography>
               </Box>
             </Box>
           </CardContent>

@@ -447,9 +447,67 @@ export const CompanyProfile: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
+      {/* Header principal mejorado */}
+      <Box sx={{ 
+        mb: 4,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 4,
+        p: 4,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+      }}>
+        {/* Elementos decorativos */}
+        <Box sx={{
+          position: 'absolute',
+          top: -20,
+          right: -20,
+          width: 100,
+          height: 100,
+          background: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '50%',
+          zIndex: 1
+        }} />
+        <Box sx={{
+          position: 'absolute',
+          bottom: -30,
+          left: -30,
+          width: 80,
+          height: 80,
+          background: 'rgba(255, 255, 255, 0.08)',
+          borderRadius: '50%',
+          zIndex: 1
+        }} />
+        
+        {/* Contenido del header */}
+        <Box sx={{ position: 'relative', zIndex: 2 }}>
+          <Typography 
+            variant="h3" 
+            fontWeight={700} 
+            sx={{ 
+              color: 'white', 
+              mb: 1,
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+            }}
+          >
+            🏢 Gestión de Perfil Empresarial
+          </Typography>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontWeight: 400,
+              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+            }}
+          >
+            Administra la información de tu empresa y mantén tu perfil actualizado
+          </Typography>
+        </Box>
+      </Box>
+
       {/* Header con botones de acción */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Perfil de Empresa</Typography>
+        <Typography variant="h4" fontWeight={600} color="primary">Información de la Empresa</Typography>
         {!isEditing ? (
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
