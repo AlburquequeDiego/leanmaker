@@ -332,8 +332,8 @@ export default function ValidacionHorasAdmin() {
     // Proyectos pendientes de validación
     ...pendingProjects.map((project) => ({
       id: `pending-${project.id}`,
-      student_name: '—',
-      student_email: '—',
+      student_name: project.student_name || '—',
+      student_email: project.student_email || '—',
       project_title: project.title || project.project_title || project.nombre || project.name || '-',
       company_name: project.company_name || project.empresa || project.company || project.empresa_nombre || '-',
       hours: project.offered_hours || project.horas || project.required_hours || project.project_required_hours || '-',
@@ -342,6 +342,7 @@ export default function ValidacionHorasAdmin() {
       isPending: true,
       projectId: project.id,
       estudiantes: project.estudiantes || project.participantes || [],
+      date: project.date || project.real_end_date || project.estimated_end_date || project.created_at,
     })),
     // Horas ya validadas
     ...workHours.map((row) => ({

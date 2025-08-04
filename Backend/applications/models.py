@@ -101,9 +101,10 @@ class Aplicacion(models.Model):
                 miembro.rol = 'estudiante'
                 miembro.esta_activo = False
                 miembro.save(update_fields=['rol', 'esta_activo'])
-            # Actualizar contador de estudiantes activos
-            self.project.current_students = MiembroProyecto.objects.filter(
-                proyecto=self.project, rol='estudiante', esta_activo=True
+            # Actualizar contador de estudiantes activos basado en aplicaciones aceptadas
+            self.project.current_students = Aplicacion.objects.filter(
+                project=self.project,
+                status__in=['accepted', 'active', 'completed']
             ).count()
             self.project.save(update_fields=['current_students'])
             return True

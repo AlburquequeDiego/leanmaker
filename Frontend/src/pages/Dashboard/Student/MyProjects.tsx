@@ -39,7 +39,7 @@ interface Project {
   id: string;
   title: string;
   company: string;
-  status: 'accepted' | 'active' | 'completed' | 'paused';
+  status: 'published' | 'active' | 'completed' | 'deleted';
   startDate: string;
   endDate: string;
   progress: number;
@@ -69,10 +69,10 @@ export const MyProjects = () => {
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [acceptedLimit, setAcceptedLimit] = useState(20);
+  const [publishedLimit, setPublishedLimit] = useState(20);
   const [activeLimit, setActiveLimit] = useState(20);
   const [completedLimit, setCompletedLimit] = useState(20);
-  const [pausedLimit, setPausedLimit] = useState(5);
+  const [deletedLimit, setDeletedLimit] = useState(5);
   const [tab, setTab] = useState(0);
 
   // Adaptador de datos del backend al frontend
@@ -80,7 +80,7 @@ export const MyProjects = () => {
     id: backend.id,
     title: backend.title,
     company: backend.company || 'Sin empresa',
-    status: backend.status || 'active',
+    status: backend.status || 'published', // Estado por defecto sincronizado con empresa
     startDate: backend.startDate || '',
     endDate: backend.endDate || '',
     progress: typeof backend.progress === 'number' ? backend.progress : (backend.status === 'completed' ? 100 : 50),
@@ -107,19 +107,34 @@ export const MyProjects = () => {
   useEffect(() => {
     async function fetchProjects() {
       try {
+        console.log('[MyProjects] 🔍 Iniciando fetch de proyectos...');
         const response = await apiService.get('/api/projects/my_projects/');
-        console.log('[MyProjects] Response:', response);
+        console.log('[MyProjects] 🔍 Response completa:', response);
+        
         // El backend devuelve {success: true, data: Array, total: number}
         const projectsData = response.data || response;
+        console.log('[MyProjects] 🔍 projectsData:', projectsData);
+        
         const arr = Array.isArray(projectsData) ? projectsData : projectsData.data;
-        // Mostrar proyectos con estado 'accepted', 'active' o 'completed'
-        const filtered = Array.isArray(arr) ? arr.filter(p => p.status === 'accepted' || p.status === 'active' || p.status === 'completed') : [];
-        console.log('[MyProjects] Proyectos filtrados:', filtered);
+        console.log('[MyProjects] 🔍 Array de proyectos:', arr);
+        console.log('[MyProjects] 🔍 Es array?', Array.isArray(arr));
+        
+        // Mostrar proyectos con estado 'published', 'active' o 'completed' (sincronizado con empresa)
+        const filtered = Array.isArray(arr) ? arr.filter(p => {
+          console.log('[MyProjects] 🔍 Proyecto:', p.title, 'Status:', p.status);
+          return p.status === 'published' || p.status === 'active' || p.status === 'completed';
+        }) : [];
+        
+        console.log('[MyProjects] 🔍 Proyectos filtrados:', filtered);
+        console.log('[MyProjects] 🔍 Cantidad de proyectos filtrados:', filtered.length);
+        
         const adaptedProjects = filtered.map(adaptProjectData);
-        console.log('[MyProjects] Proyectos adaptados:', adaptedProjects);
+        console.log('[MyProjects] 🔍 Proyectos adaptados:', adaptedProjects);
+        console.log('[MyProjects] 🔍 Cantidad de proyectos adaptados:', adaptedProjects.length);
+        
         setProjects(adaptedProjects);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error('[MyProjects] ❌ Error fetching projects:', error);
         setProjects([]);
       }
     }
@@ -135,14 +150,14 @@ export const MyProjects = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'accepted':
-        return 'success'; // Verde para aceptado
+      case 'published':
+        return 'info'; // Azul para publicado (sincronizado con empresa)
       case 'active':
-        return 'secondary'; // Morado para activo
+        return 'primary'; // Azul para activo (sincronizado con empresa)
       case 'completed':
-        return 'primary'; // Azul para completado
-      case 'paused':
-        return 'warning';
+        return 'success'; // Verde para completado (sincronizado con empresa)
+      case 'deleted':
+        return 'error'; // Rojo para eliminado (sincronizado con empresa)
       default:
         return 'default';
     }
@@ -150,14 +165,14 @@ export const MyProjects = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'accepted':
-        return 'Aceptado';
+      case 'published':
+        return 'Publicado'; // Sincronizado con empresa
       case 'active':
-        return 'En Desarrollo';
+        return 'Activo'; // Sincronizado con empresa
       case 'completed':
-        return 'Completado';
-      case 'paused':
-        return 'Pausado';
+        return 'Completado'; // Sincronizado con empresa
+      case 'deleted':
+        return 'Eliminado'; // Sincronizado con empresa
       default:
         return status;
     }
@@ -165,33 +180,33 @@ export const MyProjects = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'accepted':
-        return <CheckCircleIcon />;
+      case 'published':
+        return <AssignmentIcon />; // Icono de proyecto publicado
       case 'active':
-        return <TrendingUpIcon />;
+        return <TrendingUpIcon />; // Icono de proyecto activo
       case 'completed':
-        return <CheckCircleIcon />;
-      case 'paused':
-        return <ScheduleIcon />;
+        return <CheckCircleIcon />; // Icono de proyecto completado
+      case 'deleted':
+        return <ScheduleIcon />; // Icono de proyecto eliminado
       default:
         return <AssignmentIcon />;
     }
   };
 
-  const acceptedProjects = projects.filter(project => project.status === 'accepted');
-  const activeProjects = projects.filter(project => project.status === 'active'); // Solo active para la pestaña "En Desarrollo"
+  const publishedProjects = projects.filter(project => project.status === 'published');
+  const activeProjects = projects.filter(project => project.status === 'active'); // Solo active para la pestaña "Activo"
   const completedProjects = projects.filter(project => project.status === 'completed');
   
   console.log('[MyProjects] Filtros de pestañas:', {
     total: projects.length,
-    accepted: acceptedProjects.length,
+    published: publishedProjects.length,
     active: activeProjects.length,
     completed: completedProjects.length,
     tab: tab
   });
   
-  console.log('[MyProjects] Proyectos aceptados:', acceptedProjects);
-  const pausedProjects = projects.filter(project => project.status === 'paused');
+  console.log('[MyProjects] Proyectos publicados:', publishedProjects);
+  const deletedProjects = projects.filter(project => project.status === 'deleted');
   const totalHoursWorked = projects.reduce((sum, project) => sum + project.hoursWorked, 0);
 
   return (
@@ -249,34 +264,34 @@ export const MyProjects = () => {
               textShadow: '0 1px 2px rgba(0,0,0,0.2)'
             }}
           >
-            Gestiona y da seguimiento a todos tus proyectos activos, aceptados y completados
+            Gestiona y da seguimiento a todos tus proyectos publicados, activos y completados
           </Typography>
         </Box>
       </Box>
 
-      {/* Header con título */}
-      <Typography variant="h4" fontWeight={600} color="primary" sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+             {/* Header con título */}
+       <Typography variant="h4" fontWeight={600} color="primary" sx={{ mb: 3, display: 'flex', alignItems: 'center', pl: 1 }}>
         <AssignmentIcon sx={{ mr: 2, color: 'primary.main' }} />
-        Resumen de Proyectos
+        Resumen de Proyectos (Sincronizado con Empresa)
       </Typography>
 
-      {/* Dashboard mejorado */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 3, mb: 4 }}>
-        {/* Proyectos Aceptados - Verde vibrante */}
+             {/* Dashboard mejorado */}
+       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 3, mb: 3, pl: 1 }}>
+        {/* Proyectos Publicados - Azul marino */}
         <Card sx={{ 
-          background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+          background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
           color: 'white',
           borderRadius: 3,
-          boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)',
+          boxShadow: '0 4px 20px rgba(30, 64, 175, 0.3)',
           transition: 'transform 0.2s',
           '&:hover': { transform: 'translateY(-4px)' }
         }}>
           <CardContent sx={{ textAlign: 'center', p: 3 }}>
             <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
-              {typeof acceptedProjects.length === 'number' && !isNaN(acceptedProjects.length) ? acceptedProjects.length : 0}
+              {typeof publishedProjects.length === 'number' && !isNaN(publishedProjects.length) ? publishedProjects.length : 0}
             </Typography>
             <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
-              Aceptados
+              Publicados
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.9 }}>
               Proyectos donde fuiste seleccionado
@@ -284,12 +299,12 @@ export const MyProjects = () => {
           </CardContent>
         </Card>
 
-        {/* Proyectos Activos - Morado vibrante */}
+        {/* Proyectos Activos - Verde lima vibrante */}
         <Card sx={{ 
-          background: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
+          background: 'linear-gradient(135deg, #84cc16 0%, #65a30d 100%)',
           color: 'white',
           borderRadius: 3,
-          boxShadow: '0 4px 20px rgba(156, 39, 176, 0.3)',
+          boxShadow: '0 4px 20px rgba(132, 204, 22, 0.3)',
           transition: 'transform 0.2s',
           '&:hover': { transform: 'translateY(-4px)' }
         }}>
@@ -298,7 +313,7 @@ export const MyProjects = () => {
               {typeof activeProjects.length === 'number' && !isNaN(activeProjects.length) ? activeProjects.length : 0}
             </Typography>
             <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
-              En Desarrollo
+              Activos
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.9 }}>
               Proyectos en progreso activo
@@ -306,12 +321,12 @@ export const MyProjects = () => {
           </CardContent>
         </Card>
 
-        {/* Proyectos Completados - Azul vibrante */}
+        {/* Proyectos Completados - Verde esmeralda */}
         <Card sx={{ 
-          background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+          background: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
           color: 'white',
           borderRadius: 3,
-          boxShadow: '0 4px 20px rgba(33, 150, 243, 0.3)',
+          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
           transition: 'transform 0.2s',
           '&:hover': { transform: 'translateY(-4px)' }
         }}>
@@ -323,23 +338,23 @@ export const MyProjects = () => {
               Completados
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              Proyectos finalizados exitosamente
+              Proyectos completados exitosamente
             </Typography>
           </CardContent>
         </Card>
       </Box>
 
-      {/* Tabs de secciones */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+             {/* Tabs de secciones */}
+       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Tabs value={tab} onChange={handleTabChange}>
-          <Tab label={`Aceptados (${acceptedProjects.length})`} />
-          <Tab label={`En Desarrollo (${activeProjects.length})`} />
+          <Tab label={`Publicados (${publishedProjects.length})`} />
+          <Tab label={`Activos (${activeProjects.length})`} />
           <Tab label={`Completados (${completedProjects.length})`} />
         </Tabs>
         <ShowLatestFilter
-          value={tab === 0 ? acceptedLimit : (tab === 1 ? activeLimit : completedLimit)}
+          value={tab === 0 ? publishedLimit : (tab === 1 ? activeLimit : completedLimit)}
           onChange={(value) => {
-            if (tab === 0) setAcceptedLimit(value);
+            if (tab === 0) setPublishedLimit(value);
             else if (tab === 1) setActiveLimit(value);
             else setCompletedLimit(value);
           }}
@@ -347,43 +362,45 @@ export const MyProjects = () => {
         />
       </Box>
 
-      {/* Sección de proyectos aceptados */}
+      {/* Sección de proyectos publicados */}
       {tab === 0 && (
         <Box>
-          {console.log('[MyProjects] Renderizando pestaña aceptados:', { acceptedProjects: acceptedProjects.length, projects: acceptedProjects })}
-          {console.log('[MyProjects] acceptedProjects.length === 0:', acceptedProjects.length === 0)}
-          {acceptedProjects.length === 0 ? (
+          {console.log('[MyProjects] Renderizando pestaña publicados:', { publishedProjects: publishedProjects.length, projects: publishedProjects })}
+          {console.log('[MyProjects] publishedProjects.length === 0:', publishedProjects.length === 0)}
+          {publishedProjects.length === 0 ? (
             <Paper sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-              No tienes proyectos aceptados aún.
+              No tienes proyectos publicados aún.
             </Paper>
           ) : (
-                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-               {console.log('[MyProjects] Renderizando proyectos individuales:', acceptedProjects.slice(0, acceptedLimit))}
-                              {acceptedProjects.slice(0, acceptedLimit).map((project) => {
-                 console.log('[MyProjects] Renderizando proyecto:', project);
-                 return (
-                   <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+                                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+               {console.log('[MyProjects] Renderizando proyectos individuales:', publishedProjects.slice(0, publishedLimit))}
+                               {publishedProjects.slice(0, publishedLimit).map((project) => {
+                  console.log('[MyProjects] Renderizando proyecto:', project);
+                  return (
+                    <Box key={project.id} sx={{ width: '400px', flexShrink: 0 }}>
                   <Card sx={{ 
-                    height: '100%', 
+                    height: '320px', 
                     cursor: 'pointer', 
                     borderRadius: 3, 
                     boxShadow: 4, 
                     background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                    border: '2px solid #4CAF50',
+                    border: '2px solid #1976d2',
                     transition: 'all 0.3s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
                     '&:hover': { 
                       transform: 'translateY(-8px) scale(1.02)', 
-                      boxShadow: '0 12px 40px rgba(76, 175, 80, 0.3)',
-                      borderColor: '#45a049'
+                      boxShadow: '0 12px 40px rgba(25, 118, 210, 0.3)',
+                      borderColor: '#1565c0'
                     }
                   }} onClick={() => handleViewDetails(project)}>
-                    <CardContent>
+                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <Typography variant="h6" fontWeight={700} sx={{ flex: 1, color: '#4CAF50' }}>{project.title}</Typography>
+                        <Typography variant="h6" fontWeight={700} sx={{ flex: 1, color: '#1976d2' }}>{project.title}</Typography>
                         <Chip icon={getStatusIcon(project.status)} label={getStatusText(project.status)} color={getStatusColor(project.status) as any} size="small" sx={{ fontWeight: 600 }} />
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <BusinessIcon sx={{ color: '#4CAF50', fontSize: 20 }} />
+                        <BusinessIcon sx={{ color: '#1976d2', fontSize: 20 }} />
                         <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}><b>Empresa:</b> {project.company}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
@@ -392,16 +409,16 @@ export const MyProjects = () => {
                         {project.hoursPerWeek && <Chip label={`Horas/sem: ${project.hoursPerWeek}`} color="default" size="small" />}
                         {project.maxStudents && <Chip label={`Máx. estudiantes: ${project.maxStudents}`} color="success" size="small" />}
                       </Box>
-                      {/* Descripción TRL en verde para proyectos aceptados */}
+                      {/* Descripción TRL en azul para proyectos publicados */}
                       {project.trlLevel && (
-                        <Box sx={{ bgcolor: '#e8f5e9', borderRadius: 2, p: 1.2, mb: 1, display: 'flex', alignItems: 'center', gap: 1, border: '1px solid #4CAF50' }}>
-                          <ScienceIcon sx={{ color: '#4CAF50', fontSize: 20 }} />
-                          <Typography variant="body2" sx={{ color: '#2e7d32', fontWeight: 600 }}>
+                        <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 1.2, mb: 1, display: 'flex', alignItems: 'center', gap: 1, border: '1px solid #1976d2' }}>
+                          <ScienceIcon sx={{ color: '#1976d2', fontSize: 20 }} />
+                          <Typography variant="body2" sx={{ color: '#1565c0', fontWeight: 600 }}>
                             {getTrlDescriptionOnly(Number(project.trlLevel))}
                           </Typography>
                         </Box>
                       )}
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic' }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                         {project.description.slice(0, 120)}...
                       </Typography>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
@@ -412,11 +429,11 @@ export const MyProjects = () => {
                           <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
                         )}
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
                         <Typography variant="caption" color="text.secondary">
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
-                        <IconButton size="small" sx={{ color: '#4CAF50' }}>
+                        <IconButton size="small" sx={{ color: '#1976d2' }}>
                           <VisibilityIcon />
                         </IconButton>
                       </Box>
@@ -435,27 +452,29 @@ export const MyProjects = () => {
         <Box>
           {activeProjects.length === 0 ? (
             <Paper sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-              No tienes proyectos en desarrollo aún.
+              No tienes proyectos activos aún.
             </Paper>
           ) : (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-              {activeProjects.slice(0, activeLimit).map((project) => (
-                <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+               {activeProjects.slice(0, activeLimit).map((project) => (
+                 <Box key={project.id} sx={{ width: '400px', flexShrink: 0 }}>
                   <Card sx={{ 
-                    height: '100%', 
+                    height: '320px', 
                     cursor: 'pointer', 
                     borderRadius: 3, 
                     boxShadow: 4, 
                     background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                    border: '2px solid #9C27B0',
+                    border: '2px solid #388e3c',
                     transition: 'all 0.3s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
                     '&:hover': { 
                       transform: 'translateY(-8px) scale(1.02)', 
                       boxShadow: '0 12px 40px rgba(156, 39, 176, 0.3)',
                       borderColor: '#7B1FA2'
                     }
                   }} onClick={() => handleViewDetails(project)}>
-                    <CardContent>
+                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                         <Typography variant="h6" fontWeight={700} sx={{ flex: 1, color: '#9C27B0' }}>{project.title}</Typography>
                         <Chip icon={getStatusIcon(project.status)} label={getStatusText(project.status)} color={getStatusColor(project.status) as any} size="small" sx={{ fontWeight: 600 }} />
@@ -479,7 +498,7 @@ export const MyProjects = () => {
                           </Typography>
                         </Box>
                       )}
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic' }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                         {project.description.slice(0, 120)}...
                       </Typography>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
@@ -490,7 +509,7 @@ export const MyProjects = () => {
                           <Chip label={`+${project.technologies.length - 3}`} size="small" variant="outlined" />
                         )}
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
                         <Typography variant="caption" color="text.secondary">
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
@@ -515,48 +534,50 @@ export const MyProjects = () => {
               No tienes proyectos completados aún.
             </Paper>
           ) : (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-              {completedProjects.slice(0, completedLimit).map((project) => (
-                <Box key={project.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+               {completedProjects.slice(0, completedLimit).map((project) => (
+                 <Box key={project.id} sx={{ width: '400px', flexShrink: 0 }}>
                   <Card sx={{ 
-                    height: '100%', 
+                    height: '320px', 
                     cursor: 'pointer', 
                     borderRadius: 3,
                     boxShadow: 4,
                     background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                     border: '2px solid #2196F3',
                     transition: 'all 0.3s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
                     '&:hover': { 
                       transform: 'translateY(-8px) scale(1.02)', 
                       boxShadow: '0 12px 40px rgba(33, 150, 243, 0.3)',
                       borderColor: '#1976D2'
                     }
                   }} onClick={() => handleViewDetails(project)}>
-                    <CardContent>
-                                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                          <Box sx={{ flex: 1 }}>
-                            <Typography variant="h6" gutterBottom sx={{ color: '#2196F3', fontWeight: 700 }}>
-                              {project.title}
+                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="h6" gutterBottom sx={{ color: '#2196F3', fontWeight: 700 }}>
+                            {project.title}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Avatar sx={{ mr: 1, bgcolor: '#2196F3', width: 24, height: 24 }}>
+                              <BusinessIcon fontSize="small" />
+                            </Avatar>
+                            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                              <b>Empresa:</b> {project.company}
                             </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                              <Avatar sx={{ mr: 1, bgcolor: '#2196F3', width: 24, height: 24 }}>
-                                <BusinessIcon fontSize="small" />
-                              </Avatar>
-                              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                                <b>Empresa:</b> {project.company}
-                              </Typography>
-                            </Box>
                           </Box>
-                          <Chip
-                            icon={getStatusIcon(project.status)}
-                            label={getStatusText(project.status)}
-                            color={getStatusColor(project.status) as any}
-                            size="small"
-                            sx={{ fontWeight: 600 }}
-                          />
                         </Box>
+                        <Chip
+                          icon={getStatusIcon(project.status)}
+                          label={getStatusText(project.status)}
+                          color={getStatusColor(project.status) as any}
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </Box>
                       
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                         {project.description.substring(0, 100)}...
                       </Typography>
 
@@ -590,7 +611,7 @@ export const MyProjects = () => {
                         )}
                       </Box>
 
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
                         <Typography variant="caption" color="text.secondary">
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>

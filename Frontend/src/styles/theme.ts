@@ -3,29 +3,29 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
-      light: '#42a5f5',
-      dark: '#1565c0',
+      main: '#2563eb', // Azul más vibrante
+      light: '#3b82f6', // Azul claro más vibrante
+      dark: '#1d4ed8', // Azul oscuro más vibrante
     },
     secondary: {
-      main: '#9c27b0',
-      light: '#ba68c8',
-      dark: '#7b1fa2',
+      main: '#a855f7', // Púrpura más vibrante
+      light: '#c084fc', // Púrpura claro más vibrante
+      dark: '#9333ea', // Púrpura oscuro más vibrante
     },
     error: {
-      main: '#d32f2f',
+      main: '#dc2626', // Rojo más vibrante
     },
     warning: {
-      main: '#ed6c02',
+      main: '#ea580c', // Naranja más vibrante
     },
     info: {
-      main: '#0288d1',
+      main: '#0891b2', // Cian más vibrante
     },
     success: {
-      main: '#2e7d32',
+      main: '#16a34a', // Verde más vibrante
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f8fafc', // Gris más claro y limpio
       paper: '#ffffff',
     },
   },

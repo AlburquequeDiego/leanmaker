@@ -860,12 +860,23 @@ def api_dashboard_company_stats(request):
             total_projects = Proyecto.objects.filter(company=company).count()
             print(f'📊 [COMPANY STATS] Total proyectos: {total_projects}')
             
-            # 2. Proyectos activos (solo active, no published)
-            active_projects = Proyecto.objects.filter(
+            # 2. Proyectos activos (en desarrollo o publicados con estudiantes trabajando)
+            # Proyectos con estado 'active' (en desarrollo)
+            active_status_projects = Proyecto.objects.filter(
                 company=company,
                 status__name='active'
             ).count()
-            print(f'📊 [COMPANY STATS] Proyectos activos: {active_projects}')
+            
+            # Proyectos con estado 'published' que tienen estudiantes aceptados
+            published_with_students = Proyecto.objects.filter(
+                company=company,
+                status__name='published'
+            ).filter(
+                application_project__status__in=['accepted', 'active', 'completed']
+            ).distinct().count()
+            
+            active_projects = active_status_projects + published_with_students
+            print(f'📊 [COMPANY STATS] Proyectos activos: {active_projects} (active: {active_status_projects}, published con estudiantes: {published_with_students})')
             
             # 2.1. Proyectos publicados (separado de activos)
             published_projects = Proyecto.objects.filter(
@@ -892,11 +903,12 @@ def api_dashboard_company_stats(request):
             ).count()
             print(f'📊 [COMPANY STATS] Aplicaciones pendientes: {pending_applications}')
             
-            # 6. Estudiantes activos (todos los que han participado en proyectos de la empresa)
-            active_students = MiembroProyecto.objects.filter(
-                proyecto__company=company,
-                rol='estudiante'
-            ).values('usuario').distinct().count()
+            # 6. Estudiantes activos (estudiantes que están trabajando actualmente en proyectos)
+            # Estudiantes con aplicaciones aceptadas, activas o completadas
+            active_students = Aplicacion.objects.filter(
+                project__company=company,
+                status__in=['accepted', 'active', 'completed']
+            ).values('student').distinct().count()
             print(f'📊 [COMPANY STATS] Estudiantes activos: {active_students}')
             
             # 7. Rating promedio de la empresa

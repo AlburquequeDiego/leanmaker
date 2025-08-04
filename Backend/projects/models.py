@@ -8,6 +8,7 @@ from users.models import User
 import uuid
 from django.utils import timezone
 import json
+from decimal import Decimal
 
 class Proyecto(models.Model):
     """
@@ -227,20 +228,26 @@ class Proyecto(models.Model):
                 miembro.rol = 'estudiante'
                 miembro.esta_activo = True
                 miembro.save(update_fields=['rol', 'esta_activo'])
-        # Recalcula el número de estudiantes activos
-        self.current_students = self.miembros.filter(
-            rol='estudiante', esta_activo=True
+        
+        # Recalcula el número de estudiantes activos basado en aplicaciones aceptadas
+        from applications.models import Aplicacion
+        self.current_students = Aplicacion.objects.filter(
+            project=self,
+            status__in=['accepted', 'active', 'completed']
         ).count()
         self.save(update_fields=['current_students'])
         return True
     
     def remover_estudiante(self):
         """Remueve un estudiante del proyecto"""
-        if self.current_students > 0:
-            self.current_students -= 1
-            self.save(update_fields=['current_students'])
-            return True
-        return False
+        # Recalcula el número de estudiantes activos basado en aplicaciones aceptadas
+        from applications.models import Aplicacion
+        self.current_students = Aplicacion.objects.filter(
+            project=self,
+            status__in=['accepted', 'active', 'completed']
+        ).count()
+        self.save(update_fields=['current_students'])
+        return True
     
     def marcar_como_featured(self):
         """Marca el proyecto como destacado"""
@@ -276,20 +283,21 @@ class Proyecto(models.Model):
         # Generar horas trabajadas para cada asignación
         for asignacion in asignaciones:
             # Calcular horas totales del proyecto
-            horas_proyecto = self.required_hours or self.hours_per_week * self.duration_weeks
+            if self.required_hours and self.required_hours > 0:
+                horas_proyecto = self.required_hours
+            else:
+                horas_proyecto = self.hours_per_week * self.duration_weeks
             
             # Crear registro de horas trabajadas
             work_hour = WorkHour.objects.create(
-                assignment=asignacion,
                 student=asignacion.application.student,
                 project=self,
-                company=self.company,
                 date=timezone.now().date(),
-                hours_worked=horas_proyecto,
+                hours_worked=Decimal(str(horas_proyecto)),
                 description=f"Horas automáticas del proyecto completado: {self.title}",
-                approved=False,  # Pendiente de validación del admin
-                approved_by=None,
-                approved_at=None,
+                is_verified=False,  # Pendiente de validación del admin
+                verified_by=None,
+                verified_at=None,
                 is_project_completion=True
             )
             

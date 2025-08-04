@@ -332,63 +332,63 @@ export default function AdminDashboard() {
             maxWidth: '100%',
             width: '100%'
           }}>
-            {/* Usuarios - Azul */}
+            {/* Usuarios - Azul primario vibrante */}
             <KPICard
               title="Usuarios"
               value={totalUsers}
               description="Total de usuarios registrados en el sistema, incluyendo estudiantes, empresas y administradores"
               icon={<PeopleIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#42a5f5"
+              bgColor="#3b82f6"
               textColor="white"
             />
             
-            {/* Empresas - Morado */}
+            {/* Empresas - Rojo primario vibrante */}
             <KPICard
               title="Empresas"
               value={totalCompanies}
               description="Empresas activas que han publicado proyectos y están participando en el programa"
               icon={<BusinessIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#9c27b0"
+              bgColor="#ef4444"
               textColor="white"
             />
             
-            {/* Estudiantes - Verde */}
+            {/* Estudiantes - Verde primario vibrante */}
             <KPICard
               title="Estudiantes"
               value={totalStudents}
               description="Estudiantes universitarios activos que pueden aplicar a proyectos y registrar horas de trabajo"
               icon={<SchoolIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#43a047"
+              bgColor="#10b981"
               textColor="white"
             />
             
-            {/* Proyectos - Azul */}
+            {/* Proyectos - Amarillo primario vibrante */}
             <KPICard
               title="Proyectos"
               value={totalProjects}
               description="Proyectos activos disponibles para que los estudiantes apliquen y desarrollen sus habilidades"
               icon={<WorkIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#42a5f5"
+              bgColor="#f59e0b"
               textColor="white"
             />
             
-            {/* Postulaciones - Blanco */}
+            {/* Postulaciones - Púrpura primario vibrante */}
             <KPICard
               title="Postulaciones"
               value={pendingApplications}
               description="Aplicaciones de estudiantes a proyectos que están pendientes de revisión por las empresas"
-              icon={<PendingIcon sx={{ fontSize: 32, mr: 1, color: '#666666' }} />}
-              bgColor="#ffffff"
-              textColor="#333333"
+              icon={<PendingIcon sx={{ fontSize: 32, mr: 1, color: '#ffffff' }} />}
+              bgColor="#8b5cf6"
+              textColor="white"
             />
             
-            {/* Asignaciones de Strikes - Naranja */}
+            {/* Asignaciones de Strikes - Naranja primario vibrante */}
             <KPICard
               title="Asignaciones de Strikes"
               value={strikesAlerts}
               description="Reportes de incidencias pendientes que requieren revisión administrativa y posible asignación de strikes"
               icon={<PendingIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#ff9800"
+              bgColor="#f97316"
               textColor="white"
             />
           </Box>

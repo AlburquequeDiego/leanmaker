@@ -83,6 +83,14 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
       setLoading(true);
       setError(null);
       const adaptedProjects = await projectService.getMyProjects();
+      console.log('🔍 [Projects] Proyectos adaptados recibidos:', adaptedProjects);
+      console.log('🔍 [Projects] Estructura de proyectos:');
+      adaptedProjects.forEach((project: any, index: number) => {
+        console.log(`  - Proyecto ${index + 1}: ${project.title}`);
+        console.log(`    - status: ${project.status}`);
+        console.log(`    - estudiantes length: ${project.estudiantes?.length || 0}`);
+        console.log(`    - estudiantes:`, project.estudiantes);
+      });
       setProjects(adaptedProjects);
     } catch (err: any) {
       console.error('Error cargando proyectos:', err);
@@ -262,7 +270,14 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
       }
     } catch (error: any) {
       console.error('Error activando proyecto:', error);
-      setError(error.response?.data?.error || 'Error al activar proyecto');
+      const errorMessage = error.response?.data?.error || 'Error al activar proyecto';
+      
+      // Mostrar mensaje específico para el caso de no tener estudiantes aceptados
+      if (errorMessage.includes('estudiante aceptado')) {
+        setError('❌ No puedes activar este proyecto. Debes tener al menos un estudiante aceptado antes de poder activar el proyecto. Revisa las aplicaciones pendientes y acepta a un estudiante primero.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setUpdatingProject(null);
     }
@@ -353,8 +368,15 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
     setLoadingDetails(true);
     try {
       const response = await api.get(`/api/projects/${project.id}/`);
+      console.log('🔍 [Projects] Detalles del proyecto recibidos:', response);
+      console.log('🔍 [Projects] Estructura de detalles:');
+      console.log(`  - title: ${response.title}`);
+      console.log(`  - status: ${response.status}`);
+      console.log(`  - estudiantes length: ${response.estudiantes?.length || 0}`);
+      console.log(`  - estudiantes:`, response.estudiantes);
       setProjectDetails(response.data || response);
     } catch (e) {
+      console.error('🔍 [Projects] Error obteniendo detalles:', e);
       setProjectDetails(null);
     } finally {
       setLoadingDetails(false);
@@ -506,6 +528,15 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     color="success"
                     sx={{ fontWeight: 600 }}
                   />
+                  {project.estudiantes && project.estudiantes.length > 0 && (
+                    <Chip 
+                      label={`${project.estudiantes.length} participantes`} 
+                      size="small" 
+                      color="info"
+                      variant="outlined"
+                      sx={{ fontWeight: 500 }}
+                    />
+                  )}
                 </Box>
               </Box>
               <Box sx={{ 
@@ -698,6 +729,15 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
           <Typography variant="body1" gutterBottom>
             ¿Estás seguro de que deseas activar el proyecto <strong>"{selectedProject?.title}"</strong>?
           </Typography>
+          
+          {/* Verificación de estudiantes aceptados */}
+          {selectedProject && (!selectedProject.estudiantes || selectedProject.estudiantes.length === 0) && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              ⚠️ <strong>Atención:</strong> Este proyecto no tiene estudiantes aceptados. 
+              Debes aceptar un estudiante para poder activar el proyecto.
+            </Alert>
+          )}
+          
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             - El proyecto cambiará a estado "Activo".<br/>
             - Los estudiantes aceptados pasarán a "Proyectos Activos" y podrán comenzar a trabajar.<br/>
@@ -722,7 +762,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
             color="primary" 
             variant="contained"
             sx={{ borderRadius: 2, px: 3 }}
-            disabled={updatingProject === selectedProject?.id}
+            disabled={
+              updatingProject === selectedProject?.id || 
+              (selectedProject && (!selectedProject.estudiantes || selectedProject.estudiantes.length === 0))
+            }
           >
             {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Activar'}
           </Button>
@@ -919,18 +962,50 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
               {projectDetails && projectDetails.estudiantes && (
                 <Grid item xs={12}>
                   <Typography variant="h6" fontWeight={600} gutterBottom>
-                    Estudiantes participantes
+                    Estudiantes participantes ({projectDetails.estudiantes.length})
                   </Typography>
                   {projectDetails.estudiantes.length === 0 ? (
                     <Typography variant="body2" color="text.secondary">
                       No hay estudiantes asignados a este proyecto.
                     </Typography>
                   ) : (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {projectDetails.estudiantes.map((est: any) => (
-                        <Box key={est.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1, bgcolor: '#f8f9fa', borderRadius: 1 }}>
-                          <Chip label={est.nombre} color="primary" />
-                          <Typography variant="body2" color="text.secondary">{est.email}</Typography>
+                        <Box key={est.id} sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'space-between',
+                          p: 2, 
+                          bgcolor: '#f8f9fa', 
+                          borderRadius: 2,
+                          border: '1px solid #e0e0e0'
+                        }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Chip 
+                              label={est.nombre} 
+                              color={est.status === 'active' ? 'success' : est.status === 'completed' ? 'secondary' : 'primary'} 
+                              size="medium"
+                            />
+                            <Typography variant="body2" color="text.secondary">
+                              {est.email}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip 
+                              label={est.status === 'accepted' ? 'Aceptado' : 
+                                     est.status === 'active' ? 'Activo' : 
+                                     est.status === 'completed' ? 'Completado' : est.status} 
+                              color={est.status === 'active' ? 'success' : 
+                                     est.status === 'completed' ? 'secondary' : 'primary'} 
+                              size="small"
+                              variant="outlined"
+                            />
+                            {est.applied_at && (
+                              <Typography variant="caption" color="text.secondary">
+                                Aplicó: {new Date(est.applied_at).toLocaleDateString()}
+                              </Typography>
+                            )}
+                          </Box>
                         </Box>
                       ))}
                     </Box>

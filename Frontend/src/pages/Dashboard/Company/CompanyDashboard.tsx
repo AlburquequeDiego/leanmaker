@@ -222,7 +222,7 @@ export default function CompanyDashboard() {
                value={publishedProjects}
                description="Proyectos que están publicados y disponibles para que los estudiantes se postulen. Representa las oportunidades activas que la empresa ofrece."
                icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
-               bgColor="#2196F3"
+               bgColor="#2563eb"
                textColor="white"
              />
              
@@ -232,7 +232,7 @@ export default function CompanyDashboard() {
                value={activeProjects}
                description="Proyectos que están actualmente en desarrollo y siendo trabajados activamente por estudiantes. Representa la actividad actual de la empresa en la plataforma."
                icon={<PlayArrowIcon sx={{ fontSize: 28 }} />}
-               bgColor="#00BCD4"
+               bgColor="#16a34a"
                textColor="white"
              />
              
@@ -242,7 +242,7 @@ export default function CompanyDashboard() {
                value={completedProjects}
                description="Proyectos que han sido finalizados exitosamente. Muestra el historial de proyectos completados y la capacidad de la empresa para llevar proyectos a término."
                icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
-               bgColor="#4CAF50"
+               bgColor="#15803d"
                textColor="white"
              />
              
@@ -252,7 +252,7 @@ export default function CompanyDashboard() {
                value={totalProjects}
                description="Total de proyectos creados por la empresa en la plataforma. Incluye proyectos activos, completados y cancelados."
                icon={<BusinessIcon sx={{ fontSize: 28 }} />}
-               bgColor="#03A9F4"
+               bgColor="#0891b2"
                textColor="white"
              />
              
@@ -262,7 +262,7 @@ export default function CompanyDashboard() {
                value={pendingApplications}
                description="Solicitudes de estudiantes que están esperando revisión por parte de la empresa. Representa nuevas oportunidades de colaboración."
                icon={<PeopleIcon sx={{ fontSize: 28 }} />}
-               bgColor="#9C27B0"
+               bgColor="#a855f7"
                textColor="white"
              />
              
@@ -272,7 +272,7 @@ export default function CompanyDashboard() {
                value={totalApplications}
                description="Total de solicitudes recibidas de estudiantes para todos los proyectos de la empresa. Muestra el interés generado por los proyectos."
                icon={<AssignmentTurnedInIcon sx={{ fontSize: 28 }} />}
-               bgColor="#FF9800"
+               bgColor="#ea580c"
                textColor="white"
              />
              
@@ -292,33 +292,33 @@ export default function CompanyDashboard() {
                value={averageRating && averageRating > 0 ? averageRating : 'Sin calificaciones'}
                description="Calificación promedio que la empresa ha recibido de los estudiantes. Refleja la satisfacción y calidad de la experiencia proporcionada."
                icon={<StarIcon sx={{ fontSize: 28 }} />}
-               bgColor="#3F51B5"
+               bgColor="#6366f1"
                textColor="white"
              />
              
-             {/* Tasa de Éxito - Verde esmeralda brillante */}
-             <KPICard
-               title="Tasa de Éxito"
-               value={`${successRate}%`}
-               description="Porcentaje de proyectos que han sido completados exitosamente. Muestra la eficiencia y capacidad de la empresa para finalizar proyectos."
-               icon={<TrendingUpIcon sx={{ fontSize: 28 }} />}
-               bgColor="#00E676"
-               textColor="black"
-             />
+                           {/* Tasa de Éxito - Verde suave */}
+              <KPICard
+                title="Tasa de Éxito"
+                value={`${successRate}%`}
+                description="Porcentaje de proyectos que han sido completados exitosamente. Muestra la eficiencia y capacidad de la empresa para finalizar proyectos."
+                icon={<TrendingUpIcon sx={{ fontSize: 28 }} />}
+                bgColor="#22c55e"
+                textColor="white"
+              />
           </Box>
           
           {/* Tarjeta adicional debajo centrada */}
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
             <Box sx={{ width: { xs: '100%', sm: '50%', md: '33%' } }}>
-                             {/* Horas Ofrecidas - Rojo vibrante */}
-               <KPICard
-                 title="Horas Ofrecidas"
-                 value={totalHoursOffered}
-                 description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
-                 icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
-                 bgColor="#F44336"
-                 textColor="white"
-               />
+                                             {/* Horas Ofrecidas - Rojo vibrante */}
+                <KPICard
+                  title="Horas Ofrecidas"
+                  value={totalHoursOffered}
+                  description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
+                  icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
+                  bgColor="#dc2626"
+                  textColor="white"
+                />
             </Box>
           </Box>
         </>

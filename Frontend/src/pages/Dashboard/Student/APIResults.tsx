@@ -2,7 +2,6 @@ import {
   Box,
   Typography,
   Paper,
-
   Button,
   Table,
   TableBody,
@@ -18,6 +17,11 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  Card,
+  CardContent,
+  Grid,
+  Tooltip,
+  Divider,
 } from '@mui/material';
 import {
   Assessment as AssessmentIcon,
@@ -27,6 +31,14 @@ import {
   EmojiEvents as EmojiEventsIcon,
   Psychology as PsychologyIcon,
   Code as CodeIcon,
+  Star as StarIcon,
+  Timeline as TimelineIcon,
+  CheckCircle as CheckCircleIcon,
+  Pending as PendingIcon,
+  Cancel as CancelIcon,
+  Rocket as RocketIcon,
+  Speed as SpeedIcon,
+  WorkspacePremium as WorkspacePremiumIcon,
 } from '@mui/icons-material';
 import Snackbar from '@mui/material/Snackbar';
 import { useState, useEffect } from 'react';
@@ -67,6 +79,7 @@ const apiLevelDescriptions = {
     ],
     icon: <PsychologyIcon />,
     color: 'info' as const,
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   },
   2: {
     title: 'Nivel API 2: Asesoría + Propuesta',
@@ -79,6 +92,7 @@ const apiLevelDescriptions = {
     ],
     icon: <CodeIcon />,
     color: 'primary' as const,
+    gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
   },
   3: {
     title: 'Nivel API 3: Asesoría + Propuesta + Implementación',
@@ -91,6 +105,7 @@ const apiLevelDescriptions = {
     ],
     icon: <TrendingUpIcon />,
     color: 'success' as const,
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   },
   4: {
     title: 'Nivel API 4: Asesoría + Propuesta + Implementación + Upgrade',
@@ -103,6 +118,7 @@ const apiLevelDescriptions = {
     ],
     icon: <EmojiEventsIcon />,
     color: 'warning' as const,
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
   },
 };
 
@@ -169,6 +185,21 @@ export const APIResults = () => {
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'approved': return <CheckCircleIcon />;
+      case 'rejected': return <CancelIcon />;
+      case 'pending': return <PendingIcon />;
+      default: return <PendingIcon />;
+    }
+  };
+
+  // Calcular estadísticas
+  const totalRequests = apiRequests.length;
+  const approvedRequests = apiRequests.filter(req => req.status === 'approved').length;
+  const pendingRequests = apiRequests.filter(req => req.status === 'pending').length;
+  const rejectedRequests = apiRequests.filter(req => req.status === 'rejected').length;
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
@@ -179,10 +210,29 @@ export const APIResults = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-        <AssessmentIcon sx={{ mr: 2, color: 'primary.main' }} />
-        Resultados del Nivel API
-      </Typography>
+      {/* Header con título mejorado */}
+      <Box sx={{ mb: 4 }}>
+        <Typography 
+          variant="h3" 
+          gutterBottom 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            fontWeight: 'bold',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            mb: 1
+          }}
+        >
+          <AssessmentIcon sx={{ mr: 2, fontSize: '2.5rem', color: 'primary.main' }} />
+          Resultados del Nivel API
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ ml: 6 }}>
+          Gestiona y visualiza tu progreso en el sistema de niveles API
+        </Typography>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -190,85 +240,236 @@ export const APIResults = () => {
         </Alert>
       )}
 
-      {/* Nivel API Actual */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <TrendingUpIcon sx={{ mr: 1, color: 'primary.main' }} />
-          Nivel API Actual: <Chip label={`Nivel ${currentApiLevel}`} color={getLevelColor(currentApiLevel) as any} size="small" sx={{ ml: 2 }} />
-        </Typography>
-      </Paper>
+      {/* Estadísticas generales */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <RocketIcon sx={{ fontSize: '3rem', mb: 1 }} />
+              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                {currentApiLevel}
+              </Typography>
+              <Typography variant="body2">
+                Nivel API Actual
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+            color: 'white',
+            boxShadow: '0 8px 32px rgba(17, 153, 142, 0.3)'
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <CheckCircleIcon sx={{ fontSize: '3rem', mb: 1 }} />
+              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                {approvedRequests}
+              </Typography>
+              <Typography variant="body2">
+                Solicitudes Aprobadas
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            color: 'white',
+            boxShadow: '0 8px 32px rgba(240, 147, 251, 0.3)'
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <PendingIcon sx={{ fontSize: '3rem', mb: 1 }} />
+              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                {pendingRequests}
+              </Typography>
+              <Typography variant="body2">
+                Solicitudes Pendientes
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            color: 'white',
+            boxShadow: '0 8px 32px rgba(79, 172, 254, 0.3)'
+          }}>
+            <CardContent sx={{ textAlign: 'center', p: 3 }}>
+              <HistoryIcon sx={{ fontSize: '3rem', mb: 1 }} />
+              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                {totalRequests}
+              </Typography>
+              <Typography variant="body2">
+                Total de Solicitudes
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Nivel API Actual con información detallada */}
+      <Card sx={{ 
+        mb: 4,
+        background: apiLevelDescriptions[currentApiLevel as keyof typeof apiLevelDescriptions]?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.15)'
+      }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <WorkspacePremiumIcon sx={{ fontSize: '3rem', mr: 2 }} />
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+                Nivel API {currentApiLevel}
+              </Typography>
+              <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                {apiLevelDescriptions[currentApiLevel as keyof typeof apiLevelDescriptions]?.title}
+              </Typography>
+            </Box>
+          </Box>
+          
+          <Typography variant="body1" sx={{ mb: 3, opacity: 0.9 }}>
+            {apiLevelDescriptions[currentApiLevel as keyof typeof apiLevelDescriptions]?.description}
+          </Typography>
+          
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {apiLevelDescriptions[currentApiLevel as keyof typeof apiLevelDescriptions]?.capabilities.map((capability, index) => (
+              <Chip
+                key={index}
+                label={capability}
+                sx={{ 
+                  backgroundColor: 'rgba(255,255,255,0.2)', 
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.3)'
+                  }
+                }}
+              />
+            ))}
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Historial de Peticiones de Subida de Nivel API */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-            <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-            Solicitudes API
-          </Typography>
-          <ShowLatestFilter
-            value={showLatest}
-            onChange={setShowLatest}
-          />
-        </Box>
-        {apiRequests.length === 0 ? (
-          <Alert severity="info">
-            No tienes peticiones de subida de nivel API.
-          </Alert>
-        ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Fecha</TableCell>
-                  <TableCell>Nivel Actual</TableCell>
-                  <TableCell>Nivel Solicitado</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Feedback</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {/* Ordenar historial por fecha descendente (más reciente primero) */}
-                {apiRequests
-                  .slice()
-                  .sort((a, b) => new Date(b.submitted_at || 0).getTime() - new Date(a.submitted_at || 0).getTime())
-                  .slice(0, showLatest)
-                  .map((req) => {
-                    // Si current_level es 0, mostrar currentApiLevel o '-'
-                    const nivelActual = req.current_level && req.current_level > 0 && !isNaN(Number(req.current_level)) ? req.current_level : currentApiLevel;
-                    const nivelSolicitado = req.requested_level && req.requested_level > 0 && !isNaN(Number(req.requested_level)) ? req.requested_level : '-';
-                    let fecha = '-';
-                    if (req.submitted_at) {
-                      const d = new Date(req.submitted_at);
-                      fecha = isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
-                    }
-                    // Mensaje de avance si fue aprobado
-                    let avance = '';
-                    if (req.status === 'approved' && nivelActual !== '-' && nivelSolicitado !== '-' && nivelActual !== nivelSolicitado) {
-                      avance = `¡Felicidades! Subiste de nivel ${nivelActual} a nivel ${nivelSolicitado}.`;
-                    }
-                    return (
-                      <TableRow key={req.id}>
-                        <TableCell>{fecha}</TableCell>
-                        <TableCell>
-                          <Chip label={`Nivel ${nivelActual}`} color={getLevelColor(Number(nivelActual)) as any} size="small" />
-                        </TableCell>
-                        <TableCell>
-                          <Chip label={`Nivel ${nivelSolicitado}`} color={getLevelColor(Number(nivelSolicitado)) as any} size="small" />
-                        </TableCell>
-                        <TableCell>
-                          <Chip label={getStatusText(req.status)} color={getStatusColor(req.status) as any} size="small" />
-                        </TableCell>
-                        <TableCell>
-                          {req.feedback || avance || '-'}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </Paper>
+      <Card sx={{ 
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <TimelineIcon sx={{ mr: 2, fontSize: '2rem', color: 'primary.main' }} />
+              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                Historial de Solicitudes
+              </Typography>
+            </Box>
+            <ShowLatestFilter
+              value={showLatest}
+              onChange={setShowLatest}
+            />
+          </Box>
+          
+          <Divider sx={{ mb: 3 }} />
+          
+          {apiRequests.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <QuizIcon sx={{ fontSize: '4rem', color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                No tienes solicitudes de subida de nivel API
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Cuando realices una solicitud, aparecerá aquí tu historial completo
+              </Typography>
+            </Box>
+          ) : (
+            <TableContainer sx={{ borderRadius: 2, overflow: 'hidden' }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: 'primary.main' }}>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Nivel Actual</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Nivel Solicitado</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Estado</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Feedback</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* Ordenar historial por fecha descendente (más reciente primero) */}
+                  {apiRequests
+                    .slice()
+                    .sort((a, b) => new Date(b.submitted_at || 0).getTime() - new Date(a.submitted_at || 0).getTime())
+                    .slice(0, showLatest)
+                    .map((req, index) => {
+                      // Si current_level es 0, mostrar currentApiLevel o '-'
+                      const nivelActual = req.current_level && req.current_level > 0 && !isNaN(Number(req.current_level)) ? req.current_level : currentApiLevel;
+                      const nivelSolicitado = req.requested_level && req.requested_level > 0 && !isNaN(Number(req.requested_level)) ? req.requested_level : '-';
+                      let fecha = '-';
+                      if (req.submitted_at) {
+                        const d = new Date(req.submitted_at);
+                        fecha = isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
+                      }
+                      // Mensaje de avance si fue aprobado
+                      let avance = '';
+                      if (req.status === 'approved' && nivelActual !== '-' && nivelSolicitado !== '-' && nivelActual !== nivelSolicitado) {
+                        avance = `¡Felicidades! Subiste de nivel ${nivelActual} a nivel ${nivelSolicitado}.`;
+                      }
+                      return (
+                        <TableRow 
+                          key={req.id}
+                          sx={{ 
+                            backgroundColor: index % 2 === 0 ? 'background.paper' : 'action.hover',
+                            '&:hover': {
+                              backgroundColor: 'action.selected'
+                            }
+                          }}
+                        >
+                          <TableCell sx={{ fontWeight: 'medium' }}>{fecha}</TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={`Nivel ${nivelActual}`} 
+                              color={getLevelColor(Number(nivelActual)) as any} 
+                              size="small"
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={`Nivel ${nivelSolicitado}`} 
+                              color={getLevelColor(Number(nivelSolicitado)) as any} 
+                              size="small"
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={getStatusText(req.status)} 
+                              color={getStatusColor(req.status) as any} 
+                              size="small"
+                              icon={getStatusIcon(req.status)}
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" sx={{ maxWidth: 300 }}>
+                              {req.feedback || avance || '-'}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </CardContent>
+      </Card>
     </Box>
   );
 }; 

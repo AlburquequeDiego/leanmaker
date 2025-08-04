@@ -373,6 +373,7 @@ export const Profile = () => {
   const [newSkillLevel, setNewSkillLevel] = useState('Básico');
   const [selectedArea, setSelectedArea] = useState('');
   const [userId, setUserId] = useState<string>('');
+  const [studentData, setStudentData] = useState<any>(null);
 
   // Estados para cambio de contraseña
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
@@ -399,17 +400,17 @@ export const Profile = () => {
       
       // Obtener datos del estudiante
       const studentResponse = await apiService.get('/api/students/me/');
-      const studentData = studentResponse as any;
+      const studentDataResponse = studentResponse as any;
       
       console.log('📄 [StudentProfile] Datos de usuario recibidos:', userData);
-      console.log('📄 [StudentProfile] Datos de estudiante recibidos:', studentData);
+      console.log('📄 [StudentProfile] Datos de estudiante recibidos:', studentDataResponse);
       console.log('📄 [StudentProfile] userData.birthdate:', userData.birthdate);
       console.log('📄 [StudentProfile] userData.gender:', userData.gender);
-      console.log('📄 [StudentProfile] studentData.education_level:', studentData.education_level);
-      console.log('📄 [StudentProfile] studentData.university:', studentData.university);
-      console.log('📄 [StudentProfile] studentData.user_data:', studentData.user_data);
-      console.log('📄 [StudentProfile] studentData.user_data?.birthdate:', studentData.user_data?.birthdate);
-      console.log('📄 [StudentProfile] studentData.user_data?.gender:', studentData.user_data?.gender);
+      console.log('📄 [StudentProfile] studentData.education_level:', studentDataResponse.education_level);
+      console.log('📄 [StudentProfile] studentData.university:', studentDataResponse.university);
+      console.log('📄 [StudentProfile] studentData.user_data:', studentDataResponse.user_data);
+      console.log('📄 [StudentProfile] studentData.user_data?.birthdate:', studentDataResponse.user_data?.birthdate);
+      console.log('📄 [StudentProfile] studentData.user_data?.gender:', studentDataResponse.user_data?.gender);
       
       // Mapear y unir los datos
       const safeData: ProfileData = {
@@ -417,30 +418,31 @@ export const Profile = () => {
         apellido: userData.last_name || '',
         email: userData.email || '',
         telefono: userData.phone || '',
-        fechaNacimiento: userData.birthdate || (studentData.perfil_detallado?.fecha_nacimiento || ''),
-        genero: userData.gender || (studentData.perfil_detallado?.genero || ''),
-        institucion: studentData.university || studentData.perfil_detallado?.universidad || 'INACAP',
-        carrera: userData.career || studentData.career || '',
-        nivel: studentData.education_level || 'CFT', // Usar valor por defecto válido
-        habilidades: Array.isArray(studentData.skills) ? studentData.skills.map((skill: string) => ({ nombre: skill, nivel: 'Intermedio' })) : [],
+        fechaNacimiento: userData.birthdate || (studentDataResponse.user_data?.birthdate || ''),
+        genero: userData.gender || (studentDataResponse.user_data?.gender || ''),
+        institucion: studentDataResponse.university || 'INACAP',
+        carrera: userData.career || studentDataResponse.career || '',
+        nivel: studentDataResponse.education_level || 'CFT', // Usar valor por defecto válido
+        habilidades: Array.isArray(studentDataResponse.skills) ? studentDataResponse.skills.map((skill: string) => ({ nombre: skill, nivel: 'Intermedio' })) : [],
         biografia: userData.bio || '', // Carta de presentación
-        cv_link: studentData.cv_link || '',
-        certificado_link: studentData.certificado_link || '',
-        area: studentData.area || '',
-        modalidadesDisponibles: studentData.availability ? [studentData.availability] : [],
-        experienciaPrevia: studentData.experience_years?.toString() || '',
-        linkedin: studentData.linkedin_url || '',
-        github: studentData.github_url || '',
-        portafolio: studentData.portfolio_url || '',
+        cv_link: studentDataResponse.cv_link || '',
+        certificado_link: studentDataResponse.certificado_link || '',
+        area: studentDataResponse.area || '',
+        modalidadesDisponibles: studentDataResponse.availability ? [studentDataResponse.availability] : [],
+        experienciaPrevia: studentDataResponse.experience_years?.toString() || '',
+        linkedin: studentDataResponse.linkedin_url || '',
+        github: studentDataResponse.github_url || '',
+        portafolio: studentDataResponse.portfolio_url || '',
       };
 
-      console.log('📄 [StudentProfile] CV Link recibido del backend:', studentData.cv_link);
-      console.log('📄 [StudentProfile] Certificado Link recibido del backend:', studentData.certificado_link);
+      console.log('📄 [StudentProfile] CV Link recibido del backend:', studentDataResponse.cv_link);
+      console.log('📄 [StudentProfile] Certificado Link recibido del backend:', studentDataResponse.certificado_link);
       console.log('📄 [StudentProfile] Datos mapeados:', safeData);
       
       setProfileData(safeData);
       setEditData(safeData);
-      setUserId(studentData.id || '');
+      setStudentData(studentDataResponse);
+      setUserId(studentDataResponse.id || '');
     } catch (error) {
       console.error('Error fetching profile:', error);
       setShowError(true);
@@ -954,6 +956,20 @@ export const Profile = () => {
                 sx={{ fontWeight: 500 }}
               />
             ))}
+          </Box>
+
+          {/* Información del Nivel API */}
+          <Divider sx={{ my: 2 }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" fontWeight={600} sx={{ mr: 2 }}>
+              API:
+            </Typography>
+            <Chip 
+              label={`Nivel ${studentData?.api_level || 1}`} 
+              color="primary" 
+              size="small" 
+              sx={{ fontWeight: 'bold' }}
+            />
           </Box>
           {isEditing && (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>

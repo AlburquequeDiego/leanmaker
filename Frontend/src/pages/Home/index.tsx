@@ -231,48 +231,113 @@ export default function Home() {
             fontSize: { xs: '2rem', md: '2.5rem' },
             color: '#0a2342'
           }}>
-            Empresas que Transforman Comunidades
+            Empresas que Transforman{' '}
+            <span style={{ color: '#e91e63' }}>Comunidades</span>
           </Typography>
           
           <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', lg: 'row' }, 
-            gap: { xs: 4, md: 6 }, 
-            alignItems: 'center'
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+            gap: 3,
+            mt: 4
           }}>
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
-                Impacto Social Positivo
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {[
-                  'Apoyo a empresas pequeñas y medianas',
-                  'Innovación en procesos empresariales',
-                  'Desarrollo de soluciones tecnológicas',
-                  'Fortalecimiento de la economía local'
-                ].map((item, i) => (
-                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                    <BusinessIcon sx={{ color: '#ff9800', mt: 0.5, flexShrink: 0 }} />
-                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <img 
-                src="/imagenes/Empresas que Transforman Comunidades.png" 
-                alt="Impacto en Empresas" 
-                style={{ 
-                  width: '100%', 
-                  maxWidth: '500px',
-                  height: 'auto',
-                  borderRadius: 16, 
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                  display: 'block',
-                  margin: '0 auto'
-                }} 
-              />
-            </Box>
+            {/* Tarjeta 1 */}
+            <Card sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ mb: 2 }}>
+                  <BusinessIcon sx={{ fontSize: 40, color: '#ff9800' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#0a2342' }}>
+                  APOYO A PYMES
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Fortalecemos empresas pequeñas y medianas
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 2 */}
+            <Card sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ mb: 2 }}>
+                  <InnovationIcon sx={{ fontSize: 40, color: '#9c27b0' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#0a2342' }}>
+                  INNOVACIÓN DIGITAL
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Modernizamos procesos empresariales
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 3 - Destacada */}
+            <Card sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              border: '2px solid #ff9800',
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #fff3e0 100%)',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ mb: 2 }}>
+                  <ToolIcon sx={{ fontSize: 40, color: '#ff9800' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#ff9800' }}>
+                  SOLUCIONES TECNOLÓGICAS
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Desarrollamos herramientas a medida
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 4 */}
+            <Card sx={{ 
+              p: 3, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ mb: 2 }}>
+                  <CommunityIcon sx={{ fontSize: 40, color: '#4caf50' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#0a2342' }}>
+                  ECONOMÍA LOCAL
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Fortalecemos la economía de la comunidad
+                </Typography>
+              </CardContent>
+            </Card>
           </Box>
         </Container>
       </Box>
@@ -339,48 +404,140 @@ export default function Home() {
             fontSize: { xs: '2rem', md: '2.5rem' },
             color: '#0a2342'
           }}>
-            Alianzas Estratégicas con INACAP y Más
+            Alianzas Estratégicas con{' '}
+            <span style={{ color: '#e91e63' }}>INACAP y Más</span>
           </Typography>
           
           <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', lg: 'row' }, 
-            gap: { xs: 4, md: 6 }, 
-            alignItems: 'center'
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+            gap: 4,
+            maxWidth: '800px',
+            margin: '0 auto'
           }}>
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
-                Colaboración Académica
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {[
-                  'Programas de prácticas profesionales',
-                  'Proyectos de investigación conjuntos',
-                  'Eventos académicos y conferencias',
-                  'Intercambio de conocimientos'
-                ].map((item, i) => (
-                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                    <SchoolIcon sx={{ color: '#2196f3', mt: 0.5, flexShrink: 0 }} />
-                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <img 
-                src="/imagenes/Colaboración Académica.png" 
-                alt="Colaboración Académica" 
-                style={{ 
-                  width: '100%', 
-                  maxWidth: '500px',
-                  height: 'auto',
-                  borderRadius: 16, 
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                  display: 'block',
+            {/* Tarjeta 1 - Top Left */}
+            <Card sx={{ 
+              p: 4, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ 
+                  mb: 3,
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  backgroundColor: '#9c27b0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   margin: '0 auto'
-                }} 
-              />
-            </Box>
+                }}>
+                  <SchoolIcon sx={{ fontSize: 30, color: 'white' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ color: '#0a2342' }}>
+                  Prácticas Profesionales
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 2 - Top Right */}
+            <Card sx={{ 
+              p: 4, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ 
+                  mb: 3,
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  border: '2px solid #2196f3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto'
+                }}>
+                  <InnovationIcon sx={{ fontSize: 30, color: '#2196f3' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ color: '#0a2342' }}>
+                  Investigación Conjunta
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 3 - Bottom Left */}
+            <Card sx={{ 
+              p: 4, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ 
+                  mb: 3,
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  border: '2px solid #ff9800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto'
+                }}>
+                  <EventIcon sx={{ fontSize: 30, color: '#ff9800' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ color: '#0a2342' }}>
+                  Eventos Académicos
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 4 - Bottom Right */}
+            <Card sx={{ 
+              p: 4, 
+              textAlign: 'center',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)'
+              }
+            }}>
+              <CardContent>
+                <Box sx={{ 
+                  mb: 3,
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  border: '2px solid #4caf50',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto'
+                }}>
+                  <NetworkIcon sx={{ fontSize: 30, color: '#4caf50' }} />
+                </Box>
+                <Typography variant="h6" fontWeight={600} sx={{ color: '#0a2342' }}>
+                  Intercambio de Conocimientos
+                </Typography>
+              </CardContent>
+            </Card>
           </Box>
         </Container>
       </Box>
@@ -442,13 +599,21 @@ export default function Home() {
       {/* 8. Sección de Emprendimiento */}
       <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: '#f8f9fa' }}>
         <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
-          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+          <Box sx={{ 
             mb: 6, 
-            fontSize: { xs: '2rem', md: '2.5rem' },
-            color: '#0a2342'
+            display: 'flex', 
+            alignItems: 'center',
+            pl: { xs: 2, md: 4 }
           }}>
-            De Estudiante a Emprendedor
-          </Typography>
+            <Typography variant="h3" fontWeight={700} sx={{ 
+              fontSize: { xs: '2.5rem', md: '3rem' },
+              color: '#0a2342',
+              lineHeight: 1.2
+            }}>
+              De Estudiante a{' '}
+              <span style={{ color: '#e91e63' }}>Emprendedor</span>
+            </Typography>
+          </Box>
           
           <Box sx={{ 
             display: 'flex', 
@@ -656,58 +821,209 @@ export default function Home() {
       </Box>
 
       {/* 12. Sección de Noticias y Actualizaciones */}
-      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: '#f8f9fa' }}>
-        <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
-          <Typography variant="h3" fontWeight={700} align="center" sx={{ 
-            mb: 6, 
-            fontSize: { xs: '2rem', md: '2.5rem' },
-            color: '#0a2342'
-          }}>
-            Últimas Noticias y Actualizaciones
-          </Typography>
-          
+<Box sx={{ 
+  py: { xs: 6, md: 8 }, 
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  position: 'relative',
+  overflow: 'hidden'
+}}>
+  <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
+    <Typography variant="h3" fontWeight={700} align="center" sx={{ 
+      mb: 6, 
+      fontSize: { xs: '2rem', md: '2.5rem' },
+      color: 'white',
+      textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+    }}>
+      📰 Últimas{' '}
+      <span style={{ color: '#FFD700' }}>Noticias</span>{' '}
+      y Actualizaciones
+    </Typography>
+    
+    {/* Grid de Noticias */}
+    <Box sx={{ 
+      display: 'grid',
+      gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+      gap: 4,
+      mb: 6
+    }}>
+      {/* Noticia 1 */}
+      <Card sx={{ 
+        p: 4, 
+        textAlign: 'center',
+        borderRadius: 3,
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(10px)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+        }
+      }}>
+        <CardContent>
           <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', lg: 'row' }, 
-            gap: { xs: 4, md: 6 }, 
-            alignItems: 'center'
+            mb: 3,
+            width: 70,
+            height: 70,
+            borderRadius: '50%',
+            background: 'linear-gradient(45deg, #667eea, #764ba2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto'
           }}>
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#1976d2' }}>
-                Novedades de la Plataforma
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {[
-                  'Nuevas funcionalidades disponibles',
-                  'Logros de estudiantes destacados',
-                  'Colaboraciones con nuevas empresas',
-                  'Eventos próximos en la agenda'
-                ].map((item, i) => (
-                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                    <NewsIcon sx={{ color: '#e91e63', mt: 0.5, flexShrink: 0 }} />
-                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>{item}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <img 
-                src="/imagenes/vinculacion.png" 
-                alt="Noticias y Actualizaciones" 
-                style={{ 
-                  width: '100%', 
-                  maxWidth: '500px',
-                  height: 'auto',
-                  borderRadius: 16, 
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                  display: 'block',
-                  margin: '0 auto'
-                }} 
-              />
-            </Box>
+            <NewsIcon sx={{ fontSize: 35, color: 'white' }} />
           </Box>
-        </Container>
-      </Box>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#667eea' }}>
+            Nuevas Funcionalidades
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Descubre las últimas herramientas disponibles
+          </Typography>
+          <Chip 
+            label="¡Nuevo!" 
+            sx={{ 
+              backgroundColor: '#667eea', 
+              color: 'white',
+              fontWeight: 600
+            }} 
+          />
+        </CardContent>
+      </Card>
+
+      {/* Noticia 2 */}
+      <Card sx={{ 
+        p: 4, 
+        textAlign: 'center',
+        borderRadius: 3,
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(10px)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+        }
+      }}>
+        <CardContent>
+          <Box sx={{ 
+            mb: 3,
+            width: 70,
+            height: 70,
+            borderRadius: '50%',
+            background: 'linear-gradient(45deg, #f093fb, #f5576c)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto'
+          }}>
+            <TrendingUpIcon sx={{ fontSize: 35, color: 'white' }} />
+          </Box>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#f093fb' }}>
+            Estudiantes Destacados
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Conoce los logros de nuestros estudiantes
+          </Typography>
+          <Chip 
+            label="¡Éxito!" 
+            sx={{ 
+              backgroundColor: '#f093fb', 
+              color: 'white',
+              fontWeight: 600
+            }} 
+          />
+        </CardContent>
+      </Card>
+
+      {/* Noticia 3 */}
+      <Card sx={{ 
+        p: 4, 
+        textAlign: 'center',
+        borderRadius: 3,
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(10px)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+        }
+      }}>
+        <CardContent>
+          <Box sx={{ 
+            mb: 3,
+            width: 70,
+            height: 70,
+            borderRadius: '50%',
+            background: 'linear-gradient(45deg, #4facfe, #00f2fe)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto'
+          }}>
+            <BusinessIcon sx={{ fontSize: 35, color: 'white' }} />
+          </Box>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#4facfe' }}>
+            Nuevas Colaboraciones
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Empresas que se unen a nuestro proyecto
+          </Typography>
+          <Chip 
+            label="¡Colaboración!" 
+            sx={{ 
+              backgroundColor: '#4facfe', 
+              color: 'white',
+              fontWeight: 600
+            }} 
+          />
+        </CardContent>
+      </Card>
+
+      {/* Noticia 4 */}
+      <Card sx={{ 
+        p: 4, 
+        textAlign: 'center',
+        borderRadius: 3,
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(10px)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+        }
+      }}>
+        <CardContent>
+          <Box sx={{ 
+            mb: 3,
+            width: 70,
+            height: 70,
+            borderRadius: '50%',
+            background: 'linear-gradient(45deg, #43e97b, #38f9d7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto'
+          }}>
+            <EventIcon sx={{ fontSize: 35, color: 'white' }} />
+          </Box>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#43e97b' }}>
+            Eventos Próximos
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            No te pierdas nuestros próximos eventos
+          </Typography>
+          <Chip 
+            label="¡Próximo!" 
+            sx={{ 
+              backgroundColor: '#43e97b', 
+              color: 'white',
+              fontWeight: 600
+            }} 
+          />
+        </CardContent>
+      </Card>
+    </Box>
+  </Container>
+</Box>
 
       {/* 13. Sección de Comunidad y Networking */}
       <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>

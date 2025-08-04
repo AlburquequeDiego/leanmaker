@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   AppBar,
@@ -39,11 +39,14 @@ import {
   Warning as WarningIcon,
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 import { NotificationCenter } from '../../notifications/NotificationCenter';
 
 const drawerWidth = 280;
+const collapsedDrawerWidth = 70;
 
 interface DashboardLayoutProps {
   userRole: 'admin' | 'company' | 'student';
@@ -55,16 +58,31 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
 
-  // Simulación de notificaciones nuevas
+  // Cargar estado del sidebar desde localStorage
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebarCollapsed');
+    if (savedState !== null) {
+      setSidebarCollapsed(JSON.parse(savedState));
+    }
+  }, []);
 
+  // Guardar estado del sidebar en localStorage
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
+  }, [sidebarCollapsed]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleSidebarToggle = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -139,18 +157,35 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const drawer = (
     <Box>
       <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
-        <Typography 
-          variant="h6" 
-          noWrap 
-          component="div" 
-          sx={{ 
-            color: themeMode === 'light' ? '#1976d2' : '#e3eafc', 
-            fontWeight: 700, 
-            letterSpacing: 1 
-          }}
-        >
-          LeanMaker
-        </Typography>
+        {!sidebarCollapsed && (
+          <Typography 
+            variant="h6" 
+            noWrap 
+            component="div" 
+            sx={{ 
+              color: themeMode === 'light' ? '#1976d2' : '#e3eafc', 
+              fontWeight: 700, 
+              letterSpacing: 1 
+            }}
+          >
+            LeanMaker
+          </Typography>
+        )}
+        {sidebarCollapsed && (
+          <Typography 
+            variant="h6" 
+            noWrap 
+            component="div" 
+            sx={{ 
+              color: themeMode === 'light' ? '#1976d2' : '#e3eafc', 
+              fontWeight: 700, 
+              letterSpacing: 1,
+              fontSize: '1.2rem'
+            }}
+          >
+            LM
+          </Typography>
+        )}
       </Toolbar>
       <Divider sx={{ bgcolor: themeMode === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }} />
       <List>
@@ -158,50 +193,61 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           const selected = location.pathname === item.path || (item.path !== '/dashboard/student' && location.pathname.startsWith(item.path));
           return (
             <ListItem key={item.text} disablePadding>
-              <ListItemButton
-                selected={selected}
-                onClick={() => navigate(item.path)}
-                sx={{
-                  borderRadius: 3,
-                  background: selected 
-                    ? (themeMode === 'light' ? '#1976d2' : '#22345a') 
-                    : 'transparent',
-                  color: selected 
-                    ? '#fff' 
-                    : (themeMode === 'light' ? '#22345a' : '#e3eafc'),
-                  my: 0.5,
-                  mx: 1,
-                  height: 56,
-                  transition: 'background 0.2s, color 0.2s',
-                  '&:hover': {
-                    background: themeMode === 'light' ? '#1976d2' : '#22345a',
-                    color: '#fff',
-                  },
-                  fontWeight: selected ? 700 : 500,
-                }}
+              <Tooltip 
+                title={sidebarCollapsed ? item.text : ''} 
+                placement="right"
+                disableHoverListener={!sidebarCollapsed}
               >
-                <ListItemIcon 
-                  sx={{ 
+                <ListItemButton
+                  selected={selected}
+                  onClick={() => navigate(item.path)}
+                  sx={{
+                    borderRadius: 3,
+                    background: selected 
+                      ? (themeMode === 'light' ? '#1976d2' : '#22345a') 
+                      : 'transparent',
                     color: selected 
                       ? '#fff' 
-                      : (themeMode === 'light' ? '#1976d2' : '#b6c6e3'), 
-                    minWidth: 40, 
-                    fontSize: 28 
+                      : (themeMode === 'light' ? '#22345a' : '#e3eafc'),
+                    my: 0.5,
+                    mx: 1,
+                    height: 56,
+                    minHeight: 56,
+                    justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
+                    transition: 'background 0.2s, color 0.2s',
+                    '&:hover': {
+                      background: themeMode === 'light' ? '#1976d2' : '#22345a',
+                      color: '#fff',
+                    },
+                    fontWeight: selected ? 700 : 500,
                   }}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText 
-                  primary={item.text} 
-                  primaryTypographyProps={{ 
-                    fontWeight: 600, 
-                    fontSize: 18,
-                    color: selected 
-                      ? '#fff' 
-                      : (themeMode === 'light' ? '#22345a' : '#e3eafc')
-                  }} 
-                />
-              </ListItemButton>
+                  <ListItemIcon 
+                    sx={{ 
+                      color: selected 
+                        ? '#fff' 
+                        : (themeMode === 'light' ? '#1976d2' : '#b6c6e3'), 
+                      minWidth: sidebarCollapsed ? 'auto' : 40, 
+                      fontSize: 28,
+                      margin: sidebarCollapsed ? 0 : undefined
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  {!sidebarCollapsed && (
+                    <ListItemText 
+                      primary={item.text} 
+                      primaryTypographyProps={{ 
+                        fontWeight: 600, 
+                        fontSize: 18,
+                        color: selected 
+                          ? '#fff' 
+                          : (themeMode === 'light' ? '#22345a' : '#e3eafc')
+                      }} 
+                    />
+                  )}
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
           );
         })}
@@ -225,13 +271,14 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100vw - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          width: { sm: `calc(100vw - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` },
+          ml: { sm: `${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px` },
           bgcolor: themeMode === 'light' ? '#fff' : '#10213a',
           color: themeMode === 'light' ? '#22345a' : '#e3eafc',
           boxShadow: themeMode === 'light' ? '0 2px 8px rgba(0,0,0,0.06)' : undefined,
           maxWidth: '100vw',
           overflowX: 'hidden',
+          transition: 'width 0.3s, margin-left 0.3s',
         }}
       >
         <Toolbar>
@@ -258,6 +305,12 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             <Tooltip title={themeMode === 'light' ? 'Modo oscuro' : 'Modo claro'}>
               <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleThemeToggle}>
                 {themeMode === 'light' ? <DarkModeIcon sx={{ color: '#22345a' }} /> : <LightModeIcon />}
+              </IconButton>
+            </Tooltip>
+            {/* Botón de colapso/expansión */}
+            <Tooltip title={sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'}>
+              <IconButton color="inherit" onClick={handleSidebarToggle}>
+                {sidebarCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
               </IconButton>
             </Tooltip>
           </Box>
@@ -295,7 +348,11 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       </AppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ 
+          width: { sm: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth }, 
+          flexShrink: { sm: 0 },
+          transition: 'width 0.3s'
+        }}
       >
         <Drawer
           variant="temporary"
@@ -329,13 +386,16 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
+            width: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
+            flexShrink: 0,
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
-              width: drawerWidth,
-              maxWidth: drawerWidth,
+              width: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
+              maxWidth: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
               background: themeMode === 'light' ? '#fff' : '#10213a',
               color: themeMode === 'light' ? '#22345a' : '#e3eafc',
               borderRight: 0,
+              transition: 'width 0.3s',
             },
             '& .MuiListItemText-primary': {
               color: themeMode === 'light' ? '#22345a' : '#e3eafc',
@@ -352,7 +412,14 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       </Box>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100vw - ${drawerWidth}px)` }, maxWidth: '100vw', overflowX: 'hidden' }}
+        sx={{ 
+          flexGrow: 1, 
+          p: 3, 
+          width: { sm: `calc(100vw - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` }, 
+          maxWidth: '100vw', 
+          overflowX: 'hidden',
+          transition: 'width 0.3s'
+        }}
       >
         <Toolbar />
         <Outlet />

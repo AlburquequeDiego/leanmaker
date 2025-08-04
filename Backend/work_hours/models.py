@@ -21,7 +21,7 @@ class WorkHour(models.Model):
     )
     date = models.DateField(verbose_name='Fecha')
     hours_worked = models.DecimalField(
-        max_digits=4, 
+        max_digits=6, 
         decimal_places=2, 
         verbose_name='Horas trabajadas'
     )

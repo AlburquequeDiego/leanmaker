@@ -217,6 +217,7 @@ export const adaptProject = (backendProject: any): Project => {
     created_by: String(backendProject.created_by || ''),
     created_at: backendProject.created_at || new Date().toISOString(),
     updated_at: backendProject.updated_at || new Date().toISOString(),
+    estudiantes: backendProject.estudiantes || [], // Agregar estudiantes participantes
   };
 };
 

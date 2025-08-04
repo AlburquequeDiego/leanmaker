@@ -136,7 +136,8 @@ export const Calendar = () => {
   const [showRequestChange, setShowRequestChange] = useState(false);
   const [requestMessage, setRequestMessage] = useState('');
   const [requestSuccess, setRequestSuccess] = useState(false);
-  const [upcomingEventsLimit, setUpcomingEventsLimit] = useState(20);
+  const [upcomingEventsLimit, setUpcomingEventsLimit] = useState(5);
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -310,6 +311,14 @@ export const Calendar = () => {
       .slice(0, upcomingEventsLimit);
   }, [events, upcomingEventsLimit]);
 
+  const pastEvents = useMemo(() => {
+    const now = new Date();
+    return events
+      .filter(event => event.start <= now)
+      .sort((a, b) => b.start.getTime() - a.start.getTime()) // Orden descendente (más recientes primero)
+      .slice(0, upcomingEventsLimit);
+  }, [events, upcomingEventsLimit]);
+
   const todayEvents = useMemo(() => {
     const today = new Date();
     return events.filter(event => {
@@ -343,34 +352,69 @@ export const Calendar = () => {
 
       {/* Resumen de eventos */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        <Card sx={{ 
+          flex: '1 1 200px', 
+          minWidth: 0,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+        }}>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="primary">
+            <Typography variant="h3" sx={{ color: 'white', fontWeight: 'bold' }}>
               {events.length}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
               Total de Eventos
             </Typography>
           </CardContent>
         </Card>
         
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        <Card sx={{ 
+          flex: '1 1 200px', 
+          minWidth: 0,
+          background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+          color: 'white',
+          boxShadow: '0 8px 32px rgba(17, 153, 142, 0.3)'
+        }}>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="success.main">
+            <Typography variant="h3" sx={{ color: 'white', fontWeight: 'bold' }}>
               {upcomingEvents.length}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
               Próximos Eventos
             </Typography>
           </CardContent>
         </Card>
         
-        <Card sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        <Card sx={{ 
+          flex: '1 1 200px', 
+          minWidth: 0,
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          color: 'white',
+          boxShadow: '0 8px 32px rgba(240, 147, 251, 0.3)'
+        }}>
           <CardContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h3" color="info.main">
+            <Typography variant="h3" sx={{ color: 'white', fontWeight: 'bold' }}>
+              {pastEvents.length}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              Eventos Recientes
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ 
+          flex: '1 1 200px', 
+          minWidth: 0,
+          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+          color: 'white',
+          boxShadow: '0 8px 32px rgba(79, 172, 254, 0.3)'
+        }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ color: 'white', fontWeight: 'bold' }}>
               {todayEvents.length}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
               Eventos Hoy
             </Typography>
           </CardContent>
@@ -776,23 +820,43 @@ export const Calendar = () => {
         </Box>
       </Paper>
 
-      {/* Próximos eventos */}
-      {upcomingEvents.length > 0 && (
+      {/* Lista de eventos */}
+      {(upcomingEvents.length > 0 || pastEvents.length > 0) && (
         <Paper sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              <ScheduleIcon sx={{ mr: 1, color: 'primary.main' }} />
-              Próximos Eventos
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+                <ScheduleIcon sx={{ mr: 1, color: 'primary.main' }} />
+                {showPastEvents ? 'Eventos Recientes' : 'Próximos Eventos'}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  variant={!showPastEvents ? 'contained' : 'outlined'}
+                  size="small"
+                  onClick={() => setShowPastEvents(false)}
+                  disabled={upcomingEvents.length === 0}
+                >
+                  Próximos
+                </Button>
+                <Button
+                  variant={showPastEvents ? 'contained' : 'outlined'}
+                  size="small"
+                  onClick={() => setShowPastEvents(true)}
+                  disabled={pastEvents.length === 0}
+                >
+                  Recientes
+                </Button>
+              </Box>
+            </Box>
             <ShowLatestFilter
               value={upcomingEventsLimit}
               onChange={setUpcomingEventsLimit}
-              options={[20, 50, 100, 150, -1]}
+              options={[5, 10, 20, 50, 100]}
               label="Mostrar"
             />
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {upcomingEvents.map((event) => (
+            {(showPastEvents ? pastEvents : upcomingEvents).map((event) => (
               <Card key={event.id} sx={{ p: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

@@ -78,6 +78,32 @@ class ApiService {
           console.log(`🔍 [API] Datos recibidos de ${endpoint}:`, data);
         }
         
+        // DEBUG: Log datos de proyectos
+        if (endpoint.includes('/api/projects/company_projects/')) {
+          console.log(`🔍 [API] Datos de proyectos de empresa recibidos de ${endpoint}:`, data);
+          console.log(`🔍 [API] Estructura de datos:`);
+          console.log(`  - success: ${data?.success}`);
+          console.log(`  - count: ${data?.count}`);
+          console.log(`  - data length: ${data?.data?.length || 0}`);
+          if (data?.data && Array.isArray(data.data)) {
+            data.data.forEach((project: any, index: number) => {
+              console.log(`  - Proyecto ${index + 1}: ${project.title}`);
+              console.log(`    - estudiantes length: ${project.estudiantes?.length || 0}`);
+              console.log(`    - estudiantes:`, project.estudiantes);
+            });
+          }
+        }
+        
+        // DEBUG: Log datos de detalle de proyecto
+        if (endpoint.includes('/api/projects/') && endpoint.match(/\/\d+\/$/)) { // Solo endpoints con ID numérico
+          console.log(`🔍 [API] Datos de detalle de proyecto recibidos de ${endpoint}:`, data);
+          console.log(`🔍 [API] Campos del proyecto:`);
+          console.log(`  - title: ${data?.title}`);
+          console.log(`  - status: ${data?.status}`);
+          console.log(`  - estudiantes length: ${data?.estudiantes?.length || 0}`);
+          console.log(`  - estudiantes:`, data?.estudiantes);
+        }
+        
         // DEBUG: Log datos de empresa
         if (endpoint.includes('/api/companies/company_me/')) {
           console.log(`🔍 [API] Datos de empresa recibidos de ${endpoint}:`, data);

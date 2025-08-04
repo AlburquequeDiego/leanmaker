@@ -571,7 +571,7 @@ def student_events(request):
             models.Q(created_by=current_user) | 
             models.Q(attendees=current_user) | 
             models.Q(is_public=True)
-        ).distinct()
+        ).distinct().order_by('start_date')
         
         # Filtros adicionales
         start_date = request.GET.get('start_date')

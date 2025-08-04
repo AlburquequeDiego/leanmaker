@@ -3,6 +3,7 @@ Views para la app projects.
 """
 
 import json
+from decimal import Decimal
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -13,6 +14,7 @@ from core.views import verify_token
 from django.db.models import F
 from work_hours.models import WorkHour
 from django.utils import timezone
+from django.db import transaction
 
 
 @csrf_exempt
@@ -121,6 +123,8 @@ def projects_detail(request, project_id):
             'title': project.title,
             'description': project.description,
             'requirements': project.requirements,
+            'status': project.status.name if project.status else 'Sin estado',
+            'status_id': project.status.id if project.status else None,
             # Campos adicionales del formulario
             'tipo': project.tipo,
             'objetivo': project.objetivo,
@@ -176,16 +180,24 @@ def projects_detail(request, project_id):
         if hasattr(project, 'budget'):
             project_data['budget'] = project.budget
 
-        # Obtener estudiantes asignados (miembros activos con rol estudiante)
-        miembros = project.miembros.filter(rol='estudiante', esta_activo=True).select_related('usuario')
+        # Obtener estudiantes participantes (tanto aceptados como activos)
+        from applications.models import Aplicacion
+        accepted_applications = Aplicacion.objects.filter(
+            project=project, 
+            status__in=['accepted', 'active', 'completed']
+        ).select_related('student', 'student__user')
+        
         estudiantes = []
-        for miembro in miembros:
-            user = miembro.usuario
-            estudiantes.append({
-                'id': str(user.id),
-                'nombre': f"{user.first_name} {user.last_name}".strip() or user.email,
-                'email': user.email,
-            })
+        for app in accepted_applications:
+            student_user = app.student.user if app.student else None
+            if student_user:
+                estudiantes.append({
+                    'id': str(app.student.id),
+                    'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
+                    'email': student_user.email,
+                    'status': app.status,
+                    'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                })
         project_data['estudiantes'] = estudiantes
         
         # Actualizar current_students con el número real de estudiantes asignados
@@ -616,13 +628,54 @@ def project_detail(request, project_id):
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
         
+        # Obtener estudiantes participantes (tanto aceptados como activos)
+        from applications.models import Aplicacion
+        accepted_applications = Aplicacion.objects.filter(
+            project=project, 
+            status__in=['accepted', 'active', 'completed']
+        ).select_related('student', 'student__user')
+        
+        estudiantes = []
+        for app in accepted_applications:
+            student_user = app.student.user if app.student else None
+            if student_user:
+                estudiantes.append({
+                    'id': str(app.student.id),
+                    'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
+                    'email': student_user.email,
+                    'status': app.status,
+                    'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                })
+        
         project_data = {
             'id': str(project.id),
             'title': project.title,
             'description': project.description,
-            'status': project.status,
+            'requirements': project.requirements,
+            'status': project.status.name if project.status else 'Sin estado',
+            'status_id': project.status.id if project.status else None,
+            'area': project.area.name if project.area else 'Sin área',
+            'area_id': project.area.id if project.area else None,
+            'trl_level': project.trl.level if project.trl else 1,
+            'trl_id': project.trl.id if project.trl else None,
+            'api_level': project.api_level or 1,
+            'max_students': project.max_students,
+            'current_students': project.current_students,
+            'applications_count': project.applications_count,
+            'start_date': project.start_date.isoformat() if project.start_date else None,
+            'estimated_end_date': project.estimated_end_date.isoformat() if project.estimated_end_date else None,
+            'location': project.location or 'Remoto',
+            'modality': project.modality,
+            'duration_weeks': project.duration_weeks,
+            'hours_per_week': project.hours_per_week,
+            'required_hours': project.required_hours,
+            'is_featured': getattr(project, 'is_featured', False),
+            'is_urgent': getattr(project, 'is_urgent', False),
             'created_at': project.created_at.isoformat(),
             'updated_at': project.updated_at.isoformat(),
+            'technologies': getattr(project, 'technologies', []),
+            'tags': getattr(project, 'tags', []),
+            'estudiantes': estudiantes,  # Agregar estudiantes participantes
         }
         
         return JsonResponse(project_data)
@@ -635,6 +688,8 @@ def project_detail(request, project_id):
 def my_projects(request):
     """Devuelve los proyectos en los que participa el estudiante autenticado, con detalles y horas acumuladas."""
     try:
+        print("🔍 [my_projects] Iniciando endpoint my_projects")
+        
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
@@ -643,26 +698,41 @@ def my_projects(request):
         current_user = verify_token(token)
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        print(f"🔍 [my_projects] Usuario autenticado: {current_user.email}, Role: {current_user.role}")
+        
         # Solo estudiantes pueden ver sus proyectos
         if current_user.role != 'student':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
         # Obtener el perfil de estudiante
         try:
             student = current_user.estudiante_profile
-        except Exception:
+            print(f"🔍 [my_projects] Estudiante encontrado: {student.id}")
+        except Exception as e:
+            print(f"❌ [my_projects] Error obteniendo perfil de estudiante: {e}")
             return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
-        # Obtener aplicaciones aceptadas o completadas (excluyendo rechazadas)
+        
+        # Obtener aplicaciones aceptadas, activas o completadas (excluyendo rechazadas)
         from applications.models import Aplicacion
-        accepted_statuses = ['accepted', 'completed']
+        accepted_statuses = ['accepted', 'active', 'completed']
         applications = Aplicacion.objects.filter(
             student=student, 
             status__in=accepted_statuses
         ).exclude(status='rejected').select_related('project', 'project__company')
         
+        print(f"🔍 [my_projects] Aplicaciones encontradas: {applications.count()}")
+        
         # Filtrar solo proyectos que estén en estados visibles (no eliminados, no cancelados)
         from project_status.models import ProjectStatus
         estados_visibles = ProjectStatus.objects.filter(name__in=['published', 'active', 'completed'])
         applications = applications.filter(project__status__in=estados_visibles)
+        
+        print(f"🔍 [my_projects] Aplicaciones después de filtrar por estado: {applications.count()}")
+        
+        # Debug: mostrar cada aplicación
+        for app in applications:
+            print(f"🔍 [my_projects] Aplicación: Proyecto '{app.project.title}', Status: '{app.status}', Estado del proyecto: '{app.project.status.name if app.project.status else 'Sin estado'}'")
         projects_data = []
         horas_acumuladas = 0
         for app in applications:
@@ -670,29 +740,23 @@ def my_projects(request):
             if not project:
                 continue
             
-            # Determinar el estado real del proyecto para el estudiante
-            # Si la aplicación está completada, el proyecto está completado
-            if app.status == 'completed':
-                project_status = 'completed'
+            # Usar el estado real del proyecto (dictado por la empresa)
+            # La empresa es la que controla los estados: published -> active -> completed
+            project_status = project.status.name if project.status else 'published'
+            
+            # Calcular progreso basado en el estado del proyecto
+            if project_status == 'completed':
                 progress = 100
                 # Sumar horas ofrecidas si el proyecto está completado
                 horas_ofrecidas = getattr(project, 'required_hours', 0)
                 if isinstance(horas_ofrecidas, (int, float)):
                     horas_acumuladas += horas_ofrecidas
+            elif project_status == 'active':
+                progress = 75
+            elif project_status == 'published':
+                progress = 25
             else:
-                # Si la aplicación está aceptada, verificar si el estudiante está activo en el proyecto
-                try:
-                    miembro = MiembroProyecto.objects.get(proyecto=project, usuario=app.student.user)
-                    if miembro.esta_activo:
-                        project_status = 'active'  # En desarrollo
-                        progress = 75
-                    else:
-                        project_status = 'accepted'  # Aceptado pero no activo
-                        progress = 25
-                except MiembroProyecto.DoesNotExist:
-                    # Si no existe miembro, asumir que está aceptado pero no activo
-                    project_status = 'accepted'
-                    progress = 25
+                progress = 0
             
             projects_data.append({
                 'id': str(project.id),
@@ -722,8 +786,16 @@ def my_projects(request):
                 'requirements': getattr(project, 'requirements', ''),
                 'objetivo': getattr(project, 'objetivo', ''),
             })
-        return JsonResponse({'success': True, 'data': projects_data, 'total': len(projects_data), 'horas_acumuladas': horas_acumuladas})
+        
+        print(f"🔍 [my_projects] Proyectos procesados: {len(projects_data)}")
+        print(f"🔍 [my_projects] Datos a devolver: {projects_data}")
+        
+        response_data = {'success': True, 'data': projects_data, 'total': len(projects_data), 'horas_acumuladas': horas_acumuladas}
+        print(f"🔍 [my_projects] Response final: {response_data}")
+        
+        return JsonResponse(response_data)
     except Exception as e:
+        print(f"❌ [my_projects] Error en endpoint: {e}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
@@ -753,8 +825,28 @@ def company_projects(request):
         projects = Proyecto.objects.filter(company=empresa)
         projects_data = []
         for project in projects:
-            # Recalcular current_students por si acaso
-            current_students = project.miembros.filter(rol='estudiante', esta_activo=True).count()
+            # Obtener estudiantes participantes (tanto aceptados como activos)
+            from applications.models import Aplicacion
+            accepted_applications = Aplicacion.objects.filter(
+                project=project, 
+                status__in=['accepted', 'active', 'completed']
+            ).select_related('student', 'student__user')
+            
+            # Calcular current_students basado en aplicaciones aceptadas
+            current_students = accepted_applications.count()
+            
+            estudiantes = []
+            for app in accepted_applications:
+                student_user = app.student.user if app.student else None
+                if student_user:
+                    estudiantes.append({
+                        'id': str(app.student.id),
+                        'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
+                        'email': student_user.email,
+                        'status': app.status,
+                        'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                    })
+            
             projects_data.append({
                 'id': str(project.id),
                 'title': project.title,
@@ -782,6 +874,7 @@ def company_projects(request):
                 'updated_at': project.updated_at.isoformat() if project.updated_at else None,
                 'technologies': getattr(project, 'technologies', []),
                 'tags': getattr(project, 'tags', []),
+                'estudiantes': estudiantes,  # Agregar estudiantes participantes
             })
         return JsonResponse({'success': True, 'data': projects_data, 'count': len(projects_data)})
     except Exception as e:
@@ -811,9 +904,14 @@ def activate_project(request, project_id):
         # Verificar que la empresa es dueña del proyecto
         if not project.company or project.company.user_id != current_user.id:
             return JsonResponse({'error': 'No tienes permisos para activar este proyecto'}, status=403)
-        # Cambiar todas las aplicaciones aceptadas a 'active' y activar miembros del proyecto
+        
+        # Verificar que el proyecto tenga al menos un estudiante aceptado
         from applications.models import Aplicacion
         accepted_apps = Aplicacion.objects.filter(project=project, status='accepted')
+        if not accepted_apps.exists():
+            return JsonResponse({
+                'error': 'No puedes activar este proyecto. Debes tener al menos un estudiante aceptado antes de poder activar el proyecto.'
+            }, status=400)
         updated_count = 0
         for app in accepted_apps:
             app.status = 'active'
@@ -842,9 +940,10 @@ def activate_project(request, project_id):
         project.status = status_activo
         project.save(update_fields=['status'])
         
-        # Actualizar el contador de estudiantes activos en el proyecto
-        project.current_students = MiembroProyecto.objects.filter(
-            proyecto=project, rol='estudiante', esta_activo=True
+        # Actualizar el contador de estudiantes activos basado en aplicaciones aceptadas
+        project.current_students = Aplicacion.objects.filter(
+            project=project,
+            status__in=['accepted', 'active', 'completed']
         ).count()
         project.save(update_fields=['current_students'])
         
@@ -910,22 +1009,34 @@ def completed_pending_hours(request):
             horas_validadas = WorkHour.objects.filter(project=p, is_project_completion=True).exists()
             if horas_validadas:
                 continue  # Ya validadas, no mostrar
-            # Participantes activos
-            miembros = MiembroProyecto.objects.filter(proyecto=p, rol='estudiante', esta_activo=True).select_related('usuario')
+            # Participantes basados en aplicaciones aceptadas (más confiable)
+            from applications.models import Aplicacion
+            aplicaciones_aceptadas = Aplicacion.objects.filter(
+                project=p,
+                status__in=['accepted', 'active', 'completed']
+            ).select_related('student__user')
+            
             participantes = []
-            for miembro in miembros:
-                user = miembro.usuario
+            for aplicacion in aplicaciones_aceptadas:
+                user = aplicacion.student.user
                 participantes.append({
                     'id': str(user.id),
                     'nombre': f"{user.first_name} {user.last_name}".strip() or user.email,
                     'email': user.email,
                 })
+            
+            # Obtener el primer estudiante para mostrar en la tabla
+            primer_estudiante = participantes[0] if participantes else None
+            
             data.append({
                 'id': str(p.id),
                 'title': p.title,
                 'company': p.company.company_name if p.company else '',
                 'required_hours': p.required_hours or 0,
                 'participantes': participantes,
+                'student_name': primer_estudiante['nombre'] if primer_estudiante else '',
+                'student_email': primer_estudiante['email'] if primer_estudiante else '',
+                'date': p.real_end_date or p.estimated_end_date or p.created_at,
             })
         return JsonResponse({'results': data, 'count': len(data)})
     except Exception as e:
@@ -949,73 +1060,70 @@ def validate_project_hours(request, project_id):
             proyecto = Proyecto.objects.get(id=project_id)
         except Proyecto.DoesNotExist:
             return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
-        if not proyecto.required_hours:
-            return JsonResponse({'error': 'El proyecto no tiene horas ofrecidas definidas.'}, status=400)
+        if not proyecto.required_hours or proyecto.required_hours <= 0:
+            return JsonResponse({'error': 'El proyecto no tiene horas ofrecidas definidas o son inválidas.'}, status=400)
         # Participantes del proyecto (sin importar si esta_activo)
         miembros = proyecto.miembros.filter(rol='estudiante').select_related('usuario')
         count = 0
-        for miembro in miembros:
-            user = miembro.usuario
-            print(f"[VALIDAR HORAS] Proyecto: {proyecto.id} - {proyecto.title}")
-            print(f"[VALIDAR HORAS] Usuario: {user.id} - {user.email}")
-            # Obtener perfil de estudiante
-            estudiante = getattr(user, 'estudiante_profile', None)
-            if not estudiante:
-                print(f"[VALIDAR HORAS] Usuario {user.email} sin perfil de estudiante, se omite.")
-                continue  # Saltar si no hay perfil de estudiante
-            # Buscar asignación correctamente
-            from applications.models import Asignacion, Aplicacion
-            asignacion = Asignacion.objects.filter(application__student=estudiante, application__project=proyecto).first()
-            if not asignacion:
-                # Crear aplicación y asignación si no existen
-                print(f"[VALIDAR HORAS] No se encontró asignación para estudiante {estudiante.id} en proyecto {proyecto.id}, creando...")
-                # Buscar o crear aplicación aceptada
-                aplicacion, _ = Aplicacion.objects.get_or_create(
+        
+        # Usar transacción para mantener consistencia de datos
+        with transaction.atomic():
+            for miembro in miembros:
+                user = miembro.usuario
+                print(f"[VALIDAR HORAS] Proyecto: {proyecto.id} - {proyecto.title}")
+                print(f"[VALIDAR HORAS] Usuario: {user.id} - {user.email}")
+                # Obtener perfil de estudiante
+                estudiante = getattr(user, 'estudiante_profile', None)
+                if not estudiante:
+                    print(f"[VALIDAR HORAS] Usuario {user.email} sin perfil de estudiante, se omite.")
+                    continue  # Saltar si no hay perfil de estudiante
+                # Buscar asignación correctamente
+                from applications.models import Asignacion, Aplicacion
+                asignacion = Asignacion.objects.filter(application__student=estudiante, application__project=proyecto).first()
+                if not asignacion:
+                    # Crear aplicación y asignación si no existen
+                    print(f"[VALIDAR HORAS] No se encontró asignación para estudiante {estudiante.id} en proyecto {proyecto.id}, creando...")
+                    # Buscar o crear aplicación aceptada
+                    aplicacion, _ = Aplicacion.objects.get_or_create(
+                        student=estudiante,
+                        project=proyecto,
+                        defaults={'status': 'accepted', 'cover_letter': 'Generada automáticamente para validación de horas'}
+                    )
+                    if aplicacion.status != 'accepted':
+                        aplicacion.status = 'accepted'
+                        aplicacion.save(update_fields=['status'])
+                    # Crear asignación
+                    asignacion = Asignacion.objects.create(
+                        application=aplicacion,
+                        fecha_inicio=proyecto.start_date or timezone.now().date(),
+                        estado='en curso'
+                    )
+                # Evitar duplicados
+                if WorkHour.objects.filter(project=proyecto, student=estudiante, is_project_completion=True).exists():
+                    print(f"[VALIDAR HORAS] Ya existe WorkHour para estudiante {estudiante.id} en proyecto {proyecto.id}")
+                    continue
+                workhour = WorkHour.objects.create(
                     student=estudiante,
                     project=proyecto,
-                    defaults={'status': 'accepted', 'cover_letter': 'Generada automáticamente para validación de horas'}
+                    date=proyecto.real_end_date or proyecto.estimated_end_date or timezone.now().date(),
+                    hours_worked=Decimal(str(proyecto.required_hours)),
+                    description=f"Horas validadas por finalización del proyecto: {proyecto.title}",
+                    is_verified=True,
+                    verified_by=current_user,
+                    verified_at=timezone.now(),
+                    is_project_completion=True
                 )
-                if aplicacion.status != 'accepted':
-                    aplicacion.status = 'accepted'
-                    aplicacion.save(update_fields=['status'])
-                # Crear asignación
-                from django.utils import timezone
-                asignacion = Asignacion.objects.create(
-                    application=aplicacion,
-                    fecha_inicio=proyecto.start_date or timezone.now().date(),
-                    estado='en curso'
-                )
-            # Evitar duplicados
-            if WorkHour.objects.filter(project=proyecto, student=estudiante, is_project_completion=True).exists():
-                print(f"[VALIDAR HORAS] Ya existe WorkHour para estudiante {estudiante.id} en proyecto {proyecto.id}")
-                continue
-            # Obtener snapshot de integrantes (todos los estudiantes, activos o no)
-            integrantes_snapshot = []
-            miembros_qs = proyecto.miembros.filter(rol='estudiante')  # sin filtrar por esta_activo
-            for miembro in miembros_qs:
-                user = miembro.usuario
-                integrantes_snapshot.append({
-                    'nombre': user.full_name,
-                    'email': user.email
-                })
-            workhour = WorkHour.objects.create(
-                assignment=asignacion,
-                student=estudiante,
-                project=proyecto,
-                company=proyecto.company,
-                date=proyecto.real_end_date or proyecto.estimated_end_date or timezone.now().date(),
-                hours_worked=proyecto.required_hours,
-                description=f"Horas validadas por finalización del proyecto: {proyecto.title}",
-                approved=True,
-                approved_by=current_user,
-                approved_at=timezone.now(),
-                is_project_completion=True,
-                integrantes_snapshot=integrantes_snapshot
-            )
-            workhour.aprobar_horas(current_user)
-            print(f"[VALIDAR HORAS] Se sumaron {workhour.hours_worked} horas al estudiante {estudiante.id}. Total ahora: {estudiante.total_hours}")
-            count += 1
+                # Actualizar horas totales del estudiante
+                horas_a_sumar = int(proyecto.required_hours)
+                estudiante.actualizar_horas_totales(horas_a_sumar)
+                print(f"[VALIDAR HORAS] Se sumaron {horas_a_sumar} horas al estudiante {estudiante.id}. Total ahora: {estudiante.total_hours}")
+                count += 1
         print(f"[VALIDAR HORAS] Total horas validadas: {count}")
         return JsonResponse({'success': True, 'horas_validadas': count})
+    except Proyecto.DoesNotExist:
+        return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+    except ValueError as e:
+        return JsonResponse({'error': f'Error de conversión de datos: {str(e)}'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        print(f"[VALIDAR HORAS] Error inesperado: {str(e)}")
+        return JsonResponse({'error': f'Error interno del servidor: {str(e)}'}, status=500)

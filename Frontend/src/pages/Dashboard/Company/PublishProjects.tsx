@@ -10,6 +10,20 @@ import { MODALIDADES } from '../../../modalidades';
 const steps = ['Información Básica', 'Etapa y Duración', 'General', 'Resumen'];
 const trlToApi = { 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 4 } as const;
 const apiToHours = { 1: 20, 2: 40, 3: 80, 4: 160 } as const;
+
+// Nuevos límites de horas por TRL
+const TRL_HOURS_LIMITS = {
+  1: { min: 20, max: 40, description: 'Opción 1-2: Proyectos en fase de idea' },
+  2: { min: 20, max: 40, description: 'Opción 1-2: Proyectos en fase de idea' },
+  3: { min: 40, max: 80, description: 'Opción 3-4: Prototipos básicos' },
+  4: { min: 40, max: 80, description: 'Opción 3-4: Prototipos básicos' },
+  5: { min: 80, max: 160, description: 'Opción 5-6: Prototipos avanzados' },
+  6: { min: 80, max: 160, description: 'Opción 5-6: Prototipos avanzados' },
+  7: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+  8: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+  9: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+} as const;
+
 const trlOptions = [
   { value: 1, label: 'Opción 1', desc: 'Fase de idea, sin definición clara ni desarrollo previo.' },
   { value: 2, label: 'Opción 2', desc: 'Definición clara y antecedentes de lo que se desea desarrollar.' },
@@ -73,9 +87,13 @@ export const PublishProjects: React.FC = () => {
   const [hoursError, setHoursError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const trlKey = trlSelected as keyof typeof trlToApi;
-  const apiKey = trlToApi[trlKey] as keyof typeof apiToHours;
-  const minHours = apiToHours[apiKey];
+  
+  // Usar los nuevos límites de TRL
+  const trlKey = trlSelected as keyof typeof TRL_HOURS_LIMITS;
+  const trlLimits = TRL_HOURS_LIMITS[trlKey];
+  const minHours = trlLimits.min;
+  const maxHours = trlLimits.max;
+  
   const [areas, setAreas] = useState<{ id: number; name: string }[]>(AREAS_ESTATICAS);
   const [loadingAreas, setLoadingAreas] = useState(false); // Ya no se carga desde API
   const [validatedSteps, setValidatedSteps] = useState<Set<number>>(new Set());
@@ -84,6 +102,54 @@ export const PublishProjects: React.FC = () => {
 
   // Función para calcular duración en meses
   const calcularDuracionMeses = (fechaInicio: string, fechaFin: string) => {
+    if (!fechaInicio || !fechaFin) return '';
+    
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+    
+    if (fin <= inicio) return '0';
+    
+    const diferenciaMs = fin.getTime() - inicio.getTime();
+    const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+    const meses = Math.ceil(diferenciaDias / 30);
+    
+    return meses.toString();
+  };
+
+  // Función para calcular horas por semana
+  const calcularHorasPorSemana = (horasTotales: number, meses: number) => {
+    const semanas = meses * 4;
+    return Math.ceil(horasTotales / semanas);
+  };
+
+  // Función para obtener el mensaje de advertencia de horas por semana
+  const getHorasPorSemanaWarning = (horasPorSemana: number) => {
+    if (horasPorSemana > 35) {
+      return `⚠️ Las horas por semana (${horasPorSemana}) son muy altas. Considera aumentar la duración del proyecto. Recuerda que esto es una experiencia formativa, no un trabajo de jornada completa.`;
+    }
+    if (horasPorSemana < 5) {
+      return `⚠️ Las horas por semana (${horasPorSemana}) son muy bajas. Considera reducir la duración del proyecto.`;
+    }
+    return null;
+  };
+
+  // Función para calcular la fecha de fin recomendada
+  const calcularFechaFinRecomendada = (fechaInicio: string, horasTotales: number) => {
+    if (!fechaInicio || !horasTotales) return '';
+    
+    const inicio = new Date(fechaInicio);
+    const horasPorSemana = 35; // Límite máximo
+    const semanasNecesarias = Math.ceil(horasTotales / horasPorSemana);
+    const diasNecesarios = semanasNecesarias * 7;
+    
+    const fechaFin = new Date(inicio);
+    fechaFin.setDate(fechaFin.getDate() + diasNecesarios);
+    
+    return fechaFin.toISOString().split('T')[0];
+  };
+
+  // Función para calcular meses basado en fechas
+  const calcularMesesDesdeFechas = (fechaInicio: string, fechaFin: string) => {
     if (!fechaInicio || !fechaFin) return '';
     
     const inicio = new Date(fechaInicio);
@@ -112,6 +178,41 @@ export const PublishProjects: React.FC = () => {
     // El avance automático ha sido eliminado - ahora es completamente manual
   }, [form, trlSelected, activeStep]);
 
+  // Efecto para calcular automáticamente la fecha de fin cuando cambian las horas o fecha de inicio
+  useEffect(() => {
+    if (form.fechaInicio && form.horas && Number(form.horas) > 0) {
+      // Solo calcular automáticamente si no hay fecha de fin establecida manualmente
+      if (!form.fechaFin) {
+        const fechaFinRecomendada = calcularFechaFinRecomendada(form.fechaInicio, Number(form.horas));
+        const mesesCalculados = calcularMesesDesdeFechas(form.fechaInicio, fechaFinRecomendada);
+        
+        setForm(prev => ({
+          ...prev,
+          fechaFin: fechaFinRecomendada,
+          meses: mesesCalculados
+        }));
+      } else {
+        // Si ya hay fecha de fin, solo recalcular los meses
+        const mesesCalculados = calcularMesesDesdeFechas(form.fechaInicio, form.fechaFin);
+        setForm(prev => ({
+          ...prev,
+          meses: mesesCalculados
+        }));
+      }
+    }
+  }, [form.fechaInicio, form.horas]);
+
+  // Efecto para recalcular meses cuando la empresa modifica manualmente la fecha de fin
+  useEffect(() => {
+    if (form.fechaInicio && form.fechaFin) {
+      const mesesCalculados = calcularMesesDesdeFechas(form.fechaInicio, form.fechaFin);
+      setForm(prev => ({
+        ...prev,
+        meses: mesesCalculados
+      }));
+    }
+  }, [form.fechaFin]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     let value = e.target.value;
     
@@ -124,9 +225,9 @@ export const PublishProjects: React.FC = () => {
       let numValue = Number(value);
       
       // Validar y corregir el valor si es necesario
-      if (numValue > 350) {
-        numValue = 350;
-        value = '350';
+      if (numValue > maxHours) {
+        numValue = maxHours;
+        value = maxHours.toString();
       }
       
       // Actualizar el formulario
@@ -137,9 +238,9 @@ export const PublishProjects: React.FC = () => {
       
       // Validar y mostrar errores apropiados
       if (numValue < minHours) {
-        setHoursError(`El mínimo para esta etapa de desarrollo es ${minHours} horas.`);
-      } else if (numValue > 350) {
-        setHoursError('El máximo permitido por proyecto es 350 horas.');
+        setHoursError(`El mínimo para ${trlLimits.description} es ${minHours} horas.`);
+      } else if (numValue > maxHours) {
+        setHoursError(`El máximo para ${trlLimits.description} es ${maxHours} horas.`);
       } else {
         setHoursError(null);
       }
@@ -152,7 +253,7 @@ export const PublishProjects: React.FC = () => {
   };
 
   const handleTrlChange = (e: any) => {
-    const value = Number(e.target.value) as keyof typeof trlToApi;
+    const value = Number(e.target.value) as keyof typeof TRL_HOURS_LIMITS;
     setTrlSelected(value);
     setForm({ ...form, trl: value });
     
@@ -164,14 +265,18 @@ export const PublishProjects: React.FC = () => {
     // Marcar el paso actual como modificado
     setModifiedSteps(prev => new Set([...prev, activeStep]));
     
-    // Validar las horas actuales contra el nuevo mínimo
-    const min = apiToHours[trlToApi[value]];
+    // Validar las horas actuales contra el nuevo mínimo y máximo
+    const newLimits = TRL_HOURS_LIMITS[value];
     const currentHours = Number(form.horas);
     
-    if (currentHours > 0 && currentHours < min) {
-      setHoursError(`El mínimo para esta etapa de desarrollo es ${min} horas.`);
-    } else {
-      setHoursError(null);
+    if (currentHours > 0) {
+      if (currentHours < newLimits.min) {
+        setHoursError(`El mínimo para ${newLimits.description} es ${newLimits.min} horas.`);
+      } else if (currentHours > newLimits.max) {
+        setHoursError(`El máximo para ${newLimits.description} es ${newLimits.max} horas.`);
+      } else {
+        setHoursError(null);
+      }
     }
   };
 
@@ -229,7 +334,10 @@ export const PublishProjects: React.FC = () => {
           errors.push('Debes seleccionar una etapa de desarrollo.');
         }
         if (!form.horas || Number(form.horas) < minHours) {
-          errors.push(`Debes ingresar las horas ofrecidas (mínimo ${minHours} para esta etapa de desarrollo).`);
+          errors.push(`Debes ingresar las horas ofrecidas (mínimo ${minHours} para ${trlLimits.description}).`);
+        }
+        if (Number(form.horas) > maxHours) {
+          errors.push(`Las horas ofrecidas no pueden exceder ${maxHours} para ${trlLimits.description}.`);
         }
         break;
         
@@ -276,22 +384,21 @@ export const PublishProjects: React.FC = () => {
        errors.push('Debes seleccionar una etapa de desarrollo.');
      }
          if (!form.horas || Number(form.horas) < minHours) {
-       errors.push(`Debes ingresar las horas ofrecidas (mínimo ${minHours} para esta etapa de desarrollo).`);
+       errors.push(`Debes ingresar las horas ofrecidas (mínimo ${minHours} para ${trlLimits.description}).`);
      }
+    if (Number(form.horas) > maxHours) {
+      errors.push(`Las horas ofrecidas no pueden exceder ${maxHours} para ${trlLimits.description}.`);
+    }
     
     // Validar coherencia entre horas totales y duración (solo si hay datos válidos)
     const horasTotales = Number(form.horas) || 0;
     const duracionMeses = Number(form.meses) || 1;
     
     if (horasTotales > 0 && duracionMeses > 0) {
-      const duracionSemanas = duracionMeses * 4;
-      const horasPorSemana = Math.ceil(horasTotales / duracionSemanas);
-      
-      if (horasPorSemana > 40) {
-        errors.push(`Las horas por semana (${horasPorSemana}) son muy altas. Considera aumentar la duración del proyecto.`);
-      }
-      if (horasPorSemana < 5) {
-        errors.push(`Las horas por semana (${horasPorSemana}) son muy bajas. Considera reducir la duración del proyecto.`);
+      const horasPorSemana = calcularHorasPorSemana(horasTotales, duracionMeses);
+      const warning = getHorasPorSemanaWarning(horasPorSemana);
+      if (warning) {
+        errors.push(warning);
       }
     }
     
@@ -495,34 +602,42 @@ export const PublishProjects: React.FC = () => {
              fullWidth
              required
              error={!!hoursError}
-             helperText={hoursError || `Mínimo ${minHours} horas para esta etapa de desarrollo`}
-             inputProps={{ min: minHours, max: 350 }}
+             helperText={hoursError || `${trlLimits.description}: ${minHours}-${maxHours} horas`}
+             inputProps={{ min: minHours, max: maxHours }}
              InputLabelProps={{ required: false }}
            />
            
            
            
            {/* Visualización del cálculo en tiempo real */}
-           {form.horas && form.meses && (
+           {form.horas && form.meses && form.fechaInicio && form.fechaFin && (
              <MuiPaper sx={{ bgcolor: '#e3f2fd', p: 2, borderRadius: 2, border: '1px solid #2196f3' }}>
                <Typography variant="subtitle2" sx={{ mb: 1, color: '#1976d2' }}>
-                 📊 Cálculo de horas por semana
+                 📊 Información de duración del proyecto
                </Typography>
                <Typography variant="body2" sx={{ color: '#1976d2' }}>
                  <strong>Horas totales:</strong> {form.horas} horas<br/>
                  <strong>Duración:</strong> {form.meses} mes(es) = {(Number(form.meses) || 1) * 4} semanas<br/>
-                 <strong>Horas por semana:</strong> {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4))} horas/semana
+                 <strong>Horas por semana:</strong> {calcularHorasPorSemana(Number(form.horas), Number(form.meses))} horas/semana<br/>
+                 <strong>Fecha de inicio:</strong> {form.fechaInicio}<br/>
+                 <strong>Fecha de fin:</strong> {form.fechaFin}
                </Typography>
-               {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4)) > 40 && (
-                 <Typography variant="body2" sx={{ mt: 1, color: '#f57c00', fontWeight: 'bold' }}>
-                   ⚠️ Las horas por semana son muy altas. Considera aumentar la duración.
-                 </Typography>
-               )}
-               {Math.ceil(Number(form.horas) / ((Number(form.meses) || 1) * 4)) < 5 && (
-                 <Typography variant="body2" sx={{ mt: 1, color: '#f57c00', fontWeight: 'bold' }}>
-                   ⚠️ Las horas por semana son muy bajas. Considera reducir la duración.
-                 </Typography>
-               )}
+               {(() => {
+                 const horasPorSemana = calcularHorasPorSemana(Number(form.horas), Number(form.meses));
+                 if (horasPorSemana <= 35) {
+                   return (
+                     <Typography variant="body2" sx={{ mt: 1, color: '#2e7d32', fontWeight: 'bold' }}>
+                       ✅ Duración adecuada (≤ 35 horas/semana)
+                     </Typography>
+                   );
+                 } else {
+                   return (
+                     <Typography variant="body2" sx={{ mt: 1, color: '#f57c00', fontWeight: 'bold' }}>
+                       ⚠️ Las horas por semana ({horasPorSemana}) exceden el límite recomendado de 35 horas/semana
+                     </Typography>
+                   );
+                 }
+               })()}
              </MuiPaper>
            )}
          </Box>
@@ -598,25 +713,31 @@ export const PublishProjects: React.FC = () => {
              value={form.fechaInicio} 
              onChange={handleChange} 
              fullWidth 
-             InputLabelProps={{ shrink: true, required: false }} 
              required 
+             InputLabelProps={{ shrink: true, required: false }}
            />
+           <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
+             <Typography variant="body2">
+               <strong>Importante:</strong> Considera 2-3 semanas para seleccionar al estudiante. La fecha de fin se calculará automáticamente para no exceder 35 horas/semana.
+             </Typography>
+           </Alert>
            <TextField 
              label="¿Cuándo te gustaría terminarlo?" 
              name="fechaFin" 
              type="date" 
              value={form.fechaFin} 
-             onChange={handleChange} 
+             onChange={handleChange}
              fullWidth 
              InputLabelProps={{ shrink: true, required: false }} 
-             required 
+             helperText="Fecha recomendada (puedes modificarla si lo deseas)"
            />
            <TextField 
              label="Duración calculada (meses)" 
              name="meses" 
-             value={form.fechaInicio && form.fechaFin ? calcularDuracionMeses(form.fechaInicio, form.fechaFin) : ''} 
+             value={form.meses} 
              fullWidth 
              disabled
+             helperText="Duración calculada automáticamente"
              InputLabelProps={{ required: false }} 
            />
            <Alert severity="info" sx={{ mt: 1 }}>

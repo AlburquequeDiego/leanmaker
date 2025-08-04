@@ -307,11 +307,19 @@ export default function StudentDashboard() {
          
          {/* Nivel de API */}
          <KPICard
-           title="Nivel de API"
+           title="Nivel API"
            value={apiLevel}
-           description="Tu nivel actual de API que determina qué proyectos puedes aplicar. Los niveles más altos desbloquean proyectos más complejos y mejor pagados."
+           description={
+             apiLevel === 1 
+               ? "Nivel API 1: Asesoría - Puedes comprender conceptos básicos y trabajar bajo supervisión directa. Horas máximas permitidas: 20 horas."
+               : apiLevel === 2 
+               ? "Nivel API 2: Asesoría + Propuesta - Puedes trabajar en tareas prácticas con guía y supervisión. Horas máximas permitidas: 40 horas."
+               : apiLevel === 3 
+               ? "Nivel API 3: Asesoría + Propuesta + Implementación - Puedes trabajar de forma independiente en proyectos complejos. Horas máximas permitidas: 80 horas."
+               : "Nivel API 4: Asesoría + Propuesta + Implementación + Upgrade - Puedes liderar proyectos complejos e innovar en soluciones. Horas máximas permitidas: 160 horas."
+           }
            icon={<CodeIcon sx={{ fontSize: 28 }} />}
-           bgColor="#673ab7"
+           bgColor="#8e24aa"
            textColor="white"
          />
          

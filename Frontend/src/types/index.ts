@@ -194,6 +194,13 @@ export interface Project {
   created_by: string; // UUID del creador
   created_at: string;
   updated_at: string;
+  estudiantes?: Array<{
+    id: string;
+    nombre: string;
+    email: string;
+    status: string;
+    applied_at?: string;
+  }>; // Estudiantes participantes en el proyecto
 }
 
 // Tipos de aplicación - Coinciden con el modelo Aplicacion del backend
