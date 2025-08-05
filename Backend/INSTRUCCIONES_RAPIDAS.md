@@ -16,6 +16,20 @@ python migrate_all_apps.py
 python verify_migration.py
 ```
 
+
+--
+para ver la estructura de la base de datos :
+
+📁 Para administrar tus tablas:
+Django Admin: Accede a http://localhost:8000/admin/ para ver todas las tablas
+
+Migraciones: Usa python manage.py makemigrations y python manage.py migrate
+
+Shell: python manage.py shell para interactuar con los modelos
+
+Inspect: python manage.py inspectdb para ver la estructura actual
+
+
 ## 🔑 Credenciales por Defecto
 
 - **Email**: admin@leanmaker.com
@@ -46,19 +60,5 @@ python manage.py migrate
 python verify_migration.py
 ```
 
-## 📞 ¿Necesitas ayuda?
 
-1. Revisa el archivo `README_MIGRACION_COMPLETA.md` para detalles
-2. Ejecuta `python verify_migration.py` para diagnosticar problemas
-3. Verifica que todas las dependencias estén instaladas
 
-## 🎯 ¿Qué se implementó?
-
-- ✅ **Calendarios**: Eventos visibles en todas las vistas
-- ✅ **Entrevistas**: Interfaz profesional con datos reales
-- ✅ **Evaluaciones**: Diseño moderno y funcional
-- ✅ **Búsqueda de Estudiantes**: Registro completo con portafolios
-- ✅ **Notificaciones**: Diseño profesional mejorado
-- ✅ **Strikes**: Interfaz ultra profesional con gradientes
-
-**¡El sistema está completamente funcional y listo para usar!** 🚀 

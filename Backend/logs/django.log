@@ -26545,3 +26545,25 @@ INFO 2025-08-05 14:12:03,699 signals 13116 17304 Signals de notificaciones conec
 INFO 2025-08-05 14:12:08,745 signals 16608 16884 Signals de notificaciones conectados exitosamente
 INFO 2025-08-05 14:12:13,133 signals 14268 10244 Signals de notificaciones conectados exitosamente
 INFO 2025-08-05 14:12:19,326 signals 16604 12036 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:18:21,162 signals 1524 17348 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:30:35,908 signals 10596 7688 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:32:54,331 signals 8244 3276 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:34:58,835 signals 14000 1812 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:35:12,449 signals 14020 15844 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:35:25,740 signals 12164 16404 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:35:28,718 signals 4376 7316 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:35:29,306 signals 15740 1812 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:35:29,309 autoreload 15740 1812 Watching for file changes with StatReloader
+INFO 2025-08-05 14:36:10,229 signals 11016 9836 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:36:22,127 signals 5864 1944 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:36:22,871 autoreload 15740 1812 C:\Users\albur\Desktop\leanmaker\Backend\data_backups\migrations\0002_alter_databackups_options_and_more.py changed, reloading.
+INFO 2025-08-05 14:36:23,776 signals 14608 1740 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:36:23,788 autoreload 14608 1740 Watching for file changes with StatReloader
+INFO 2025-08-05 14:36:26,507 signals 1264 8328 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:36:31,262 signals 3036 13948 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:36:47,327 signals 16784 12996 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:36:51,506 signals 16920 16408 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:37:04,230 signals 9480 16316 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:37:35,231 signals 2804 4708 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:37:43,191 signals 5464 17316 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:39:24,994 signals 1728 14632 Signals de notificaciones conectados exitosamente
