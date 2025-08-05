@@ -26225,3 +26225,323 @@ INFO 2025-08-05 11:35:54,807 signals 12632 3756 Signals de notificaciones conect
 INFO 2025-08-05 11:35:54,822 autoreload 12632 3756 Watching for file changes with StatReloader
 INFO 2025-08-05 11:36:07,071 basehttp 12632 1308 "OPTIONS /api/token/ HTTP/1.1" 200 0
 INFO 2025-08-05 11:36:39,598 basehttp 12632 8996 "OPTIONS /api/dashboard/admin_stats/ HTTP/1.1" 200 0
+INFO 2025-08-05 11:38:25,384 basehttp 12632 7620 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-08-05 11:38:27,785 basehttp 12632 7620 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-08-05 11:38:29,828 basehttp 12632 7620 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-08-05 11:38:51,200 middleware 12632 12736 Petición: GET /api/health-simple/ - IP: 127.0.0.1
+INFO 2025-08-05 11:38:51,207 middleware 12632 12736 Respuesta: 200 - GET /api/health-simple/
+INFO 2025-08-05 11:38:51,283 basehttp 12632 12736 "GET /api/health-simple/ HTTP/1.1" 200 79
+INFO 2025-08-05 11:39:20,812 basehttp 12632 15076 "OPTIONS /api/token/ HTTP/1.1" 200 0
+INFO 2025-08-05 11:41:27,173 middleware 12632 11452 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:28,717 middleware 12632 11452 Respuesta: 200 - POST /api/token/
+INFO 2025-08-05 11:41:28,840 basehttp 12632 11452 "POST /api/token/ HTTP/1.1" 200 1166
+INFO 2025-08-05 11:41:28,861 middleware 12632 300 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:28,882 middleware 12632 300 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:41:28,967 basehttp 12632 300 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:41:29,161 middleware 12632 15256 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:29,434 middleware 12632 15256 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-05 11:41:30,060 basehttp 12632 15256 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 288
+INFO 2025-08-05 11:41:33,697 middleware 12632 11224 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:33,761 middleware 12632 11224 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-08-05 11:41:33,826 basehttp 12632 11224 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-05 11:41:36,082 middleware 12632 1792 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:36,634 middleware 12632 1792 Respuesta: 200 - POST /api/token/
+INFO 2025-08-05 11:41:36,710 basehttp 12632 1792 "POST /api/token/ HTTP/1.1" 200 1167
+INFO 2025-08-05 11:41:36,720 middleware 12632 7048 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:36,732 middleware 12632 7048 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:41:36,780 basehttp 12632 7048 "GET /api/users/profile/ HTTP/1.1" 200 1860
+INFO 2025-08-05 11:41:36,861 middleware 12632 10308 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:36,902 middleware 12632 10308 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-05 11:41:37,017 basehttp 12632 10308 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 295
+INFO 2025-08-05 11:41:39,165 middleware 12632 15044 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:39,187 middleware 12632 15044 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-08-05 11:41:39,211 basehttp 12632 15044 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-05 11:41:41,400 middleware 12632 12932 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:41,836 middleware 12632 12932 Respuesta: 200 - POST /api/token/
+INFO 2025-08-05 11:41:41,878 basehttp 12632 12932 "POST /api/token/ HTTP/1.1" 200 1092
+INFO 2025-08-05 11:41:41,891 middleware 12632 4020 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:41,900 middleware 12632 4020 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:41:41,938 basehttp 12632 4020 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-05 11:41:42,011 middleware 12632 10556 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:42,053 middleware 12632 10556 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-05 11:41:42,159 basehttp 12632 10556 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 613
+INFO 2025-08-05 11:41:45,757 middleware 12632 12240 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:45,782 middleware 12632 12240 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-08-05 11:41:45,815 basehttp 12632 12240 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-05 11:41:49,308 middleware 12632 6112 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:49,765 middleware 12632 6112 Respuesta: 200 - POST /api/token/
+INFO 2025-08-05 11:41:49,795 basehttp 12632 6112 "POST /api/token/ HTTP/1.1" 200 1166
+INFO 2025-08-05 11:41:49,802 middleware 12632 14072 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:49,815 middleware 12632 14072 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:41:49,836 basehttp 12632 14072 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:41:49,907 middleware 12632 13592 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:49,953 middleware 12632 13592 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-05 11:41:49,992 basehttp 12632 13592 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 288
+INFO 2025-08-05 11:41:52,029 middleware 12632 2908 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:52,029 middleware 12632 10688 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:41:52,349 middleware 12632 2908 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:41:52,356 middleware 12632 10688 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:41:52,524 basehttp 12632 2908 "GET /api/applications/my_applications/?t=1754408512015&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:41:52,544 basehttp 12632 10688 "GET /api/applications/my_applications/?t=1754408512013&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:42:41,282 middleware 12632 1044 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:41,282 middleware 12632 3892 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:41,307 middleware 12632 1044 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:42:41,317 middleware 12632 3892 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:42:41,401 basehttp 12632 1044 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:42:41,431 basehttp 12632 3892 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:42:41,464 middleware 12632 2756 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:41,475 middleware 12632 15476 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:41,493 middleware 12632 2756 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:42:41,499 middleware 12632 15476 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:42:41,569 basehttp 12632 15476 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:42:41,689 basehttp 12632 2756 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:42:42,246 middleware 12632 144 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:42,255 middleware 12632 8004 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:42,777 middleware 12632 144 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:42:42,917 middleware 12632 8004 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:42:42,917 basehttp 12632 144 "GET /api/applications/my_applications/?t=1754408562176&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:42:43,006 basehttp 12632 8004 "GET /api/applications/my_applications/?t=1754408562179&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:42:56,378 middleware 12632 6076 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:56,378 middleware 12632 15836 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:56,392 middleware 12632 6076 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:42:56,397 middleware 12632 15836 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:42:56,432 basehttp 12632 6076 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:42:56,444 middleware 12632 16320 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:56,467 basehttp 12632 15836 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:42:56,474 middleware 12632 16320 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:42:56,483 middleware 12632 8704 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:56,520 basehttp 12632 16320 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:42:56,546 middleware 12632 8704 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:42:56,581 basehttp 12632 8704 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:42:56,685 middleware 12632 10600 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:56,711 middleware 12632 2024 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:42:57,014 middleware 12632 2024 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:42:57,066 middleware 12632 10600 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:42:57,079 basehttp 12632 2024 "GET /api/applications/my_applications/?t=1754408576642&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:42:57,117 basehttp 12632 10600 "GET /api/applications/my_applications/?t=1754408576639&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:43:03,714 middleware 12632 13192 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:43:03,717 middleware 12632 1568 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:43:03,725 middleware 12632 1568 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:43:03,728 middleware 12632 13192 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:43:03,774 basehttp 12632 1568 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:43:03,786 middleware 12632 10500 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:43:03,790 basehttp 12632 13192 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:43:03,791 middleware 12632 9336 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:43:03,801 middleware 12632 10500 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:43:03,803 middleware 12632 9336 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:43:03,852 basehttp 12632 10500 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:43:03,869 basehttp 12632 9336 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:43:04,151 middleware 12632 10424 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:43:04,160 middleware 12632 3676 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:43:04,365 middleware 12632 3676 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:43:04,370 middleware 12632 10424 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:43:04,449 basehttp 12632 3676 "GET /api/applications/my_applications/?t=1754408584152&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:43:04,461 basehttp 12632 10424 "GET /api/applications/my_applications/?t=1754408584146&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:44:17,195 middleware 12632 2544 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:44:17,219 middleware 12632 2544 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:44:17,294 basehttp 12632 2544 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:45:30,913 middleware 12632 5352 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:30,913 middleware 12632 8904 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:30,922 middleware 12632 5352 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:45:30,927 middleware 12632 8904 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:45:30,967 basehttp 12632 5352 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:45:30,971 basehttp 12632 8904 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:45:30,978 middleware 12632 12112 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:30,983 middleware 12632 14376 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:30,997 middleware 12632 14376 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:45:30,999 middleware 12632 12112 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:45:31,207 basehttp 12632 14376 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:45:31,218 basehttp 12632 12112 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:45:31,286 middleware 12632 10176 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:31,294 middleware 12632 6368 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:31,558 middleware 12632 6368 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:45:31,676 basehttp 12632 6368 "GET /api/applications/my_applications/?t=1754408731289&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:45:31,680 middleware 12632 10176 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:45:31,815 basehttp 12632 10176 "GET /api/applications/my_applications/?t=1754408731287&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:45:32,859 middleware 12632 16060 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:32,862 middleware 12632 9308 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:32,905 middleware 12632 9308 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:45:32,905 middleware 12632 16060 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:45:32,962 basehttp 12632 16060 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:45:32,971 middleware 12632 16012 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:32,984 basehttp 12632 9308 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:45:32,994 middleware 12632 16012 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:45:32,996 middleware 12632 11696 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:33,003 middleware 12632 11696 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:45:33,032 basehttp 12632 16012 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:45:33,056 basehttp 12632 11696 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:45:33,211 middleware 12632 9156 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:33,218 middleware 12632 6432 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:45:33,487 middleware 12632 6432 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:45:33,487 middleware 12632 9156 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:45:33,570 basehttp 12632 9156 "GET /api/applications/my_applications/?t=1754408733205&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:45:33,580 basehttp 12632 6432 "GET /api/applications/my_applications/?t=1754408733208&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:46:20,820 middleware 12632 12188 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:20,840 middleware 12632 12188 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:46:20,864 basehttp 12632 12188 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:46:50,718 middleware 12632 5608 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:50,726 middleware 12632 15680 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:50,730 middleware 12632 5608 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:46:50,734 middleware 12632 15680 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:46:50,775 basehttp 12632 5608 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:46:50,781 basehttp 12632 15680 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:46:50,789 middleware 12632 15136 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:50,793 middleware 12632 976 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:50,795 middleware 12632 15136 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:46:50,803 middleware 12632 976 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:46:50,837 basehttp 12632 976 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:46:50,848 basehttp 12632 15136 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:46:51,072 middleware 12632 16132 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:51,080 middleware 12632 8016 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:51,273 middleware 12632 16132 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:46:51,283 middleware 12632 8016 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:46:51,358 basehttp 12632 16132 "GET /api/applications/my_applications/?t=1754408811064&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:46:51,370 basehttp 12632 8016 "GET /api/applications/my_applications/?t=1754408811073&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:46:53,850 middleware 12632 10296 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:53,888 middleware 12632 10296 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:46:53,928 basehttp 12632 10296 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:46:58,149 middleware 12632 1040 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:58,156 middleware 12632 2812 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:58,186 middleware 12632 1040 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:46:58,196 middleware 12632 2812 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-05 11:46:58,297 basehttp 12632 1040 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:46:58,315 middleware 12632 4204 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:58,320 basehttp 12632 2812 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-05 11:46:58,330 middleware 12632 4204 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:46:58,374 basehttp 12632 4204 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:46:58,425 middleware 12632 12284 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:58,439 middleware 12632 12284 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:46:58,479 basehttp 12632 12284 "GET /api/users/profile/ HTTP/1.1" 200 576
+INFO 2025-08-05 11:46:58,597 middleware 12632 13284 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:58,599 middleware 12632 3996 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:46:59,088 middleware 12632 13284 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:46:59,103 middleware 12632 3996 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:46:59,223 basehttp 12632 13284 "GET /api/applications/my_applications/?t=1754408818588&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:46:59,256 basehttp 12632 3996 "GET /api/applications/my_applications/?t=1754408818592&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:47:31,849 middleware 12632 2344 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:47:31,862 middleware 12632 2344 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:47:31,886 basehttp 12632 2344 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:48:32,557 middleware 12632 13348 Petición: GET /api/projects/fec51945-5c81-47b9-8c8d-9086a02be27e/ - IP: 127.0.0.1
+INFO 2025-08-05 11:48:32,573 middleware 12632 13348 Respuesta: 200 - GET /api/projects/fec51945-5c81-47b9-8c8d-9086a02be27e/
+INFO 2025-08-05 11:48:32,666 basehttp 12632 13348 "GET /api/projects/fec51945-5c81-47b9-8c8d-9086a02be27e/ HTTP/1.1" 200 1383
+INFO 2025-08-05 11:48:38,769 middleware 12632 6348 Petición: GET /api/projects/ab5e9d09-fdc7-4ede-b45e-de25f073e003/ - IP: 127.0.0.1
+INFO 2025-08-05 11:48:38,804 middleware 12632 6348 Respuesta: 200 - GET /api/projects/ab5e9d09-fdc7-4ede-b45e-de25f073e003/
+INFO 2025-08-05 11:48:39,036 basehttp 12632 6348 "GET /api/projects/ab5e9d09-fdc7-4ede-b45e-de25f073e003/ HTTP/1.1" 200 1663
+INFO 2025-08-05 11:48:41,755 middleware 12632 4020 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:48:41,788 middleware 12632 4020 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:48:41,858 basehttp 12632 4020 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:49:31,977 middleware 12632 16124 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:49:31,981 middleware 12632 2264 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:49:32,103 middleware 12632 2264 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-05 11:49:32,103 middleware 12632 16124 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-05 11:49:32,248 basehttp 12632 2264 "GET /api/projects/my_projects/ HTTP/1.1" 200 6272
+INFO 2025-08-05 11:49:32,262 basehttp 12632 16124 "GET /api/projects/my_projects/ HTTP/1.1" 200 6272
+INFO 2025-08-05 11:49:33,955 middleware 12632 10872 Petición: GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/ - IP: 127.0.0.1
+INFO 2025-08-05 11:49:33,984 middleware 12632 10872 Respuesta: 200 - GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/
+INFO 2025-08-05 11:49:34,102 basehttp 12632 10872 "GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/ HTTP/1.1" 200 1644
+INFO 2025-08-05 11:49:58,294 middleware 12632 10180 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:49:58,298 middleware 12632 14920 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:49:58,535 middleware 12632 10180 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:49:58,573 middleware 12632 14920 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:49:58,625 basehttp 12632 10180 "GET /api/applications/my_applications/?t=1754408998285&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:49:58,644 basehttp 12632 14920 "GET /api/applications/my_applications/?t=1754408998286&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:49:59,778 middleware 12632 4412 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:49:59,794 middleware 12632 4412 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:49:59,828 basehttp 12632 4412 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:50:16,776 middleware 12632 8440 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:50:16,792 middleware 12632 8440 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:50:16,828 basehttp 12632 8440 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:50:38,061 middleware 12632 4696 Petición: GET /api/projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:50:38,061 middleware 12632 3040 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-05 11:50:38,061 middleware 12632 10672 Petición: GET /api/projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:50:38,070 middleware 12632 2516 Petición: GET /api/applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:50:38,073 middleware 12632 16136 Petición: GET /api/students/me/ - IP: 127.0.0.1
+INFO 2025-08-05 11:50:38,078 middleware 12632 1308 Petición: GET /api/applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:50:38,127 middleware 12632 3040 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-05 11:50:38,143 middleware 12632 16136 Respuesta: 200 - GET /api/students/me/
+INFO 2025-08-05 11:50:38,176 middleware 12632 10672 Respuesta: 200 - GET /api/projects/
+INFO 2025-08-05 11:50:38,176 middleware 12632 4696 Respuesta: 200 - GET /api/projects/
+INFO 2025-08-05 11:50:38,266 middleware 12632 1308 Respuesta: 200 - GET /api/applications/
+INFO 2025-08-05 11:50:38,311 middleware 12632 2516 Respuesta: 200 - GET /api/applications/
+INFO 2025-08-05 11:50:38,323 basehttp 12632 3040 "GET /api/students/me/ HTTP/1.1" 200 1560
+INFO 2025-08-05 11:50:38,348 basehttp 12632 16136 "GET /api/students/me/ HTTP/1.1" 200 1560
+INFO 2025-08-05 11:50:38,578 basehttp 12632 10672 "GET /api/projects/ HTTP/1.1" 200 2867
+INFO 2025-08-05 11:50:38,705 basehttp 12632 4696 "GET /api/projects/ HTTP/1.1" 200 2867
+INFO 2025-08-05 11:50:38,779 basehttp 12632 1308 "GET /api/applications/ HTTP/1.1" 200 3599
+INFO 2025-08-05 11:50:38,802 basehttp 12632 2516 "GET /api/applications/ HTTP/1.1" 200 3599
+INFO 2025-08-05 11:51:13,775 middleware 12632 12592 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:51:13,779 middleware 12632 15444 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:51:13,989 middleware 12632 12592 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:51:13,997 middleware 12632 15444 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:51:14,068 basehttp 12632 12592 "GET /api/applications/my_applications/?t=1754409073765&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:51:14,074 basehttp 12632 15444 "GET /api/applications/my_applications/?t=1754409073767&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:51:15,167 middleware 12632 12908 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:51:15,183 middleware 12632 12908 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:51:15,216 basehttp 12632 12908 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:51:37,012 middleware 12632 9864 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:51:37,012 middleware 12632 9388 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:51:37,143 middleware 12632 9864 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-05 11:51:37,149 middleware 12632 9388 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-05 11:51:37,219 basehttp 12632 9388 "GET /api/projects/my_projects/ HTTP/1.1" 200 6272
+INFO 2025-08-05 11:51:37,230 basehttp 12632 9864 "GET /api/projects/my_projects/ HTTP/1.1" 200 6272
+INFO 2025-08-05 11:51:37,704 middleware 12632 10800 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:51:37,706 middleware 12632 14432 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-05 11:51:37,928 middleware 12632 10800 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:51:37,933 middleware 12632 14432 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-05 11:51:38,012 basehttp 12632 10800 "GET /api/applications/my_applications/?t=1754409097694&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:51:38,019 basehttp 12632 14432 "GET /api/applications/my_applications/?t=1754409097697&nocache=true HTTP/1.1" 200 11624
+INFO 2025-08-05 11:52:06,784 middleware 12632 4752 Petición: GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ - IP: 127.0.0.1
+INFO 2025-08-05 11:52:06,802 middleware 12632 4752 Respuesta: 200 - GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/
+INFO 2025-08-05 11:52:06,827 basehttp 12632 4752 "GET /api/projects/9ba2e021-a13c-4ddf-acd5-87f65640edf8/ HTTP/1.1" 200 1563
+INFO 2025-08-05 11:52:51,344 middleware 12632 1648 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:52:51,347 middleware 12632 7636 Petición: GET /api/projects/my_projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:52:51,459 middleware 12632 1648 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-05 11:52:51,485 middleware 12632 7636 Respuesta: 200 - GET /api/projects/my_projects/
+INFO 2025-08-05 11:52:51,549 basehttp 12632 1648 "GET /api/projects/my_projects/ HTTP/1.1" 200 6272
+INFO 2025-08-05 11:52:51,559 basehttp 12632 7636 "GET /api/projects/my_projects/ HTTP/1.1" 200 6272
+INFO 2025-08-05 11:52:53,361 middleware 12632 12316 Petición: GET /api/projects/ae4dcf42-0705-40ca-8967-f658c4474400/ - IP: 127.0.0.1
+INFO 2025-08-05 11:52:53,381 middleware 12632 12316 Respuesta: 200 - GET /api/projects/ae4dcf42-0705-40ca-8967-f658c4474400/
+INFO 2025-08-05 11:52:53,550 basehttp 12632 12316 "GET /api/projects/ae4dcf42-0705-40ca-8967-f658c4474400/ HTTP/1.1" 200 1693
+INFO 2025-08-05 11:53:05,665 middleware 12632 8120 Petición: POST /api/auth/logout/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:05,701 middleware 12632 8120 Respuesta: 200 - POST /api/auth/logout/
+INFO 2025-08-05 11:53:05,774 basehttp 12632 8120 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-05 11:53:07,889 middleware 12632 15240 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:08,983 middleware 12632 15240 Respuesta: 200 - POST /api/token/
+INFO 2025-08-05 11:53:09,088 basehttp 12632 15240 "POST /api/token/ HTTP/1.1" 200 1092
+INFO 2025-08-05 11:53:09,101 middleware 12632 10180 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:09,116 middleware 12632 10180 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-05 11:53:09,196 basehttp 12632 10180 "GET /api/users/profile/ HTTP/1.1" 200 539
+INFO 2025-08-05 11:53:09,280 middleware 12632 8240 Petición: GET /api/dashboard/admin_stats/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:09,335 middleware 12632 8240 Respuesta: 200 - GET /api/dashboard/admin_stats/
+INFO 2025-08-05 11:53:09,562 basehttp 12632 8240 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 613
+INFO 2025-08-05 11:53:11,150 middleware 12632 1264 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:11,160 middleware 12632 7592 Petición: GET /api/admin/projects/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:11,214 middleware 12632 1264 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-05 11:53:11,222 middleware 12632 7592 Respuesta: 200 - GET /api/admin/projects/
+INFO 2025-08-05 11:53:11,496 basehttp 12632 1264 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 11924
+INFO 2025-08-05 11:53:11,503 basehttp 12632 7592 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 11924
+INFO 2025-08-05 11:53:14,650 middleware 12632 6116 Petición: GET /api/projects/a0198e30-eeca-4b13-a6c6-55cf956d3e34/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:14,685 middleware 12632 6116 Respuesta: 200 - GET /api/projects/a0198e30-eeca-4b13-a6c6-55cf956d3e34/
+INFO 2025-08-05 11:53:14,897 basehttp 12632 6116 "GET /api/projects/a0198e30-eeca-4b13-a6c6-55cf956d3e34/ HTTP/1.1" 200 1440
+INFO 2025-08-05 11:53:20,726 middleware 12632 10308 Petición: GET /api/projects/ae4dcf42-0705-40ca-8967-f658c4474400/ - IP: 127.0.0.1
+INFO 2025-08-05 11:53:20,757 middleware 12632 10308 Respuesta: 200 - GET /api/projects/ae4dcf42-0705-40ca-8967-f658c4474400/
+INFO 2025-08-05 11:53:20,813 basehttp 12632 10308 "GET /api/projects/ae4dcf42-0705-40ca-8967-f658c4474400/ HTTP/1.1" 200 1693
+INFO 2025-08-05 14:04:44,994 signals 9296 6276 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:04:45,937 signals 12524 7496 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:04:45,958 autoreload 12524 7496 Watching for file changes with StatReloader
+INFO 2025-08-05 14:05:53,675 signals 5812 2144 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:06:01,380 signals 11924 9544 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:06:13,300 signals 16020 12180 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:06:49,423 signals 11888 15528 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:09:03,359 signals 14316 10560 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:09:07,479 signals 6324 12664 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:11:16,389 signals 2464 1840 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:11:29,786 signals 16800 12032 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:11:34,489 signals 12384 2092 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:11:39,298 signals 16412 17236 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:11:45,854 signals 3264 12132 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:11:58,836 signals 17392 10884 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:12:03,699 signals 13116 17304 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:12:08,745 signals 16608 16884 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:12:13,133 signals 14268 10244 Signals de notificaciones conectados exitosamente
+INFO 2025-08-05 14:12:19,326 signals 16604 12036 Signals de notificaciones conectados exitosamente
