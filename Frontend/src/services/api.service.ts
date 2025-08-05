@@ -8,21 +8,48 @@ class ApiService {
     options: RequestInit = {}
   ): Promise<T> {
     // Construir URL completa - usar proxy en desarrollo
-    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+    let url: string;
+    if (endpoint.startsWith('http')) {
+      url = endpoint;
+    } else if (endpoint.startsWith('/api/')) {
+      // En desarrollo, usar el proxy de Vite
+      url = endpoint;
+    } else {
+      url = `${API_BASE_URL}${endpoint}`;
+    }
+    
+    // Debug: Log URL being requested
+    console.log(`🔍 [API] Requesting URL: ${url}`);
+    console.log(`🔍 [API] Endpoint: ${endpoint}`);
+    console.log(`🔍 [API] API_BASE_URL: ${API_BASE_URL}`);
     
 
     
     // Get access token
     const token = authService.getAccessToken();
     
+    // Debug: Log token info for hub analytics endpoint
+    if (endpoint.includes('/api/hub/analytics/')) {
+      console.log('🔍 [API] Token para hub analytics:', token ? 'Presente' : 'Ausente');
+      console.log('🔍 [API] Token value:', token);
+    }
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
     };
+    
+    // Debug: Log headers for hub analytics endpoint
+    if (endpoint.includes('/api/hub/analytics/')) {
+      console.log('🔍 [API] Headers configurados:', config.headers);
+    }
 
     try {
       const response = await fetch(url, config);
@@ -397,6 +424,11 @@ class ApiService {
     }
     
     if (endpoint.includes('/api/project-applications/') || endpoint.includes('/api/applications/')) {
+      // Excluir el endpoint my_applications para que use su propio adaptador
+      if (endpoint.includes('/api/applications/my_applications/')) {
+        return data; // Devolver datos tal como están
+      }
+      
       if (Array.isArray(data)) {
         return data.map(adaptApplication);
       }

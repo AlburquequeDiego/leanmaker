@@ -41,6 +41,7 @@ import {
   DarkMode as DarkModeIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
+  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 import { NotificationCenter } from '../../notifications/NotificationCenter';
@@ -129,7 +130,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Gestión de Estudiantes', icon: <SchoolIcon />, path: '/dashboard/admin/gestion-estudiantes' },
         { text: 'Gestión de Proyectos', icon: <AssignmentIcon />, path: '/dashboard/admin/gestion-proyectos' },
         { text: 'Gestión de Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/admin/gestion-evaluaciones' },
-        { text: 'Configuración de Plataforma', icon: <SettingsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
+        { text: 'Reportes y Analytics', icon: <AnalyticsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
       ],
       company: [
         { text: 'Proyectos', icon: <AssignmentIcon />, path: '/dashboard/company/projects' },

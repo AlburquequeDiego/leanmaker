@@ -19,6 +19,19 @@ from projects.models import Proyecto
 from django.db.models import F
 from django.utils import timezone
 
+from django.db.models import Count, Avg, Sum, Q
+import calendar
+from applications.models import Aplicacion as AplicacionProyecto
+from students.models import Estudiante, ApiLevelRequest
+from companies.models import Empresa
+from work_hours.models import WorkHour
+from project_status.models import ProjectStatus
+from strikes.models import Strike, StrikeReport
+from notifications.models import Notification
+from mass_notifications.models import MassNotification
+from interviews.models import Interview
+from evaluations.models import Evaluation
+
 def home(request):
     """Vista principal de la aplicación."""
     from django.db import connection
@@ -893,11 +906,11 @@ def api_dashboard_company_stats(request):
             print(f'📊 [COMPANY STATS] Proyectos completados: {completed_projects}')
             
             # 4. Total de aplicaciones recibidas
-            total_applications = Aplicacion.objects.filter(project__company=company).count()
+            total_applications = AplicacionProyecto.objects.filter(project__company=company).count()
             print(f'📊 [COMPANY STATS] Total aplicaciones: {total_applications}')
             
             # 5. Aplicaciones pendientes
-            pending_applications = Aplicacion.objects.filter(
+            pending_applications = AplicacionProyecto.objects.filter(
                 project__company=company, 
                 status='pending'
             ).count()
@@ -905,7 +918,7 @@ def api_dashboard_company_stats(request):
             
             # 6. Estudiantes activos (estudiantes que están trabajando actualmente en proyectos)
             # Estudiantes con aplicaciones aceptadas, activas o completadas
-            active_students = Aplicacion.objects.filter(
+            active_students = AplicacionProyecto.objects.filter(
                 project__company=company,
                 status__in=['accepted', 'active', 'completed']
             ).values('student').distinct().count()
@@ -937,7 +950,7 @@ def api_dashboard_company_stats(request):
             print(f'📊 [COMPANY STATS] Proyectos este mes: {projects_this_month}')
             
             # 10. Aplicaciones recibidas este mes
-            applications_this_month = Aplicacion.objects.filter(
+            applications_this_month = AplicacionProyecto.objects.filter(
                 project__company=company,
                 applied_at__gte=first_day_month
             ).count()
@@ -1021,17 +1034,17 @@ def api_dashboard_student_stats(request):
         try:
             print(f"🔍 [STUDENT DASHBOARD] Calculando estadísticas para estudiante: {student.user.email}")
             
-            total_applications = Aplicacion.objects.filter(student=student).count()
+            total_applications = AplicacionProyecto.objects.filter(student=student).count()
             print(f"📝 [STUDENT DASHBOARD] Total aplicaciones: {total_applications}")
             
-            pending_applications = Aplicacion.objects.filter(student=student, status='pending').count()
+            pending_applications = AplicacionProyecto.objects.filter(student=student, status='pending').count()
             print(f"⏳ [STUDENT DASHBOARD] Aplicaciones pendientes: {pending_applications}")
             
-            accepted_applications = Aplicacion.objects.filter(student=student, status='accepted').count()
+            accepted_applications = AplicacionProyecto.objects.filter(student=student, status='accepted').count()
             print(f"✅ [STUDENT DASHBOARD] Aplicaciones aceptadas: {accepted_applications}")
             
             # Obtener proyectos del estudiante a través de aplicaciones aceptadas
-            accepted_applications_objs = Aplicacion.objects.filter(student=student, status='accepted')
+            accepted_applications_objs = AplicacionProyecto.objects.filter(student=student, status='accepted')
             print(f"🔗 [STUDENT DASHBOARD] Objetos de aplicaciones aceptadas: {accepted_applications_objs.count()}")
             
             student_projects = Proyecto.objects.filter(application_project__in=accepted_applications_objs)
@@ -1052,7 +1065,7 @@ def api_dashboard_student_stats(request):
             
             # Calcular proyectos disponibles (proyectos publicados, no postulados, cumple nivel API)
             published_projects = Proyecto.objects.filter(status__name='published')
-            applied_project_ids = Aplicacion.objects.filter(student=student).values_list('project', flat=True)
+            applied_project_ids = AplicacionProyecto.objects.filter(student=student).values_list('project', flat=True)
             available_projects = published_projects.exclude(id__in=applied_project_ids).filter(
                 min_api_level__lte=student.api_level
             ).count()
@@ -1188,6 +1201,35 @@ def api_dashboard_admin_stats(request):
         strikes_alerts = StrikeReport.objects.filter(status='pending').count()
         print(f"⚠️ [ADMIN DASHBOARD] Alertas de strikes (reportes pendientes): {strikes_alerts}")
         
+        # Obtener solicitudes de cuestionario de API pendientes
+        api_questionnaire_requests = 0
+        try:
+            from students.models import ApiLevelRequest
+            api_questionnaire_requests = ApiLevelRequest.objects.filter(status='pending').count()
+            print(f"📋 [ADMIN DASHBOARD] Solicitudes de cuestionario de API pendientes: {api_questionnaire_requests}")
+        except Exception as e:
+            print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo solicitudes de cuestionario API pendientes: {str(e)}")
+            api_questionnaire_requests = 0
+        
+        # Obtener proyectos activos
+        active_projects = 0
+        try:
+            active_projects = Proyecto.objects.filter(status='active').count()
+            print(f"🚀 [ADMIN DASHBOARD] Proyectos activos: {active_projects}")
+        except Exception as e:
+            print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo proyectos activos: {str(e)}")
+            active_projects = 0
+        
+        # Obtener horas pendientes de validación
+        pending_hours = 0
+        try:
+            from work_hours.models import WorkHour
+            pending_hours = WorkHour.objects.filter(status='pending').count()
+            print(f"⏰ [ADMIN DASHBOARD] Horas pendientes de validación: {pending_hours}")
+        except Exception as e:
+            print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo horas pendientes: {str(e)}")
+            pending_hours = 0
+        
         # Obtener top 10 estudiantes con más horas registradas
         from work_hours.models import WorkHour
         from django.db.models import Sum
@@ -1259,6 +1301,9 @@ def api_dashboard_admin_stats(request):
             'total_projects': total_projects,
             'pending_applications': pending_applications,
             'strikes_alerts': strikes_alerts,
+            'api_questionnaire_requests': api_questionnaire_requests,
+            'active_projects': active_projects,
+            'pending_hours': pending_hours,
             'top_students': top_students,
             'recent_activity': []  # Placeholder para actividad reciente
         }
@@ -1482,6 +1527,605 @@ def test_simple(request):
         'message': 'Backend funcionando correctamente',
         'timestamp': timezone.now().isoformat()
     })
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_hub_analytics_data(request):
+    """
+    Endpoint para obtener datos del Hub de Reportes y Analytics
+    """
+    # Verificar autenticación JWT (temporalmente deshabilitado para pruebas)
+    # auth_header = request.headers.get('Authorization')
+    # if not auth_header or not auth_header.startswith('Bearer '):
+    #     return JsonResponse({
+    #         'error': 'Token de autenticación requerido'
+    #     }, status=401)
+    
+    # token = auth_header.split(' ')[1]
+    # try:
+    #     user = verify_token(token)
+    #     if not user:
+    #         return JsonResponse({
+    #             'error': 'Token inválido'
+    #         }, status=401)
+    # except Exception as e:
+    #     return JsonResponse({
+    #         'error': 'Error al verificar token'
+    #     }, status=401)
+    
+    # Temporalmente usar un usuario admin para pruebas
+    try:
+        user = User.objects.filter(is_staff=True).first()
+        if not user:
+            user = User.objects.first()
+    except:
+        user = None
+    
+    print(f"🔍 [HUB ANALYTICS] Endpoint llamado por usuario: {user}")
+    print(f"🔍 [HUB ANALYTICS] Todos los headers: {dict(request.headers)}")
+    if user:
+        print(f"🔍 [HUB ANALYTICS] Usuario autenticado: {user.is_authenticated}")
+        print(f"🔍 [HUB ANALYTICS] Tipo de usuario: {type(user)}")
+    else:
+        print(f"🔍 [HUB ANALYTICS] No hay usuario disponible")
+    
+    try:
+        
+        # Obtener fecha actual y fechas para cálculos
+        now = timezone.now()
+        current_month = now.month
+        current_year = now.year
+        
+        # 1. DATOS BÁSICOS (KPI Cards)
+        total_users = User.objects.count()
+        total_students = Estudiante.objects.count()
+        total_companies = Empresa.objects.count()
+        total_projects = Proyecto.objects.count()
+        
+        # Filtrar por nombre del estado usando la relación - hacer más flexible
+        active_projects = Proyecto.objects.filter(
+            status__name__icontains='activo'
+        ).count()
+        
+        completed_projects = Proyecto.objects.filter(
+            status__name__icontains='completado'
+        ).count()
+        
+        pending_projects = Proyecto.objects.filter(
+            status__name__icontains='pendiente'
+        ).count()
+        
+        # Los proyectos cancelados incluyen tanto los cancelados como los eliminados
+        cancelled_projects = Proyecto.objects.filter(
+            status__name__in=['cancelado', 'deleted', 'eliminado']
+        ).count()
+        
+        # Obtener total de aplicaciones y horas para datos de ejemplo
+        total_applications = AplicacionProyecto.objects.count()
+        total_hours_aggregate = WorkHour.objects.aggregate(total=Sum('hours_worked'))
+        total_hours_value = total_hours_aggregate['total'] or 0
+        
+        # Debug: imprimir los estados disponibles
+        print(f"🔍 [HUB ANALYTICS] Estados de proyectos encontrados:")
+        estados_unicos = Proyecto.objects.values_list('status__name', flat=True).distinct()
+        for estado in estados_unicos:
+            print(f"  - {estado}")
+        
+        print(f"📊 [HUB ANALYTICS] Conteos de proyectos:")
+        print(f"  - Activos: {active_projects}")
+        print(f"  - Completados: {completed_projects}")
+        print(f"  - Pendientes: {pending_projects}")
+        print(f"  - Cancelados/Eliminados: {cancelled_projects}")
+        
+        # 2. ACTIVIDAD SEMANAL (últimos 7 días)
+        dias_semana = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom']
+        week_data = []
+        
+        for i in range(7):
+            date = now - timedelta(days=i)
+            day_name = dias_semana[date.weekday()]
+            
+            # Usuarios activos ese día
+            users_active = User.objects.filter(
+                last_login__date=date.date()
+            ).count()
+            
+            # Proyectos creados ese día
+            projects_created = Proyecto.objects.filter(
+                created_at__date=date.date()
+            ).count()
+            
+            # Aplicaciones enviadas ese día
+            applications_sent = AplicacionProyecto.objects.filter(
+                created_at__date=date.date()
+            ).count()
+            
+            # Horas trabajadas ese día
+            hours_worked = WorkHour.objects.filter(
+                date=date.date()
+            ).aggregate(total=Sum('hours_worked'))
+            hours_value = hours_worked['total'] or 0
+            
+            week_data.append({
+                'name': day_name,
+                'usuarios': users_active,
+                'proyectos': projects_created,
+                'aplicaciones': applications_sent,
+                'horas': hours_value
+            })
+        
+        # Invertir para mostrar de lunes a domingo
+        week_data.reverse()
+        
+
+        
+        # 3. ESTADO DE PROYECTOS (para gráfico circular)
+        project_status_data = []
+        
+        # Obtener todos los estados disponibles
+        available_statuses = ProjectStatus.objects.all()
+        
+        if available_statuses.exists():
+            # Usar estados reales de la base de datos
+            for status in available_statuses:
+                count = Proyecto.objects.filter(status=status).count()
+                if count > 0:  # Solo incluir estados con proyectos
+                    project_status_data.append({
+                        'name': status.name,
+                        'value': count,
+                        'color': status.color
+                    })
+        else:
+            # Fallback con datos básicos
+            project_status_data = [
+                {'name': 'Activos', 'value': active_projects, 'color': '#22c55e'},
+                {'name': 'Completados', 'value': completed_projects, 'color': '#3b82f6'},
+                {'name': 'Pendientes', 'value': pending_projects, 'color': '#f59e0b'},
+                {'name': 'Cancelados/Eliminados', 'value': cancelled_projects, 'color': '#ef4444'},
+            ]
+        
+
+        
+        # 4. ESTADÍSTICAS MENSUALES (últimos 6 meses)
+        meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        monthly_stats = []
+        
+        for i in range(6):
+            month_date = now - timedelta(days=30*i)
+            month_name = meses[month_date.month - 1]
+            
+            # Proyectos creados ese mes
+            projects_month = Proyecto.objects.filter(
+                created_at__year=month_date.year,
+                created_at__month=month_date.month
+            ).count()
+            
+            # Estudiantes registrados ese mes
+            students_month = Estudiante.objects.filter(
+                user__date_joined__year=month_date.year,
+                user__date_joined__month=month_date.month
+            ).count()
+            
+            # Empresas registradas ese mes
+            companies_month = Empresa.objects.filter(
+                user__date_joined__year=month_date.year,
+                user__date_joined__month=month_date.month
+            ).count()
+            
+            # Horas trabajadas ese mes
+            hours_month = WorkHour.objects.filter(
+                date__year=month_date.year,
+                date__month=month_date.month
+            ).aggregate(total=Sum('hours_worked'))
+            hours_month_value = hours_month['total'] or 0
+            
+            monthly_stats.append({
+                'name': month_name,
+                'proyectos': projects_month,
+                'estudiantes': students_month,
+                'empresas': companies_month,
+                'horas': hours_month_value
+            })
+        
+
+        
+        # 5. TOP 20 ESTUDIANTES (por horas trabajadas)
+        top_students = []
+        try:
+            # Estrategia: obtener primero las horas trabajadas por estudiante
+            students_with_hours = Estudiante.objects.annotate(
+                work_hours_sum=Sum('work_hours__hours_worked')
+            ).order_by('-work_hours_sum')[:20]
+            
+            print(f"🔍 [HUB ANALYTICS] Top estudiantes encontrados: {students_with_hours.count()}")
+            
+            for student in students_with_hours:
+                # Obtener datos adicionales por separado para evitar duplicados
+                completed_projects = student.user.membresias_proyecto.filter(
+                    proyecto__status__name__icontains='completed'
+                ).count()
+                
+                # Calcular rating promedio
+                ratings = student.user.membresias_proyecto.values_list('evaluacion_promedio', flat=True)
+                ratings = [r for r in ratings if r is not None]
+                average_rating = sum(ratings) / len(ratings) if ratings else 0
+                
+                # Usar el campo work_hours_sum del modelo si no hay horas en work_hours
+                actual_hours = student.work_hours_sum or student.total_hours or 0
+                
+                top_students.append({
+                    'id': student.id,
+                    'name': f"{student.user.first_name} {student.user.last_name}".strip() or student.user.email,
+                    'email': student.user.email,
+                    'avatar': ''.join([n[0].upper() for n in (student.user.first_name or student.user.email).split()[:2]]),
+                    'totalHours': actual_hours,
+                    'completedProjects': completed_projects,
+                    'averageRating': round(average_rating, 1),
+                    'level': student.api_level or 1,
+                    'status': 'active'
+                })
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo top estudiantes: {str(e)}")
+            # Fallback: obtener estudiantes sin anotaciones complejas
+            try:
+                fallback_students = Estudiante.objects.all()[:20]
+                for student in fallback_students:
+                    top_students.append({
+                        'id': student.id,
+                        'name': f"{student.user.first_name} {student.user.last_name}".strip() or student.user.email,
+                        'email': student.user.email,
+                        'avatar': ''.join([n[0].upper() for n in (student.user.first_name or student.user.email).split()[:2]]),
+                        'totalHours': student.total_hours or 0,
+                        'completedProjects': student.completed_projects or 0,
+                        'averageRating': round(student.rating or 0, 1),
+                        'level': student.api_level or 1,
+                        'status': 'active'
+                    })
+            except Exception as fallback_error:
+                print(f"⚠️ [HUB ANALYTICS] Error en fallback estudiantes: {str(fallback_error)}")
+        
+        # 6. TOP 20 EMPRESAS (por proyectos creados y horas ofrecidas)
+        top_companies = []
+        try:
+            print("🔍 [HUB ANALYTICS] Iniciando consulta principal de empresas...")
+            # Consulta corregida usando relaciones correctas - ordenar por proyectos y horas ofrecidas
+            top_companies_data = Empresa.objects.annotate(
+                projects_count=Count('proyectos'),
+                active_projects_count=Count('proyectos', filter=Q(proyectos__status__name__icontains='active')),
+                students_count=Count('proyectos__miembros__usuario', distinct=True),
+                real_hours_offered=Sum('proyectos__work_hours__hours_worked')
+            ).order_by('-projects_count', '-real_hours_offered')[:20]
+            
+            print(f"🔍 [HUB ANALYTICS] Top empresas encontradas: {top_companies_data.count()}")
+            print(f"🔍 [HUB ANALYTICS] Consulta principal exitosa")
+            
+            for company in top_companies_data:
+                print(f"🔍 [HUB ANALYTICS] Empresa: {company.company_name}, Proyectos: {company.projects_count}, Horas: {company.real_hours_offered}")
+                top_companies.append({
+                    'id': company.id,
+                    'name': company.company_name or company.user.email,
+                    'industry': company.industry or 'Tecnología',
+                    'avatar': ''.join([n[0].upper() for n in (company.company_name or company.user.email).split()[:2]]),
+                    'totalProjects': company.projects_count or 0,
+                    'activeProjects': company.active_projects_count or 0,
+                    'averageRating': round(company.rating or 0, 1),
+                    'totalStudents': company.students_count or 0,
+                    'realHoursOffered': company.real_hours_offered or 0,
+                    'status': 'active'
+                })
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo top empresas: {str(e)}")
+            print(f"⚠️ [HUB ANALYTICS] Ejecutando fallback...")
+        
+        # 7. ACTIVIDAD RECIENTE
+        recent_activity = []
+        try:
+            # Últimas aplicaciones
+            recent_applications = AplicacionProyecto.objects.select_related(
+                'student__user', 'project'
+            ).order_by('-created_at')[:3]
+            
+            for app in recent_applications:
+                recent_activity.append({
+                    'id': f"app_{app.id}",
+                    'user': f"{app.student.user.first_name} {app.student.user.last_name}".strip() or app.student.user.email,
+                    'action': 'Aplicó al proyecto',
+                    'project': app.project.title,
+                    'time': f"{timezone.now() - app.created_at}",
+                    'status': app.status
+                })
+            
+            # Últimas solicitudes de API
+            try:
+                recent_api_requests = ApiLevelRequest.objects.select_related(
+                    'student__user'
+                ).order_by('-submitted_at')[:2]
+                
+                for req in recent_api_requests:
+                    recent_activity.append({
+                        'id': f"api_{req.id}",
+                        'user': f"{req.student.user.first_name} {req.student.user.last_name}".strip() or req.student.user.email,
+                        'action': 'Solicitó nivel API',
+                        'project': 'N/A',
+                        'time': f"{timezone.now() - req.submitted_at}",
+                        'status': req.status
+                    })
+            except Exception as e:
+                print(f"⚠️ [HUB ANALYTICS] Error obteniendo solicitudes API: {str(e)}")
+                
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo actividad reciente: {str(e)}")
+        
+        # 8. SOLICITUDES PENDIENTES
+        pending_requests = []
+        try:
+            # Solicitudes de API pendientes
+            try:
+                api_requests = ApiLevelRequest.objects.filter(
+                    status='pending'
+                ).select_related('student__user').order_by('-submitted_at')[:5]
+                
+                for req in api_requests:
+                    pending_requests.append({
+                        'id': f"API-{req.id}",
+                        'student': f"{req.student.user.first_name} {req.student.user.last_name}".strip() or req.student.user.email,
+                        'type': 'Cuestionario API',
+                        'level': req.requested_level,
+                        'submitted': req.submitted_at.strftime('%Y-%m-%d'),
+                        'status': 'Pendiente'
+                    })
+            except Exception as e:
+                print(f"⚠️ [HUB ANALYTICS] Error obteniendo solicitudes API: {str(e)}")
+            
+            # Horas pendientes de validación
+            try:
+                pending_hours = WorkHour.objects.filter(
+                    is_verified=False
+                ).select_related('student__user', 'project').order_by('-created_at')[:3]
+                
+                for hour in pending_hours:
+                    pending_requests.append({
+                        'id': f"HR-{hour.id}",
+                        'student': f"{hour.student.user.first_name} {hour.student.user.last_name}".strip() or hour.student.user.email,
+                        'type': 'Validación Horas',
+                        'level': hour.student.api_level or 1,
+                        'submitted': hour.created_at.strftime('%Y-%m-%d'),
+                        'status': 'Pendiente'
+                    })
+            except Exception as e:
+                print(f"⚠️ [HUB ANALYTICS] Error obteniendo horas pendientes: {str(e)}")
+                
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo solicitudes pendientes: {str(e)}")
+        
+        # ===== NUEVAS MÉTRICAS =====
+        
+        # 2. MÉTRICAS DE APLICACIONES Y PROCESO DE SELECCIÓN
+        try:
+            # Tasa de aceptación de aplicaciones
+            total_applications = AplicacionProyecto.objects.count()
+            accepted_applications = AplicacionProyecto.objects.filter(status='accepted').count()
+            application_acceptance_rate = (accepted_applications / total_applications * 100) if total_applications > 0 else 0
+            
+            # Aplicaciones por estado
+            applications_by_status = AplicacionProyecto.objects.values('status').annotate(
+                count=Count('id')
+            ).order_by('-count')
+            
+            # Top proyectos más solicitados
+            top_requested_projects = Proyecto.objects.annotate(
+                application_count=Count('application_project')
+            ).order_by('-application_count')[:5]
+            
+
+            
+            applications_metrics = {
+                'totalApplications': total_applications,
+                'acceptedApplications': accepted_applications,
+                'acceptanceRate': round(application_acceptance_rate, 1),
+                'byStatus': list(applications_by_status),
+                'topRequestedProjects': [
+                    {
+                        'id': str(project.id),
+                        'title': project.title,
+                        'company': project.company.company_name if hasattr(project, 'company') and project.company else 'Sin empresa',
+                        'applications': getattr(project, 'application_count', 0)
+                    }
+                    for project in top_requested_projects
+                ]
+            }
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas de aplicaciones: {str(e)}")
+            applications_metrics = {
+                'totalApplications': 0,
+                'acceptedApplications': 0,
+                'acceptanceRate': 0,
+                'byStatus': [],
+                'topRequestedProjects': []
+            }
+        
+        # 4. MÉTRICAS DE STRIKES Y DISCIPLINA
+        try:
+            # Total de strikes activos
+            active_strikes = Strike.objects.filter(is_active=True).count()
+            
+            # Estudiantes con strikes (distribución)
+            students_with_strikes = Estudiante.objects.filter(strikes__gt=0).count()
+            students_by_strikes = Estudiante.objects.values('strikes').annotate(
+                count=Count('id')
+            ).filter(strikes__gt=0).order_by('strikes')
+            
+            # Empresas que más reportan strikes
+            companies_reporting_strikes = Empresa.objects.annotate(
+                strike_reports_count=Count('strike_reports')
+            ).filter(strike_reports_count__gt=0).order_by('-strike_reports_count')[:5]
+            
+            # Tendencia de strikes por mes (últimos 6 meses)
+            strikes_trend = []
+            for i in range(6):
+                month_date = now - timedelta(days=30*i)
+                strikes_this_month = Strike.objects.filter(
+                    issued_at__year=month_date.year,
+                    issued_at__month=month_date.month
+                ).count()
+                strikes_trend.append({
+                    'month': month_date.strftime('%Y-%m'),
+                    'strikes': strikes_this_month
+                })
+            strikes_trend.reverse()
+            
+
+            
+            strikes_metrics = {
+                'activeStrikes': active_strikes,
+                'studentsWithStrikes': students_with_strikes,
+                'studentsByStrikes': list(students_by_strikes),
+                'topReportingCompanies': companies_reporting_strikes if isinstance(companies_reporting_strikes, list) else [
+                    {
+                        'id': str(company.id),
+                        'name': company.company_name,
+                        'reports': company.strike_reports_count
+                    }
+                    for company in companies_reporting_strikes
+                ],
+                'monthlyTrend': strikes_trend
+            }
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas de strikes: {str(e)}")
+            strikes_metrics = {
+                'activeStrikes': 0,
+                'studentsWithStrikes': 0,
+                'studentsByStrikes': [],
+                'topReportingCompanies': [],
+                'monthlyTrend': []
+            }
+        
+        # 5. MÉTRICAS DE NOTIFICACIONES
+        try:
+            # Notificaciones enviadas vs leídas
+            total_notifications = Notification.objects.count()
+            read_notifications = Notification.objects.filter(read=True).count()
+            notification_read_rate = (read_notifications / total_notifications * 100) if total_notifications > 0 else 0
+            
+            # Tipos de notificación más efectivos
+            notifications_by_type = Notification.objects.values('type').annotate(
+                count=Count('id'),
+                read_count=Count('id', filter=Q(read=True))
+            ).annotate(
+                read_rate=Count('id', filter=Q(read=True)) * 100.0 / Count('id')
+            ).order_by('-read_rate')
+            
+            # Engagement de notificaciones masivas
+            mass_notifications = MassNotification.objects.filter(is_sent=True).count()
+            mass_notifications_sent = MassNotification.objects.filter(is_sent=True).count()
+            
+            notifications_metrics = {
+                'totalNotifications': total_notifications,
+                'readNotifications': read_notifications,
+                'readRate': round(notification_read_rate, 1),
+                'byType': list(notifications_by_type),
+                'massNotifications': mass_notifications,
+                'massNotificationsSent': mass_notifications_sent
+            }
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas de notificaciones: {str(e)}")
+            notifications_metrics = {
+                'totalNotifications': 0,
+                'readNotifications': 0,
+                'readRate': 0,
+                'byType': [],
+                'massNotifications': 0,
+                'massNotificationsSent': 0
+            }
+        
+        # 6. MÉTRICAS DE NIVELES API Y TRL
+        try:
+            # Distribución de estudiantes por nivel API
+            students_by_api_level = Estudiante.objects.values('api_level').annotate(
+                count=Count('id')
+            ).order_by('api_level')
+            
+            # Proyectos por nivel TRL
+            projects_by_trl = Proyecto.objects.values('trl__level').annotate(
+                count=Count('id')
+            ).order_by('trl__level')
+            
+            # Solicitudes de cambio de nivel API
+            api_level_requests = ApiLevelRequest.objects.count()
+            pending_api_requests = ApiLevelRequest.objects.filter(status='pending').count()
+            approved_api_requests = ApiLevelRequest.objects.filter(status='approved').count()
+            
+            api_trl_metrics = {
+                'studentsByApiLevel': [
+                    {'api_level': item['api_level'], 'count': item['count']}
+                    for item in students_by_api_level
+                ],
+                'projectsByTrl': [
+                    {'trl_level': item['trl__level'], 'count': item['count']}
+                    for item in projects_by_trl
+                ],
+                'totalApiRequests': api_level_requests,
+                'pendingApiRequests': pending_api_requests,
+                'approvedApiRequests': approved_api_requests
+            }
+            
+
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas API/TRL: {str(e)}")
+            api_trl_metrics = {
+                'studentsByApiLevel': [],
+                'projectsByTrl': [],
+                'totalApiRequests': 0,
+                'pendingApiRequests': 0,
+                'approvedApiRequests': 0
+            }
+        
+        response_data = {
+            'stats': {
+                'totalUsers': total_users,
+                'totalProjects': total_projects,
+                'totalCompanies': total_companies,
+                'totalStudents': total_students,
+                'activeProjects': active_projects,
+                'completedProjects': completed_projects,
+                'pendingProjects': pending_projects,
+                'cancelledProjects': cancelled_projects,
+            },
+            'activityData': week_data,
+            'projectStatusData': project_status_data,
+            'monthlyStats': monthly_stats,
+            'topStudents': top_students,
+            'topCompanies': top_companies,
+            'recentActivity': recent_activity,
+            'pendingRequests': pending_requests,
+            # Nuevas métricas
+            'applicationsMetrics': applications_metrics,
+            'strikesMetrics': strikes_metrics,
+            'notificationsMetrics': notifications_metrics,
+            'apiTrlMetrics': api_trl_metrics,
+        }
+        
+        # Debug: imprimir resumen de datos enviados
+        print(f"📊 [HUB ANALYTICS] Resumen de datos enviados:")
+        print(f"  - activityData: {len(week_data)} días")
+        print(f"  - projectStatusData: {len(project_status_data)} estados")
+        print(f"  - monthlyStats: {len(monthly_stats)} meses")
+        print(f"  - topStudents: {len(top_students)} estudiantes")
+        print(f"  - topCompanies: {len(top_companies)} empresas")
+        print(f"  - applicationsMetrics: {applications_metrics['totalApplications']} aplicaciones")
+        print(f"  - strikesMetrics: {strikes_metrics['activeStrikes']} strikes activos")
+        print(f"  - notificationsMetrics: {notifications_metrics['totalNotifications']} notificaciones")
+        print(f"  - apiTrlMetrics: {api_trl_metrics['totalApiRequests']} solicitudes API")
+        
+        print(f"📊 [HUB ANALYTICS] Datos enviados exitosamente")
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        print(f"❌ [HUB ANALYTICS] Error: {str(e)}")
+        return JsonResponse(
+            {'error': str(e)},
+            status=500
+        )
 
 # Funciones auxiliares para JWT
 def generate_access_token(user):

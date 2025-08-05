@@ -22,6 +22,8 @@ import {
   ListItemText,
   Card,
   CardContent,
+  Divider,
+  Stack,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -29,6 +31,15 @@ import {
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
   Schedule as ScheduleIcon,
+  Assessment as AssessmentIcon,
+  History as HistoryIcon,
+  FilterList as FilterIcon,
+  Refresh as RefreshIcon,
+  Group as GroupIcon,
+  Business as BusinessIcon,
+  School as SchoolIcon,
+  Timer as TimerIcon,
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
@@ -543,115 +554,283 @@ export default function ValidacionHorasAdmin() {
   ];
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* TÍTULO Y DESCRIPCIÓN */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
-          Validación de Horas
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          En esta sección puedes validar las horas reportadas por los estudiantes en sus proyectos y consultar el historial de validaciones.
-        </Typography>
-      </Box>
-      {/* Tarjetas de conteo usando Box en vez de Grid */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <Card sx={{ bgcolor: '#1976d2', color: 'white', minWidth: 200, flex: '1 1 200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 3 }}>
-            <Typography variant="h6" align="center">Pendientes</Typography>
-            <Typography variant="h3" fontWeight={700} align="center">{countPendientes}</Typography>
+    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+      {/* Header con gradiente */}
+      <Card sx={{ 
+        mb: 3, 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5, 
+                mr: 2,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <AssessmentIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+              <Box>
+                <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+                  Validación de Horas
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  Valida las horas reportadas por los estudiantes y consulta el historial de validaciones
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Tarjetas de KPI con diseño mejorado */}
+      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <Card sx={{ 
+          minWidth: 250, 
+          flex: '1 1 250px',
+          background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+          boxShadow: '0 8px 25px rgba(255, 107, 107, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Pendientes
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {countPendientes}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Requieren validación
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <TimerIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
           </CardContent>
         </Card>
-        <Card sx={{ bgcolor: '#43a047', color: 'white', minWidth: 200, flex: '1 1 200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 3 }}>
-            <Typography variant="h6" align="center">Validados</Typography>
-            <Typography variant="h3" fontWeight={700} align="center">{countValidados}</Typography>
+
+        <Card sx={{ 
+          minWidth: 250, 
+          flex: '1 1 250px',
+          background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+          boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Validados
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {countValidados}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Procesados exitosamente
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <CheckCircleIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
           </CardContent>
         </Card>
       </Box>
-      {/* Tabla de pendientes */}
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" fontWeight={700}>
-            Proyectos pendientes de validación
-          </Typography>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="pending-page-size-label">Mostrar</InputLabel>
-            <Select
-              labelId="pending-page-size-label"
-              value={pendingPageSize}
-              label="Mostrar"
-              onChange={e => setPendingPageSize(e.target.value as any)}
-            >
-              {pageSizeOptions.map(opt => (
-                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-        <DataTable
-          data={displayedPendingRows}
-          columns={columns}
-          loading={loading || pendingLoading}
-          error={error || pendingError}
-          filters={[]}
-          onFilterChange={() => {}}
-          showPageSizeSelector={false}
-        />
-      </Paper>
-      {/* Historial de validados */}
-      <Paper sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" fontWeight={700}>
-            Historial de proyectos validados
-          </Typography>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="validated-page-size-label">Mostrar</InputLabel>
-            <Select
-              labelId="validated-page-size-label"
-              value={validatedPageSize}
-              label="Mostrar"
-              onChange={e => setValidatedPageSize(e.target.value as any)}
-            >
-              {pageSizeOptions.map(opt => (
-                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-        <DataTable
-          data={displayedValidatedRows}
-          columns={columns}
-          loading={loading || pendingLoading}
-          error={error || pendingError}
-          filters={[]}
-          onFilterChange={() => {}}
-          showPageSizeSelector={false}
-        />
-      </Paper>
-      {/* Modal para ver integrantes */}
+      {/* Tabla de pendientes con diseño mejorado */}
+      <Card sx={{ 
+        mb: 4, 
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ 
+              background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)', 
+              borderRadius: 2, 
+              p: 1, 
+              mr: 2
+            }}>
+              <TimerIcon sx={{ color: 'white', fontSize: 24 }} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                Proyectos Pendientes de Validación
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                Proyectos que requieren revisión y validación de horas
+              </Typography>
+            </Box>
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel id="pending-page-size-label">Mostrar</InputLabel>
+              <Select
+                labelId="pending-page-size-label"
+                value={pendingPageSize}
+                label="Mostrar"
+                onChange={e => setPendingPageSize(e.target.value as any)}
+                sx={{ borderRadius: 2 }}
+              >
+                {pageSizeOptions.map(opt => (
+                  <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <DataTable
+            data={displayedPendingRows}
+            columns={columns}
+            loading={loading || pendingLoading}
+            error={error || pendingError}
+            filters={[]}
+            onFilterChange={() => {}}
+            showPageSizeSelector={false}
+          />
+        </CardContent>
+      </Card>
+      {/* Historial de validados con diseño mejorado */}
+      <Card sx={{ 
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ 
+              background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)', 
+              borderRadius: 2, 
+              p: 1, 
+              mr: 2
+            }}>
+              <HistoryIcon sx={{ color: 'white', fontSize: 24 }} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                Historial de Proyectos Validados
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                Registro completo de todas las validaciones procesadas
+              </Typography>
+            </Box>
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel id="validated-page-size-label">Mostrar</InputLabel>
+              <Select
+                labelId="validated-page-size-label"
+                value={validatedPageSize}
+                label="Mostrar"
+                onChange={e => setValidatedPageSize(e.target.value as any)}
+                sx={{ borderRadius: 2 }}
+              >
+                {pageSizeOptions.map(opt => (
+                  <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <DataTable
+            data={displayedValidatedRows}
+            columns={columns}
+            loading={loading || pendingLoading}
+            error={error || pendingError}
+            filters={[]}
+            onFilterChange={() => {}}
+            showPageSizeSelector={false}
+          />
+        </CardContent>
+      </Card>
+      {/* Modal para ver integrantes con diseño mejorado */}
       <Dialog open={openIntegrantes} onClose={handleCloseIntegrantes} maxWidth="sm" fullWidth>
-        <DialogTitle>Integrantes de {integrantesProyecto}</DialogTitle>
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 'bold'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <GroupIcon />
+            <Typography variant="h6">Integrantes de {integrantesProyecto}</Typography>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           <List>
             {integrantes.length === 0 ? (
               <ListItem>
-                <ListItemText primary="No hay integrantes registrados" />
+                <ListItemText 
+                  primary={
+                    <Typography variant="body1" sx={{ color: '#7f8c8d', fontStyle: 'italic' }}>
+                      No hay integrantes registrados
+                    </Typography>
+                  } 
+                />
               </ListItem>
             ) : integrantes.map((est, idx) => (
-              <ListItem key={idx}>
-                <ListItemText primary={est.nombre || est.name || est.full_name || est.email} secondary={est.email} />
+              <ListItem key={idx} sx={{ 
+                borderRadius: 2, 
+                mb: 1, 
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)',
+                }
+              }}>
+                <ListItemText 
+                  primary={
+                    <Typography variant="body1" sx={{ fontWeight: 500, color: '#2c3e50' }}>
+                      {est.nombre || est.name || est.full_name || est.email}
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                      {est.email}
+                    </Typography>
+                  }
+                />
               </ListItem>
             ))}
           </List>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseIntegrantes}>Cerrar</Button>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={handleCloseIntegrantes}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Modal de validación de hora */}
+      {/* Modal de validación de hora con diseño mejorado */}
       <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="sm" fullWidth>
-        <DialogTitle>
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+          color: 'white',
+          fontWeight: 'bold'
+        }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <CheckCircleIcon />
             <Typography variant="h6">Validar Hora de Trabajo</Typography>
@@ -660,29 +839,39 @@ export default function ValidacionHorasAdmin() {
         <DialogContent>
           {selectedHour && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>
-                Información de la Hora
-              </Typography>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">Estudiante</Typography>
-                <Typography variant="body1">{selectedHour.student_name}</Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">Proyecto</Typography>
-                <Typography variant="body1">{selectedHour.project_title}</Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">Fecha</Typography>
-                <Typography variant="body1">{new Date(selectedHour.date).toLocaleDateString()}</Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">Horas Trabajadas</Typography>
-                <Typography variant="body1">{selectedHour.hours_worked} horas</Typography>
-              </Box>
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" color="text.secondary">Descripción</Typography>
-                <Typography variant="body1">{selectedHour.description || 'Sin descripción'}</Typography>
-              </Box>
+              <Card sx={{ 
+                mb: 3, 
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                borderRadius: 2
+              }}>
+                <CardContent sx={{ p: 2 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                    Información de la Hora
+                  </Typography>
+                  <Stack spacing={2}>
+                    <Box>
+                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Estudiante</Typography>
+                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedHour.student_name}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Proyecto</Typography>
+                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedHour.project_title}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Fecha</Typography>
+                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{new Date(selectedHour.date).toLocaleDateString()}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Horas Trabajadas</Typography>
+                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedHour.hours_worked} horas</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Descripción</Typography>
+                      <Typography variant="body1" sx={{ color: '#2c3e50' }}>{selectedHour.description || 'Sin descripción'}</Typography>
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
               
               <TextField
                 fullWidth
@@ -692,26 +881,49 @@ export default function ValidacionHorasAdmin() {
                 value={adminComment}
                 onChange={(e) => setAdminComment(e.target.value)}
                 placeholder="Agregar comentario sobre la validación (opcional)"
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    '&:hover fieldset': {
+                      borderColor: '#4ecdc4',
+                    },
+                  }
+                }}
               />
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal}>Cancelar</Button>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={handleCloseModal}
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
           <Button 
             onClick={handleValidate} 
             variant="contained" 
-            color="success"
             disabled={actionLoading}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
+              }
+            }}
           >
             {actionLoading ? <CircularProgress size={20} /> : 'Aprobar Hora'}
           </Button>
         </DialogActions>
       </Dialog>
 
-             {/* Modal de detalle del proyecto */}
+             {/* Modal de detalle del proyecto con diseño mejorado */}
        <Dialog open={detailModalOpen} onClose={handleCloseDetailModal} maxWidth="lg" fullWidth>
-         <DialogTitle>
+         <DialogTitle sx={{ 
+           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+           color: 'white',
+           fontWeight: 'bold'
+         }}>
            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
              <WorkIcon />
              <Typography variant="h6">Detalle del Proyecto</Typography>
@@ -725,78 +937,162 @@ export default function ValidacionHorasAdmin() {
            ) : selectedProjectDetail && selectedProjectDetail.title ? (
              <Box sx={{ mt: 2 }}>
                {/* Información del proyecto */}
-               <Card sx={{ mb: 3 }}>
-                 <CardContent>
-                   <Typography variant="h6" gutterBottom>
-                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                       <WorkIcon />
-                       Información del Proyecto
+               <Card sx={{ 
+                 mb: 3, 
+                 background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                 borderRadius: 3,
+                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+               }}>
+                 <CardContent sx={{ p: 3 }}>
+                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                     <Box sx={{ 
+                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+                       borderRadius: 2, 
+                       p: 1, 
+                       mr: 2
+                     }}>
+                       <WorkIcon sx={{ color: 'white', fontSize: 24 }} />
                      </Box>
-                   </Typography>
-                   <Box sx={{ mb: 2 }}>
-                     <Typography variant="h5" color="primary" gutterBottom>
+                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                       Información del Proyecto
+                     </Typography>
+                   </Box>
+                   
+                   <Box sx={{ mb: 3 }}>
+                     <Typography variant="h5" sx={{ color: '#667eea', fontWeight: 'bold', mb: 2 }}>
                        {selectedProjectDetail.title}
                      </Typography>
-                     <Typography variant="body1" paragraph>
+                     <Typography variant="body1" sx={{ color: '#2c3e50', lineHeight: 1.6 }}>
                        {selectedProjectDetail.description}
                      </Typography>
                    </Box>
-                   <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Tipo de Actividad</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.tipo || 'No especificado'}</Typography>
+                   
+                   <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Tipo de Actividad</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.tipo || 'No especificado'}</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Objetivo</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.objetivo || 'No especificado'}</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Objetivo</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.objetivo || 'No especificado'}</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Encargado</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.encargado || 'No especificado'}</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Encargado</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.encargado || 'No especificado'}</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Contacto</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.contacto || 'No especificado'}</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Contacto</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.contacto || 'No especificado'}</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Nivel API Requerido</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.api_level || 'No especificado'}</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Nivel API Requerido</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.api_level || 'No especificado'}</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Horas Requeridas</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.required_hours || 'No especificadas'}</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Horas Requeridas</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.required_hours || 'No especificadas'}</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Duración (semanas)</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.duration_weeks} semanas</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Duración (semanas)</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.duration_weeks} semanas</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Horas por Semana</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.hours_per_week} horas</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Horas por Semana</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.hours_per_week} horas</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Modalidad</Typography>
-                       <Chip label={translateModality(selectedProjectDetail.modality)} color="info" size="small" />
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Modalidad</Typography>
+                       <Chip 
+                         label={translateModality(selectedProjectDetail.modality)} 
+                         sx={{ 
+                           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                           color: 'white',
+                           fontWeight: 'bold'
+                         }} 
+                         size="small" 
+                       />
                      </Box>
                      
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Ubicación</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.location || 'No especificada'}</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Ubicación</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.location || 'No especificada'}</Typography>
                      </Box>
-                     <Box>
-                       <Typography variant="subtitle2" color="text.secondary">Estudiantes</Typography>
-                       <Typography variant="body1">{selectedProjectDetail.current_students} / {selectedProjectDetail.max_students}</Typography>
+                     <Box sx={{ 
+                       p: 2, 
+                       borderRadius: 2, 
+                       background: 'rgba(255, 255, 255, 0.7)',
+                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                     }}>
+                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Estudiantes</Typography>
+                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.current_students} / {selectedProjectDetail.max_students}</Typography>
                      </Box>
                    </Box>
                    
                    {/* Requisitos del proyecto */}
-                   <Box sx={{ mt: 3 }}>
-                     <Typography variant="subtitle1" gutterBottom>
+                   <Box sx={{ mt: 4 }}>
+                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
                        Requisitos del Proyecto
                      </Typography>
-                     <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                       {selectedProjectDetail.requirements}
-                     </Typography>
+                     <Card sx={{ 
+                       background: 'rgba(255, 255, 255, 0.8)',
+                       borderRadius: 2
+                     }}>
+                       <CardContent sx={{ p: 2 }}>
+                         <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#2c3e50', lineHeight: 1.6 }}>
+                           {selectedProjectDetail.requirements}
+                         </Typography>
+                       </CardContent>
+                     </Card>
                    </Box>
                  </CardContent>
                </Card>
@@ -894,8 +1190,20 @@ export default function ValidacionHorasAdmin() {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailModal}>Cerrar</Button>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={handleCloseDetailModal}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
       <Snackbar

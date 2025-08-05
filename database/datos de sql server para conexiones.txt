@@ -1,37 +1,15 @@
-
 ADMINISTRADOS:
 admin@gmail.com                 admin
-
 estudiantes:
 juan.perez@inacapmail.cl        Estudiante123!
 joaco.gomez@inacapmail.cl       Estudiante123!
-
 EMPRESAS:
 lucia.amaya@gmail.com           Empresa123!
 
-
-
-
------------------ESTUDIANTE-------------------
-Mis Evaluaciones-------------------------falta
-
------------------EMPRESA----------------------
-Evaluaciones-----------------------------falta  
-Strikes----------------------------------falta 
-
-------------------ADMIN-----------------------
-Gestión de Calificaciones----------------falta
-Configuración de Plataforma--------------falta
-
-
-
-
-
-Dashboard de Administrador         ok 
-Perfil de Administrador            ok
-Gestión de Notificaciones Masivas  ok
-Gestión de Usuarios                ok      
-Validación de Horas                ok
-Gestión de Empresas                ok
-Gestión de Estudiantes             ok
-Gestión de Proyectos               ok
+-----------------ESTUDIANTE
+Mis Evaluaciones               falta
+-----------------EMPRESA
+Evaluaciones                   falta  
+Strikes                        falta 
+-----------------ADMIN
+Gestión de Calificaciones      falta

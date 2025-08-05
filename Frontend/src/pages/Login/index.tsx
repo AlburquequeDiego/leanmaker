@@ -257,6 +257,29 @@ export const Login = () => {
                 >
                   Volver al inicio
                 </Button>
+                
+                {/* Botón de emergencia para limpiar localStorage */}
+                <Button
+                  fullWidth
+                  variant="text"
+                  size="small"
+                  sx={{ 
+                    mb: 2, 
+                    color: '#666', 
+                    fontSize: '12px',
+                    textTransform: 'none',
+                    '&:hover': { 
+                      bgcolor: '#f5f5f5',
+                      color: '#d32f2f'
+                    } 
+                  }}
+                  onClick={() => {
+                    localStorage.clear();
+                    window.location.reload();
+                  }}
+                >
+                  Limpiar datos de sesión (emergencia)
+                </Button>
                 <Box sx={{ textAlign: 'center' }}>
                   <Link
                     component={RouterLink}

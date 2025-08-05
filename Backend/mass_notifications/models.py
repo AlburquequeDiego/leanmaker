@@ -6,10 +6,20 @@ class MassNotification(models.Model):
     """Modelo para notificaciones masivas"""
     
     NOTIFICATION_TYPES = [
-        ('email', 'Email'),
-        ('sms', 'SMS'),
-        ('push', 'Push Notification'),
-        ('in_app', 'In-App'),
+        ('announcement', 'Anuncio'),
+        ('reminder', 'Recordatorio'),
+        ('alert', 'Alerta'),
+        ('update', 'Actualización'),
+        ('event', 'Evento'),
+        ('deadline', 'Fecha límite'),
+    ]
+    
+    PRIORITY_CHOICES = [
+        ('low', 'Baja'),
+        ('normal', 'Normal'),
+        ('medium', 'Media'),
+        ('high', 'Alta'),
+        ('urgent', 'Urgente'),
     ]
     
     TARGET_AUDIENCES = [
@@ -24,8 +34,14 @@ class MassNotification(models.Model):
     notification_type = models.CharField(
         max_length=20,
         choices=NOTIFICATION_TYPES,
-        default='in_app',
+        default='announcement',
         verbose_name='Tipo de notificación'
+    )
+    priority = models.CharField(
+        max_length=20,
+        choices=PRIORITY_CHOICES,
+        default='normal',
+        verbose_name='Prioridad'
     )
     target_audience = models.CharField(
         max_length=20,

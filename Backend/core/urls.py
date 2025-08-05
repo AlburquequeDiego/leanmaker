@@ -62,6 +62,7 @@ urlpatterns = [
         path('dashboard/student_stats/', views.api_dashboard_student_stats, name='api_dashboard_student_stats'),
         path('dashboard/company_stats/', views.api_dashboard_company_stats, name='api_dashboard_company_stats'),
         path('dashboard/admin_stats/', views.api_dashboard_admin_stats, name='api_dashboard_admin_stats'),
+    path('hub/analytics/', views.api_hub_analytics_data, name='api_hub_analytics_data'),
         path('users/profile/', views.api_user_profile, name='api_user_profile'),
         path('users/change-password/', views.api_change_password, name='api_change_password'),
         path('token/', views.api_login, name='api_login'),

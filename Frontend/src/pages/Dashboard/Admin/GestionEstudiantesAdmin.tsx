@@ -25,6 +25,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Card,
+  CardContent,
+  Stack,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -35,6 +38,14 @@ import {
   Warning as WarningIcon,
   Block as BlockIcon,
   Edit as EditIcon,
+  Refresh as RefreshIcon,
+  Assessment as AssessmentIcon,
+  Timer as TimerIcon,
+  Star as StarIcon,
+  Group as GroupIcon,
+  Work as WorkIcon,
+  Search as SearchIcon,
+  FilterList as FilterListIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
@@ -461,10 +472,21 @@ export default function GestionEstudiantesAdmin() {
           <Tooltip title="Editar">
             <span>
               <IconButton
-                color="primary"
                 onClick={() => {
                   setSelectedStudent(row);
                   setShowEditDialog(true); // Asume que existe un modal de edición
+                }}
+                sx={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
                 }}
               >
                 <EditIcon />
@@ -474,9 +496,20 @@ export default function GestionEstudiantesAdmin() {
           <Tooltip title="Activar">
             <span>
               <IconButton
-                color="success"
                 onClick={() => handleStudentAction(row, 'activate')}
                 disabled={row.status === 'active' || row.status === 'approved'}
+                sx={{
+                  background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <CheckCircleIcon />
               </IconButton>
@@ -485,9 +518,20 @@ export default function GestionEstudiantesAdmin() {
           <Tooltip title="Suspender">
             <span>
               <IconButton
-                color="warning"
                 onClick={() => handleStudentAction(row, 'suspend')}
                 disabled={row.status === 'suspended'}
+                sx={{
+                  background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <WarningIcon />
               </IconButton>
@@ -496,9 +540,20 @@ export default function GestionEstudiantesAdmin() {
           <Tooltip title="Bloquear">
             <span>
               <IconButton
-                color="error"
                 onClick={() => handleStudentAction(row, 'block')}
                 disabled={row.status === 'rejected' || row.status === 'blocked'}
+                sx={{
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <BlockIcon />
               </IconButton>
@@ -508,13 +563,24 @@ export default function GestionEstudiantesAdmin() {
           <Tooltip title="Desbloquear">
             <span>
               <IconButton
-                color="success"
                 onClick={async () => {
                   await apiService.post(`/api/users/${row.id}/unblock/`);
                   setSuccessMsg('Estudiante desbloqueado exitosamente');
                   loadStudents();
                 }}
                 disabled={row.status !== 'blocked' && row.status !== 'rejected'}
+                sx={{
+                  background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <CheckCircleIcon />
               </IconButton>
@@ -570,47 +636,340 @@ export default function GestionEstudiantesAdmin() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" gutterBottom fontWeight={700}>
-          Gestión de Estudiantes
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<HistoryIcon />}
-          onClick={() => navigate('/dashboard/admin/api-requests')}
-        >
-          Historial de Solicitudes API
-        </Button>
+    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+      {/* Header con gradiente */}
+      <Card sx={{ 
+        mb: 3, 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5, 
+                mr: 2,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <PersonIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+              <Box>
+                <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+                  Gestión de Estudiantes
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  Administra y supervisa todos los estudiantes registrados en la plataforma
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                variant="contained"
+                startIcon={<HistoryIcon />}
+                onClick={() => navigate('/dashboard/admin/api-requests')}
+                sx={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(10px)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.3)',
+                  }
+                }}
+              >
+                Gestión de Solicitudes de API Estudiantes
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<RefreshIcon />}
+                onClick={loadStudents}
+                sx={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(10px)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.3)',
+                  }
+                }}
+              >
+                Actualizar
+              </Button>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Tarjetas de estadísticas */}
+      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+          boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Total Estudiantes
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {students.length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Registrados en la plataforma
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <PersonIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Estudiantes Activos
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {students.filter(s => s.status === 'active' || s.status === 'approved').length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Operando normalmente
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <CheckCircleIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+          boxShadow: '0 8px 25px rgba(255, 107, 107, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Con Strikes
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {students.filter(s => s.strikes > 0).length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Requieren atención
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <WarningIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
+          boxShadow: '0 8px 25px rgba(243, 156, 18, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Total Horas
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {students.reduce((sum, student) => sum + student.total_hours, 0)}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Horas acumuladas
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <TimerIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
       </Box>
 
-      <DataTable
-        title="Lista de Estudiantes"
-        data={students}
-        columns={columns}
-        loading={loading}
-        error={error}
-        filters={tableFilters}
-        onFilterChange={handleFilterChange}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-        totalCount={totalCount}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
-        showPagination={false}
-        emptyMessage="No hay estudiantes registrados"
-      />
+      {/* Filtros y tabla de estudiantes con diseño mejorado */}
+      <Card sx={{ 
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+              borderRadius: 2, 
+              p: 1, 
+              mr: 2
+            }}>
+              <AssessmentIcon sx={{ color: 'white', fontSize: 24 }} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                Lista de Estudiantes
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                Gestiona el estado y configuración de todos los estudiantes
+              </Typography>
+            </Box>
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel>Mostrar</InputLabel>
+              <Select
+                value={pageSize}
+                label="Mostrar"
+                onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value={20}>20 últimos</MenuItem>
+                <MenuItem value={50}>50 últimos</MenuItem>
+                <MenuItem value={100}>100 últimos</MenuItem>
+                <MenuItem value={150}>150 últimos</MenuItem>
+                <MenuItem value={200}>200 últimos</MenuItem>
+                <MenuItem value={'todos'}>Todos</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
 
-      {/* Modal para ver cuestionario y subir de nivel */}
+          {/* Filtros mejorados */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+            <TextField
+              label="Buscar por nombre o email"
+              variant="outlined"
+              size="small"
+              value={filters.search || ''}
+              onChange={e => handleFilterChange({ ...filters, search: e.target.value })}
+              sx={{ 
+                minWidth: 220,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: '#667eea',
+                  },
+                }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon sx={{ mr: 1, color: '#7f8c8d' }} />
+                ),
+              }}
+            />
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
+              <InputLabel>Nivel API</InputLabel>
+              <Select
+                label="Nivel API"
+                value={filters.api_level || ''}
+                onChange={e => handleFilterChange({ ...filters, api_level: e.target.value })}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="1">API 1</MenuItem>
+                <MenuItem value="2">API 2</MenuItem>
+                <MenuItem value="3">API 3</MenuItem>
+                <MenuItem value="4">API 4</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
+              <InputLabel>Estado</InputLabel>
+              <Select
+                label="Estado"
+                value={filters.status || ''}
+                onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="active">Activo</MenuItem>
+                <MenuItem value="approved">Aprobado</MenuItem>
+                <MenuItem value="inactive">Inactivo</MenuItem>
+                <MenuItem value="suspended">Suspendido</MenuItem>
+                <MenuItem value="blocked">Bloqueado</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <DataTable
+            title="Lista de Estudiantes"
+            data={students}
+            columns={columns}
+            loading={loading}
+            error={error}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
+            showPagination={false}
+            showPageSizeSelector={false}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Modal para ver cuestionario y subir de nivel con diseño mejorado */}
       <Dialog 
         open={modalOpen} 
         onClose={handleCloseModal}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 'bold'
+        }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <PersonIcon />
             <Typography variant="h6">
@@ -623,93 +982,146 @@ export default function GestionEstudiantesAdmin() {
           {selectedStudent && (
             <Box sx={{ mt: 2 }}>
               {/* Información del estudiante */}
-              <Paper sx={{ p: 2, mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Información del Estudiante
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">Email:</Typography>
-                    <Typography variant="body1">{selectedStudent.email}</Typography>
+              <Card sx={{ 
+                mb: 3, 
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                borderRadius: 2
+              }}>
+                <CardContent sx={{ p: 2 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                    Información del Estudiante
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">Email:</Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>{selectedStudent.email}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">Nivel API Actual:</Typography>
+                      <Chip label={`API ${selectedStudent.api_level}`} color="primary" sx={{ fontWeight: 600 }} />
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">Horas Acumuladas:</Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>{selectedStudent.total_hours} hrs</Typography>
+                    </Box>
                   </Box>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">Nivel API Actual:</Typography>
-                    <Chip label={`API ${selectedStudent.api_level}`} color="primary" />
-                  </Box>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">Horas Acumuladas:</Typography>
-                    <Typography variant="body1">{selectedStudent.total_hours} hrs</Typography>
-                  </Box>
-                </Box>
-              </Paper>
+                </CardContent>
+              </Card>
 
               {/* Información adicional */}
-              <Alert severity="info" sx={{ mb: 3 }}>
+              <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
                 Para revisar y aprobar solicitudes de cambio de nivel API, ve a la sección "Historial de Solicitudes API" en el menú principal.
               </Alert>
 
               {/* Historial de solicitudes de cambio de nivel API */}
-              <Paper sx={{ p: 2, mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <HistoryIcon />
-                  <Typography variant="h6">Solicitudes de Cambio de Nivel API</Typography>
-                </Box>
-                
-                {apiHistory.length > 0 ? (
-                  <List>
-                    {apiHistory.map((history, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <TrendingUpIcon color="primary" />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Typography variant="body1">
-                                API {history.old_level} → API {history.new_level}
-                              </Typography>
-                              <Chip 
-                                label={history.status === 'approved' ? 'Aprobado' : 
-                                       history.status === 'rejected' ? 'Rechazado' : 'Pendiente'}
-                                color={history.status === 'approved' ? 'success' : 
-                                       history.status === 'rejected' ? 'error' : 'warning'}
-                                size="small"
-                              />
-                            </Box>
-                          }
-                          secondary={`${new Date(history.date).toLocaleDateString()} - ${history.admin_name}${history.comment ? ` - ${history.comment}` : ''}`}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                ) : (
-                  <Typography color="text.secondary">
-                    Sin solicitudes de cambio de nivel API registradas.
-                  </Typography>
-                )}
-              </Paper>
-
-
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                borderRadius: 2
+              }}>
+                <CardContent sx={{ p: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <HistoryIcon color="primary" />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                      Solicitudes de Cambio de Nivel API
+                    </Typography>
+                  </Box>
+                  
+                  {apiHistory.length > 0 ? (
+                    <List>
+                      {apiHistory.map((history, index) => (
+                        <ListItem key={index} sx={{ 
+                          background: 'rgba(102, 126, 234, 0.05)', 
+                          borderRadius: 1, 
+                          mb: 1 
+                        }}>
+                          <ListItemIcon>
+                            <TrendingUpIcon color="primary" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                  API {history.old_level} → API {history.new_level}
+                                </Typography>
+                                <Chip 
+                                  label={history.status === 'approved' ? 'Aprobado' : 
+                                         history.status === 'rejected' ? 'Rechazado' : 'Pendiente'}
+                                  color={history.status === 'approved' ? 'success' : 
+                                         history.status === 'rejected' ? 'error' : 'warning'}
+                                  size="small"
+                                  sx={{ fontWeight: 600 }}
+                                />
+                              </Box>
+                            }
+                            secondary={`${new Date(history.date).toLocaleDateString()} - ${history.admin_name}${history.comment ? ` - ${history.comment}` : ''}`}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Typography color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                      Sin solicitudes de cambio de nivel API registradas.
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
             </Box>
           )}
         </DialogContent>
         
-        <DialogActions>
-          <Button onClick={handleCloseModal}>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={handleCloseModal}
+            sx={{ borderRadius: 2 }}
+          >
             Cerrar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Mensaje de éxito */}
+      {/* Mensaje de éxito con diseño mejorado */}
       <Snackbar
         open={!!successMsg}
         autoHideDuration={6000}
         onClose={() => setSuccessMsg('')}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setSuccessMsg('')} severity="success" sx={{ width: '100%' }}>
+        <Alert 
+          onClose={() => setSuccessMsg('')} 
+          severity="success"
+          sx={{ 
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+            color: 'white',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
           {successMsg}
+        </Alert>
+      </Snackbar>
+
+      {/* Mensaje de error con diseño mejorado */}
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setError(null)} 
+          severity="error"
+          sx={{ 
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+            color: 'white',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
+          {error}
         </Alert>
       </Snackbar>
     </Box>

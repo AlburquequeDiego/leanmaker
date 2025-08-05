@@ -558,6 +558,8 @@ export interface DashboardStats {
   total_applications: number;
   pending_applications: number;
   strikes_alerts: number; // Agregado para coincidir con el backend
+  api_questionnaire_requests: number; // Nuevo campo para solicitudes de cuestionario API
+  pending_hours: number; // Nuevo campo para horas pendientes
   top_students: TopStudent[]; // Nuevo campo para top 10 estudiantes
 }
 

@@ -164,9 +164,7 @@ AUTHENTICATION_BACKENDS = [
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:5173",
     "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -189,6 +187,8 @@ JWT_SECRET_KEY = config('JWT_SECRET_KEY', default='your-secret-key-change-in-pro
 JWT_ALGORITHM = 'HS256'
 JWT_ACCESS_TOKEN_EXPIRE_HOURS = 1
 JWT_REFRESH_TOKEN_EXPIRE_DAYS = 7
+
+
 
 # Logging
 LOGGING = {
@@ -276,9 +276,7 @@ CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'  # Más permisivo para desarrollo
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'http://localhost:5173',
     'http://127.0.0.1:3000',
-    'http://127.0.0.1:5173',
 ]
 
 # CSRF Exempt URLs for API endpoints

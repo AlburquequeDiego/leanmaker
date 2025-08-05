@@ -50,26 +50,37 @@ def notification_list(request):
         total_count = notifications.count()
         notifications_page = notifications[offset:offset + limit]
         
+        # Importar modelos para contar destinatarios
+        from users.models import User
+        from students.models import Estudiante
+        from companies.models import Empresa
+        
         notifications_data = []
         for notification in notifications_page:
-            # Mapear notification_type del backend al frontend
-            type_mapping = {
-                'email': 'announcement',
-                'sms': 'alert',
-                'push': 'update',
-                'in_app': 'announcement'
-            }
-            
             # Mapear target_audience del backend al frontend
             target_all_students = notification.target_audience in ['students', 'all']
             target_all_companies = notification.target_audience in ['companies', 'all']
+            
+            # Calcular número de destinatarios reales
+            total_recipients = 0
+            if notification.target_audience == 'all':
+                total_recipients = User.objects.filter(is_active=True).exclude(role='admin').count()
+            elif notification.target_audience == 'students':
+                total_recipients = Estudiante.objects.filter(user__is_active=True).count()
+            elif notification.target_audience == 'companies':
+                total_recipients = Empresa.objects.filter(user__is_active=True).count()
+            
+            # Calcular números de envío
+            sent_count = total_recipients if notification.is_sent else 0
+            failed_count = 0  # Por ahora siempre 0
+            read_count = 0    # Por ahora siempre 0
             
             notifications_data.append({
                 'id': notification.id,
                 'title': notification.title,
                 'message': notification.message,
-                'notification_type': type_mapping.get(notification.notification_type, 'announcement'),
-                'priority': 'normal',  # Valor por defecto
+                'notification_type': notification.notification_type,
+                'priority': notification.priority,
                 'status': 'sent' if notification.is_sent else 'draft',
                 'target_all_students': target_all_students,
                 'target_all_companies': target_all_companies,
@@ -79,10 +90,10 @@ def notification_list(request):
                 'sent_at': notification.sent_at.isoformat() if notification.sent_at else None,
                 'created_at': notification.created_at.isoformat(),
                 'created_by_name': notification.sent_by.first_name if notification.sent_by else 'Admin',
-                'total_recipients': 0,  # Valor por defecto
-                'sent_count': 1 if notification.is_sent else 0,
-                'failed_count': 0,
-                'read_count': 0,
+                'total_recipients': total_recipients,
+                'sent_count': sent_count,
+                'failed_count': failed_count,
+                'read_count': read_count,
             })
         
         return JsonResponse({
@@ -119,16 +130,6 @@ def notification_create(request):
         
         data = json.loads(request.body)
         
-        # Mapear notification_type del frontend al backend
-        type_mapping = {
-            'announcement': 'in_app',
-            'reminder': 'in_app',
-            'alert': 'push',
-            'update': 'push',
-            'event': 'in_app',
-            'deadline': 'in_app'
-        }
-        
         # Mapear target_audience del frontend al backend
         target_audience = 'all'
         if data.get('target_all_students') and not data.get('target_all_companies'):
@@ -141,7 +142,8 @@ def notification_create(request):
         notification = MassNotification.objects.create(
             title=data['title'],
             message=data['message'],
-            notification_type=type_mapping.get(data.get('notification_type', 'announcement'), 'in_app'),
+            notification_type=data.get('notification_type', 'announcement'),
+            priority=data.get('priority', 'normal'),
             target_audience=target_audience,
             sent_by=current_user,
             scheduled_at=data.get('scheduled_at'),
@@ -221,14 +223,47 @@ def notification_send(request, pk):
         
         notification = get_object_or_404(MassNotification, pk=pk)
         
-        # Aquí iría la lógica para enviar la notificación
+        # Importar modelos necesarios
+        from users.models import User
+        from students.models import Estudiante
+        from companies.models import Empresa
+        from notifications.models import Notification
+        
+        # Determinar destinatarios según target_audience
+        recipients = []
+        if notification.target_audience == 'all':
+            recipients = User.objects.filter(is_active=True).exclude(role='admin')
+        elif notification.target_audience == 'students':
+            recipients = User.objects.filter(is_active=True, role='student')
+        elif notification.target_audience == 'companies':
+            recipients = User.objects.filter(is_active=True, role='company')
+        
+        # Crear notificaciones individuales para cada destinatario
+        notifications_created = 0
+        for recipient in recipients:
+            try:
+                Notification.objects.create(
+                    user=recipient,
+                    title=notification.title,
+                    message=notification.message,
+                    type=notification.notification_type,  # Usar el tipo real de la notificación masiva
+                    priority=notification.priority,        # Usar la prioridad real
+                    read=False,
+                    created_at=timezone.now()
+                )
+                notifications_created += 1
+            except Exception as e:
+                print(f"Error creando notificación para {recipient.email}: {e}")
+                continue
+        
+        # Marcar la notificación masiva como enviada
         notification.is_sent = True
         notification.sent_at = timezone.now()
         notification.save()
         
         return JsonResponse({
             'success': True,
-            'message': 'Notificación enviada exitosamente'
+            'message': f'Notificación enviada exitosamente a {notifications_created} destinatarios'
         })
         
     except Exception as e:

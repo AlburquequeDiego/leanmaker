@@ -548,6 +548,8 @@ export const adaptDashboardStats = (backendStats: any): DashboardStats => ({
   total_applications: backendStats.total_applications || 0,
   pending_applications: backendStats.pending_applications || 0,
   strikes_alerts: backendStats.strikes_alerts || 0, // Agregado para coincidir con el backend
+  api_questionnaire_requests: backendStats.api_questionnaire_requests || 0, // Nuevo campo para solicitudes de cuestionario API
+  pending_hours: backendStats.pending_hours || 0, // Nuevo campo para horas pendientes
   top_students: Array.isArray(backendStats.top_students) ? backendStats.top_students : [], // Nuevo campo
 });
 

@@ -33,7 +33,7 @@ import GestionEmpresasAdmin from '../pages/Dashboard/Admin/GestionEmpresasAdmin'
 import GestionEstudiantesAdmin from '../pages/Dashboard/Admin/GestionEstudiantesAdmin';
 import GestionProyectosAdmin from '../pages/Dashboard/Admin/GestionProyectosAdmin';
 import GestionEvaluacionesAdmin from '../pages/Dashboard/Admin/GestionEvaluacionesAdmin';
-import ConfiguracionPlataformaAdmin from '../pages/Dashboard/Admin/ConfiguracionPlataformaAdmin';
+import ReportesYAnalytics from '../pages/Dashboard/Admin/Reportes y Analytics/Reportes y Analytics';
 import APIRequestsAdmin from '../pages/Dashboard/Admin/APIRequestsAdmin';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
@@ -111,7 +111,7 @@ export const AppRoutes = () => {
           <Route path="api-requests" element={<APIRequestsAdmin />} />
           <Route path="gestion-proyectos" element={<GestionProyectosAdmin />} />
           <Route path="gestion-evaluaciones" element={<GestionEvaluacionesAdmin />} />
-          <Route path="configuracion-plataforma" element={<ConfiguracionPlataformaAdmin />} />
+          <Route path="configuracion-plataforma" element={<ReportesYAnalytics />} />
         </Route>
 
         {/* Rutas de empresa con layout persistente - Consolidadas en 10 interfaces */}

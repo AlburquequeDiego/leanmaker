@@ -50,10 +50,19 @@ class AuthService {
       console.warn('Logout endpoint not available, clearing local storage only');
     } finally {
       // Clear all stored data
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+      this.clearLocalStorage();
     }
+  }
+
+  // Método para limpiar completamente el localStorage
+  clearLocalStorage(): void {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    // Limpiar cualquier otro dato relacionado con la autenticación
+    localStorage.removeItem('auth');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userData');
   }
 
   async getCurrentUser(): Promise<User | null> {
@@ -123,8 +132,27 @@ class AuthService {
     return apiService.post('/api/users/password-reset/confirm/', { email, code, new_password });
   }
 
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem('accessToken');
+  async isAuthenticated(): Promise<boolean> {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      return false;
+    }
+    
+    try {
+      // Verificar que el token sea válido
+      const isValid = await this.verifyToken(token);
+      if (!isValid) {
+        // Si el token no es válido, limpiar localStorage
+        this.logout();
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      // Si hay error al verificar, limpiar localStorage
+      this.logout();
+      return false;
+    }
   }
 
   getUser(): User | null {

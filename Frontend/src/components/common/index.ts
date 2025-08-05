@@ -2,4 +2,5 @@
 export { ConnectionStatus } from './ConnectionStatus';
 export { LoadingButton } from './LoadingButton';
 export { DataTable } from './DataTable'; 
-export { ShowLatestFilter } from './ShowLatestFilter'; 
+export { ShowLatestFilter } from './ShowLatestFilter';
+export { default as ProjectDetailsModal } from './ProjectDetailsModal'; 

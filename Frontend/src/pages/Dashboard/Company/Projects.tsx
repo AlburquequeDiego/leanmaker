@@ -42,6 +42,22 @@ import { projectService } from '../../../services/project.service';
 import { PublishProjects } from './PublishProjects';
 import { useLocation } from 'react-router-dom';
 
+// Función para obtener descripción del TRL
+const getTrlDescription = (trlLevel: number) => {
+  const descriptions = [
+    'El proyecto está en fase de idea inicial. Aún no hay desarrollo previo y se está definiendo qué se quiere lograr.',
+    'El proyecto tiene una definición clara de lo que se quiere lograr y se conocen los antecedentes del problema a resolver.',
+    'Se han realizado pruebas iniciales y validaciones de concepto. Algunas partes del proyecto ya han sido evaluadas por separado.',
+    'Existe un prototipo básico que ha sido probado en condiciones controladas y simples.',
+    'Existe un prototipo que ha sido probado en condiciones similares a las reales donde funcionará.',
+    'El prototipo ha sido probado en un entorno real mediante un piloto o prueba inicial.',
+    'El proyecto ha sido probado en condiciones reales durante un tiempo prolongado, demostrando su funcionamiento.',
+    'El proyecto está validado tanto técnicamente como comercialmente, listo para su implementación.',
+    'El proyecto está completamente desarrollado y disponible para ser utilizado por la sociedad.'
+  ];
+  return descriptions[trlLevel - 1] || 'Estado no especificado';
+};
+
 const COUNT_OPTIONS = [5, 20, 50, 100, 150, 200, 250, -1];
 
 const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
@@ -515,6 +531,17 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                   </Typography>
                   <StatusBadge status={project.status} />
                 </Box>
+                {project.area && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Chip 
+                      label={project.area} 
+                      size="small" 
+                      color="secondary"
+                      variant="outlined"
+                      sx={{ fontWeight: 600, fontSize: '0.75rem' }}
+                    />
+                  </Box>
+                )}
                 <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
                   {project.description && project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description || 'Sin descripción'}
                 </Typography>
@@ -630,14 +657,86 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
 
   return (
     <Box sx={{ width: '100%', p: { xs: 1, md: 3 }, bgcolor: '#f7fafd', minHeight: '100vh' }}>
-      {/* Header mejorado */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          Gestión de Proyectos
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Administra y supervisa todos tus proyectos de la plataforma
-        </Typography>
+      {/* Banner superior con gradiente y contexto */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '20px',
+          p: 4,
+          mb: 4,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%',
+            width: '200%',
+            height: '200%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+            animation: 'float 6s ease-in-out infinite',
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-30%',
+            right: '-30%',
+            width: '60%',
+            height: '60%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+            animation: 'float 8s ease-in-out infinite reverse',
+          },
+          '@keyframes float': {
+            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+            '50%': { transform: 'translateY(-20px) rotate(180deg)' },
+          },
+        }}
+      >
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 2 }}>
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+              }}
+            >
+              <TaskAltIcon sx={{ fontSize: 32, color: 'white' }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="h3"
+                sx={{
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  mb: 1,
+                }}
+              >
+                Gestión de Proyectos
+              </Typography>
+                             <Typography
+                 variant="h6"
+                 sx={{
+                   color: 'rgba(255, 255, 255, 0.9)',
+                   fontWeight: 300,
+                   textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                 }}
+               >
+                 {tab === 0 && "Administra y supervisa todos tus proyectos de la plataforma"}
+                 {tab === 1 && "Gestiona y restaura proyectos que han sido eliminados anteriormente"}
+                 {tab === 2 && "Crea y publica nuevos proyectos para atraer talento universitario"}
+               </Typography>
+            </Box>
+          </Box>
+        </Box>
       </Box>
 
       <Tabs 
@@ -918,10 +1017,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 
                 <Grid item xs={12} md={6}>
                   <Typography variant="h6" fontWeight={600} gutterBottom>
-                    Etapa de Desarrollo
+                    Estado del Proyecto
                   </Typography>
                   <Typography variant="body1">
-                    Opción {projectDetails?.trl_id || selectedProject.trl_id}
+                    {getTrlDescription(projectDetails?.trl_id || selectedProject.trl_id)}
                   </Typography>
                 </Grid>
                 

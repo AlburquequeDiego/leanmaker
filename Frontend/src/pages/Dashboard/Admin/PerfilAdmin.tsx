@@ -15,7 +15,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-
+  Chip,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -28,6 +30,11 @@ import {
   Lock as LockIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
+  AdminPanelSettings as AdminIcon,
+  CalendarToday as CalendarIcon,
+  AccessTime as TimeIcon,
+  VerifiedUser as VerifiedIcon,
+  Security as SecurityIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
@@ -100,7 +107,7 @@ const PasswordForm = ({
           if (currentPasswordRef.current) {
             currentPasswordRef.current.blur();
           }
-        }, 50);
+        }, 100);
       }
     }, 100);
 
@@ -108,79 +115,94 @@ const PasswordForm = ({
   }, []);
 
   const handleSubmit = () => {
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      return;
+    }
     onSubmit(passwordData);
   };
 
   return (
     <>
-      <DialogTitle>Cambiar Contraseña</DialogTitle>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <SecurityIcon color="primary" />
+        Cambiar Contraseña
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <Box sx={{ position: 'relative' }}>
-            <input
+        <Box sx={{ pt: 2 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {success}
+            </Alert>
+          )}
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
               ref={currentPasswordRef}
+              label="Contraseña actual"
               type={showPasswords.current ? 'text' : 'password'}
               value={passwordData.current_password}
               onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
-              required
-              autoComplete="off"
-              style={{
-                width: '100%',
-                padding: '16.5px 14px',
-                border: '1px solid rgba(0, 0, 0, 0.23)',
-                borderRadius: '4px',
-                fontSize: '16px',
-                fontFamily: 'inherit',
-                backgroundColor: 'transparent',
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+                    edge="end"
+                  >
+                    {showPasswords.current ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                ),
               }}
-              placeholder="Contraseña actual *"
             />
-            <IconButton
-              onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: '50%',
-                transform: 'translateY(-50%)',
+            
+            <TextField
+              label="Nueva contraseña"
+              type={showPasswords.new ? 'text' : 'password'}
+              value={passwordData.new_password}
+              onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                    edge="end"
+                  >
+                    {showPasswords.new ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                ),
               }}
-            >
-              {showPasswords.current ? <VisibilityOffIcon /> : <VisibilityIcon />}
-            </IconButton>
+            />
+            
+            <TextField
+              label="Confirmar nueva contraseña"
+              type={showPasswords.confirm ? 'text' : 'password'}
+              value={passwordData.confirm_password}
+              onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+              fullWidth
+              error={passwordData.new_password !== passwordData.confirm_password && passwordData.confirm_password !== ''}
+              helperText={
+                passwordData.new_password !== passwordData.confirm_password && passwordData.confirm_password !== ''
+                  ? 'Las contraseñas no coinciden'
+                  : ''
+              }
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                    edge="end"
+                  >
+                    {showPasswords.confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                ),
+              }}
+            />
           </Box>
-          <TextField
-            label="Nueva contraseña"
-            type={showPasswords.new ? 'text' : 'password'}
-            value={passwordData.new_password}
-            onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
-            required
-            autoComplete="off"
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
-                >
-                  {showPasswords.new ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </IconButton>
-              ),
-            }}
-          />
-          <TextField
-            label="Confirmar nueva contraseña"
-            type={showPasswords.confirm ? 'text' : 'password'}
-            value={passwordData.confirm_password}
-            onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
-            required
-            autoComplete="off"
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
-                >
-                  {showPasswords.confirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </IconButton>
-              ),
-            }}
-          />
         </Box>
       </DialogContent>
       <DialogActions>
@@ -188,7 +210,12 @@ const PasswordForm = ({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_password}
+          disabled={
+            !passwordData.current_password ||
+            !passwordData.new_password ||
+            !passwordData.confirm_password ||
+            passwordData.new_password !== passwordData.confirm_password
+          }
         >
           Cambiar Contraseña
         </Button>
@@ -204,10 +231,8 @@ export default function PerfilAdmin() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [dialogKey, setDialogKey] = useState(Date.now());
-  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
-  
-  // Form states
+  const [dialogKey, setDialogKey] = useState(0);
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -217,48 +242,26 @@ export default function PerfilAdmin() {
     department: '',
   });
 
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string>('');
-
   useEffect(() => {
     fetchProfile();
   }, []);
 
-
-
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const data = await apiService.get('/api/users/profile/') as any;
-      
-      const adminProfile = {
-        id: data.id,
-        username: data.username,
-        email: data.email,
-        first_name: data.first_name || '',
-        last_name: data.last_name || '',
-        phone: data.phone || '',
-        position: data.position || '',
-        department: data.department || '',
-        avatar: data.avatar,
-        is_active: data.is_active,
-        date_joined: data.date_joined,
-        last_login: data.last_login,
-      };
-      
-      setProfile(adminProfile);
+      const userData = await apiService.get('/api/users/profile/');
+      setProfile(userData);
       setFormData({
-        first_name: adminProfile.first_name,
-        last_name: adminProfile.last_name,
-        email: adminProfile.email,
-        phone: adminProfile.phone,
-        position: adminProfile.position,
-        department: adminProfile.department,
+        first_name: userData.first_name || '',
+        last_name: userData.last_name || '',
+        email: userData.email || '',
+        phone: userData.phone || '',
+        position: userData.position || '',
+        department: userData.department || '',
       });
-      
-    } catch (error) {
-      console.error('❌ [PerfilAdmin] Error al cargar perfil:', error);
+    } catch (err) {
       setError('Error al cargar el perfil');
+      console.error('Error fetching profile:', err);
     } finally {
       setLoading(false);
     }
@@ -266,112 +269,48 @@ export default function PerfilAdmin() {
 
   const handleSaveProfile = async () => {
     try {
-      const updateData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone: formData.phone,
-        position: formData.position,
-        department: formData.department,
-      };
-
-      await apiService.patch('/api/users/profile/', updateData);
-      
-      setSuccess('Perfil actualizado exitosamente');
-      setIsEditing(false);
+      setLoading(true);
+      await apiService.patch('/api/users/profile/', formData);
+      setSuccess('Perfil actualizado correctamente');
       await fetchProfile();
-    } catch (error) {
-      console.error('❌ [PerfilAdmin] Error al actualizar perfil:', error);
+      setIsEditing(false);
+    } catch (err) {
       setError('Error al actualizar el perfil');
+      console.error('Error updating profile:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChangePassword = async (formData: ChangePasswordData) => {
-    if (formData.new_password !== formData.confirm_password) {
-      setError('Las contraseñas nuevas no coinciden');
-      return;
-    }
-
-    if (formData.new_password.length < 8) {
-      setError('La nueva contraseña debe tener al menos 8 caracteres');
-      return;
-    }
-
     try {
-      const passwordData = {
-        old_password: formData.current_password,
-        new_password: formData.new_password,
-        new_password_confirm: formData.confirm_password,
-      };
-      
-      await apiService.post('/api/users/change-password/', passwordData);
-      
-      setSuccess('Contraseña cambiada exitosamente');
+      setLoading(true);
+      await apiService.post('/api/users/change-password/', formData);
+      setSuccess('Contraseña cambiada correctamente');
       setShowPasswordDialog(false);
-    } catch (error) {
-      console.error('❌ [PerfilAdmin] Error al cambiar contraseña:', error);
-      setError('Error al cambiar la contraseña. Verifica tu contraseña actual.');
+      setDialogKey(prev => prev + 1);
+    } catch (err: any) {
+      setError(err.message || 'Error al cambiar la contraseña');
+      console.error('Error changing password:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleOpenPasswordDialog = () => {
-    // Limpiar errores y mensajes
-    setError(null);
-    setSuccess(null);
-    
-    // Cerrar el diálogo primero para destruir el componente
-    setShowPasswordDialog(false);
-    
-    // Generar una nueva key única y abrir el diálogo después de un delay
-    setTimeout(() => {
-      setDialogKey(Date.now());
-      setShowPasswordDialog(true);
-    }, 100);
-  };
-
-  const handleAvatarUpload = async () => {
-    if (!avatarFile) return;
-
-    try {
-      const formData = new FormData();
-      formData.append('avatar', avatarFile);
-
-      await apiService.patch('/api/users/profile/', formData);
-      
-      setSuccess('Avatar actualizado exitosamente');
-      setShowAvatarDialog(false);
-      setAvatarFile(null);
-      setAvatarPreview('');
-      await fetchProfile();
-    } catch (error) {
-      console.error('❌ [PerfilAdmin] Error al subir avatar:', error);
-      setError('Error al subir el avatar');
-    }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    setShowPasswordDialog(true);
+    setDialogKey(prev => prev + 1);
   };
 
   const handleCancelEdit = () => {
-    if (profile) {
-      setFormData({
-        first_name: profile.first_name,
-        last_name: profile.last_name,
-        email: profile.email,
-        phone: profile.phone || '',
-        position: profile.position || '',
-        department: profile.department || '',
-      });
-    }
+    setFormData({
+      first_name: profile?.first_name || '',
+      last_name: profile?.last_name || '',
+      email: profile?.email || '',
+      phone: profile?.phone || '',
+      position: profile?.position || '',
+      department: profile?.department || '',
+    });
     setIsEditing(false);
   };
 
@@ -392,198 +331,368 @@ export default function PerfilAdmin() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <PersonIcon sx={{ mr: 2, color: 'primary.main' }} />
-        Perfil de Administrador
-      </Typography>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
-      )}
-
-      {success && (
-        <Alert severity="success" sx={{ mb: 3 }}>
-          {success}
-        </Alert>
-      )}
-
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-        {/* Información del perfil */}
-        <Box sx={{ flex: 1 }}>
-          <Paper sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5">Información Personal</Typography>
-              <Box>
-                {!isEditing ? (
-                  <Button
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    onClick={() => setIsEditing(true)}
-                  >
-                    Editar
-                  </Button>
-                ) : (
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
-                      variant="contained"
-                      startIcon={<SaveIcon />}
-                      onClick={handleSaveProfile}
-                    >
-                      Guardar
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      startIcon={<CancelIcon />}
-                      onClick={handleCancelEdit}
-                    >
-                      Cancelar
-                    </Button>
-                  </Box>
-                )}
-              </Box>
-            </Box>
-
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              <TextField
-                label="Nombre"
-                value={formData.first_name}
-                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                disabled={!isEditing}
-                sx={{ minWidth: { xs: '100%', sm: '48%' } }}
-              />
-              <TextField
-                label="Apellido"
-                value={formData.last_name}
-                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                disabled={!isEditing}
-                sx={{ minWidth: { xs: '100%', sm: '48%' } }}
-              />
-              <TextField
-                label="Correo electrónico"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={!isEditing}
-                InputProps={{
-                  startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-                sx={{ width: '100%' }}
-              />
-              <TextField
-                label="Teléfono"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                disabled={!isEditing}
-                InputProps={{
-                  startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-                sx={{ minWidth: { xs: '100%', sm: '48%' } }}
-              />
-              <TextField
-                label="Cargo"
-                value={formData.position}
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                disabled={!isEditing}
-                InputProps={{
-                  startAdornment: <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-                sx={{ minWidth: { xs: '100%', sm: '48%' } }}
-              />
-              <TextField
-                label="Departamento"
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                disabled={!isEditing}
-                InputProps={{
-                  startAdornment: <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-                sx={{ width: '100%' }}
-              />
-            </Box>
-          </Paper>
-        </Box>
-
-        {/* Avatar y acciones */}
-        <Box sx={{ width: { xs: '100%', md: 350 } }}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Avatar
-              src={avatarPreview || profile.avatar}
-              sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
+    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      {/* Banner superior con gradiente y contexto */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '20px',
+          p: 4,
+          mb: 4,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%',
+            width: '200%',
+            height: '200%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+            animation: 'float 6s ease-in-out infinite',
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-30%',
+            right: '-30%',
+            width: '60%',
+            height: '60%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+            animation: 'float 8s ease-in-out infinite reverse',
+          },
+          '@keyframes float': {
+            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+            '50%': { transform: 'translateY(-20px) rotate(180deg)' },
+          },
+        }}
+      >
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 2 }}>
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+              }}
             >
-              {profile.first_name?.[0]}{profile.last_name?.[0]}
-            </Avatar>
-            
-            <Button
-              variant="outlined"
-              onClick={() => setShowAvatarDialog(true)}
-              sx={{ mb: 2 }}
-            >
-              Cambiar Avatar
-            </Button>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Button
-              variant="outlined"
-              startIcon={<LockIcon />}
-              onClick={handleOpenPasswordDialog}
-              fullWidth
-            >
-              Cambiar Contraseña
-            </Button>
-          </Paper>
-
-          {/* Información de la cuenta */}
-          <Paper sx={{ p: 3, mt: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Información de la Cuenta
-            </Typography>
-            
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Nombre de usuario
-              </Typography>
-              <Typography variant="body1" fontWeight="bold">
-                {profile.username}
-              </Typography>
+              <AdminIcon sx={{ fontSize: 32, color: 'white' }} />
             </Box>
-
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Estado
-              </Typography>
-              <Typography 
-                variant="body1" 
-                color={profile.is_active ? 'success.main' : 'error.main'}
-                fontWeight="bold"
+            <Box>
+              <Typography
+                variant="h3"
+                sx={{
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  mb: 1,
+                }}
               >
-                {profile.is_active ? 'Activo' : 'Inactivo'}
+                Gestión de Perfil Administrativo
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontWeight: 300,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                }}
+              >
+                Administra tu información personal y configuración de cuenta para mantener el control total del sistema
               </Typography>
             </Box>
+          </Box>
+          
+          {/* Indicadores de estado */}
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Chip
+              icon={<VerifiedIcon />}
+              label="Cuenta Verificada"
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+              }}
+            />
+            <Chip
+              icon={<SecurityIcon />}
+              label="Acceso Administrativo"
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+              }}
+            />
+            <Chip
+              icon={<TimeIcon />}
+              label={`Último acceso: ${profile?.last_login ? new Date(profile.last_login).toLocaleDateString('es-ES') : 'N/A'}`}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+              }}
+            />
+          </Box>
+        </Box>
+      </Box>
 
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Fecha de registro
-              </Typography>
-              <Typography variant="body1">
-                {new Date(profile.date_joined).toLocaleDateString()}
-              </Typography>
-            </Box>
+      {/* Contenido principal */}
+      <Box sx={{ p: 3 }}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-            {profile.last_login && (
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Último acceso
+        {success && (
+          <Alert severity="success" sx={{ mb: 3 }}>
+            {success}
+          </Alert>
+        )}
+
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3 }}>
+          {/* Columna principal - Información del perfil */}
+          <Box sx={{ flex: 1 }}>
+            {/* Información Personal */}
+            <Card sx={{ mb: 3, boxShadow: 3 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PersonIcon color="primary" />
+                    <Typography variant="h5" fontWeight="bold">
+                      Información Personal
+                    </Typography>
+                  </Box>
+                  <Box>
+                    {!isEditing ? (
+                      <Button
+                        variant="outlined"
+                        startIcon={<EditIcon />}
+                        onClick={() => setIsEditing(true)}
+                        sx={{ borderRadius: 2 }}
+                      >
+                        Editar
+                      </Button>
+                    ) : (
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          variant="contained"
+                          startIcon={<SaveIcon />}
+                          onClick={handleSaveProfile}
+                          sx={{ borderRadius: 2 }}
+                        >
+                          Guardar
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          startIcon={<CancelIcon />}
+                          onClick={handleCancelEdit}
+                          sx={{ borderRadius: 2 }}
+                        >
+                          Cancelar
+                        </Button>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  {/* Nombre y Apellido */}
+                  <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                    <TextField
+                      label="Nombre"
+                      value={formData.first_name}
+                      onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                      disabled={!isEditing}
+                      fullWidth
+                      sx={{ borderRadius: 2 }}
+                    />
+                    <TextField
+                      label="Apellido"
+                      value={formData.last_name}
+                      onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                      disabled={!isEditing}
+                      fullWidth
+                      sx={{ borderRadius: 2 }}
+                    />
+                  </Box>
+
+                  {/* Email */}
+                  <TextField
+                    label="Correo electrónico"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                    }}
+                    fullWidth
+                    sx={{ borderRadius: 2 }}
+                  />
+
+                  {/* Teléfono y Cargo */}
+                  <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                    <TextField
+                      label="Teléfono"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      disabled={!isEditing}
+                      InputProps={{
+                        startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                      }}
+                      fullWidth
+                      sx={{ borderRadius: 2 }}
+                    />
+                    <TextField
+                      label="Cargo"
+                      value={formData.position}
+                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                      disabled={!isEditing}
+                      InputProps={{
+                        startAdornment: <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                      }}
+                      fullWidth
+                      sx={{ borderRadius: 2 }}
+                    />
+                  </Box>
+
+                  {/* Departamento */}
+                  <TextField
+                    label="Departamento"
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                    }}
+                    fullWidth
+                    sx={{ borderRadius: 2 }}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Columna lateral - Avatar y información de cuenta */}
+          <Box sx={{ width: { xs: '100%', lg: 400 } }}>
+            {/* Avatar y acciones */}
+            <Card sx={{ mb: 3, boxShadow: 3 }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Box sx={{ mb: 3 }}>
+                  <Avatar
+                    sx={{ 
+                      width: 140, 
+                      height: 140, 
+                      fontSize: '3rem',
+                      border: '4px solid',
+                      borderColor: 'primary.main',
+                      boxShadow: 3,
+                      mx: 'auto',
+                      backgroundColor: 'primary.main'
+                    }}
+                  >
+                    {profile.first_name?.[0]}{profile.last_name?.[0]}
+                  </Avatar>
+                </Box>
+                
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  {profile.first_name} {profile.last_name}
                 </Typography>
-                <Typography variant="body1">
-                  {new Date(profile.last_login).toLocaleString()}
+                
+                <Chip
+                  icon={<AdminIcon />}
+                  label="Administrador"
+                  color="primary"
+                  variant="filled"
+                  sx={{ mb: 2 }}
+                />
+
+                <Divider sx={{ my: 2 }} />
+
+                <Button
+                  variant="outlined"
+                  startIcon={<LockIcon />}
+                  onClick={handleOpenPasswordDialog}
+                  fullWidth
+                  sx={{ borderRadius: 2, mb: 2 }}
+                >
+                  Cambiar Contraseña
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Información de la cuenta */}
+            <Card sx={{ boxShadow: 3 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <VerifiedIcon color="primary" />
+                  Información de la Cuenta
                 </Typography>
-              </Box>
-            )}
-          </Paper>
+                
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PersonIcon fontSize="small" />
+                      Nombre de usuario
+                    </Typography>
+                    <Typography variant="body1" fontWeight="bold" sx={{ ml: 2 }}>
+                      {profile.username}
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <VerifiedIcon fontSize="small" />
+                      Estado
+                    </Typography>
+                    <Chip
+                      label={profile.is_active ? 'Activo' : 'Inactivo'}
+                      color={profile.is_active ? 'success' : 'error'}
+                      size="small"
+                      sx={{ ml: 2 }}
+                    />
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CalendarIcon fontSize="small" />
+                      Fecha de registro
+                    </Typography>
+                    <Typography variant="body1" sx={{ ml: 2 }}>
+                      {new Date(profile.date_joined).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </Typography>
+                  </Box>
+
+                  {profile.last_login && (
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <TimeIcon fontSize="small" />
+                        Último acceso
+                      </Typography>
+                      <Typography variant="body1" sx={{ ml: 2 }}>
+                        {new Date(profile.last_login).toLocaleString('es-ES')}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
       </Box>
 
@@ -603,52 +712,8 @@ export default function PerfilAdmin() {
             error={error} 
             success={success} 
           />
-      </Dialog>
+        </Dialog>
       )}
-
-      {/* Dialog para cambiar avatar */}
-      <Dialog open={showAvatarDialog} onClose={() => setShowAvatarDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Cambiar Avatar</DialogTitle>
-        <DialogContent>
-          <Box sx={{ textAlign: 'center', py: 2 }}>
-            <Avatar
-              src={avatarPreview || profile.avatar}
-              sx={{ width: 100, height: 100, mx: 'auto', mb: 2 }}
-            >
-              {profile.first_name?.[0]}{profile.last_name?.[0]}
-            </Avatar>
-            
-            <input
-              accept="image/*"
-              type="file"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-              id="avatar-upload"
-            />
-            <label htmlFor="avatar-upload">
-              <Button variant="outlined" component="span">
-                Seleccionar Imagen
-              </Button>
-            </label>
-            
-            {avatarFile && (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Archivo seleccionado: {avatarFile.name}
-              </Typography>
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowAvatarDialog(false)}>Cancelar</Button>
-          <Button
-            variant="contained"
-            onClick={handleAvatarUpload}
-            disabled={!avatarFile}
-          >
-            Subir Avatar
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       <Snackbar
         open={!!success}

@@ -1,178 +1,9 @@
-import { Box, Typography, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Avatar, Tooltip, IconButton } from '@mui/material';
-import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, Pending as PendingIcon, EmojiEvents as TrophyIcon, Info as InfoIcon } from '@mui/icons-material';
+import { Box, Typography, CircularProgress, Paper, Chip, Tooltip, IconButton } from '@mui/material';
+import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, Pending as PendingIcon, Info as InfoIcon, Quiz as QuizIcon, PlayArrow as PlayArrowIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 import { useState } from 'react';
-
-// Definir el tipo localmente para evitar problemas de importación
-interface TopStudent {
-  student_id: string;
-  user_data: {
-    id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    full_name: string;
-  };
-  total_hours: number;
-  completed_projects: number;
-  api_level: number;
-  strikes: number;
-  gpa: number;
-  career: string;
-  university: string;
-}
-
-// Componente para mostrar el ranking de top estudiantes
-const TopStudentsRanking = ({ topStudents }: { topStudents: TopStudent[] }) => {
-  const getRankColor = (rank: number) => {
-    switch (rank) {
-      case 1: return '#FFD700'; // Oro
-      case 2: return '#C0C0C0'; // Plata
-      case 3: return '#CD7F32'; // Bronce
-      default: return '#E0E0E0'; // Gris
-    }
-  };
-
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return `${rank}`;
-    }
-  };
-
-  return (
-    <Paper sx={{ p: 3, bgcolor: '#ffffff', boxShadow: 2, borderRadius: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <TrophyIcon sx={{ fontSize: 32, mr: 2, color: '#FFD700' }} />
-        <Typography variant="h5" fontWeight={700} color="#333333">
-          Top 10 Estudiantes - Más Horas Registradas
-        </Typography>
-      </Box>
-      
-      {topStudents.length === 0 ? (
-        <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-          No hay estudiantes con horas registradas aún.
-        </Typography>
-      ) : (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#f5f5f5' }}>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>Ranking</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>Estudiante</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>Universidad</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>Carrera</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>Horas Totales</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>Proyectos</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>API Level</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>GPA</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 16 }}>Strikes</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {topStudents.map((student, index) => (
-                <TableRow 
-                  key={student.student_id}
-                  sx={{ 
-                    '&:hover': { bgcolor: '#f8f9fa' },
-                    '&:nth-of-type(odd)': { bgcolor: '#fafafa' }
-                  }}
-                >
-                  <TableCell>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      bgcolor: getRankColor(index + 1),
-                      color: index < 3 ? '#333' : '#666',
-                      fontWeight: 700,
-                      fontSize: 16
-                    }}>
-                      {getRankIcon(index + 1)}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar 
-                        sx={{ 
-                          width: 40, 
-                          height: 40, 
-                          mr: 2,
-                          bgcolor: index < 3 ? '#1976d2' : '#757575'
-                        }}
-                      >
-                        {student.user_data.full_name.charAt(0).toUpperCase()}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="body1" fontWeight={600}>
-                          {student.user_data.full_name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {student.user_data.email}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {student.university}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {student.career}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={`${student.total_hours}h`} 
-                      color={index < 3 ? "primary" : "default"}
-                      variant={index < 3 ? "filled" : "outlined"}
-                      sx={{ fontWeight: 600 }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight={600}>
-                      {student.completed_projects}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={`API ${student.api_level}`} 
-                      color="info" 
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight={600}>
-                      {student.gpa.toFixed(2)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={student.strikes} 
-                      color={student.strikes === 0 ? "success" : "warning"}
-                      size="small"
-                      variant={student.strikes === 0 ? "filled" : "outlined"}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </Paper>
-  );
-};
 
 // Componente para tarjetas KPI con tooltip
 interface KPICardProps {
@@ -287,6 +118,9 @@ export default function AdminDashboard() {
   const totalProjects = stats?.total_projects || 0;
   const pendingApplications = stats?.pending_applications || 0;
   const strikesAlerts = stats?.strikes_alerts || 0;
+  const apiQuestionnaireRequests = stats?.api_questionnaire_requests || 0;
+  const activeProjects = stats?.active_projects || 0;
+  const pendingHours = stats?.pending_hours || 0;
 
   return (
     <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
@@ -322,11 +156,11 @@ export default function AdminDashboard() {
       {/* Contenido solo si hay datos */}
       {!loading && !error && stats && (
         <>
-          {/* KPIs principales - 2 filas × 3 columnas */}
+          {/* KPIs principales - 3 filas × 3 columnas */}
           <Box sx={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gridTemplateRows: 'repeat(2, 160px)',
+            gridTemplateRows: 'repeat(3, 160px)',
             gap: 3,
             mb: 4,
             maxWidth: '100%',
@@ -391,10 +225,37 @@ export default function AdminDashboard() {
               bgColor="#f97316"
               textColor="white"
             />
+            
+            {/* Solicitudes de Cuestionario API - Verde azulado vibrante */}
+            <KPICard
+              title="Cuestionarios API"
+              value={apiQuestionnaireRequests}
+              description="Solicitudes de cuestionario de API pendientes de revisión por el administrador para determinar el nivel del estudiante"
+              icon={<QuizIcon sx={{ fontSize: 32, mr: 1 }} />}
+              bgColor="#06b6d4"
+              textColor="white"
+            />
+            
+            {/* Proyectos Activos - Verde vibrante */}
+            <KPICard
+              title="Proyectos Activos"
+              value={activeProjects}
+              description="Proyectos que están actualmente en desarrollo con estudiantes trabajando activamente"
+              icon={<PlayArrowIcon sx={{ fontSize: 32, mr: 1 }} />}
+              bgColor="#22c55e"
+              textColor="white"
+            />
+            
+            {/* Horas Pendientes - Índigo vibrante */}
+            <KPICard
+              title="Horas Pendientes"
+              value={pendingHours}
+              description="Horas de trabajo registradas por estudiantes que están pendientes de validación por las empresas"
+              icon={<ScheduleIcon sx={{ fontSize: 32, mr: 1 }} />}
+              bgColor="#6366f1"
+              textColor="white"
+            />
           </Box>
-
-          {/* Top 10 Estudiantes */}
-          <TopStudentsRanking topStudents={stats.top_students || []} />
         </>
       )}
     </Box>

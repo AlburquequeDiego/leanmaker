@@ -674,7 +674,93 @@ export const CompanyCalendar = forwardRef((_, ref) => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      {/* Sección de estadísticas y resumen - ARRIBA DE TODO */}
+      {/* Header mejorado con gradiente y estadísticas - ARRIBA DE TODO */}
+      <Box sx={{ 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 3,
+        p: 3,
+        mb: 3,
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ 
+          position: 'absolute', 
+          top: 0, 
+          right: 0, 
+          width: '200px', 
+          height: '200px', 
+          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          transform: 'translate(50px, -50px)'
+        }} />
+        <Box sx={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          left: 0, 
+          width: '150px', 
+          height: '150px', 
+          background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+          transform: 'translate(-50px, 50px)'
+        }} />
+        
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+          <Box>
+            <Typography variant="h3" fontWeight={700} sx={{ mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+              📅 Calendario Empresarial
+            </Typography>
+            <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
+              Gestiona tus entrevistas y reuniones de proyecto
+            </Typography>
+          </Box>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* Estadísticas rápidas */}
+            <Box sx={{ 
+              background: 'rgba(255,255,255,0.15)', 
+              borderRadius: 2, 
+              p: 2, 
+              textAlign: 'center',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
+              <Typography variant="h4" fontWeight={700}>
+                {events.length}
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                Eventos
+              </Typography>
+            </Box>
+            
+            <Button 
+              variant="contained" 
+              startIcon={<AddIcon />} 
+              onClick={() => setShowAddDialog(true)}
+              sx={{ 
+                background: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
+                borderRadius: 3,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+                '&:hover': {
+                  background: 'rgba(255,255,255,0.3)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.2)'
+                }
+              }}
+            >
+              Agregar Evento
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Sección de estadísticas y resumen */}
       {events.length > 0 && (
         <Box sx={{ 
           background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
@@ -755,92 +841,6 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           </Box>
         </Box>
       )}
-
-      {/* Header mejorado con gradiente y estadísticas */}
-      <Box sx={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: 3,
-        p: 3,
-        mb: 3,
-        color: 'white',
-        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <Box sx={{ 
-          position: 'absolute', 
-          top: 0, 
-          right: 0, 
-          width: '200px', 
-          height: '200px', 
-          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
-          transform: 'translate(50px, -50px)'
-        }} />
-        <Box sx={{ 
-          position: 'absolute', 
-          bottom: 0, 
-          left: 0, 
-          width: '150px', 
-          height: '150px', 
-          background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
-          transform: 'translate(-50px, 50px)'
-        }} />
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
-          <Box>
-            <Typography variant="h3" fontWeight={700} sx={{ mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-              📅 Calendario Empresarial
-            </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
-              Gestiona tus entrevistas y reuniones de proyecto
-            </Typography>
-          </Box>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {/* Estadísticas rápidas */}
-            <Box sx={{ 
-              background: 'rgba(255,255,255,0.15)', 
-              borderRadius: 2, 
-              p: 2, 
-              textAlign: 'center',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}>
-              <Typography variant="h4" fontWeight={700}>
-                {events.length}
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Eventos
-              </Typography>
-            </Box>
-            
-            <Button 
-              variant="contained" 
-              startIcon={<AddIcon />} 
-              onClick={() => setShowAddDialog(true)}
-              sx={{ 
-                background: 'rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.3)',
-                color: 'white',
-                fontWeight: 600,
-                px: 3,
-                py: 1.5,
-                borderRadius: 3,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
-                '&:hover': {
-                  background: 'rgba(255,255,255,0.3)',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.2)'
-                }
-              }}
-            >
-          Agregar Evento
-        </Button>
-      </Box>
-      </Box>
-      </Box>
 
       {/* Controles de vista mejorados */}
       <Box sx={{ 

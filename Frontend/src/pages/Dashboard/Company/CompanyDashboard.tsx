@@ -11,7 +11,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+
 import SchoolIcon from '@mui/icons-material/School';
 import InfoIcon from '@mui/icons-material/Info';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
@@ -162,7 +162,6 @@ export default function CompanyDashboard() {
   const activeStudents = stats?.active_students || 0;
   const averageRating = stats?.rating || 0;
   const totalHoursOffered = stats?.total_hours_offered || 0;
-  const successRate = totalProjects > 0 ? Math.round((completedProjects / totalProjects) * 100) : 0;
 
   return (
     <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
@@ -286,41 +285,26 @@ export default function CompanyDashboard() {
                textColor="white"
              />
              
-             {/* GPA Empresa - Azul índigo vibrante */}
-             <KPICard
-               title="GPA Empresa"
-               value={averageRating && averageRating > 0 ? averageRating : 'Sin calificaciones'}
-               description="Calificación promedio que la empresa ha recibido de los estudiantes. Refleja la satisfacción y calidad de la experiencia proporcionada."
-               icon={<StarIcon sx={{ fontSize: 28 }} />}
-               bgColor="#6366f1"
-               textColor="white"
-             />
-             
-                           {/* Tasa de Éxito - Verde suave */}
+                           {/* GPA Empresa - Azul índigo vibrante */}
               <KPICard
-                title="Tasa de Éxito"
-                value={`${successRate}%`}
-                description="Porcentaje de proyectos que han sido completados exitosamente. Muestra la eficiencia y capacidad de la empresa para finalizar proyectos."
-                icon={<TrendingUpIcon sx={{ fontSize: 28 }} />}
-                bgColor="#22c55e"
+                title="GPA Empresa"
+                value={averageRating && averageRating > 0 ? averageRating : 'Sin calificaciones'}
+                description="Calificación promedio que la empresa ha recibido de los estudiantes. Refleja la satisfacción y calidad de la experiencia proporcionada."
+                icon={<StarIcon sx={{ fontSize: 28 }} />}
+                bgColor="#6366f1"
                 textColor="white"
               />
-          </Box>
-          
-          {/* Tarjeta adicional debajo centrada */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-            <Box sx={{ width: { xs: '100%', sm: '50%', md: '33%' } }}>
-                                             {/* Horas Ofrecidas - Rojo vibrante */}
-                <KPICard
-                  title="Horas Ofrecidas"
-                  value={totalHoursOffered}
-                  description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
-                  icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
-                  bgColor="#dc2626"
-                  textColor="white"
-                />
-            </Box>
-          </Box>
+              
+              {/* Horas Ofrecidas - Rojo vibrante */}
+              <KPICard
+                title="Horas Ofrecidas"
+                value={totalHoursOffered}
+                description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
+                icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
+                bgColor="#dc2626"
+                textColor="white"
+              />
+           </Box>
         </>
       )}
     </Box>

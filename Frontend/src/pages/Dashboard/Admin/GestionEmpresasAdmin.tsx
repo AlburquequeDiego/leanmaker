@@ -25,6 +25,7 @@ import {
   Alert,
   Chip,
   IconButton,
+  Divider,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -38,6 +39,11 @@ import {
   Work as WorkIcon,
   Star as StarIcon,
   Edit as EditIcon,
+  TrendingUp as TrendingUpIcon,
+  Refresh as RefreshIcon,
+  Group as GroupIcon,
+  Assessment as AssessmentIcon,
+  Timer as TimerIcon,
 } from '@mui/icons-material';
 import Tooltip from '@mui/material/Tooltip';
 import { apiService } from '../../../services/api.service';
@@ -98,6 +104,16 @@ export const GestionEmpresasAdmin = () => {
   const [pageSize, setPageSize] = useState<number | 'todos'>(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  
+  // Estados para estadísticas
+  const [stats, setStats] = useState({
+    totalCompanies: 0,
+    activeCompanies: 0,
+    suspendedCompanies: 0,
+    blockedCompanies: 0,
+    averageRating: 0,
+    totalProjects: 0
+  });
   const [filters, setFilters] = useState<any>({});
 
   const [loading, setLoading] = useState(true);
@@ -343,10 +359,21 @@ export const GestionEmpresasAdmin = () => {
           <Tooltip title="Editar">
             <span>
               <IconButton
-                color="primary"
                 onClick={() => {
                   setSelectedCompany(row);
                   // setShowEditDialog(true); // Asume que existe un estado y modal para editar
+                }}
+                sx={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
                 }}
               >
                 <EditIcon />
@@ -356,9 +383,20 @@ export const GestionEmpresasAdmin = () => {
           <Tooltip title="Activar">
             <span>
               <IconButton
-                color="success"
                 onClick={() => handleAction(row, 'activate')}
                 disabled={row.status === 'active' || !row.user}
+                sx={{
+                  background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <CheckCircleIcon />
               </IconButton>
@@ -367,9 +405,20 @@ export const GestionEmpresasAdmin = () => {
           <Tooltip title="Suspender">
             <span>
               <IconButton
-                color="warning"
                 onClick={() => handleAction(row, 'suspend')}
                 disabled={row.status === 'suspended' || !row.user}
+                sx={{
+                  background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <WarningIcon />
               </IconButton>
@@ -378,9 +427,20 @@ export const GestionEmpresasAdmin = () => {
           <Tooltip title="Bloquear">
             <span>
               <IconButton
-                color="error"
                 onClick={() => handleAction(row, 'block')}
                 disabled={row.status === 'blocked' || !row.user}
+                sx={{
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <BlockIcon />
               </IconButton>
@@ -389,7 +449,6 @@ export const GestionEmpresasAdmin = () => {
           <Tooltip title="Desbloquear">
             <span>
               <IconButton
-                color="info"
                 onClick={async () => {
                   if (!row.user) {
                     setErrorMessage('Esta empresa no tiene usuario asociado. No se puede desbloquear.');
@@ -411,6 +470,18 @@ export const GestionEmpresasAdmin = () => {
                   }
                 }}
                 disabled={row.status !== 'blocked' || !row.user}
+                sx={{
+                  background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
               >
                 <CheckCircleIcon />
               </IconButton>
@@ -456,92 +527,368 @@ export const GestionEmpresasAdmin = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>
-          Gestión de Empresas
-        </Typography>
-        
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Mostrar</InputLabel>
-          <Select
-            value={pageSize}
-            label="Mostrar"
-            onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
-          >
-            <MenuItem value={20}>20 últimos</MenuItem>
-            <MenuItem value={50}>50 últimos</MenuItem>
-            <MenuItem value={100}>100 últimos</MenuItem>
-            <MenuItem value={150}>150 últimos</MenuItem>
-            <MenuItem value={200}>200 últimos</MenuItem>
-            <MenuItem value={'todos'}>Todos</MenuItem>
-          </Select>
-        </FormControl>
+    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+      {/* Header con gradiente */}
+      <Card sx={{ 
+        mb: 3, 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5, 
+                mr: 2,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <BusinessIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+              <Box>
+                <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+                  Gestión de Empresas
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  Administra y supervisa todas las empresas registradas en la plataforma
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<RefreshIcon />}
+              onClick={fetchData}
+              sx={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  background: 'rgba(255, 255, 255, 0.3)',
+                }
+              }}
+            >
+              Actualizar
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Tarjetas de estadísticas */}
+      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+          boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Total Empresas
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {companies.length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Registradas en la plataforma
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <BusinessIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Empresas Activas
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {companies.filter(c => c.status === 'active').length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Operando normalmente
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <CheckCircleIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+          boxShadow: '0 8px 25px rgba(255, 107, 107, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Empresas Bloqueadas
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {companies.filter(c => c.status === 'blocked').length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Requieren atención
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <BlockIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
+          boxShadow: '0 8px 25px rgba(243, 156, 18, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Total Proyectos
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                  {companies.reduce((sum, company) => sum + company.projects_count, 0)}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Creados por empresas
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <WorkIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
       </Box>
 
-      {/* Filtros y tabla de empresas */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-        <TextField
-          label="Buscar por nombre o email"
-          variant="outlined"
-          size="small"
-          value={filters.search || ''}
-          onChange={e => handleFilterChange({ ...filters, search: e.target.value })}
-          sx={{ minWidth: 220 }}
-        />
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
-          <InputLabel>Estado</InputLabel>
-          <Select
-            label="Estado"
-            value={filters.status || ''}
-            onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
-          >
-            <MenuItem value="">Todos</MenuItem>
-            <MenuItem value="active">Activa</MenuItem>
-            <MenuItem value="suspended">Suspendida</MenuItem>
-            <MenuItem value="blocked">Bloqueada</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      <DataTable
-        title="Lista de Empresas"
-        data={companies}
-        columns={columns}
-        loading={loading}
-        error={null}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-        totalCount={totalCount}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
-        showPagination={false}
-        showPageSizeSelector={false}
-      />
+      {/* Filtros y tabla de empresas con diseño mejorado */}
+      <Card sx={{ 
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+              borderRadius: 2, 
+              p: 1, 
+              mr: 2
+            }}>
+              <AssessmentIcon sx={{ color: 'white', fontSize: 24 }} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                Lista de Empresas
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                Gestiona el estado y configuración de todas las empresas
+              </Typography>
+            </Box>
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel>Mostrar</InputLabel>
+              <Select
+                value={pageSize}
+                label="Mostrar"
+                onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value={20}>20 últimos</MenuItem>
+                <MenuItem value={50}>50 últimos</MenuItem>
+                <MenuItem value={100}>100 últimos</MenuItem>
+                <MenuItem value={150}>150 últimos</MenuItem>
+                <MenuItem value={200}>200 últimos</MenuItem>
+                <MenuItem value={'todos'}>Todos</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
 
-      {/* Modal de acción */}
+          {/* Filtros mejorados */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+            <TextField
+              label="Buscar por nombre o email"
+              variant="outlined"
+              size="small"
+              value={filters.search || ''}
+              onChange={e => handleFilterChange({ ...filters, search: e.target.value })}
+              sx={{ 
+                minWidth: 220,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: '#667eea',
+                  },
+                }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon sx={{ mr: 1, color: '#7f8c8d' }} />
+                ),
+              }}
+            />
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
+              <InputLabel>Estado</InputLabel>
+              <Select
+                label="Estado"
+                value={filters.status || ''}
+                onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="active">Activa</MenuItem>
+                <MenuItem value="suspended">Suspendida</MenuItem>
+                <MenuItem value="blocked">Bloqueada</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <DataTable
+            title="Lista de Empresas"
+            data={companies}
+            columns={columns}
+            loading={loading}
+            error={null}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
+            showPagination={false}
+            showPageSizeSelector={false}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Modal de acción con diseño mejorado */}
       <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {actionType === 'activate' && 'Activar Empresa'}
-          {actionType === 'suspend' && 'Suspender Empresa'}
-          {actionType === 'block' && 'Bloquear Empresa'}
+        <DialogTitle sx={{ 
+          background: actionType === 'activate' 
+            ? 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)'
+            : actionType === 'suspend'
+            ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
+            : 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+          color: 'white',
+          fontWeight: 'bold'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {actionType === 'activate' && <CheckCircleIcon />}
+            {actionType === 'suspend' && <WarningIcon />}
+            {actionType === 'block' && <BlockIcon />}
+            <Typography variant="h6">
+              {actionType === 'activate' && 'Activar Empresa'}
+              {actionType === 'suspend' && 'Suspender Empresa'}
+              {actionType === 'block' && 'Bloquear Empresa'}
+            </Typography>
+          </Box>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="body1" gutterBottom>
-              ¿Estás seguro de que quieres {actionType === 'activate' ? 'activar' : actionType === 'suspend' ? 'suspender' : 'bloquear'} la empresa{' '}
-              <strong>{selectedCompany?.name}</strong>?
-            </Typography>
+            <Card sx={{ 
+              mb: 3, 
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              borderRadius: 2
+            }}>
+              <CardContent sx={{ p: 2 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                  Confirmar Acción
+                </Typography>
+                <Typography variant="body1" sx={{ color: '#2c3e50', lineHeight: 1.6 }}>
+                  ¿Estás seguro de que quieres{' '}
+                  <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea' }}>
+                    {actionType === 'activate' ? 'activar' : actionType === 'suspend' ? 'suspender' : 'bloquear'}
+                  </Box>{' '}
+                  la empresa{' '}
+                  <Box component="span" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                    {selectedCompany?.name}
+                  </Box>?
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#7f8c8d', mt: 2, fontStyle: 'italic' }}>
+                  Esta acción cambiará el estado de la empresa y afectará su capacidad para usar la plataforma.
+                </Typography>
+              </CardContent>
+            </Card>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setActionDialog(false)}>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setActionDialog(false)}
+            sx={{ borderRadius: 2 }}
+          >
             Cancelar
           </Button>
           <Button 
             variant="contained"
-            color={actionType === 'activate' ? 'success' : actionType === 'suspend' ? 'warning' : 'error'}
             onClick={handleConfirmAction}
+            sx={{ 
+              borderRadius: 2,
+              background: actionType === 'activate' 
+                ? 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)'
+                : actionType === 'suspend'
+                ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
+                : 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+              '&:hover': {
+                background: actionType === 'activate' 
+                  ? 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)'
+                  : actionType === 'suspend'
+                  ? 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)'
+                  : 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
+              }
+            }}
           >
             Confirmar
           </Button>
@@ -553,9 +900,21 @@ export const GestionEmpresasAdmin = () => {
         open={showSuccess}
         autoHideDuration={6000}
         onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setShowSuccess(false)} severity="success">
-            {successMessage}
+        <Alert 
+          onClose={() => setShowSuccess(false)} 
+          severity="success"
+          sx={{ 
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+            color: 'white',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
+          {successMessage}
         </Alert>
       </Snackbar>
 
@@ -564,9 +923,21 @@ export const GestionEmpresasAdmin = () => {
         open={showError}
         autoHideDuration={6000}
         onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setShowError(false)} severity="error">
-            {errorMessage}
+        <Alert 
+          onClose={() => setShowError(false)} 
+          severity="error"
+          sx={{ 
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+            color: 'white',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
+          {errorMessage}
         </Alert>
       </Snackbar>
     </Box>

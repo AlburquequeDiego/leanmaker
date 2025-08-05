@@ -73,5 +73,33 @@ export const theme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 12,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          paddingTop: '24px !important',
+          paddingBottom: '24px !important',
+          paddingLeft: '24px !important',
+          paddingRight: '24px !important',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          paddingTop: '20px !important',
+          paddingBottom: '20px !important',
+          paddingLeft: '24px !important',
+          paddingRight: '24px !important',
+        },
+      },
+    },
   },
 }); 

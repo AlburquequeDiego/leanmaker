@@ -26,6 +26,7 @@ import {
   Divider,
   Badge,
 } from '@mui/material';
+import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 import {
   Assignment as AssignmentIcon,
   Business as BusinessIcon,
@@ -67,6 +68,7 @@ interface Application {
   api_level?: string;
   area?: string; // <-- Agregado
   objetivo?: string;
+  project_id?: string; // ID del proyecto
 }
 
 interface FilterOptions {
@@ -222,7 +224,9 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
 
 // Función para adaptar los datos del backend al formato del frontend
 const adaptApplicationData = (backendData: any): Application => {
-  return {
+  console.log('🔍 [Frontend] Adaptando datos:', backendData);
+  
+  const adapted = {
     id: backendData.id,
     projectTitle: backendData.project_title || 'Sin título',
     company: backendData.company || 'Sin empresa',
@@ -235,43 +239,63 @@ const adaptApplicationData = (backendData: any): Application => {
     description: backendData.project_description || 'Sin descripción',
     compatibility: backendData.compatibility || 0,
     notes: backendData.student_notes || backendData.cover_letter || undefined,
-    modality: backendData.modality,
-    
-    required_hours: backendData.required_hours,
-    hours_per_week: backendData.hours_per_week,
-    max_students: backendData.max_students,
-    current_students: backendData.current_students,
-    trl_level: backendData.trl_level,
-    api_level: backendData.api_level,
-    area: backendData.area || '', // <-- Agregado
+    modality: backendData.modality || '',
+    required_hours: backendData.required_hours || '',
+    hours_per_week: backendData.hours_per_week || '',
+    max_students: backendData.max_students || '',
+    current_students: backendData.current_students || '',
+    trl_level: backendData.trl_level || '',
+    api_level: backendData.api_level || '',
+    area: backendData.area || '',
+    objetivo: backendData.objetivo || '',
+    project_id: backendData.project || undefined, // El campo project ahora es directamente el ID
   };
+  
+  console.log('🔍 [Frontend] Datos adaptados:', adapted);
+  return adapted;
 };
 
 // Componente principal de aplicaciones
 export const MyApplications: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
 
-  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
   const [historyLimit, setHistoryLimit] = useState(15); // Por defecto 15
+  
+  // Estados para el modal de detalles del proyecto
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedProjectDetail, setSelectedProjectDetail] = useState<any>(null);
+  const [loadingProjectDetail, setLoadingProjectDetail] = useState(false);
 
   useEffect(() => {
     async function fetchApplications() {
       try {
-        // Obtener aplicaciones específicas del estudiante
-        const data = await apiService.get('/api/applications/my_applications/');
-        console.log('Applications data received:', data);
+        console.log('🔍 [Frontend] Iniciando fetch de aplicaciones...');
+        // Forzar recarga sin caché
+        const timestamp = Date.now();
+        const data = await apiService.get(`/api/applications/my_applications/?t=${timestamp}&nocache=true`);
+        console.log('🔍 [Frontend] Datos recibidos del backend:', data);
         
-        // El backend devuelve {results: Array, total: number}
         const applicationsArray = data.results || data;
+        console.log('🔍 [Frontend] applicationsArray:', applicationsArray);
         
-        if (Array.isArray(applicationsArray)) {
-                  // Adaptar cada aplicación al formato del frontend
-        const adaptedApplications = applicationsArray.map(app => adaptApplicationData(app));
-        setApplications(adaptedApplications);
-        setFilteredApplications(adaptedApplications);
+        if (Array.isArray(applicationsArray) && applicationsArray.length > 0) {
+          console.log('🔍 [Frontend] Primera aplicación del backend:', applicationsArray[0]);
+          console.log('🔍 [Frontend] Campos disponibles en la primera aplicación:');
+          console.log('   - project_title:', applicationsArray[0].project_title);
+          console.log('   - company:', applicationsArray[0].company);
+          console.log('   - project_description:', applicationsArray[0].project_description);
+          console.log('   - project:', applicationsArray[0].project);
+          console.log('   - student:', applicationsArray[0].student);
+          
+          const adaptedApplications = applicationsArray.map(app => adaptApplicationData(app));
+          console.log('🔍 [Frontend] Primera aplicación adaptada:', adaptedApplications[0]);
+          console.log('🔍 [Frontend] Total de aplicaciones adaptadas:', adaptedApplications.length);
+          
+          setApplications(adaptedApplications);
+          setFilteredApplications(adaptedApplications);
         } else {
+          console.log('🔍 [Frontend] No hay aplicaciones o no es un array válido');
           setApplications([]);
           setFilteredApplications([]);
         }
@@ -284,9 +308,43 @@ export const MyApplications: React.FC = () => {
     fetchApplications();
   }, []);
 
-  const handleViewDetails = (application: Application) => {
-    setSelectedApplication(application);
-    setDialogOpen(true);
+  // Función para manejar la visualización de detalles del proyecto
+  const handleViewProjectDetails = async (application: Application) => {
+    console.log('🔍 [MyApplications] Iniciando handleViewProjectDetails');
+    console.log('🔍 [MyApplications] Application:', application);
+    
+    if (!application.project_id) {
+      console.error('No se encontró el ID del proyecto');
+      return;
+    }
+    
+    console.log('🔍 [MyApplications] Project ID:', application.project_id);
+    
+    setLoadingProjectDetail(true);
+    try {
+      // Obtener los detalles completos del proyecto desde la API
+      console.log('🔍 [MyApplications] Haciendo llamada a API para obtener detalles del proyecto');
+      const projectData = await apiService.get(`/api/projects/${application.project_id}/`);
+      console.log('🔍 [MyApplications] Datos del proyecto recibidos:', projectData);
+      
+      setSelectedProjectDetail(projectData);
+      setDetailModalOpen(true);
+      console.log('🔍 [MyApplications] Modal abierto correctamente');
+    } catch (error) {
+      console.error('Error fetching project details:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+    } finally {
+      setLoadingProjectDetail(false);
+    }
+  };
+
+  // Función para cerrar el modal de detalles del proyecto
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedProjectDetail(null);
   };
 
   // Actualizar handleFilter para soportar solo los filtros esenciales
@@ -681,8 +739,9 @@ export const MyApplications: React.FC = () => {
                     <IconButton
                       size="small"
                       color="primary"
-                      onClick={() => handleViewDetails(application)}
-                      title="Ver detalles"
+                      onClick={() => handleViewProjectDetails(application)}
+                      title="Ver detalles del proyecto"
+                      disabled={loadingProjectDetail}
                       sx={{ 
                         bgcolor: 'rgba(102, 126, 234, 0.1)',
                         '&:hover': {
@@ -702,442 +761,19 @@ export const MyApplications: React.FC = () => {
         </TableContainer>
       )}
 
-      {/* Dialog para detalles mejorado */}
-      <Dialog 
-        open={dialogOpen} 
-        onClose={() => setDialogOpen(false)} 
-        maxWidth="lg" 
-        fullWidth
-        PaperProps={{
-          sx: {
-            maxHeight: '90vh',
-            borderRadius: 3,
-            overflow: 'hidden',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            boxShadow: '0 15px 30px rgba(0,0,0,0.15)'
-          }
-        }}
-      >
-        {selectedApplication && (
-          <>
-            {/* Header con gradiente */}
-            <Box sx={{ 
-              p: 3, 
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <Box sx={{ 
-                position: 'absolute', 
-                top: -30, 
-                right: -30, 
-                width: 120, 
-                height: 120, 
-                borderRadius: '50%', 
-                background: 'rgba(255,255,255,0.1)',
-                zIndex: 0
-              }} />
-              <Box sx={{ position: 'relative', zIndex: 1 }}>
-                <Typography variant="h4" fontWeight={700} gutterBottom sx={{ 
-                  textShadow: '1px 1px 3px rgba(0,0,0,0.3)',
-                  letterSpacing: '0.3px'
-                }}>
-                  {selectedApplication.projectTitle}
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', mt: 1.5 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'rgba(255,255,255,0.2)', px: 1.5, py: 0.5, borderRadius: 1.5 }}>
-                    <BusinessIcon sx={{ fontSize: 16 }} />
-                    <Typography variant="body2" fontWeight={600}>{selectedApplication.company}</Typography>
-                  </Box>
-                  {selectedApplication.area && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'rgba(255,255,255,0.2)', px: 1.5, py: 0.5, borderRadius: 1.5 }}>
-                      <AssignmentIcon sx={{ fontSize: 16 }} />
-                      <Typography variant="body2" fontWeight={600}>{selectedApplication.area}</Typography>
-                    </Box>
-                  )}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'rgba(255,255,255,0.2)', px: 1.5, py: 0.5, borderRadius: 1.5 }}>
-                    <CheckCircleIcon sx={{ fontSize: 16 }} />
-                    <Typography variant="body2" fontWeight={600}>{getStatusText(selectedApplication.status)}</Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
 
-            {/* Contenido principal */}
-            <Box sx={{ 
-              p: 3, 
-              bgcolor: '#fafafa',
-              maxHeight: 'calc(90vh - 140px)',
-              overflow: 'auto',
-              '&::-webkit-scrollbar': {
-                width: '6px',
-              },
-              '&::-webkit-scrollbar-track': {
-                background: '#f1f1f1',
-                borderRadius: '3px',
-              },
-              '&::-webkit-scrollbar-thumb': {
-                background: '#c1c1c1',
-                borderRadius: '3px',
-                '&:hover': {
-                  background: '#a8a8a8',
-                },
-              },
-            }}>
-              <Grid container spacing={3}>
-                {/* Columna principal */}
-                <Grid item xs={12} lg={8}>
-                  {/* Descripción */}
-                  <Paper sx={{ 
-                    p: 2.5, 
-                    mb: 2, 
-                    borderRadius: 2,
-                    background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                    border: '1px solid rgba(255,255,255,0.8)'
-                  }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                      <Box sx={{ 
-                        p: 1, 
-                        borderRadius: 1.5, 
-                        bgcolor: 'primary.main',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <AssignmentIcon sx={{ fontSize: 20 }} />
-                      </Box>
-                      <Typography variant="h6" fontWeight={600} color="primary.main">
-                        Descripción del Proyecto
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" sx={{ 
-                      lineHeight: 1.6, 
-                      color: '#374151',
-                      fontSize: '1rem'
-                    }}>
-                      {selectedApplication.description || 'Sin descripción'}
-                    </Typography>
-                  </Paper>
 
-                  {/* Objetivos */}
-                  {selectedApplication.objetivo && (
-                    <Paper sx={{ 
-                      p: 2.5, 
-                      mb: 2, 
-                      borderRadius: 2,
-                      background: 'linear-gradient(145deg, #e8f5e8 0%, #f0f8f0 100%)',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                      border: '1px solid rgba(76, 175, 80, 0.2)'
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                        <Box sx={{ 
-                          p: 1, 
-                          borderRadius: 1.5, 
-                          bgcolor: 'success.main',
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}>
-                          <TrendingUpIcon sx={{ fontSize: 20 }} />
-                        </Box>
-                        <Typography variant="h6" fontWeight={600} color="success.main">
-                          Objetivos del Proyecto
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" sx={{ 
-                        lineHeight: 1.6, 
-                        color: '#374151',
-                        fontSize: '1rem'
-                      }}>
-                        {selectedApplication.objetivo}
-                      </Typography>
-                    </Paper>
-                  )}
-
-                  {/* Requisitos */}
-                  {selectedApplication.requiredSkills && selectedApplication.requiredSkills.length > 0 && (
-                    <Paper sx={{ 
-                      p: 2.5, 
-                      mb: 2, 
-                      borderRadius: 2,
-                      background: 'linear-gradient(145deg, #fff3e0 0%, #fef7f0 100%)',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                      border: '1px solid rgba(255, 152, 0, 0.2)'
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                        <Box sx={{ 
-                          p: 1, 
-                          borderRadius: 1.5, 
-                          bgcolor: 'warning.main',
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}>
-                          <ScheduleIcon sx={{ fontSize: 20 }} />
-                        </Box>
-                        <Typography variant="h6" fontWeight={600} color="warning.main">
-                          Requisitos del Proyecto
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {selectedApplication.requiredSkills.map((skill) => (
-                          <Chip 
-                            key={skill} 
-                            label={skill} 
-                            size="small" 
-                            sx={{ 
-                              fontWeight: 600,
-                              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                              '&:hover': { transform: 'translateY(-1px)', transition: 'transform 0.2s' }
-                            }} 
-                          />
-                        ))}
-                      </Box>
-                </Paper>
-                  )}
-
-                  {/* Detalles del proyecto */}
-                  <Paper sx={{ 
-                    p: 2.5, 
-                    borderRadius: 2,
-                    background: 'linear-gradient(145deg, #f3f4f6 0%, #ffffff 100%)',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                    border: '1px solid rgba(0,0,0,0.05)'
-                  }}>
-                    <Typography variant="subtitle1" fontWeight={600} gutterBottom color="text.primary" sx={{ mb: 1.5 }}>
-                      Detalles del Proyecto
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {selectedApplication.api_level && (
-                        <Chip 
-                          label={`API ${selectedApplication.api_level}`} 
-                          color="success" 
-                          size="small" 
-                          icon={<TrendingUpIcon />} 
-                          sx={{ 
-                            fontWeight: 600,
-                            boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                            '&:hover': { transform: 'translateY(-1px)', transition: 'transform 0.2s' }
-                          }} 
-                        />
-                      )}
-                      {selectedApplication.modality && (
-                        <Chip 
-                          label={selectedApplication.modality} 
-                          color="info" 
-                          size="small" 
-                          sx={{ 
-                            fontWeight: 600,
-                            boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                            '&:hover': { transform: 'translateY(-1px)', transition: 'transform 0.2s' }
-                          }} 
-                        />
-                      )}
-                      {selectedApplication.hours_per_week && (
-                        <Chip 
-                          label={`${selectedApplication.hours_per_week} hrs/sem`} 
-                          color="default" 
-                          size="small" 
-                          icon={<ScheduleIcon />}
-                          sx={{ 
-                            fontWeight: 600,
-                            boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                            '&:hover': { transform: 'translateY(-1px)', transition: 'transform 0.2s' }
-                          }} 
-                        />
-                      )}
-                      {selectedApplication.max_students && (
-                        <Chip 
-                          label={`Máx. ${selectedApplication.max_students} estudiantes`} 
-                          color="success" 
-                          size="small" 
-                          sx={{ 
-                            fontWeight: 600,
-                            boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                            '&:hover': { transform: 'translateY(-1px)', transition: 'transform 0.2s' }
-                          }} 
-                        />
-                      )}
-                    </Box>
-                  </Paper>
-
-                  {/* Nivel TRL */}
-                  {selectedApplication.trl_level && (
-                    <Paper sx={{ 
-                      p: 2.5, 
-                      mt: 2, 
-                      borderRadius: 2,
-                      background: 'linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%)',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                      border: '1px solid rgba(25, 118, 210, 0.2)'
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Box sx={{ 
-                          p: 1, 
-                          borderRadius: 1.5, 
-                          bgcolor: 'primary.main',
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}>
-                          <TrendingUpIcon sx={{ fontSize: 20 }} />
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle1" fontWeight={600} color="primary.main">
-                            Estado del Proyecto
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
-                            {getTrlDescriptionOnly(Number(selectedApplication.trl_level))}
-                          </Typography>
-                        </Box>
-                    </Box>
-                  </Paper>
-                )}
-              </Grid>
-
-                {/* Sidebar */}
-                <Grid item xs={12} lg={4}>
-                  <Paper sx={{ 
-                    p: 2.5, 
-                    borderRadius: 2,
-                    background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                    border: '1px solid rgba(0,0,0,0.05)',
-                    height: 'fit-content',
-                    position: 'sticky',
-                    top: 20
-                  }}>
-                    <Typography variant="subtitle1" fontWeight={600} gutterBottom color="primary.main" sx={{ mb: 2 }}>
-                      Información de la Aplicación
-                    </Typography>
-                    
-                    <Box sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                        <ScheduleIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                          Fecha de Aplicación
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" sx={{ 
-                        color: '#374151', 
-                        fontWeight: 500,
-                        bgcolor: '#f3f4f6',
-                        p: 1,
-                        borderRadius: 1.5,
-                        fontSize: '0.875rem'
-                      }}>
-                        {selectedApplication.appliedDate ? new Date(selectedApplication.appliedDate).toLocaleString('es-ES') : '-'}
-                      </Typography>
-                    </Box>
-
-                  {selectedApplication.responseDate && (
-                      <Box sx={{ mb: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                          <CheckCircleIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                          <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                            Fecha de Respuesta
-                          </Typography>
-                        </Box>
-                        <Typography variant="body2" sx={{ 
-                          color: '#374151', 
-                          fontWeight: 500,
-                          bgcolor: '#f3f4f6',
-                          p: 1,
-                          borderRadius: 1.5,
-                          fontSize: '0.875rem'
-                        }}>
-                          {new Date(selectedApplication.responseDate).toLocaleString('es-ES')}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    <Box sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                        <CheckCircleIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                          Estado Actual
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" sx={{ 
-                        color: '#374151', 
-                        fontWeight: 500,
-                        bgcolor: '#f3f4f6',
-                        p: 1,
-                        borderRadius: 1.5,
-                        fontSize: '0.875rem'
-                      }}>
-                        {getStatusText(selectedApplication.status)}
-                      </Typography>
-                    </Box>
-
-                    {selectedApplication.notes && (
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 1, display: 'block' }}>
-                          Notas Adicionales
-                        </Typography>
-                        <Alert severity="info" sx={{ 
-                          '& .MuiAlert-message': { 
-                            fontSize: '0.875rem',
-                            lineHeight: 1.4
-                          }
-                        }}>
-                          {selectedApplication.notes}
-                    </Alert>
-                      </Box>
-                    )}
-
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mt: 3 }}>
-                      <Button 
-                        onClick={() => setDialogOpen(false)} 
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        sx={{ 
-                          py: 1,
-                          fontWeight: 600,
-                          borderRadius: 1.5,
-                          background: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
-                          boxShadow: '0 2px 8px rgba(156, 39, 176, 0.3)',
-                          '&:hover': {
-                            transform: 'translateY(-1px)',
-                            boxShadow: '0 4px 12px rgba(156, 39, 176, 0.4)',
-                            transition: 'all 0.2s'
-                          }
-                        }}
-                      >
-                        Cerrar
-                      </Button>
-                    </Box>
-                </Paper>
-              </Grid>
-            </Grid>
-            </Box>
-          </>
-        )}
-      </Dialog>
+      {/* Modal de detalles del proyecto */}
+      <ProjectDetailsModal
+        open={detailModalOpen}
+        onClose={handleCloseDetailModal}
+        project={selectedProjectDetail}
+        userRole="student"
+      />
     </Box>
   );
 };
 
-function getTrlDescriptionOnly(trlLevel: number) {
-  const descriptions = [
-    'El proyecto está en fase de idea inicial. Aún no hay desarrollo previo y se está definiendo qué se quiere lograr.',
-    'El proyecto tiene una definición clara de lo que se quiere lograr y se conocen los antecedentes del problema a resolver.',
-    'Se han realizado pruebas iniciales y validaciones de concepto. Algunas partes del proyecto ya han sido evaluadas por separado.',
-    'Existe un prototipo básico que ha sido probado en condiciones controladas y simples.',
-    'Existe un prototipo que ha sido probado en condiciones similares a las reales donde funcionará.',
-    'El prototipo ha sido probado en un entorno real mediante un piloto o prueba inicial.',
-    'El proyecto ha sido probado en condiciones reales durante un tiempo prolongado, demostrando su funcionamiento.',
-    'El proyecto está validado tanto técnicamente como comercialmente, listo para su implementación.',
-    'El proyecto está completamente desarrollado y disponible para ser utilizado por la sociedad.'
-  ];
-  return descriptions[trlLevel - 1] || '';
-}
+
 
 export default MyApplications; 

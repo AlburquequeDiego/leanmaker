@@ -37,8 +37,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Limpiar tokens residuales si estamos en la página de login
+        if (window.location.pathname === '/login') {
+          const hasTokens = localStorage.getItem('accessToken') || localStorage.getItem('refreshToken');
+          if (hasTokens) {
+            console.log('[useAuth] Tokens encontrados en login, limpiando...');
+            authService.clearLocalStorage();
+            setLoading(false);
+            return;
+          }
+        }
+
         // Check if user is already authenticated
-        if (authService.isAuthenticated()) {
+        const isAuth = await authService.isAuthenticated();
+        if (isAuth) {
           const currentUser = await authService.getCurrentUser();
           setUser(currentUser);
         }

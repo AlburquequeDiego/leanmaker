@@ -33,7 +33,7 @@ import {
   Science as ScienceIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
-import { ShowLatestFilter } from '../../../components/common/ShowLatestFilter';
+import { ShowLatestFilter, ProjectDetailsModal } from '../../../components/common';
 
 interface Project {
   id: string;
@@ -74,6 +74,11 @@ export const MyProjects = () => {
   const [completedLimit, setCompletedLimit] = useState(20);
   const [deletedLimit, setDeletedLimit] = useState(5);
   const [tab, setTab] = useState(0);
+
+  // Estados para el modal de detalles
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedProjectDetail, setSelectedProjectDetail] = useState<Project | null>(null);
+  const [loadingProjectDetail, setLoadingProjectDetail] = useState(false);
 
   // Adaptador de datos del backend al frontend
   const adaptProjectData = (backend: any): Project => ({
@@ -144,6 +149,27 @@ export const MyProjects = () => {
   const handleViewDetails = (project: Project) => {
     setSelectedProject(project);
     setDialogOpen(true);
+  };
+
+  const handleViewProjectDetails = async (project: Project) => {
+    setSelectedProjectDetail(project);
+    setDetailModalOpen(true);
+    setLoadingProjectDetail(true);
+    
+    try {
+      // Obtener detalles completos del proyecto desde el backend
+      const response = await apiService.get(`/api/projects/${project.id}/`);
+      setSelectedProjectDetail(response.data || response);
+    } catch (error) {
+      console.error('Error obteniendo detalles del proyecto:', error);
+    } finally {
+      setLoadingProjectDetail(false);
+    }
+  };
+
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedProjectDetail(null);
   };
 
   const handleTabChange = (_: any, newValue: number) => setTab(newValue);
@@ -433,7 +459,14 @@ export const MyProjects = () => {
                         <Typography variant="caption" color="text.secondary">
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
-                        <IconButton size="small" sx={{ color: '#1976d2' }}>
+                        <IconButton 
+                          size="small" 
+                          sx={{ color: '#1976d2' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewProjectDetails(project);
+                          }}
+                        >
                           <VisibilityIcon />
                         </IconButton>
                       </Box>
@@ -513,7 +546,14 @@ export const MyProjects = () => {
                         <Typography variant="caption" color="text.secondary">
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
-                        <IconButton size="small" sx={{ color: '#9C27B0' }}>
+                        <IconButton 
+                          size="small" 
+                          sx={{ color: '#9C27B0' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewProjectDetails(project);
+                          }}
+                        >
                           <VisibilityIcon />
                         </IconButton>
                       </Box>
@@ -615,7 +655,10 @@ export const MyProjects = () => {
                         <Typography variant="caption" color="text.secondary">
                           {typeof project.totalHours === 'number' && !isNaN(project.totalHours) ? project.totalHours : 0} horas • {project.location}
                         </Typography>
-                        <IconButton size="small" sx={{ color: '#2196F3' }}>
+                        <IconButton size="small" sx={{ color: '#2196F3' }} onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewProjectDetails(project);
+                          }}>
                           <VisibilityIcon />
                         </IconButton>
                       </Box>
@@ -659,7 +702,7 @@ export const MyProjects = () => {
                 {selectedProject.teamMembers && <Chip label={`Miembros del equipo: ${selectedProject.teamMembers}`} color="success" />}
                 {selectedProject.maxStudents && <Chip label={`Máx. estudiantes: ${selectedProject.maxStudents}`} color="success" />}
                 {selectedProject.currentStudents !== undefined && <Chip label={`Actualmente: ${selectedProject.currentStudents}`} color="warning" />}
-                {selectedProject.trlLevel && <Chip label={`TRL: ${selectedProject.trlLevel}`} color="primary" icon={<ScienceIcon />} />}
+                {selectedProject.trlLevel && <Chip label={`Estado del Proyecto: ${getTrlDescriptionOnly(Number(selectedProject.trlLevel))}`} color="primary" icon={<ScienceIcon />} />}
                 {selectedProject.apiLevel && <Chip label={`API Level: ${selectedProject.apiLevel}`} color="primary" icon={<TrendingUpIcon />} />}
               </Box>
               <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -700,6 +743,18 @@ export const MyProjects = () => {
           <Button onClick={() => setDialogOpen(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Modal de detalles del proyecto */}
+      {selectedProjectDetail && (
+        <ProjectDetailsModal
+          open={detailModalOpen}
+          onClose={handleCloseDetailModal}
+          project={selectedProjectDetail}
+          loading={loadingProjectDetail}
+          showStudents={false}
+          userRole="student"
+        />
+      )}
     </Box>
   );
 };

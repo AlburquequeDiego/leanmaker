@@ -24,6 +24,8 @@ import {
   InputAdornment,
   FormControlLabel,
   Switch,
+  Badge,
+  Divider,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -35,6 +37,16 @@ import {
   Error as ErrorIcon,
   CheckCircle as CheckCircleIcon,
   History as HistoryIcon,
+  Notifications as NotificationsIcon,
+  FilterList as FilterIcon,
+  Clear as ClearIcon,
+  AdminPanelSettings as AdminIcon,
+  Business as BusinessIcon,
+  School as SchoolIcon,
+  Schedule as ScheduleIcon,
+  PriorityHigh as PriorityHighIcon,
+  NotificationsActive as NotificationsActiveIcon,
+  MarkEmailRead as MarkEmailReadIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
@@ -389,11 +401,130 @@ export default function NotificacionesAdmin() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <InfoIcon sx={{ mr: 2, color: 'primary.main' }} />
-        Gestión de Notificaciones Masivas
-      </Typography>
+    <Box sx={{ flexGrow: 1, p: 3 }}>
+      {/* Banner superior con gradiente y contexto */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '20px',
+          p: 4,
+          mb: 4,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%',
+            width: '200%',
+            height: '200%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+            animation: 'float 6s ease-in-out infinite',
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-30%',
+            right: '-30%',
+            width: '60%',
+            height: '60%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+            animation: 'float 8s ease-in-out infinite reverse',
+          },
+          '@keyframes float': {
+            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+            '50%': { transform: 'translateY(-20px) rotate(180deg)' },
+          },
+        }}
+      >
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 2 }}>
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+              }}
+            >
+              <AdminIcon sx={{ fontSize: 32, color: 'white' }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="h3"
+                sx={{
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  mb: 1,
+                }}
+              >
+                Gestión de Notificaciones Masivas
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontWeight: 300,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                }}
+              >
+                Administra y envía notificaciones masivas a estudiantes y empresas
+              </Typography>
+            </Box>
+          </Box>
+          
+          {/* Indicadores de estado */}
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Chip
+              icon={<NotificationsIcon />}
+              label={`${notifications.length} Total`}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+              }}
+            />
+            <Chip
+              icon={<SendIcon />}
+              label={`${notifications.filter(n => n.status === 'sent').length} Enviadas`}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+              }}
+            />
+            <Chip
+              icon={<ScheduleIcon />}
+              label={`${notifications.filter(n => n.status === 'draft').length} Borradores`}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+              }}
+            />
+            <Chip
+              icon={<PriorityHighIcon />}
+              label={`${notifications.filter(n => n.priority === 'urgent' || n.priority === 'high').length} Alta Prioridad`}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+              }}
+            />
+          </Box>
+        </Box>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -401,123 +532,224 @@ export default function NotificacionesAdmin() {
         </Alert>
       )}
 
-      {/* Filtros y acciones */}
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
-          <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
-            <TextField
-              variant="outlined"
-              placeholder="Buscar notificaciones..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
+      {/* Filtros mejorados */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 4, 
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+        borderRadius: 3,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.05)'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            p: 1,
+            borderRadius: 2,
+            bgcolor: 'primary.main',
+            color: 'white'
+          }}>
+            <FilterIcon fontSize="small" />
+            <Typography variant="h6" fontWeight={600}>Filtros y Búsqueda</Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<SendIcon />}
+            onClick={() => setShowCreateDialog(true)}
+            sx={{ 
+              borderRadius: 2,
+              ml: 'auto',
+              px: 3,
+              py: 1
+            }}
+          >
+            Nueva Notificación
+          </Button>
+        </Box>
+        
+        <Box sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 3, 
+          alignItems: 'center',
+          p: 2,
+          borderRadius: 2,
+          bgcolor: 'rgba(255,255,255,0.7)'
+        }}>
+          <TextField
+            size="small"
+            placeholder="🔍 Buscar notificaciones..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="primary" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ 
+              minWidth: 280,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
+              }
+            }}
+          />
+          
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>📢 Tipo</InputLabel>
+            <Select
+              value={typeFilter}
+              label="📢 Tipo"
+              onChange={(e) => setTypeFilter(e.target.value)}
+              sx={{
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
               }}
-              fullWidth
-            />
-          </Box>
-          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
-            <FormControl fullWidth>
-              <InputLabel>Tipo</InputLabel>
-              <Select
-                value={typeFilter}
-                label="Tipo"
-                onChange={(e) => setTypeFilter(e.target.value)}
-              >
-                <MenuItem value="">Todos</MenuItem>
-                <MenuItem value="announcement">Anuncio</MenuItem>
-                <MenuItem value="reminder">Recordatorio</MenuItem>
-                <MenuItem value="alert">Alerta</MenuItem>
-                <MenuItem value="update">Actualización</MenuItem>
-                <MenuItem value="event">Evento</MenuItem>
-                <MenuItem value="deadline">Fecha límite</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
-            <FormControl fullWidth>
-              <InputLabel>Estado</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Estado"
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <MenuItem value="">Todos</MenuItem>
-                <MenuItem value="sent">Enviadas</MenuItem>
-                <MenuItem value="draft">Borrador</MenuItem>
-                <MenuItem value="cancelled">Canceladas</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
-            <FormControl fullWidth>
-              <InputLabel>Prioridad</InputLabel>
-              <Select
-                value={priorityFilter}
-                label="Prioridad"
-                onChange={(e) => setPriorityFilter(e.target.value)}
-              >
-                <MenuItem value="">Todas</MenuItem>
-                <MenuItem value="low">Baja</MenuItem>
-                <MenuItem value="normal">Normal</MenuItem>
-                <MenuItem value="medium">Media</MenuItem>
-                <MenuItem value="high">Alta</MenuItem>
-                <MenuItem value="urgent">Urgente</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ flex: '0 1 200px', minWidth: 0 }}>
-            <FormControl fullWidth>
-              <InputLabel>Mostrar</InputLabel>
-              <Select
-                value={limit}
-                label="Mostrar"
-                onChange={(e) => setLimit(Number(e.target.value))}
-              >
-                <MenuItem value={5}>5 últimas</MenuItem>
-                <MenuItem value={10}>10 últimas</MenuItem>
-                <MenuItem value={20}>20 últimas</MenuItem>
-                <MenuItem value={50}>50 últimas</MenuItem>
-                <MenuItem value={100}>100 últimas</MenuItem>
-                <MenuItem value={-1}>Todas</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ flex: '0 1 auto', minWidth: 0 }}>
-            <Button
-              variant="contained"
-              startIcon={<SendIcon />}
-              onClick={() => setShowCreateDialog(true)}
-              sx={{ whiteSpace: 'nowrap' }}
             >
-              Nueva Notificación
-            </Button>
-          </Box>
+              <MenuItem value="">Todos los tipos</MenuItem>
+              <MenuItem value="announcement">📢 Anuncio</MenuItem>
+              <MenuItem value="reminder">⏰ Recordatorio</MenuItem>
+              <MenuItem value="alert">🚨 Alerta</MenuItem>
+              <MenuItem value="update">🔄 Actualización</MenuItem>
+              <MenuItem value="event">📅 Evento</MenuItem>
+              <MenuItem value="deadline">⏳ Fecha límite</MenuItem>
+            </Select>
+          </FormControl>
+          
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>📊 Estado</InputLabel>
+            <Select
+              value={statusFilter}
+              label="📊 Estado"
+              onChange={(e) => setStatusFilter(e.target.value)}
+              sx={{
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
+              }}
+            >
+              <MenuItem value="">Todos los estados</MenuItem>
+              <MenuItem value="sent">✅ Enviadas</MenuItem>
+              <MenuItem value="draft">📝 Borrador</MenuItem>
+              <MenuItem value="cancelled">❌ Canceladas</MenuItem>
+            </Select>
+          </FormControl>
+          
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>🎯 Prioridad</InputLabel>
+            <Select
+              value={priorityFilter}
+              label="🎯 Prioridad"
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              sx={{
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
+              }}
+            >
+              <MenuItem value="">Todas las prioridades</MenuItem>
+              <MenuItem value="low">🔵 Baja</MenuItem>
+              <MenuItem value="normal">🟢 Normal</MenuItem>
+              <MenuItem value="medium">🟡 Media</MenuItem>
+              <MenuItem value="high">🔴 Alta</MenuItem>
+              <MenuItem value="urgent">🚨 Urgente</MenuItem>
+            </Select>
+          </FormControl>
+          
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>📋 Mostrar</InputLabel>
+            <Select
+              value={limit}
+              label="📋 Mostrar"
+              onChange={(e) => setLimit(Number(e.target.value))}
+              sx={{
+                borderRadius: 2,
+                bgcolor: 'white',
+                '&:hover': {
+                  bgcolor: 'grey.50'
+                }
+              }}
+            >
+              <MenuItem value={5}>5 últimas</MenuItem>
+              <MenuItem value={10}>10 últimas</MenuItem>
+              <MenuItem value={20}>20 últimas</MenuItem>
+              <MenuItem value={50}>50 últimas</MenuItem>
+              <MenuItem value={100}>100 últimas</MenuItem>
+              <MenuItem value={-1}>Todas</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
       </Paper>
 
-      {/* Lista de notificaciones */}
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, display: 'flex', alignItems: 'center' }}>
-        <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-        Historial de Notificaciones
-      </Typography>
+      {/* Lista de notificaciones mejorada */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 2, 
+        mb: 3,
+        p: 2,
+        borderRadius: 3,
+        background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+        border: '1px solid #90caf9'
+      }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1,
+          p: 1,
+          borderRadius: 2,
+          bgcolor: 'primary.main',
+          color: 'white'
+        }}>
+          <HistoryIcon fontSize="small" />
+          <Typography variant="h5" fontWeight={600}>Historial de Notificaciones</Typography>
+        </Box>
+        <Chip 
+          label={filteredNotifications.length} 
+          color="secondary" 
+          size="small"
+          sx={{ fontWeight: 600 }}
+        />
+      </Box>
       
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 3 }}>
         {(limit === -1 ? filteredNotifications : filteredNotifications.slice(0, limit)).map((notification) => (
           <Box key={notification.id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ flexGrow: 1 }}>
+            <Card sx={{ 
+              height: '100%', 
+              display: 'flex', 
+              flexDirection: 'column',
+              borderRadius: 3,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+              border: '1px solid rgba(0,0,0,0.05)',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+              }
+            }}>
+              <CardContent sx={{ flexGrow: 1, p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                   {getTypeIcon(notification.notification_type)}
-                  <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                  <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
                     {notification.title}
                   </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
                   {notification.message}
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
@@ -525,33 +757,45 @@ export default function NotificacionesAdmin() {
                     label={getTypeText(notification.notification_type)} 
                     color={getTypeColor(notification.notification_type) as any}
                     size="small"
+                    sx={{ borderRadius: 1 }}
                   />
                   <Chip 
                     label={getStatusText(notification.status)} 
                     color={getStatusColor(notification.status) as any}
                     size="small"
+                    sx={{ borderRadius: 1 }}
                   />
                   <Chip 
                     label={getPriorityText(notification.priority)} 
                     color={getPriorityColor(notification.priority) as any}
                     size="small"
+                    sx={{ borderRadius: 1 }}
                   />
                 </Box>
-                <Typography variant="caption" color="text.secondary" component="div">
-                  <strong>Destinatarios:</strong> {getTargetText(notification)}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" component="div">
-                  <strong>Enviadas:</strong> {notification.sent_count}/{notification.total_recipients}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" component="div">
-                  <strong>Creada:</strong> {new Date(notification.created_at).toLocaleString()}
-                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <BusinessIcon fontSize="small" />
+                    <strong>Destinatarios:</strong> {getTargetText(notification)}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <SendIcon fontSize="small" />
+                    <strong>Enviadas:</strong> {notification.sent_count}/{notification.total_recipients}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <ScheduleIcon fontSize="small" />
+                    <strong>Creada:</strong> {new Date(notification.created_at).toLocaleString()}
+                  </Typography>
+                </Box>
               </CardContent>
-              <CardActions sx={{ justifyContent: 'space-between', p: 2 }}>
+              <CardActions sx={{ justifyContent: 'space-between', p: 2, pt: 0 }}>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton 
                     size="small" 
                     onClick={() => setSelectedNotification(notification)}
+                    sx={{ 
+                      borderRadius: 1,
+                      '&:hover': { bgcolor: 'primary.light' }
+                    }}
                   >
                     <VisibilityIcon />
                   </IconButton>
@@ -560,6 +804,10 @@ export default function NotificacionesAdmin() {
                     color="primary"
                     onClick={() => handleSendNotification(notification.id)}
                     disabled={notification.status === 'sent' || notification.status === 'sending' || notification.status === 'cancelled'}
+                    sx={{ 
+                      borderRadius: 1,
+                      '&:hover': { bgcolor: 'primary.light' }
+                    }}
                   >
                     <SendIcon />
                   </IconButton>
@@ -568,17 +816,22 @@ export default function NotificacionesAdmin() {
                     color="error"
                     onClick={() => handleDeleteNotification(notification.id)}
                     disabled={notification.status === 'cancelled'}
+                    sx={{ 
+                      borderRadius: 1,
+                      '&:hover': { bgcolor: 'error.light' }
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
                 </Box>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    disabled
-                  >
+                <Button
+                  variant="outlined"
+                  size="small"
+                  disabled
+                  sx={{ borderRadius: 2 }}
+                >
                   {getStatusText(notification.status)}
-                  </Button>
+                </Button>
               </CardActions>
             </Card>
           </Box>
@@ -586,15 +839,75 @@ export default function NotificacionesAdmin() {
       </Box>
 
       {filteredNotifications.length === 0 && !loading && (
-        <Alert severity="info" sx={{ mt: 3 }}>
-          No se encontraron notificaciones masivas que coincidan con los filtros aplicados.
-        </Alert>
+        <Box sx={{ 
+          textAlign: 'center', 
+          py: 6,
+          px: 3,
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+          borderRadius: 3,
+          mt: 3
+        }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            gap: 2 
+          }}>
+            <Box sx={{ 
+              width: 80, 
+              height: 80, 
+              borderRadius: '50%', 
+              bgcolor: 'primary.light',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2
+            }}>
+              <NotificationsIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+            </Box>
+            <Typography variant="h5" fontWeight={600} color="text.primary">
+              📭 No hay notificaciones masivas
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
+              No se encontraron notificaciones masivas. Crea una nueva notificación para comenzar a comunicarte con estudiantes y empresas.
+            </Typography>
+            <Button 
+              variant="contained" 
+              onClick={() => setShowCreateDialog(true)}
+              sx={{ 
+                mt: 2,
+                borderRadius: 2,
+                px: 3,
+                py: 1
+              }}
+              startIcon={<SendIcon />}
+            >
+              Crear Primera Notificación
+            </Button>
+          </Box>
+        </Box>
       )}
 
       {/* Dialog para crear notificación */}
-      <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Crear Nueva Notificación Masiva</DialogTitle>
-        <DialogContent>
+      <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          bgcolor: 'primary.main', 
+          color: 'white',
+          fontWeight: 600
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <SendIcon />
+            Crear Nueva Notificación Masiva
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
               label="Título"
@@ -626,12 +939,12 @@ export default function NotificacionesAdmin() {
                   label="Tipo"
                   onChange={(e) => setFormData({ ...formData, notification_type: e.target.value as any })}
                 >
-                  <MenuItem value="announcement">Anuncio</MenuItem>
-                  <MenuItem value="reminder">Recordatorio</MenuItem>
-                  <MenuItem value="alert">Alerta</MenuItem>
-                  <MenuItem value="update">Actualización</MenuItem>
-                  <MenuItem value="event">Evento</MenuItem>
-                  <MenuItem value="deadline">Fecha límite</MenuItem>
+                  <MenuItem value="announcement">📢 Anuncio</MenuItem>
+                  <MenuItem value="reminder">⏰ Recordatorio</MenuItem>
+                  <MenuItem value="alert">🚨 Alerta</MenuItem>
+                  <MenuItem value="update">🔄 Actualización</MenuItem>
+                  <MenuItem value="event">📅 Evento</MenuItem>
+                  <MenuItem value="deadline">⏳ Fecha límite</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth>
@@ -641,16 +954,17 @@ export default function NotificacionesAdmin() {
                   label="Prioridad"
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
                 >
-                  <MenuItem value="low">Baja</MenuItem>
-                  <MenuItem value="normal">Normal</MenuItem>
-                  <MenuItem value="medium">Media</MenuItem>
-                  <MenuItem value="high">Alta</MenuItem>
-                  <MenuItem value="urgent">Urgente</MenuItem>
+                  <MenuItem value="low">🔵 Baja</MenuItem>
+                  <MenuItem value="normal">🟢 Normal</MenuItem>
+                  <MenuItem value="medium">🟡 Media</MenuItem>
+                  <MenuItem value="high">🔴 Alta</MenuItem>
+                  <MenuItem value="urgent">🚨 Urgente</MenuItem>
                 </Select>
               </FormControl>
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <BusinessIcon />
                 Destinatarios
               </Typography>
               
@@ -685,13 +999,20 @@ export default function NotificacionesAdmin() {
             </Box>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowCreateDialog(false)}>Cancelar</Button>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5', gap: 2 }}>
+          <Button 
+            onClick={() => setShowCreateDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cancelar
+          </Button>
           <Button
             variant="contained"
             onClick={handleCreateNotification}
             disabled={!formData.title.trim() || !formData.message.trim() || 
                      (!formData.target_all_students && !formData.target_all_companies)}
+            sx={{ borderRadius: 2, px: 3 }}
           >
             Crear Notificación
           </Button>
@@ -699,51 +1020,77 @@ export default function NotificacionesAdmin() {
       </Dialog>
 
       {/* Dialog para ver detalles */}
-      <Dialog open={!!selectedNotification} onClose={() => setSelectedNotification(null)} maxWidth="md" fullWidth>
+      <Dialog open={!!selectedNotification} onClose={() => setSelectedNotification(null)} maxWidth="md" fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+          }
+        }}
+      >
         {selectedNotification && (
           <>
-            <DialogTitle>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <DialogTitle sx={{ 
+              bgcolor: 'primary.main', 
+              color: 'white',
+              fontWeight: 600
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 {getTypeIcon(selectedNotification.notification_type)}
                 {selectedNotification.title}
               </Box>
             </DialogTitle>
-            <DialogContent>
-              <Typography variant="body1" sx={{ mb: 2 }}>
+            <DialogContent sx={{ p: 3 }}>
+              <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
                 {selectedNotification.message}
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                 <Chip 
                   label={getTypeText(selectedNotification.notification_type)} 
                   color={getTypeColor(selectedNotification.notification_type) as any}
+                  sx={{ borderRadius: 1 }}
                 />
                 <Chip 
                   label={getStatusText(selectedNotification.status)} 
                   color={getStatusColor(selectedNotification.status) as any}
+                  sx={{ borderRadius: 1 }}
                 />
                 <Chip 
                   label={getPriorityText(selectedNotification.priority)} 
                   variant="outlined"
                   color={getPriorityColor(selectedNotification.priority) as any}
+                  sx={{ borderRadius: 1 }}
                 />
               </Box>
-              <Typography variant="body2" color="text.secondary" component="div">
-                <strong>Destinatarios:</strong> {getTargetText(selectedNotification)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" component="div">
-                <strong>Creada:</strong> {new Date(selectedNotification.created_at).toLocaleString()}
-              </Typography>
-              {selectedNotification.sent_at && (
-                <Typography variant="body2" color="text.secondary" component="div">
-                  <strong>Enviada:</strong> {new Date(selectedNotification.sent_at).toLocaleString()}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <BusinessIcon fontSize="small" />
+                  <strong>Destinatarios:</strong> {getTargetText(selectedNotification)}
                 </Typography>
-              )}
-              <Typography variant="body2" color="text.secondary" component="div">
-                <strong>Estadísticas:</strong> {selectedNotification.sent_count} enviadas, {selectedNotification.read_count} leídas de {selectedNotification.total_recipients} destinatarios
-              </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ScheduleIcon fontSize="small" />
+                  <strong>Creada:</strong> {new Date(selectedNotification.created_at).toLocaleString()}
+                </Typography>
+                {selectedNotification.sent_at && (
+                  <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <SendIcon fontSize="small" />
+                    <strong>Enviada:</strong> {new Date(selectedNotification.sent_at).toLocaleString()}
+                  </Typography>
+                )}
+                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <NotificationsIcon fontSize="small" />
+                  <strong>Estadísticas:</strong> {selectedNotification.sent_count} enviadas, {selectedNotification.read_count} leídas de {selectedNotification.total_recipients} destinatarios
+                </Typography>
+              </Box>
             </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setSelectedNotification(null)}>Cerrar</Button>
+            <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5', gap: 2 }}>
+              <Button 
+                onClick={() => setSelectedNotification(null)}
+                variant="outlined"
+                sx={{ borderRadius: 2, px: 3 }}
+              >
+                Cerrar
+              </Button>
             </DialogActions>
           </>
         )}

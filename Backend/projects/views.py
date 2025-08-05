@@ -15,6 +15,7 @@ from django.db.models import F
 from work_hours.models import WorkHour
 from django.utils import timezone
 from django.db import transaction
+from notifications.services import NotificationService
 
 
 @csrf_exempt
@@ -417,6 +418,9 @@ def projects_update(request, project_id):
         if 'status' in data:
             from project_status.models import ProjectStatus
             try:
+                # Guardar el estado anterior para las notificaciones
+                old_status_name = project.status.name if project.status else None
+                
                 # Buscar el estado por nombre
                 status_name = data['status']
                 if status_name in ['published', 'active', 'completed', 'deleted', 'cancelled']:
@@ -445,6 +449,21 @@ def projects_update(request, project_id):
                 setattr(project, field, data[field])
         
         project.save()
+        
+        # Enviar notificaciones según el cambio de estado
+        if 'status' in data:
+            try:
+                old_status = old_status_name if 'old_status_name' in locals() else None
+                new_status = project.status.name if project.status else None
+                
+                if new_status == 'active' or new_status == 'in-progress':
+                    NotificationService.notify_project_activated(project)
+                elif new_status == 'completed':
+                    NotificationService.notify_project_completed(project)
+                elif old_status and new_status and old_status != new_status:
+                    NotificationService.notify_project_status_change(project, old_status, new_status)
+            except Exception as e:
+                print(f"Error al enviar notificaciones de cambio de estado: {str(e)}")
         
         # Retornar datos actualizados con el nuevo estado
         return JsonResponse({
@@ -1119,6 +1138,13 @@ def validate_project_hours(request, project_id):
                 print(f"[VALIDAR HORAS] Se sumaron {horas_a_sumar} horas al estudiante {estudiante.id}. Total ahora: {estudiante.total_hours}")
                 count += 1
         print(f"[VALIDAR HORAS] Total horas validadas: {count}")
+        
+        # Enviar notificación a todos los estudiantes del proyecto
+        try:
+            NotificationService.notify_project_hours_validation(proyecto, count)
+        except Exception as e:
+            print(f"Error al enviar notificación de validación de horas: {str(e)}")
+        
         return JsonResponse({'success': True, 'horas_validadas': count})
     except Proyecto.DoesNotExist:
         return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)

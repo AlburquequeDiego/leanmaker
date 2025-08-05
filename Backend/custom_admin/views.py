@@ -136,6 +136,8 @@ def admin_projects_list(request):
         offset = (page - 1) * limit
         search = request.GET.get('search', '')
         status = request.GET.get('status', '')
+        api_level = request.GET.get('api_level', '')
+        trl_level = request.GET.get('trl_level', '')
         
         # Query base
         queryset = Proyecto.objects.select_related('company', 'status', 'area', 'trl').all()
@@ -150,6 +152,12 @@ def admin_projects_list(request):
         
         if status:
             queryset = queryset.filter(status__name=status)
+            
+        if api_level:
+            queryset = queryset.filter(api_level=api_level)
+            
+        if trl_level:
+            queryset = queryset.filter(trl__level=trl_level)
         
         # Contar total
         total_count = queryset.count()

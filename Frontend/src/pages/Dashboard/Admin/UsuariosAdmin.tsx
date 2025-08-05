@@ -27,6 +27,10 @@ import {
   Snackbar,
   Avatar,
   Tooltip,
+  Card,
+  CardContent,
+  Divider,
+  Stack,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -39,6 +43,13 @@ import {
   School as SchoolIcon,
   AdminPanelSettings as AdminIcon,
   Warning as WarningIcon,
+  FilterList as FilterIcon,
+  Refresh as RefreshIcon,
+  Group as GroupIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Work as WorkIcon,
+  School as SchoolIcon2,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
@@ -320,112 +331,214 @@ export default function UsuariosAdmin() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <PersonIcon sx={{ mr: 2, color: 'primary.main' }} />
-        Gestión de Usuarios
-      </Typography>
+    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+      {/* Header con gradiente */}
+      <Card sx={{ 
+        mb: 3, 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5, 
+                mr: 2,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <GroupIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+              <Box>
+                <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+                  Gestión de Usuarios
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  Administra todos los usuarios de la plataforma
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setShowCreateDialog(true)}
+              sx={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  background: 'rgba(255, 255, 255, 0.3)',
+                }
+              }}
+            >
+              Nuevo Usuario
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
           {error}
         </Alert>
       )}
 
-      {/* Filtros y búsqueda */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-          <TextField
-            label="Buscar usuarios..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ minWidth: 300 }}
-          />
-          <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel>Tipo</InputLabel>
-            <Select
-              value={typeFilter}
-              label="Tipo"
-              onChange={(e) => setTypeFilter(e.target.value)}
+      {/* Filtros y búsqueda con diseño mejorado */}
+      <Card sx={{ 
+        mb: 3, 
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <FilterIcon sx={{ mr: 1, color: 'primary.main' }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Filtros y Búsqueda
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <TextField
+              label="Buscar usuarios..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'primary.main' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ 
+                minWidth: 300,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                }
+              }}
+            />
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Tipo</InputLabel>
+              <Select
+                value={typeFilter}
+                label="Tipo"
+                onChange={(e) => setTypeFilter(e.target.value)}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="student">Estudiantes</MenuItem>
+                <MenuItem value="company">Empresas</MenuItem>
+                <MenuItem value="admin">Administradores</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Estado</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Estado"
+                onChange={(e) => setStatusFilter(e.target.value)}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="active">Activos</MenuItem>
+                <MenuItem value="inactive">Inactivos</MenuItem>
+                <MenuItem value="blocked">Bloqueados</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Mostrar</InputLabel>
+              <Select
+                value={limit}
+                label="Mostrar"
+                onChange={(e) => setLimit(e.target.value === 'todos' ? 1000000 : Number(e.target.value))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value={20}>20 últimos</MenuItem>
+                <MenuItem value={50}>50 últimos</MenuItem>
+                <MenuItem value={100}>100 últimos</MenuItem>
+                <MenuItem value={150}>150 últimos</MenuItem>
+                <MenuItem value={200}>200 últimos</MenuItem>
+                <MenuItem value={'todos'}>Todos</MenuItem>
+              </Select>
+            </FormControl>
+            <Button
+              variant="outlined"
+              startIcon={<RefreshIcon />}
+              onClick={fetchUsers}
+              sx={{ borderRadius: 2 }}
             >
-              <MenuItem value="">Todos</MenuItem>
-              <MenuItem value="student">Estudiantes</MenuItem>
-              <MenuItem value="company">Empresas</MenuItem>
-              <MenuItem value="admin">Administradores</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel>Estado</InputLabel>
-            <Select
-              value={statusFilter}
-              label="Estado"
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <MenuItem value="">Todos</MenuItem>
-              <MenuItem value="active">Activos</MenuItem>
-              <MenuItem value="inactive">Inactivos</MenuItem>
-              <MenuItem value="blocked">Bloqueados</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel>Mostrar</InputLabel>
-            <Select
-              value={limit}
-              label="Mostrar"
-              onChange={(e) => setLimit(e.target.value === 'todos' ? 1000000 : Number(e.target.value))}
-            >
-              <MenuItem value={20}>20 últimos</MenuItem>
-              <MenuItem value={50}>50 últimos</MenuItem>
-              <MenuItem value={100}>100 últimos</MenuItem>
-              <MenuItem value={150}>150 últimos</MenuItem>
-              <MenuItem value={200}>200 últimos</MenuItem>
-              <MenuItem value={'todos'}>Todos</MenuItem>
-            </Select>
-          </FormControl>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setShowCreateDialog(true)}
-          >
-            Nuevo Usuario
-          </Button>
-        </Box>
-      </Paper>
+              Actualizar
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
-      {/* Tabla de usuarios */}
-      <Paper sx={{ overflow: 'hidden' }}>
+      {/* Tabla de usuarios con diseño mejorado */}
+      <Card sx={{ 
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        borderRadius: 3,
+        overflow: 'hidden'
+      }}>
         <TableContainer>
           <Table>
-            <TableHead sx={{ bgcolor: 'primary.main' }}>
-              <TableRow>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Usuario</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Tipo</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Estado</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha Registro</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Acciones</TableCell>
+            <TableHead>
+              <TableRow sx={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                '& th': {
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: '0.95rem',
+                  borderBottom: 'none'
+                }
+              }}>
+                <TableCell>Usuario</TableCell>
+                <TableCell>Tipo</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Estado</TableCell>
+                <TableCell>Fecha Registro</TableCell>
+                <TableCell>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id} hover>
+              {filteredUsers.map((user, index) => (
+                <TableRow 
+                  key={user.id} 
+                  hover
+                  sx={{ 
+                    '&:nth-of-type(odd)': {
+                      backgroundColor: 'rgba(102, 126, 234, 0.02)',
+                    },
+                    '&:hover': {
+                      backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                      transform: 'translateY(-1px)',
+                      transition: 'all 0.2s ease-in-out',
+                    }
+                  }}
+                >
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Avatar src={user.avatar} sx={{ width: 40, height: 40 }}>
+                      <Avatar 
+                        src={user.avatar} 
+                        sx={{ 
+                          width: 45, 
+                          height: 45,
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                        }}
+                      >
                         {user.first_name?.[0]}{user.last_name?.[0]}
                       </Avatar>
                       <Box>
-                        <Typography variant="body2" fontWeight="bold">
+                        <Typography variant="body2" fontWeight="bold" sx={{ color: '#2c3e50' }}>
                           {user.first_name} {user.last_name}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ color: '#7f8c8d' }}>
                           @{user.username}
                         </Typography>
                       </Box>
@@ -438,10 +551,22 @@ export default function UsuariosAdmin() {
                         label={getTypeText(user.user_type)} 
                         color={getTypeColor(user.user_type) as any}
                         size="small"
+                        sx={{ 
+                          borderRadius: 1.5,
+                          fontWeight: 'bold',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        }}
                       />
                     </Box>
                   </TableCell>
-                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <EmailIcon sx={{ fontSize: 16, color: '#7f8c8d' }} />
+                      <Typography variant="body2" sx={{ color: '#2c3e50' }}>
+                        {user.email}
+                      </Typography>
+                    </Box>
+                  </TableCell>
                   <TableCell>
                     <Chip 
                       label={
@@ -455,10 +580,17 @@ export default function UsuariosAdmin() {
                         'success'
                       }
                       size="small"
+                      sx={{ 
+                        borderRadius: 1.5,
+                        fontWeight: 'bold',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                      }}
                     />
                   </TableCell>
                   <TableCell>
-                    {new Date(user.date_joined).toLocaleDateString()}
+                    <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                      {new Date(user.date_joined).toLocaleDateString()}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
@@ -468,6 +600,14 @@ export default function UsuariosAdmin() {
                             size="small"
                             color="primary"
                             onClick={() => handleEditUser(user)}
+                            sx={{
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              color: 'white',
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                transform: 'scale(1.1)',
+                              }
+                            }}
                           >
                             <EditIcon />
                           </IconButton>
@@ -487,6 +627,14 @@ export default function UsuariosAdmin() {
                                   fetchUsers();
                                 }}
                                 disabled={user.is_active}
+                                sx={{
+                                  background: user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                                  color: 'white',
+                                  '&:hover': {
+                                    background: user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
                               >
                                 <CheckCircleIcon />
                               </IconButton>
@@ -503,6 +651,14 @@ export default function UsuariosAdmin() {
                                   fetchUsers();
                                 }}
                                 disabled={!user.is_active}
+                                sx={{
+                                  background: !user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                                  color: 'white',
+                                  '&:hover': {
+                                    background: !user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
                               >
                                 <WarningIcon />
                               </IconButton>
@@ -519,6 +675,14 @@ export default function UsuariosAdmin() {
                                   fetchUsers();
                                 }}
                                 disabled={!user.is_verified}
+                                sx={{
+                                  background: !user.is_verified ? '#e0e0e0' : 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+                                  color: 'white',
+                                  '&:hover': {
+                                    background: !user.is_verified ? '#e0e0e0' : 'linear-gradient(135deg, #d32f2f 0%, #c62828 100%)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
                               >
                                 <BlockIcon />
                               </IconButton>
@@ -535,6 +699,14 @@ export default function UsuariosAdmin() {
                                   fetchUsers();
                                 }}
                                 disabled={user.is_verified}
+                                sx={{
+                                  background: user.is_verified ? '#e0e0e0' : 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+                                  color: 'white',
+                                  '&:hover': {
+                                    background: user.is_verified ? '#e0e0e0' : 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
                               >
                                 <CheckCircleIcon />
                               </IconButton>
@@ -542,7 +714,6 @@ export default function UsuariosAdmin() {
                           </Tooltip>
                         </>
                       )}
-                      {/* Acciones para admin u otros tipos, si aplica, aquí... */}
                     </Box>
                   </TableCell>
                 </TableRow>
@@ -550,72 +721,112 @@ export default function UsuariosAdmin() {
             </TableBody>
           </Table>
         </TableContainer>
-      </Paper>
+      </Card>
 
       {filteredUsers.length === 0 && !loading && (
-        <Alert severity="info" sx={{ mt: 3 }}>
-          No se encontraron usuarios que coincidan con los filtros aplicados.
-        </Alert>
+        <Card sx={{ 
+          mt: 3, 
+          background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+          border: '1px solid #ffcc02'
+        }}>
+          <CardContent sx={{ textAlign: 'center', py: 4 }}>
+            <PersonIcon sx={{ fontSize: 64, color: '#ff9800', mb: 2 }} />
+            <Typography variant="h6" sx={{ color: '#e65100', mb: 1 }}>
+              No se encontraron usuarios
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#bf360c' }}>
+              No se encontraron usuarios que coincidan con los filtros aplicados.
+            </Typography>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Dialog para crear usuario */}
-      <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Crear Nuevo Usuario</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 1 }}>
-            <TextField
-              label="Nombre de usuario"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              fullWidth
-              required
-            />
-            <FormControl fullWidth required>
-              <InputLabel>Tipo de usuario</InputLabel>
-              <Select
-                value={formData.user_type}
-                label="Tipo de usuario"
-                onChange={(e) => setFormData({ ...formData, user_type: e.target.value as any })}
-              >
-                <MenuItem value="student">Estudiante</MenuItem>
-                <MenuItem value="company">Empresa</MenuItem>
-                <MenuItem value="admin">Administrador</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              label="Nombre"
-              value={formData.first_name}
-              onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Apellido"
-              value={formData.last_name}
-              onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Teléfono"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              fullWidth
-            />
+                           {/* Dialog para crear usuario con diseño mejorado */}
+        <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth>
+          <DialogTitle sx={{ 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            fontWeight: 'bold',
+            py: 2.5,
+            px: 3
+          }}>
+            Crear Nuevo Usuario
+          </DialogTitle>
+          <DialogContent sx={{ p: 3, pt: 6 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Primera fila */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Nombre de usuario"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+              <FormControl fullWidth required>
+                <InputLabel>Tipo de usuario</InputLabel>
+                <Select
+                  value={formData.user_type}
+                  label="Tipo de usuario"
+                  onChange={(e) => setFormData({ ...formData, user_type: e.target.value as any })}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="student">Estudiante</MenuItem>
+                  <MenuItem value="company">Empresa</MenuItem>
+                  <MenuItem value="admin">Administrador</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            
+            {/* Segunda fila */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Nombre"
+                value={formData.first_name}
+                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+              <TextField
+                label="Apellido"
+                value={formData.last_name}
+                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+            
+            {/* Tercera fila */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+              <TextField
+                label="Teléfono"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+            
+            {/* Campos específicos por tipo */}
             {formData.user_type === 'company' && (
               <TextField
                 label="Nombre de la empresa"
                 value={formData.company_name}
                 onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                 fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             )}
             {formData.user_type === 'student' && (
@@ -624,89 +835,136 @@ export default function UsuariosAdmin() {
                 value={formData.career}
                 onChange={(e) => setFormData({ ...formData, career: e.target.value })}
                 fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             )}
-            <TextField
-              label="Contraseña"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Confirmar contraseña"
-              type="password"
-              value={formData.confirm_password}
-              onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
-              fullWidth
-              required
-            />
+            
+            {/* Contraseñas */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Contraseña"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+              <TextField
+                label="Confirmar contraseña"
+                type="password"
+                value={formData.confirm_password}
+                onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowCreateDialog(false)}>Cancelar</Button>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setShowCreateDialog(false)}
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
           <Button
             variant="contained"
             onClick={handleCreateUser}
             disabled={!formData.username || !formData.email || !formData.password || !formData.confirm_password}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
           >
             Crear Usuario
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Dialog para editar usuario */}
-      <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Editar Usuario</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 1 }}>
-            <TextField
-              label="Nombre de usuario"
-              value={formData.username}
-              disabled
-              fullWidth
-            />
-            <TextField
-              label="Tipo de usuario"
-              value={getTypeText(formData.user_type)}
-              disabled
-              fullWidth
-            />
-            <TextField
-              label="Nombre"
-              value={formData.first_name}
-              onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Apellido"
-              value={formData.last_name}
-              onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Teléfono"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              fullWidth
-            />
+                           {/* Dialog para editar usuario con diseño mejorado */}
+        <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)} maxWidth="md" fullWidth>
+          <DialogTitle sx={{ 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            fontWeight: 'bold',
+            py: 2.5,
+            px: 3
+          }}>
+            Editar Usuario
+          </DialogTitle>
+          <DialogContent sx={{ p: 3, pt: 6 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Primera fila */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Nombre de usuario"
+                value={formData.username}
+                disabled
+                fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+              <TextField
+                label="Tipo de usuario"
+                value={getTypeText(formData.user_type)}
+                disabled
+                fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+            
+            {/* Segunda fila */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Nombre"
+                value={formData.first_name}
+                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+              <TextField
+                label="Apellido"
+                value={formData.last_name}
+                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+            
+            {/* Tercera fila */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                fullWidth
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+              <TextField
+                label="Teléfono"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+            
+            {/* Campos específicos por tipo */}
             {formData.user_type === 'company' && (
               <TextField
                 label="Nombre de la empresa"
                 value={formData.company_name}
                 onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                 fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             )}
             {formData.user_type === 'student' && (
@@ -715,16 +973,29 @@ export default function UsuariosAdmin() {
                 value={formData.career}
                 onChange={(e) => setFormData({ ...formData, career: e.target.value })}
                 fullWidth
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             )}
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowEditDialog(false)}>Cancelar</Button>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setShowEditDialog(false)}
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
           <Button
             variant="contained"
             onClick={handleUpdateUser}
             disabled={!formData.first_name || !formData.last_name || !formData.email}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
           >
             Actualizar Usuario
           </Button>

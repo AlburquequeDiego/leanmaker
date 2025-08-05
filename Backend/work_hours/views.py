@@ -11,6 +11,7 @@ from .models import WorkHour
 from projects.models import Proyecto
 from students.models import Estudiante
 from django.utils import timezone
+from notifications.services import NotificationService
 
 
 @csrf_exempt
@@ -104,30 +105,45 @@ def work_hours_create(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        data = json.loads(request.body)
-        student = get_object_or_404(Estudiante, id=data['student_id'])
-        project = get_object_or_404(Proyecto, id=data['project_id'])
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
         
+        # Validar datos requeridos
+        required_fields = ['project_id', 'date', 'hours_worked', 'description']
+        for field in required_fields:
+            if field not in data:
+                return JsonResponse({'error': f'Campo requerido: {field}'}, status=400)
+        
+        # Obtener proyecto
+        try:
+            project = Proyecto.objects.get(id=data['project_id'])
+        except Proyecto.DoesNotExist:
+            return JsonResponse({'error': 'Proyecto no encontrado'}, status=404)
+        
+        # Obtener perfil de estudiante
+        try:
+            student = current_user.estudiante_profile
+        except Exception:
+            return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+        
+        # Crear hora de trabajo
         work_hour = WorkHour.objects.create(
             student=student,
             project=project,
-            date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
+            date=data['date'],
             hours_worked=data['hours_worked'],
-            description=data.get('description', '')
+            description=data['description'],
+            is_verified=False
         )
         
         return JsonResponse({
             'success': True,
-            'message': 'Hora de trabajo registrada exitosamente',
-            'work_hour': {
-                'id': work_hour.id,
-                'student_name': f"{work_hour.student.user.first_name} {work_hour.student.user.last_name}",
-                'project_title': work_hour.project.title,
-                'date': work_hour.date.strftime('%Y-%m-%d'),
-                'hours_worked': float(work_hour.hours_worked),
-                'description': work_hour.description
-            }
-        })
+            'message': 'Hora de trabajo creada exitosamente',
+            'work_hour_id': str(work_hour.id)
+        }, status=201)
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -136,7 +152,7 @@ def work_hours_create(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def work_hours_detail(request, pk):
-    """Detalle de una hora de trabajo con información completa del proyecto y estudiante"""
+    """Detalle de una hora de trabajo específica"""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -148,106 +164,28 @@ def work_hours_detail(request, pk):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        work_hour = get_object_or_404(WorkHour.objects.select_related(
-            'student', 'student__user', 'project', 'project__company', 'project__area', 'project__trl'
-        ), pk=pk)
+        work_hour = get_object_or_404(WorkHour, pk=pk)
         
-        # Información del estudiante
-        student_data = {
-            'id': str(work_hour.student.id),
-            'name': f"{work_hour.student.user.first_name} {work_hour.student.user.last_name}",
-            'email': work_hour.student.user.email,
-            'career': work_hour.student.career,
-            'university': work_hour.student.university,
-            'semester': work_hour.student.semester,
-            'api_level': work_hour.student.api_level,
-            'trl_level': work_hour.student.trl_level,
-            'gpa': float(work_hour.student.gpa),
-            'total_hours': work_hour.student.total_hours,
-            'completed_projects': work_hour.student.completed_projects,
-            'strikes': work_hour.student.strikes,
-            'status': work_hour.student.status,
-            'portfolio_url': work_hour.student.portfolio_url,
-            'github_url': work_hour.student.github_url,
-            'linkedin_url': work_hour.student.linkedin_url,
-        }
-        
-        # Información del proyecto
-        project_data = {
-            'id': str(work_hour.project.id),
-            'title': work_hour.project.title,
-            'description': work_hour.project.description,
-            'requirements': work_hour.project.requirements,
-            'tipo': work_hour.project.tipo,
-            'objetivo': work_hour.project.objetivo,
-            'encargado': work_hour.project.encargado,
-            'contacto': work_hour.project.contacto,
-            'api_level': work_hour.project.api_level,
-            'required_hours': work_hour.project.required_hours,
-            'duration_weeks': work_hour.project.duration_weeks,
-            'hours_per_week': work_hour.project.hours_per_week,
-            'min_api_level': work_hour.project.min_api_level,
-            'max_students': work_hour.project.max_students,
-            'current_students': work_hour.project.current_students,
-            'modality': work_hour.project.modality,
-            'location': work_hour.project.location,
-
-            'start_date': work_hour.project.start_date.strftime('%Y-%m-%d') if work_hour.project.start_date else None,
-            'estimated_end_date': work_hour.project.estimated_end_date.strftime('%Y-%m-%d') if work_hour.project.estimated_end_date else None,
-            'real_end_date': work_hour.project.real_end_date.strftime('%Y-%m-%d') if work_hour.project.real_end_date else None,
-            'application_deadline': work_hour.project.application_deadline.strftime('%Y-%m-%d') if work_hour.project.application_deadline else None,
-            'is_featured': work_hour.project.is_featured,
-            'is_urgent': work_hour.project.is_urgent,
-            'is_project_completion': work_hour.project.is_project_completion,
-            'published_at': work_hour.project.published_at.isoformat() if work_hour.project.published_at else None,
-            'created_at': work_hour.project.created_at.isoformat(),
-            'updated_at': work_hour.project.updated_at.isoformat(),
-        }
-        
-        # Información de la empresa
-        company_data = {
-            'id': str(work_hour.project.company.id),
-            'name': work_hour.project.company.company_name,
-            'email': work_hour.project.company.user.email if work_hour.project.company.user else None,
-            'phone': work_hour.project.company.company_phone,
-            'website': work_hour.project.company.website,
-            'description': work_hour.project.company.description,
-            'industry': work_hour.project.company.industry,
-            'size': work_hour.project.company.size,
-            'location': f"{work_hour.project.company.city}, {work_hour.project.company.country}" if work_hour.project.company.city and work_hour.project.company.country else (work_hour.project.company.city or work_hour.project.company.country or 'No especificada'),
-        } if work_hour.project.company else None
-        
-        # Información del área
-        area_data = {
-            'id': str(work_hour.project.area.id),
-            'name': work_hour.project.area.name,
-            'description': work_hour.project.area.description,
-        } if work_hour.project.area else None
-        
-        # Información del TRL
-        trl_data = {
-            'id': str(work_hour.project.trl.id),
-            'name': work_hour.project.trl.name,
-            'description': work_hour.project.trl.description,
-            'level': work_hour.project.trl.level,
-        } if work_hour.project.trl else None
+        # Verificar permisos (solo el estudiante propietario o admin puede ver)
+        if current_user.role != 'admin' and work_hour.student.user != current_user:
+            return JsonResponse({'error': 'No tienes permisos para ver esta hora de trabajo'}, status=403)
         
         work_hour_data = {
-            'id': work_hour.id,
+            'id': str(work_hour.id),
+            'student_id': str(work_hour.student.id),
+            'student_name': f"{work_hour.student.user.first_name} {work_hour.student.user.last_name}",
+            'student_email': work_hour.student.user.email,
+            'project_id': str(work_hour.project.id),
+            'project_title': work_hour.project.title,
+            'company_name': work_hour.project.company.company_name if work_hour.project.company else 'Sin empresa',
             'date': work_hour.date.strftime('%Y-%m-%d'),
             'hours_worked': float(work_hour.hours_worked),
             'description': work_hour.description,
             'is_verified': work_hour.is_verified,
             'verified_by': str(work_hour.verified_by.id) if work_hour.verified_by else None,
             'verified_at': work_hour.verified_at.isoformat() if work_hour.verified_at else None,
-            'is_project_completion': work_hour.is_project_completion,
             'created_at': work_hour.created_at.isoformat(),
             'updated_at': work_hour.updated_at.isoformat(),
-            'student': student_data,
-            'project': project_data,
-            'company': company_data,
-            'area': area_data,
-            'trl': trl_data,
         }
         
         return JsonResponse({
@@ -262,7 +200,7 @@ def work_hours_detail(request, pk):
 @csrf_exempt
 @require_http_methods(["PUT", "PATCH"])
 def work_hours_update(request, pk):
-    """Actualizar hora de trabajo"""
+    """Actualizar una hora de trabajo"""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -275,26 +213,29 @@ def work_hours_update(request, pk):
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
         work_hour = get_object_or_404(WorkHour, pk=pk)
-        data = json.loads(request.body)
         
-        # Actualizar campos
-        if 'date' in data:
-            work_hour.date = datetime.strptime(data['date'], '%Y-%m-%d').date()
-        if 'hours_worked' in data:
-            work_hour.hours_worked = data['hours_worked']
-        if 'description' in data:
-            work_hour.description = data['description']
-        if 'is_verified' in data:
-            work_hour.is_verified = data['is_verified']
-            if data['is_verified']:
-                work_hour.verified_by = current_user
-                work_hour.verified_at = timezone.now()
+        # Verificar permisos (solo el estudiante propietario puede editar)
+        if work_hour.student.user != current_user:
+            return JsonResponse({'error': 'No tienes permisos para editar esta hora de trabajo'}, status=403)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        # Actualizar campos permitidos
+        allowed_fields = ['date', 'hours_worked', 'description']
+        for field in allowed_fields:
+            if field in data:
+                setattr(work_hour, field, data[field])
         
         work_hour.save()
         
         return JsonResponse({
             'success': True,
-            'message': 'Hora de trabajo actualizada exitosamente'
+            'message': 'Hora de trabajo actualizada exitosamente',
+            'work_hour_id': str(work_hour.id)
         })
         
     except Exception as e:
@@ -304,7 +245,7 @@ def work_hours_update(request, pk):
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def work_hours_delete(request, pk):
-    """Eliminar hora de trabajo"""
+    """Eliminar una hora de trabajo"""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -406,6 +347,71 @@ def project_work_hours(request, project_id):
             'success': True,
             'results': work_hours_data,
             'total_hours': float(total_hours)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def approve_work_hour(request, pk):
+    """Aprobar o rechazar una hora de trabajo individual"""
+    try:
+        # Verificar autenticación y permisos de admin
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user or current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado. Solo administradores pueden aprobar horas.'}, status=403)
+        
+        # Obtener la hora de trabajo
+        work_hour = get_object_or_404(WorkHour, pk=pk)
+        
+        # Parsear datos
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Datos JSON inválidos'}, status=400)
+        
+        action = data.get('action')  # 'approve' o 'reject'
+        comment = data.get('comment', '')
+        
+        if action not in ['approve', 'reject']:
+            return JsonResponse({'error': 'Acción inválida. Debe ser "approve" o "reject"'}, status=400)
+        
+        # Actualizar la hora de trabajo
+        if action == 'approve':
+            work_hour.is_verified = True
+            work_hour.verified_by = current_user
+            work_hour.verified_at = timezone.now()
+            message = 'Hora aprobada correctamente'
+        else:  # reject
+            work_hour.is_verified = False
+            work_hour.verified_by = current_user
+            work_hour.verified_at = timezone.now()
+            message = 'Hora rechazada correctamente'
+        
+        # Guardar comentario si se proporciona
+        if comment:
+            work_hour.comentario_validacion = comment
+        
+        work_hour.save()
+        
+        # Enviar notificación al estudiante
+        try:
+            NotificationService.notify_hours_validation(work_hour, action == 'approve')
+        except Exception as e:
+            print(f"Error al enviar notificación de validación: {str(e)}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': message,
+            'work_hour_id': str(work_hour.id),
+            'is_verified': work_hour.is_verified
         })
         
     except Exception as e:

@@ -11,6 +11,7 @@ from .models import Aplicacion
 from users.models import User
 from core.auth_utils import get_user_from_token, require_auth
 from django.utils import timezone
+from notifications.services import NotificationService
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -161,6 +162,7 @@ def application_detail(request, application_id):
 @require_http_methods(["GET"])
 def my_applications(request):
     """Devuelve las aplicaciones del estudiante autenticado con datos de proyecto y empresa."""
+    print(f"🔍 [my_applications] Iniciando endpoint")
     try:
         # Verificar autenticación
         current_user = get_user_from_token(request)
@@ -174,13 +176,26 @@ def my_applications(request):
         # Obtener aplicaciones del estudiante
         from .models import Aplicacion
         applications = Aplicacion.objects.filter(student=student).select_related('project', 'project__company')
+        print(f"🔍 [my_applications] Aplicaciones encontradas: {applications.count()}")
+        
+        # Verificar que las aplicaciones tienen proyectos con empresas
+        for app in applications:
+            if app.project and app.project.company:
+                print(f"🔍 [my_applications] ✅ Proyecto '{app.project.title}' tiene empresa: '{app.project.company.company_name}'")
+            elif app.project:
+                print(f"🔍 [my_applications] ❌ Proyecto '{app.project.title}' NO tiene empresa")
+            else:
+                print(f"🔍 [my_applications] ❌ Aplicación {app.id} NO tiene proyecto")
+        
         applications_data = []
         for app in applications:
-            # Solo incluir si el proyecto tiene empresa asociada
-            if not app.project or not app.project.company:
+            # Verificar que el proyecto existe
+            if not app.project:
                 continue
-            applications_data.append({
+            
+            application_data = {
                 'id': str(app.id),
+                'project': str(app.project.id),  # ID del proyecto como string
                 'status': app.status,
                 'created_at': app.created_at.isoformat(),
                 'updated_at': app.updated_at.isoformat(),
@@ -188,31 +203,52 @@ def my_applications(request):
                 'responded_at': app.responded_at.isoformat() if app.responded_at else None,
                 'student_notes': app.student_notes,
                 'cover_letter': app.cover_letter,
-                'project': {
-                    'id': str(app.project.id),
-                    'title': app.project.title,
-                    'description': app.project.description,
-                    'requirements': getattr(app.project, 'requirements', ''),
-                    'duration_weeks': getattr(app.project, 'duration_weeks', None),
-                    'location': getattr(app.project, 'location', ''),
-                    'modality': getattr(app.project, 'modality', ''),
+                # Campos del proyecto como campos planos
+                'project_title': app.project.title,
+                'project_description': app.project.description if app.project.description else 'Sin descripción',
+                'requirements': getattr(app.project, 'requirements', ''),
+                'projectDuration': f"{getattr(app.project, 'duration_weeks', 0)} semanas" if getattr(app.project, 'duration_weeks', 0) else 'No especificado',
+                'location': getattr(app.project, 'location', 'Remoto'),
+                'modality': getattr(app.project, 'modality', 'Presencial'),
+                'required_hours': getattr(app.project, 'required_hours', 0),
+                'hours_per_week': getattr(app.project, 'hours_per_week', 0),
+                'max_students': getattr(app.project, 'max_students', 1),
+                'current_students': getattr(app.project, 'current_students', 0),
+                'trl_level': getattr(app.project.trl, 'level', 1) if app.project.trl else 1,
+                'api_level': getattr(app.project, 'api_level', 1),
+                'area': app.project.area.name if app.project.area else 'Sin área',
+                'company': app.project.company.company_name if app.project.company else 'Empresa no especificada',
+                'student_name': f"{app.student.user.first_name} {app.student.user.last_name}".strip() if app.student and app.student.user else 'Estudiante no encontrado',
+                'student_email': app.student.user.email if app.student and app.student.user else 'Sin email',
+                'requiredSkills': getattr(app.project, 'required_skills', []),
+                'compatibility': 0,  # Se calculará en el frontend si es necesario
+            }
+            
+            print(f"🔍 [my_applications] Datos creados para '{app.project.title}':")
+            print(f"   - project_title: {application_data['project_title']}")
+            print(f"   - company: {application_data['company']}")
+            print(f"   - project_description: {application_data['project_description']}")
+            
+            applications_data.append(application_data)
         
-                    'required_hours': getattr(app.project, 'required_hours', None),
-                    'hours_per_week': getattr(app.project, 'hours_per_week', None),
-                    'max_students': getattr(app.project, 'max_students', None),
-                    'current_students': getattr(app.project, 'current_students', None),
-                    'trl_level': getattr(app.project, 'trl_level', None),
-                    'api_level': getattr(app.project, 'api_level', None),
-                    'area': getattr(app.project.area, 'name', '') if getattr(app.project, 'area', None) else '',
-                    'company': {
-                        'id': str(app.project.company.id),
-                        'name': app.project.company.company_name,
-                    },
-                    'company_name': app.project.company.company_name,
-                },
-            })
-        return JsonResponse({'results': applications_data, 'total': applications.count()})
+        response_data = {
+            'results': applications_data,
+            'total': applications.count()
+        }
+        
+        print(f"🔍 [my_applications] Devolviendo {len(applications_data)} aplicaciones")
+        if applications_data:
+            print(f"🔍 [my_applications] Primera aplicación - project_title: {applications_data[0].get('project_title', 'NO ENCONTRADO')}")
+            print(f"🔍 [my_applications] Primera aplicación - company: {applications_data[0].get('company', 'NO ENCONTRADO')}")
+            
+            # Verificar la estructura completa de la primera aplicación
+            print(f"🔍 [my_applications] Estructura completa de la primera aplicación:")
+            for key, value in applications_data[0].items():
+                print(f"   - {key}: {value}")
+        
+        return JsonResponse(response_data)
     except Exception as e:
+        print(f"❌ [my_applications] Error: {e}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
@@ -438,6 +474,12 @@ def accept_application(request, application_id):
         
         # Aceptar la aplicación
         if application.aceptar(company_notes):
+            # Enviar notificación al estudiante
+            try:
+                NotificationService.notify_application_accepted(application)
+            except Exception as e:
+                print(f"Error al enviar notificación de aceptación: {str(e)}")
+            
             return JsonResponse({
                 'success': True,
                 'message': 'Postulación aceptada correctamente',
@@ -474,6 +516,12 @@ def reject_application(request, application_id):
         
         # Rechazar la aplicación
         application.rechazar(company_notes)
+        
+        # Enviar notificación al estudiante
+        try:
+            NotificationService.notify_application_rejected(application)
+        except Exception as e:
+            print(f"Error al enviar notificación de rechazo: {str(e)}")
         
         return JsonResponse({
             'success': True,
