@@ -198,7 +198,7 @@ export default function ValidacionHorasAdmin() {
       if (filters.date_from) params.append('date_from', filters.date_from);
       if (filters.date_to) params.append('date_to', filters.date_to);
 
-      const response = await apiService.get(`/work-hours/?${params.toString()}`);
+      const response = await apiService.get(`/api/work-hours/?${params.toString()}`);
       
       setWorkHours(response.results || []);
       setTotalCount(response.count || 0);
@@ -297,7 +297,7 @@ export default function ValidacionHorasAdmin() {
     if (!selectedHour) return;
     setActionLoading(true);
     try {
-      await apiService.post(`/work-hours/${selectedHour.id}/approve/`, {
+      await apiService.post(`/api/work-hours/${selectedHour.id}/approve/`, {
         comentario: adminComment
       });
       setSuccessMsg('Hora aprobada correctamente');

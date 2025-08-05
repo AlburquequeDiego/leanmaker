@@ -1,7 +1,5 @@
 # 🚀 LEANMAKER - INSTRUCCIONES RÁPIDAS DE MIGRACIÓN
 
-## ⚡ Migración Automática (RECOMENDADO)
-
 ```bash
 # 1. Navegar al directorio Backend
 cd Backend
@@ -16,49 +14,20 @@ python migrate_all_apps.py
 python verify_migration.py
 ```
 
+# Ver estructura de la BD
+python manage.py inspectdb
 
---
-para ver la estructura de la base de datos :
-
-📁 Para administrar tus tablas:
-Django Admin: Accede a http://localhost:8000/admin/ para ver todas las tablas
-
-Migraciones: Usa python manage.py makemigrations y python manage.py migrate
-
-Shell: python manage.py shell para interactuar con los modelos
-
-Inspect: python manage.py inspectdb para ver la estructura actual
-
-
-## 🔑 Credenciales por Defecto
-
-- **Email**: admin@leanmaker.com
-- **Password**: admin123
-
-## ✅ Verificación Rápida
-
-Si todo salió bien, deberías ver:
-
-```
-🎉 ¡TODAS LAS VERIFICACIONES PASARON!
-✅ La migración fue exitosa
-🚀 El sistema está listo para usar
-```
-
-## 🚨 Si hay problemas
-
-```bash
-# Limpiar migraciones y empezar de nuevo
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc" -delete
-
-# Regenerar y aplicar migraciones
+# Crear migraciones
 python manage.py makemigrations
+
+# Aplicar migraciones
 python manage.py migrate
 
-# Verificar
-python verify_migration.py
-```
+# Ver estado de migraciones
+python manage.py showmigrations
+
+# Entrar al shell
+python manage.py shell
 
 
 

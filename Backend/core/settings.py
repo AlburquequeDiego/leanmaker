@@ -293,6 +293,7 @@ CSRF_EXEMPT_URLS = [
     '/api/applications/',
     '/api/notifications/',
     '/api/dashboard/',
+    '/api/work-hours/',
 ]
 
 # Login URLs

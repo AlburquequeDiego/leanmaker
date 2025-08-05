@@ -71,7 +71,7 @@ export const API_ENDPOINTS = {
   CALENDAR_EVENTS: '/api/calendar/events/',
   
   // Work Hours (endpoints reales del backend)
-  WORK_HOURS: '/work-hours/',
+  WORK_HOURS: '/api/work-hours/',
   
   // Interviews (endpoints reales del backend)
   INTERVIEWS: '/interviews/',
