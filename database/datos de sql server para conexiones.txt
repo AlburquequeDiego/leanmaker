@@ -5,12 +5,24 @@ juan.perez@inacapmail.cl        Estudiante123!
 joaco.gomez@inacapmail.cl       Estudiante123!
 EMPRESAS:
 lucia.amaya@gmail.com           Empresa123!
+
+
 -----------------ESTUDIANTE
-Mis Evaluaciones               falta
+Mis Evaluaciones      
+tarjeta en dashboard
+
 -----------------EMPRESA
-Evaluaciones                   falta  
-Strikes                        falta 
+Evaluaciones
+tarjeta en dashboard
+Strikes
 
 -----------------ADMIN
-Gestión de Calificaciones      falta  
-Asignaciones de Strikes  - Métricas de Strikes y Disciplina
+gestion de empresas 
+gestion de estudiantes gpa + strikes
+Gestión de Calificaciones Mutuas: Calificaciones Mutuas , Gestión de Reportes de Strikes
+Asignaciones de Strikes
+Gestión de Analytics y Reportes:
+Métricas de Strikes y Disciplina
+
+
+

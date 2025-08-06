@@ -8,6 +8,9 @@
 Django==4.2.7
 django-cors-headers==4.3.1
 
+# Django REST Framework (REQUERIDO - se usa en serializers)
+djangorestframework==3.14.0
+
 # Database (SQL Server Azure)
 django-mssql-backend==2.8.1
 pyodbc==5.0.1
@@ -72,11 +75,11 @@ isort==5.12.0
 Sphinx==7.2.6
 sphinx-rtd-theme==1.3.0
 
-# Performance Monitoring
-django-silk==5.0.4
+# Performance Monitoring (OPCIONAL - comentar si no se usa)
+# django-silk==5.0.4
 
-# API Documentation (if needed later)
-drf-yasg==1.21.7
+# API Documentation (OPCIONAL - comentar si no se usa)
+# drf-yasg==1.21.7
 
 # Additional Utilities
 requests==2.31.0

@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 from projects.models import Proyecto
 from django.db import IntegrityError
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 
 @csrf_exempt
@@ -553,79 +554,296 @@ def admin_activate_company(request, current_user, company_id):
 @csrf_exempt
 @require_http_methods(["POST", "GET"])
 def company_ratings(request):
+    """Endpoint simplificado para que estudiantes califiquen empresas usando consultas SQL directas"""
     # Autenticación por token
     auth_header = request.headers.get('Authorization')
     user = None
     if auth_header and auth_header.startswith('Bearer '):
         token = auth_header.split(' ')[1]
         user = verify_token(token)
-    # Agregar log para depuración
-    print('Usuario autenticado en company_ratings:', user, getattr(user, 'role', None))
+    
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            
             # Validar usuario autenticado y estudiante
             if not user or not user.is_authenticated or getattr(user, 'role', None) != 'student':
-                return JsonResponse({'error': 'Solo estudiantes pueden calificar empresas.'}, status=403)
+                return JsonResponse({'error': 'Solo estudiantes pueden calificar empresas'}, status=403)
+            
             # Validar campos requeridos
-            project_id = data.get('project')
-            company_id = data.get('company')
-            puntuacion = int(data.get('rating', 0))
-            if not project_id or not company_id or not (1 <= puntuacion <= 5):
-                return JsonResponse({'error': 'Datos incompletos o inválidos.'}, status=400)
-            import uuid
+            required_fields = ['company_id', 'project_id', 'rating', 'comments']
+            for field in required_fields:
+                if field not in data:
+                    return JsonResponse({'error': f'Campo requerido: {field}'}, status=400)
+            
+            company_id = data['company_id']
+            project_id = data['project_id']
+            rating = data['rating']
+            comments = data['comments']
+            
+            # Validar rating (1-5)
             try:
-                project_uuid = str(uuid.UUID(str(project_id)))
-                company_uuid = str(uuid.UUID(str(company_id)))
-            except Exception:
-                return JsonResponse({'error': 'project o company no tienen formato UUID válido.'}, status=400)
-            # Buscar empresa y proyecto
-            try:
-                empresa = Empresa.objects.get(id=company_uuid)
-                proyecto = Proyecto.objects.get(id=project_uuid)
-            except Empresa.DoesNotExist:
-                return JsonResponse({'error': 'Empresa no encontrada.'}, status=404)
-            except Proyecto.DoesNotExist:
-                return JsonResponse({'error': 'Proyecto no encontrado.'}, status=404)
-            # Validar que el proyecto pertenezca a la empresa
-            if proyecto.company != empresa:
-                return JsonResponse({'error': 'El proyecto no pertenece a la empresa seleccionada.'}, status=400)
-            # Validar que el proyecto esté completado
-            if proyecto.status != 'completed' and getattr(proyecto.status, 'name', None) != 'completed':
-                return JsonResponse({'error': 'Solo puedes calificar proyectos completados.'}, status=400)
-            # Validar que el estudiante haya participado en el proyecto
-            from applications.models import Aplicacion
-            participo = Aplicacion.objects.filter(project=proyecto, student=user, status='completed').exists()
-            if not participo:
-                return JsonResponse({'error': 'Solo puedes calificar proyectos en los que participaste y completaste.'}, status=400)
-            # Validar que no haya calificado este proyecto antes
-            if CalificacionEmpresa.objects.filter(empresa=empresa, estudiante=user, proyecto=proyecto).exists():
-                return JsonResponse({'error': 'Ya has calificado este proyecto para esta empresa.'}, status=400)
-            # Crear calificación
-            calificacion = CalificacionEmpresa.objects.create(
-                empresa=empresa,
-                estudiante=user,
-                proyecto=proyecto,
-                puntuacion=puntuacion
-            )
-            empresa.actualizar_calificacion(puntuacion)
-            return JsonResponse({'success': True, 'message': 'Calificación registrada', 'id': str(calificacion.id)})
+                rating = int(rating)
+                if rating < 1 or rating > 5:
+                    return JsonResponse({'error': 'Rating debe estar entre 1 y 5'}, status=400)
+            except (ValueError, TypeError):
+                return JsonResponse({'error': 'Rating debe ser un número entre 1 y 5'}, status=400)
+            
+            from django.db import connection
+            
+            # Verificar que el proyecto existe y pertenece a la empresa
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT p.id, e.id, e.company_name
+                    FROM projects p
+                    INNER JOIN companies_empresa e ON p.company_id = e.id
+                    WHERE p.id = %s AND e.id = %s
+                """, [project_id, company_id])
+                
+                project_exists = cursor.fetchone()
+                if not project_exists:
+                    return JsonResponse({'error': 'Proyecto o empresa no encontrados'}, status=404)
+                
+                # Verificar que el estudiante completó este proyecto
+                cursor.execute("""
+                    SELECT a.id
+                    FROM applications a
+                    INNER JOIN students_estudiante s ON a.student_id = s.id
+                    WHERE a.project_id = %s AND s.user_id = %s AND a.status = 'completed'
+                """, [project_id, user.id])
+                
+                completed_project = cursor.fetchone()
+                if not completed_project:
+                    return JsonResponse({'error': 'No has completado este proyecto'}, status=403)
+                
+                # Verificar si ya calificó esta empresa para este proyecto
+                cursor.execute("""
+                    SELECT ce.id
+                    FROM companies_calificacionempresa ce
+                    INNER JOIN students_estudiante s ON ce.estudiante_id = s.id
+                    WHERE ce.empresa_id = %s AND s.user_id = %s
+                """, [company_id, user.id])
+                
+                existing_rating = cursor.fetchone()
+                if existing_rating:
+                    return JsonResponse({'error': 'Ya calificaste esta empresa'}, status=400)
+                
+                # Obtener el ID del estudiante
+                cursor.execute("""
+                    SELECT s.id
+                    FROM students_estudiante s
+                    WHERE s.user_id = %s
+                """, [user.id])
+                
+                student_id = cursor.fetchone()
+                if not student_id:
+                    return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+                
+                # Crear la calificación
+                cursor.execute("""
+                    INSERT INTO companies_calificacionempresa (id, empresa_id, estudiante_id, puntuacion, comentario, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, %s, NOW(), NOW())
+                """, [str(uuid.uuid4()), company_id, student_id[0], rating, comments])
+                
+                # Actualizar el promedio de la empresa
+                cursor.execute("""
+                    UPDATE companies_empresa 
+                    SET average_rating = (
+                        SELECT AVG(puntuacion) 
+                        FROM companies_calificacionempresa 
+                        WHERE empresa_id = %s
+                    )
+                    WHERE id = %s
+                """, [company_id, company_id])
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Empresa calificada exitosamente',
+                'rating': rating
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'JSON inválido'}, status=400)
         except Exception as e:
+            print(f"Error en company_ratings POST: {str(e)}")
             return JsonResponse({'error': str(e)}, status=500)
+    
     elif request.method == "GET":
-        # Admin y empresa pueden ver todas las calificaciones
-        if not user or not user.is_authenticated or user.role not in ['admin', 'company']:
-            return JsonResponse({'error': 'No autorizado'}, status=403)
-        calificaciones = CalificacionEmpresa.objects.all()
-        data = [
-            {
-                'id': str(c.id),
-                'empresa': c.empresa.company_name,
-                'estudiante': c.estudiante.full_name,
-                'proyecto': c.proyecto.title if hasattr(c, 'proyecto') else '',
-                'puntuacion': c.puntuacion,
-                'fecha': c.fecha_calificacion.isoformat()
-            }
-            for c in calificaciones
-        ]
-        return JsonResponse({'results': data, 'count': len(data)}) 
+        try:
+            company_id = request.GET.get('company_id')
+            if not company_id:
+                return JsonResponse({'error': 'company_id requerido'}, status=400)
+            
+            from django.db import connection
+            
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT 
+                        ce.id,
+                        ce.puntuacion,
+                        ce.comentario,
+                        ce.created_at,
+                        u.first_name,
+                        u.last_name,
+                        u.email
+                    FROM companies_calificacionempresa ce
+                    INNER JOIN students_estudiante s ON ce.estudiante_id = s.id
+                    INNER JOIN users_user u ON s.user_id = u.id
+                    WHERE ce.empresa_id = %s
+                    ORDER BY ce.created_at DESC
+                """, [company_id])
+                
+                rows = cursor.fetchall()
+                
+            ratings_data = []
+            for row in rows:
+                ratings_data.append({
+                    'id': str(row[0]),
+                    'rating': row[1],
+                    'comments': row[2] or '',
+                    'created_at': row[3].isoformat() if row[3] else None,
+                    'student_name': f"{row[4] or ''} {row[5] or ''}".strip() or row[6],
+                    'student_email': row[6]
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'data': ratings_data,
+                'total': len(ratings_data)
+            })
+            
+        except Exception as e:
+            print(f"Error en company_ratings GET: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def student_completed_projects(request):
+    """Endpoint simplificado para obtener proyectos completados de un estudiante usando consultas SQL directas"""
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token requerido'}, status=401)
+    
+    token = auth_header.split(' ')[1]
+    user = verify_token(token)
+    if not user or not user.is_authenticated or getattr(user, 'role', None) != 'student':
+        return JsonResponse({'error': 'Solo estudiantes pueden acceder a este endpoint.'}, status=403)
+    
+    try:
+        from django.db import connection
+        
+        print(f"[DEBUG] Usuario autenticado: {user.id} - {user.email}")
+        
+        # Primero, vamos a verificar si el estudiante existe
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT s.id, s.user_id, u.email
+                FROM students s
+                INNER JOIN users_user u ON s.user_id = u.id
+                WHERE s.user_id = %s
+            """, [user.id])
+            
+            student_exists = cursor.fetchone()
+            if not student_exists:
+                print(f"[DEBUG] Estudiante no encontrado para usuario: {user.id}")
+                return JsonResponse({
+                    'success': True,
+                    'data': [],
+                    'total': 0,
+                    'message': 'Estudiante no encontrado'
+                })
+            
+            print(f"[DEBUG] Estudiante encontrado: {student_exists}")
+        
+        # Consulta SQL directa para obtener proyectos completados del estudiante
+        with connection.cursor() as cursor:
+            print(f"[DEBUG] Ejecutando consulta SQL para proyectos completados...")
+            
+            # Intentar con la tabla 'applications' primero
+            try:
+                cursor.execute("""
+                    SELECT DISTINCT
+                        p.id as project_id,
+                        p.title as project_title,
+                        p.description as project_description,
+                        e.id as company_id,
+                        e.company_name as company_name,
+                        a.applied_at as completion_date,
+                        CASE WHEN ce.id IS NOT NULL THEN 1 ELSE 0 END as already_rated,
+                        COALESCE(ce.puntuacion, 0) as rating
+                    FROM applications a
+                    INNER JOIN projects p ON a.project_id = p.id
+                    INNER JOIN companies_empresa e ON p.company_id = e.id
+                    INNER JOIN students s ON a.student_id = s.id
+                    LEFT JOIN companies_calificacionempresa ce ON ce.empresa_id = e.id AND ce.estudiante_id = s.id
+                    WHERE s.user_id = %s 
+                    AND a.status = 'completed'
+                    ORDER BY a.applied_at DESC
+                """, [user.id])
+                
+                rows = cursor.fetchall()
+                print(f"[DEBUG] Filas encontradas en 'applications': {len(rows)}")
+                
+            except Exception as e:
+                print(f"[DEBUG] Error con tabla 'applications': {e}")
+                # Intentar con la tabla 'project_applications'
+                try:
+                    cursor.execute("""
+                        SELECT DISTINCT
+                            p.id as project_id,
+                            p.title as project_title,
+                            p.description as project_description,
+                            e.id as company_id,
+                            e.company_name as company_name,
+                            pa.applied_at as completion_date,
+                            CASE WHEN ce.id IS NOT NULL THEN 1 ELSE 0 END as already_rated,
+                            COALESCE(ce.puntuacion, 0) as rating
+                        FROM project_applications pa
+                        INNER JOIN projects p ON pa.proyecto_id = p.id
+                        INNER JOIN companies_empresa e ON p.company_id = e.id
+                        INNER JOIN students s ON pa.estudiante_id = s.user_id
+                        LEFT JOIN companies_calificacionempresa ce ON ce.empresa_id = e.id AND ce.estudiante_id = s.id
+                        WHERE s.user_id = %s 
+                        AND pa.estado = 'completed'
+                        ORDER BY pa.applied_at DESC
+                    """, [user.id])
+                    
+                    rows = cursor.fetchall()
+                    print(f"[DEBUG] Filas encontradas en 'project_applications': {len(rows)}")
+                    
+                except Exception as e2:
+                    print(f"[DEBUG] Error con tabla 'project_applications': {e2}")
+                    # Si ambas fallan, devolver lista vacía
+                    rows = []
+            
+        # Convertir resultados a formato JSON
+        projects_data = []
+        for row in rows:
+            try:
+                projects_data.append({
+                    'project_id': str(row[0]),
+                    'project_title': row[1] or 'Sin título',
+                    'project_description': row[2] or '',
+                    'company_id': str(row[3]),
+                    'company_name': row[4] or 'Sin empresa',
+                    'completion_date': row[5].isoformat() if row[5] else None,
+                    'already_rated': bool(row[6]),
+                    'rating': row[7] if row[7] > 0 else None
+                })
+            except Exception as row_error:
+                print(f"[DEBUG] Error procesando fila {row}: {row_error}")
+                continue
+        
+        print(f"[DEBUG] Proyectos completados encontrados: {len(projects_data)}")
+        return JsonResponse({
+            'success': True,
+            'data': projects_data,
+            'total': len(projects_data)
+        })
+        
+    except Exception as e:
+        print(f"Error en student_completed_projects: {str(e)}")
+        import traceback
+        print(f"Traceback completo: {traceback.format_exc()}")
+        return JsonResponse({'error': str(e)}, status=500) 

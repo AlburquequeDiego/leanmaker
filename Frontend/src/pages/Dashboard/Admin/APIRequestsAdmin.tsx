@@ -153,7 +153,7 @@ export default function APIRequestsAdmin() {
       <Card sx={{ 
         mb: 4,
         background: themeMode === 'dark'
-          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+          ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
           : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         boxShadow: themeMode === 'dark'
           ? '0 8px 32px rgba(0, 0, 0, 0.3)'

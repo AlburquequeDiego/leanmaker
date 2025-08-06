@@ -4,7 +4,7 @@ URLs para la app companies.
 
 from django.urls import path
 from . import views
-from .views import company_ratings
+from .views import company_ratings, student_completed_projects
 
 app_name = 'companies'
 
@@ -16,8 +16,7 @@ urlpatterns = [
     path('admin/<uuid:company_id>/activate/', views.admin_activate_company, name='admin_activate_company'),
     path('admin/<uuid:company_id>/block/', views.admin_block_company, name='admin_block_company'),
     path('company_me/', views.company_me, name='company_me'),
-]
-
-urlpatterns += [
-    path('api/company-ratings/', company_ratings, name='company_ratings'),
+    # NUEVOS ENDPOINTS PARA CALIFICACIONES
+    path('ratings/', company_ratings, name='company_ratings'),  # POST/GET calificaciones de empresas
+    path('student/completed-projects/', student_completed_projects, name='student_completed_projects'),  # GET proyectos completados
 ] 

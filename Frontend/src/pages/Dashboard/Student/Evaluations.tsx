@@ -27,6 +27,7 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
+  Grid,
 } from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
@@ -38,6 +39,7 @@ import {
   Schedule as ScheduleIcon,
   Add as AddIcon,
   Star as StarIcon,
+  RateReview as RateReviewIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
@@ -71,13 +73,19 @@ interface CompanyRating {
   rating: number;
   comment: string;
   date: string;
+  project_title?: string;
 }
 
-interface Project {
-  id: string;
-  title: string;
-  company: string;
-  status: 'active' | 'completed' | 'paused';
+interface CompletedProject {
+  project_id: string;
+  project_title: string;
+  project_description: string;
+  company_id: string;
+  company_name: string;
+  completion_date: string;
+  already_rated: boolean;
+  rating?: number;
+  rating_id?: string;
 }
 
 const typeConfig = {
@@ -124,8 +132,9 @@ function adaptEvaluation(raw: any): Evaluation {
 export const Evaluations = () => {
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [companyRatings, setCompanyRatings] = useState<CompanyRating[]>([]);
-  const [availableCompanies, setAvailableCompanies] = useState<string[]>([]);
+  const [completedProjects, setCompletedProjects] = useState<CompletedProject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState(false);
 
   const [selectedEvaluation, setSelectedEvaluation] = useState<Evaluation | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -134,7 +143,7 @@ export const Evaluations = () => {
   
   // Estados para el modal de calificar empresa
   const [calificarModalOpen, setCalificarModalOpen] = useState(false);
-  const [empresaSeleccionada, setEmpresaSeleccionada] = useState('');
+  const [selectedProject, setSelectedProject] = useState<CompletedProject | null>(null);
   const [calificacion, setCalificacion] = useState<number | null>(null);
   const [comentario, setComentario] = useState('');
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
@@ -143,18 +152,11 @@ export const Evaluations = () => {
     severity: 'success' 
   });
 
-  const [completedProjects, setCompletedProjects] = useState<Project[]>([]);
-  // 1. Estado para la lista de empresas
-  const [empresas, setEmpresas] = useState<any[]>([]);
-
   const { data: stats } = useDashboardStats('student');
 
-  // 2. Cargar empresas al montar el componente
   useEffect(() => {
     fetchEvaluations();
-    fetchCompanyRatings();
     fetchCompletedProjects();
-    fetchEmpresas(); // nueva función
   }, []);
 
   const fetchEvaluations = async () => {
@@ -173,15 +175,14 @@ export const Evaluations = () => {
       } else if (response?.data && Array.isArray(response.data)) {
         evaluationsData = response.data;
       } else {
-        setSnackbar({ open: true, message: 'La respuesta del backend no contiene evaluaciones válidas.', severity: 'error' });
-        console.error('Formato inesperado de respuesta:', response);
+        console.log('Formato inesperado de respuesta:', response);
         setEvaluations([]);
         setLoading(false);
         return;
       }
+      
       if (!Array.isArray(evaluationsData)) {
-        setSnackbar({ open: true, message: 'La respuesta del backend no es un array de evaluaciones.', severity: 'error' });
-        console.error('Evaluations no es un array:', evaluationsData);
+        console.log('Evaluations no es un array:', evaluationsData);
         setEvaluations([]);
         setLoading(false);
         return;
@@ -195,58 +196,24 @@ export const Evaluations = () => {
     setLoading(false);
   };
 
-  const fetchCompanyRatings = async () => {
-    try {
-      // Este endpoint no existe en el backend, por ahora lo deshabilitamos
-      console.log('[Evaluations] Company ratings endpoint not available');
-      setCompanyRatings([]);
-    } catch (error) {
-      console.error('Error fetching company ratings:', error);
-      setCompanyRatings([]);
-    }
-  };
-
-  const fetchAvailableCompanies = async () => {
-    try {
-      const response = await apiService.get('/api/companies/');
-      console.log('[Evaluations] Companies response:', response);
-      
-      // El backend devuelve {message: 'companies_list placeholder'}
-      // Por ahora usamos un array vacío hasta que se implemente el endpoint
-      setAvailableCompanies([]);
-    } catch (error) {
-      console.error('Error fetching companies:', error);
-      setAvailableCompanies([]);
-    }
-  };
-
-  // Nueva función para obtener proyectos completados
   const fetchCompletedProjects = async () => {
+    setLoadingProjects(true);
     try {
-      const response = await apiService.get('/api/projects/my_projects/');
-      const projectsData = response.data || response;
-      const arr = Array.isArray(projectsData) ? projectsData : projectsData.data;
-      const completed = Array.isArray(arr) ? arr.filter((p: any) => p.status === 'completed') : [];
-      setCompletedProjects(completed.map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        company: p.company,
-        status: p.status
-      })));
+      const response = await apiService.get('/api/companies/student/completed-projects/');
+      console.log('[Evaluations] Completed projects response:', response);
+      
+      if (response?.projects) {
+        setCompletedProjects(response.projects);
+      } else if (Array.isArray(response)) {
+        setCompletedProjects(response);
+      } else {
+        setCompletedProjects([]);
+      }
     } catch (error) {
+      console.error('Error fetching completed projects:', error);
       setCompletedProjects([]);
     }
-  };
-
-  const fetchEmpresas = async () => {
-    try {
-      const response = await apiService.get('/api/companies/');
-      // Ajusta según la estructura real de la respuesta
-      const empresasData = response.data?.results || response.results || response.data || [];
-      setEmpresas(empresasData);
-    } catch (error) {
-      setEmpresas([]);
-    }
+    setLoadingProjects(false);
   };
 
   const handleAction = (evaluation: Evaluation) => {
@@ -263,16 +230,8 @@ export const Evaluations = () => {
   // Usar el GPA real del backend si está disponible
   const gpa = stats?.gpa !== undefined ? Number(stats.gpa).toFixed(2) : '0.00';
 
-  // 1. Crear lista de proyectos completados para calificar
-  const proyectosCompletados = completedProjects.map(p => ({
-    id: p.id,
-    label: `${p.title} – ${p.company}`,
-    company: p.company
-  }));
-
-  // 3. handleCalificarEmpresa: buscar el UUID por nombre
   const handleCalificarEmpresa = async () => {
-    if (!empresaSeleccionada || !calificacion) {
+    if (!selectedProject || !calificacion) {
       setSnackbar({ 
         open: true, 
         message: 'Por favor completa todos los campos', 
@@ -280,65 +239,60 @@ export const Evaluations = () => {
       });
       return;
     }
-    // Buscar el proyecto seleccionado
-    const proyecto = proyectosCompletados.find(p => p.id === empresaSeleccionada);
-    // Buscar el UUID de la empresa por nombre (usando company_name)
-    const empresa = empresas.find(e => e.company_name === proyecto.company);
-    const companyUUID = empresa ? empresa.id : '';
-    const projectUUID = proyecto?.id ? String(proyecto.id) : '';
-    console.log('Objeto proyecto seleccionado:', proyecto);
-    console.log('Empresa encontrada:', empresa);
-    console.log('Payload enviado a /api/company-ratings/:', {
-      project: projectUUID,
-      company: companyUUID,
-      rating: calificacion
-    });
+
     try {
-      const newRating = await apiService.post('/api/company-ratings/', {
-        project: projectUUID,
-        company: companyUUID,
-        rating: calificacion
-      });
-      setCompanyRatings(prev => [...prev, newRating as CompanyRating]);
-      setEmpresaSeleccionada('');
-      setCalificacion(null);
-      setCalificarModalOpen(false);
+      const payload = {
+        company_id: selectedProject.company_id,
+        project_id: selectedProject.project_id,
+        rating: calificacion,
+        comments: comentario || `Evaluación de ${calificacion} estrellas para ${selectedProject.company_name}`
+      };
+
+      console.log('Payload enviado a /api/companies/ratings/:', payload);
+      
+      const response = await apiService.post('/api/companies/ratings/', payload);
+      
       setSnackbar({ 
         open: true, 
         message: '¡Evaluación enviada con éxito!', 
         severity: 'success' 
       });
-    } catch (error) {
+
+      // Actualizar la lista de proyectos completados
+      await fetchCompletedProjects();
+      
+      // Limpiar el formulario
+      setSelectedProject(null);
+      setCalificacion(null);
+      setComentario('');
+      setCalificarModalOpen(false);
+      
+    } catch (error: any) {
       console.error('Error submitting company rating:', error);
       setSnackbar({ 
         open: true, 
-        message: 'Error al enviar la evaluación', 
+        message: error.message || 'Error al enviar la evaluación', 
         severity: 'error' 
       });
     }
   };
 
   const handleCloseCalificarModal = () => {
-    setEmpresaSeleccionada('');
+    setSelectedProject(null);
     setCalificacion(null);
+    setComentario('');
     setCalificarModalOpen(false);
   };
 
-  // 1. Obtener empresas con proyectos completados
-  const empresasCompletadas = Array.from(new Set(completedEvaluations.map(e => e.company)));
+  const handleOpenCalificarModal = (project: CompletedProject) => {
+    setSelectedProject(project);
+    setCalificarModalOpen(true);
+  };
 
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
         <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!Array.isArray(evaluations)) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">La estructura de los datos de evaluaciones no es válida.</Alert>
       </Box>
     );
   }
@@ -350,20 +304,20 @@ export const Evaluations = () => {
       </Typography>
 
       {/* Estadísticas Generales */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
-        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
                 {completedEvaluations.length}
               </Typography>
               <Typography variant="body2">
-                Evaluaciones Completadas
+                Evaluaciones Recibidas
               </Typography>
             </CardContent>
           </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
@@ -374,8 +328,8 @@ export const Evaluations = () => {
               </Typography>
             </CardContent>
           </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
@@ -386,27 +340,116 @@ export const Evaluations = () => {
               </Typography>
             </CardContent>
           </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px', minWidth: 0 }}>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
-                {evaluations.length}
+                {completedProjects.length}
               </Typography>
               <Typography variant="body2">
-                Total Proyectos
+                Proyectos Completados
               </Typography>
             </CardContent>
           </Card>
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
 
-      {/* Evaluaciones Completadas */}
+      {/* Sección de Evaluaciones de Empresas */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 0, display: 'flex', alignItems: 'center' }}>
+            <RateReviewIcon sx={{ mr: 1, color: 'primary.main' }} />
+            Evaluar Empresas ({completedProjects.length} proyectos completados)
+          </Typography>
+        </Box>
+
+        {loadingProjects ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : completedProjects.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <BusinessIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              No tienes proyectos completados aún
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Una vez que completes proyectos, podrás evaluar a las empresas.
+            </Typography>
+          </Box>
+        ) : (
+          <Grid container spacing={2}>
+            {completedProjects.map((project) => (
+              <Grid item xs={12} sm={6} md={4} key={project.project_id}>
+                <Card sx={{ height: '100%', position: 'relative' }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {project.project_title}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                            <BusinessIcon fontSize="small" />
+                          </Avatar>
+                          <Typography variant="body2" color="text.secondary">
+                            {project.company_name}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      {project.already_rated && (
+                        <Chip
+                          label="Ya evaluada"
+                          color="success"
+                          size="small"
+                          icon={<CheckCircleIcon />}
+                        />
+                      )}
+                    </Box>
+
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      {project.project_description?.substring(0, 100)}...
+                    </Typography>
+
+                    {project.already_rated && project.rating && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Rating value={project.rating} readOnly size="small" />
+                        <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
+                          {project.rating}/5
+                        </Typography>
+                      </Box>
+                    )}
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Completado: {new Date(project.completion_date).toLocaleDateString()}
+                      </Typography>
+                      {!project.already_rated && (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          startIcon={<StarIcon />}
+                          onClick={() => handleOpenCalificarModal(project)}
+                        >
+                          Evaluar
+                        </Button>
+                      )}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Paper>
+
+      {/* Evaluaciones Recibidas */}
       <Paper sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
           <Typography variant="h5" gutterBottom sx={{ mb: 0, display: 'flex', alignItems: 'center' }}>
             <CheckCircleIcon sx={{ mr: 1, color: 'success.main' }} />
-            Evaluaciones Completadas ({completedEvaluations.length})
+            Evaluaciones Recibidas ({completedEvaluations.length})
           </Typography>
           <TextField
             select
@@ -426,13 +469,13 @@ export const Evaluations = () => {
         {completedEvaluations.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="body1" color="text.secondary">
-              No hay evaluaciones completadas aún
+              No hay evaluaciones recibidas aún
             </Typography>
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          <Grid container spacing={2}>
             {completedEvaluations.slice(0, completedLimit).map((evaluation) => (
-              <Box key={evaluation.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+              <Grid item xs={12} sm={6} md={4} key={evaluation.id}>
                 <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleAction(evaluation)}>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -467,15 +510,6 @@ export const Evaluations = () => {
                       {evaluation.comments?.substring(0, 100)}...
                     </Typography>
 
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                      {evaluation.technologies?.slice(0, 3).map((tech: string) => (
-                        <Chip key={tech} label={tech} size="small" variant="outlined" />
-                      ))}
-                      {evaluation.technologies?.length > 3 && (
-                        <Chip label={`+${evaluation.technologies.length - 3}`} size="small" variant="outlined" />
-                      )}
-                    </Box>
-
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="caption" color="text.secondary">
                         {evaluation.date} • {evaluation.projectDuration}
@@ -486,9 +520,9 @@ export const Evaluations = () => {
                     </Box>
                   </CardContent>
                 </Card>
-              </Box>
+              </Grid>
             ))}
-          </Box>
+          </Grid>
         )}
       </Paper>
 
@@ -515,9 +549,9 @@ export const Evaluations = () => {
               <MenuItem value={pendingEvaluations.length}>Todos</MenuItem>
             </TextField>
           </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          <Grid container spacing={2}>
             {pendingEvaluations.slice(0, pendingLimit).map((evaluation) => (
-              <Box key={evaluation.id} sx={{ flex: '1 1 400px', minWidth: 0 }}>
+              <Grid item xs={12} sm={6} md={4} key={evaluation.id}>
                 <Card sx={{ height: '100%', opacity: 0.7 }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -545,20 +579,14 @@ export const Evaluations = () => {
                       Evaluación en proceso...
                     </Typography>
 
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                      {evaluation.technologies?.slice(0, 3).map((tech: string) => (
-                        <Chip key={tech} label={tech} size="small" variant="outlined" />
-                      ))}
-                    </Box>
-
                     <Typography variant="caption" color="text.secondary">
                       {evaluation.date} • {evaluation.projectDuration}
                     </Typography>
                   </CardContent>
                 </Card>
-              </Box>
+              </Grid>
             ))}
-          </Box>
+          </Grid>
         </Paper>
       )}
 
@@ -656,73 +684,6 @@ export const Evaluations = () => {
                   </Box>
                 </Box>
 
-                {/* Categorías de Evaluación */}
-                <Box>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Evaluación por Categorías
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                        {selectedEvaluation.categories?.map((category: any, index: number) => (
-                          <Box key={index} sx={{ flex: '1 1 250px', minWidth: 0 }}>
-                            <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                {category.icon}
-                                <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
-                                  {category.name}
-                                </Typography>
-                              </Box>
-                              <Rating value={category.rating} readOnly size="small" />
-                              <Typography variant="body2" color="text.secondary">
-                                {category.rating}/5
-                              </Typography>
-                            </Box>
-                          </Box>
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Box>
-
-                {/* Tecnologías y Entregables */}
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-                  <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
-                    <Card>
-                      <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                          Tecnologías Utilizadas
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {selectedEvaluation.technologies?.map((tech: string) => (
-                            <Chip key={tech} label={tech} color="primary" variant="outlined" />
-                          ))}
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Box>
-
-                  <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
-                    <Card>
-                      <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                          Entregables
-                        </Typography>
-                        <List dense>
-                          {selectedEvaluation.deliverables?.map((deliverable: string, index: number) => (
-                            <ListItem key={index}>
-                              <ListItemIcon>
-                                <CheckCircleIcon color="success" />
-                              </ListItemIcon>
-                              <ListItemText primary={deliverable} />
-                            </ListItem>
-                          ))}
-                        </List>
-                      </CardContent>
-                    </Card>
-                  </Box>
-                </Box>
-
                 {/* Comentarios */}
                 {selectedEvaluation.comments && (
                   <Box>
@@ -735,7 +696,7 @@ export const Evaluations = () => {
                           "{selectedEvaluation.comments}"
                         </Typography>
 
-                        {selectedEvaluation.strengths && (
+                        {selectedEvaluation.strengths && selectedEvaluation.strengths.length > 0 && (
                           <Box sx={{ mb: 3 }}>
                             <Typography variant="subtitle1" gutterBottom sx={{ color: 'success.main' }}>
                               Fortalezas
@@ -753,7 +714,7 @@ export const Evaluations = () => {
                           </Box>
                         )}
 
-                        {selectedEvaluation.areasForImprovement && (
+                        {selectedEvaluation.areasForImprovement && selectedEvaluation.areasForImprovement.length > 0 && (
                           <Box>
                             <Typography variant="subtitle1" gutterBottom sx={{ color: 'warning.main' }}>
                               Áreas de Mejora
@@ -783,66 +744,6 @@ export const Evaluations = () => {
         </DialogActions>
       </Dialog>
 
-      <Divider sx={{ my: 4 }} />
-      
-      {/* Sección de Evaluaciones dadas a empresas */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h6" fontWeight={600}>
-          Evaluaciones que diste a la empresa
-        </Typography>
-      </Box>
-
-      {companyRatings.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center', bgcolor: '#f8fafc' }}>
-          <StarIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            Aún no has evaluado a ninguna empresa
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Comparte tu experiencia con las empresas donde has trabajado para ayudar a otros estudiantes.
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => setCalificarModalOpen(true)}
-            sx={{ borderRadius: 2 }}
-          >
-            Calificar Mi Primera Empresa
-          </Button>
-        </Paper>
-      ) : (
-        companyRatings.map((ev, idx) => (
-          <Paper key={idx} sx={{ p: 3, mb: 2, borderRadius: 2, bgcolor: '#f8fafc' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-              <Box>
-                <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
-                  {ev.company}
-                </Typography>
-                <Rating 
-                  value={ev.rating} 
-                  readOnly 
-                  size="medium"
-                  sx={{ mb: 1 }}
-                />
-                <Typography variant="body2" color="text.secondary">
-                  {ev.rating} de 5 estrellas
-                </Typography>
-              </Box>
-              <Chip 
-                label="Evaluación enviada" 
-                color="success" 
-                size="small" 
-                icon={<CheckCircleIcon />}
-              />
-            </Box>
-            <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-              "{ev.comment}"
-            </Typography>
-          </Paper>
-        ))
-      )}
-
       {/* Modal para calificar empresa */}
       <Dialog 
         open={calificarModalOpen} 
@@ -859,43 +760,47 @@ export const Evaluations = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
-            {/* Selección de empresa */}
-            <FormControl fullWidth>
-              <InputLabel>Proyecto a calificar</InputLabel>
-              <Select
-                value={empresaSeleccionada}
-                label="Proyecto a calificar"
-                onChange={(e) => setEmpresaSeleccionada(e.target.value)}
-              >
-                {proyectosCompletados.map((proy) => (
-                  <MenuItem key={proy.id} value={proy.id}>
-                    {proy.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {/* Calificación con estrellas */}
-            <Box>
-              <Typography variant="subtitle1" gutterBottom>
-                ¿Cómo calificarías tu experiencia con esta empresa?
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-                <Rating
-                  value={calificacion}
-                  onChange={(_, newValue) => setCalificacion(newValue)}
-                  size="large"
-                />
+          {selectedProject && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+              {/* Información del proyecto */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Proyecto: {selectedProject.project_title}
+                </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {calificacion ? `${calificacion} de 5 estrellas` : 'Selecciona una calificación'}
+                  Empresa: {selectedProject.company_name}
                 </Typography>
               </Box>
-            </Box>
 
-            {/* Comentario */}
-            {/* (Quitar el TextField de feedback/comentario) */}
-          </Box>
+              {/* Calificación con estrellas */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  ¿Cómo calificarías tu experiencia con esta empresa?
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
+                  <Rating
+                    value={calificacion}
+                    onChange={(_, newValue) => setCalificacion(newValue)}
+                    size="large"
+                  />
+                  <Typography variant="body2" color="text.secondary">
+                    {calificacion ? `${calificacion} de 5 estrellas` : 'Selecciona una calificación'}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Comentario opcional */}
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="Comentario (opcional)"
+                value={comentario}
+                onChange={(e) => setComentario(e.target.value)}
+                placeholder="Comparte tu experiencia con esta empresa..."
+              />
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseCalificarModal} color="inherit">
@@ -905,7 +810,7 @@ export const Evaluations = () => {
             onClick={handleCalificarEmpresa} 
             variant="contained" 
             color="primary"
-            disabled={!empresaSeleccionada || !calificacion}
+            disabled={!selectedProject || !calificacion}
           >
             Enviar Evaluación
           </Button>

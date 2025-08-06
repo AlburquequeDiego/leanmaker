@@ -15,4 +15,7 @@ urlpatterns = [
     path('<uuid:evaluation_id>/update/', views.evaluations_update, name='evaluation_update'),
     path('<uuid:evaluation_id>/approve/', views.evaluation_approve, name='evaluation_approve'),
     path('<uuid:evaluation_id>/reject/', views.evaluation_reject, name='evaluation_reject'),
+    # NUEVOS ENDPOINTS PARA EVALUACIONES MUTUAS
+    path('company-evaluate-student/', views.company_evaluate_student, name='company_evaluate_student'),
+    path('company-students-to-evaluate/', views.company_students_to_evaluate, name='company_students_to_evaluate'),
 ]

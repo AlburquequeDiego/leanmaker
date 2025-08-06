@@ -24,6 +24,12 @@ class Evaluation(models.Model):
         ('intermediate', 'Intermedia'),
         ('final', 'Final'),
     ]
+    
+    # NUEVO: Tipo de evaluación para distinguir dirección
+    EVALUATION_TYPE_CHOICES = [
+        ('company_to_student', 'Empresa a Estudiante'),
+        ('student_to_company', 'Estudiante a Empresa'),
+    ]
 
     # Campos básicos - coinciden con frontend
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -32,10 +38,21 @@ class Evaluation(models.Model):
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_done')
     category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE, related_name='evaluations')  # Campo agregado para coincidir con frontend
     
+    # NUEVO: Tipo de evaluación
+    evaluation_type = models.CharField(
+        max_length=25, 
+        choices=EVALUATION_TYPE_CHOICES,
+        default='company_to_student',
+        help_text='Dirección de la evaluación'
+    )
+    
     # Campos de evaluación - coinciden con frontend
     score = models.FloatField(validators=[MinValueValidator(1), MaxValueValidator(5)])  # Ahora solo de 1 a 5
     comments = models.TextField(blank=True, null=True)
     evaluation_date = models.DateField(auto_now_add=True)  # Campo agregado para coincidir con frontend
+    
+    # NUEVO: Criterios específicos por tipo de evaluación
+    criteria_scores = models.JSONField(default=dict, blank=True, help_text='Puntajes por criterio específico')
     
     # Campos adicionales para compatibilidad
     company = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='evaluations', null=True, blank=True)
@@ -58,9 +75,15 @@ class Evaluation(models.Model):
         verbose_name = 'Evaluación'
         verbose_name_plural = 'Evaluaciones'
         ordering = ['-date', '-created_at']
+        # NUEVO: Índice para consultas eficientes
+        indexes = [
+            models.Index(fields=['evaluation_type', 'status']),
+            models.Index(fields=['student', 'evaluation_type']),
+            models.Index(fields=['company', 'evaluation_type']),
+        ]
 
     def __str__(self):
-        return f"{self.student.user.full_name} - {self.project.title} ({self.get_type_display()})"
+        return f"{self.student.user.full_name} - {self.project.title} ({self.get_evaluation_type_display()})"
     
     def save(self, *args, **kwargs):
         # Sincronizar campos para compatibilidad
@@ -69,6 +92,13 @@ class Evaluation(models.Model):
         if not self.overall_rating:
             self.overall_rating = self.score
         
+        # NUEVO: Determinar automáticamente el tipo de evaluación
+        if not self.evaluation_type:
+            if self.evaluator.role == 'company':
+                self.evaluation_type = 'company_to_student'
+            elif self.evaluator.role == 'student':
+                self.evaluation_type = 'student_to_company'
+        
         super().save(*args, **kwargs)
 
     def get_strengths_list(self):
@@ -76,6 +106,16 @@ class Evaluation(models.Model):
 
     def get_areas_for_improvement_list(self):
         return [a.strip() for a in (self.areas_for_improvement or '').split(',') if a.strip()]
+    
+    # NUEVO: Método para obtener criterios específicos
+    def get_criteria_scores(self):
+        """Retorna los puntajes por criterio como diccionario"""
+        return self.criteria_scores or {}
+    
+    def set_criteria_scores(self, criteria_dict):
+        """Establece los puntajes por criterio"""
+        self.criteria_scores = criteria_dict
+        self.save(update_fields=['criteria_scores'])
 
 class EvaluationCategoryScore(models.Model):
     """Puntaje por categoría/criterio en una evaluación"""
