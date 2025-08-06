@@ -34,6 +34,7 @@ import {
   Delete as DeleteIcon,
   Category as CategoryIcon,
 } from '@mui/icons-material';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ProjectDetailsModalProps {
   open: boolean;
@@ -52,6 +53,8 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
   showStudents = false,
   userRole = 'student'
 }) => {
+  const { themeMode } = useTheme();
+  
   if (!project) return null;
 
   // Debug: Log project data to see what fields are available
@@ -215,21 +218,22 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
       {/* Contenido principal */}
       <Box sx={{ 
         p: 2.5, 
-        bgcolor: '#fafafa',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : '#fafafa',
+        color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
         maxHeight: 'calc(90vh - 140px)',
         overflow: 'auto',
         '&::-webkit-scrollbar': {
           width: '6px',
         },
         '&::-webkit-scrollbar-track': {
-          background: '#f1f1f1',
+          background: themeMode === 'dark' ? '#334155' : '#f1f1f1',
           borderRadius: '3px',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: '#c1c1c1',
+          background: themeMode === 'dark' ? '#475569' : '#c1c1c1',
           borderRadius: '3px',
           '&:hover': {
-            background: '#a8a8a8',
+            background: themeMode === 'dark' ? '#64748b' : '#a8a8a8',
           },
         },
       }}>
@@ -246,9 +250,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 p: 2, 
                 mb: 2, 
                 borderRadius: 2,
-                background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+                background: themeMode === 'dark' ? 'linear-gradient(145deg, #334155 0%, #1e293b 100%)' : 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(255,255,255,0.8)'
+                border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
+                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                   <Box sx={{ 
@@ -268,7 +273,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 </Box>
                 <Typography variant="body2" sx={{ 
                   lineHeight: 1.6, 
-                  color: '#374151',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#374151',
                   fontSize: '1rem'
                 }}>
                   {project.description || 'Sin descripción disponible'}
@@ -281,9 +286,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   p: 2, 
                   mb: 2, 
                   borderRadius: 2,
-                  background: 'linear-gradient(145deg, #e8f5e8 0%, #f0f8f0 100%)',
+                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #064e3b 0%, #065f46 100%)' : 'linear-gradient(145deg, #e8f5e8 0%, #f0f8f0 100%)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  border: '1px solid rgba(76, 175, 80, 0.2)'
+                  border: themeMode === 'dark' ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid rgba(76, 175, 80, 0.2)',
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                     <Box sx={{ 
@@ -303,7 +309,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   </Box>
                   <Typography variant="body2" sx={{ 
                     lineHeight: 1.6, 
-                    color: '#374151',
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#374151',
                     fontSize: '1rem'
                   }}>
                     {project.objetivo}
@@ -317,9 +323,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   p: 2, 
                   mb: 2, 
                   borderRadius: 2,
-                  background: 'linear-gradient(145deg, #fff3e0 0%, #fef7f0 100%)',
+                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #451a03 0%, #78350f 100%)' : 'linear-gradient(145deg, #fff3e0 0%, #fef7f0 100%)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  border: '1px solid rgba(255, 152, 0, 0.2)'
+                  border: themeMode === 'dark' ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid rgba(255, 152, 0, 0.2)',
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                     <Box sx={{ 
@@ -339,7 +346,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   </Box>
                   <Typography variant="body2" sx={{ 
                     lineHeight: 1.6, 
-                    color: '#374151',
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#374151',
                     fontSize: '1rem'
                   }}>
                     {project.requirements}
@@ -353,9 +360,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   p: 2, 
                   mb: 2, 
                   borderRadius: 2,
-                  background: 'linear-gradient(145deg, #f3e5f5 0%, #faf5ff 100%)',
+                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #581c87 0%, #7c3aed 100%)' : 'linear-gradient(145deg, #f3e5f5 0%, #faf5ff 100%)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  border: '1px solid rgba(156, 39, 176, 0.2)'
+                  border: themeMode === 'dark' ? '1px solid rgba(139, 92, 246, 0.2)' : '1px solid rgba(156, 39, 176, 0.2)',
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                     <Box sx={{ 
@@ -375,7 +383,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   </Box>
                   <Typography variant="body2" sx={{ 
                     lineHeight: 1.6, 
-                    color: '#374151',
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#374151',
                     fontSize: '1rem'
                   }}>
                     {project.tipo}
@@ -383,15 +391,16 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 </Paper>
               )}
 
-                             {/* Estado del Proyecto - Visible para todos pero con diferente formato según el rol */}
-               {trlLevel > 0 && (
+              {/* Estado del Proyecto - Visible para todos pero con diferente formato según el rol */}
+              {trlLevel > 0 && (
                 <Paper sx={{ 
                   p: 2, 
                   mb: 2, 
                   borderRadius: 2,
-                  background: 'linear-gradient(145deg, #e3f2fd 0%, #f0f8ff 100%)',
+                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #1e3a8a 0%, #1e40af 100%)' : 'linear-gradient(145deg, #e3f2fd 0%, #f0f8ff 100%)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  border: '1px solid rgba(25, 118, 210, 0.2)'
+                  border: themeMode === 'dark' ? '1px solid rgba(59, 130, 246, 0.2)' : '1px solid rgba(25, 118, 210, 0.2)',
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                     <Box sx={{ 
@@ -406,23 +415,23 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                       <ScienceIcon sx={{ fontSize: 20 }} />
                     </Box>
                     <Box>
-                                             <Typography variant="h6" fontWeight={600} color="primary.main">
-                         {userRole === 'admin' 
-                           ? `Etapa de Desarrollo (TRL ${trlLevel})`
-                           : 'Estado del Proyecto'
-                         }
-                       </Typography>
-                       <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600, mt: 0.5 }}>
-                         {userRole === 'admin' 
-                           ? getTrlDescription(trlLevel)
-                           : getProjectStatusForStudent(trlLevel)
-                         }
-                       </Typography>
-                       {userRole === 'student' && (
-                         <Typography variant="body2" sx={{ color: '#374151', mt: 1, lineHeight: 1.5 }}>
-                           {getProjectStatusDescriptionForStudent(trlLevel)}
-                         </Typography>
-                       )}
+                      <Typography variant="h6" fontWeight={600} color="primary.main">
+                        {userRole === 'admin' 
+                          ? `Etapa de Desarrollo (TRL ${trlLevel})`
+                          : 'Estado del Proyecto'
+                        }
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600, mt: 0.5 }}>
+                        {userRole === 'admin' 
+                          ? getTrlDescription(trlLevel)
+                          : getProjectStatusForStudent(trlLevel)
+                        }
+                      </Typography>
+                      {userRole === 'student' && (
+                        <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#374151', mt: 1, lineHeight: 1.5 }}>
+                          {getProjectStatusDescriptionForStudent(trlLevel)}
+                        </Typography>
+                      )}
                     </Box>
                   </Box>
                 </Paper>
@@ -434,9 +443,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   p: 2, 
                   mb: 2, 
                   borderRadius: 2,
-                  background: 'linear-gradient(145deg, #e8f5e8 0%, #f0f8f0 100%)',
+                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #064e3b 0%, #065f46 100%)' : 'linear-gradient(145deg, #e8f5e8 0%, #f0f8f0 100%)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  border: '1px solid rgba(76, 175, 80, 0.2)'
+                  border: themeMode === 'dark' ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid rgba(76, 175, 80, 0.2)',
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                     <Box sx={{ 
@@ -455,7 +465,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                     </Typography>
                   </Box>
                   {project.estudiantes.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'}>
                       No hay estudiantes asignados a este proyecto.
                     </Typography>
                   ) : (
@@ -466,19 +476,20 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                           alignItems: 'center', 
                           justifyContent: 'space-between',
                           p: 2, 
-                          bgcolor: '#f8f9fa', 
+                          bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa', 
                           borderRadius: 2,
-                          border: '1px solid #e0e0e0'
+                          border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0',
+                          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
                         }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
                               <PersonIcon />
                             </Avatar>
                             <Box>
-                              <Typography variant="body2" fontWeight={600}>
+                              <Typography variant="body2" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                                 {est.nombre}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                                 {est.email}
                               </Typography>
                             </Box>
@@ -494,7 +505,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                               variant="outlined"
                             />
                             {est.applied_at && (
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                                 Aplicó: {new Date(est.applied_at).toLocaleDateString()}
                               </Typography>
                             )}
@@ -512,12 +523,13 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
               <Paper sx={{ 
                 p: 2, 
                 borderRadius: 2,
-                background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+                background: themeMode === 'dark' ? 'linear-gradient(145deg, #334155 0%, #1e293b 100%)' : 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(0,0,0,0.05)',
+                border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
                 height: 'fit-content',
                 position: 'sticky',
-                top: 20
+                top: 20,
+                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
               }}>
                 <Typography variant="h6" fontWeight={600} gutterBottom color="primary.main" sx={{ mb: 2 }}>
                   Información del Proyecto
@@ -526,22 +538,22 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {/* Duración y Horas */}
                 <Box sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                    <ScheduleIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                    <ScheduleIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                    <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                       Duración
                     </Typography>
                   </Box>
                   <Typography variant="body2" sx={{ 
-                    color: '#374151', 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                     fontWeight: 500,
-                    bgcolor: '#f3f4f6',
+                    bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                     p: 1,
                     borderRadius: 1.5,
                     fontSize: '0.875rem'
                   }}>
                     {project.duration_weeks || 0} semanas • {project.hours_per_week || 0} horas/semana
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                  <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', mt: 0.5, display: 'block' }}>
                     Horas totales: <b>{((project.duration_weeks || 0) * (project.hours_per_week || 0))}</b>
                   </Typography>
                 </Box>
@@ -549,15 +561,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {/* Modalidad */}
                 <Box sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                    <LocationIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                    <LocationIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                    <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                       Modalidad
                     </Typography>
                   </Box>
                   <Typography variant="body2" sx={{ 
-                    color: '#374151', 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                     fontWeight: 500,
-                    bgcolor: '#f3f4f6',
+                    bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                     p: 1,
                     borderRadius: 1.5,
                     fontSize: '0.875rem'
@@ -570,15 +582,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {project.area && (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                      <CategoryIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      <CategoryIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                         Área del Proyecto
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ 
-                      color: '#374151', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                       fontWeight: 500,
-                      bgcolor: '#f3f4f6',
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                       p: 1,
                       borderRadius: 1.5,
                       fontSize: '0.875rem'
@@ -592,15 +604,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {project.encargado && (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                      <PersonIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      <PersonIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                         Responsable del Proyecto
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ 
-                      color: '#374151', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                       fontWeight: 500,
-                      bgcolor: '#f3f4f6',
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                       p: 1,
                       borderRadius: 1.5,
                       fontSize: '0.875rem'
@@ -614,15 +626,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {project.contacto && (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                      <PhoneIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      <PhoneIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                         Contacto de la Empresa
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ 
-                      color: '#374151', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                       fontWeight: 500,
-                      bgcolor: '#f3f4f6',
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                       p: 1,
                       borderRadius: 1.5,
                       fontSize: '0.875rem'
@@ -636,15 +648,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {project.required_hours && (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                      <AccessTimeIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      <AccessTimeIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                         Horas Ofrecidas
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ 
-                      color: '#374151', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                       fontWeight: 500,
-                      bgcolor: '#f3f4f6',
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                       p: 1,
                       borderRadius: 1.5,
                       fontSize: '0.875rem'
@@ -658,15 +670,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {project.start_date && (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                      <CalendarIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      <CalendarIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                         Fecha de Inicio
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ 
-                      color: '#374151', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                       fontWeight: 500,
-                      bgcolor: '#f3f4f6',
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                       p: 1,
                       borderRadius: 1.5,
                       fontSize: '0.875rem'
@@ -680,15 +692,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {project.estimated_end_date && (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                      <CalendarIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      <CalendarIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                         Fecha Estimada de Fin
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ 
-                      color: '#374151', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                       fontWeight: 500,
-                      bgcolor: '#f3f4f6',
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                       p: 1,
                       borderRadius: 1.5,
                       fontSize: '0.875rem'
@@ -702,15 +714,15 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 {project.created_at && (
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                      <CalendarIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
-                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      <CalendarIcon sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                         Fecha de Creación
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ 
-                      color: '#374151', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#374151', 
                       fontWeight: 500,
-                      bgcolor: '#f3f4f6',
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#f3f4f6',
                       p: 1,
                       borderRadius: 1.5,
                       fontSize: '0.875rem'
@@ -726,7 +738,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
 
                 {/* Chips de información adicional */}
                 <Box sx={{ mt: 3 }}>
-                  <Typography variant="subtitle2" fontWeight={600} gutterBottom color="text.primary">
+                  <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Detalles del Proyecto
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>

@@ -19,6 +19,8 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -42,6 +44,7 @@ import {
   MarkEmailRead as MarkEmailReadIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Notification {
   id: string;
@@ -68,6 +71,7 @@ interface NotificationFilters {
 }
 
 export const Notifications = () => {
+  const { themeMode } = useTheme();
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
@@ -319,7 +323,13 @@ export const Notifications = () => {
   const hasActiveFilters = Object.values(filters).some(value => value !== 'all' && value !== '');
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3,
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+      minHeight: '100vh'
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -512,12 +522,28 @@ export const Notifications = () => {
         
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
           <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="noti-limit-label">Mostrar</InputLabel>
+            <InputLabel id="noti-limit-label" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Mostrar</InputLabel>
             <Select
               labelId="noti-limit-label"
               value={limit}
               label="Mostrar"
               onChange={e => setLimit(Number(e.target.value))}
+              sx={{
+                bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                },
+                '& .MuiSvgIcon-root': {
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                },
+              }}
             >
               {[5, 10, 20, 30, 50].map(num => (
                 <MenuItem key={num} value={num}>{num} últimas</MenuItem>
@@ -528,134 +554,133 @@ export const Notifications = () => {
       </Box>
 
       {/* Filtros mejorados */}
-      <Paper sx={{ 
-        p: 3, 
-        mb: 3, 
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        borderRadius: 3,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.05)'
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <Button
-            variant="contained"
-            startIcon={<FilterIcon />}
-            sx={{
-              bgcolor: 'primary.main',
-              color: 'white',
-              borderRadius: 2,
-              px: 3,
-              py: 1,
-              fontWeight: 600,
-              boxShadow: 2,
-              '&:hover': {
-                bgcolor: 'primary.dark',
-                boxShadow: 4,
-                transform: 'translateY(-1px)'
-              }
-            }}
-          >
-            Filtros y Búsqueda
-          </Button>
-          {hasActiveFilters && (
-            <Button
-              size="small"
-              onClick={clearFilters}
-              startIcon={<ClearIcon />}
-              variant="outlined"
+      <Card 
+        className="filter-card"
+        sx={{ 
+          mb: 3, 
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          borderRadius: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <FilterIcon sx={{ mr: 1, color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+            <Typography variant="h6" sx={{ 
+              fontWeight: 'bold',
+              color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+            }}>
+              Filtros y Búsqueda
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <TextField
+              label="Buscar notificaciones..."
+              value={filters.search}
+              onChange={e => handleFilterChange('search', e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+                  </InputAdornment>
+                ),
+              }}
               sx={{ 
-                borderRadius: 2,
-                borderColor: 'error.main',
-                color: 'error.main',
-                '&:hover': {
-                  borderColor: 'error.dark',
-                  bgcolor: 'error.light',
-                  color: 'error.dark'
+                minWidth: 300,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '&:hover fieldset': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& fieldset': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                },
+                '& .MuiInputBase-input': {
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
                 }
               }}
-            >
-              Limpiar filtros
-            </Button>
-          )}
-        </Box>
-        
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 3, 
-          alignItems: 'center',
-          p: 2,
-          borderRadius: 2,
-          bgcolor: 'rgba(255,255,255,0.7)'
-        }}>
-          <TextField
-            size="small"
-            placeholder="🔍 Buscar notificaciones..."
-            value={filters.search}
-            onChange={e => handleFilterChange('search', e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="primary" />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ 
-              minWidth: 280,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
-                }
-              }
-            }}
-          />
-          
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>🎯 Prioridad</InputLabel>
-            <Select
-              value={filters.priority}
-              label="🎯 Prioridad"
-              onChange={e => handleFilterChange('priority', e.target.value)}
-              sx={{
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
-                }
-              }}
-            >
-              <MenuItem value="all">Todas las prioridades</MenuItem>
-              <MenuItem value="urgent">🚨 Urgente</MenuItem>
-              <MenuItem value="high">🔴 Alta</MenuItem>
-              <MenuItem value="medium">🟡 Media</MenuItem>
-              <MenuItem value="normal">🟢 Normal</MenuItem>
-              <MenuItem value="low">🔵 Baja</MenuItem>
-            </Select>
-          </FormControl>
-          
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>📖 Estado</InputLabel>
-            <Select
-              value={filters.readStatus}
-              label="📖 Estado"
-              onChange={e => handleFilterChange('readStatus', e.target.value)}
-              sx={{
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
-                }
-              }}
-            >
-              <MenuItem value="all">Todos los estados</MenuItem>
-              <MenuItem value="unread">📬 No leídas</MenuItem>
-              <MenuItem value="read">📭 Leídas</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Paper>
+            />
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Prioridad</InputLabel>
+              <Select
+                value={filters.priority}
+                label="Prioridad"
+                onChange={e => handleFilterChange('priority', e.target.value)}
+                sx={{ 
+                  borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                  },
+                }}
+              >
+                <MenuItem value="all">Todas las prioridades</MenuItem>
+                <MenuItem value="urgent">🚨 Urgente</MenuItem>
+                <MenuItem value="high">🔴 Alta</MenuItem>
+                <MenuItem value="medium">🟡 Media</MenuItem>
+                <MenuItem value="normal">🟢 Normal</MenuItem>
+                <MenuItem value="low">🔵 Baja</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Estado</InputLabel>
+              <Select
+                value={filters.readStatus}
+                label="Estado"
+                onChange={e => handleFilterChange('readStatus', e.target.value)}
+                sx={{ 
+                  borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                  },
+                }}
+              >
+                <MenuItem value="all">Todos los estados</MenuItem>
+                <MenuItem value="unread">📬 No leídas</MenuItem>
+                <MenuItem value="read">📭 Leídas</MenuItem>
+              </Select>
+            </FormControl>
+            {hasActiveFilters && (
+              <Button
+                variant="outlined"
+                startIcon={<ClearIcon />}
+                onClick={clearFilters}
+                sx={{ borderRadius: 2 }}
+              >
+                Limpiar filtros
+              </Button>
+            )}
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Lista de notificaciones mejorada */}
       <Box sx={{ 
@@ -665,8 +690,12 @@ export const Notifications = () => {
         mb: 3,
         p: 2,
         borderRadius: 3,
-        background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-        border: '1px solid #90caf9'
+        background: themeMode === 'dark' 
+          ? 'linear-gradient(135deg, #334155 0%, #475569 100%)' 
+          : 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+        border: themeMode === 'dark' 
+          ? '1px solid rgba(255,255,255,0.1)' 
+          : '1px solid #90caf9'
       }}>
         <Box sx={{ 
           display: 'flex', 
@@ -680,21 +709,6 @@ export const Notifications = () => {
           <HistoryIcon fontSize="small" />
           <Typography variant="h5" fontWeight={600}>Historial de Notificaciones</Typography>
         </Box>
-        <Badge 
-          badgeContent={filteredNotifications.length} 
-          color="primary"
-          sx={{ 
-            '& .MuiBadge-badge': {
-              bgcolor: '#1976d2',
-              color: 'white',
-              fontWeight: 600
-            }
-          }}
-        >
-          <Typography variant="body2" color="text.secondary">
-            notificación{filteredNotifications.length !== 1 ? 'es' : ''} encontrada{filteredNotifications.length !== 1 ? 's' : ''}
-          </Typography>
-        </Badge>
       </Box>
       
       <Paper sx={{ 
@@ -702,14 +716,18 @@ export const Notifications = () => {
         overflow: 'auto',
         borderRadius: 3,
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.05)'
+        border: '1px solid rgba(0,0,0,0.05)',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+        color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
       }}>
         {filteredNotifications.length === 0 ? (
           <Box sx={{ 
             textAlign: 'center', 
             py: 6,
             px: 3,
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #334155 0%, #475569 100%)' 
+              : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
           }}>
             <Box sx={{ 
               display: 'flex', 
@@ -729,13 +747,13 @@ export const Notifications = () => {
               }}>
                 <NotificationsIcon sx={{ fontSize: 40, color: 'primary.main' }} />
               </Box>
-              <Typography variant="h5" fontWeight={600} color="text.primary">
+              <Typography variant="h5" fontWeight={600} color={themeMode === 'dark' ? '#f1f5f9' : 'text.primary'}>
                 {hasActiveFilters 
                   ? '🔍 No se encontraron notificaciones'
                   : '📭 No hay notificaciones'
                 }
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
+              <Typography variant="body1" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} sx={{ maxWidth: 400 }}>
                 {hasActiveFilters 
                   ? 'No se encontraron notificaciones con los filtros seleccionados. Intenta ajustar tus criterios de búsqueda.'
                   : '¡Perfecto! No tienes notificaciones pendientes. Cuando recibas nuevas notificaciones aparecerán aquí.'
@@ -814,93 +832,112 @@ export const Notifications = () => {
                     </Box>
                   </ListItemAvatar>
                                      <ListItemText
-                     primary={
-                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-                         <Typography 
-                           variant="subtitle1" 
-                           fontWeight={notification.read ? 'normal' : 'bold'}
-                           sx={{ flex: 1, minWidth: 0 }}
-                           component="span"
-                         >
-                           {notification.title}
-                         </Typography>
-                         <Chip
-                           label={getTypeLabel(notification.type)}
-                           size="small"
-                           variant="outlined"
-                           sx={{ fontSize: '0.7rem' }}
-                         />
-                         <Chip
-                           label={getPriorityLabel(notification.priority)}
-                           size="small"
-                           color={getPriorityColor(notification.priority) as any}
-                                                       sx={{
-                              fontWeight: 600,
-                              '&.MuiChip-colorError': {
-                                bgcolor: '#d32f2f',
-                                color: 'white'
-                              },
-                              '&.MuiChip-colorWarning': {
-                                bgcolor: '#ed6c02',
-                                color: 'white'
-                              },
-                              '&.MuiChip-colorInfo': {
-                                bgcolor: '#1976d2',
-                                color: 'white'
-                              },
-                              '&.MuiChip-colorSuccess': {
-                                bgcolor: '#1976d2',
-                                color: 'white'
-                              }
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+                        <Box 
+                          component="span"
+                          sx={{ 
+                            flex: 1, 
+                            minWidth: 0,
+                            fontWeight: notification.read ? 'normal' : 'bold',
+                            fontSize: '1rem',
+                            lineHeight: 1.2
+                          }}
+                        >
+                          {notification.title}
+                        </Box>
+                        <Chip
+                          label={getTypeLabel(notification.type)}
+                          size="small"
+                          variant="outlined"
+                          sx={{ fontSize: '0.7rem' }}
+                        />
+                        <Chip
+                          label={getPriorityLabel(notification.priority)}
+                          size="small"
+                          color={getPriorityColor(notification.priority) as any}
+                          sx={{
+                            fontWeight: 600,
+                            '&.MuiChip-colorError': {
+                              bgcolor: '#d32f2f',
+                              color: 'white'
+                            },
+                            '&.MuiChip-colorWarning': {
+                              bgcolor: '#ed6c02',
+                              color: 'white'
+                            },
+                            '&.MuiChip-colorInfo': {
+                              bgcolor: '#1976d2',
+                              color: 'white'
+                            },
+                            '&.MuiChip-colorSuccess': {
+                              bgcolor: '#1976d2',
+                              color: 'white'
+                            }
+                          }}
+                        />
+                      </Box>
+                    }
+                    secondary={
+                      <>
+                        <Box 
+                          component="span"
+                          sx={{ 
+                            mb: 1, 
+                            lineHeight: 1.4,
+                            color: 'text.secondary',
+                            fontSize: '0.875rem',
+                            display: 'block'
+                          }}
+                        >
+                          {notification.message}
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                          <Box 
+                            component="span"
+                            sx={{ 
+                              color: 'text.secondary',
+                              fontSize: '0.75rem'
                             }}
-                         />
-                       </Box>
-                     }
-                     secondary={
-                       <>
-                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1, lineHeight: 1.4 }} component="span">
-                           {notification.message}
-                         </Typography>
-                                                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                            <Typography variant="caption" color="text.secondary" component="span">
-                              {notification.company && `${notification.company} • `}
-                              {new Date(notification.date).toLocaleDateString('es-ES', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </Typography>
-                            {!notification.read && (
-                              <Chip
-                                label="Nueva"
-                                size="small"
-                                sx={{
-                                  bgcolor: '#1976d2',
-                                  color: 'white',
-                                  fontSize: '0.6rem',
-                                  height: 16,
-                                  '& .MuiChip-label': {
-                                    px: 1,
-                                    py: 0.2
-                                  }
-                                }}
-                              />
-                            )}
+                          >
+                            {notification.company && `${notification.company} • `}
+                            {new Date(notification.date).toLocaleDateString('es-ES', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
                           </Box>
-                       </>
-                     }
-                     sx={{ 
-                       margin: 0,
-                       '& .MuiListItemText-primary': {
-                         marginBottom: 0.5,
-                       },
-                       '& .MuiListItemText-secondary': {
-                         marginTop: 0.5,
-                       }
-                     }}
-                   />
+                          {!notification.read && (
+                            <Chip
+                              label="Nueva"
+                              size="small"
+                              sx={{
+                                bgcolor: '#1976d2',
+                                color: 'white',
+                                fontSize: '0.6rem',
+                                height: 16,
+                                '& .MuiChip-label': {
+                                  px: 1,
+                                  py: 0.2
+                                }
+                              }}
+                            />
+                          )}
+                        </Box>
+                      </>
+                    }
+                    sx={{ 
+                      margin: 0,
+                      '& .MuiListItemText-primary': {
+                        marginBottom: 0.5,
+                      },
+                      '& .MuiListItemText-secondary': {
+                        marginTop: 0.5,
+                      }
+                    }}
+                  />
                 </ListItem>
                 {index < filteredNotifications.length - 1 && <Divider />}
               </Box>
@@ -918,7 +955,9 @@ export const Notifications = () => {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
           }
         }}
       >
@@ -932,20 +971,31 @@ export const Notifications = () => {
               mb: 3,
               p: 2,
               borderRadius: 2,
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              border: '1px solid rgba(0,0,0,0.05)'
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #334155 0%, #475569 100%)' 
+                : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              border: themeMode === 'dark' 
+                ? '1px solid rgba(255,255,255,0.1)' 
+                : '1px solid rgba(0,0,0,0.05)'
             }}>
               <Avatar sx={{ 
-                bgcolor: selectedNotification.read ? 'background.paper' : 'primary.light',
+                bgcolor: selectedNotification.read 
+                  ? (themeMode === 'dark' ? '#475569' : 'background.paper') 
+                  : 'primary.light',
                 width: 64, 
                 height: 64, 
                 boxShadow: 3,
-                border: selectedNotification.read ? '2px solid #e0e0e0' : '2px solid #1976d2',
+                border: selectedNotification.read 
+                  ? (themeMode === 'dark' ? '2px solid #64748b' : '2px solid #e0e0e0') 
+                  : '2px solid #1976d2',
               }}>
                 {getNotificationIcon(selectedNotification.type)}
               </Avatar>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h5" fontWeight={700} sx={{ mb: 1, color: 'text.primary' }}>
+                <Typography variant="h5" fontWeight={700} sx={{ 
+                  mb: 1, 
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' 
+                }}>
                   {selectedNotification.title}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -970,10 +1020,15 @@ export const Notifications = () => {
               p: 3, 
               mb: 3, 
               borderRadius: 2,
-              bgcolor: 'grey.50',
-              border: '1px solid rgba(0,0,0,0.05)'
+              bgcolor: themeMode === 'dark' ? '#334155' : 'grey.50',
+              border: themeMode === 'dark' 
+                ? '1px solid rgba(255,255,255,0.1)' 
+                : '1px solid rgba(0,0,0,0.05)'
             }}>
-              <Typography variant="body1" sx={{ color: 'text.primary', lineHeight: 1.7 }} component="div">
+              <Typography variant="body1" sx={{ 
+                color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary', 
+                lineHeight: 1.7 
+              }} component="div">
                 {selectedNotification.message}
               </Typography>
             </Box>
@@ -984,13 +1039,17 @@ export const Notifications = () => {
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
                 gap: 2,
-                background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                background: themeMode === 'dark' 
+                  ? 'linear-gradient(135deg, #334155 0%, #475569 100%)' 
+                  : 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
                 borderRadius: 2,
                 p: 3,
                 mb: 3,
                 alignItems: { sm: 'center' },
                 flexWrap: 'wrap',
-                border: '1px solid #90caf9'
+                border: themeMode === 'dark' 
+                  ? '1px solid rgba(255,255,255,0.1)' 
+                  : '1px solid #90caf9'
               }}
             >
               {selectedNotification.company && (
@@ -1000,10 +1059,12 @@ export const Notifications = () => {
                   gap: 1,
                   p: 1,
                   borderRadius: 1,
-                  bgcolor: 'rgba(255,255,255,0.7)'
+                  bgcolor: themeMode === 'dark' 
+                    ? 'rgba(255,255,255,0.1)' 
+                    : 'rgba(255,255,255,0.7)'
                 }}>
                   <BusinessIcon fontSize="small" color="info" />
-                  <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                  <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} fontWeight={500}>
                     {selectedNotification.company}
                   </Typography>
                 </Box>
@@ -1014,10 +1075,12 @@ export const Notifications = () => {
                 gap: 1,
                 p: 1,
                 borderRadius: 1,
-                bgcolor: 'rgba(255,255,255,0.7)'
+                bgcolor: themeMode === 'dark' 
+                  ? 'rgba(255,255,255,0.1)' 
+                  : 'rgba(255,255,255,0.7)'
               }}>
                 <InfoIcon fontSize="small" color="action" />
-                <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} fontWeight={500}>
                   {new Date(selectedNotification.date).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'long',
@@ -1033,10 +1096,12 @@ export const Notifications = () => {
                 gap: 1,
                 p: 1,
                 borderRadius: 1,
-                bgcolor: 'rgba(255,255,255,0.7)'
+                bgcolor: themeMode === 'dark' 
+                  ? 'rgba(255,255,255,0.1)' 
+                  : 'rgba(255,255,255,0.7)'
               }}>
                 <WarningIcon fontSize="small" color={getPriorityColor(selectedNotification.priority) as any} />
-                <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} fontWeight={500}>
                   Prioridad: {getPriorityLabel(selectedNotification.priority)}
                 </Typography>
               </Box>
@@ -1048,7 +1113,9 @@ export const Notifications = () => {
               justifyContent: 'flex-end', 
               gap: 2, 
               pt: 2,
-              borderTop: '1px solid rgba(0,0,0,0.1)'
+              borderTop: themeMode === 'dark' 
+                ? '1px solid rgba(255,255,255,0.1)' 
+                : '1px solid rgba(0,0,0,0.1)'
             }}>
               <Button
                 onClick={() => setDialogOpen(false)}

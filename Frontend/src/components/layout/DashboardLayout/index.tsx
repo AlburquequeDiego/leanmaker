@@ -18,6 +18,7 @@ import {
   MenuItem,
   Divider,
   Tooltip,
+  useTheme as useMuiTheme,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -44,6 +45,7 @@ import {
   Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
+import { useTheme as useCustomTheme } from '../../../contexts/ThemeContext';
 import { NotificationCenter } from '../../notifications/NotificationCenter';
 
 const drawerWidth = 280;
@@ -53,9 +55,6 @@ interface DashboardLayoutProps {
   userRole: 'admin' | 'company' | 'student';
 }
 
-// Este componente define la estructura principal del dashboard, incluyendo el menú lateral (Drawer),
-// la barra superior (AppBar) y el área de contenido dinámico (Outlet). El menú y las opciones
-// se adaptan según el rol del usuario (admin, empresa o estudiante).
 export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -63,7 +62,8 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
-  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
+  const { themeMode, toggleTheme } = useCustomTheme();
+  const muiTheme = useMuiTheme();
 
   // Cargar estado del sidebar desde localStorage
   useEffect(() => {
@@ -97,10 +97,6 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handleThemeToggle = () => {
-    setThemeMode((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
   const getMenuItems = () => {
@@ -156,7 +152,11 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   };
 
   const drawer = (
-    <Box>
+    <Box sx={{ 
+      bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+      height: '100%'
+    }}>
       <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
         {!sidebarCollapsed && (
           <Typography 
@@ -164,7 +164,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             noWrap 
             component="div" 
             sx={{ 
-              color: themeMode === 'light' ? '#1976d2' : '#e3eafc', 
+              color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
               fontWeight: 700, 
               letterSpacing: 1 
             }}
@@ -178,7 +178,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             noWrap 
             component="div" 
             sx={{ 
-              color: themeMode === 'light' ? '#1976d2' : '#e3eafc', 
+              color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
               fontWeight: 700, 
               letterSpacing: 1,
               fontSize: '1.2rem'
@@ -188,10 +188,24 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           </Typography>
         )}
       </Toolbar>
-      <Divider sx={{ bgcolor: themeMode === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }} />
+      <Divider sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#e2e8f0' }} />
       <List>
         {getMenuItems().map((item) => {
-          const selected = location.pathname === item.path || (item.path !== '/dashboard/student' && location.pathname.startsWith(item.path));
+          // Lógica mejorada para la selección
+          let selected = false;
+          
+          if (item.path === location.pathname) {
+            // Coincidencia exacta
+            selected = true;
+          } else if (item.text === 'Dashboard') {
+            // Para Dashboard, solo seleccionar si estamos exactamente en la ruta del dashboard
+            selected = location.pathname === item.path;
+          } else {
+            // Para otros elementos, verificar si la ruta actual comienza con el path del item
+            // pero solo si no es el dashboard
+            selected = location.pathname.startsWith(item.path) && item.path !== '/dashboard/admin' && item.path !== '/dashboard/company' && item.path !== '/dashboard/student';
+          }
+          
           return (
             <ListItem key={item.text} disablePadding>
               <Tooltip 
@@ -204,21 +218,26 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
                   onClick={() => navigate(item.path)}
                   sx={{
                     borderRadius: 3,
-                    background: selected 
-                      ? (themeMode === 'light' ? '#1976d2' : '#22345a') 
-                      : 'transparent',
-                    color: selected 
-                      ? '#fff' 
-                      : (themeMode === 'light' ? '#22345a' : '#e3eafc'),
                     my: 0.5,
                     mx: 1,
                     height: 56,
                     minHeight: 56,
                     justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
-                    transition: 'background 0.2s, color 0.2s',
+                    transition: 'all 0.2s ease-in-out',
+                    bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    '&.Mui-selected': {
+                      backgroundColor: themeMode === 'dark' ? '#ffffff' : '#2563eb',
+                      color: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                      '&:hover': {
+                        backgroundColor: themeMode === 'dark' ? '#f1f5f9' : '#1d4ed8',
+                      },
+                      '& .MuiListItemIcon-root': {
+                        color: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                      },
+                    },
                     '&:hover': {
-                      background: themeMode === 'light' ? '#1976d2' : '#22345a',
-                      color: '#fff',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(37, 99, 235, 0.08)',
                     },
                     fontWeight: selected ? 700 : 500,
                   }}
@@ -226,8 +245,8 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
                   <ListItemIcon 
                     sx={{ 
                       color: selected 
-                        ? '#fff' 
-                        : (themeMode === 'light' ? '#1976d2' : '#b6c6e3'), 
+                        ? (themeMode === 'dark' ? '#1e293b' : '#ffffff')
+                        : (themeMode === 'dark' ? '#cbd5e1' : '#64748b'),
                       minWidth: sidebarCollapsed ? 'auto' : 40, 
                       fontSize: 28,
                       margin: sidebarCollapsed ? 0 : undefined
@@ -239,11 +258,11 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
                     <ListItemText 
                       primary={item.text} 
                       primaryTypographyProps={{ 
-                        fontWeight: 600, 
+                        fontWeight: selected ? 700 : 600, 
                         fontSize: 18,
                         color: selected 
-                          ? '#fff' 
-                          : (themeMode === 'light' ? '#22345a' : '#e3eafc')
+                          ? (themeMode === 'dark' ? '#1e293b' : '#ffffff')
+                          : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b')
                       }} 
                     />
                   )}
@@ -260,10 +279,23 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
   const getSectionName = () => {
     const path = location.pathname;
     const sections = getMenuItems();
-    // Ordenar por longitud de path descendente para que las coincidencias más largas tengan prioridad
-    const sortedSections = sections.sort((a, b) => b.path.length - a.path.length);
-    const found = sortedSections.find((item) => path === item.path || path.startsWith(item.path));
-    return found ? found.text : '';
+    
+    // Buscar coincidencia exacta primero
+    const exactMatch = sections.find((item) => path === item.path);
+    if (exactMatch) {
+      return exactMatch.text;
+    }
+    
+    // Si no hay coincidencia exacta, buscar coincidencia parcial
+    // pero excluir el dashboard para evitar que se muestre "Dashboard" en todas las páginas
+    const partialMatch = sections.find((item) => {
+      if (item.text === 'Dashboard') {
+        return false; // No mostrar "Dashboard" para rutas que no sean exactamente el dashboard
+      }
+      return path.startsWith(item.path) && item.path !== '/dashboard/admin' && item.path !== '/dashboard/company' && item.path !== '/dashboard/student';
+    });
+    
+    return partialMatch ? partialMatch.text : '';
   };
 
   return (
@@ -274,9 +306,9 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         sx={{
           width: { sm: `calc(100vw - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` },
           ml: { sm: `${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px` },
-          bgcolor: themeMode === 'light' ? '#fff' : '#10213a',
-          color: themeMode === 'light' ? '#22345a' : '#e3eafc',
-          boxShadow: themeMode === 'light' ? '0 2px 8px rgba(0,0,0,0.06)' : undefined,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+          boxShadow: themeMode === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
           maxWidth: '100vw',
           overflowX: 'hidden',
           transition: 'width 0.3s, margin-left 0.3s',
@@ -296,7 +328,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ fontWeight: 600, flexGrow: 1, textAlign: { xs: 'center', sm: 'left' }, color: themeMode === 'light' ? '#22345a' : '#e3eafc' }}
+            sx={{ fontWeight: 600, flexGrow: 1, textAlign: { xs: 'center', sm: 'left' }, color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6' }}
           >
             {getSectionName()}
           </Typography>
@@ -304,8 +336,8 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 1 }}>
             {/* Tema claro/oscuro */}
             <Tooltip title={themeMode === 'light' ? 'Modo oscuro' : 'Modo claro'}>
-              <IconButton color={themeMode === 'light' ? 'default' : 'inherit'} onClick={handleThemeToggle}>
-                {themeMode === 'light' ? <DarkModeIcon sx={{ color: '#22345a' }} /> : <LightModeIcon />}
+              <IconButton color="inherit" onClick={toggleTheme}>
+                {themeMode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
               </IconButton>
             </Tooltip>
             {/* Botón de colapso/expansión */}
@@ -321,16 +353,28 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             aria-label="account of current user"
             aria-haspopup="true"
             onClick={handleProfileMenuOpen}
-            color={themeMode === 'light' ? 'default' : 'inherit'}
+            color="inherit"
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: themeMode === 'light' ? '#e3eafc' : undefined }}>
-              <AccountCircleIcon sx={{ color: themeMode === 'light' ? '#22345a' : undefined }} />
+            <Avatar sx={{ width: 32, height: 32, bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6' }}>
+              <AccountCircleIcon />
             </Avatar>
           </IconButton>
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleProfileMenuClose}
+            PaperProps={{
+              sx: {
+                bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.1)',
+                '& .MuiMenuItem-root': {
+                  '&:hover': {
+                    bgcolor: themeMode === 'dark' ? '#334155' : '#f1f5f9',
+                  },
+                },
+              },
+            }}
           >
             <MenuItem onClick={() => navigate(`/dashboard/${userRole === 'admin' ? 'admin/perfil' : userRole === 'student' ? 'student/profile' : 'company/profile'}`)}>
               <ListItemIcon>
@@ -360,7 +404,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
@@ -368,16 +412,9 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
               boxSizing: 'border-box',
               width: drawerWidth,
               maxWidth: drawerWidth,
-              bgcolor: themeMode === 'light' ? '#fff' : '#10213a',
-              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
+              bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
               borderRight: 0,
-            },
-            '& .MuiListItemText-primary': {
-              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
-              fontWeight: 600,
-            },
-            '& .MuiListItemIcon-root': {
-              color: themeMode === 'light' ? '#22345a' : '#b6c6e3',
             },
           }}
         >
@@ -393,17 +430,10 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
               boxSizing: 'border-box',
               width: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
               maxWidth: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
-              background: themeMode === 'light' ? '#fff' : '#10213a',
-              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
+              background: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
               borderRight: 0,
               transition: 'width 0.3s',
-            },
-            '& .MuiListItemText-primary': {
-              color: themeMode === 'light' ? '#22345a' : '#e3eafc',
-              fontWeight: 600,
-            },
-            '& .MuiListItemIcon-root': {
-              color: themeMode === 'light' ? '#22345a' : '#b6c6e3',
             },
           }}
           open
@@ -419,7 +449,8 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           width: { sm: `calc(100vw - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` }, 
           maxWidth: '100vw', 
           overflowX: 'hidden',
-          transition: 'width 0.3s'
+          transition: 'width 0.3s',
+          bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
         }}
       >
         <Toolbar />

@@ -28,6 +28,7 @@ import {
   Card,
   CardContent,
   Stack,
+  InputAdornment,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -50,6 +51,7 @@ import {
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Student {
   id: string;
@@ -117,6 +119,7 @@ interface ApiQuestionnaire {
 }
 
 export default function GestionEstudiantesAdmin() {
+  const { themeMode } = useTheme();
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -636,7 +639,14 @@ export default function GestionEstudiantesAdmin() {
   };
 
   return (
-    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+    <Box sx={{ 
+      p: 3, 
+      background: themeMode === 'dark' 
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' 
+        : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Header con gradiente */}
       <Card sx={{ 
         mb: 3, 
@@ -648,7 +658,9 @@ export default function GestionEstudiantesAdmin() {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
+                background: themeMode === 'dark'
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(255, 255, 255, 0.2)', 
                 borderRadius: 2, 
                 p: 1.5, 
                 mr: 2,
@@ -671,12 +683,18 @@ export default function GestionEstudiantesAdmin() {
                 startIcon={<HistoryIcon />}
                 onClick={() => navigate('/dashboard/admin/api-requests')}
                 sx={{
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: themeMode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : 'rgba(255, 255, 255, 0.2)',
                   backdropFilter: 'blur(10px)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  border: themeMode === 'dark'
+                    ? '1px solid rgba(255, 255, 255, 0.2)'
+                    : '1px solid rgba(255, 255, 255, 0.3)',
                   '&:hover': {
-                    background: 'rgba(255, 255, 255, 0.3)',
+                    background: themeMode === 'dark'
+                      ? 'rgba(255, 255, 255, 0.2)'
+                      : 'rgba(255, 255, 255, 0.3)',
                   }
                 }}
               >
@@ -687,12 +705,18 @@ export default function GestionEstudiantesAdmin() {
                 startIcon={<RefreshIcon />}
                 onClick={loadStudents}
                 sx={{
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: themeMode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : 'rgba(255, 255, 255, 0.2)',
                   backdropFilter: 'blur(10px)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  border: themeMode === 'dark'
+                    ? '1px solid rgba(255, 255, 255, 0.2)'
+                    : '1px solid rgba(255, 255, 255, 0.3)',
                   '&:hover': {
-                    background: 'rgba(255, 255, 255, 0.3)',
+                    background: themeMode === 'dark'
+                      ? 'rgba(255, 255, 255, 0.2)'
+                      : 'rgba(255, 255, 255, 0.3)',
                   }
                 }}
               >
@@ -843,36 +867,59 @@ export default function GestionEstudiantesAdmin() {
       </Box>
 
       {/* Filtros y tabla de estudiantes con diseño mejorado */}
-      <Card sx={{ 
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-        borderRadius: 3
-      }}>
+      <Card 
+        className="filter-card"
+        sx={{ 
+          mb: 4, 
+          background: themeMode === 'dark'
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+            : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+          boxShadow: themeMode === 'dark'
+            ? '0 4px 20px rgba(0, 0, 0, 0.3)'
+            : '0 4px 20px rgba(0, 0, 0, 0.08)',
+          borderRadius: 3
+        }}
+      >
         <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Box sx={{ 
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-              borderRadius: 2, 
-              p: 1, 
-              mr: 2
-            }}>
-              <AssessmentIcon sx={{ color: 'white', fontSize: 24 }} />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
-                Lista de Estudiantes
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
-                Gestiona el estado y configuración de todos los estudiantes
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <FilterListIcon sx={{ mr: 1, color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+              <Typography variant="h6" sx={{ 
+                fontWeight: 'bold',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+              }}>
+                Filtros y Búsqueda
               </Typography>
             </Box>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Mostrar</InputLabel>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280'
+              }}>
+                Mostrar
+              </InputLabel>
               <Select
                 value={pageSize}
                 label="Mostrar"
                 onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  }
+                }}
               >
                 <MenuItem value={20}>20 últimos</MenuItem>
                 <MenuItem value={50}>50 últimos</MenuItem>
@@ -883,37 +930,70 @@ export default function GestionEstudiantesAdmin() {
               </Select>
             </FormControl>
           </Box>
-
-          {/* Filtros mejorados */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
             <TextField
               label="Buscar por nombre o email"
-              variant="outlined"
-              size="small"
               value={filters.search || ''}
               onChange={e => handleFilterChange({ ...filters, search: e.target.value })}
-              sx={{ 
-                minWidth: 220,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  '&:hover fieldset': {
-                    borderColor: '#667eea',
-                  },
-                }
-              }}
               InputProps={{
                 startAdornment: (
-                  <SearchIcon sx={{ mr: 1, color: '#7f8c8d' }} />
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+                  </InputAdornment>
                 ),
               }}
+              sx={{ 
+                minWidth: 300,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '&:hover fieldset': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                },
+                '& .MuiInputBase-input': {
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                },
+              }}
             />
-            <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
-              <InputLabel>Nivel API</InputLabel>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280'
+              }}>
+                Nivel API
+              </InputLabel>
               <Select
                 label="Nivel API"
                 value={filters.api_level || ''}
                 onChange={e => handleFilterChange({ ...filters, api_level: e.target.value })}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  }
+                }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 <MenuItem value="1">API 1</MenuItem>
@@ -922,13 +1002,35 @@ export default function GestionEstudiantesAdmin() {
                 <MenuItem value="4">API 4</MenuItem>
               </Select>
             </FormControl>
-            <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
-              <InputLabel>Estado</InputLabel>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280'
+              }}>
+                Estado
+              </InputLabel>
               <Select
                 label="Estado"
                 value={filters.status || ''}
                 onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  }
+                }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 <MenuItem value="active">Activo</MenuItem>
@@ -939,24 +1041,24 @@ export default function GestionEstudiantesAdmin() {
               </Select>
             </FormControl>
           </Box>
-
-          <DataTable
-            title="Lista de Estudiantes"
-            data={students}
-            columns={columns}
-            loading={loading}
-            error={error}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-            totalCount={totalCount}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
-            showPagination={false}
-            showPageSizeSelector={false}
-          />
         </CardContent>
       </Card>
+
+      <DataTable
+        title="Lista de Estudiantes"
+        data={students}
+        columns={columns}
+        loading={loading}
+        error={error}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
+        showPagination={false}
+        showPageSizeSelector={false}
+      />
 
       {/* Modal para ver cuestionario y subir de nivel con diseño mejorado */}
       <Dialog 
@@ -978,31 +1080,50 @@ export default function GestionEstudiantesAdmin() {
           </Box>
         </DialogTitle>
         
-        <DialogContent>
+        <DialogContent sx={{
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           {selectedStudent && (
             <Box sx={{ mt: 2 }}>
               {/* Información del estudiante */}
               <Card sx={{ 
                 mb: 3, 
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                background: themeMode === 'dark'
+                  ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                  : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                 borderRadius: 2
               }}>
                 <CardContent sx={{ p: 2 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                  <Typography variant="h6" sx={{ 
+                    fontWeight: 'bold', 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                    mb: 2 
+                  }}>
                     Información del Estudiante
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     <Box>
-                      <Typography variant="body2" color="text.secondary">Email:</Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>{selectedStudent.email}</Typography>
+                      <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                        Email:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                        {selectedStudent.email}
+                      </Typography>
                     </Box>
                     <Box>
-                      <Typography variant="body2" color="text.secondary">Nivel API Actual:</Typography>
+                      <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                        Nivel API Actual:
+                      </Typography>
                       <Chip label={`API ${selectedStudent.api_level}`} color="primary" sx={{ fontWeight: 600 }} />
                     </Box>
                     <Box>
-                      <Typography variant="body2" color="text.secondary">Horas Acumuladas:</Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>{selectedStudent.total_hours} hrs</Typography>
+                      <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                        Horas Acumuladas:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                        {selectedStudent.total_hours} hrs
+                      </Typography>
                     </Box>
                   </Box>
                 </CardContent>
@@ -1015,13 +1136,18 @@ export default function GestionEstudiantesAdmin() {
 
               {/* Historial de solicitudes de cambio de nivel API */}
               <Card sx={{ 
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                background: themeMode === 'dark'
+                  ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                  : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
                 borderRadius: 2
               }}>
                 <CardContent sx={{ p: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <HistoryIcon color="primary" />
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 'bold', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+                    }}>
                       Solicitudes de Cambio de Nivel API
                     </Typography>
                   </Box>
@@ -1030,7 +1156,9 @@ export default function GestionEstudiantesAdmin() {
                     <List>
                       {apiHistory.map((history, index) => (
                         <ListItem key={index} sx={{ 
-                          background: 'rgba(102, 126, 234, 0.05)', 
+                          background: themeMode === 'dark'
+                            ? 'rgba(102, 126, 234, 0.1)'
+                            : 'rgba(102, 126, 234, 0.05)', 
                           borderRadius: 1, 
                           mb: 1 
                         }}>
@@ -1040,7 +1168,10 @@ export default function GestionEstudiantesAdmin() {
                           <ListItemText
                             primary={
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                <Typography variant="body1" sx={{ 
+                                  fontWeight: 600,
+                                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                                }}>
                                   API {history.old_level} → API {history.new_level}
                                 </Typography>
                                 <Chip 
@@ -1059,7 +1190,10 @@ export default function GestionEstudiantesAdmin() {
                       ))}
                     </List>
                   ) : (
-                    <Typography color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                    <Typography sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', 
+                      fontStyle: 'italic' 
+                    }}>
                       Sin solicitudes de cambio de nivel API registradas.
                     </Typography>
                   )}
@@ -1069,7 +1203,10 @@ export default function GestionEstudiantesAdmin() {
           )}
         </DialogContent>
         
-        <DialogActions sx={{ p: 3 }}>
+        <DialogActions sx={{ 
+          p: 3,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
           <Button 
             onClick={handleCloseModal}
             sx={{ borderRadius: 2 }}

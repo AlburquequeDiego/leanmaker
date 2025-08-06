@@ -34,6 +34,7 @@ import {
   Schedule as ScheduleIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -324,6 +325,7 @@ if (typeof document !== 'undefined') {
 }
 
 export const CompanyCalendar = forwardRef((_, ref) => {
+  const { themeMode } = useTheme();
   const api = useApi();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   
@@ -408,7 +410,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           console.error('Error adaptando evento:', event, error);
           return null;
         }
-      }).filter(Boolean); // Filtrar eventos nulos
+      }).filter((e): e is CalendarEvent => e !== null); // Filtrar eventos nulos
       
       // console.log('All adapted company events:', adaptedEvents);
       // console.log('Company Calendar - Formatted events details:', adaptedEvents.map(e => ({
@@ -496,7 +498,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
   };
 
   const handleSelectEvent = (event: CalendarEvent) => {
-    console.log('Evento seleccionado:', event);
+    // console.log('Evento seleccionado:', event);
     setSelectedEvent(event);
     setDialogOpen(true);
   };
@@ -673,7 +675,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
   // }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3,
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+      minHeight: '100vh'
+    }}>
       {/* Header mejorado con gradiente y estadísticas - ARRIBA DE TODO */}
       <Box sx={{ 
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -763,78 +771,200 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       {/* Sección de estadísticas y resumen */}
       {events.length > 0 && (
         <Box sx={{ 
-          background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+          background: themeMode === 'dark' 
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+            : 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
           borderRadius: 3,
           p: 3,
           mb: 3,
-          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-          border: '1px solid rgba(102, 126, 234, 0.1)'
+          boxShadow: themeMode === 'dark' 
+            ? '0 4px 16px rgba(0,0,0,0.3)' 
+            : '0 4px 16px rgba(0,0,0,0.08)',
+          border: themeMode === 'dark' 
+            ? '1px solid #334155' 
+            : '1px solid rgba(102, 126, 234, 0.1)'
         }}>
           <Typography variant="h6" fontWeight={600} color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             📊 Resumen de Actividad
           </Typography>
           
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, gap: 2 }}>
+            {/* Tarjeta de Entrevistas - Azul */}
             <Box sx={{ 
-              background: 'white', 
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)' 
+                : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', 
               borderRadius: 2, 
               p: 2, 
               textAlign: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              border: '1px solid rgba(102, 126, 234, 0.1)'
+              boxShadow: themeMode === 'dark' 
+                ? '0 4px 12px rgba(30, 64, 175, 0.4)' 
+                : '0 4px 12px rgba(59, 130, 246, 0.2)',
+              border: themeMode === 'dark' 
+                ? '1px solid #3b82f6' 
+                : '1px solid #60a5fa',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <Typography variant="h4" fontWeight={700} color="primary">
+              <Box sx={{ 
+                position: 'absolute', 
+                top: 0, 
+                right: 0, 
+                width: '60px', 
+                height: '60px', 
+                background: themeMode === 'dark' 
+                  ? 'radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%)' 
+                  : 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
+                transform: 'translate(20px, -20px)'
+              }} />
+              <Typography variant="h4" fontWeight={700} sx={{ 
+                color: themeMode === 'dark' ? '#60a5fa' : '#1e40af',
+                position: 'relative',
+                zIndex: 1
+              }}>
                 {events.filter(e => e.event_type === 'interview').length}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#1e40af',
+                fontWeight: 600,
+                position: 'relative',
+                zIndex: 1
+              }}>
                 Entrevistas
               </Typography>
             </Box>
             
+            {/* Tarjeta de Reuniones - Verde */}
             <Box sx={{ 
-              background: 'white', 
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' 
+                : 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', 
               borderRadius: 2, 
               p: 2, 
               textAlign: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              border: '1px solid rgba(102, 126, 234, 0.1)'
+              boxShadow: themeMode === 'dark' 
+                ? '0 4px 12px rgba(5, 150, 105, 0.4)' 
+                : '0 4px 12px rgba(16, 185, 129, 0.2)',
+              border: themeMode === 'dark' 
+                ? '1px solid #10b981' 
+                : '1px solid #34d399',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <Typography variant="h4" fontWeight={700} color="primary">
+              <Box sx={{ 
+                position: 'absolute', 
+                top: 0, 
+                right: 0, 
+                width: '60px', 
+                height: '60px', 
+                background: themeMode === 'dark' 
+                  ? 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)' 
+                  : 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
+                transform: 'translate(20px, -20px)'
+              }} />
+              <Typography variant="h4" fontWeight={700} sx={{ 
+                color: themeMode === 'dark' ? '#34d399' : '#059669',
+                position: 'relative',
+                zIndex: 1
+              }}>
                 {events.filter(e => e.event_type === 'meeting').length}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#059669',
+                fontWeight: 600,
+                position: 'relative',
+                zIndex: 1
+              }}>
                 Reuniones
               </Typography>
             </Box>
             
+            {/* Tarjeta de Online - Púrpura */}
             <Box sx={{ 
-              background: 'white', 
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)' 
+                : 'linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)', 
               borderRadius: 2, 
               p: 2, 
               textAlign: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              border: '1px solid rgba(102, 126, 234, 0.1)'
+              boxShadow: themeMode === 'dark' 
+                ? '0 4px 12px rgba(124, 58, 237, 0.4)' 
+                : '0 4px 12px rgba(139, 92, 246, 0.2)',
+              border: themeMode === 'dark' 
+                ? '1px solid #8b5cf6' 
+                : '1px solid #a78bfa',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <Typography variant="h4" fontWeight={700} color="primary">
+              <Box sx={{ 
+                position: 'absolute', 
+                top: 0, 
+                right: 0, 
+                width: '60px', 
+                height: '60px', 
+                background: themeMode === 'dark' 
+                  ? 'radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%)' 
+                  : 'radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)',
+                transform: 'translate(20px, -20px)'
+              }} />
+              <Typography variant="h4" fontWeight={700} sx={{ 
+                color: themeMode === 'dark' ? '#a78bfa' : '#7c3aed',
+                position: 'relative',
+                zIndex: 1
+              }}>
                 {events.filter(e => e.meeting_type === 'online').length}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#7c3aed',
+                fontWeight: 600,
+                position: 'relative',
+                zIndex: 1
+              }}>
                 Online
               </Typography>
             </Box>
             
+            {/* Tarjeta de En Sede - Rojo */}
             <Box sx={{ 
-              background: 'white', 
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' 
+                : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)', 
               borderRadius: 2, 
               p: 2, 
               textAlign: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              border: '1px solid rgba(102, 126, 234, 0.1)'
+              boxShadow: themeMode === 'dark' 
+                ? '0 4px 12px rgba(220, 38, 38, 0.4)' 
+                : '0 4px 12px rgba(239, 68, 68, 0.2)',
+              border: themeMode === 'dark' 
+                ? '1px solid #ef4444' 
+                : '1px solid #f87171',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <Typography variant="h4" fontWeight={700} color="primary">
-                {events.filter(e => e.meeting_type === 'cowork' || e.meeting_type === 'fablab').length}
+              <Box sx={{ 
+                position: 'absolute', 
+                top: 0, 
+                right: 0, 
+                width: '60px', 
+                height: '60px', 
+                background: themeMode === 'dark' 
+                  ? 'radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, transparent 70%)' 
+                  : 'radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%)',
+                transform: 'translate(20px, -20px)'
+              }} />
+              <Typography variant="h4" fontWeight={700} sx={{ 
+                color: themeMode === 'dark' ? '#f87171' : '#dc2626',
+                position: 'relative',
+                zIndex: 1
+              }}>
+                {events.filter(e => e.meeting_type === 'cowork' || e.meeting_type === 'fablab' || e.meeting_type === 'onsite').length}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#dc2626',
+                fontWeight: 600,
+                position: 'relative',
+                zIndex: 1
+              }}>
                 En Sede
               </Typography>
             </Box>
@@ -844,12 +974,18 @@ export const CompanyCalendar = forwardRef((_, ref) => {
 
       {/* Controles de vista mejorados */}
       <Box sx={{ 
-        background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+        background: themeMode === 'dark' 
+          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+          : 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
         borderRadius: 3,
         p: 2,
         mb: 3,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(102, 126, 234, 0.1)'
+        boxShadow: themeMode === 'dark' 
+          ? '0 4px 16px rgba(0,0,0,0.3)' 
+          : '0 4px 16px rgba(0,0,0,0.08)',
+        border: themeMode === 'dark' 
+          ? '1px solid #334155' 
+          : '1px solid rgba(102, 126, 234, 0.1)'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" fontWeight={600} color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -861,12 +997,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               <IconButton 
                 onClick={() => setView('month')} 
                 sx={{ 
-                  background: view === 'month' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
-                  color: view === 'month' ? 'white' : '#666',
+                  background: view === 'month' 
+                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                    : themeMode === 'dark' 
+                      ? 'rgba(255,255,255,0.1)' 
+                      : 'rgba(255,255,255,0.8)',
+                  color: view === 'month' ? 'white' : themeMode === 'dark' ? '#f1f5f9' : '#666',
                   borderRadius: 2,
                   p: 1.5,
                   '&:hover': {
-                    background: view === 'month' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
+                    background: view === 'month' 
+                      ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' 
+                      : themeMode === 'dark' 
+                        ? 'rgba(96, 165, 250, 0.2)' 
+                        : 'rgba(102, 126, 234, 0.1)',
                     transform: 'translateY(-1px)'
                   }
                 }}
@@ -878,12 +1022,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               <IconButton 
                 onClick={() => setView('week')} 
                 sx={{ 
-                  background: view === 'week' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
-                  color: view === 'week' ? 'white' : '#666',
+                  background: view === 'week' 
+                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                    : themeMode === 'dark' 
+                      ? 'rgba(255,255,255,0.1)' 
+                      : 'rgba(255,255,255,0.8)',
+                  color: view === 'week' ? 'white' : themeMode === 'dark' ? '#f1f5f9' : '#666',
                   borderRadius: 2,
                   p: 1.5,
                   '&:hover': {
-                    background: view === 'week' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
+                    background: view === 'week' 
+                      ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' 
+                      : themeMode === 'dark' 
+                        ? 'rgba(96, 165, 250, 0.2)' 
+                        : 'rgba(102, 126, 234, 0.1)',
                     transform: 'translateY(-1px)'
                   }
                 }}
@@ -895,12 +1047,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               <IconButton 
                 onClick={() => setView('day')} 
                 sx={{ 
-                  background: view === 'day' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
-                  color: view === 'day' ? 'white' : '#666',
+                  background: view === 'day' 
+                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                    : themeMode === 'dark' 
+                      ? 'rgba(255,255,255,0.1)' 
+                      : 'rgba(255,255,255,0.8)',
+                  color: view === 'day' ? 'white' : themeMode === 'dark' ? '#f1f5f9' : '#666',
                   borderRadius: 2,
                   p: 1.5,
                   '&:hover': {
-                    background: view === 'day' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
+                    background: view === 'day' 
+                      ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' 
+                      : themeMode === 'dark' 
+                        ? 'rgba(96, 165, 250, 0.2)' 
+                        : 'rgba(102, 126, 234, 0.1)',
                     transform: 'translateY(-1px)'
                   }
                 }}
@@ -908,48 +1068,80 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 <ViewDayIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Vista de agenda">
-              <IconButton 
-                onClick={() => setView('agenda')} 
-                sx={{ 
-                  background: view === 'agenda' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255,255,255,0.8)',
-                  color: view === 'agenda' ? 'white' : '#666',
-                  borderRadius: 2,
-                  p: 1.5,
-                  '&:hover': {
-                    background: view === 'agenda' ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' : 'rgba(102, 126, 234, 0.1)',
-                    transform: 'translateY(-1px)'
-                  }
-                }}
-              >
-                <TodayIcon />
-              </IconButton>
-            </Tooltip>
           </Box>
         </Box>
       </Box>
 
-
-
-
-
-            {/* Calendario principal - VERSIÓN PERSONALIZADA */}
-      <Paper sx={{ p: 3, mb: 4, backgroundColor: 'white' }}>
-        <Box sx={{ border: '1px solid #ddd', borderRadius: 1, overflow: 'hidden' }}>
+      {/* Calendario principal */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 3,
+        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+      }}>
+        <Box sx={{ 
+          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #ddd', 
+          borderRadius: 1, 
+          overflow: 'hidden' 
+        }}>
           {/* Navegación del calendario */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, borderBottom: '1px solid #ddd' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            p: 2, 
+            borderBottom: themeMode === 'dark' ? '1px solid #334155' : '1px solid #ddd',
+            bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa'
+          }}>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button onClick={() => setDate(new Date())} variant="outlined" size="small">
+              <Button 
+                onClick={() => setDate(new Date())} 
+                variant="outlined" 
+                size="small"
+                sx={{
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  '&:hover': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                  }
+                }}
+              >
                 HOY
               </Button>
-              <Button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))} variant="outlined" size="small">
+              <Button 
+                onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))} 
+                variant="outlined" 
+                size="small"
+                sx={{
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  '&:hover': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                  }
+                }}
+              >
                 ANTERIOR
               </Button>
-              <Button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))} variant="outlined" size="small">
+              <Button 
+                onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))} 
+                variant="outlined" 
+                size="small"
+                sx={{
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  '&:hover': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                  }
+                }}
+              >
                 SIGUIENTE
               </Button>
             </Box>
-            <Typography variant="h6">
+            <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
               {date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
@@ -957,6 +1149,22 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 onClick={() => setView('month')} 
                 variant={view === 'month' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'month' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 MES
               </Button>
@@ -964,6 +1172,22 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 onClick={() => setView('week')} 
                 variant={view === 'week' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'week' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 SEMANA
               </Button>
@@ -971,6 +1195,22 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 onClick={() => setView('day')} 
                 variant={view === 'day' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'day' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 DÍA
               </Button>
@@ -978,6 +1218,22 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 onClick={() => setView('agenda')} 
                 variant={view === 'agenda' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'agenda' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 AGENDA
               </Button>
@@ -1038,8 +1294,12 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         sx={{ 
                           height: '100%',
                           p: 1, 
-                          border: '1px solid #ddd',
-                          backgroundColor: isToday ? '#e3f2fd' : isCurrentMonth ? 'white' : '#f9f9f9',
+                          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #ddd',
+                          backgroundColor: isToday 
+                            ? (themeMode === 'dark' ? '#1e40af' : '#e3f2fd') 
+                            : isCurrentMonth 
+                              ? (themeMode === 'dark' ? '#1e293b' : 'white') 
+                              : (themeMode === 'dark' ? '#0f172a' : '#f9f9f9'),
                           position: 'relative',
         overflow: 'hidden',
                           display: 'flex',
@@ -1050,7 +1310,9 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                           variant="body2" 
                           sx={{ 
                             fontWeight: isToday ? 'bold' : 'normal',
-                            color: isCurrentMonth ? 'text.primary' : 'text.secondary',
+                            color: isCurrentMonth 
+                              ? (themeMode === 'dark' ? '#f1f5f9' : '#1e293b') 
+                              : (themeMode === 'dark' ? '#64748b' : '#64748b'),
                             mb: 0.5
                           }}
                         >
@@ -1094,7 +1356,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                             </Box>
                           ))}
                           {dayEvents.length > 3 && (
-                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '8px' }}>
+                            <Typography 
+                              variant="caption" 
+                              sx={{ 
+                                fontSize: '8px',
+                                color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
+                              }}
+                            >
                               +{dayEvents.length - 3} más
                             </Typography>
                           )}
@@ -1383,25 +1651,47 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       )}
       
       {/* Modal para agregar evento mejorado */}
-      <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} maxWidth="md" fullWidth>
-        {console.log('Estado actual de newEvent:', newEvent)}
+      <Dialog 
+        open={showAddDialog} 
+        onClose={() => setShowAddDialog(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            borderRadius: 3,
+            boxShadow: themeMode === 'dark' 
+              ? '0 20px 40px rgba(0,0,0,0.5)' 
+              : '0 20px 40px rgba(0,0,0,0.15)'
+          }
+        }}
+      >
         <DialogTitle sx={{ 
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
-          fontWeight: 600
+          fontWeight: 600,
+          borderRadius: '12px 12px 0 0'
         }}>
           Programar Entrevista/Reunión
         </DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
+        <DialogContent sx={{ 
+          mt: 2,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Información del Representante */}
             <Box sx={{ 
               p: 2, 
-              bgcolor: '#f8f9fa', 
+              bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa', 
               borderRadius: 2, 
-              border: '1px solid #e0e0e0' 
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
             }}>
-              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+              <Typography variant="h6" fontWeight={600} sx={{ 
+                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                mb: 2
+              }}>
                 Información del Representante
               </Typography>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
@@ -1411,6 +1701,27 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   value={newEvent.representative_name} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, representative_name: e.target.value }))} 
                   placeholder="Ej: María González López"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                  }}
             />
             <TextField 
               fullWidth 
@@ -1418,6 +1729,27 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   value={newEvent.representative_position} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, representative_position: e.target.value }))} 
                   placeholder="Ej: Directora de Recursos Humanos"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                  }}
                 />
               </Box>
             </Box>
@@ -1425,16 +1757,26 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             {/* Selección de Proyecto y Participante */}
             <Box sx={{ 
               p: 2, 
-              bgcolor: '#f0f8ff', 
+              bgcolor: themeMode === 'dark' ? '#334155' : '#f0f8ff', 
               borderRadius: 2, 
-              border: '1px solid #bbdefb' 
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #bbdefb'
             }}>
-              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+              <Typography variant="h6" fontWeight={600} sx={{ 
+                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                mb: 2
+              }}>
                 Proyecto y Participante
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <FormControl fullWidth>
-              <InputLabel>Proyecto</InputLabel>
+                  <InputLabel sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}>
+                    Proyecto
+                  </InputLabel>
               <Select
                 value={selectedProject}
                 onChange={e => {
@@ -1447,30 +1789,79 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       }));
                 }}
                 label="Proyecto"
+                    sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }}
               >
                 <MenuItem value="">Selecciona un proyecto</MenuItem>
                 {companyProjects.map(project => (
-                  <MenuItem key={project.id} value={project.id}>{project.title}</MenuItem>
+                      <MenuItem key={project.id} value={project.id} sx={{
+                        bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        '&:hover': {
+                          bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                        },
+                      }}>
+                        {project.title}
+                      </MenuItem>
                 ))}
               </Select>
             </FormControl>
                 
             <FormControl fullWidth>
-                  <InputLabel>Participante</InputLabel>
+                  <InputLabel sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}>
+                    Participante
+                  </InputLabel>
               <Select
                     value={newEvent.attendees.length > 0 ? newEvent.attendees[0] : ''}
                     onChange={e => setNewEvent((prev: any) => ({ ...prev, attendees: [e.target.value] }))}
                     label="Participante"
                 disabled={!selectedProject}
+                    sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }}
               >
                     <MenuItem value="">Selecciona un participante</MenuItem>
                 {users.filter(u => u.project === selectedProject).map(user => (
-                      <MenuItem key={user.student?.user || user.id} value={user.student?.user || user.id}>
+                      <MenuItem key={user.student?.user || user.id} value={user.student?.user || user.id} sx={{
+                        bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        '&:hover': {
+                          bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                        },
+                      }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                       <Typography variant="body2" fontWeight={600}>
                             {user.student?.name || user.student?.user_data?.full_name || 'Estudiante'}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" sx={{ 
+                            color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
+                          }}>
                             Estado: {user.status === 'pending' ? 'Pendiente' : 
                                    user.status === 'accepted' ? 'Aceptado' : 
                                    user.status === 'rejected' ? 'Rechazado' : user.status}
@@ -1486,11 +1877,14 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             {/* Detalles del Evento */}
             <Box sx={{ 
               p: 2, 
-              bgcolor: '#fff3e0', 
+              bgcolor: themeMode === 'dark' ? '#334155' : '#fff3e0', 
               borderRadius: 2, 
-              border: '1px solid #ffcc02' 
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #ffcc02'
             }}>
-              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+              <Typography variant="h6" fontWeight={600} sx={{ 
+                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                mb: 2
+              }}>
                 Detalles del Evento
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -1500,6 +1894,27 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   value={newEvent.title} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, title: e.target.value }))} 
                   placeholder="Ej: Entrevista - Desarrollo de Aplicación Móvil"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                  }}
                 />
                 <TextField 
                   fullWidth 
@@ -1509,6 +1924,27 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   value={newEvent.description} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, description: e.target.value }))} 
                   placeholder="Ej: Reunión para discutir los detalles del proyecto, revisar el cronograma y establecer los próximos pasos de desarrollo."
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                  }}
                 />
               <TextField 
                 fullWidth 
@@ -1529,6 +1965,30 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 }} 
                 InputLabelProps={{ shrink: true }} 
                 helperText="Solo se permiten eventos entre las 8:00 AM y las 19:00 PM"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiFormHelperText-root': {
+                      color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                    },
+                  }}
               />
               
               {/* Alerta informativa sobre la duración */}
@@ -1537,19 +1997,26 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 sx={{ 
                   mt: 2, 
                   borderRadius: 2,
-                  background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-                  border: '1px solid #2196f3',
+                    background: themeMode === 'dark' 
+                      ? 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' 
+                      : 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                    border: themeMode === 'dark' ? '1px solid #3b82f6' : '1px solid #2196f3',
                   '& .MuiAlert-icon': {
-                    color: '#1976d2'
+                      color: themeMode === 'dark' ? '#60a5fa' : '#1976d2'
                   }
                 }}
                 icon={<ScheduleIcon />}
               >
                 <Box>
-                  <Typography variant="subtitle2" fontWeight={600} sx={{ color: '#1976d2', mb: 0.5 }}>
+                    <Typography variant="subtitle2" fontWeight={600} sx={{ 
+                      color: themeMode === 'dark' ? '#60a5fa' : '#1976d2', 
+                      mb: 0.5 
+                    }}>
                     ⏰ Duración automática
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#1565c0' }}>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#1565c0' 
+                    }}>
                     La reunión durará exactamente <strong>1 hora</strong> desde la hora seleccionada. 
                     Por ejemplo: si seleccionas las 9:00 AM, la reunión terminará a las 10:00 AM.
                   </Typography>
@@ -1561,16 +2028,26 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             {/* Tipo de Reunión */}
             <Box sx={{ 
               p: 2, 
-              bgcolor: '#e8f5e8', 
+              bgcolor: themeMode === 'dark' ? '#334155' : '#e8f5e8', 
               borderRadius: 2, 
-              border: '1px solid #4caf50' 
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #4caf50'
             }}>
-              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+              <Typography variant="h6" fontWeight={600} sx={{ 
+                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                mb: 2
+              }}>
                 Tipo de Reunión
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <FormControl fullWidth>
-                  <InputLabel>Tipo de Reunión</InputLabel>
+                  <InputLabel sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}>
+                    Tipo de Reunión
+                  </InputLabel>
                   <Select 
                     value={newEvent.meeting_type} 
                     label="Tipo de Reunión" 
@@ -1584,10 +2061,47 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         meeting_room: '' // Reset sala cuando cambia el tipo
                       }));
                     }}
+                    sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }}
                   >
-                    <MenuItem value="online">Online (Videollamada)</MenuItem>
-                    <MenuItem value="cowork">En Sede - Cowork</MenuItem>
-                    <MenuItem value="fablab">En Sede - FabLab</MenuItem>
+                    <MenuItem value="online" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Online (Videollamada)
+                    </MenuItem>
+                    <MenuItem value="cowork" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      En Sede - Cowork
+                    </MenuItem>
+                    <MenuItem value="fablab" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      En Sede - FabLab
+                    </MenuItem>
                   </Select>
                 </FormControl>
 
@@ -1599,10 +2113,34 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     value={newEvent.meeting_link} 
                     onChange={(e) => setNewEvent((prev: any) => ({ ...prev, meeting_link: e.target.value }))} 
                     placeholder="Ej: https://meet.google.com/abc-defg-hij"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        '& fieldset': {
+                          borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                        '&.Mui-focused': {
+                          color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                        },
+                      },
+                    }}
                   />
                 ) : (newEvent.meeting_type === 'cowork' || newEvent.meeting_type === 'fablab') ? (
                   <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                      mb: 1 
+                    }}>
                       Selecciona una sala:
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -1615,6 +2153,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                               console.log('Sala seleccionada: cowork-sala1');
                               setNewEvent((prev: any) => ({ ...prev, meeting_room: 'cowork-sala1' }));
                             }}
+                            sx={{
+                              bgcolor: newEvent.meeting_room === 'cowork-sala1' 
+                                ? (themeMode === 'dark' ? '#60a5fa' : '#1976d2')
+                                : 'transparent',
+                              color: newEvent.meeting_room === 'cowork-sala1' 
+                                ? 'white' 
+                                : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b'),
+                              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                              '&:hover': {
+                                bgcolor: newEvent.meeting_room === 'cowork-sala1'
+                                  ? (themeMode === 'dark' ? '#3b82f6' : '#1565c0')
+                                  : (themeMode === 'dark' ? '#475569' : '#f1f5f9'),
+                              }
+                            }}
                           >
                             Sala 1 - Cowork
                           </Button>
@@ -1625,6 +2177,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                               console.log('Sala seleccionada: cowork-sala2');
                               setNewEvent((prev: any) => ({ ...prev, meeting_room: 'cowork-sala2' }));
                             }}
+                            sx={{
+                              bgcolor: newEvent.meeting_room === 'cowork-sala2' 
+                                ? (themeMode === 'dark' ? '#60a5fa' : '#1976d2')
+                                : 'transparent',
+                              color: newEvent.meeting_room === 'cowork-sala2' 
+                                ? 'white' 
+                                : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b'),
+                              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                              '&:hover': {
+                                bgcolor: newEvent.meeting_room === 'cowork-sala2'
+                                  ? (themeMode === 'dark' ? '#3b82f6' : '#1565c0')
+                                  : (themeMode === 'dark' ? '#475569' : '#f1f5f9'),
+                              }
+                            }}
                           >
                             Sala 2 - Cowork
                           </Button>
@@ -1634,6 +2200,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                             onClick={() => {
                               console.log('Sala seleccionada: cowork-sala3');
                               setNewEvent((prev: any) => ({ ...prev, meeting_room: 'cowork-sala3' }));
+                            }}
+                            sx={{
+                              bgcolor: newEvent.meeting_room === 'cowork-sala3' 
+                                ? (themeMode === 'dark' ? '#60a5fa' : '#1976d2')
+                                : 'transparent',
+                              color: newEvent.meeting_room === 'cowork-sala3' 
+                                ? 'white' 
+                                : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b'),
+                              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                              '&:hover': {
+                                bgcolor: newEvent.meeting_room === 'cowork-sala3'
+                                  ? (themeMode === 'dark' ? '#3b82f6' : '#1565c0')
+                                  : (themeMode === 'dark' ? '#475569' : '#f1f5f9'),
+                              }
                             }}
                           >
                             Sala 3 - Cowork
@@ -1649,6 +2229,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                               console.log('Sala seleccionada: fablab-sala1');
                               setNewEvent((prev: any) => ({ ...prev, meeting_room: 'fablab-sala1' }));
                             }}
+                            sx={{
+                              bgcolor: newEvent.meeting_room === 'fablab-sala1' 
+                                ? (themeMode === 'dark' ? '#60a5fa' : '#1976d2')
+                                : 'transparent',
+                              color: newEvent.meeting_room === 'fablab-sala1' 
+                                ? 'white' 
+                                : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b'),
+                              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                              '&:hover': {
+                                bgcolor: newEvent.meeting_room === 'fablab-sala1'
+                                  ? (themeMode === 'dark' ? '#3b82f6' : '#1565c0')
+                                  : (themeMode === 'dark' ? '#475569' : '#f1f5f9'),
+                              }
+                            }}
                           >
                             Sala 1 - FabLab
                           </Button>
@@ -1658,6 +2252,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                             onClick={() => {
                               console.log('Sala seleccionada: fablab-sala2');
                               setNewEvent((prev: any) => ({ ...prev, meeting_room: 'fablab-sala2' }));
+                            }}
+                            sx={{
+                              bgcolor: newEvent.meeting_room === 'fablab-sala2' 
+                                ? (themeMode === 'dark' ? '#60a5fa' : '#1976d2')
+                                : 'transparent',
+                              color: newEvent.meeting_room === 'fablab-sala2' 
+                                ? 'white' 
+                                : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b'),
+                              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                              '&:hover': {
+                                bgcolor: newEvent.meeting_room === 'fablab-sala2'
+                                  ? (themeMode === 'dark' ? '#3b82f6' : '#1565c0')
+                                  : (themeMode === 'dark' ? '#475569' : '#f1f5f9'),
+                              }
                             }}
                           >
                             Sala 2 - FabLab
@@ -1669,6 +2277,20 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                               console.log('Sala seleccionada: fablab-sala3');
                               setNewEvent((prev: any) => ({ ...prev, meeting_room: 'fablab-sala3' }));
                             }}
+                            sx={{
+                              bgcolor: newEvent.meeting_room === 'fablab-sala3' 
+                                ? (themeMode === 'dark' ? '#60a5fa' : '#1976d2')
+                                : 'transparent',
+                              color: newEvent.meeting_room === 'fablab-sala3' 
+                                ? 'white' 
+                                : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b'),
+                              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                              '&:hover': {
+                                bgcolor: newEvent.meeting_room === 'fablab-sala3'
+                                  ? (themeMode === 'dark' ? '#3b82f6' : '#1565c0')
+                                  : (themeMode === 'dark' ? '#475569' : '#f1f5f9'),
+                              }
+                            }}
                           >
                             Sala 3 - FabLab
                           </Button>
@@ -1676,7 +2298,11 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       )}
                     </Box>
                     {newEvent.meeting_room && (
-                      <Typography variant="caption" color="success.main" sx={{ mt: 1, display: 'block' }}>
+                      <Typography variant="caption" sx={{ 
+                        color: themeMode === 'dark' ? '#10b981' : '#2e7d32',
+                        mt: 1, 
+                        display: 'block' 
+                      }}>
                         ✅ Sala seleccionada: {newEvent.meeting_room}
                       </Typography>
                     )}
@@ -1688,49 +2314,169 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             {/* Configuración Adicional */}
             <Box sx={{ 
               p: 2, 
-              bgcolor: '#f3e5f5', 
+              bgcolor: themeMode === 'dark' ? '#334155' : '#f3e5f5', 
               borderRadius: 2, 
-              border: '1px solid #9c27b0' 
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #9c27b0'
             }}>
-              <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+              <Typography variant="h6" fontWeight={600} sx={{ 
+                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                mb: 2
+              }}>
                 Configuración Adicional
               </Typography>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             <FormControl fullWidth>
-              <InputLabel>Tipo de Evento</InputLabel>
+                  <InputLabel sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}>
+                    Tipo de Evento
+                  </InputLabel>
               <Select 
                 value={newEvent.event_type} 
                 label="Tipo de Evento" 
                 onChange={(e) => setNewEvent((prev: any) => ({ ...prev, event_type: e.target.value }))}
-              >
-                <MenuItem value="interview">Entrevista</MenuItem>
-                    <MenuItem value="meeting">Reunión de Proyecto</MenuItem>
-                <MenuItem value="other">Otro</MenuItem>
+                    sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }}
+                  >
+                    <MenuItem value="interview" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Entrevista
+                    </MenuItem>
+                    <MenuItem value="meeting" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Reunión de Proyecto
+                    </MenuItem>
+                    <MenuItem value="other" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Otro
+                    </MenuItem>
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel>Prioridad</InputLabel>
+                  <InputLabel sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}>
+                    Prioridad
+                  </InputLabel>
               <Select 
                 value={newEvent.priority} 
                 label="Prioridad" 
                 onChange={(e) => setNewEvent((prev: any) => ({ ...prev, priority: e.target.value }))}
-              >
-                <MenuItem value="low">Baja</MenuItem>
-                <MenuItem value="normal">Normal</MenuItem>
-                <MenuItem value="medium">Media</MenuItem>
-                <MenuItem value="high">Alta</MenuItem>
-                <MenuItem value="urgent">Urgente</MenuItem>
+                    sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#64748b' : '#d1d5db',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }}
+                  >
+                    <MenuItem value="low" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Baja
+                    </MenuItem>
+                    <MenuItem value="normal" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Normal
+                    </MenuItem>
+                    <MenuItem value="medium" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Media
+                    </MenuItem>
+                    <MenuItem value="high" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Alta
+                    </MenuItem>
+                    <MenuItem value="urgent" sx={{
+                      bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
+                      },
+                    }}>
+                      Urgente
+                    </MenuItem>
               </Select>
             </FormControl>
               </Box>
             </Box>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <DialogActions sx={{ 
+          p: 3, 
+          bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5',
+          borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
+        }}>
           <Button 
             onClick={() => setShowAddDialog(false)} 
             variant="outlined"
-            sx={{ borderRadius: 2, px: 3 }}
+            sx={{ 
+              borderRadius: 2, 
+              px: 3,
+              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+              '&:hover': {
+                borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+              }
+            }}
           >
             Cancelar
           </Button>
@@ -1743,6 +2489,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               '&:hover': {
                 background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
               }
             }}
           >
@@ -1752,31 +2500,56 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       </Dialog>
       
       {/* Modal de detalle de evento mejorado */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+      <Dialog 
+        open={dialogOpen} 
+        onClose={() => setDialogOpen(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            borderRadius: 3,
+            boxShadow: themeMode === 'dark' 
+              ? '0 20px 40px rgba(0,0,0,0.5)' 
+              : '0 20px 40px rgba(0,0,0,0.15)'
+          }
+        }}
+      >
         <DialogTitle sx={{ 
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
-          fontWeight: 600
+          fontWeight: 600,
+          borderRadius: '12px 12px 0 0'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {selectedEvent && getEventIcon(selectedEvent.event_type)}
             <Typography variant="h6">Detalles del Evento</Typography>
           </Box>
         </DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
+        <DialogContent sx={{ 
+          mt: 2,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           {selectedEvent && (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               {/* Header del evento */}
               <Box sx={{ 
                 p: 2, 
-                bgcolor: '#f8f9fa', 
+                bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa', 
                 borderRadius: 2, 
-                border: '1px solid #e0e0e0' 
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
               }}>
-                <Typography variant="h5" gutterBottom color="primary" fontWeight={600}>
+                <Typography variant="h5" gutterBottom sx={{ 
+                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                  fontWeight: 600
+                }}>
                   {selectedEvent.title}
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" sx={{ 
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                }}>
                   {selectedEvent.description || 'Sin descripción'}
                 </Typography>
               </Box>
@@ -1785,22 +2558,33 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               {(selectedEvent.representative_name || selectedEvent.representative_position) && (
                 <Box sx={{ 
                   p: 2, 
-                  bgcolor: '#e3f2fd', 
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#e3f2fd', 
                   borderRadius: 2, 
-                  border: '1px solid #bbdefb' 
+                  border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #bbdefb'
                 }}>
-                  <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                  <Typography variant="h6" fontWeight={600} sx={{ 
+                    color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                    mb: 2
+                  }}>
                     Representante de la Empresa
                   </Typography>
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                   <Box>
-                      <Typography variant="body2" color="text.secondary">Nombre:</Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                      }}>
+                        Nombre:
+                      </Typography>
                       <Typography variant="body1" fontWeight={600}>
                         {selectedEvent.representative_name || 'No especificado'}
                   </Typography>
                     </Box>
                     <Box>
-                      <Typography variant="body2" color="text.secondary">Cargo:</Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                      }}>
+                        Cargo:
+                      </Typography>
                       <Typography variant="body1" fontWeight={600}>
                         {selectedEvent.representative_position || 'No especificado'}
                   </Typography>
@@ -1812,16 +2596,23 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               {/* Detalles de la reunión */}
               <Box sx={{ 
                 p: 2, 
-                bgcolor: '#fff3e0', 
+                bgcolor: themeMode === 'dark' ? '#334155' : '#fff3e0', 
                 borderRadius: 2, 
-                border: '1px solid #ffcc02' 
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #ffcc02'
               }}>
-                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                <Typography variant="h6" fontWeight={600} sx={{ 
+                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                  mb: 2
+                }}>
                   Detalles de la Reunión
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Tipo de Evento:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Tipo de Evento:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.event_type === 'interview' ? 'Entrevista' : 
                        selectedEvent.event_type === 'meeting' ? 'Reunión de Proyecto' : 
@@ -1829,7 +2620,11 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Tipo de Reunión:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Tipo de Reunión:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.meeting_type === 'online' ? 'Online (Videollamada)' : 
                        selectedEvent.meeting_type === 'onsite' ? 'En Sede' : 
@@ -1837,13 +2632,21 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Fecha:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Fecha:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.start_date ? format(new Date(selectedEvent.start_date), 'EEEE, d MMMM yyyy', { locale: es }) : '-'}
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Hora:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Hora:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.start_date && selectedEvent.end_date ? 
                       `${format(new Date(selectedEvent.start_date), 'HH:mm')} - ${format(new Date(selectedEvent.end_date), 'HH:mm')}` : '-'}
@@ -1855,19 +2658,34 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               {/* Ubicación específica */}
               <Box sx={{ 
                 p: 2, 
-                bgcolor: '#e8f5e8', 
+                bgcolor: themeMode === 'dark' ? '#334155' : '#e3f2fd', 
                 borderRadius: 2, 
-                border: '1px solid #4caf50' 
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #bbdefb'
               }}>
-                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                <Typography variant="h6" fontWeight={600} sx={{ 
+                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                  mb: 2
+                }}>
                   Ubicación
                   </Typography>
                 {selectedEvent.meeting_type === 'online' ? (
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Link de Videollamada:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Link de Videollamada:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600} sx={{ wordBreak: 'break-all' }}>
                       {selectedEvent.meeting_link ? (
-                        <a href={selectedEvent.meeting_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+                        <a 
+                          href={selectedEvent.meeting_link} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          style={{ 
+                            color: themeMode === 'dark' ? '#60a5fa' : '#1976d2', 
+                            textDecoration: 'underline' 
+                          }}
+                        >
                           {selectedEvent.meeting_link}
                         </a>
                       ) : 'No especificado'}
@@ -1875,18 +2693,31 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   </Box>
                 ) : (selectedEvent.meeting_type === 'cowork' || selectedEvent.meeting_type === 'fablab') ? (
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Ubicación:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Ubicación:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.meeting_type === 'cowork' ? 'Cowork' : 'FabLab'}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>Sala:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', 
+                      mt: 1 
+                    }}>
+                      Sala:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.meeting_room || 'No especificado'}
                     </Typography>
                   </Box>
                 ) : (
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Ubicación:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Ubicación:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.location || 'No especificado'}
                     </Typography>
@@ -1897,11 +2728,14 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               {/* Participantes */}
               <Box sx={{ 
                 p: 2, 
-                bgcolor: '#f3e5f5', 
+                bgcolor: themeMode === 'dark' ? '#334155' : '#f3e5f5', 
                 borderRadius: 2, 
-                border: '1px solid #9c27b0' 
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #9c27b0'
               }}>
-                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                <Typography variant="h6" fontWeight={600} sx={{ 
+                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                  mb: 2
+                }}>
                   Participantes
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -1909,15 +2743,17 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     selectedEvent.attendee_names.map((attendeeName: string, index: number) => (
                       <Box key={index} sx={{ 
                         p: 1, 
-                        bgcolor: 'white', 
+                        bgcolor: themeMode === 'dark' ? '#475569' : 'white', 
                         borderRadius: 1, 
-                        border: '1px solid #e0e0e0',
+                        border: themeMode === 'dark' ? '1px solid #64748b' : '1px solid #e0e0e0',
                         minWidth: 200
                       }}>
                         <Typography variant="body2" fontWeight={600}>
                           {attendeeName}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ 
+                          color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
+                        }}>
                           Participante
                         </Typography>
                       </Box>
@@ -1926,21 +2762,25 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     selectedEvent.attendees.map((attendee: any, index: number) => (
                       <Box key={index} sx={{ 
                         p: 1, 
-                        bgcolor: 'white', 
+                        bgcolor: themeMode === 'dark' ? '#475569' : 'white', 
                         borderRadius: 1, 
-                        border: '1px solid #e0e0e0',
+                        border: themeMode === 'dark' ? '1px solid #64748b' : '1px solid #e0e0e0',
                         minWidth: 200
                       }}>
                         <Typography variant="body2" fontWeight={600}>
                           {typeof attendee === 'object' ? attendee.full_name || attendee.email || attendee.id : String(attendee)}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ 
+                          color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
+                        }}>
                           Participante
                         </Typography>
                       </Box>
                     ))
                   ) : (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
                       No hay participantes registrados
                     </Typography>
                   )}
@@ -1951,11 +2791,14 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               {selectedEvent.project_title && (
                 <Box sx={{ 
                   p: 2, 
-                  bgcolor: '#e8f5e8', 
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#e8f5e8', 
                   borderRadius: 2, 
-                  border: '1px solid #4caf50' 
+                  border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #4caf50'
                 }}>
-                  <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                  <Typography variant="h6" fontWeight={600} sx={{ 
+                    color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                    mb: 2
+                  }}>
                     Proyecto
                   </Typography>
                   <Typography variant="body1" fontWeight={600}>
@@ -1967,16 +2810,23 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               {/* Información adicional */}
               <Box sx={{ 
                 p: 2, 
-                bgcolor: '#fafafa', 
+                bgcolor: themeMode === 'dark' ? '#334155' : '#fafafa', 
                 borderRadius: 2, 
-                border: '1px solid #e0e0e0' 
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
               }}>
-                <Typography variant="h6" fontWeight={600} color="primary" gutterBottom>
+                <Typography variant="h6" fontWeight={600} sx={{ 
+                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                  mb: 2
+                }}>
                   Información Adicional
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Prioridad:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Prioridad:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.priority === 'low' ? 'Baja' : 
                        selectedEvent.priority === 'normal' ? 'Normal' : 
@@ -1987,7 +2837,11 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Creado por:</Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      Creado por:
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {selectedEvent.created_by || 'No especificado'}
                     </Typography>
@@ -1997,7 +2851,11 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <DialogActions sx={{ 
+          p: 3, 
+          bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5',
+          borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
+        }}>
           <Button 
             onClick={() => setDialogOpen(false)} 
             variant="contained"

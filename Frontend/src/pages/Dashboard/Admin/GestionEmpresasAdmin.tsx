@@ -48,6 +48,7 @@ import {
 import Tooltip from '@mui/material/Tooltip';
 import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Company {
   id: string;
@@ -90,6 +91,7 @@ interface Evaluation {
 }
 
 export const GestionEmpresasAdmin = () => {
+  const { themeMode } = useTheme();
   const [tabValue, setTabValue] = useState(0);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [actionDialog, setActionDialog] = useState(false);
@@ -527,7 +529,14 @@ export const GestionEmpresasAdmin = () => {
   };
 
   return (
-    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+    <Box sx={{ 
+      p: 3, 
+      background: themeMode === 'dark' 
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' 
+        : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Header con gradiente */}
       <Card sx={{ 
         mb: 3, 
@@ -539,7 +548,9 @@ export const GestionEmpresasAdmin = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
+                background: themeMode === 'dark'
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(255, 255, 255, 0.2)', 
                 borderRadius: 2, 
                 p: 1.5, 
                 mr: 2,
@@ -561,12 +572,18 @@ export const GestionEmpresasAdmin = () => {
               startIcon={<RefreshIcon />}
               onClick={fetchData}
               sx={{
-                background: 'rgba(255, 255, 255, 0.2)',
+                background: themeMode === 'dark'
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(255, 255, 255, 0.2)',
                 backdropFilter: 'blur(10px)',
                 color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
+                border: themeMode === 'dark'
+                  ? '1px solid rgba(255, 255, 255, 0.2)'
+                  : '1px solid rgba(255, 255, 255, 0.3)',
                 '&:hover': {
-                  background: 'rgba(255, 255, 255, 0.3)',
+                  background: themeMode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.2)'
+                    : 'rgba(255, 255, 255, 0.3)',
                 }
               }}
             >
@@ -717,8 +734,12 @@ export const GestionEmpresasAdmin = () => {
 
       {/* Filtros y tabla de empresas con diseño mejorado */}
       <Card sx={{ 
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        background: themeMode === 'dark'
+          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+          : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: themeMode === 'dark'
+          ? '0 4px 20px rgba(0, 0, 0, 0.3)'
+          : '0 4px 20px rgba(0, 0, 0, 0.08)',
         borderRadius: 3
       }}>
         <CardContent sx={{ p: 3 }}>
@@ -732,20 +753,47 @@ export const GestionEmpresasAdmin = () => {
               <AssessmentIcon sx={{ color: 'white', fontSize: 24 }} />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+              <Typography variant="h5" sx={{ 
+                fontWeight: 'bold', 
+                color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+              }}>
                 Lista de Empresas
               </Typography>
-              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+              }}>
                 Gestiona el estado y configuración de todas las empresas
               </Typography>
             </Box>
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Mostrar</InputLabel>
+              <InputLabel sx={{
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280'
+              }}>
+                Mostrar
+              </InputLabel>
               <Select
                 value={pageSize}
                 label="Mostrar"
                 onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  }
+                }}
               >
                 <MenuItem value={20}>20 últimos</MenuItem>
                 <MenuItem value={50}>50 últimos</MenuItem>
@@ -769,24 +817,57 @@ export const GestionEmpresasAdmin = () => {
                 minWidth: 220,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
                   '&:hover fieldset': {
-                    borderColor: '#667eea',
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#667eea',
                   },
-                }
+                  '&.Mui-focused fieldset': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#667eea',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                },
+                '& .MuiInputBase-input': {
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                },
               }}
               InputProps={{
                 startAdornment: (
-                  <SearchIcon sx={{ mr: 1, color: '#7f8c8d' }} />
+                  <SearchIcon sx={{ mr: 1, color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' }} />
                 ),
               }}
             />
             <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
-              <InputLabel>Estado</InputLabel>
+              <InputLabel sx={{
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280'
+              }}>Estado</InputLabel>
               <Select
                 label="Estado"
                 value={filters.status || ''}
                 onChange={e => handleFilterChange({ ...filters, status: e.target.value })}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  }
+                }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 <MenuItem value="active">Activa</MenuItem>
@@ -836,35 +917,54 @@ export const GestionEmpresasAdmin = () => {
             </Typography>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <Box sx={{ mt: 2 }}>
             <Card sx={{ 
               mb: 3, 
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              background: themeMode === 'dark'
+                ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
               borderRadius: 2
             }}>
               <CardContent sx={{ p: 2 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                <Typography variant="subtitle1" sx={{ 
+                  fontWeight: 'bold', 
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                  mb: 2 
+                }}>
                   Confirmar Acción
                 </Typography>
-                <Typography variant="body1" sx={{ color: '#2c3e50', lineHeight: 1.6 }}>
+                <Typography variant="body1" sx={{ 
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                  lineHeight: 1.6 
+                }}>
                   ¿Estás seguro de que quieres{' '}
                   <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea' }}>
                     {actionType === 'activate' ? 'activar' : actionType === 'suspend' ? 'suspender' : 'bloquear'}
                   </Box>{' '}
                   la empresa{' '}
-                  <Box component="span" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                  <Box component="span" sx={{ fontWeight: 'bold', color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' }}>
                     {selectedCompany?.name}
                   </Box>?
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#7f8c8d', mt: 2, fontStyle: 'italic' }}>
+                <Typography variant="body2" sx={{ 
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                  mt: 2, 
+                  fontStyle: 'italic' 
+                }}>
                   Esta acción cambiará el estado de la empresa y afectará su capacidad para usar la plataforma.
                 </Typography>
               </CardContent>
             </Card>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
+        <DialogActions sx={{ 
+          p: 3,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
           <Button 
             onClick={() => setActionDialog(false)}
             sx={{ borderRadius: 2 }}

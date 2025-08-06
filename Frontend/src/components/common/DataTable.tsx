@@ -22,6 +22,8 @@ import {
   Stack,
   Pagination,
   InputAdornment,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -29,6 +31,7 @@ import {
   Clear as ClearIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
+  Filter as FilterIcon,
 } from '@mui/icons-material';
 
 interface DataTableProps {
@@ -178,56 +181,79 @@ export const DataTable: React.FC<DataTableProps> = ({
 
       {/* Filtros SIEMPRE visibles */}
       {filters.length > 0 && (
-        <Paper sx={{ p: 2, mb: 2 }}>
-          <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" gap={2}>
-            {filters.map((filter) => (
-              <Box key={filter.key} sx={{ minWidth: 200 }}>
-                {filter.type === 'text' ? (
-                  <TextField
-                    size="small"
-                    label={filter.label}
-                    value={localFilters[filter.key] || ''}
-                    onChange={(e) => handleFilterChange(filter.key, e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                ) : (
-                  <FormControl size="small" fullWidth>
-                    <InputLabel>{filter.label}</InputLabel>
-                    <Select
+        <Card 
+          className="filter-card"
+          sx={{ 
+            mb: 2, 
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            borderRadius: 3
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <FilterIcon sx={{ mr: 1, color: 'primary.main' }} />
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                Filtros y Búsqueda
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+              {filters.map((filter) => (
+                <Box key={filter.key} sx={{ minWidth: 200 }}>
+                  {filter.type === 'text' ? (
+                    <TextField
+                      label={filter.label}
                       value={localFilters[filter.key] || ''}
                       onChange={(e) => handleFilterChange(filter.key, e.target.value)}
-                      label={filter.label}
-                    >
-                      {/* Solo muestra 'Todos' si el filtro NO es pageSize/Mostrar últimas */}
-                      {filter.key !== 'pageSize' && filter.label !== 'Mostrar últimas' && (
-                        <MenuItem value="">Todos</MenuItem>
-                      )}
-                      {filter.options?.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              </Box>
-            ))}
-            <Button
-              variant="outlined"
-              startIcon={<ClearIcon />}
-              onClick={clearFilters}
-              size="small"
-            >
-              Limpiar
-            </Button>
-          </Stack>
-        </Paper>
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon sx={{ color: 'primary.main' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{ 
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          '&:hover fieldset': {
+                            borderColor: 'primary.main',
+                          },
+                        }
+                      }}
+                    />
+                  ) : (
+                    <FormControl sx={{ minWidth: 200 }}>
+                      <InputLabel>{filter.label}</InputLabel>
+                      <Select
+                        value={localFilters[filter.key] || ''}
+                        label={filter.label}
+                        onChange={(e) => handleFilterChange(filter.key, e.target.value)}
+                        sx={{ borderRadius: 2 }}
+                      >
+                        {/* Solo muestra 'Todos' si el filtro NO es pageSize/Mostrar últimas */}
+                        {filter.key !== 'pageSize' && filter.label !== 'Mostrar últimas' && (
+                          <MenuItem value="">Todos</MenuItem>
+                        )}
+                        {filter.options?.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                </Box>
+              ))}
+              <Button
+                variant="outlined"
+                startIcon={<ClearIcon />}
+                onClick={clearFilters}
+                sx={{ borderRadius: 2 }}
+              >
+                Limpiar
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
       )}
 
       {/* Estado de carga */}

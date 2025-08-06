@@ -54,10 +54,12 @@ import {
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptNotificationList } from '../../../utils/adapters';
+import { useTheme } from '../../../contexts/ThemeContext';
 import type { Notification } from '../../../types';
 
 export const CompanyNotifications: React.FC = () => {
   const api = useApi();
+  const { themeMode } = useTheme();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -331,12 +333,18 @@ export const CompanyNotifications: React.FC = () => {
 
   const markAsRead = async (id: string) => {
     try {
-      await api.patch(`/api/notifications/${id}/mark-read/`);
-      setNotifications(prev => 
-        prev.map(n => n.id === id ? { ...n, read: true } : n)
-      );
-    } catch (error) {
+      const response = await api.post(`/api/notifications/${id}/mark-read/`);
+      
+      // Solo actualizar el estado si la respuesta fue exitosa
+      if (response && response.data && response.data.success) {
+        setNotifications(prev => 
+          prev.map(n => n.id === id ? { ...n, read: true } : n)
+        );
+      }
+    } catch (error: any) {
       console.error('Error marking notification as read:', error);
+      // No mostrar error al usuario por ahora, solo log
+      // El error 405 ya no debería ocurrir después del fix
     }
   };
 
@@ -362,7 +370,13 @@ export const CompanyNotifications: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f7fafd', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -372,7 +386,7 @@ export const CompanyNotifications: React.FC = () => {
           mb: 4,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(102, 126, 234, 0.4)' : '0 8px 32px rgba(102, 126, 234, 0.3)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -452,7 +466,7 @@ export const CompanyNotifications: React.FC = () => {
             bgcolor: '#1976d2', 
             color: 'white',
             borderRadius: 3,
-            boxShadow: 3,
+            boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(25, 118, 210, 0.4)' : 3,
             transition: 'transform 0.2s',
             '&:hover': { transform: 'translateY(-4px)' }
           }}>
@@ -472,7 +486,7 @@ export const CompanyNotifications: React.FC = () => {
             bgcolor: '#fb8c00', 
             color: 'white',
             borderRadius: 3,
-            boxShadow: 3,
+            boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(251, 140, 0, 0.4)' : 3,
             transition: 'transform 0.2s',
             '&:hover': { transform: 'translateY(-4px)' }
           }}>
@@ -492,7 +506,7 @@ export const CompanyNotifications: React.FC = () => {
             bgcolor: '#388e3c', 
             color: 'white',
             borderRadius: 3,
-            boxShadow: 3,
+            boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(56, 142, 60, 0.4)' : 3,
             transition: 'transform 0.2s',
             '&:hover': { transform: 'translateY(-4px)' }
           }}>
@@ -512,7 +526,7 @@ export const CompanyNotifications: React.FC = () => {
             bgcolor: '#d32f2f', 
             color: 'white',
             borderRadius: 3,
-            boxShadow: 3,
+            boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(211, 47, 47, 0.4)' : 3,
             transition: 'transform 0.2s',
             '&:hover': { transform: 'translateY(-4px)' }
           }}>
@@ -532,91 +546,74 @@ export const CompanyNotifications: React.FC = () => {
       </Grid>
 
       {/* Filtros mejorados */}
-      <Paper sx={{ 
-        p: 3, 
-        mb: 3, 
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        borderRadius: 3,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.05)'
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1,
-            p: 1,
-            borderRadius: 2,
-            bgcolor: 'primary.main',
-            color: 'white'
-          }}>
-            <FilterIcon fontSize="small" />
-            <Typography variant="h6" fontWeight={600}>Filtros y Búsqueda</Typography>
+      <Card 
+        className="filter-card"
+        sx={{ 
+          mb: 3, 
+          boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0, 0, 0, 0.3)' : '0 4px 20px rgba(0, 0, 0, 0.08)',
+          borderRadius: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <FilterIcon sx={{ mr: 1, color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+              Filtros y Búsqueda
+            </Typography>
           </Box>
-          {hasActiveFilters && (
-            <Button
-              size="small"
-              onClick={() => {
-                setPriorityFilter('all');
-                setTypeFilter('all');
-                setReadStatusFilter('all');
-                setSearch('');
-              }}
-              startIcon={<ClearIcon />}
-              variant="outlined"
-              sx={{ 
-                borderRadius: 2,
-                borderColor: 'error.main',
-                color: 'error.main',
-                '&:hover': {
-                  borderColor: 'error.dark',
-                  bgcolor: 'error.light',
-                  color: 'error.dark'
-                }
-              }}
-            >
-              Limpiar filtros
-            </Button>
-          )}
-        </Box>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={4}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
             <TextField
-              fullWidth
-              size="small"
-              placeholder="🔍 Buscar notificaciones..."
+              label="Buscar notificaciones..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
                   </InputAdornment>
                 ),
               }}
               sx={{ 
+                minWidth: 300,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
-                  bgcolor: 'white',
-                  '&:hover': {
-                    bgcolor: 'grey.50'
-                  }
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '&:hover fieldset': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& fieldset': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#374151',
+                },
+                '& .MuiInputBase-input': {
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
                 }
               }}
             />
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <FormControl fullWidth size="small">
-              <InputLabel>🎯 Prioridad</InputLabel>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#374151' }}>Prioridad</InputLabel>
               <Select
                 value={priorityFilter}
-                label="🎯 Prioridad"
+                label="Prioridad"
                 onChange={e => setPriorityFilter(e.target.value)}
                 sx={{ 
                   borderRadius: 2,
-                  bgcolor: 'white',
-                  '&:hover': {
-                    bgcolor: 'grey.50'
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#374151',
                   }
                 }}
               >
@@ -628,40 +625,78 @@ export const CompanyNotifications: React.FC = () => {
                 <MenuItem value="low">🔵 Baja</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <FormControl fullWidth size="small">
-              <InputLabel>📖 Estado</InputLabel>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#374151' }}>Tipo</InputLabel>
               <Select
-                value={readStatusFilter}
-                label="📖 Estado"
-                onChange={e => setReadStatusFilter(e.target.value)}
+                value={typeFilter}
+                label="Tipo"
+                onChange={e => setTypeFilter(e.target.value)}
                 sx={{ 
                   borderRadius: 2,
-                  bgcolor: 'white',
-                  '&:hover': {
-                    bgcolor: 'grey.50'
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#374151',
                   }
                 }}
               >
                 <MenuItem value="all">Todos</MenuItem>
-                <MenuItem value="unread">📬 No leídas</MenuItem>
-                <MenuItem value="read">📭 Leídas</MenuItem>
+                <MenuItem value="application">Aplicación</MenuItem>
+                <MenuItem value="project">Proyecto</MenuItem>
+                <MenuItem value="evaluation">Evaluación</MenuItem>
+                <MenuItem value="system">Sistema</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <FormControl fullWidth size="small">
-              <InputLabel>📊 Mostrar</InputLabel>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#374151' }}>Estado</InputLabel>
+              <Select
+                value={readStatusFilter}
+                label="Estado"
+                onChange={e => setReadStatusFilter(e.target.value)}
+                sx={{ 
+                  borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#374151',
+                  }
+                }}
+              >
+                <MenuItem value="all">Todos</MenuItem>
+                <MenuItem value="unread">No leídas</MenuItem>
+                <MenuItem value="read">Leídas</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#374151' }}>Mostrar</InputLabel>
               <Select
                 value={displayCount}
-                label="📊 Mostrar"
+                label="Mostrar"
                 onChange={e => setDisplayCount(Number(e.target.value))}
                 sx={{ 
                   borderRadius: 2,
-                  bgcolor: 'white',
-                  '&:hover': {
-                    bgcolor: 'grey.50'
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#374151',
                   }
                 }}
               >
@@ -671,9 +706,32 @@ export const CompanyNotifications: React.FC = () => {
                 <MenuItem value={-1}>Todas</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-        </Grid>
-      </Paper>
+            {hasActiveFilters && (
+              <Button
+                variant="outlined"
+                startIcon={<ClearIcon />}
+                onClick={() => {
+                  setPriorityFilter('all');
+                  setTypeFilter('all');
+                  setReadStatusFilter('all');
+                  setSearch('');
+                }}
+                sx={{ 
+                  borderRadius: 2,
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  color: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  '&:hover': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                    bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                  }
+                }}
+              >
+                Limpiar filtros
+              </Button>
+            )}
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Lista de notificaciones mejorada */}
       <Box sx={{ 
@@ -683,8 +741,8 @@ export const CompanyNotifications: React.FC = () => {
         mb: 3,
         p: 2,
         borderRadius: 3,
-        background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-        border: '1px solid #90caf9'
+        background: themeMode === 'dark' ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' : 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+        border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #90caf9'
       }}>
         <Box sx={{ 
           display: 'flex', 
@@ -708,16 +766,17 @@ export const CompanyNotifications: React.FC = () => {
       
       <Paper sx={{ 
         borderRadius: 3, 
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.05)',
-        overflow: 'hidden' 
+        boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+        border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+        overflow: 'hidden',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
       }}>
         {filteredNotifications.length === 0 ? (
           <Box sx={{ 
             textAlign: 'center', 
             py: 6,
             px: 3,
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+            background: themeMode === 'dark' ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
           }}>
             <Box sx={{ 
               display: 'flex', 
@@ -737,13 +796,13 @@ export const CompanyNotifications: React.FC = () => {
               }}>
                 <NotificationsNoneIcon sx={{ fontSize: 40, color: 'primary.main' }} />
               </Box>
-              <Typography variant="h5" fontWeight={600} color="text.primary">
+              <Typography variant="h5" fontWeight={600} color={themeMode === 'dark' ? '#f1f5f9' : 'text.primary'}>
                 {hasActiveFilters 
                   ? '🔍 No se encontraron notificaciones'
                   : '📭 No hay notificaciones'
                 }
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
+              <Typography variant="body1" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} sx={{ maxWidth: 400 }}>
                 {hasActiveFilters 
                   ? 'No se encontraron notificaciones con los filtros seleccionados. Intenta ajustar tus criterios de búsqueda.'
                   : '¡Perfecto! No tienes notificaciones pendientes. Cuando recibas nuevas notificaciones aparecerán aquí.'
@@ -762,7 +821,11 @@ export const CompanyNotifications: React.FC = () => {
                     mt: 2,
                     borderRadius: 2,
                     px: 3,
-                    py: 1
+                    py: 1,
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : 'primary.dark'
+                    }
                   }}
                   startIcon={<ClearIcon />}
                 >
@@ -778,9 +841,15 @@ export const CompanyNotifications: React.FC = () => {
                 <ListItem
                   onClick={() => handleNotificationClick(notification)}
                   sx={{
-                    backgroundColor: notification.read ? 'transparent' : 'rgba(25, 118, 210, 0.04)',
+                    backgroundColor: notification.read 
+                      ? 'transparent' 
+                      : themeMode === 'dark' 
+                        ? 'rgba(25, 118, 210, 0.1)' 
+                        : 'rgba(25, 118, 210, 0.04)',
                     '&:hover': {
-                      backgroundColor: notification.read ? 'rgba(0, 0, 0, 0.04)' : 'rgba(25, 118, 210, 0.08)',
+                      backgroundColor: notification.read 
+                        ? themeMode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)'
+                        : themeMode === 'dark' ? 'rgba(25, 118, 210, 0.15)' : 'rgba(25, 118, 210, 0.08)',
                     },
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
@@ -826,14 +895,19 @@ export const CompanyNotifications: React.FC = () => {
                   <ListItemText
                     primary={
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1.5 }}>
-                        <Typography 
-                          variant="subtitle1" 
-                          fontWeight={notification.read ? 500 : 700}
-                          sx={{ flex: 1, minWidth: 0 }}
+                        <Box 
                           component="span"
+                          sx={{ 
+                            flex: 1, 
+                            minWidth: 0,
+                            fontWeight: notification.read ? 500 : 700,
+                            fontSize: '1rem',
+                            lineHeight: 1.2,
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
                         >
                           {notification.title}
-                        </Typography>
+                        </Box>
                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                           <Chip
                             label={getNotificationTypeLabel(notification.type)}
@@ -852,11 +926,29 @@ export const CompanyNotifications: React.FC = () => {
                     }
                     secondary={
                       <Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, lineHeight: 1.5 }}>
+                        <Box 
+                          component="span"
+                          sx={{ 
+                            mb: 1.5, 
+                            lineHeight: 1.5,
+                            color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                            fontSize: '0.875rem',
+                            display: 'block'
+                          }}
+                        >
                           {notification.message}
-                        </Typography>
+                        </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Box 
+                            component="span"
+                            sx={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: 0.5,
+                              color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                              fontSize: '0.75rem'
+                            }}
+                          >
                             <ScheduleIcon sx={{ fontSize: 14 }} />
                             {new Date(notification.created_at).toLocaleDateString('es-ES', {
                               year: 'numeric',
@@ -865,7 +957,7 @@ export const CompanyNotifications: React.FC = () => {
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
-                          </Typography>
+                          </Box>
                           {!notification.read && (
                             <Chip
                               label="Nueva"
@@ -877,7 +969,7 @@ export const CompanyNotifications: React.FC = () => {
                         </Box>
                       </Box>
                     }
-                    sx={{ 
+                    sx={{
                       margin: 0,
                       '& .MuiListItemText-primary': {
                         marginBottom: 0.5,
@@ -904,7 +996,8 @@ export const CompanyNotifications: React.FC = () => {
         PaperProps={{
           sx: { 
             borderRadius: 3,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+            boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.12)',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
           }
         }}
       >
@@ -934,7 +1027,7 @@ export const CompanyNotifications: React.FC = () => {
                 </Box>
               </Box>
             </DialogTitle>
-            <DialogContent sx={{ p: 3 }}>
+            <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
               <Box sx={{ mt: 2 }}>
                 <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
                   <Chip
@@ -958,19 +1051,25 @@ export const CompanyNotifications: React.FC = () => {
                   />
                 </Box>
                 
-                <Paper sx={{ p: 3, bgcolor: '#f8f9fa', borderRadius: 2, mb: 3 }}>
+                <Paper sx={{ 
+                  p: 3, 
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa', 
+                  borderRadius: 2, 
+                  mb: 3,
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                }}>
                   <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                     {selectedNotification.message}
                   </Typography>
                 </Paper>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <ScheduleIcon sx={{ fontSize: 16 }} />
                     Fecha: {new Date(selectedNotification.created_at).toLocaleString('es-ES')}
                   </Typography>
                   {selectedNotification.related_url && (
-                    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <BusinessIcon sx={{ fontSize: 16 }} />
                       URL relacionada: {selectedNotification.related_url}
                     </Typography>
@@ -978,7 +1077,11 @@ export const CompanyNotifications: React.FC = () => {
                 </Box>
               </Box>
             </DialogContent>
-            <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5', gap: 2 }}>
+            <DialogActions sx={{ 
+              p: 3, 
+              bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5', 
+              gap: 2 
+            }}>
               <Button 
                 onClick={handleCloseDialog}
                 variant="outlined"

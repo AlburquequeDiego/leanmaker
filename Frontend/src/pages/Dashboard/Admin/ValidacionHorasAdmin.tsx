@@ -46,6 +46,7 @@ import { DataTable } from '../../../components/common/DataTable';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { translateModality } from '../../../utils/adapters';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface WorkHour {
   id: string;
@@ -132,6 +133,7 @@ interface ProjectDetail {
 }
 
 export default function ValidacionHorasAdmin() {
+  const { themeMode } = useTheme();
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -162,8 +164,8 @@ export default function ValidacionHorasAdmin() {
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
   // NUEVOS ESTADOS PARA CANTIDAD DE REGISTROS EN CADA TABLA
-  const [pendingPageSize, setPendingPageSize] = useState(15);
-  const [validatedPageSize, setValidatedPageSize] = useState(15);
+  const [pendingPageSize, setPendingPageSize] = useState<number | 'Todos'>(15);
+  const [validatedPageSize, setValidatedPageSize] = useState<number | 'Todos'>(15);
 
   // Opciones para el selector
   const pageSizeOptions = [15, 50, 100, 150, 'Todos'];
@@ -554,7 +556,12 @@ export default function ValidacionHorasAdmin() {
   ];
 
   return (
-    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+    <Box sx={{ 
+      p: 3, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Header con gradiente */}
       <Card sx={{ 
         mb: 3, 
@@ -660,7 +667,9 @@ export default function ValidacionHorasAdmin() {
       {/* Tabla de pendientes con diseño mejorado */}
       <Card sx={{ 
         mb: 4, 
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        background: themeMode === 'dark' 
+          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+          : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
         borderRadius: 3
       }}>
@@ -675,21 +684,48 @@ export default function ValidacionHorasAdmin() {
               <TimerIcon sx={{ color: 'white', fontSize: 24 }} />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+              <Typography variant="h5" sx={{ 
+                fontWeight: 'bold', 
+                color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+              }}>
                 Proyectos Pendientes de Validación
               </Typography>
-              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+              }}>
                 Proyectos que requieren revisión y validación de horas
               </Typography>
             </Box>
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel id="pending-page-size-label">Mostrar</InputLabel>
+              <InputLabel id="pending-page-size-label" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+              }}>
+                Mostrar
+              </InputLabel>
               <Select
                 labelId="pending-page-size-label"
                 value={pendingPageSize}
                 label="Mostrar"
                 onChange={e => setPendingPageSize(e.target.value as any)}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  }
+                }}
               >
                 {pageSizeOptions.map(opt => (
                   <MenuItem key={opt} value={opt}>{opt}</MenuItem>
@@ -710,7 +746,9 @@ export default function ValidacionHorasAdmin() {
       </Card>
       {/* Historial de validados con diseño mejorado */}
       <Card sx={{ 
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        background: themeMode === 'dark' 
+          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+          : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
         borderRadius: 3
       }}>
@@ -725,21 +763,48 @@ export default function ValidacionHorasAdmin() {
               <HistoryIcon sx={{ color: 'white', fontSize: 24 }} />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+              <Typography variant="h5" sx={{ 
+                fontWeight: 'bold', 
+                color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+              }}>
                 Historial de Proyectos Validados
               </Typography>
-              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+              }}>
                 Registro completo de todas las validaciones procesadas
               </Typography>
             </Box>
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel id="validated-page-size-label">Mostrar</InputLabel>
+              <InputLabel id="validated-page-size-label" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+              }}>
+                Mostrar
+              </InputLabel>
               <Select
                 labelId="validated-page-size-label"
                 value={validatedPageSize}
                 label="Mostrar"
                 onChange={e => setValidatedPageSize(e.target.value as any)}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  }
+                }}
               >
                 {pageSizeOptions.map(opt => (
                   <MenuItem key={opt} value={opt}>{opt}</MenuItem>
@@ -770,13 +835,19 @@ export default function ValidacionHorasAdmin() {
             <Typography variant="h6">Integrantes de {integrantesProyecto}</Typography>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ 
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <List>
             {integrantes.length === 0 ? (
               <ListItem>
                 <ListItemText 
                   primary={
-                    <Typography variant="body1" sx={{ color: '#7f8c8d', fontStyle: 'italic' }}>
+                    <Typography variant="body1" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                      fontStyle: 'italic' 
+                    }}>
                       No hay integrantes registrados
                     </Typography>
                   } 
@@ -786,20 +857,29 @@ export default function ValidacionHorasAdmin() {
               <ListItem key={idx} sx={{ 
                 borderRadius: 2, 
                 mb: 1, 
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                background: themeMode === 'dark' 
+                  ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                  : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)',
+                  background: themeMode === 'dark' 
+                    ? 'linear-gradient(135deg, #475569 0%, #64748b 100%)'
+                    : 'linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)',
                 }
               }}>
                 <ListItemText 
                   primary={
-                    <Typography variant="body1" sx={{ fontWeight: 500, color: '#2c3e50' }}>
+                    <Typography variant="body1" sx={{ 
+                      fontWeight: 500, 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+                    }}>
                       {est.nombre || est.name || est.full_name || est.email}
                     </Typography>
                   }
                   secondary={
-                    <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
-                      {est.email}
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+                    }}>
+                      {est.email || est.career || 'Sin información adicional'}
                     </Typography>
                   }
                 />
@@ -836,38 +916,96 @@ export default function ValidacionHorasAdmin() {
             <Typography variant="h6">Validar Hora de Trabajo</Typography>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ 
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           {selectedHour && (
             <Box sx={{ mt: 2 }}>
               <Card sx={{ 
                 mb: 3, 
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                background: themeMode === 'dark' 
+                  ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                  : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                 borderRadius: 2
               }}>
                 <CardContent sx={{ p: 2 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                  <Typography variant="subtitle1" sx={{ 
+                    fontWeight: 'bold', 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                    mb: 2 
+                  }}>
                     Información de la Hora
                   </Typography>
                   <Stack spacing={2}>
                     <Box>
-                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Estudiante</Typography>
-                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedHour.student_name}</Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500 
+                      }}>
+                        Estudiante
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                        fontWeight: 500 
+                      }}>
+                        {selectedHour.student_name}
+                      </Typography>
                     </Box>
                     <Box>
-                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Proyecto</Typography>
-                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedHour.project_title}</Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500 
+                      }}>
+                        Proyecto
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                        fontWeight: 500 
+                      }}>
+                        {selectedHour.project_title}
+                      </Typography>
                     </Box>
                     <Box>
-                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Fecha</Typography>
-                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{new Date(selectedHour.date).toLocaleDateString()}</Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500 
+                      }}>
+                        Fecha
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                        fontWeight: 500 
+                      }}>
+                        {new Date(selectedHour.date).toLocaleDateString()}
+                      </Typography>
                     </Box>
                     <Box>
-                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Horas Trabajadas</Typography>
-                      <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedHour.hours_worked} horas</Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500 
+                      }}>
+                        Horas Trabajadas
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                        fontWeight: 500 
+                      }}>
+                        {selectedHour.hours_worked} horas
+                      </Typography>
                     </Box>
                     <Box>
-                      <Typography variant="body2" sx={{ color: '#7f8c8d', fontWeight: 500 }}>Descripción</Typography>
-                      <Typography variant="body1" sx={{ color: '#2c3e50' }}>{selectedHour.description || 'Sin descripción'}</Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500 
+                      }}>
+                        Descripción
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+                      }}>
+                        {selectedHour.description || 'Sin descripción'}
+                      </Typography>
                     </Box>
                   </Stack>
                 </CardContent>
@@ -884,19 +1022,41 @@ export default function ValidacionHorasAdmin() {
                 sx={{ 
                   '& .MuiOutlinedInput-root': { 
                     borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
                     '&:hover fieldset': {
-                      borderColor: '#4ecdc4',
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#4ecdc4',
                     },
-                  }
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#4ecdc4',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
                 }}
               />
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
+        <DialogActions sx={{ 
+          p: 3,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
           <Button 
             onClick={handleCloseModal}
-            sx={{ borderRadius: 2 }}
+            sx={{ 
+              borderRadius: 2,
+              color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+              '&:hover': {
+                backgroundColor: themeMode === 'dark' ? '#334155' : '#f3f4f6',
+              }
+            }}
           >
             Cancelar
           </Button>
@@ -912,7 +1072,7 @@ export default function ValidacionHorasAdmin() {
               }
             }}
           >
-            {actionLoading ? <CircularProgress size={20} /> : 'Aprobar Hora'}
+            {actionLoading ? 'Validando...' : 'Validar'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -929,7 +1089,10 @@ export default function ValidacionHorasAdmin() {
              <Typography variant="h6">Detalle del Proyecto</Typography>
            </Box>
          </DialogTitle>
-         <DialogContent>
+         <DialogContent sx={{ 
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
            {detailLoading ? (
              <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
                <CircularProgress />
@@ -939,7 +1102,9 @@ export default function ValidacionHorasAdmin() {
                {/* Información del proyecto */}
                <Card sx={{ 
                  mb: 3, 
-                 background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                 background: themeMode === 'dark' 
+                   ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                   : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                  borderRadius: 3,
                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
                }}>
@@ -953,16 +1118,26 @@ export default function ValidacionHorasAdmin() {
                      }}>
                        <WorkIcon sx={{ color: 'white', fontSize: 24 }} />
                      </Box>
-                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                     <Typography variant="h6" sx={{ 
+                       fontWeight: 'bold', 
+                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+                     }}>
                        Información del Proyecto
                      </Typography>
                    </Box>
                    
                    <Box sx={{ mb: 3 }}>
-                     <Typography variant="h5" sx={{ color: '#667eea', fontWeight: 'bold', mb: 2 }}>
+                     <Typography variant="h5" sx={{ 
+                       color: '#667eea', 
+                       fontWeight: 'bold', 
+                       mb: 2 
+                     }}>
                        {selectedProjectDetail.title}
                      </Typography>
-                     <Typography variant="body1" sx={{ color: '#2c3e50', lineHeight: 1.6 }}>
+                     <Typography variant="body1" sx={{ 
+                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                       lineHeight: 1.6 
+                     }}>
                        {selectedProjectDetail.description}
                      </Typography>
                    </Box>
@@ -971,82 +1146,212 @@ export default function ValidacionHorasAdmin() {
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Tipo de Actividad</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.tipo || 'No especificado'}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Tipo de Actividad
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.tipo || 'No especificado'}
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Objetivo</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.objetivo || 'No especificado'}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Objetivo
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.objetivo || 'No especificado'}
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Encargado</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.encargado || 'No especificado'}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Encargado
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.encargado || 'No especificado'}
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Contacto</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.contacto || 'No especificado'}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Contacto
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.contacto || 'No especificado'}
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Nivel API Requerido</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.api_level || 'No especificado'}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Nivel API Requerido
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.api_level || 'No especificado'}
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Horas Requeridas</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.required_hours || 'No especificadas'}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Horas Requeridas
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.required_hours || 'No especificadas'}
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Duración (semanas)</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.duration_weeks} semanas</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Duración (semanas)
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.duration_weeks} semanas
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Horas por Semana</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.hours_per_week} horas</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Horas por Semana
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.hours_per_week} horas
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Modalidad</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Modalidad
+                       </Typography>
                        <Chip 
                          label={translateModality(selectedProjectDetail.modality)} 
                          sx={{ 
@@ -1061,34 +1366,74 @@ export default function ValidacionHorasAdmin() {
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Ubicación</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.location || 'No especificada'}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Ubicación
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.location || 'No especificada'}
+                       </Typography>
                      </Box>
                      <Box sx={{ 
                        p: 2, 
                        borderRadius: 2, 
-                       background: 'rgba(255, 255, 255, 0.7)',
-                       border: '1px solid rgba(102, 126, 234, 0.1)'
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.7)',
+                       border: themeMode === 'dark' 
+                         ? '1px solid rgba(102, 126, 234, 0.3)'
+                         : '1px solid rgba(102, 126, 234, 0.1)'
                      }}>
-                       <Typography variant="subtitle2" sx={{ color: '#7f8c8d', fontWeight: 600, mb: 1 }}>Estudiantes</Typography>
-                       <Typography variant="body1" sx={{ color: '#2c3e50', fontWeight: 500 }}>{selectedProjectDetail.current_students} / {selectedProjectDetail.max_students}</Typography>
+                       <Typography variant="subtitle2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                         fontWeight: 600, 
+                         mb: 1 
+                       }}>
+                         Estudiantes
+                       </Typography>
+                       <Typography variant="body1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                         fontWeight: 500 
+                       }}>
+                         {selectedProjectDetail.current_students} / {selectedProjectDetail.max_students}
+                       </Typography>
                      </Box>
                    </Box>
                    
                    {/* Requisitos del proyecto */}
                    <Box sx={{ mt: 4 }}>
-                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                     <Typography variant="subtitle1" sx={{ 
+                       fontWeight: 'bold', 
+                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                       mb: 2 
+                     }}>
                        Requisitos del Proyecto
                      </Typography>
                      <Card sx={{ 
-                       background: 'rgba(255, 255, 255, 0.8)',
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.1)'
+                         : 'rgba(255, 255, 255, 0.8)',
                        borderRadius: 2
                      }}>
                        <CardContent sx={{ p: 2 }}>
-                         <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#2c3e50', lineHeight: 1.6 }}>
+                         <Typography variant="body2" sx={{ 
+                           whiteSpace: 'pre-wrap', 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                           lineHeight: 1.6 
+                         }}>
                            {selectedProjectDetail.requirements}
                          </Typography>
                        </CardContent>
@@ -1099,45 +1444,120 @@ export default function ValidacionHorasAdmin() {
 
                {/* Información de la empresa */}
                {selectedProjectDetail.company && (
-                 <Card sx={{ mb: 3 }}>
-                   <CardContent>
-                     <Typography variant="h6" gutterBottom>
+                 <Card sx={{ 
+                   mb: 3,
+                   background: themeMode === 'dark' 
+                     ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                     : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                   borderRadius: 3,
+                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+                 }}>
+                   <CardContent sx={{ p: 3 }}>
+                     <Typography variant="h6" sx={{ 
+                       fontWeight: 'bold',
+                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
+                       mb: 2
+                     }}>
                        Información de la Empresa
                      </Typography>
                      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                        <Box>
-                         <Typography variant="subtitle2" color="text.secondary">Nombre</Typography>
-                         <Typography variant="body1">{selectedProjectDetail.company.name}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Nombre
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.name}
+                         </Typography>
                        </Box>
                        <Box>
-                         <Typography variant="subtitle2" color="text.secondary">Email</Typography>
-                         <Typography variant="body1">{selectedProjectDetail.company.email}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Email
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.email}
+                         </Typography>
                        </Box>
                        <Box>
-                         <Typography variant="subtitle2" color="text.secondary">Teléfono</Typography>
-                         <Typography variant="body1">{selectedProjectDetail.company.phone || 'No especificado'}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Teléfono
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.phone || 'No especificado'}
+                         </Typography>
                        </Box>
                        <Box>
-                         <Typography variant="subtitle2" color="text.secondary">Sitio Web</Typography>
-                         <Typography variant="body1">{selectedProjectDetail.company.website || 'No especificado'}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Sitio Web
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.website || 'No especificado'}
+                         </Typography>
                        </Box>
                        <Box>
-                         <Typography variant="subtitle2" color="text.secondary">Industria</Typography>
-                         <Typography variant="body1">{selectedProjectDetail.company.industry || 'No especificada'}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Industria
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.industry || 'No especificada'}
+                         </Typography>
                        </Box>
                        <Box>
-                         <Typography variant="subtitle2" color="text.secondary">Tamaño</Typography>
-                         <Typography variant="body1">{selectedProjectDetail.company.size || 'No especificado'}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Tamaño
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.size || 'No especificado'}
+                         </Typography>
                        </Box>
                        <Box>
-                         <Typography variant="subtitle2" color="text.secondary">Ubicación</Typography>
-                         <Typography variant="body1">{selectedProjectDetail.company.location || 'No especificada'}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Ubicación
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.location || 'No especificada'}
+                         </Typography>
                        </Box>
                      </Box>
                      {selectedProjectDetail.company.description && (
                        <Box sx={{ mt: 2 }}>
-                         <Typography variant="subtitle2" color="text.secondary">Descripción</Typography>
-                         <Typography variant="body2">{selectedProjectDetail.company.description}</Typography>
+                         <Typography variant="subtitle2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                         }}>
+                           Descripción
+                         </Typography>
+                         <Typography variant="body2" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                         }}>
+                           {selectedProjectDetail.company.description}
+                         </Typography>
                        </Box>
                      )}
                    </CardContent>
@@ -1147,14 +1567,31 @@ export default function ValidacionHorasAdmin() {
                {/* Información del área y TRL */}
                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                  {selectedProjectDetail.area && (
-                   <Card>
-                     <CardContent>
-                       <Typography variant="h6" gutterBottom>
+                   <Card sx={{ 
+                     background: themeMode === 'dark' 
+                       ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                       : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                     borderRadius: 3,
+                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+                   }}>
+                     <CardContent sx={{ p: 3 }}>
+                       <Typography variant="h6" sx={{ 
+                         fontWeight: 'bold',
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
+                         mb: 2
+                       }}>
                          Área del Proyecto
                        </Typography>
-                       <Typography variant="subtitle1">{selectedProjectDetail.area.name}</Typography>
+                       <Typography variant="subtitle1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                       }}>
+                         {selectedProjectDetail.area.name}
+                       </Typography>
                        {selectedProjectDetail.area.description && (
-                         <Typography variant="body2" color="text.secondary">
+                         <Typography variant="body2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                           mt: 1
+                         }}>
                            {selectedProjectDetail.area.description}
                          </Typography>
                        )}
@@ -1163,17 +1600,36 @@ export default function ValidacionHorasAdmin() {
                  )}
                  
                  {selectedProjectDetail.trl && (
-                   <Card>
-                     <CardContent>
-                       <Typography variant="h6" gutterBottom>
+                   <Card sx={{ 
+                     background: themeMode === 'dark' 
+                       ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                       : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                     borderRadius: 3,
+                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+                   }}>
+                     <CardContent sx={{ p: 3 }}>
+                       <Typography variant="h6" sx={{ 
+                         fontWeight: 'bold',
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
+                         mb: 2
+                       }}>
                          Nivel TRL
                        </Typography>
-                       <Typography variant="subtitle1">{selectedProjectDetail.trl.name}</Typography>
-                       <Typography variant="body2" color="text.secondary">
+                       <Typography variant="subtitle1" sx={{ 
+                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                       }}>
+                         {selectedProjectDetail.trl.name}
+                       </Typography>
+                       <Typography variant="body2" sx={{ 
+                         color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+                       }}>
                          Nivel {selectedProjectDetail.trl.level}
                        </Typography>
                        {selectedProjectDetail.trl.description && (
-                         <Typography variant="body2" color="text.secondary">
+                         <Typography variant="body2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                           mt: 1
+                         }}>
                            {selectedProjectDetail.trl.description}
                          </Typography>
                        )}
@@ -1184,13 +1640,18 @@ export default function ValidacionHorasAdmin() {
             </Box>
           ) : (
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="body1" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
+              }}>
                 No se pudieron cargar los detalles del proyecto
               </Typography>
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
+        <DialogActions sx={{ 
+          p: 3,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
           <Button 
             onClick={handleCloseDetailModal}
             sx={{ 

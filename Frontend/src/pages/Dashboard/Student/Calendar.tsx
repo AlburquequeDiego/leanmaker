@@ -25,6 +25,7 @@ import {
   Schedule as ScheduleIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -124,6 +125,7 @@ const localizer = dateFnsLocalizer({
 
 
 export const Calendar = () => {
+  const { themeMode } = useTheme();
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   
@@ -153,7 +155,7 @@ export const Calendar = () => {
       
       const eventsArray = Array.isArray(eventsData)
         ? eventsData
-        : (eventsData?.results || []);
+        : (eventsData as any)?.results || [];
       
       // Validar que eventsArray sea un array válido
       if (!Array.isArray(eventsArray)) {
@@ -173,7 +175,7 @@ export const Calendar = () => {
           console.error('Error adaptando evento:', event, error);
           return null;
         }
-      }).filter(Boolean); // Filtrar eventos nulos
+      }).filter((e): e is CalendarEvent => e !== null); // Filtrar eventos nulos
       
       console.log('Calendar - Events loaded successfully:', formattedEvents.length);
       console.log('Calendar - Formatted events details:', formattedEvents.map(e => ({
@@ -238,7 +240,8 @@ export const Calendar = () => {
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: string | undefined) => {
+    if (!status) return 'Sin estado';
     switch (status) {
       case 'upcoming': return 'Próximo';
       case 'in-progress': return 'En curso';
@@ -336,7 +339,13 @@ export const Calendar = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+      minHeight: '100vh'
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -423,8 +432,6 @@ export const Calendar = () => {
         </Alert>
       )}
 
-
-
       {/* Resumen de eventos */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
         <Card sx={{ 
@@ -496,25 +503,76 @@ export const Calendar = () => {
         </Card>
       </Box>
 
-
-
       {/* Calendario principal - VERSIÓN PERSONALIZADA */}
-      <Paper sx={{ p: 3, mb: 4, backgroundColor: 'white' }}>
-        <Box sx={{ border: '1px solid #ddd', borderRadius: 1, overflow: 'hidden' }}>
+      <Paper sx={{ 
+        p: 3, 
+        mb: 4, 
+        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+      }}>
+        <Box sx={{ 
+          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #ddd', 
+          borderRadius: 1, 
+          overflow: 'hidden' 
+        }}>
           {/* Navegación del calendario */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, borderBottom: '1px solid #ddd' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            p: 2, 
+            borderBottom: themeMode === 'dark' ? '1px solid #334155' : '1px solid #ddd',
+            bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa'
+          }}>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button onClick={() => setDate(new Date())} variant="outlined" size="small">
+              <Button 
+                onClick={() => setDate(new Date())} 
+                variant="outlined" 
+                size="small"
+                sx={{
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  '&:hover': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                  }
+                }}
+              >
                 HOY
               </Button>
-              <Button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))} variant="outlined" size="small">
+              <Button 
+                onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))} 
+                variant="outlined" 
+                size="small"
+                sx={{
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  '&:hover': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                  }
+                }}
+              >
                 ANTERIOR
               </Button>
-              <Button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))} variant="outlined" size="small">
+              <Button 
+                onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))} 
+                variant="outlined" 
+                size="small"
+                sx={{
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  '&:hover': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                  }
+                }}
+              >
                 SIGUIENTE
               </Button>
             </Box>
-            <Typography variant="h6">
+            <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
               {date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
@@ -522,6 +580,22 @@ export const Calendar = () => {
                 onClick={() => setView('month')} 
                 variant={view === 'month' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'month' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 MES
               </Button>
@@ -529,6 +603,22 @@ export const Calendar = () => {
                 onClick={() => setView('week')} 
                 variant={view === 'week' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'week' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 SEMANA
               </Button>
@@ -536,6 +626,22 @@ export const Calendar = () => {
                 onClick={() => setView('day')} 
                 variant={view === 'day' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'day' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 DÍA
               </Button>
@@ -543,6 +649,22 @@ export const Calendar = () => {
                 onClick={() => setView('agenda')} 
                 variant={view === 'agenda' ? 'contained' : 'outlined'} 
                 size="small"
+                sx={{
+                  ...(view === 'agenda' ? {
+                    bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                    }
+                  } : {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    '&:hover': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                    }
+                  })
+                }}
               >
                 AGENDA
               </Button>
@@ -603,8 +725,12 @@ export const Calendar = () => {
                         sx={{ 
                           height: '100%',
                           p: 1, 
-                          border: '1px solid #ddd',
-                          backgroundColor: isToday ? '#e3f2fd' : isCurrentMonth ? 'white' : '#f9f9f9',
+                          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #ddd',
+                          backgroundColor: isToday 
+                            ? (themeMode === 'dark' ? '#1e40af' : '#e3f2fd') 
+                            : isCurrentMonth 
+                              ? (themeMode === 'dark' ? '#1e293b' : 'white') 
+                              : (themeMode === 'dark' ? '#0f172a' : '#f9f9f9'),
                           position: 'relative',
                           overflow: 'hidden',
                           display: 'flex',
@@ -615,7 +741,9 @@ export const Calendar = () => {
                           variant="body2" 
                           sx={{ 
                             fontWeight: isToday ? 'bold' : 'normal',
-                            color: isCurrentMonth ? 'text.primary' : 'text.secondary',
+                            color: isCurrentMonth 
+                              ? (themeMode === 'dark' ? '#f1f5f9' : '#1e293b') 
+                              : (themeMode === 'dark' ? '#64748b' : '#64748b'),
                             mb: 0.5
                           }}
                         >
@@ -659,7 +787,13 @@ export const Calendar = () => {
                             </Box>
                           ))}
                           {dayEvents.length > 3 && (
-                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '8px' }}>
+                            <Typography 
+                              variant="caption" 
+                              sx={{ 
+                                fontSize: '8px',
+                                color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
+                              }}
+                            >
                               +{dayEvents.length - 3} más
                             </Typography>
                           )}
@@ -683,14 +817,19 @@ export const Calendar = () => {
                   alignItems: 'center', 
                   justifyContent: 'center', 
                   height: '100%',
-                  background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
+                  background: themeMode === 'dark' 
+                    ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+                    : 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
                   borderRadius: 3,
                   p: 4
                 }}>
                   <Typography variant="h6" color="primary" gutterBottom>
                     📅 No hay eventos programados
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <Typography variant="body2" sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    mb: 2 
+                  }}>
                     No tienes eventos en tu agenda. Los eventos aparecerán aquí cuando sean programados.
                   </Typography>
                 </Box>
@@ -710,15 +849,25 @@ export const Calendar = () => {
                           p: 3,
                           mb: 2,
                           borderRadius: 3,
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                          border: '1px solid rgba(102, 126, 234, 0.1)',
-                          background: 'linear-gradient(135deg, #ffffff 0%, #fafbff 100%)',
+                          boxShadow: themeMode === 'dark' 
+                            ? '0 4px 16px rgba(0,0,0,0.3)' 
+                            : '0 4px 16px rgba(0,0,0,0.08)',
+                          border: themeMode === 'dark' 
+                            ? '1px solid #334155' 
+                            : '1px solid rgba(102, 126, 234, 0.1)',
+                          background: themeMode === 'dark' 
+                            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+                            : 'linear-gradient(135deg, #ffffff 0%, #fafbff 100%)',
                           cursor: 'pointer',
                           transition: 'all 0.3s ease',
                           '&:hover': {
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
-                            borderColor: 'rgba(102, 126, 234, 0.3)'
+                            boxShadow: themeMode === 'dark' 
+                              ? '0 8px 25px rgba(0,0,0,0.4)' 
+                              : '0 8px 25px rgba(102, 126, 234, 0.15)',
+                            borderColor: themeMode === 'dark' 
+                              ? '#60a5fa' 
+                              : 'rgba(102, 126, 234, 0.3)'
                           }
                         }}
                         onClick={() => handleSelectEvent(event)}
@@ -756,7 +905,10 @@ export const Calendar = () => {
                               />
                             </Box>
                             
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            <Typography variant="body2" sx={{ 
+                              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                              mb: 1 
+                            }}>
                               📅 {new Date(event.start).toLocaleDateString('es-ES', { 
                                 weekday: 'long', 
                                 day: 'numeric',
@@ -765,7 +917,10 @@ export const Calendar = () => {
                               })}
                             </Typography>
                             
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            <Typography variant="body2" sx={{ 
+                              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                              mb: 1 
+                            }}>
                               🕐 {new Date(event.start).toLocaleTimeString('es-ES', { 
                                 hour: '2-digit', 
                                 minute: '2-digit' 
@@ -776,13 +931,18 @@ export const Calendar = () => {
                             </Typography>
                             
                             {event.location && (
-                              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              <Typography variant="body2" sx={{ 
+                                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                                mb: 1 
+                              }}>
                                 📍 {event.location}
                               </Typography>
                             )}
                             
                             {event.description && (
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography variant="body2" sx={{ 
+                                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                              }}>
                                 {event.description}
                               </Typography>
                             )}
@@ -897,7 +1057,12 @@ export const Calendar = () => {
 
       {/* Lista de eventos */}
       {(upcomingEvents.length > 0 || pastEvents.length > 0) && (
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ 
+          p: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+        }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
@@ -910,6 +1075,22 @@ export const Calendar = () => {
                   size="small"
                   onClick={() => setShowPastEvents(false)}
                   disabled={upcomingEvents.length === 0}
+                  sx={{
+                    ...(showPastEvents ? {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      '&:hover': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                        backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                      }
+                    } : {
+                      bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      color: 'white',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                      }
+                    })
+                  }}
                 >
                   Próximos
                 </Button>
@@ -918,6 +1099,22 @@ export const Calendar = () => {
                   size="small"
                   onClick={() => setShowPastEvents(true)}
                   disabled={pastEvents.length === 0}
+                  sx={{
+                    ...(showPastEvents ? {
+                      bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      color: 'white',
+                      '&:hover': {
+                        bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                      }
+                    } : {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      '&:hover': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                        backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)'
+                      }
+                    })
+                  }}
                 >
                   Recientes
                 </Button>
@@ -932,17 +1129,23 @@ export const Calendar = () => {
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {(showPastEvents ? pastEvents : upcomingEvents).map((event) => (
-              <Card key={event.id} sx={{ p: 2 }}>
+              <Card key={event.id} sx={{ 
+                p: 2,
+                bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0'
+              }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     {getEventIcon(event.event_type)}
                     <Box>
-                      <Typography variant="h6">{event.title}</Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                        {event.title}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>
                         {format(event.start, 'dd/MM/yyyy HH:mm')} - {format(event.end, 'HH:mm')}
                       </Typography>
                       {event.location && (
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>
                           📍 {event.location}
                         </Typography>
                       )}
@@ -969,13 +1172,19 @@ export const Calendar = () => {
 
       {/* Dialog para detalles del evento */}
       <Dialog open={!!selectedEvent} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
+        <DialogTitle sx={{ 
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <InfoIcon color="primary" />
             <Typography variant="h6">Detalles del Evento</Typography>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ 
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           {selectedEvent && (
             <Box>
               <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
@@ -1002,23 +1211,27 @@ export const Calendar = () => {
                 </>
               )}
               
-                             {/* Información del Representante */}
-               {(selectedEvent.representative_name || selectedEvent.representative_position) && (
-                 <>
-                   <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Representante de la Empresa</Typography>
-                   <Typography variant="body1">
-                     {selectedEvent.representative_name || 'No especificado'}
-                     {selectedEvent.representative_position && ` - ${selectedEvent.representative_position}`}
-                   </Typography>
-                 </>
-               )}
+              {/* Información del Representante */}
+              {(selectedEvent.representative_name || selectedEvent.representative_position) && (
+                <>
+                  <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Representante de la Empresa</Typography>
+                  <Typography variant="body1">
+                    {selectedEvent.representative_name || 'No especificado'}
+                    {selectedEvent.representative_position && ` - ${selectedEvent.representative_position}`}
+                  </Typography>
+                </>
+              )}
               
               {/* Tipo de Reunión */}
               {selectedEvent.meeting_type && (
                 <>
                   <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Tipo de Reunión</Typography>
                   <Typography variant="body1">
-                    {selectedEvent.meeting_type === 'online' ? 'Online' : 'En Sede'}
+                    {selectedEvent.meeting_type === 'online' ? 'Online (Videollamada)' : 
+                     selectedEvent.meeting_type === 'cowork' ? 'En Sede - Cowork' :
+                     selectedEvent.meeting_type === 'fablab' ? 'En Sede - FabLab' :
+                     selectedEvent.meeting_type === 'onsite' ? 'En Sede' : 
+                     selectedEvent.meeting_type}
                   </Typography>
                 </>
               )}
@@ -1035,17 +1248,19 @@ export const Calendar = () => {
                 </>
               )}
               
-                             {/* Sala (solo si es en sede) */}
-               {(selectedEvent.meeting_type === 'cowork' || selectedEvent.meeting_type === 'fablab') && selectedEvent.meeting_room && (
-                 <>
-                   <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Ubicación</Typography>
-                   <Typography variant="body1">
-                     {selectedEvent.meeting_type === 'cowork' ? 'Cowork' : 'FabLab'}
-                   </Typography>
-                   <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 1 }}>Sala</Typography>
-                   <Typography variant="body1">{selectedEvent.meeting_room}</Typography>
-                 </>
-               )}
+              {/* Sala (solo si es en sede) */}
+              {(selectedEvent.meeting_type === 'cowork' || selectedEvent.meeting_type === 'fablab' || selectedEvent.meeting_type === 'onsite') && selectedEvent.meeting_room && (
+                <>
+                  <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>Ubicación</Typography>
+                  <Typography variant="body1">
+                    {selectedEvent.meeting_type === 'cowork' ? 'Cowork' : 
+                     selectedEvent.meeting_type === 'fablab' ? 'FabLab' : 
+                     'En Sede'}
+                  </Typography>
+                  <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 1 }}>Sala</Typography>
+                  <Typography variant="body1">{selectedEvent.meeting_room || 'No especificada'}</Typography>
+                </>
+              )}
               
               <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                 <Chip label={getEventTypeText(selectedEvent.event_type)} color="primary" />
@@ -1055,7 +1270,10 @@ export const Calendar = () => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ 
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <Button onClick={handleCloseDialog} color="secondary">Cerrar</Button>
         </DialogActions>
       </Dialog>

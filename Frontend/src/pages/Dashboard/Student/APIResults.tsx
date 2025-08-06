@@ -45,6 +45,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../../services/api.service';
 import { ShowLatestFilter } from '../../../components/common/ShowLatestFilter';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface APIResult {
   id: string;
@@ -123,6 +124,7 @@ const apiLevelDescriptions = {
 };
 
 export const APIResults = () => {
+  const { themeMode } = useTheme();
   const [apiRequests, setApiRequests] = useState<ApiLevelRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -202,14 +204,25 @@ export const APIResults = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-        <CircularProgress />
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: 400,
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5'
+      }}>
+        <CircularProgress sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3, 
+      backgroundColor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5', 
+      minHeight: '100vh' 
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -291,7 +304,11 @@ export const APIResults = () => {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ 
+          mb: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+        }}>
           {error}
         </Alert>
       )}
@@ -415,14 +432,25 @@ export const APIResults = () => {
 
       {/* Historial de Peticiones de Subida de Nivel API */}
       <Card sx={{ 
-        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-        borderRadius: 3
+        boxShadow: themeMode === 'dark' 
+          ? '0 8px 32px rgba(0,0,0,0.3)' 
+          : '0 8px 32px rgba(0,0,0,0.1)',
+        borderRadius: 3,
+        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+        color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
       }}>
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <TimelineIcon sx={{ mr: 2, fontSize: '2rem', color: 'primary.main' }} />
-              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+              <TimelineIcon sx={{ 
+                mr: 2, 
+                fontSize: '2rem', 
+                color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' 
+              }} />
+              <Typography variant="h5" sx={{ 
+                fontWeight: 'bold',
+                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+              }}>
                 Historial de Solicitudes
               </Typography>
             </Box>
@@ -432,15 +460,27 @@ export const APIResults = () => {
             />
           </Box>
           
-          <Divider sx={{ mb: 3 }} />
+          <Divider sx={{ 
+            mb: 3,
+            borderColor: themeMode === 'dark' ? '#475569' : '#e0e0e0'
+          }} />
           
           {apiRequests.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 4 }}>
-              <QuizIcon sx={{ fontSize: '4rem', color: 'text.secondary', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+              <QuizIcon sx={{ 
+                fontSize: '4rem', 
+                color: themeMode === 'dark' ? '#64748b' : 'text.secondary', 
+                mb: 2 
+              }} />
+              <Typography variant="h6" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', 
+                mb: 1 
+              }}>
                 No tienes solicitudes de subida de nivel API
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'
+              }}>
                 Cuando realices una solicitud, aparecerá aquí tu historial completo
               </Typography>
             </Box>
@@ -448,12 +488,29 @@ export const APIResults = () => {
             <TableContainer sx={{ borderRadius: 2, overflow: 'hidden' }}>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Nivel Actual</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Nivel Solicitado</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Estado</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Feedback</TableCell>
+                  <TableRow sx={{ 
+                    backgroundColor: themeMode === 'dark' ? '#334155' : 'primary.main' 
+                  }}>
+                    <TableCell sx={{ 
+                      color: 'white', 
+                      fontWeight: 'bold' 
+                    }}>Fecha</TableCell>
+                    <TableCell sx={{ 
+                      color: 'white', 
+                      fontWeight: 'bold' 
+                    }}>Nivel Actual</TableCell>
+                    <TableCell sx={{ 
+                      color: 'white', 
+                      fontWeight: 'bold' 
+                    }}>Nivel Solicitado</TableCell>
+                    <TableCell sx={{ 
+                      color: 'white', 
+                      fontWeight: 'bold' 
+                    }}>Estado</TableCell>
+                    <TableCell sx={{ 
+                      color: 'white', 
+                      fontWeight: 'bold' 
+                    }}>Feedback</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -480,13 +537,18 @@ export const APIResults = () => {
                         <TableRow 
                           key={req.id}
                           sx={{ 
-                            backgroundColor: index % 2 === 0 ? 'background.paper' : 'action.hover',
+                            backgroundColor: index % 2 === 0 
+                              ? themeMode === 'dark' ? '#334155' : 'background.paper' 
+                              : themeMode === 'dark' ? '#475569' : 'action.hover',
                             '&:hover': {
-                              backgroundColor: 'action.selected'
+                              backgroundColor: themeMode === 'dark' ? '#1e3a8a' : 'action.selected'
                             }
                           }}
                         >
-                          <TableCell sx={{ fontWeight: 'medium' }}>{fecha}</TableCell>
+                          <TableCell sx={{ 
+                            fontWeight: 'medium',
+                            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+                          }}>{fecha}</TableCell>
                           <TableCell>
                             <Chip 
                               label={`Nivel ${nivelActual}`} 
@@ -513,7 +575,10 @@ export const APIResults = () => {
                             />
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ maxWidth: 300 }}>
+                            <Typography variant="body2" sx={{ 
+                              maxWidth: 300,
+                              color: themeMode === 'dark' ? '#cbd5e1' : 'inherit'
+                            }}>
                               {req.feedback || avance || '-'}
                             </Typography>
                           </TableCell>

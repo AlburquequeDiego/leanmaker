@@ -25,6 +25,10 @@ import {
   Tab,
   Divider,
   Badge,
+  FormControl,
+  InputLabel,
+  Select,
+  InputAdornment,
 } from '@mui/material';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 import {
@@ -40,10 +44,12 @@ import {
   WorkOutline as WorkOutlineIcon,
   Star as StarIcon,
   Lightbulb as LightbulbIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { adaptApplication } from '../../../utils/adapters';
 import { MODALIDADES } from '../../../modalidades';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Application {
   id: string;
@@ -110,6 +116,7 @@ interface FiltrosProyectosDisponiblesProps {
 
 // Componente de filtros mejorado
 const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter, historyLimit, setHistoryLimit }) => {
+  const { themeMode } = useTheme();
   const [busqueda, setBusqueda] = useState('');
   const [area, setArea] = useState('');
   const [estado, setEstado] = useState('');
@@ -126,99 +133,160 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={4}>
-        <TextField
-          label="Buscar aplicaciones"
-          value={busqueda}
-          onChange={e => setBusqueda(e.target.value)}
-          fullWidth
-          size="small"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 2,
-              '&:hover fieldset': {
-                borderColor: 'primary.main',
-              },
-            }
-          }}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6} md={2}>
-        <TextField
-          select
-          label="Área"
+    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+      <TextField
+        label="Buscar aplicaciones"
+        value={busqueda}
+        onChange={e => setBusqueda(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+            </InputAdornment>
+          ),
+        }}
+        sx={{ 
+          minWidth: 300,
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+            bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            '&:hover fieldset': {
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            },
+            '& fieldset': {
+              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+          },
+          '& .MuiInputBase-input': {
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+          }
+        }}
+      />
+      <FormControl sx={{ minWidth: 150 }}>
+        <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Área</InputLabel>
+        <Select
           value={area}
+          label="Área"
           onChange={e => setArea(e.target.value)}
-          fullWidth
-          size="small"
-          sx={{ borderRadius: 2 }}
+          sx={{ 
+            borderRadius: 2,
+            bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            },
+            '& .MuiSvgIcon-root': {
+              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+            },
+          }}
         >
           <MenuItem value="">Todas</MenuItem>
           {areas.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
-        </TextField>
-      </Grid>
-      <Grid item xs={12} sm={6} md={2}>
-        <TextField
-          select
-          label="Estado"
+        </Select>
+      </FormControl>
+      <FormControl sx={{ minWidth: 150 }}>
+        <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Estado</InputLabel>
+        <Select
           value={estado}
+          label="Estado"
           onChange={e => setEstado(e.target.value)}
-          fullWidth
-          size="small"
-          sx={{ borderRadius: 2 }}
+          sx={{ 
+            borderRadius: 2,
+            bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            },
+            '& .MuiSvgIcon-root': {
+              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+            },
+          }}
         >
           <MenuItem value="">Todos</MenuItem>
           <MenuItem value="pending">Pendiente</MenuItem>
           <MenuItem value="accepted">Aceptada</MenuItem>
           <MenuItem value="rejected">Rechazada</MenuItem>
-        </TextField>
-      </Grid>
-      <Grid item xs={12} sm={6} md={2}>
-        <TextField
-          select
-          label="Mostrar últimas"
+        </Select>
+      </FormControl>
+      <FormControl sx={{ minWidth: 150 }}>
+        <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Mostrar</InputLabel>
+        <Select
           value={historyLimit}
+          label="Mostrar"
           onChange={(e) => setHistoryLimit(Number(e.target.value))}
-          fullWidth
-          size="small"
-          sx={{ borderRadius: 2 }}
+          sx={{ 
+            borderRadius: 2,
+            bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            },
+            '& .MuiSvgIcon-root': {
+              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+            },
+          }}
         >
           <MenuItem value={15}>15 últimas</MenuItem>
           <MenuItem value={50}>50 últimas</MenuItem>
           <MenuItem value={100}>100 últimas</MenuItem>
           <MenuItem value={-1}>Todas</MenuItem>
-        </TextField>
-      </Grid>
-      <Grid item xs={12} sm={6} md={1}>
+        </Select>
+      </FormControl>
+      <Button 
+        variant="outlined"
+        onClick={handleFiltrar}
+        sx={{ 
+          borderRadius: 2,
+          borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+          '&:hover': {
+            borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+            bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.04)',
+          }
+        }}
+      >
+        Filtrar
+      </Button>
+      {(busqueda || area || estado) && (
         <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleFiltrar}
-          fullWidth
+          variant="outlined"
+          onClick={handleLimpiar}
           sx={{ 
             borderRadius: 2,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
             '&:hover': {
-              background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+              bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.04)',
             }
           }}
         >
-          Filtrar
-        </Button>
-      </Grid>
-      <Grid item xs={12} sm={6} md={1}>
-        <Button 
-          variant="outlined" 
-          color="secondary" 
-          onClick={handleLimpiar}
-          fullWidth
-          sx={{ borderRadius: 2 }}
-        >
           Limpiar
         </Button>
-      </Grid>
-    </Grid>
+      )}
+    </Box>
   );
 };
 
@@ -257,6 +325,7 @@ const adaptApplicationData = (backendData: any): Application => {
 
 // Componente principal de aplicaciones
 export const MyApplications: React.FC = () => {
+  const { themeMode } = useTheme();
   const [applications, setApplications] = useState<Application[]>([]);
 
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
@@ -449,7 +518,13 @@ export const MyApplications: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3,
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+      minHeight: '100vh'
+    }}>
       {/* Header mejorado */}
       <Box sx={{ 
         mb: 4,
@@ -585,33 +660,42 @@ export const MyApplications: React.FC = () => {
       </Box>
 
       {/* Filtros mejorados */}
-      <Paper sx={{ 
-        p: 3, 
-        mb: 4, 
-        borderRadius: 3,
-        background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(255,255,255,0.8)'
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-          <FilterListIcon sx={{ color: 'primary.main', fontSize: 24 }} />
-          <Typography variant="h6" fontWeight={600} color="primary.main">
-            Filtros de Búsqueda
-          </Typography>
-        </Box>
-        <FiltrosProyectosDisponibles 
-          onFilter={handleFilter} 
-          historyLimit={historyLimit}
-          setHistoryLimit={setHistoryLimit}
-        />
-      </Paper>
+      <Card 
+        className="filter-card"
+        sx={{ 
+          mb: 4, 
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          borderRadius: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <FilterListIcon sx={{ mr: 1, color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+            <Typography variant="h6" sx={{ 
+              fontWeight: 'bold',
+              color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+            }}>
+              Filtros de Búsqueda
+            </Typography>
+          </Box>
+          <FiltrosProyectosDisponibles 
+            onFilter={handleFilter} 
+            historyLimit={historyLimit}
+            setHistoryLimit={setHistoryLimit}
+          />
+        </CardContent>
+      </Card>
 
       {/* Tabs mejorados */}
       <Box sx={{ 
         borderBottom: 1, 
-        borderColor: 'divider', 
+        borderColor: themeMode === 'dark' ? 'rgba(255,255,255,0.1)' : 'divider', 
         mb: 3,
-        background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+        background: themeMode === 'dark' 
+          ? 'linear-gradient(145deg, #1e293b 0%, #334155 100%)' 
+          : 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
         borderRadius: 2,
         p: 1
       }}>
@@ -623,6 +707,7 @@ export const MyApplications: React.FC = () => {
               fontWeight: 600,
               borderRadius: 1.5,
               mx: 0.5,
+              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
               '&.Mui-selected': {
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
@@ -642,12 +727,16 @@ export const MyApplications: React.FC = () => {
         <Box sx={{ 
           textAlign: 'center', 
           py: 6,
-          background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+          background: themeMode === 'dark' 
+            ? 'linear-gradient(145deg, #334155 0%, #475569 100%)' 
+            : 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
           borderRadius: 3,
-          border: '1px solid rgba(0,0,0,0.05)'
+          border: themeMode === 'dark' 
+            ? '1px solid rgba(255,255,255,0.1)' 
+            : '1px solid rgba(0,0,0,0.05)'
         }}>
-          <WorkOutlineIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary">
+          <WorkOutlineIcon sx={{ fontSize: 60, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', mb: 2 }} />
+          <Typography variant="h6" color={themeMode === 'dark' ? '#f1f5f9' : 'text.secondary'}>
             No se encontraron aplicaciones en esta categoría
           </Typography>
         </Box>
@@ -655,7 +744,9 @@ export const MyApplications: React.FC = () => {
         <TableContainer component={Paper} sx={{ 
           borderRadius: 3,
           boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
         }}>
           <Table>
             <TableHead>
@@ -680,8 +771,11 @@ export const MyApplications: React.FC = () => {
                   key={application.id} 
                   hover
                   sx={{ 
+                    bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
                     '&:hover': {
-                      background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+                      background: themeMode === 'dark' 
+                        ? 'linear-gradient(145deg, #475569 0%, #64748b 100%)' 
+                        : 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
                       transform: 'translateY(-1px)',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                       transition: 'all 0.2s'
@@ -690,10 +784,12 @@ export const MyApplications: React.FC = () => {
                 >
                   <TableCell>
                     <Box>
-                      <Typography variant="body1" fontWeight="bold" sx={{ color: '#1a237e' }}>
+                      <Typography variant="body1" fontWeight="bold" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1a237e' 
+                      }}>
                         {application.projectTitle}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'}>
                         {application.description.substring(0, 60)}...
                       </Typography>
                     </Box>
@@ -709,7 +805,9 @@ export const MyApplications: React.FC = () => {
                       }}>
                         <BusinessIcon fontSize="small" />
                       </Avatar>
-                      <Typography variant="body2" fontWeight={500}>
+                      <Typography variant="body2" fontWeight={500} sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' 
+                      }}>
                         {application.company}
                       </Typography>
                     </Box>
@@ -731,7 +829,10 @@ export const MyApplications: React.FC = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    <Typography variant="body2" sx={{ 
+                      fontWeight: 500,
+                      color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+                    }}>
                       {new Date(application.appliedDate).toLocaleDateString('es-ES')}
                     </Typography>
                   </TableCell>
@@ -743,9 +844,14 @@ export const MyApplications: React.FC = () => {
                       title="Ver detalles del proyecto"
                       disabled={loadingProjectDetail}
                       sx={{ 
-                        bgcolor: 'rgba(102, 126, 234, 0.1)',
+                        bgcolor: themeMode === 'dark' 
+                          ? 'rgba(102, 126, 234, 0.2)' 
+                          : 'rgba(102, 126, 234, 0.1)',
+                        color: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
                         '&:hover': {
-                          bgcolor: 'rgba(102, 126, 234, 0.2)',
+                          bgcolor: themeMode === 'dark' 
+                            ? 'rgba(102, 126, 234, 0.3)' 
+                            : 'rgba(102, 126, 234, 0.2)',
                           transform: 'scale(1.1)',
                           transition: 'all 0.2s'
                         }

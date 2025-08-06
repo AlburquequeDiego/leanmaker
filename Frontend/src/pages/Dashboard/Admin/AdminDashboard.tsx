@@ -3,6 +3,7 @@ import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, W
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { useState } from 'react';
 
 // Componente para tarjetas KPI con tooltip
@@ -93,6 +94,7 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { themeMode } = useTheme();
 
   // Obtener el nombre del usuario para personalizar el dashboard
   const getUserDisplayName = () => {
@@ -123,10 +125,15 @@ export default function AdminDashboard() {
   const pendingHours = stats?.pending_hours || 0;
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+    <Box sx={{ 
+      p: 3, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
           Dashboard de Administrador - {getUserDisplayName()}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -148,7 +155,7 @@ export default function AdminDashboard() {
 
       {/* Error discreto */}
       {error && !loading && (
-        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+        <Typography variant="body2" sx={{ textAlign: 'center', py: 2, color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>
           No se pudo cargar la información.
         </Typography>
       )}

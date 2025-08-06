@@ -52,6 +52,7 @@ import {
   School as SchoolIcon2,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface User {
   id: string;
@@ -72,6 +73,7 @@ interface User {
 }
 
 export default function UsuariosAdmin() {
+  const { themeMode } = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -331,7 +333,12 @@ export default function UsuariosAdmin() {
   }
 
   return (
-    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+    <Box sx={{ 
+      p: 3, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Header con gradiente */}
       <Card sx={{ 
         mb: 3, 
@@ -387,12 +394,14 @@ export default function UsuariosAdmin() {
       )}
 
       {/* Filtros y búsqueda con diseño mejorado */}
-      <Card sx={{ 
-        mb: 3, 
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-        borderRadius: 3
-      }}>
+      <Card 
+        className="filter-card"
+        sx={{ 
+          mb: 3, 
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          borderRadius: 3
+        }}
+      >
         <CardContent sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <FilterIcon sx={{ mr: 1, color: 'primary.main' }} />
@@ -480,7 +489,9 @@ export default function UsuariosAdmin() {
 
       {/* Tabla de usuarios con diseño mejorado */}
       <Card sx={{ 
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        background: themeMode === 'dark' 
+          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+          : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
         borderRadius: 3,
         overflow: 'hidden'
@@ -511,11 +522,13 @@ export default function UsuariosAdmin() {
                   key={user.id} 
                   hover
                   sx={{ 
-                    '&:nth-of-type(odd)': {
-                      backgroundColor: 'rgba(102, 126, 234, 0.02)',
-                    },
+                    backgroundColor: themeMode === 'dark' 
+                      ? (index % 2 === 0 ? '#1e293b' : '#334155')
+                      : (index % 2 === 0 ? 'rgba(102, 126, 234, 0.02)' : 'transparent'),
                     '&:hover': {
-                      backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                      backgroundColor: themeMode === 'dark' 
+                        ? 'rgba(102, 126, 234, 0.1)'
+                        : 'rgba(102, 126, 234, 0.05)',
                       transform: 'translateY(-1px)',
                       transition: 'all 0.2s ease-in-out',
                     }
@@ -535,10 +548,14 @@ export default function UsuariosAdmin() {
                         {user.first_name?.[0]}{user.last_name?.[0]}
                       </Avatar>
                       <Box>
-                        <Typography variant="body2" fontWeight="bold" sx={{ color: '#2c3e50' }}>
+                        <Typography variant="body2" fontWeight="bold" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+                        }}>
                           {user.first_name} {user.last_name}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: '#7f8c8d' }}>
+                        <Typography variant="caption" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+                        }}>
                           @{user.username}
                         </Typography>
                       </Box>
@@ -561,8 +578,10 @@ export default function UsuariosAdmin() {
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <EmailIcon sx={{ fontSize: 16, color: '#7f8c8d' }} />
-                      <Typography variant="body2" sx={{ color: '#2c3e50' }}>
+                      <EmailIcon sx={{ fontSize: 16, color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' }} />
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+                      }}>
                         {user.email}
                       </Typography>
                     </Box>
@@ -588,7 +607,9 @@ export default function UsuariosAdmin() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                    <Typography variant="body2" sx={{ 
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+                    }}>
                       {new Date(user.date_joined).toLocaleDateString()}
                     </Typography>
                   </TableCell>
@@ -726,51 +747,141 @@ export default function UsuariosAdmin() {
       {filteredUsers.length === 0 && !loading && (
         <Card sx={{ 
           mt: 3, 
-          background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
-          border: '1px solid #ffcc02'
+          background: themeMode === 'dark' 
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+            : 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+          border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #ffcc02'
         }}>
           <CardContent sx={{ textAlign: 'center', py: 4 }}>
-            <PersonIcon sx={{ fontSize: 64, color: '#ff9800', mb: 2 }} />
-            <Typography variant="h6" sx={{ color: '#e65100', mb: 1 }}>
+            <PersonIcon sx={{ fontSize: 64, color: themeMode === 'dark' ? '#cbd5e1' : '#ff9800', mb: 2 }} />
+            <Typography variant="h6" sx={{ 
+              color: themeMode === 'dark' ? '#f1f5f9' : '#e65100', 
+              mb: 1 
+            }}>
               No se encontraron usuarios
             </Typography>
-            <Typography variant="body2" sx={{ color: '#bf360c' }}>
+            <Typography variant="body2" sx={{ 
+              color: themeMode === 'dark' ? '#cbd5e1' : '#bf360c' 
+            }}>
               No se encontraron usuarios que coincidan con los filtros aplicados.
             </Typography>
           </CardContent>
         </Card>
       )}
 
-                           {/* Dialog para crear usuario con diseño mejorado */}
-        <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth>
-          <DialogTitle sx={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            fontWeight: 'bold',
-            py: 2.5,
-            px: 3
-          }}>
-            Crear Nuevo Usuario
-          </DialogTitle>
-          <DialogContent sx={{ p: 3, pt: 6 }}>
+      {/* Dialog para crear usuario con diseño mejorado */}
+      <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 'bold',
+          py: 2.5,
+          px: 3
+        }}>
+          Crear Nuevo Usuario
+        </DialogTitle>
+        <DialogContent sx={{ 
+          p: 3, 
+          pt: 4,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Primera fila */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
               <TextField
                 label="Nombre de usuario"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
               <FormControl fullWidth required>
-                <InputLabel>Tipo de usuario</InputLabel>
+                <InputLabel 
+                  sx={{
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}
+                  shrink={true}
+                >
+                  Tipo de usuario
+                </InputLabel>
                 <Select
                   value={formData.user_type}
                   label="Tipo de usuario"
                   onChange={(e) => setFormData({ ...formData, user_type: e.target.value as any })}
-                  sx={{ borderRadius: 2 }}
+                  sx={{ 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& .MuiSelect-select': {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  }}
                 >
                   <MenuItem value="student">Estudiante</MenuItem>
                   <MenuItem value="company">Empresa</MenuItem>
@@ -787,7 +898,52 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
               <TextField
                 label="Apellido"
@@ -795,7 +951,52 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             </Box>
             
@@ -808,14 +1009,104 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
               <TextField
                 label="Teléfono"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             </Box>
             
@@ -826,7 +1117,52 @@ export default function UsuariosAdmin() {
                 value={formData.company_name}
                 onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                 fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             )}
             {formData.user_type === 'student' && (
@@ -835,7 +1171,52 @@ export default function UsuariosAdmin() {
                 value={formData.career}
                 onChange={(e) => setFormData({ ...formData, career: e.target.value })}
                 fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             )}
             
@@ -848,7 +1229,52 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
               <TextField
                 label="Confirmar contraseña"
@@ -857,15 +1283,70 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             </Box>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
+        <DialogActions sx={{ 
+          p: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e5e7eb'
+        }}>
           <Button 
             onClick={() => setShowCreateDialog(false)}
-            sx={{ borderRadius: 2 }}
+            sx={{ 
+              borderRadius: 2,
+              color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+              '&:hover': {
+                backgroundColor: themeMode === 'dark' ? '#334155' : '#f3f4f6',
+              }
+            }}
           >
             Cancelar
           </Button>
@@ -886,35 +1367,125 @@ export default function UsuariosAdmin() {
         </DialogActions>
       </Dialog>
 
-                           {/* Dialog para editar usuario con diseño mejorado */}
-        <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)} maxWidth="md" fullWidth>
-          <DialogTitle sx={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            fontWeight: 'bold',
-            py: 2.5,
-            px: 3
-          }}>
-            Editar Usuario
-          </DialogTitle>
-          <DialogContent sx={{ p: 3, pt: 6 }}>
+      {/* Dialog para editar usuario con diseño mejorado */}
+      <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 'bold',
+          py: 2.5,
+          px: 3
+        }}>
+          Editar Usuario
+        </DialogTitle>
+        <DialogContent sx={{ 
+          p: 3, 
+          pt: 4,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Primera fila */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
               <TextField
                 label="Nombre de usuario"
                 value={formData.username}
-                disabled
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                required
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
-              <TextField
-                label="Tipo de usuario"
-                value={getTypeText(formData.user_type)}
-                disabled
-                fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-              />
+              <FormControl fullWidth required>
+                <InputLabel 
+                  sx={{
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}
+                  shrink={true}
+                >
+                  Tipo de usuario
+                </InputLabel>
+                <Select
+                  value={formData.user_type}
+                  label="Tipo de usuario"
+                  onChange={(e) => setFormData({ ...formData, user_type: e.target.value as any })}
+                  sx={{ 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& .MuiSelect-select': {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  }}
+                >
+                  <MenuItem value="student">Estudiante</MenuItem>
+                  <MenuItem value="company">Empresa</MenuItem>
+                  <MenuItem value="admin">Administrador</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             
             {/* Segunda fila */}
@@ -925,7 +1496,52 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
               <TextField
                 label="Apellido"
@@ -933,7 +1549,52 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             </Box>
             
@@ -946,14 +1607,104 @@ export default function UsuariosAdmin() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 fullWidth
                 required
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
               <TextField
                 label="Teléfono"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             </Box>
             
@@ -964,7 +1715,52 @@ export default function UsuariosAdmin() {
                 value={formData.company_name}
                 onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                 fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             )}
             {formData.user_type === 'student' && (
@@ -973,15 +1769,70 @@ export default function UsuariosAdmin() {
                 value={formData.career}
                 onChange={(e) => setFormData({ ...formData, career: e.target.value })}
                 fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '& input': {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
               />
             )}
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
+        <DialogActions sx={{ 
+          p: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e5e7eb'
+        }}>
           <Button 
             onClick={() => setShowEditDialog(false)}
-            sx={{ borderRadius: 2 }}
+            sx={{ 
+              borderRadius: 2,
+              color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+              '&:hover': {
+                backgroundColor: themeMode === 'dark' ? '#334155' : '#f3f4f6',
+              }
+            }}
           >
             Cancelar
           </Button>
@@ -1002,16 +1853,16 @@ export default function UsuariosAdmin() {
         </DialogActions>
       </Dialog>
 
-      <Snackbar
-        open={!!success}
-        autoHideDuration={6000}
-        onClose={() => setSuccess(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
-          {success}
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
+    <Snackbar
+      open={!!success}
+      autoHideDuration={6000}
+      onClose={() => setSuccess(null)}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
+        {success}
+      </Alert>
+    </Snackbar>
+  </Box>
+);
 } 

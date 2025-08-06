@@ -21,7 +21,7 @@ export interface CalendarEvent {
   project_title?: string;
   status?: string;
   // Campos adicionales para reuniones/entrevistas
-  meeting_type?: 'online' | 'onsite';
+  meeting_type?: 'online' | 'onsite' | 'cowork' | 'fablab';
   meeting_link?: string;
   meeting_room?: string;
   duration?: string;

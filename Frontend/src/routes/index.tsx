@@ -4,6 +4,7 @@ import { CircularProgress, Box } from '@mui/material';
 import { Home, Login, Register } from '../pages';
 import { TestConnection } from '../components/TestConnection';
 import { TestLogin } from '../components/TestLogin';
+import { LightModeWrapper } from '../components/LightModeWrapper';
 import StudentDashboard from '../pages/Dashboard/Student/StudentDashboard';
 import Profile from '../pages/Dashboard/Student/Profile';
 import Notifications from '../pages/Dashboard/Student/Notifications';
@@ -75,10 +76,22 @@ export const AppRoutes = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
-        {/* Rutas públicas */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Rutas públicas - SIEMPRE en modo claro */}
+        <Route path="/" element={
+          <LightModeWrapper>
+            <Home />
+          </LightModeWrapper>
+        } />
+        <Route path="/login" element={
+          <LightModeWrapper>
+            <Login />
+          </LightModeWrapper>
+        } />
+        <Route path="/register" element={
+          <LightModeWrapper>
+            <Register />
+          </LightModeWrapper>
+        } />
         <Route path="/test-connection" element={<TestConnection />} />
         <Route path="/test-login" element={<TestLogin />} />
 

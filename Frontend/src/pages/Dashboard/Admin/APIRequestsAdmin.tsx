@@ -37,6 +37,7 @@ import {
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface ApiLevelRequest {
   id: number;
@@ -51,6 +52,7 @@ interface ApiLevelRequest {
 }
 
 export default function APIRequestsAdmin() {
+  const { themeMode } = useTheme();
   const [requests, setRequests] = useState<ApiLevelRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -141,21 +143,30 @@ export default function APIRequestsAdmin() {
   return (
     <Box sx={{ 
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      p: 3
+      background: themeMode === 'dark' 
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' 
+        : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      p: 3,
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
     }}>
       {/* Header Principal */}
       <Card sx={{ 
         mb: 4,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        background: themeMode === 'dark'
+          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+          : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: themeMode === 'dark'
+          ? '0 8px 32px rgba(0, 0, 0, 0.3)'
+          : '0 8px 32px rgba(0, 0, 0, 0.1)',
         borderRadius: 3,
         overflow: 'hidden'
       }}>
         <Box sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             <Box sx={{ 
-              background: 'rgba(255, 255, 255, 0.2)',
+              background: themeMode === 'dark'
+                ? 'rgba(255, 255, 255, 0.1)'
+                : 'rgba(255, 255, 255, 0.2)',
               borderRadius: 2,
               p: 1.5,
               backdropFilter: 'blur(10px)',
@@ -166,10 +177,10 @@ export default function APIRequestsAdmin() {
               <HistoryIcon sx={{ fontSize: 32, color: 'white' }} />
             </Box>
             <Box>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+              <Typography variant="h4" sx={{ color: '#ffffff', fontWeight: 'bold', mb: 0.5, textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
                 Gestión de Solicitudes de Nivel API
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+              <Typography variant="body1" sx={{ color: '#ffffff', textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
                 Administración y revisión de solicitudes de cambio de nivel API de estudiantes
               </Typography>
             </Box>
@@ -180,12 +191,18 @@ export default function APIRequestsAdmin() {
               <IconButton 
                 onClick={fetchRequests}
                 sx={{ 
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: themeMode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : 'rgba(255, 255, 255, 0.2)',
                   backdropFilter: 'blur(10px)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  border: themeMode === 'dark'
+                    ? '1px solid rgba(255, 255, 255, 0.2)'
+                    : '1px solid rgba(255, 255, 255, 0.3)',
                   '&:hover': {
-                    background: 'rgba(255, 255, 255, 0.3)',
+                    background: themeMode === 'dark'
+                      ? 'rgba(255, 255, 255, 0.2)'
+                      : 'rgba(255, 255, 255, 0.3)',
                     transform: 'scale(1.05)'
                   }
                 }}
@@ -198,13 +215,21 @@ export default function APIRequestsAdmin() {
               onClick={() => navigate(-1)}
               startIcon={<ArrowBackIcon />}
               sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)',
+                background: themeMode === 'dark'
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(255, 255, 255, 0.2)',
                 backdropFilter: 'blur(10px)',
                 color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
+                border: themeMode === 'dark'
+                  ? '1px solid rgba(255, 255, 255, 0.2)'
+                  : '1px solid rgba(255, 255, 255, 0.3)',
                 '&:hover': {
-                  background: 'rgba(255, 255, 255, 0.3)',
-                  border: '1px solid rgba(255, 255, 255, 0.5)'
+                  background: themeMode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.2)'
+                    : 'rgba(255, 255, 255, 0.3)',
+                  border: themeMode === 'dark'
+                    ? '1px solid rgba(255, 255, 255, 0.4)'
+                    : '1px solid rgba(255, 255, 255, 0.5)'
                 }
               }}
             >
@@ -233,26 +258,38 @@ export default function APIRequestsAdmin() {
           justifyContent: 'center', 
           alignItems: 'center', 
           minHeight: 400,
-          background: 'rgba(255, 255, 255, 0.9)',
+          background: themeMode === 'dark'
+            ? 'rgba(30, 41, 59, 0.9)'
+            : 'rgba(255, 255, 255, 0.9)',
           backdropFilter: 'blur(10px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          boxShadow: themeMode === 'dark'
+            ? '0 8px 32px rgba(0, 0, 0, 0.3)'
+            : '0 8px 32px rgba(0, 0, 0, 0.1)',
           borderRadius: 3
         }}>
           <CircularProgress size={60} />
         </Card>
       ) : (
         <Card sx={{ 
-          background: 'rgba(255, 255, 255, 0.9)',
+          background: themeMode === 'dark'
+            ? 'rgba(30, 41, 59, 0.9)'
+            : 'rgba(255, 255, 255, 0.9)',
           backdropFilter: 'blur(10px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          boxShadow: themeMode === 'dark'
+            ? '0 8px 32px rgba(0, 0, 0, 0.3)'
+            : '0 8px 32px rgba(0, 0, 0, 0.1)',
           borderRadius: 3,
           overflow: 'hidden'
         }}>
           {/* Header de la tabla */}
           <Box sx={{ 
             p: 3, 
-            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-            borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+            background: themeMode === 'dark'
+              ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+              : 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            borderBottom: themeMode === 'dark'
+              ? '1px solid rgba(255, 255, 255, 0.1)'
+              : '1px solid rgba(0, 0, 0, 0.1)',
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center' 
@@ -269,10 +306,15 @@ export default function APIRequestsAdmin() {
                 <HistoryIcon sx={{ fontSize: 24, color: 'white' }} />
               </Box>
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 600, 
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                }}>
                   Registro de Solicitudes
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#64748b' }}>
+                <Typography variant="body2" sx={{ 
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+                }}>
                   {requests.length} solicitudes encontradas
                 </Typography>
               </Box>
@@ -280,16 +322,26 @@ export default function APIRequestsAdmin() {
             
             {/* Selector de cantidad a mostrar */}
             <FormControl size="small" sx={{ minWidth: 140 }}>
-              <InputLabel sx={{ color: '#64748b' }}>Mostrar</InputLabel>
+              <InputLabel sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+              }}>
+                Mostrar
+              </InputLabel>
               <Select
                 value={pageSize}
                 label="Mostrar"
                 onChange={(e) => setPageSize(e.target.value === 'todos' ? 1000000 : Number(e.target.value))}
                 sx={{
-                  background: 'white',
+                  background: themeMode === 'dark' ? '#334155' : 'white',
                   borderRadius: 2,
                   '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'rgba(0, 0, 0, 0.1)'
+                    borderColor: themeMode === 'dark' ? '#475569' : 'rgba(0, 0, 0, 0.1)'
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                  },
+                  '& .MuiSelect-select': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
                   }
                 }}
               >
@@ -307,14 +359,43 @@ export default function APIRequestsAdmin() {
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow sx={{ background: 'rgba(248, 250, 252, 0.8)' }}>
-                  <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Estudiante</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Nivel Actual</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Nivel Solicitado</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Estado</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Fecha de Solicitud</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Feedback</TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Acciones</TableCell>
+                <TableRow sx={{ 
+                  background: themeMode === 'dark'
+                    ? 'rgba(51, 65, 85, 0.8)'
+                    : 'rgba(248, 250, 252, 0.8)' 
+                }}>
+                  <TableCell sx={{ 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                  }}>
+                    Estudiante
+                  </TableCell>
+                  <TableCell sx={{ 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                  }}>
+                    Nivel Actual
+                  </TableCell>
+                  <TableCell sx={{ 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                  }}>
+                    Nivel Solicitado
+                  </TableCell>
+                  <TableCell sx={{ 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                  }}>
+                    Estado
+                  </TableCell>
+                  <TableCell sx={{ 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                  }}>
+                    Fecha de Solicitud
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>Feedback</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -323,17 +404,17 @@ export default function APIRequestsAdmin() {
                     key={req.id}
                     sx={{ 
                       '&:hover': {
-                        background: 'rgba(102, 126, 234, 0.05)',
+                        background: themeMode === 'dark' ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.05)',
                         transform: 'scale(1.001)',
                         transition: 'all 0.2s ease-in-out'
                       },
                       '&:nth-of-type(even)': {
-                        background: 'rgba(248, 250, 252, 0.3)'
+                        background: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(248, 250, 252, 0.3)'
                       }
                     }}
                   >
                     <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1e293b' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: themeMode === 'dark' ? '#ffffff' : '#1e293b' }}>
                         {req.student_name}
                       </Typography>
                     </TableCell>
@@ -372,14 +453,14 @@ export default function APIRequestsAdmin() {
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#ffffff' : '#1e293b' }}>
                           {new Date(req.submitted_at).toLocaleDateString('es-ES', {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric'
                           })}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                        <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>
                           {new Date(req.submitted_at).toLocaleTimeString('es-ES', {
                             hour: '2-digit',
                             minute: '2-digit'
@@ -388,7 +469,7 @@ export default function APIRequestsAdmin() {
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" sx={{ color: req.feedback ? '#1e293b' : '#64748b' }}>
+                      <Typography variant="body2" sx={{ color: themeMode === 'dark' ? (req.feedback ? '#ffffff' : '#cbd5e1') : (req.feedback ? '#1e293b' : '#64748b') }}>
                         {req.feedback || 'Sin feedback'}
                       </Typography>
                     </TableCell>
@@ -416,7 +497,7 @@ export default function APIRequestsAdmin() {
                           </Button>
                         </Tooltip>
                       ) : (
-                        <Typography variant="body2" sx={{ color: '#64748b', fontStyle: 'italic' }}>
+                        <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', fontStyle: 'italic' }}>
                           {req.status === 'approved' ? 'Aprobada' : 'Rechazada'}
                         </Typography>
                       )}
@@ -438,8 +519,12 @@ export default function APIRequestsAdmin() {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-            background: 'rgba(255, 255, 255, 0.95)',
+            boxShadow: themeMode === 'dark'
+              ? '0 20px 60px rgba(0, 0, 0, 0.4)'
+              : '0 20px 60px rgba(0, 0, 0, 0.2)',
+            background: themeMode === 'dark'
+              ? 'rgba(30, 41, 59, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)'
           }
         }}
@@ -465,9 +550,17 @@ export default function APIRequestsAdmin() {
             </Typography>
           </Box>
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ 
+          p: 3,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ mb: 2, fontWeight: 600, color: '#1e293b' }}>
+            <Typography variant="body1" sx={{ 
+              mb: 2, 
+              fontWeight: 600, 
+              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+            }}>
               <strong>Estudiante:</strong> {selectedRequest?.student_name}
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
@@ -493,14 +586,31 @@ export default function APIRequestsAdmin() {
             sx={{ 
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
+                backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                   borderColor: '#667eea'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#667eea'
                 }
-              }
+              },
+              '& .MuiInputLabel-root': {
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+              },
+              '& .MuiInputBase-input': {
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+              },
             }}
           />
         </DialogContent>
-        <DialogActions sx={{ p: 3, gap: 2 }}>
+        <DialogActions sx={{ 
+          p: 3, 
+          gap: 2,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
           <Button 
             onClick={() => setSelectedRequest(null)} 
             color="inherit"

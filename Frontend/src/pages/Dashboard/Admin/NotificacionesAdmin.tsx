@@ -533,167 +533,123 @@ export default function NotificacionesAdmin() {
       )}
 
       {/* Filtros mejorados */}
-      <Paper sx={{ 
-        p: 3, 
-        mb: 4, 
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        borderRadius: 3,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(0,0,0,0.05)'
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1,
-            p: 1,
-            borderRadius: 2,
-            bgcolor: 'primary.main',
-            color: 'white'
-          }}>
-            <FilterIcon fontSize="small" />
-            <Typography variant="h6" fontWeight={600}>Filtros y Búsqueda</Typography>
+      <Card 
+        className="filter-card"
+        sx={{ 
+          mb: 4, 
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          borderRadius: 3
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <FilterIcon sx={{ mr: 1, color: 'primary.main' }} />
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                Filtros y Búsqueda
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<SendIcon />}
+              onClick={() => setShowCreateDialog(true)}
+              sx={{ 
+                borderRadius: 2,
+                px: 3,
+                py: 1
+              }}
+            >
+              Nueva Notificación
+            </Button>
           </Box>
-          <Button
-            variant="contained"
-            startIcon={<SendIcon />}
-            onClick={() => setShowCreateDialog(true)}
-            sx={{ 
-              borderRadius: 2,
-              ml: 'auto',
-              px: 3,
-              py: 1
-            }}
-          >
-            Nueva Notificación
-          </Button>
-        </Box>
-        
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 3, 
-          alignItems: 'center',
-          p: 2,
-          borderRadius: 2,
-          bgcolor: 'rgba(255,255,255,0.7)'
-        }}>
-          <TextField
-            size="small"
-            placeholder="🔍 Buscar notificaciones..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="primary" />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ 
-              minWidth: 280,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
-                }
-              }
-            }}
-          />
-          
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>📢 Tipo</InputLabel>
-            <Select
-              value={typeFilter}
-              label="📢 Tipo"
-              onChange={(e) => setTypeFilter(e.target.value)}
-              sx={{
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <TextField
+              label="Buscar notificaciones..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'primary.main' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ 
+                minWidth: 300,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
                 }
               }}
-            >
-              <MenuItem value="">Todos los tipos</MenuItem>
-              <MenuItem value="announcement">📢 Anuncio</MenuItem>
-              <MenuItem value="reminder">⏰ Recordatorio</MenuItem>
-              <MenuItem value="alert">🚨 Alerta</MenuItem>
-              <MenuItem value="update">🔄 Actualización</MenuItem>
-              <MenuItem value="event">📅 Evento</MenuItem>
-              <MenuItem value="deadline">⏳ Fecha límite</MenuItem>
-            </Select>
-          </FormControl>
-          
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>📊 Estado</InputLabel>
-            <Select
-              value={statusFilter}
-              label="📊 Estado"
-              onChange={(e) => setStatusFilter(e.target.value)}
-              sx={{
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
-                }
-              }}
-            >
-              <MenuItem value="">Todos los estados</MenuItem>
-              <MenuItem value="sent">✅ Enviadas</MenuItem>
-              <MenuItem value="draft">📝 Borrador</MenuItem>
-              <MenuItem value="cancelled">❌ Canceladas</MenuItem>
-            </Select>
-          </FormControl>
-          
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>🎯 Prioridad</InputLabel>
-            <Select
-              value={priorityFilter}
-              label="🎯 Prioridad"
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              sx={{
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
-                }
-              }}
-            >
-              <MenuItem value="">Todas las prioridades</MenuItem>
-              <MenuItem value="low">🔵 Baja</MenuItem>
-              <MenuItem value="normal">🟢 Normal</MenuItem>
-              <MenuItem value="medium">🟡 Media</MenuItem>
-              <MenuItem value="high">🔴 Alta</MenuItem>
-              <MenuItem value="urgent">🚨 Urgente</MenuItem>
-            </Select>
-          </FormControl>
-          
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>📋 Mostrar</InputLabel>
-            <Select
-              value={limit}
-              label="📋 Mostrar"
-              onChange={(e) => setLimit(Number(e.target.value))}
-              sx={{
-                borderRadius: 2,
-                bgcolor: 'white',
-                '&:hover': {
-                  bgcolor: 'grey.50'
-                }
-              }}
-            >
-              <MenuItem value={5}>5 últimas</MenuItem>
-              <MenuItem value={10}>10 últimas</MenuItem>
-              <MenuItem value={20}>20 últimas</MenuItem>
-              <MenuItem value={50}>50 últimas</MenuItem>
-              <MenuItem value={100}>100 últimas</MenuItem>
-              <MenuItem value={-1}>Todas</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Paper>
+            />
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Tipo</InputLabel>
+              <Select
+                value={typeFilter}
+                label="Tipo"
+                onChange={(e) => setTypeFilter(e.target.value)}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos los tipos</MenuItem>
+                <MenuItem value="announcement">📢 Anuncio</MenuItem>
+                <MenuItem value="reminder">⏰ Recordatorio</MenuItem>
+                <MenuItem value="alert">🚨 Alerta</MenuItem>
+                <MenuItem value="update">🔄 Actualización</MenuItem>
+                <MenuItem value="event">📅 Evento</MenuItem>
+                <MenuItem value="deadline">⏳ Fecha límite</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Estado</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Estado"
+                onChange={(e) => setStatusFilter(e.target.value)}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos los estados</MenuItem>
+                <MenuItem value="sent">✅ Enviadas</MenuItem>
+                <MenuItem value="draft">📝 Borrador</MenuItem>
+                <MenuItem value="cancelled">❌ Canceladas</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Prioridad</InputLabel>
+              <Select
+                value={priorityFilter}
+                label="Prioridad"
+                onChange={(e) => setPriorityFilter(e.target.value)}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todas las prioridades</MenuItem>
+                <MenuItem value="low">🔵 Baja</MenuItem>
+                <MenuItem value="normal">🟢 Normal</MenuItem>
+                <MenuItem value="medium">🟡 Media</MenuItem>
+                <MenuItem value="high">🔴 Alta</MenuItem>
+                <MenuItem value="urgent">🚨 Urgente</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel>Mostrar</InputLabel>
+              <Select
+                value={limit}
+                label="Mostrar"
+                onChange={(e) => setLimit(Number(e.target.value))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value={5}>5 últimas</MenuItem>
+                <MenuItem value={10}>10 últimas</MenuItem>
+                <MenuItem value={20}>20 últimas</MenuItem>
+                <MenuItem value={50}>50 últimas</MenuItem>
+                <MenuItem value={100}>100 últimas</MenuItem>
+                <MenuItem value={-1}>Todas</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Lista de notificaciones mejorada */}
       <Box sx={{ 

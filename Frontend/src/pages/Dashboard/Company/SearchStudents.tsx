@@ -57,11 +57,12 @@ import { useApi } from '../../../hooks/useApi';
 import { notificationService } from '../../../services/notification.service';
 import { adaptStudentList } from '../../../utils/adapters';
 import type { Student } from '../../../types';
-
+import { useTheme } from '../../../contexts/ThemeContext';
 
 
 export const SearchStudents: React.FC = () => {
   const api = useApi();
+  const { themeMode } = useTheme();
   const [students, setStudents] = useState<Student[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,14 +214,14 @@ export const SearchStudents: React.FC = () => {
   const handleSendMessage = async (student: Student & { userData?: any }) => {
     try {
       setSendingMessage(true);
-      console.log('🚀 Enviando notificación de contacto a estudiante:', student.id);
+      console.log(' Enviando notificación de contacto a estudiante:', student.id);
       
       const response = await notificationService.sendCompanyMessage({
         student_id: student.id,
         message: 'La empresa quiere comunicarse contigo. Revisa tu correo institucional para más detalles.'
       });
       
-      console.log('✅ Respuesta del servidor:', response);
+      console.log(' Respuesta del servidor:', response);
       
       if (response.success || response.message === 'Mensaje enviado exitosamente') {
         alert('Notificación enviada exitosamente. El estudiante recibirá una notificación para revisar su correo institucional.');
@@ -239,7 +240,14 @@ export const SearchStudents: React.FC = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh',
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+      }}>
         <CircularProgress />
       </Box>
     );
@@ -247,7 +255,11 @@ export const SearchStudents: React.FC = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ 
+        p: 3,
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+      }}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
@@ -261,7 +273,13 @@ export const SearchStudents: React.FC = () => {
   // Si no hay estudiantes cargados
   if (students.length === 0 && !loading) {
     return (
-      <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, bgcolor: '#f8fafc', minHeight: '100vh' }}>
+      <Box sx={{ 
+        flexGrow: 1, 
+        p: { xs: 2, md: 4 }, 
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc', 
+        minHeight: '100vh',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+      }}>
         {/* Banner superior con gradiente y contexto */}
         <Box
           sx={{
@@ -271,7 +289,7 @@ export const SearchStudents: React.FC = () => {
             mb: 4,
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+            boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(102, 126, 234, 0.4)' : '0 8px 32px rgba(102, 126, 234, 0.3)',
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -345,15 +363,16 @@ export const SearchStudents: React.FC = () => {
         <Box sx={{ 
           textAlign: 'center', 
           py: 8,
-          bgcolor: 'white',
+          bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
           borderRadius: 3,
-          border: '2px dashed #cbd5e1'
+          border: themeMode === 'dark' ? '2px dashed #475569' : '2px dashed #cbd5e1',
+          boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 'none'
         }}>
-          <GroupIcon sx={{ fontSize: 80, color: '#cbd5e1', mb: 2 }} />
-          <Typography variant="h5" color="text.secondary" fontWeight={500}>
+          <GroupIcon sx={{ fontSize: 80, color: themeMode === 'dark' ? '#94a3b8' : '#cbd5e1', mb: 2 }} />
+          <Typography variant="h5" color="text.secondary" fontWeight={500} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'text.secondary' }}>
             No hay estudiantes registrados
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
             Aún no hay estudiantes que hayan postulado a proyectos de tu empresa. Los estudiantes aparecerán aquí una vez que postulen.
           </Typography>
           <Button 
@@ -369,7 +388,13 @@ export const SearchStudents: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, bgcolor: '#f8fafc', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: { xs: 2, md: 4 }, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -379,7 +404,7 @@ export const SearchStudents: React.FC = () => {
           mb: 4,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(102, 126, 234, 0.4)' : '0 8px 32px rgba(102, 126, 234, 0.3)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -455,11 +480,12 @@ export const SearchStudents: React.FC = () => {
         <Paper elevation={0} sx={{ 
           borderRadius: 3, 
           p: 3, 
-          border: '1px solid #e2e8f0',
+          border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
           position: 'relative',
           overflow: 'hidden',
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(102, 126, 234, 0.4)' : 'none',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -487,11 +513,12 @@ export const SearchStudents: React.FC = () => {
         <Paper elevation={0} sx={{ 
           borderRadius: 3, 
           p: 3, 
-          border: '1px solid #e2e8f0',
+          border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0',
           background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
           color: 'white',
           position: 'relative',
           overflow: 'hidden',
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(240, 147, 251, 0.4)' : 'none',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -519,11 +546,12 @@ export const SearchStudents: React.FC = () => {
         <Paper elevation={0} sx={{ 
           borderRadius: 3, 
           p: 3, 
-          border: '1px solid #e2e8f0',
+          border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0',
           background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
           color: 'white',
           position: 'relative',
           overflow: 'hidden',
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(79, 172, 254, 0.4)' : 'none',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -550,11 +578,17 @@ export const SearchStudents: React.FC = () => {
       </Box>
 
       {/* Filtros de búsqueda */}
-      <Paper elevation={0} sx={{ mb: 4, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: 'white' }}>
-        <Box sx={{ p: 3, borderBottom: '1px solid #e2e8f0' }}>
+      <Paper elevation={0} sx={{ 
+        mb: 4, 
+        borderRadius: 3, 
+        border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0', 
+        bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+        boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 'none'
+      }}>
+        <Box sx={{ p: 3, borderBottom: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <FilterIcon sx={{ color: '#64748b' }} />
-            <Typography variant="h6" fontWeight={600} sx={{ color: '#1e293b' }}>
+            <FilterIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : '#64748b' }} />
+            <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
               Filtros de Búsqueda
             </Typography>
           </Box>
@@ -568,11 +602,28 @@ export const SearchStudents: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 InputProps={{
-                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                  startAdornment: <SearchIcon sx={{ mr: 1, color: themeMode === 'dark' ? '#60a5fa' : 'text.secondary' }} />,
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2,
+                    bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db'
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
                   }
                 }}
               />
@@ -580,7 +631,7 @@ export const SearchStudents: React.FC = () => {
 
             <Grid item xs={12} md={2}>
               <FormControl fullWidth>
-                <InputLabel>Mostrar</InputLabel>
+                <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>Mostrar</InputLabel>
                 <Select
                   value={showAllStudents ? 'all' : resultsLimit}
                   label="Mostrar"
@@ -595,6 +646,17 @@ export const SearchStudents: React.FC = () => {
                   }}
                   sx={{
                     borderRadius: 2,
+                    bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db'
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                    }
                   }}
                 >
                   <MenuItem value={20}>Últimos 20</MenuItem>
@@ -612,7 +674,7 @@ export const SearchStudents: React.FC = () => {
       {/* Contador de resultados */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h6" fontWeight={600} sx={{ color: '#1e293b' }}>
+          <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
             Registro de Postulantes
           </Typography>
           <Chip 
@@ -623,10 +685,10 @@ export const SearchStudents: React.FC = () => {
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
             {showAllStudents ? 'Mostrando todos los estudiantes' : `Mostrando últimos ${resultsLimit}`}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
             ({filteredStudents.length} de {students.length} total)
           </Typography>
         </Box>
@@ -642,14 +704,15 @@ export const SearchStudents: React.FC = () => {
             <Grid item xs={12} md={6} lg={4} key={student.id}>
               <Card elevation={0} sx={{ 
                 borderRadius: 3, 
-                border: '1px solid #e2e8f0',
-                bgcolor: 'white',
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0',
+                bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
                 transition: 'all 0.3s ease',
                 overflow: 'hidden',
+                boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 'none',
                 '&:hover': { 
                   transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-                  borderColor: '#cbd5e1'
+                  boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(0,0,0,0.4)' : '0 12px 40px rgba(0,0,0,0.15)',
+                  borderColor: themeMode === 'dark' ? '#60a5fa' : '#cbd5e1'
                 }
               }}>
                 <CardContent sx={{ p: 0 }}>
@@ -657,8 +720,8 @@ export const SearchStudents: React.FC = () => {
                   <Box sx={{ 
                     p: 3, 
                     pb: 2,
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                    borderBottom: '1px solid #e2e8f0'
+                    background: themeMode === 'dark' ? 'linear-gradient(135deg, #334155 0%, #475569 100%)' : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                    borderBottom: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0'
                   }}>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -672,15 +735,14 @@ export const SearchStudents: React.FC = () => {
                           {userData.full_name ? userData.full_name.charAt(0).toUpperCase() : 'E'}
                         </Avatar>
                         <Box>
-                          <Typography variant="h6" fontWeight={700} sx={{ color: '#1e293b', mb: 0.5 }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b', mb: 0.5 }}>
                             {userData.full_name || `${userData.first_name} ${userData.last_name}`}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem', color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                             {userData.email}
                           </Typography>
                         </Box>
                       </Box>
-
                     </Box>
 
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -706,12 +768,12 @@ export const SearchStudents: React.FC = () => {
                   </Box>
 
                   {/* Contenido del estudiante */}
-                  <Box sx={{ p: 3, pt: 2 }}>
+                  <Box sx={{ p: 3, pt: 2, bgcolor: themeMode === 'dark' ? '#1e293b' : 'white' }}>
 
                     {/* Habilidades */}
                     {student.skills && student.skills.length > 0 && (
                       <Box sx={{ mb: 2 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, mb: 1, display: 'block' }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, mb: 1, display: 'block', color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                           Habilidades:
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
@@ -788,22 +850,23 @@ export const SearchStudents: React.FC = () => {
         <Box sx={{ 
           textAlign: 'center', 
           py: 8,
-          bgcolor: 'white',
+          bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
           borderRadius: 3,
-          border: '2px dashed #cbd5e1'
+          border: themeMode === 'dark' ? '2px dashed #475569' : '2px dashed #cbd5e1',
+          boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 'none'
         }}>
-          <PersonIcon sx={{ fontSize: 80, color: '#cbd5e1', mb: 2 }} />
-          <Typography variant="h5" color="text.secondary" fontWeight={500}>
+          <PersonIcon sx={{ fontSize: 80, color: themeMode === 'dark' ? '#94a3b8' : '#cbd5e1', mb: 2 }} />
+          <Typography variant="h5" color="text.secondary" fontWeight={500} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'text.secondary' }}>
             No se encontraron estudiantes postulantes
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
             Aún no hay estudiantes que hayan postulado a proyectos de tu empresa. Intenta ajustar los filtros de búsqueda.
           </Typography>
           <Button 
             variant="outlined" 
             onClick={() => {
-                  setSearchTerm('');
-    setSelectedSkills([]);
+              setSearchTerm('');
+              setSelectedSkills([]);
             }}
             sx={{ borderRadius: 2, textTransform: 'none' }}
           >
@@ -829,7 +892,7 @@ export const SearchStudents: React.FC = () => {
         }}>
           Perfil Completo del Estudiante
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
           {selectedStudent && selectedUser && (
             <Box sx={{ pt: 2 }}>
               {console.log('🎨 Renderizando portafolio con datos:', { selectedStudent, selectedUser })}
@@ -840,119 +903,119 @@ export const SearchStudents: React.FC = () => {
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Avatar>
                 <Box>
-                  <Typography variant="h5" fontWeight={700}>
+                  <Typography variant="h5" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     {selectedUser.full_name || `${selectedUser.first_name || ''} ${selectedUser.last_name || ''}` || '-'}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     {selectedUser.email || '-'}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     {selectedUser.phone || '-'}
                   </Typography>
                 </Box>
               </Box>
 
-              <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa' }}>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Fecha de Nacimiento:</Typography>
-                    <Typography variant="body1">{selectedStudent.perfil_detallado?.fecha_nacimiento || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Fecha de Nacimiento:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.perfil_detallado?.fecha_nacimiento || '-'}</Typography>
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Género:</Typography>
-                    <Typography variant="body1">{selectedStudent.perfil_detallado?.genero || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Género:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.perfil_detallado?.genero || '-'}</Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Carrera:</Typography>
-                    <Typography variant="body1">{selectedStudent.career || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Carrera:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.career || '-'}</Typography>
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Nivel Educativo:</Typography>
-                    <Typography variant="body1">{selectedStudent.api_level || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Nivel Educativo:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.api_level || '-'}</Typography>
                   </Box>
                 </Box>
               </Paper>
 
               {/* Habilidades */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Habilidades</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Habilidades</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                 {(selectedStudent.skills || []).map((h: string) => (
                   <Chip key={h} label={h} color="primary" />
                 ))}
-                {(!selectedStudent.skills || selectedStudent.skills.length === 0) && <Typography variant="body2" color="text.secondary">-</Typography>}
+                {(!selectedStudent.skills || selectedStudent.skills.length === 0) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>-</Typography>}
               </Box>
 
               {/* Documentos */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Documentos</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Documentos</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                 {selectedStudent.cv_link && (
-                  <Typography variant="body2">
-                    <strong>CV:</strong> <a href={selectedStudent.cv_link} target="_blank" rel="noopener noreferrer">{selectedStudent.cv_link}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>CV:</strong> <a href={selectedStudent.cv_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.cv_link}</a>
                   </Typography>
                 )}
                 {selectedStudent.certificado_link && (
-                  <Typography variant="body2">
-                    <strong>Certificado:</strong> <a href={selectedStudent.certificado_link} target="_blank" rel="noopener noreferrer">{selectedStudent.certificado_link}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>Certificado:</strong> <a href={selectedStudent.certificado_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.certificado_link}</a>
                   </Typography>
                 )}
-                {(!selectedStudent.cv_link && !selectedStudent.certificado_link) && <Typography variant="body2" color="text.secondary">No hay documentos</Typography>}
+                {(!selectedStudent.cv_link && !selectedStudent.certificado_link) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay documentos</Typography>}
               </Box>
 
               {/* Área de interés y modalidades */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Área y Modalidad</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Área y Modalidad</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                 <Box sx={{ flex: 1, minWidth: 220 }}>
-                  <Typography variant="body2" color="text.secondary">Área de interés:</Typography>
-                  <Typography variant="body1">{selectedStudent.area || '-'}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Área de interés:</Typography>
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.area || '-'}</Typography>
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 220 }}>
-                  <Typography variant="body2" color="text.secondary">Modalidad:</Typography>
-                  <Typography variant="body1">{selectedStudent.availability || '-'}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Modalidad:</Typography>
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.availability || '-'}</Typography>
                 </Box>
               </Box>
 
               {/* Experiencia previa */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Experiencia Previa</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>{selectedStudent.experience_years ? `${selectedStudent.experience_years} años` : '-'}</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Experiencia Previa</Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>{selectedStudent.experience_years ? `${selectedStudent.experience_years} años` : '-'}</Typography>
 
               {/* Enlaces */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Enlaces</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Enlaces</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                 {selectedStudent.linkedin_url && (
-                  <Typography variant="body2">
-                    <strong>LinkedIn:</strong> <a href={selectedStudent.linkedin_url} target="_blank" rel="noopener noreferrer">{selectedStudent.linkedin_url}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>LinkedIn:</strong> <a href={selectedStudent.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.linkedin_url}</a>
                   </Typography>
                 )}
                 {selectedStudent.github_url && (
-                  <Typography variant="body2">
-                    <strong>GitHub:</strong> <a href={selectedStudent.github_url} target="_blank" rel="noopener noreferrer">{selectedStudent.github_url}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>GitHub:</strong> <a href={selectedStudent.github_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.github_url}</a>
                   </Typography>
                 )}
                 {selectedStudent.portfolio_url && (
-                  <Typography variant="body2">
-                    <strong>Portafolio:</strong> <a href={selectedStudent.portfolio_url} target="_blank" rel="noopener noreferrer">{selectedStudent.portfolio_url}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>Portafolio:</strong> <a href={selectedStudent.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.portfolio_url}</a>
                   </Typography>
                 )}
-                {(!selectedStudent.linkedin_url && !selectedStudent.github_url && !selectedStudent.portfolio_url) && <Typography variant="body2" color="text.secondary">No hay enlaces</Typography>}
+                {(!selectedStudent.linkedin_url && !selectedStudent.github_url && !selectedStudent.portfolio_url) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay enlaces</Typography>}
               </Box>
 
               {/* Carta de Presentación */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Carta de Presentación</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Carta de Presentación</Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                 {selectedStudent.bio || selectedStudent.user_data?.bio || '-'}
               </Typography>
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5', gap: 2 }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5', gap: 2 }}>
           <Button 
             onClick={() => setShowDetailDialog(false)}
             variant="outlined"
@@ -985,18 +1048,18 @@ export const SearchStudents: React.FC = () => {
         }}
       >
         <DialogTitle sx={{ 
-          bgcolor: '#f8fafc', 
-          borderBottom: '1px solid #e2e8f0',
+          bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc', 
+          borderBottom: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           gap: 2
         }}>
           <SendIcon color="primary" />
-          <Typography variant="h6" fontWeight={700}>
+          <Typography variant="h6" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
             Contactar Estudiante
           </Typography>
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
           {selectedStudent && selectedUser && (
             <Box sx={{ pt: 2 }}>
               <Box sx={{ 
@@ -1005,9 +1068,9 @@ export const SearchStudents: React.FC = () => {
                 gap: 2, 
                 mb: 3,
                 p: 2,
-                bgcolor: '#f8fafc',
+                bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
                 borderRadius: 2,
-                border: '1px solid #e2e8f0'
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0'
               }}>
                 <Avatar sx={{ 
                   width: 50, 
@@ -1019,39 +1082,39 @@ export const SearchStudents: React.FC = () => {
                   {selectedUser.full_name ? selectedUser.full_name.charAt(0).toUpperCase() : 'E'}
                 </Avatar>
                 <Box>
-                  <Typography variant="h6" fontWeight={600} sx={{ color: '#1e293b' }}>
+                  <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
                     {selectedUser.full_name || `${selectedUser.first_name} ${selectedUser.last_name}`}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     {selectedUser.email}
                   </Typography>
                 </Box>
               </Box>
 
-              <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+              <Typography variant="body1" sx={{ mb: 2, fontWeight: 500, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                 ¿Deseas contactar a este estudiante?
               </Typography>
               
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                 Se enviará una notificación al estudiante indicando que tu empresa se quiere comunicar con él/ella. 
                 El estudiante recibirá el mensaje: <strong>"La empresa quiere comunicarse contigo. Revisa tu correo institucional para más detalles."</strong>
               </Typography>
               
               <Box sx={{ 
                 p: 2, 
-                bgcolor: '#f0f9ff', 
-                border: '1px solid #0ea5e9', 
+                bgcolor: themeMode === 'dark' ? '#1e3a8a' : '#f0f9ff', 
+                border: themeMode === 'dark' ? '1px solid #3b82f6' : '1px solid #0ea5e9', 
                 borderRadius: 2,
-                borderLeft: '4px solid #0ea5e9'
+                borderLeft: themeMode === 'dark' ? '4px solid #3b82f6' : '4px solid #0ea5e9'
               }}>
-                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                   💡 <strong>Nota:</strong> El estudiante será notificado para revisar su correo institucional donde podrás contactarlo directamente.
                 </Typography>
               </Box>
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc', borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0' }}>
           <Button 
             onClick={() => setShowContactDialog(false)}
             variant="outlined"

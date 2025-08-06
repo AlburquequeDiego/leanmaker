@@ -56,6 +56,7 @@ import {
 } from '@mui/icons-material';
 import { apiService } from '../../../../services/api.service';
 import { ShowLatestFilter, ProjectDetailsModal } from '../../../../components/common';
+import { useTheme } from '../../../../contexts/ThemeContext';
 
 import { MODALIDADES } from '../../../../modalidades';
 
@@ -124,6 +125,9 @@ export default function AvailableProjects() {
 
   // Estado para mostrar alertas de modalidad
   const [showModalidadAlert, setShowModalidadAlert] = useState(false);
+
+  // Hook para el tema
+  const { themeMode } = useTheme();
 
   useEffect(() => {
     fetchProjects();
@@ -324,7 +328,12 @@ export default function AvailableProjects() {
   );
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ 
+      p: 3,
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+      minHeight: '100vh'
+    }}>
       {/* Header mejorado con diseño más atractivo */}
       <Box sx={{ 
         mb: 4,
@@ -464,13 +473,14 @@ export default function AvailableProjects() {
         p: 3, 
         mb: 4, 
         borderRadius: 3,
-        background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        border: '1px solid rgba(255,255,255,0.8)'
+        background: themeMode === 'dark' ? 'linear-gradient(145deg, #1e293b 0%, #334155 100%)' : 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+        border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-          <FilterListIcon sx={{ color: 'primary.main', fontSize: 24 }} />
-          <Typography variant="h6" fontWeight={600} color="primary.main">
+          <FilterListIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main', fontSize: 24 }} />
+          <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }}>
             Filtros de Búsqueda
           </Typography>
         </Box>
@@ -485,7 +495,7 @@ export default function AvailableProjects() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'primary.main' }} />
+                    <SearchIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
                   </InputAdornment>
                 ),
               }}
@@ -493,22 +503,52 @@ export default function AvailableProjects() {
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
                   '&:hover fieldset': {
-                    borderColor: 'primary.main',
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
                   },
-                }
+                  '&.Mui-focused fieldset': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                  '&.Mui-focused': {
+                    color: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                },
               }}
             />
           </Grid>
           
           <Grid item xs={12} sm={6} md={2.5}>
             <FormControl fullWidth>
-              <InputLabel>Área de Conocimiento</InputLabel>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Área de Conocimiento</InputLabel>
               <Select
                 value={area}
                 onChange={e => setArea(e.target.value)}
                 label="Área de Conocimiento"
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                  },
+                }}
               >
                 <MenuItem value="">Todas las áreas</MenuItem>
                 {areas.map((a, index) => (
@@ -521,7 +561,7 @@ export default function AvailableProjects() {
 
           <Grid item xs={12} sm={6} md={2.5}>
             <FormControl fullWidth>
-              <InputLabel>Modalidad de Trabajo</InputLabel>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Modalidad de Trabajo</InputLabel>
               <Select
                 value={modalidad}
                 onChange={e => {
@@ -529,7 +569,23 @@ export default function AvailableProjects() {
                   setShowModalidadAlert(e.target.value !== '');
                 }}
                 label="Modalidad de Trabajo"
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                  },
+                }}
               >
                 <MenuItem value="">Todas las modalidades</MenuItem>
                 {MODALIDADES.map((m, index) => (
@@ -585,12 +641,12 @@ export default function AvailableProjects() {
         gap: 2, 
         mb: 3,
         p: 2,
-        bgcolor: 'rgba(25, 118, 210, 0.05)',
+        bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.05)',
         borderRadius: 2,
-        border: '1px solid rgba(25, 118, 210, 0.1)'
+        border: themeMode === 'dark' ? '1px solid rgba(96, 165, 250, 0.2)' : '1px solid rgba(25, 118, 210, 0.1)'
       }}>
-        <StarIcon sx={{ color: 'primary.main' }} />
-        <Typography variant="h6" fontWeight={600} color="primary.main">
+        <StarIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
+        <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }}>
           {filteredProjects.length} proyecto{filteredProjects.length !== 1 ? 's' : ''} encontrado{filteredProjects.length !== 1 ? 's' : ''}
         </Typography>
         {filteredProjects.length > 0 && (
@@ -611,56 +667,56 @@ export default function AvailableProjects() {
           return (
             <Card key={project.id} sx={{
               borderRadius: 3,
-               background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
-               boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-               border: '1px solid rgba(255,255,255,0.8)',
-               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-               position: 'relative',
-               overflow: 'hidden',
-               '&::before': {
-                 content: '""',
-                 position: 'absolute',
-                 top: 0,
-                 left: 0,
-                 right: 0,
-                 height: '3px',
-                 background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-                 zIndex: 1
-               },
-               '&:hover': { 
-                 transform: 'translateY(-4px)', 
-                 boxShadow: '0 12px 24px rgba(0,0,0,0.12)',
-                 borderColor: '#667eea'
-               }
-             }}>
-               <CardContent sx={{ p: 2, pt: 3 }}>
-                 {/* Header con título y estado */}
-                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1.5 }}>
-                   <Typography 
-                     variant="h6" 
-                     fontWeight={700} 
-                     sx={{ 
-                       color: '#1a237e',
-                       fontSize: '1.1rem',
-                       lineHeight: 1.2,
-                       flex: 1,
-                       mr: 1.5,
-                       textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                     }}
-                   >
-                     {project.title}
-                   </Typography>
-                   <Chip 
-                     label={translateProjectStatus(project.status)} 
-                     color={project.status === 'Activo' ? 'success' : 'default'} 
-                     size="small" 
-                     sx={{ 
-                       fontWeight: 600,
-                       fontSize: '0.7rem',
-                       height: 20,
-                       '& .MuiChip-label': { px: 1 }
-                     }} 
-                   />
+              background: themeMode === 'dark' ? 'linear-gradient(145deg, #1e293b 0%, #334155 100%)' : 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+              boxShadow: themeMode === 'dark' ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.08)',
+              border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '3px',
+                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                zIndex: 1
+              },
+              '&:hover': { 
+                transform: 'translateY(-4px)', 
+                boxShadow: themeMode === 'dark' ? '0 12px 24px rgba(0,0,0,0.4)' : '0 12px 24px rgba(0,0,0,0.12)',
+                borderColor: '#667eea'
+              }
+            }}>
+              <CardContent sx={{ p: 2, pt: 3 }}>
+                {/* Header con título y estado */}
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1.5 }}>
+                  <Typography 
+                    variant="h6" 
+                    fontWeight={700} 
+                    sx={{ 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1a237e',
+                      fontSize: '1.1rem',
+                      lineHeight: 1.2,
+                      flex: 1,
+                      mr: 1.5,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    {project.title}
+                  </Typography>
+                  <Chip 
+                    label={translateProjectStatus(project.status)} 
+                    color={project.status === 'Activo' ? 'success' : 'default'} 
+                    size="small" 
+                    sx={{ 
+                      fontWeight: 600,
+                      fontSize: '0.7rem',
+                      height: 20,
+                      '& .MuiChip-label': { px: 1 }
+                    }} 
+                  />
                 </Box>
 
                  {/* Información de empresa y área */}
@@ -671,11 +727,11 @@ export default function AvailableProjects() {
                      gap: 0.5,
                      p: 1,
                      borderRadius: 1.5,
-                     bgcolor: 'rgba(76, 175, 80, 0.08)',
-                     border: '1px solid rgba(76, 175, 80, 0.2)'
+                     bgcolor: themeMode === 'dark' ? 'rgba(76, 175, 80, 0.15)' : 'rgba(76, 175, 80, 0.08)',
+                     border: themeMode === 'dark' ? '1px solid rgba(76, 175, 80, 0.3)' : '1px solid rgba(76, 175, 80, 0.2)'
                    }}>
-                     <TrendingUpIcon sx={{ color: '#2e7d32', fontSize: 16 }} />
-                     <Typography variant="body2" sx={{ fontWeight: 600, color: '#2e7d32', fontSize: '0.8rem' }}>
+                     <TrendingUpIcon sx={{ color: themeMode === 'dark' ? '#4caf50' : '#2e7d32', fontSize: 16 }} />
+                     <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#4caf50' : '#2e7d32', fontSize: '0.8rem' }}>
                     <b>Empresa:</b> {project.company_name}
                   </Typography>
                    </Box>
@@ -686,11 +742,11 @@ export default function AvailableProjects() {
                      gap: 0.5,
                      p: 1,
                      borderRadius: 1.5,
-                     bgcolor: 'rgba(25, 118, 210, 0.08)',
-                     border: '1px solid rgba(25, 118, 210, 0.2)'
+                     bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.15)' : 'rgba(25, 118, 210, 0.08)',
+                     border: themeMode === 'dark' ? '1px solid rgba(96, 165, 250, 0.3)' : '1px solid rgba(25, 118, 210, 0.2)'
                    }}>
-                     <ScienceIcon sx={{ color: '#1565c0', fontSize: 16 }} />
-                     <Typography variant="body2" sx={{ fontWeight: 600, color: '#1565c0', fontSize: '0.8rem' }}>
+                     <ScienceIcon sx={{ color: themeMode === 'dark' ? '#60a5fa' : '#1565c0', fontSize: 16 }} />
+                     <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#60a5fa' : '#1565c0', fontSize: '0.8rem' }}>
                     <b>Área:</b> {project.area}
                   </Typography>
                 </Box>
@@ -701,13 +757,13 @@ export default function AvailableProjects() {
                    mb: 1.5,
                    p: 1.5,
                    borderRadius: 1.5,
-                   bgcolor: 'rgba(0,0,0,0.02)',
-                   border: '1px solid rgba(0,0,0,0.05)'
+                   bgcolor: themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                   border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)'
                  }}>
                    <Typography 
                      variant="body2" 
                      sx={{ 
-                       color: '#374151',
+                       color: themeMode === 'dark' ? '#cbd5e1' : '#374151',
                        lineHeight: 1.4,
                        fontStyle: 'italic',
                        fontSize: '0.8rem'
@@ -771,10 +827,14 @@ export default function AvailableProjects() {
                        py: 0.5,
                        borderWidth: 1.5,
                        fontSize: '0.75rem',
+                       color: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                       borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
                        '&:hover': {
                          borderWidth: 1.5,
                          transform: 'translateY(-1px)',
-                         boxShadow: '0 2px 4px rgba(25, 118, 210, 0.2)'
+                         boxShadow: themeMode === 'dark' ? '0 2px 4px rgba(96, 165, 250, 0.3)' : '0 2px 4px rgba(25, 118, 210, 0.2)',
+                         borderColor: themeMode === 'dark' ? '#93c5fd' : 'primary.dark',
+                         bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.04)'
                        }
                      }}
                    >
@@ -831,7 +891,12 @@ export default function AvailableProjects() {
       </Box>
 
       {filteredProjects.length === 0 && !loading && (
-        <Alert severity="info" sx={{ mt: 3 }}>
+        <Alert severity="info" sx={{ 
+          mt: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#e3f2fd',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#0d47a1',
+          border: themeMode === 'dark' ? '1px solid rgba(96, 165, 250, 0.3)' : '1px solid rgba(25, 118, 210, 0.2)'
+        }}>
           No se encontraron proyectos que coincidan con los filtros aplicados.
         </Alert>
       )}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useHubAnalytics } from '../../../../hooks/useHubAnalytics';
+import { useTheme } from '../../../../contexts/ThemeContext';
 import {
   Box,
   Typography,
@@ -92,6 +93,7 @@ const getStatusIcon = (status: string) => {
 
 export const ReportesYAnalytics = () => {
   const { data, loading, error, refreshData } = useHubAnalytics();
+  const { themeMode } = useTheme();
   
   // Usar datos del backend o valores por defecto
   const stats = data?.stats || {
@@ -172,7 +174,7 @@ export const ReportesYAnalytics = () => {
           <AnalyticsIcon sx={{ fontSize: 40, color: 'error.main' }} />
           <Typography variant="h4" color="error">Error al cargar datos</Typography>
         </Box>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', mb: 2 }}>
           {error}
         </Typography>
         <Button variant="contained" onClick={refreshData}>
@@ -183,7 +185,12 @@ export const ReportesYAnalytics = () => {
   }
 
   return (
-    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+    <Box sx={{ 
+      p: 3, 
+      background: themeMode === 'dark' ? '#0f172a' : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+    }}>
       {/* Header con gradiente */}
       <Card sx={{ 
         mb: 3, 
@@ -204,10 +211,10 @@ export const ReportesYAnalytics = () => {
                 <AnalyticsIcon sx={{ color: 'white', fontSize: 32 }} />
               </Box>
               <Box>
-                <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5 }}>
+                <Typography variant="h4" sx={{ color: '#ffffff', fontWeight: 'bold', mb: 0.5, textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
                   Gestión de Analytics y Reportes
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                <Typography variant="body2" sx={{ color: '#ffffff', textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
                   Dashboard de métricas globales y estadísticas del sistema LeanMaker
                 </Typography>
               </Box>
@@ -254,13 +261,13 @@ export const ReportesYAnalytics = () => {
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1 }}>
+                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
                   {stats.totalUsers.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
                   Usuarios Registrados
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
                   +12% este mes
                 </Typography>
               </Box>
@@ -292,13 +299,13 @@ export const ReportesYAnalytics = () => {
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1 }}>
+                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
                   {stats.totalProjects.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
                   Proyectos Activos
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
                   {stats.activeProjects} en curso
                 </Typography>
               </Box>
@@ -330,13 +337,13 @@ export const ReportesYAnalytics = () => {
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1 }}>
+                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
                   {stats.totalCompanies.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
                   Empresas Colaboradoras
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
                   {stats.totalStudents} estudiantes
                 </Typography>
               </Box>
@@ -368,13 +375,13 @@ export const ReportesYAnalytics = () => {
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1 }}>
+                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
                   {stats.totalStudents.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
                   Estudiantes Activos
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
                   Participando en proyectos
                 </Typography>
               </Box>
@@ -397,9 +404,14 @@ export const ReportesYAnalytics = () => {
       <Box sx={{ display: 'flex', gap: 10, mb: 10, flexWrap: 'wrap' }}>
         {/* Gráfico de Actividad Semanal */}
         <Box sx={{ flex: '2 1 600px', minWidth: 400 }}>
-          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: 3,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+          }}>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Actividad Semanal</Typography>
+              <Typography variant="h6" sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Actividad Semanal</Typography>
               {activityData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={activityData}>
@@ -438,7 +450,7 @@ export const ReportesYAnalytics = () => {
                 </ResponsiveContainer>
               ) : (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-                  <Typography color="text.secondary">No hay datos de actividad disponibles</Typography>
+                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de actividad disponibles</Typography>
                 </Box>
               )}
             </CardContent>
@@ -447,9 +459,14 @@ export const ReportesYAnalytics = () => {
 
                         {/* Gráfico de Estado de Proyectos */}
         <Box sx={{ flex: '1 1 300px', minWidth: 300 }}>
-          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: 3,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+          }}>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Estado de Proyectos</Typography>
+              <Typography variant="h6" sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Estado de Proyectos</Typography>
               {projectStatusData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -478,7 +495,7 @@ export const ReportesYAnalytics = () => {
                 </ResponsiveContainer>
               ) : (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-                  <Typography color="text.secondary">No hay datos de proyectos disponibles</Typography>
+                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de proyectos disponibles</Typography>
                 </Box>
               )}
             </CardContent>
@@ -490,9 +507,14 @@ export const ReportesYAnalytics = () => {
        <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', mb: 4 }}>
         {/* Gráfico de Estadísticas Mensuales */}
         <Box sx={{ flex: '1 1 100%', minWidth: 600 }}>
-          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: 3,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+          }}>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Estadísticas Mensuales</Typography>
+              <Typography variant="h6" sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Estadísticas Mensuales</Typography>
               {monthlyStats.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={monthlyStats}>
@@ -531,7 +553,7 @@ export const ReportesYAnalytics = () => {
                 </ResponsiveContainer>
               ) : (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-                  <Typography color="text.secondary">No hay datos mensuales disponibles</Typography>
+                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos mensuales disponibles</Typography>
                 </Box>
               )}
             </CardContent>
@@ -543,22 +565,27 @@ export const ReportesYAnalytics = () => {
        <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', mt: 6 }}>
          {/* Top 20 Estudiantes */}
          <Box sx={{ flex: '1 1 500px', minWidth: 400 }}>
-           <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+           <Card sx={{ 
+             borderRadius: 3, 
+             boxShadow: 3,
+             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+             color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+           }}>
              <CardContent>
                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                 <Typography variant="h6">Top 20 Estudiantes</Typography>
-                 <Typography variant="body2" color="text.secondary">Por horas en proyectos</Typography>
+                 <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Top 20 Estudiantes</Typography>
+                 <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>Por horas en proyectos</Typography>
                </Box>
                {topStudents.length > 0 ? (
                  <TableContainer>
                    <Table>
                      <TableHead>
                        <TableRow>
-                         <TableCell>Estudiante</TableCell>
-                         <TableCell>Nivel API</TableCell>
-                         <TableCell>Horas</TableCell>
-                         <TableCell>Proyectos</TableCell>
-                         <TableCell>Rating</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiante</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Nivel API</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
                        </TableRow>
                      </TableHead>
                      <TableBody>
@@ -566,9 +593,11 @@ export const ReportesYAnalytics = () => {
                          <TableRow 
                            key={student.id} 
                            sx={index === 0 ? { 
-                             bgcolor: '#fef3c7', 
-                             '&:hover': { bgcolor: '#fde68a' } 
-                           } : {}}
+                             bgcolor: themeMode === 'dark' ? '#334155' : '#fef3c7', 
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#fde68a' } 
+                           } : {
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }
+                           }}
                          >
                            <TableCell>
                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -576,10 +605,10 @@ export const ReportesYAnalytics = () => {
                                  {index < 3 ? ['🥇', '🥈', '🥉'][index] : student.name.charAt(0)}
                                </Avatar>
                                <Box>
-                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                 <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                                    {student.name}
                                  </Typography>
-                                 <Typography variant="caption" color="text.secondary">
+                                 <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                                    {student.email}
                                  </Typography>
                                </Box>
@@ -607,7 +636,7 @@ export const ReportesYAnalytics = () => {
                              />
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                                {student.averageRating ? student.averageRating.toFixed(1) : '0.0'} ⭐
                              </Typography>
                            </TableCell>
@@ -618,7 +647,7 @@ export const ReportesYAnalytics = () => {
                  </TableContainer>
                ) : (
                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                   <Typography color="text.secondary">No hay datos de estudiantes disponibles</Typography>
+                   <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de estudiantes disponibles</Typography>
                  </Box>
                )}
              </CardContent>
@@ -627,23 +656,28 @@ export const ReportesYAnalytics = () => {
 
          {/* Top 20 Empresas */}
          <Box sx={{ flex: '1 1 500px', minWidth: 400 }}>
-           <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+           <Card sx={{ 
+             borderRadius: 3, 
+             boxShadow: 3,
+             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+             color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+           }}>
              <CardContent>
                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                 <Typography variant="h6">Top 20 Empresas</Typography>
-                 <Typography variant="body2" color="text.secondary">Por proyectos y horas ofrecidas</Typography>
+                 <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Top 20 Empresas</Typography>
+                 <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>Por proyectos y horas ofrecidas</Typography>
                </Box>
                {topCompanies.length > 0 ? (
                  <TableContainer>
                    <Table>
                      <TableHead>
                        <TableRow>
-                         <TableCell>Empresa</TableCell>
-                         <TableCell>Proyectos</TableCell>
-                         <TableCell>Activos</TableCell>
-                         <TableCell>Estudiantes</TableCell>
-                         <TableCell>Horas Ofrecidas</TableCell>
-                         <TableCell>Rating</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Empresa</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Activos</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiantes</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas Ofrecidas</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
                        </TableRow>
                      </TableHead>
                      <TableBody>
@@ -651,9 +685,11 @@ export const ReportesYAnalytics = () => {
                          <TableRow 
                            key={company.id} 
                            sx={index === 0 ? { 
-                             bgcolor: '#dbeafe', 
-                             '&:hover': { bgcolor: '#bfdbfe' } 
-                           } : {}}
+                             bgcolor: themeMode === 'dark' ? '#334155' : '#dbeafe', 
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#bfdbfe' } 
+                           } : {
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }
+                           }}
                          >
                            <TableCell>
                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -661,10 +697,10 @@ export const ReportesYAnalytics = () => {
                                  {index < 3 ? ['🏆', '🥈', '🥉'][index] : company.name.charAt(0)}
                                </Avatar>
                                <Box>
-                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                 <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                                    {company.name}
                                  </Typography>
-                                 <Typography variant="caption" color="text.secondary">
+                                 <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                                    {company.industry}
                                  </Typography>
                                </Box>
@@ -697,7 +733,7 @@ export const ReportesYAnalytics = () => {
                              </Typography>
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                                {company.averageRating ? company.averageRating.toFixed(1) : '0.0'} ⭐
                              </Typography>
                            </TableCell>
@@ -708,7 +744,7 @@ export const ReportesYAnalytics = () => {
                  </TableContainer>
                ) : (
                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                   <Typography color="text.secondary">No hay datos de empresas disponibles</Typography>
+                   <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de empresas disponibles</Typography>
                  </Box>
                )}
              </CardContent>
@@ -737,7 +773,7 @@ export const ReportesYAnalytics = () => {
             }}>
               <Typography sx={{ fontSize: 20, color: 'white' }}>📝</Typography>
             </Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Aplicaciones y Proceso de Selección
             </Typography>
           </Box>
@@ -746,6 +782,8 @@ export const ReportesYAnalytics = () => {
             borderRadius: 3, 
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             transition: 'all 0.3s ease',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
             '&:hover': {
               transform: 'translateY(-2px)',
               boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
@@ -762,60 +800,60 @@ export const ReportesYAnalytics = () => {
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#f8fafc',
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#e2e8f0',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#e2e8f0',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#f1f5f9',
+                    bgcolor: themeMode === 'dark' ? '#475569' : '#f1f5f9',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#3b82f6', mb: 1 }}>
                     {applicationsMetrics.totalApplications}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Total de Aplicaciones
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#f0fdf4',
+                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#bbf7d0',
+                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#dcfce7',
+                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
                     {applicationsMetrics.acceptanceRate}%
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Tasa de Aceptación
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#fffbeb',
+                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fffbeb',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#fde68a',
+                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#fef3c7',
+                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fef3c7',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
                     {applicationsMetrics.acceptedApplications}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Aplicaciones Aceptadas
                   </Typography>
                 </Box>
@@ -825,7 +863,7 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
                 {/* Gráfico de Barras - Total de Aplicaciones vs Aceptadas */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Comparación de Aplicaciones
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -865,7 +903,7 @@ export const ReportesYAnalytics = () => {
                       justifyContent: 'center', 
                       alignItems: 'center', 
                       height: 50,
-                      color: 'text.secondary',
+                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
                       fontStyle: 'italic',
                       mt: 2
                     }}>
@@ -876,7 +914,7 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico Circular - Tasa de Aceptación */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Tasa de Aceptación
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -948,7 +986,7 @@ export const ReportesYAnalytics = () => {
                       justifyContent: 'center', 
                       alignItems: 'center', 
                       height: 50,
-                      color: 'text.secondary',
+                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
                       fontStyle: 'italic',
                       mt: 2
                     }}>
@@ -961,7 +999,7 @@ export const ReportesYAnalytics = () => {
               {/* Gráfico de Aplicaciones por Estado */}
               {applicationsMetrics.byStatus.length > 0 && (
                 <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Distribución de Aplicaciones por Estado
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -1006,7 +1044,7 @@ export const ReportesYAnalytics = () => {
             }}>
               <Typography sx={{ fontSize: 20, color: 'white' }}>⚠️</Typography>
             </Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Strikes y Disciplina
             </Typography>
           </Box>
@@ -1015,6 +1053,8 @@ export const ReportesYAnalytics = () => {
             borderRadius: 3, 
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             transition: 'all 0.3s ease',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
             '&:hover': {
               transform: 'translateY(-2px)',
               boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
@@ -1031,60 +1071,60 @@ export const ReportesYAnalytics = () => {
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#fef2f2',
+                  bgcolor: themeMode === 'dark' ? '#450a0a' : '#fef2f2',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#fecaca',
+                  borderColor: themeMode === 'dark' ? '#7f1d1d' : '#fecaca',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#fee2e2',
+                    bgcolor: themeMode === 'dark' ? '#7f1d1d' : '#fee2e2',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#ef4444', mb: 1 }}>
                     {strikesMetrics.activeStrikes}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Strikes Activos
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#fef3c7',
+                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fef3c7',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#fde68a',
+                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#fde68a',
+                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fde68a',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
                     {strikesMetrics.studentsWithStrikes}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Estudiantes con Strikes
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#f0fdf4',
+                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#bbf7d0',
+                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#dcfce7',
+                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
                     {strikesMetrics.topReportingCompanies.length}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Empresas Reportando
                   </Typography>
                 </Box>
@@ -1095,7 +1135,7 @@ export const ReportesYAnalytics = () => {
                 {/* Gráfico de Líneas - Tendencia de Strikes */}
                 {strikesMetrics.monthlyTrend.length > 0 && (
                   <Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                       Tendencia Mensual de Strikes
                     </Typography>
                     <ResponsiveContainer width="100%" height={250}>
@@ -1125,7 +1165,7 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico de Barras - Distribución de Strikes */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Distribución de Strikes
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -1186,7 +1226,7 @@ export const ReportesYAnalytics = () => {
             }}>
               <Typography sx={{ fontSize: 20, color: 'white' }}>🔔</Typography>
             </Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Notificaciones
             </Typography>
           </Box>
@@ -1195,6 +1235,8 @@ export const ReportesYAnalytics = () => {
             borderRadius: 3, 
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             transition: 'all 0.3s ease',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
             '&:hover': {
               transform: 'translateY(-2px)',
               boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
@@ -1211,60 +1253,60 @@ export const ReportesYAnalytics = () => {
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#f8fafc',
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#e2e8f0',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#e2e8f0',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#f1f5f9',
+                    bgcolor: themeMode === 'dark' ? '#475569' : '#f1f5f9',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#3b82f6', mb: 1 }}>
                     {notificationsMetrics.totalNotifications}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Total de Notificaciones
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#f0fdf4',
+                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#bbf7d0',
+                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#dcfce7',
+                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
                     {notificationsMetrics.readRate}%
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Tasa de Lectura
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#fffbeb',
+                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fffbeb',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#fde68a',
+                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#fef3c7',
+                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fef3c7',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
                     {notificationsMetrics.massNotifications}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Notificaciones Masivas
                   </Typography>
                 </Box>
@@ -1274,7 +1316,7 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
                 {/* Gráfico Circular - Tasa de Lectura */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Tasa de Lectura de Notificaciones
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -1313,7 +1355,7 @@ export const ReportesYAnalytics = () => {
                 {/* Gráfico de Notificaciones por Tipo */}
                 {notificationsMetrics.byType.length > 0 && (
                   <Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                       Notificaciones por Tipo
                     </Typography>
                     <ResponsiveContainer width="100%" height={250}>
@@ -1359,7 +1401,7 @@ export const ReportesYAnalytics = () => {
             }}>
               <Typography sx={{ fontSize: 20, color: 'white' }}>📊</Typography>
             </Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Niveles API y TRL
             </Typography>
           </Box>
@@ -1368,6 +1410,8 @@ export const ReportesYAnalytics = () => {
             borderRadius: 3, 
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             transition: 'all 0.3s ease',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
             '&:hover': {
               transform: 'translateY(-2px)',
               boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
@@ -1384,60 +1428,60 @@ export const ReportesYAnalytics = () => {
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#f8fafc',
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#e2e8f0',
+                  borderColor: themeMode === 'dark' ? '#475569' : '#e2e8f0',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#f1f5f9',
+                    bgcolor: themeMode === 'dark' ? '#475569' : '#f1f5f9',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#3b82f6', mb: 1 }}>
                     {apiTrlMetrics.totalApiRequests}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Total de Solicitudes API
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#fffbeb',
+                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fffbeb',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#fde68a',
+                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#fef3c7',
+                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fef3c7',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
                     {apiTrlMetrics.pendingApiRequests}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Solicitudes Pendientes
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: 2, 
-                  bgcolor: '#f0fdf4',
+                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
                   textAlign: 'center',
                   border: '1px solid',
-                  borderColor: '#bbf7d0',
+                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: '#dcfce7',
+                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
                     transform: 'translateY(-1px)'
                   }
                 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
                     {apiTrlMetrics.approvedApiRequests}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
                     Solicitudes Aprobadas
                   </Typography>
                 </Box>
@@ -1447,7 +1491,7 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
                 {/* Gráfico de Barras - Solicitudes API */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Estado de Solicitudes API
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -1486,7 +1530,7 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico Circular - Distribución de Solicitudes */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Distribución de Solicitudes API
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -1569,7 +1613,7 @@ export const ReportesYAnalytics = () => {
                       justifyContent: 'center', 
                       alignItems: 'center', 
                       height: 50,
-                      color: 'text.secondary',
+                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
                       fontStyle: 'italic',
                       mt: 2
                     }}>
@@ -1583,7 +1627,7 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4, mt: 4 }}>
                 {/* Gráfico de Estudiantes por Nivel API */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Distribución de Estudiantes por Nivel API
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -1616,22 +1660,15 @@ export const ReportesYAnalytics = () => {
                     </BarChart>
                   </ResponsiveContainer>
                   {apiTrlMetrics.studentsByApiLevel.length === 0 && (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      alignItems: 'center', 
-                      height: 50,
-                      color: 'text.secondary',
-                      fontStyle: 'italic'
-                    }}>
-                      No hay datos de distribución de estudiantes por nivel API
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+                      <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de distribución de estudiantes por nivel API</Typography>
                     </Box>
                   )}
                 </Box>
 
                 {/* Gráfico de Proyectos por Nivel TRL */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
                     Proyectos por Nivel TRL
                   </Typography>
                   <ResponsiveContainer width="100%" height={250}>
@@ -1668,15 +1705,8 @@ export const ReportesYAnalytics = () => {
                     </BarChart>
                   </ResponsiveContainer>
                   {apiTrlMetrics.projectsByTrl.length === 0 && (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      alignItems: 'center', 
-                      height: 50,
-                      color: 'text.secondary',
-                      fontStyle: 'italic'
-                    }}>
-                      No hay datos de distribución de proyectos por nivel TRL
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+                      <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de distribución de proyectos por nivel TRL</Typography>
                     </Box>
                   )}
                 </Box>

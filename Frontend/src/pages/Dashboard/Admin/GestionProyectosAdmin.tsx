@@ -27,6 +27,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
+import { useTheme } from '../../../contexts/ThemeContext';
 import {
   Person as PersonIcon,
   Edit as EditIcon,
@@ -85,6 +86,7 @@ interface Application {
 }
 
 export const GestionProyectosAdmin = () => {
+  const { themeMode } = useTheme();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [actionDialog, setActionDialog] = useState(false);
   const [actionType, setActionType] = useState<'edit' | 'suspend' | 'delete' | 'view_students' | null>(null);
@@ -674,7 +676,14 @@ export const GestionProyectosAdmin = () => {
   );
 
   return (
-    <Box sx={{ p: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
+    <Box sx={{ 
+      p: 3, 
+      background: themeMode === 'dark' 
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' 
+        : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Header con gradiente */}
       <Card sx={{ 
         mb: 3, 
@@ -686,7 +695,9 @@ export const GestionProyectosAdmin = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
+                background: themeMode === 'dark'
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(255, 255, 255, 0.2)', 
                 borderRadius: 2, 
                 p: 1.5, 
                 mr: 2,
@@ -864,8 +875,12 @@ export const GestionProyectosAdmin = () => {
 
       {/* Filtros y tabla de proyectos con diseño mejorado */}
       <Card sx={{ 
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        background: themeMode === 'dark'
+          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+          : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        boxShadow: themeMode === 'dark'
+          ? '0 4px 20px rgba(0, 0, 0, 0.3)'
+          : '0 4px 20px rgba(0, 0, 0, 0.08)',
         borderRadius: 3
       }}>
         <CardContent sx={{ p: 3 }}>
@@ -879,10 +894,15 @@ export const GestionProyectosAdmin = () => {
               <AssessmentIcon sx={{ color: 'white', fontSize: 24 }} />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+              <Typography variant="h5" sx={{ 
+                fontWeight: 'bold', 
+                color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+              }}>
                 Lista de Proyectos
               </Typography>
-              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+              }}>
                 Gestiona el estado y configuración de todos los proyectos
               </Typography>
             </Box>
@@ -988,7 +1008,6 @@ export const GestionProyectosAdmin = () => {
           </Box>
 
           <DataTable
-            title="Lista de Proyectos"
             data={projects}
             columns={columns}
             loading={loading}
@@ -999,6 +1018,7 @@ export const GestionProyectosAdmin = () => {
             currentPage={currentPage}
             pageSize={pageSize}
             showPagination={false}
+            showPageSizeSelector={false}
             actions={actions}
             emptyMessage="No hay proyectos registrados"
             pageSizeOptions={[50, 100, 200, 500, 1000, 'todos']}
@@ -1007,7 +1027,24 @@ export const GestionProyectosAdmin = () => {
       </Card>
 
       {/* Modal de acción con diseño mejorado */}
-      <Dialog open={actionDialog} onClose={() => setActionDialog(false)} maxWidth="md" fullWidth>
+      <Dialog 
+        open={actionDialog} 
+        onClose={() => setActionDialog(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: themeMode === 'dark'
+              ? '0 20px 60px rgba(0, 0, 0, 0.4)'
+              : '0 20px 60px rgba(0, 0, 0, 0.2)',
+            background: themeMode === 'dark'
+              ? 'rgba(30, 41, 59, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
         <DialogTitle sx={{ 
           background: actionType === 'suspend' 
             ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
@@ -1015,43 +1052,66 @@ export const GestionProyectosAdmin = () => {
             ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)'
             : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          borderRadius: '12px 12px 0 0'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {actionType === 'suspend' && <BlockIcon />}
             {actionType === 'delete' && <DeleteIcon />}
             {actionType === 'view_students' && <PeopleIcon />}
-                         <Typography variant="h6">
-               {actionType === 'suspend' && 'Suspender Proyecto'}
-               {actionType === 'delete' && 'Eliminar Proyecto'}
-               {actionType === 'view_students' && 'Participante del Proyecto'}
-             </Typography>
+            <Typography variant="h6">
+              {actionType === 'suspend' && 'Suspender Proyecto'}
+              {actionType === 'delete' && 'Eliminar Proyecto'}
+              {actionType === 'view_students' && 'Participante del Proyecto'}
+            </Typography>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ 
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
           {actionType === 'view_students' ? (
             <Box sx={{ mt: 2 }}>
               <Card sx={{ 
                 mb: 3, 
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                background: themeMode === 'dark'
+                  ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                  : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                 borderRadius: 2
               }}>
                 <CardContent sx={{ p: 2 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
+                  <Typography variant="h6" sx={{ 
+                    fontWeight: 'bold', 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
+                    mb: 2 
+                  }}>
                     {selectedProject?.title || 'Proyecto'}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                  <Typography variant="body2" sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d' 
+                  }}>
                     Información del proyecto
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap' }}>
                     <Box>
-                      <Typography variant="caption" color="text.secondary">Empresa:</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      <Typography variant="caption" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                      }}>
+                        Empresa:
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        fontWeight: 600,
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                      }}>
                         {selectedProject?.company_name || 'Sin empresa'}
                       </Typography>
                     </Box>
                     <Box>
-                      <Typography variant="caption" color="text.secondary">Estado:</Typography>
+                      <Typography variant="caption" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                      }}>
+                        Estado:
+                      </Typography>
                       <Chip 
                         label={getStatusText(selectedProject?.status || '')} 
                         color={getStatusColor(selectedProject?.status || '') as any}
@@ -1060,8 +1120,15 @@ export const GestionProyectosAdmin = () => {
                       />
                     </Box>
                     <Box>
-                      <Typography variant="caption" color="text.secondary">Estudiantes:</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      <Typography variant="caption" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                      }}>
+                        Estudiantes:
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        fontWeight: 600,
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                      }}>
                         {selectedProject?.students_assigned || 0} / {selectedProject?.students_needed || 0}
                       </Typography>
                     </Box>

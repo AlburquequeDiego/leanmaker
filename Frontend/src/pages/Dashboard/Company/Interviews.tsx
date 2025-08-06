@@ -52,9 +52,11 @@ import {
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptCalendarEvent } from '../../../utils/adapters';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 export const CompanyInterviews: React.FC = () => {
   const api = useApi();
+  const { themeMode } = useTheme();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,13 +106,14 @@ export const CompanyInterviews: React.FC = () => {
     const total = events.length;
     const pending = pendingInterviews.length;
     const completed = completedInterviews.length;
-    const thisWeek = pendingInterviews.filter(ev => {
+    const today = events.filter(ev => {
       const eventDate = new Date(ev.start_date);
-      const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      return eventDate <= weekFromNow;
+      const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+      return eventDateOnly.getTime() === todayDate.getTime();
     }).length;
     
-    return { total, pending, completed, thisWeek };
+    return { total, pending, completed, today };
   }, [events, pendingInterviews, completedInterviews]);
 
   useEffect(() => {
@@ -202,7 +205,13 @@ export const CompanyInterviews: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, bgcolor: '#f8fafc', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: { xs: 2, md: 4 }, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -318,9 +327,13 @@ export const CompanyInterviews: React.FC = () => {
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)' 
+              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             color: 'white',
-            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 25px rgba(30, 64, 175, 0.4)' 
+              : '0 8px 25px rgba(102, 126, 234, 0.3)',
             borderRadius: 3
           }}>
             <CardContent sx={{ textAlign: 'center', p: 3 }}>
@@ -341,9 +354,13 @@ export const CompanyInterviews: React.FC = () => {
 
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ 
-            background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' 
+              : 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
             color: 'white',
-            boxShadow: '0 8px 25px rgba(255, 107, 107, 0.3)',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 25px rgba(220, 38, 38, 0.4)' 
+              : '0 8px 25px rgba(255, 107, 107, 0.3)',
             borderRadius: 3
           }}>
             <CardContent sx={{ textAlign: 'center', p: 3 }}>
@@ -364,9 +381,13 @@ export const CompanyInterviews: React.FC = () => {
 
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ 
-            background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' 
+              : 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
             color: 'white',
-            boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 25px rgba(5, 150, 105, 0.4)' 
+              : '0 8px 25px rgba(78, 205, 196, 0.3)',
             borderRadius: 3
           }}>
             <CardContent sx={{ textAlign: 'center', p: 3 }}>
@@ -387,22 +408,30 @@ export const CompanyInterviews: React.FC = () => {
 
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ 
-            background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-            color: '#2c3e50',
-            boxShadow: '0 8px 25px rgba(168, 237, 234, 0.3)',
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)' 
+              : 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            color: themeMode === 'dark' ? 'white' : '#2c3e50',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 25px rgba(124, 58, 237, 0.4)' 
+              : '0 8px 25px rgba(168, 237, 234, 0.3)',
             borderRadius: 3
           }}>
             <CardContent sx={{ textAlign: 'center', p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'rgba(44, 62, 80, 0.2)', width: 56, height: 56 }}>
+                <Avatar sx={{ 
+                  bgcolor: themeMode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(44, 62, 80, 0.2)', 
+                  width: 56, 
+                  height: 56 
+                }}>
                   <AccessTimeIcon sx={{ fontSize: 28 }} />
                 </Avatar>
               </Box>
               <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
-                {stats.thisWeek}
+                {stats.today}
               </Typography>
               <Typography variant="h6" sx={{ opacity: 0.9 }}>
-                Esta Semana
+                Hoy
               </Typography>
             </CardContent>
           </Card>
@@ -410,7 +439,17 @@ export const CompanyInterviews: React.FC = () => {
       </Grid>
 
       {/* Tabs de navegación */}
-      <Paper sx={{ p: 2, mb: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+      <Paper sx={{ 
+        p: 2, 
+        mb: 4, 
+        borderRadius: 3, 
+        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+        boxShadow: themeMode === 'dark' 
+          ? '0 4px 20px rgba(0,0,0,0.3)' 
+          : '0 4px 20px rgba(0,0,0,0.08)',
+        border: themeMode === 'dark' ? '1px solid #334155' : 'none'
+      }}>
         <Tabs 
           value={activeTab} 
           onChange={(e, newValue) => setActiveTab(newValue)}
@@ -423,20 +462,20 @@ export const CompanyInterviews: React.FC = () => {
               px: 3,
               py: 1.5,
               '&.Mui-selected': {
-                color: '#1976d2',
+                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                 '& .MuiSvgIcon-root': {
-                  color: '#1976d2'
+                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2'
                 }
               },
               '&:not(.Mui-selected)': {
-                color: '#666',
+                color: themeMode === 'dark' ? '#cbd5e1' : '#666',
                 '& .MuiSvgIcon-root': {
-                  color: '#666'
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#666'
                 }
               }
             },
             '& .MuiTabs-indicator': {
-              backgroundColor: '#1976d2',
+              backgroundColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
               height: 3,
               borderRadius: '2px 2px 0 0'
             }
@@ -503,17 +542,39 @@ export const CompanyInterviews: React.FC = () => {
       <Box sx={{ mt: 3 }}>
         {activeTab === 0 && (
           <Box>
-            <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#1976d2' }}>
+            <Typography variant="h5" fontWeight={700} sx={{ 
+              mb: 3, 
+              color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' 
+            }}>
               Próximas Entrevistas
-          </Typography>
+            </Typography>
             
             {pendingInterviews.length === 0 ? (
-              <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
-                <ScheduleIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                No hay entrevistas pendientes
-              </Typography>
-                <Typography variant="body2" color="text.secondary">
+              <Paper sx={{ 
+                p: 6, 
+                textAlign: 'center', 
+                borderRadius: 3,
+                bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                boxShadow: themeMode === 'dark' 
+                  ? '0 4px 20px rgba(0,0,0,0.3)' 
+                  : '0 4px 20px rgba(0,0,0,0.08)',
+                border: themeMode === 'dark' ? '1px solid #334155' : 'none'
+              }}>
+                <ScheduleIcon sx={{ 
+                  fontSize: 80, 
+                  color: themeMode === 'dark' ? '#64748b' : 'text.secondary', 
+                  mb: 2 
+                }} />
+                <Typography variant="h6" sx={{ 
+                  color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', 
+                  mb: 2
+                }}>
+                  No hay entrevistas pendientes
+                </Typography>
+                <Typography variant="body2" sx={{ 
+                  color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' 
+                }}>
                   Todas las entrevistas han sido completadas o no hay nuevas programadas.
                 </Typography>
               </Paper>
@@ -524,19 +585,26 @@ export const CompanyInterviews: React.FC = () => {
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   const timeUntil = getTimeUntil(event.start_date);
                   
-                return (
+                  return (
                     <Grid item xs={12} md={6} lg={4} key={event.id}>
                       <Card sx={{ 
                         height: '100%',
-                    borderRadius: 3,
-                        boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+                        borderRadius: 3,
+                        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        boxShadow: themeMode === 'dark' 
+                          ? '0 8px 25px rgba(0,0,0,0.3)' 
+                          : '0 8px 25px rgba(0,0,0,0.1)',
                         transition: 'all 0.3s ease',
-                    '&:hover': {
+                        '&:hover': {
                           transform: 'translateY(-5px)',
-                          boxShadow: '0 15px 35px rgba(0,0,0,0.15)',
-                    },
-                    position: 'relative',
-                        overflow: 'hidden'
+                          boxShadow: themeMode === 'dark' 
+                            ? '0 15px 35px rgba(0,0,0,0.5)' 
+                            : '0 15px 35px rgba(0,0,0,0.15)',
+                        },
+                        position: 'relative',
+                        overflow: 'hidden',
+                        border: themeMode === 'dark' ? '1px solid #334155' : 'none'
                       }}>
                         <Box sx={{
                           position: 'absolute',
@@ -544,29 +612,32 @@ export const CompanyInterviews: React.FC = () => {
                           left: 0,
                           right: 0,
                           height: 4,
-                          background: 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)'
+                          background: themeMode === 'dark' 
+                            ? 'linear-gradient(90deg, #dc2626 0%, #b91c1c 100%)' 
+                            : 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)'
                         }} />
                         
                         <CardContent sx={{ p: 3 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                             <Avatar sx={{ 
                               mr: 2, 
-                              bgcolor: '#ff6b6b',
-                              width: 50,
-                              height: 50,
-                              fontSize: '1.2rem',
-                              fontWeight: 700
+                              bgcolor: themeMode === 'dark' ? '#dc2626' : '#ff6b6b',
+                              color: 'white'
                             }}>
                               {iniciales}
                             </Avatar>
                             <Box sx={{ flexGrow: 1 }}>
-                              <Typography variant="h6" fontWeight={700} color="#1976d2">
-                          {nombre}
-                        </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                          {event.project_title || event.title}
-                        </Typography>
-                      </Box>
+                              <Typography variant="h6" fontWeight={700} sx={{ 
+                                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' 
+                              }}>
+                                {nombre}
+                              </Typography>
+                              <Typography variant="body2" sx={{ 
+                                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                              }}>
+                                {event.project_title || event.title}
+                              </Typography>
+                            </Box>
                             <Chip 
                               label="Pendiente" 
                               color="warning" 
@@ -575,16 +646,25 @@ export const CompanyInterviews: React.FC = () => {
                             />
                           </Box>
 
-                          <Divider sx={{ my: 2 }} />
+                          <Divider sx={{ 
+                            my: 2,
+                            borderColor: themeMode === 'dark' ? '#334155' : '#e0e0e0'
+                          }} />
 
                           <Box sx={{ space: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                              <CalendarIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20 }} />
+                              <CalendarIcon sx={{ 
+                                mr: 1.5, 
+                                color: themeMode === 'dark' ? '#dc2626' : '#ff6b6b', 
+                                fontSize: 20 
+                              }} />
                               <Box>
                                 <Typography variant="body2" fontWeight={600}>
                                   {formatDate(event.start_date)}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{ 
+                                  color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' 
+                                }}>
                                   En {timeUntil}
                                 </Typography>
                               </Box>
@@ -592,31 +672,44 @@ export const CompanyInterviews: React.FC = () => {
 
                             {event.project_title && (
                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                <WorkIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20 }} />
+                                <WorkIcon sx={{ 
+                                  mr: 1.5, 
+                                  color: themeMode === 'dark' ? '#dc2626' : '#ff6b6b', 
+                                  fontSize: 20 
+                                }} />
                                 <Typography variant="body2">
                                   <strong>Proyecto:</strong> {event.project_title}
                                 </Typography>
-                    </Box>
+                              </Box>
                             )}
 
-                                                         {event.description && (
-                               <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1.5 }}>
-                                 <InfoIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20, mt: 0.2 }} />
-                                 <Typography variant="body2">
-                                   <strong>Motivo:</strong> {event.description}
-                                 </Typography>
-                    </Box>
-                             )}
+                            {event.description && (
+                              <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1.5 }}>
+                                <InfoIcon sx={{ 
+                                  mr: 1.5, 
+                                  color: themeMode === 'dark' ? '#dc2626' : '#ff6b6b', 
+                                  fontSize: 20, 
+                                  mt: 0.2 
+                                }} />
+                                <Typography variant="body2">
+                                  <strong>Motivo:</strong> {event.description}
+                                </Typography>
+                              </Box>
+                            )}
 
-                             {event.location && (
-                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                 <WorkIcon sx={{ mr: 1.5, color: '#ff6b6b', fontSize: 20 }} />
-                                 <Typography variant="body2">
-                                   <strong>Ubicación:</strong> {event.location}
-                                 </Typography>
-                    </Box>
-                             )}
-                    </Box>
+                            {event.location && (
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                <WorkIcon sx={{ 
+                                  mr: 1.5, 
+                                  color: themeMode === 'dark' ? '#dc2626' : '#ff6b6b', 
+                                  fontSize: 20 
+                                }} />
+                                <Typography variant="body2">
+                                  <strong>Ubicación:</strong> {event.location}
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
                         </CardContent>
 
                         <CardActions sx={{ p: 3, pt: 0 }}>
@@ -624,8 +717,15 @@ export const CompanyInterviews: React.FC = () => {
                             size="small" 
                             startIcon={<VisibilityIcon />}
                             variant="outlined"
-                            color="primary"
                             onClick={() => handleViewDetails(event)}
+                            sx={{
+                              color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                              borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                              '&:hover': {
+                                borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
+                                backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
+                              }
+                            }}
                           >
                             Ver Detalles
                           </Button>
@@ -641,17 +741,39 @@ export const CompanyInterviews: React.FC = () => {
 
         {activeTab === 1 && (
           <Box>
-            <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#388e3c' }}>
-            Entrevistas Completadas
-          </Typography>
+            <Typography variant="h5" fontWeight={700} sx={{ 
+              mb: 3, 
+              color: themeMode === 'dark' ? '#059669' : '#388e3c' 
+            }}>
+              Entrevistas Completadas
+            </Typography>
             
             {completedInterviews.length === 0 ? (
-              <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
-                <CheckCircleIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                No hay entrevistas completadas
-              </Typography>
-                <Typography variant="body2" color="text.secondary">
+              <Paper sx={{ 
+                p: 6, 
+                textAlign: 'center', 
+                borderRadius: 3,
+                bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                boxShadow: themeMode === 'dark' 
+                  ? '0 4px 20px rgba(0,0,0,0.3)' 
+                  : '0 4px 20px rgba(0,0,0,0.08)',
+                border: themeMode === 'dark' ? '1px solid #334155' : 'none'
+              }}>
+                <CheckCircleIcon sx={{ 
+                  fontSize: 80, 
+                  color: themeMode === 'dark' ? '#64748b' : 'text.secondary', 
+                  mb: 2 
+                }} />
+                <Typography variant="h6" sx={{ 
+                  color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', 
+                  mb: 2
+                }}>
+                  No hay entrevistas completadas
+                </Typography>
+                <Typography variant="body2" sx={{ 
+                  color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' 
+                }}>
                   Las entrevistas completadas aparecerán aquí.
                 </Typography>
               </Paper>
@@ -661,19 +783,26 @@ export const CompanyInterviews: React.FC = () => {
                   const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   
-                return (
+                  return (
                     <Grid item xs={12} md={6} lg={4} key={event.id}>
                       <Card sx={{ 
                         height: '100%',
-                    borderRadius: 3,
-                        boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+                        borderRadius: 3,
+                        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        boxShadow: themeMode === 'dark' 
+                          ? '0 8px 25px rgba(0,0,0,0.3)' 
+                          : '0 8px 25px rgba(0,0,0,0.1)',
                         transition: 'all 0.3s ease',
-                    '&:hover': {
+                        '&:hover': {
                           transform: 'translateY(-5px)',
-                          boxShadow: '0 15px 35px rgba(0,0,0,0.15)',
-                    },
-                    position: 'relative',
-                        overflow: 'hidden'
+                          boxShadow: themeMode === 'dark' 
+                            ? '0 15px 35px rgba(0,0,0,0.5)' 
+                            : '0 15px 35px rgba(0,0,0,0.15)',
+                        },
+                        position: 'relative',
+                        overflow: 'hidden',
+                        border: themeMode === 'dark' ? '1px solid #334155' : 'none'
                       }}>
                         <Box sx={{
                           position: 'absolute',
@@ -681,29 +810,32 @@ export const CompanyInterviews: React.FC = () => {
                           left: 0,
                           right: 0,
                           height: 4,
-                          background: 'linear-gradient(90deg, #4ecdc4 0%, #44a08d 100%)'
+                          background: themeMode === 'dark' 
+                            ? 'linear-gradient(90deg, #059669 0%, #047857 100%)' 
+                            : 'linear-gradient(90deg, #4ecdc4 0%, #44a08d 100%)'
                         }} />
                         
                         <CardContent sx={{ p: 3 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                             <Avatar sx={{ 
                               mr: 2, 
-                              bgcolor: '#4ecdc4',
-                              width: 50,
-                              height: 50,
-                              fontSize: '1.2rem',
-                              fontWeight: 700
+                              bgcolor: themeMode === 'dark' ? '#059669' : '#4ecdc4',
+                              color: 'white'
                             }}>
                               {iniciales}
                             </Avatar>
                             <Box sx={{ flexGrow: 1 }}>
-                              <Typography variant="h6" fontWeight={700} color="#388e3c">
-                          {nombre}
-                        </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                          {event.project_title || event.title}
-                        </Typography>
-                      </Box>
+                              <Typography variant="h6" fontWeight={700} sx={{ 
+                                color: themeMode === 'dark' ? '#10b981' : '#388e3c' 
+                              }}>
+                                {nombre}
+                              </Typography>
+                              <Typography variant="body2" sx={{ 
+                                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                              }}>
+                                {event.project_title || event.title}
+                              </Typography>
+                            </Box>
                             <Chip 
                               label="Completada" 
                               color="success" 
@@ -712,11 +844,18 @@ export const CompanyInterviews: React.FC = () => {
                             />
                           </Box>
 
-                          <Divider sx={{ my: 2 }} />
+                          <Divider sx={{ 
+                            my: 2,
+                            borderColor: themeMode === 'dark' ? '#334155' : '#e0e0e0'
+                          }} />
 
                           <Box sx={{ space: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                              <CalendarIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20 }} />
+                              <CalendarIcon sx={{ 
+                                mr: 1.5, 
+                                color: themeMode === 'dark' ? '#059669' : '#4ecdc4', 
+                                fontSize: 20 
+                              }} />
                               <Typography variant="body2" fontWeight={600}>
                                 {formatDate(event.start_date)}
                               </Typography>
@@ -724,31 +863,44 @@ export const CompanyInterviews: React.FC = () => {
 
                             {event.project_title && (
                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                <WorkIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20 }} />
+                                <WorkIcon sx={{ 
+                                  mr: 1.5, 
+                                  color: themeMode === 'dark' ? '#059669' : '#4ecdc4', 
+                                  fontSize: 20 
+                                }} />
                                 <Typography variant="body2">
                                   <strong>Proyecto:</strong> {event.project_title}
                                 </Typography>
-                    </Box>
+                              </Box>
                             )}
 
-                                                         {event.description && (
-                               <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1.5 }}>
-                                 <InfoIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20, mt: 0.2 }} />
-                                 <Typography variant="body2">
-                                   <strong>Motivo:</strong> {event.description}
-                                 </Typography>
-                    </Box>
-                             )}
+                            {event.description && (
+                              <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1.5 }}>
+                                <InfoIcon sx={{ 
+                                  mr: 1.5, 
+                                  color: themeMode === 'dark' ? '#059669' : '#4ecdc4', 
+                                  fontSize: 20, 
+                                  mt: 0.2 
+                                }} />
+                                <Typography variant="body2">
+                                  <strong>Motivo:</strong> {event.description}
+                                </Typography>
+                              </Box>
+                            )}
 
-                             {event.location && (
-                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                 <WorkIcon sx={{ mr: 1.5, color: '#4ecdc4', fontSize: 20 }} />
-                                 <Typography variant="body2">
-                                   <strong>Ubicación:</strong> {event.location}
-                                 </Typography>
-                    </Box>
-                             )}
-                    </Box>
+                            {event.location && (
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                <WorkIcon sx={{ 
+                                  mr: 1.5, 
+                                  color: themeMode === 'dark' ? '#059669' : '#4ecdc4', 
+                                  fontSize: 20 
+                                }} />
+                                <Typography variant="body2">
+                                  <strong>Ubicación:</strong> {event.location}
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
                         </CardContent>
 
                         <CardActions sx={{ p: 3, pt: 0 }}>
@@ -756,8 +908,15 @@ export const CompanyInterviews: React.FC = () => {
                             size="small" 
                             startIcon={<VisibilityIcon />}
                             variant="outlined"
-                            color="primary"
                             onClick={() => handleViewDetails(event)}
+                            sx={{
+                              color: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                              borderColor: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                              '&:hover': {
+                                borderColor: themeMode === 'dark' ? '#059669' : '#2e7d32',
+                                backgroundColor: themeMode === 'dark' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 142, 60, 0.1)'
+                              }
+                            }}
                           >
                             Ver Detalles
                           </Button>
@@ -773,30 +932,77 @@ export const CompanyInterviews: React.FC = () => {
 
         {activeTab === 2 && (
           <Box>
-            <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#2c3e50' }}>
+            <Typography variant="h5" fontWeight={700} sx={{ 
+              mb: 3, 
+              color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
+            }}>
               Historial Completo
             </Typography>
             
             {viewMode === 'table' ? (
-              <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+              <TableContainer component={Paper} sx={{ 
+                borderRadius: 3, 
+                bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                boxShadow: themeMode === 'dark' 
+                  ? '0 4px 20px rgba(0,0,0,0.3)' 
+                  : '0 4px 20px rgba(0,0,0,0.08)',
+                border: themeMode === 'dark' ? '1px solid #334155' : 'none'
+              }}>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#f8fafc' }}>
-                      <TableCell sx={{ fontWeight: 700 }}>Estudiante</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Proyecto</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Fecha</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Estado</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Acciones</TableCell>
+                    <TableRow sx={{ 
+                      bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' 
+                    }}>
+                      <TableCell sx={{ 
+                        fontWeight: 700,
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                      }}>
+                        Estudiante
+                      </TableCell>
+                      <TableCell sx={{ 
+                        fontWeight: 700,
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                      }}>
+                        Proyecto
+                      </TableCell>
+                      <TableCell sx={{ 
+                        fontWeight: 700,
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                      }}>
+                        Fecha
+                      </TableCell>
+                      <TableCell sx={{ 
+                        fontWeight: 700,
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                      }}>
+                        Estado
+                      </TableCell>
+                      <TableCell sx={{ 
+                        fontWeight: 700,
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                      }}>
+                        Acciones
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {filteredEvents.map((event) => {
                       const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                       return (
-                        <TableRow key={event.id} hover>
-                          <TableCell>
+                        <TableRow key={event.id} hover sx={{
+                          '&:hover': {
+                            bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5'
+                          }
+                        }}>
+                          <TableCell sx={{ 
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Avatar sx={{ mr: 2, bgcolor: getStatusColor(event.status) }}>
+                              <Avatar sx={{ 
+                                mr: 2, 
+                                bgcolor: getStatusColor(event.status) 
+                              }}>
                                 {nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase()}
                               </Avatar>
                               <Typography variant="body2" fontWeight={600}>
@@ -804,8 +1010,16 @@ export const CompanyInterviews: React.FC = () => {
                               </Typography>
                             </Box>
                           </TableCell>
-                          <TableCell>{event.project_title || '-'}</TableCell>
-                          <TableCell>{formatDate(event.start_date)}</TableCell>
+                          <TableCell sx={{ 
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}>
+                            {event.project_title || '-'}
+                          </TableCell>
+                          <TableCell sx={{ 
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}>
+                            {formatDate(event.start_date)}
+                          </TableCell>
                           <TableCell>
                             <Chip 
                               label={getStatusLabel(event.status)} 
@@ -815,7 +1029,16 @@ export const CompanyInterviews: React.FC = () => {
                           </TableCell>
                           <TableCell>
                             <Tooltip title="Ver detalles">
-                              <IconButton size="small" color="primary" onClick={() => handleViewDetails(event)}>
+                              <IconButton 
+                                size="small" 
+                                onClick={() => handleViewDetails(event)}
+                                sx={{
+                                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                                  '&:hover': {
+                                    bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
+                                  }
+                                }}
+                              >
                                 <VisibilityIcon />
                               </IconButton>
                             </Tooltip>
@@ -828,8 +1051,8 @@ export const CompanyInterviews: React.FC = () => {
               </TableContainer>
             ) : (
               <Grid container spacing={3}>
-                                    {filteredEvents.map((event) => {
-                      const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
+                {filteredEvents.map((event) => {
+                  const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   
                   return (
@@ -837,12 +1060,19 @@ export const CompanyInterviews: React.FC = () => {
                       <Card sx={{ 
                         height: '100%',
                         borderRadius: 3,
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+                        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        boxShadow: themeMode === 'dark' 
+                          ? '0 4px 15px rgba(0,0,0,0.3)' 
+                          : '0 4px 15px rgba(0,0,0,0.08)',
                         transition: 'all 0.3s ease',
                         '&:hover': {
                           transform: 'translateY(-3px)',
-                          boxShadow: '0 8px 25px rgba(0,0,0,0.12)',
-                        }
+                          boxShadow: themeMode === 'dark' 
+                            ? '0 8px 25px rgba(0,0,0,0.5)' 
+                            : '0 8px 25px rgba(0,0,0,0.12)',
+                        },
+                        border: themeMode === 'dark' ? '1px solid #334155' : 'none'
                       }}>
                         <Box sx={{
                           position: 'absolute',
@@ -863,15 +1093,17 @@ export const CompanyInterviews: React.FC = () => {
                               fontSize: '1rem'
                             }}>
                               {iniciales}
-                  </Avatar>
-                  <Box sx={{ flexGrow: 1 }}>
+                            </Avatar>
+                            <Box sx={{ flexGrow: 1 }}>
                               <Typography variant="subtitle1" fontWeight={600}>
                                 {nombre}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {event.project_title || event.title}
-                    </Typography>
-                  </Box>
+                              </Typography>
+                              <Typography variant="body2" sx={{ 
+                                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                              }}>
+                                {event.project_title || event.title}
+                              </Typography>
+                            </Box>
                             <Chip 
                               label={getStatusLabel(event.status)} 
                               color={event.status === 'completed' ? 'success' : event.status === 'scheduled' ? 'warning' : 'error'}
@@ -879,21 +1111,24 @@ export const CompanyInterviews: React.FC = () => {
                             />
                           </Box>
 
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          <Typography variant="body2" sx={{ 
+                            color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', 
+                            mb: 1 
+                          }}>
                             {formatDate(event.start_date)}
                           </Typography>
 
-                                                     {event.project_title && (
-                             <Typography variant="body2" sx={{ mb: 0.5 }}>
-                               <strong>Proyecto:</strong> {event.project_title}
-                             </Typography>
-                           )}
-                           
-                           {event.location && (
-                             <Typography variant="body2" sx={{ mb: 0.5 }}>
-                               <strong>Ubicación:</strong> {event.location}
-                             </Typography>
-                           )}
+                          {event.project_title && (
+                            <Typography variant="body2" sx={{ mb: 0.5 }}>
+                              <strong>Proyecto:</strong> {event.project_title}
+                            </Typography>
+                          )}
+                          
+                          {event.location && (
+                            <Typography variant="body2" sx={{ mb: 0.5 }}>
+                              <strong>Ubicación:</strong> {event.location}
+                            </Typography>
+                          )}
                         </CardContent>
                         
                         <CardActions sx={{ p: 2, pt: 0 }}>
@@ -901,8 +1136,15 @@ export const CompanyInterviews: React.FC = () => {
                             size="small" 
                             startIcon={<VisibilityIcon />}
                             variant="outlined"
-                            color="primary"
                             onClick={() => handleViewDetails(event)}
+                            sx={{
+                              color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                              borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                              '&:hover': {
+                                borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
+                                backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
+                              }
+                            }}
                           >
                             Ver Detalles
                           </Button>
@@ -917,290 +1159,214 @@ export const CompanyInterviews: React.FC = () => {
         )}
       </Box>
 
-      {/* Modal de detalles de la entrevista */}
+      {/* Modal de detalles */}
       <Dialog 
         open={detailDialogOpen} 
-        onClose={handleCloseDetails}
-        maxWidth="md"
+        onClose={handleCloseDetails} 
+        maxWidth="lg" 
         fullWidth
         PaperProps={{
           sx: {
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
             borderRadius: 3,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
+            boxShadow: themeMode === 'dark' 
+              ? '0 20px 40px rgba(0,0,0,0.5)' 
+              : '0 20px 40px rgba(0,0,0,0.15)'
           }
         }}
       >
-        {selectedEvent && (
-          <>
-            <DialogTitle sx={{ 
-              pb: 1,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              borderRadius: '12px 12px 0 0'
-            }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar sx={{ 
-                  bgcolor: 'rgba(255,255,255,0.2)', 
-                  width: 48, 
-                  height: 48,
-                  fontSize: '1.2rem',
-                  fontWeight: 700
+        <DialogTitle sx={{ 
+          background: themeMode === 'dark' 
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 600,
+          borderRadius: '12px 12px 0 0'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <GroupIcon sx={{ fontSize: 28 }} />
+            <Typography variant="h6">Detalles de la Entrevista</Typography>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ 
+          mt: 2,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          {selectedEvent && (
+            <Grid container spacing={3}>
+              {/* Información del estudiante */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                  border: themeMode === 'dark' ? '1px solid #475569' : 'none'
                 }}>
-                  {(selectedEvent.attendees?.[0]?.full_name || selectedEvent.attendees?.[0]?.email || 'NA').split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase()}
-                </Avatar>
-                <Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    {selectedEvent.project_title || selectedEvent.title}
+                  <Typography variant="h6" fontWeight={700} sx={{ 
+                    mb: 2, 
+                    color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' 
+                  }}>
+                    Información del Estudiante
                   </Typography>
-                  <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    {selectedEvent.attendees?.[0]?.full_name || selectedEvent.attendees?.[0]?.email || 'Estudiante no asignado'}
-                  </Typography>
-                </Box>
-              </Box>
-            </DialogTitle>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Avatar sx={{ 
+                      mr: 2, 
+                      bgcolor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                      width: 60, 
+                      height: 60 
+                    }}>
+                      {selectedEvent.attendees[0]?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase() || 'ES'}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="h6" fontWeight={700}>
+                        {selectedEvent.attendees[0]?.full_name || selectedEvent.attendees[0]?.email || 'Estudiante no asignado'}
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                      }}>
+                        {selectedEvent.attendees[0]?.email || 'Email no disponible'}
+                      </Typography>
+                    </Box>
+                  </Box>
 
-            <DialogContent sx={{ p: 4 }}>
-              <Grid container spacing={3}>
-                {/* Información básica */}
-                <Grid item xs={12} md={6}>
-                  <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
-                    <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
-                      Información General
-                    </Typography>
-                    
-                    <Box sx={{ space: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <CalendarIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                        <Box>
-                          <Typography variant="body2" fontWeight={600}>
-                            Fecha y Hora
-                          </Typography>
-                          <Typography variant="body1">
-                            {formatDate(selectedEvent.start_date)}
-                          </Typography>
-                        </Box>
-                      </Box>
-
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <AccessTimeIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                        <Box>
-                          <Typography variant="body2" fontWeight={600}>
-                            Duración
-                          </Typography>
-                          <Typography variant="body1">
-                            {selectedEvent.duration || '1 hora'}
-                          </Typography>
-                        </Box>
-                      </Box>
-
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Chip 
-                          label={getStatusLabel(selectedEvent.status)} 
-                          color={selectedEvent.status === 'completed' ? 'success' : selectedEvent.status === 'scheduled' ? 'warning' : 'error'}
-                          sx={{ fontWeight: 600 }}
-                        />
+                  {selectedEvent.attendees[0]?.career && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <WorkIcon sx={{ 
+                        mr: 2, 
+                        color: themeMode === 'dark' ? '#60a5fa' : '#1976d2', 
+                        fontSize: 24 
+                      }} />
+                      <Box>
+                        <Typography variant="body2" fontWeight={600}>
+                          Carrera
+                        </Typography>
+                        <Typography variant="body1">
+                          {selectedEvent.attendees[0].career}
+                        </Typography>
                       </Box>
                     </Box>
-                  </Paper>
-                </Grid>
+                  )}
 
-                {/* Detalles del proyecto */}
-                <Grid item xs={12} md={6}>
-                  <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
-                    <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
-                      Detalles del Proyecto
-                    </Typography>
-                    
-                    {selectedEvent.project_title ? (
-                      <Box sx={{ space: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                          <WorkIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              Proyecto
-                            </Typography>
-                            <Typography variant="body1">
-                              {selectedEvent.project_title}
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        {selectedEvent.description && (
-                          <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                            <InfoIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24, mt: 0.2 }} />
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                Motivo de la Entrevista
-                              </Typography>
-                              <Typography variant="body1">
-                                {selectedEvent.description}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        )}
+                  {selectedEvent.attendees[0]?.role && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <PersonIcon sx={{ 
+                        mr: 2, 
+                        color: themeMode === 'dark' ? '#60a5fa' : '#1976d2', 
+                        fontSize: 24 
+                      }} />
+                      <Box>
+                        <Typography variant="body2" fontWeight={600}>
+                          Rol
+                        </Typography>
+                        <Typography variant="body1">
+                          {selectedEvent.attendees[0].role === 'student' ? 'Estudiante' : 
+                           selectedEvent.attendees[0].role === 'company' ? 'Empresa' : 
+                           selectedEvent.attendees[0].role === 'admin' ? 'Administrador' : 
+                           selectedEvent.attendees[0].role}
+                        </Typography>
                       </Box>
-                    ) : (
-                      <Typography variant="body2" color="text.secondary">
-                        No hay información del proyecto disponible
+                    </Box>
+                  )}
+                </Paper>
+              </Grid>
+
+              {/* Información adicional */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                  border: themeMode === 'dark' ? '1px solid #475569' : 'none'
+                }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ 
+                    mb: 2, 
+                    color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' 
+                  }}>
+                    Información Adicional
+                  </Typography>
+                  
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body2" fontWeight={600}>
+                        Tipo de Evento:
                       </Typography>
-                    )}
-                  </Paper>
-                </Grid>
-
-                {/* Información del Estudiante */}
-                {selectedEvent.attendees && selectedEvent.attendees.length > 0 && selectedEvent.attendees[0] && (
-                  <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
-                      <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
-                        Información del Estudiante
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                      }}>
+                        Entrevista
                       </Typography>
-                      
-                      <Box sx={{ space: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                          <PersonIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              Nombre Completo
-                            </Typography>
-                            <Typography variant="body1">
-                              {selectedEvent.attendees[0].full_name || 'No disponible'}
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                          <MailOutlineIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              Email
-                            </Typography>
-                            <Typography variant="body1">
-                              {selectedEvent.attendees[0].email || 'No disponible'}
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        {selectedEvent.attendees[0].phone && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                            <PersonIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                Teléfono
-                              </Typography>
-                              <Typography variant="body1">
-                                {selectedEvent.attendees[0].phone}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        )}
-
-                        {selectedEvent.attendees[0].career && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                            <WorkIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                Carrera
-                              </Typography>
-                              <Typography variant="body1">
-                                {selectedEvent.attendees[0].career}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        )}
-
-                        {selectedEvent.attendees[0].role && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                            <PersonIcon sx={{ mr: 2, color: '#1976d2', fontSize: 24 }} />
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                Rol
-                              </Typography>
-                              <Typography variant="body1">
-                                {selectedEvent.attendees[0].role === 'student' ? 'Estudiante' : 
-                                 selectedEvent.attendees[0].role === 'company' ? 'Empresa' : 
-                                 selectedEvent.attendees[0].role === 'admin' ? 'Administrador' : 
-                                 selectedEvent.attendees[0].role}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        )}
-                      </Box>
-                    </Paper>
-                  </Grid>
-                )}
-
-                {/* Información adicional */}
-                <Grid item xs={12} md={6}>
-                  <Paper sx={{ p: 3, borderRadius: 2, bgcolor: '#f8fafc' }}>
-                    <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#1976d2' }}>
-                      Información Adicional
-                    </Typography>
+                    </Grid>
                     
-                    <Grid container spacing={2}>
-
-                      
+                    {selectedEvent.location && (
                       <Grid item xs={12} sm={6}>
                         <Typography variant="body2" fontWeight={600}>
-                          Tipo de Evento:
+                          Ubicación:
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Entrevista
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                        }}>
+                          {selectedEvent.location}
                         </Typography>
                       </Grid>
-                      
-                                             {selectedEvent.location && (
-                         <Grid item xs={12} sm={6}>
-                           <Typography variant="body2" fontWeight={600}>
-                             Ubicación:
-                           </Typography>
-                           <Typography variant="body2" color="text.secondary">
-                             {selectedEvent.location}
-                           </Typography>
-                         </Grid>
-                       )}
-                       
-                       <Grid item xs={12} sm={6}>
-                         <Typography variant="body2" fontWeight={600}>
-                           Sala:
-                         </Typography>
-                                                  <Typography variant="body2" color="text.secondary">
-                           {selectedEvent.room || 'No especificada'}
-                </Typography>
-                       </Grid>
-                      
-                      {selectedEvent.attendees && selectedEvent.attendees.length > 1 && (
-                        <Grid item xs={12} sm={6}>
-                          <Typography variant="body2" fontWeight={600}>
-                            Participantes:
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                            {selectedEvent.attendees.map((att: any) => att.full_name || att.email || att.id).join(', ')}
-                </Typography>
-                        </Grid>
-                      )}
+                    )}
+                    
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body2" fontWeight={600}>
+                        Sala:
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                      }}>
+                        {selectedEvent.room || 'No especificada'}
+                      </Typography>
                     </Grid>
-              </Paper>
-                </Grid>
+                    
+                    {selectedEvent.attendees && selectedEvent.attendees.length > 1 && (
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="body2" fontWeight={600}>
+                          Participantes:
+                        </Typography>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                        }}>
+                          {selectedEvent.attendees.map((att: any) => att.full_name || att.email || att.id).join(', ')}
+                        </Typography>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Paper>
               </Grid>
-            </DialogContent>
+            </Grid>
+          )}
+        </DialogContent>
 
-            <DialogActions sx={{ p: 3, pt: 0 }}>
-              <Button 
-                onClick={handleCloseDetails}
-                variant="contained"
-                sx={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
-                  }
-                }}
-              >
-                Cerrar
-              </Button>
-            </DialogActions>
-          </>
-        )}
+        <DialogActions sx={{ 
+          p: 3, 
+          pt: 0,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e0e0e0'
+        }}>
+          <Button 
+            onClick={handleCloseDetails}
+            variant="contained"
+            sx={{
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)' 
+                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: themeMode === 'dark' 
+                  ? 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' 
+                  : 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Cerrar
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

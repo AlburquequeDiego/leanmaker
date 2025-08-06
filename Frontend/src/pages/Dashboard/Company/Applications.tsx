@@ -37,11 +37,13 @@ import { useApi } from '../../../hooks/useApi';
 import { adaptApplication, adaptApplicationList } from '../../../utils/adapters';
 import { API_ENDPOINTS } from '../../../config/api.config';
 import type { Application } from '../../../types';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 const cantidadOpciones = [5, 10, 50, 100, 150, 200, 'todas'];
 
 export const CompanyApplications: React.FC = () => {
   const api = useApi();
+  const { themeMode } = useTheme();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -240,7 +242,14 @@ export const CompanyApplications: React.FC = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh',
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f7fafd',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+      }}>
         <CircularProgress />
       </Box>
     );
@@ -248,7 +257,11 @@ export const CompanyApplications: React.FC = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ 
+        p: 3,
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f7fafd',
+        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+      }}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
@@ -260,7 +273,13 @@ export const CompanyApplications: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f7fafd', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -270,7 +289,7 @@ export const CompanyApplications: React.FC = () => {
           mb: 4,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(102, 126, 234, 0.4)' : '0 8px 32px rgba(102, 126, 234, 0.3)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -352,7 +371,7 @@ export const CompanyApplications: React.FC = () => {
           bgcolor: '#1976d2', 
           color: 'white',
           borderRadius: 3,
-          boxShadow: 3,
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(25, 118, 210, 0.4)' : 3,
           transition: 'transform 0.2s',
           '&:hover': { transform: 'translateY(-4px)' }
         }}>
@@ -370,7 +389,7 @@ export const CompanyApplications: React.FC = () => {
           bgcolor: '#fb8c00', 
           color: 'white',
           borderRadius: 3,
-          boxShadow: 3,
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(251, 140, 0, 0.4)' : 3,
           transition: 'transform 0.2s',
           '&:hover': { transform: 'translateY(-4px)' }
         }}>
@@ -388,7 +407,7 @@ export const CompanyApplications: React.FC = () => {
           bgcolor: '#388e3c', 
           color: 'white',
           borderRadius: 3,
-          boxShadow: 3,
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(56, 142, 60, 0.4)' : 3,
           transition: 'transform 0.2s',
           '&:hover': { transform: 'translateY(-4px)' }
         }}>
@@ -406,7 +425,7 @@ export const CompanyApplications: React.FC = () => {
           bgcolor: '#f44336', 
           color: 'white',
           borderRadius: 3,
-          boxShadow: 3,
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(244, 67, 54, 0.4)' : 3,
           transition: 'transform 0.2s',
           '&:hover': { transform: 'translateY(-4px)' }
         }}>
@@ -423,7 +442,7 @@ export const CompanyApplications: React.FC = () => {
       </Box>
 
       {/* Tabs mejorados con control de cantidad integrado */}
-      <Paper sx={{ mb: 3, borderRadius: 3, overflow: 'hidden' }}>
+      <Paper sx={{ mb: 3, borderRadius: 3, overflow: 'hidden', bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2 }}>
           <Tabs 
             value={selectedTab} 
@@ -433,7 +452,11 @@ export const CompanyApplications: React.FC = () => {
                 fontSize: '1rem',
                 fontWeight: 600,
                 textTransform: 'none',
-                minHeight: 56
+                minHeight: 56,
+                color: themeMode === 'dark' ? '#cbd5e1' : 'inherit'
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
               }
             }}
           >
@@ -446,13 +469,26 @@ export const CompanyApplications: React.FC = () => {
           
           {/* Control de cantidad integrado */}
           <FormControl size="small" sx={{ minWidth: 120, my: 1 }}>
-            <InputLabel id="cantidad-label">Mostrar</InputLabel>
+            <InputLabel id="cantidad-label" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>Mostrar</InputLabel>
             <Select
               labelId="cantidad-label"
               value={cantidadActual}
               label="Mostrar"
               onChange={e => handleCantidadChange(selectedTab, e.target.value)}
-              sx={{ borderRadius: 2 }}
+              sx={{ 
+                borderRadius: 2,
+                bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db'
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                }
+              }}
             >
               {cantidadOpciones.map(opt => (
                 <MenuItem key={opt} value={opt}>{opt === 'todas' ? 'Todas' : opt}</MenuItem>
@@ -473,15 +509,16 @@ export const CompanyApplications: React.FC = () => {
             gridColumn: '1 / -1', 
             textAlign: 'center', 
             py: 6,
-            bgcolor: 'white',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
             borderRadius: 3,
-            boxShadow: 2
+            boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 2,
+            border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
           }}>
-            <PersonIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h5" color="text.secondary" gutterBottom>
+            <PersonIcon sx={{ fontSize: 80, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary', mb: 2 }} />
+            <Typography variant="h5" color="text.secondary" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'text.secondary' }}>
               No hay postulaciones en esta categoría
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
               Las nuevas postulaciones aparecerán aquí cuando los estudiantes se postulen a tus proyectos.
             </Typography>
           </Box>
@@ -489,14 +526,14 @@ export const CompanyApplications: React.FC = () => {
           aplicacionesMostradas.map((application) => (
             <Card key={application.id} sx={{ 
               borderRadius: 3,
-              boxShadow: 3,
-              bgcolor: 'white',
-              border: '1px solid #e0e0e0',
+              boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 3,
+              bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0',
               transition: 'all 0.3s ease',
               '&:hover': {
-                boxShadow: 6,
+                boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(0,0,0,0.4)' : 6,
                 transform: 'translateY(-4px)',
-                borderColor: 'primary.main'
+                borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
               }
             }}>
               <CardContent sx={{ p: 3 }}>
@@ -510,13 +547,13 @@ export const CompanyApplications: React.FC = () => {
                     <PersonIcon sx={{ fontSize: 28 }} />
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" fontWeight={700}>
+                    <Typography variant="h6" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                       {application.student_name || 'Estudiante no encontrado'}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                    <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                       Postuló a: {application.project_title || 'Proyecto no encontrado'}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
                       {new Date(application.applied_at).toLocaleDateString('es-ES', {
                         year: 'numeric',
                         month: 'long',
@@ -534,11 +571,9 @@ export const CompanyApplications: React.FC = () => {
                   />
                 </Box>
 
-
-
                 {/* Carta de Presentación */}
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" fontWeight={600} color="primary" gutterBottom>
+                  <Typography variant="subtitle2" fontWeight={600} color="primary" gutterBottom sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }}>
                     Carta de Presentación:
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ 
@@ -548,15 +583,16 @@ export const CompanyApplications: React.FC = () => {
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                     p: 2,
-                    bgcolor: '#fafafa',
+                    bgcolor: themeMode === 'dark' ? '#334155' : '#fafafa',
                     borderRadius: 1,
-                    border: '1px solid #e0e0e0'
+                    border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0',
+                    color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'
                   }}>
                     {application.cover_letter || application.student?.bio || application.student?.user_data?.bio || 'No se ha proporcionado carta de presentación'}
                   </Typography>
                 </Box>
 
-                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
                   Postuló: {new Date(application.applied_at).toLocaleDateString()}
                 </Typography>
               </CardContent>
@@ -641,7 +677,7 @@ export const CompanyApplications: React.FC = () => {
         }}>
           Perfil Completo del Estudiante
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
           {selectedApplication && (
             <Box>
               {/* Header con nombre y apellido */}
@@ -650,119 +686,119 @@ export const CompanyApplications: React.FC = () => {
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Avatar>
                 <Box>
-                  <Typography variant="h5" fontWeight={700}>
+                  <Typography variant="h5" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     {(selectedApplication.student?.user_data?.first_name || '') + ' ' + (selectedApplication.student?.user_data?.last_name || '') || selectedApplication.student?.name || '-'}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     {selectedApplication.student?.user_data?.email || selectedApplication.student?.email || '-'}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     {selectedApplication.student?.user_data?.phone || selectedApplication.student?.phone || '-'}
                   </Typography>
                 </Box>
               </Box>
 
-              <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+              <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa' }}>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Fecha de Nacimiento:</Typography>
-                    <Typography variant="body1">{selectedApplication.student?.perfil_detallado?.fecha_nacimiento || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Fecha de Nacimiento:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.perfil_detallado?.fecha_nacimiento || '-'}</Typography>
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Género:</Typography>
-                    <Typography variant="body1">{selectedApplication.student?.perfil_detallado?.genero || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Género:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.perfil_detallado?.genero || '-'}</Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Carrera:</Typography>
-                    <Typography variant="body1">{selectedApplication.student?.career || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Carrera:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.career || '-'}</Typography>
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary">Nivel Educativo:</Typography>
-                    <Typography variant="body1">{selectedApplication.student?.api_level || '-'}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Nivel Educativo:</Typography>
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.api_level || '-'}</Typography>
                   </Box>
                 </Box>
               </Paper>
 
               {/* Habilidades */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Habilidades</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Habilidades</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                 {(selectedApplication.student?.skills || []).map((h: string) => (
                   <Chip key={h} label={h} color="primary" />
                 ))}
-                {(!selectedApplication.student?.skills || selectedApplication.student.skills.length === 0) && <Typography variant="body2" color="text.secondary">-</Typography>}
+                {(!selectedApplication.student?.skills || selectedApplication.student.skills.length === 0) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>-</Typography>}
               </Box>
 
               {/* Documentos */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Documentos</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Documentos</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                 {selectedApplication.student?.cv_link && (
-                  <Typography variant="body2">
-                    <strong>CV:</strong> <a href={selectedApplication.student.cv_link} target="_blank" rel="noopener noreferrer">{selectedApplication.student.cv_link}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>CV:</strong> <a href={selectedApplication.student.cv_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.cv_link}</a>
                   </Typography>
                 )}
                 {selectedApplication.student?.certificado_link && (
-                  <Typography variant="body2">
-                    <strong>Certificado:</strong> <a href={selectedApplication.student.certificado_link} target="_blank" rel="noopener noreferrer">{selectedApplication.student.certificado_link}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>Certificado:</strong> <a href={selectedApplication.student.certificado_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.certificado_link}</a>
                   </Typography>
                 )}
-                {(!selectedApplication.student?.cv_link && !selectedApplication.student?.certificado_link) && <Typography variant="body2" color="text.secondary">No hay documentos</Typography>}
+                {(!selectedApplication.student?.cv_link && !selectedApplication.student?.certificado_link) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay documentos</Typography>}
               </Box>
 
               {/* Área de interés y modalidades */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Área y Modalidad</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Área y Modalidad</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                 <Box sx={{ flex: 1, minWidth: 220 }}>
-                  <Typography variant="body2" color="text.secondary">Área de interés:</Typography>
-                  <Typography variant="body1">{selectedApplication.student?.area || '-'}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Área de interés:</Typography>
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.area || '-'}</Typography>
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 220 }}>
-                  <Typography variant="body2" color="text.secondary">Modalidad:</Typography>
-                  <Typography variant="body1">{selectedApplication.student?.availability || '-'}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Modalidad:</Typography>
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.availability || '-'}</Typography>
                 </Box>
               </Box>
 
               {/* Experiencia previa */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Experiencia Previa</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>{selectedApplication.student?.experience_years ? `${selectedApplication.student.experience_years} años` : '-'}</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Experiencia Previa</Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>{selectedApplication.student?.experience_years ? `${selectedApplication.student.experience_years} años` : '-'}</Typography>
 
               {/* Enlaces */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Enlaces</Typography>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Enlaces</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                 {selectedApplication.student?.linkedin_url && (
-                  <Typography variant="body2">
-                    <strong>LinkedIn:</strong> <a href={selectedApplication.student.linkedin_url} target="_blank" rel="noopener noreferrer">{selectedApplication.student.linkedin_url}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>LinkedIn:</strong> <a href={selectedApplication.student.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.linkedin_url}</a>
                   </Typography>
                 )}
                 {selectedApplication.student?.github_url && (
-                  <Typography variant="body2">
-                    <strong>GitHub:</strong> <a href={selectedApplication.student.github_url} target="_blank" rel="noopener noreferrer">{selectedApplication.student.github_url}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>GitHub:</strong> <a href={selectedApplication.student.github_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.github_url}</a>
                   </Typography>
                 )}
                 {selectedApplication.student?.portfolio_url && (
-                  <Typography variant="body2">
-                    <strong>Portafolio:</strong> <a href={selectedApplication.student.portfolio_url} target="_blank" rel="noopener noreferrer">{selectedApplication.student.portfolio_url}</a>
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
+                    <strong>Portafolio:</strong> <a href={selectedApplication.student.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.portfolio_url}</a>
                   </Typography>
                 )}
-                {(!selectedApplication.student?.linkedin_url && !selectedApplication.student?.github_url && !selectedApplication.student?.portfolio_url) && <Typography variant="body2" color="text.secondary">No hay enlaces</Typography>}
+                {(!selectedApplication.student?.linkedin_url && !selectedApplication.student?.github_url && !selectedApplication.student?.portfolio_url) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay enlaces</Typography>}
               </Box>
 
               {/* Carta de Presentación */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600}>Carta de Presentación</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
+              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Carta de Presentación</Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                 {selectedApplication.cover_letter || selectedApplication.student?.bio || selectedApplication.student?.user_data?.bio || '-'}
               </Typography>
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5', gap: 2 }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5', gap: 2 }}>
           {/* Botones de Acción */}
           {selectedApplication && selectedApplication.status === 'pending' && (
             <Button

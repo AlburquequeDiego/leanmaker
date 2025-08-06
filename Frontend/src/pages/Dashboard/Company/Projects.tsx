@@ -41,6 +41,7 @@ import type { Project } from '../../../types';
 import { projectService } from '../../../services/project.service';
 import { PublishProjects } from './PublishProjects';
 import { useLocation } from 'react-router-dom';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 // Función para obtener descripción del TRL
 const getTrlDescription = (trlLevel: number) => {
@@ -63,6 +64,7 @@ const COUNT_OPTIONS = [5, 20, 50, 100, 150, 200, 250, -1];
 const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const location = useLocation();
   const api = useApi();
+  const { themeMode } = useTheme();
   const [tab, setTab] = useState(initialTab);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -429,25 +431,65 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const renderDashboard = () => (
     <Grid container spacing={3} sx={{ mb: 4, justifyContent: 'center', alignItems: 'stretch' }}>
       <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ bgcolor: '#ff9800', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+        <Card sx={{ 
+          bgcolor: '#ff9800', 
+          color: 'white', 
+          p: 3, 
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(255, 152, 0, 0.4)' : 2, 
+          borderRadius: 4, 
+          textAlign: 'center', 
+          minWidth: 240, 
+          maxWidth: 320, 
+          width: '100%' 
+        }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.published}</Typography>
           <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Publicados</Typography>
         </Card>
       </Grid>
       <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ bgcolor: '#4caf50', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+        <Card sx={{ 
+          bgcolor: '#4caf50', 
+          color: 'white', 
+          p: 3, 
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(76, 175, 80, 0.4)' : 2, 
+          borderRadius: 4, 
+          textAlign: 'center', 
+          minWidth: 240, 
+          maxWidth: 320, 
+          width: '100%' 
+        }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.active}</Typography>
           <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Activos</Typography>
         </Card>
       </Grid>
       <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ bgcolor: '#2196f3', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+        <Card sx={{ 
+          bgcolor: '#2196f3', 
+          color: 'white', 
+          p: 3, 
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(33, 150, 243, 0.4)' : 2, 
+          borderRadius: 4, 
+          textAlign: 'center', 
+          minWidth: 240, 
+          maxWidth: 320, 
+          width: '100%' 
+        }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.completed}</Typography>
           <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Completados</Typography>
         </Card>
       </Grid>
       <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ bgcolor: '#f44336', color: 'white', p: 3, boxShadow: 2, borderRadius: 4, textAlign: 'center', minWidth: 240, maxWidth: 320, width: '100%' }}>
+        <Card sx={{ 
+          bgcolor: '#f44336', 
+          color: 'white', 
+          p: 3, 
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(244, 67, 54, 0.4)' : 2, 
+          borderRadius: 4, 
+          textAlign: 'center', 
+          minWidth: 240, 
+          maxWidth: 320, 
+          width: '100%' 
+        }}>
           <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>{statusCounts.deleted}</Typography>
           <Typography variant="subtitle1" sx={{ color: 'white' }}>Proyectos Eliminados</Typography>
         </Card>
@@ -467,17 +509,31 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
     
     return (
       <Box sx={{ mb: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           {icon}
-          <Typography variant="h6" fontWeight={700} color="primary" sx={{ ml: 1 }}>
+          <Typography variant="h6" fontWeight={700} color="primary" sx={{ ml: 1, color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }}>
             {title} ({filtered.length})
-                    </Typography>
+          </Typography>
           <Box sx={{ ml: 2 }}>
             <FormControl size="medium" sx={{ minWidth: 140 }}>
               <Select
                 value={count}
                 onChange={handleSectionCountChange(status)}
-                sx={{ minWidth: 140, fontSize: 16 }}
+                sx={{ 
+                  minWidth: 140, 
+                  fontSize: 16,
+                  bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db'
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                  }
+                }}
                 displayEmpty
                 renderValue={selected => selected === -1 ? 'Todas' : `Últimos ${selected}`}
               >
@@ -486,17 +542,18 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 ))}
               </Select>
             </FormControl>
-                  </Box>
-                </Box>
+          </Box>
+        </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {toShow.length === 0 && (
             <Paper sx={{ 
               p: 4, 
               textAlign: 'center',
-              bgcolor: '#f8f9fa',
-              borderRadius: 3
+              bgcolor: themeMode === 'dark' ? '#1e293b' : '#f8f9fa',
+              borderRadius: 3,
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0'
             }}>
-              <Typography color="text.secondary" variant="h6">
+              <Typography color="text.secondary" variant="h6" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                 No hay proyectos {title.toLowerCase()}.
               </Typography>
             </Paper>
@@ -513,20 +570,20 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
               flexDirection: 'row', 
               alignItems: 'center', 
               p: 3, 
-              boxShadow: 3, 
+              boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 3, 
               borderRadius: 3,
-              bgcolor: 'white',
-              border: '1px solid #e0e0e0',
+              bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+              border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0',
               transition: 'all 0.3s ease',
               '&:hover': {
-                boxShadow: 6,
+                boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(0,0,0,0.4)' : 6,
                 transform: 'translateY(-2px)',
-                borderColor: 'primary.main'
+                borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
               }
             }}>
               <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                  <Typography variant="h6" fontWeight={700} sx={{ mr: 1, color: 'primary.main' }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ mr: 1, color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }}>
                     {project.title}
                   </Typography>
                   <StatusBadge status={project.status} />
@@ -542,11 +599,11 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     />
                   </Box>
                 )}
-                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                   {project.description && project.description.length > 120 ? project.description.slice(0, 120) + '...' : project.description || 'Sin descripción'}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
                     {project.duration_weeks ? `${project.duration_weeks} semanas • ` : ''} {project.hours_per_week || 0} horas/semana
                   </Typography>
                   <Chip 
@@ -656,7 +713,13 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   };
 
   return (
-    <Box sx={{ width: '100%', p: { xs: 1, md: 3 }, bgcolor: '#f7fafd', minHeight: '100vh' }}>
+    <Box sx={{ 
+      width: '100%', 
+      p: { xs: 1, md: 3 }, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f7fafd', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -666,7 +729,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
           mb: 4,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(102, 126, 234, 0.4)' : '0 8px 32px rgba(102, 126, 234, 0.3)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -748,7 +811,11 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
             fontSize: '1rem',
             fontWeight: 600,
             textTransform: 'none',
-            minHeight: 48
+            minHeight: 48,
+            color: themeMode === 'dark' ? '#cbd5e1' : 'inherit'
+          },
+          '& .MuiTabs-indicator': {
+            backgroundColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
           }
         }}
       >
@@ -768,7 +835,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
       
       {tab === 1 && (
         <Box>
-          <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
+          <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
             Proyectos Eliminados
           </Typography>
           {renderSection('deleted', <DeleteIcon color="error" />, 'Proyectos Eliminados')}
@@ -788,15 +855,15 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         }}>
           ¿Eliminar proyecto?
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
-          <Typography variant="body1" gutterBottom>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+          <Typography variant="body1" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
             ¿Seguro que deseas eliminar el proyecto <strong>"{selectedProject?.title}"</strong>?
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
             Esta acción no se puede deshacer y se perderán todos los datos asociados al proyecto.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5' }}>
           <Button 
             onClick={handleDeleteCancel}
             variant="outlined"
@@ -824,8 +891,8 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         }}>
           ¿Activar proyecto?
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
-          <Typography variant="body1" gutterBottom>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+          <Typography variant="body1" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
             ¿Estás seguro de que deseas activar el proyecto <strong>"{selectedProject?.title}"</strong>?
           </Typography>
           
@@ -837,18 +904,18 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
             </Alert>
           )}
           
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
             - El proyecto cambiará a estado "Activo".<br/>
             - Los estudiantes aceptados pasarán a "Proyectos Activos" y podrán comenzar a trabajar.<br/>
             - Los estudiantes recibirán una notificación de que el proyecto está en curso.<br/>
             - Ya no podrás modificar los estudiantes asignados a este proyecto.<br/>
             - El avance y las entregas de los estudiantes comenzarán a registrarse desde este momento.<br/>
           </Typography>
-          <Typography variant="body2" color="error">
+          <Typography variant="body2" color="error" sx={{ color: themeMode === 'dark' ? '#fca5a5' : 'error.main' }}>
             Esta acción no se puede deshacer.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5' }}>
           <Button 
             onClick={handleActivateCancel}
             variant="outlined"
@@ -880,18 +947,18 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         }}>
           ¿Marcar proyecto como completado?
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
-          <Typography variant="body1" gutterBottom>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+          <Typography variant="body1" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
             ¿Seguro que deseas marcar el proyecto <strong>"{selectedProject?.title}"</strong> como completado?
           </Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography variant="body2" color="text.secondary" gutterBottom sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
             <b>Una vez que completes el proyecto:</b><br/>
             - El soporte del sistema validará y asignará las horas correspondientes de proyecto a los integrantes.<br/>
             - Si algún estudiante no completó los trabajos asignados, el soporte podrá asignarle un strike como penalización.<br/>
             - Esta acción es irreversible y no se podrá modificar ni corregir posteriormente.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5' }}>
           <Button 
             onClick={handleCompleteCancel}
             variant="outlined"
@@ -920,11 +987,11 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         }}>
           Detalles del Proyecto
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
           {selectedProject && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <Box>
-                <Typography variant="h5" fontWeight={700} color="primary" gutterBottom>
+                <Typography variant="h5" fontWeight={700} color="primary" gutterBottom sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }}>
                   {projectDetails?.title || selectedProject.title}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
@@ -941,94 +1008,94 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
               
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Descripción
                   </Typography>
-                  <Typography variant="body1" sx={{ bgcolor: '#f8f9fa', p: 2, borderRadius: 2 }}>
+                  <Typography variant="body1" sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa', p: 2, borderRadius: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.description || selectedProject.description || 'Sin descripción'}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Requerimientos
                   </Typography>
-                  <Typography variant="body1" sx={{ bgcolor: '#f8f9fa', p: 2, borderRadius: 2 }}>
+                  <Typography variant="body1" sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa', p: 2, borderRadius: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.requirements || selectedProject.requirements || 'Sin requisitos especificados'}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Tipo de Actividad
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.tipo || selectedProject.tipo || 'No especificado'}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Objetivo del Proyecto
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.objetivo || selectedProject.objetivo || 'No especificado'}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Duración
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {(projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0} semanas • {(projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0} horas/semana
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
                     Horas totales del proyecto: <b>{((projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0) * ((projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0)}</b>
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Modalidad
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.modality || selectedProject.modality || 'No especificada'}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Responsable del Proyecto
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.encargado || selectedProject.encargado || 'No especificado'}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Contacto de la Empresa
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.contacto || selectedProject.contacto || 'No especificado'}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Estado del Proyecto
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {getTrlDescription(projectDetails?.trl_id || selectedProject.trl_id)}
                   </Typography>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Horas Ofrecidas
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                     {projectDetails?.required_hours || selectedProject.required_hours} horas
                   </Typography>
                 </Grid>
@@ -1038,10 +1105,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 
                 {(projectDetails?.start_date || selectedProject.start_date) && (
                   <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontWeight={600} gutterBottom>
+                    <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                       Fecha de Inicio
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                       {new Date(projectDetails?.start_date || selectedProject.start_date).toLocaleDateString()}
                     </Typography>
                   </Grid>
@@ -1049,10 +1116,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 
                 {(projectDetails?.estimated_end_date || selectedProject.estimated_end_date) && (
                   <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontWeight={600} gutterBottom>
+                    <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                       Fecha Estimada de Fin
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
                       {new Date(projectDetails?.estimated_end_date || selectedProject.estimated_end_date).toLocaleDateString()}
                     </Typography>
                   </Grid>
@@ -1060,11 +1127,11 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
               </Grid>
               {projectDetails && projectDetails.estudiantes && (
                 <Grid item xs={12}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                     Estudiantes participantes ({projectDetails.estudiantes.length})
                   </Typography>
                   {projectDetails.estudiantes.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
                       No hay estudiantes asignados a este proyecto.
                     </Typography>
                   ) : (
@@ -1075,9 +1142,9 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                           alignItems: 'center', 
                           justifyContent: 'space-between',
                           p: 2, 
-                          bgcolor: '#f8f9fa', 
+                          bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa', 
                           borderRadius: 2,
-                          border: '1px solid #e0e0e0'
+                          border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
                         }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Chip 
@@ -1085,7 +1152,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                               color={est.status === 'active' ? 'success' : est.status === 'completed' ? 'secondary' : 'primary'} 
                               size="medium"
                             />
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                               {est.email}
                             </Typography>
                           </Box>
@@ -1100,7 +1167,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                               variant="outlined"
                             />
                             {est.applied_at && (
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography variant="caption" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
                                 Aplicó: {new Date(est.applied_at).toLocaleDateString()}
                               </Typography>
                             )}
@@ -1114,7 +1181,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5' }}>
           <Button 
             onClick={handleViewClose}
             variant="contained"
@@ -1134,15 +1201,15 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
         }}>
           Restaurar Proyecto
         </DialogTitle>
-        <DialogContent sx={{ p: 3 }}>
-          <Typography variant="body1" gutterBottom>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+          <Typography variant="body1" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
             ¿Estás seguro de que quieres restaurar el proyecto "{selectedProject?.title}"?
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
             El proyecto volverá a estar publicado y será visible para los estudiantes.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5' }}>
           <Button 
             onClick={handleRestoreCancel}
             variant="outlined"

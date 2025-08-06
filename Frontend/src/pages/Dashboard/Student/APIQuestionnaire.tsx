@@ -24,6 +24,7 @@ import {
   EmojiEvents as EmojiEventsIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Question {
   id: number;
@@ -137,6 +138,7 @@ const getChipColor = (apiLevel: number) => {
 };
 
 export const APIQuestionnaire = () => {
+  const { themeMode } = useTheme();
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [showResults, setShowResults] = useState(false);
   const [calculatedLevel, setCalculatedLevel] = useState<number>(0);
@@ -253,8 +255,14 @@ export const APIQuestionnaire = () => {
   // Mostrar loading mientras se obtiene el nivel API
   if (loadingApiLevel) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-        <CircularProgress />
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: 400,
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5'
+      }}>
+        <CircularProgress sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
       </Box>
     );
   }
@@ -262,7 +270,12 @@ export const APIQuestionnaire = () => {
   // Si no se pudo obtener el nivel API, mostrar error
   if (currentApiLevel === null) {
     return (
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+      <Box sx={{ 
+        flexGrow: 1, 
+        p: 3,
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5',
+        minHeight: '100vh'
+      }}>
         {/* Banner superior con gradiente y contexto */}
         <Box
           sx={{
@@ -343,11 +356,15 @@ export const APIQuestionnaire = () => {
           </Box>
         </Box>
 
-        <Alert severity="error" sx={{ mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
+        <Alert severity="error" sx={{ 
+          mb: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+        }}>
+          <Typography variant="h6" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
             Error al cargar tu nivel API
           </Typography>
-          <Typography variant="body1">
+          <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
             No se pudo obtener tu nivel API actual. Por favor, recarga la página o contacta al administrador si el problema persiste.
           </Typography>
         </Alert>
@@ -358,8 +375,14 @@ export const APIQuestionnaire = () => {
   // Mostrar loading mientras se procesa el cuestionario
   if (loading && !showResults) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-        <CircularProgress />
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: 400,
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5'
+      }}>
+        <CircularProgress sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }} />
       </Box>
     );
   }
@@ -367,7 +390,12 @@ export const APIQuestionnaire = () => {
   // Si el estudiante ya tiene el nivel máximo (API 4), mostrar mensaje de que no puede hacer el cuestionario
   if (currentApiLevel >= 4) {
     return (
-      <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      <Box sx={{ 
+        flexGrow: 1, 
+        p: 3, 
+        backgroundColor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5', 
+        minHeight: '100vh' 
+      }}>
         {/* Banner superior con gradiente y contexto */}
         <Box
           sx={{
@@ -528,7 +556,12 @@ export const APIQuestionnaire = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3, 
+      backgroundColor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5', 
+      minHeight: '100vh' 
+    }}>
       {/* Banner superior con gradiente y contexto */}
       <Box
         sx={{
@@ -610,13 +643,21 @@ export const APIQuestionnaire = () => {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ 
+          mb: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+        }}>
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 3 }}>
+        <Alert severity="success" sx={{ 
+          mb: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+        }}>
           {success}
         </Alert>
       )}
@@ -710,18 +751,26 @@ export const APIQuestionnaire = () => {
         <Card sx={{ 
           maxWidth: 800, 
           mx: 'auto',
-          background: 'white',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          background: themeMode === 'dark' ? '#1e293b' : 'white',
+          boxShadow: themeMode === 'dark' 
+            ? '0 8px 32px rgba(0,0,0,0.3)' 
+            : '0 8px 32px rgba(0,0,0,0.1)',
           borderRadius: 3
         }}>
           <CardContent sx={{ p: 4 }}>
             {/* Barra de progreso mejorada */}
           <Box sx={{ mb: 4 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                <Typography variant="h6" sx={{ 
+                  color: themeMode === 'dark' ? '#60a5fa' : 'primary.main', 
+                  fontWeight: 'bold' 
+                }}>
                   📊 Progreso: {Object.keys(answers).length} de {questions.length} preguntas
               </Typography>
-                <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                <Typography variant="h6" sx={{ 
+                  color: themeMode === 'dark' ? '#60a5fa' : 'primary.main', 
+                  fontWeight: 'bold' 
+                }}>
                 {Math.round(progress)}%
               </Typography>
             </Box>
@@ -731,7 +780,7 @@ export const APIQuestionnaire = () => {
                 sx={{ 
                   height: 12, 
                   borderRadius: 6,
-                  bgcolor: '#e0e0e0',
+                  bgcolor: themeMode === 'dark' ? '#475569' : '#e0e0e0',
                   '& .MuiLinearProgress-bar': {
                     background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
                     borderRadius: 6
@@ -745,7 +794,11 @@ export const APIQuestionnaire = () => {
             <Box>
                 
 
-                <Typography variant="h5" gutterBottom sx={{ mb: 4, color: 'text.primary', fontWeight: 'bold' }}>
+                <Typography variant="h5" gutterBottom sx={{ 
+                  mb: 4, 
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary', 
+                  fontWeight: 'bold' 
+                }}>
                   {questions[currentQuestion].question}
               </Typography>
 
@@ -757,10 +810,18 @@ export const APIQuestionnaire = () => {
                   <FormControlLabel
                     key={index}
                     value={option.value}
-                      control={<Radio sx={{ color: 'primary.main' }} />}
+                      control={<Radio sx={{ 
+                        color: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                        '&.Mui-checked': {
+                          color: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
+                        }
+                      }} />}
                     label={
                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                           <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                           <Typography variant="body1" sx={{ 
+                             fontWeight: 'medium',
+                             color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+                           }}>
                              {option.text}
                            </Typography>
                         <Chip 
@@ -774,20 +835,22 @@ export const APIQuestionnaire = () => {
                     sx={{ 
                         mb: 3, 
                         p: 3, 
-                        border: '2px solid #e0e0e0', 
+                        border: themeMode === 'dark' ? '2px solid #475569' : '2px solid #e0e0e0', 
                         borderRadius: 3,
-                        bgcolor: 'white',
+                        bgcolor: themeMode === 'dark' ? '#334155' : 'white',
                         transition: 'all 0.3s ease',
                         '&:hover': { 
-                          bgcolor: '#f8f9fa',
-                          borderColor: 'primary.main',
+                          bgcolor: themeMode === 'dark' ? '#475569' : '#f8f9fa',
+                          borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
                           transform: 'translateY(-2px)',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                          boxShadow: themeMode === 'dark' 
+                            ? '0 4px 12px rgba(96, 165, 250, 0.2)' 
+                            : '0 4px 12px rgba(0,0,0,0.1)'
                         },
                         '&.Mui-checked': {
-                          borderColor: 'primary.main',
-                          bgcolor: 'primary.light',
-                          color: 'primary.contrastText'
+                          borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                          bgcolor: themeMode === 'dark' ? '#1e3a8a' : 'primary.light',
+                          color: themeMode === 'dark' ? '#f1f5f9' : 'primary.contrastText'
                         }
                     }}
                   />
@@ -804,7 +867,13 @@ export const APIQuestionnaire = () => {
                       px: 4, 
                       py: 1.5,
                       borderRadius: 2,
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+                      '&:hover': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                        bgcolor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.04)',
+                      }
                     }}
                   >
                     ← Anterior
@@ -836,8 +905,10 @@ export const APIQuestionnaire = () => {
         <Card sx={{ 
           maxWidth: 800, 
           mx: 'auto',
-          background: 'white',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          background: themeMode === 'dark' ? '#1e293b' : 'white',
+          boxShadow: themeMode === 'dark' 
+            ? '0 8px 32px rgba(0,0,0,0.3)' 
+            : '0 8px 32px rgba(0,0,0,0.1)',
           borderRadius: 3
         }}>
           <CardContent sx={{ p: 4 }}>
@@ -852,10 +923,16 @@ export const APIQuestionnaire = () => {
               }}>
                 <CheckCircleIcon sx={{ fontSize: 64 }} />
               </Box>
-              <Typography variant="h3" gutterBottom sx={{ color: 'success.main', fontWeight: 'bold' }}>
+              <Typography variant="h3" gutterBottom sx={{ 
+                color: 'success.main', 
+                fontWeight: 'bold' 
+              }}>
               ¡Cuestionario Completado!
             </Typography>
-              <Typography variant="h5" sx={{ color: 'text.secondary', fontWeight: 'medium' }}>
+              <Typography variant="h5" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', 
+                fontWeight: 'medium' 
+              }}>
               Tu nivel calculado es:
             </Typography>
           </Box>

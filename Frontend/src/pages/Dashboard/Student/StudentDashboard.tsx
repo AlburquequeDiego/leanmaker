@@ -11,6 +11,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import CodeIcon from '@mui/icons-material/Code';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 
 // Componente gráfico circular simple (SVG)
@@ -155,6 +156,7 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
 
 export default function StudentDashboard() {
   const { user } = useAuth();
+  const { themeMode } = useTheme();
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('student');
 
   // Obtener el nombre del usuario para personalizar el dashboard
@@ -209,10 +211,16 @@ export default function StudentDashboard() {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, bgcolor: '#f5f7fa', minHeight: '100vh' }}>
+    <Box sx={{ 
+      flexGrow: 1, 
+      p: 3, 
+      bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc', 
+      minHeight: '100vh',
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }}>
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
           Bienvenido a tu Dashboard - {getUserDisplayName()}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
