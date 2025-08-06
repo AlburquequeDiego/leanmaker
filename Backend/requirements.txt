@@ -1,5 +1,5 @@
 # ========================================
-# LEANMAKER BACKEND - DJANGO PURO + TYPESCRIPT
+# LEANMAKER BACKEND - DJANGO PURO + TYPESCRIPT (Actualizado 06/08/2025)
 # ========================================
 # Python 3.12+ | Django 4.2+ 
 # ========================================
@@ -13,7 +13,7 @@ djangorestframework==3.14.0
 
 # Database (SQL Server Azure)
 django-mssql-backend==2.8.1
-pyodbc==5.0.1
+pyodbc>=5.2.0
 
 # Development & Testing
 django-debug-toolbar==4.2.0
@@ -24,7 +24,7 @@ faker==20.1.0
 
 # Utilities
 python-decouple==3.8
-Pillow==10.1.0
+Pillow==10.4.0
 django-storages==1.14.2
 
 # Background Tasks
