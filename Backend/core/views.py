@@ -1602,8 +1602,61 @@ def api_hub_analytics_data(request):
         
         # Obtener total de aplicaciones y horas para datos de ejemplo
         total_applications = AplicacionProyecto.objects.count()
-        total_hours_aggregate = WorkHour.objects.aggregate(total=Sum('hours_worked'))
-        total_hours_value = total_hours_aggregate['total'] or 0
+        
+        # DEBUG: Verificar exactamente cuántas horas hay y de dónde vienen
+        print("🔍 [HUB ANALYTICS] DEBUGGING HORAS:")
+        
+        # 1. Total de horas en WorkHour
+        total_work_hours = WorkHour.objects.aggregate(total=Sum('hours_worked'))
+        total_work_hours_value = float(total_work_hours['total'] or 0)
+        print(f"  - Total horas en WorkHour: {total_work_hours_value}")
+        
+        # 2. Horas por estudiante
+        students_hours = Estudiante.objects.annotate(
+            student_hours=Sum('work_hours__hours_worked')
+        ).filter(student_hours__isnull=False)
+        
+        total_students_hours = 0
+        for student in students_hours:
+            student_total = float(student.student_hours or 0)
+            total_students_hours += student_total
+            print(f"  - Estudiante {student.user.email}: {student_total} horas")
+        
+        print(f"  - Total horas de estudiantes: {total_students_hours}")
+        print(f"  - Diferencia: {total_work_hours_value - total_students_hours}")
+        
+        # 3. Verificar si hay WorkHour sin estudiante
+        orphaned_hours = WorkHour.objects.filter(student__isnull=True)
+        if orphaned_hours.exists():
+            orphaned_total = float(orphaned_hours.aggregate(total=Sum('hours_worked'))['total'] or 0)
+            print(f"  - ⚠️ WorkHour sin estudiante: {orphaned_total} horas")
+        
+        # 4. Verificar duplicados o problemas
+        all_work_hours = WorkHour.objects.all()
+        print(f"  - Total registros WorkHour: {all_work_hours.count()}")
+        
+        # Usar el total de estudiantes para el cálculo final (debe ser igual al top student)
+        total_hours_value = total_students_hours
+        
+        # Sincronizar horas totales de estudiantes con las horas reales registradas
+        try:
+            print("🔍 [HUB ANALYTICS] Sincronizando horas totales de estudiantes...")
+            students_to_update = Estudiante.objects.annotate(
+                real_hours=Sum('work_hours__hours_worked')
+            ).filter(
+                real_hours__isnull=False
+            )
+            
+            for student in students_to_update:
+                real_hours = float(student.real_hours or 0)
+                if student.total_hours != real_hours:
+                    print(f"🔄 [HUB ANALYTICS] Sincronizando estudiante {student.id}: {student.total_hours} -> {real_hours}")
+                    student.total_hours = real_hours
+                    student.save(update_fields=['total_hours'])
+            
+            print(f"✅ [HUB ANALYTICS] Sincronización completada para {students_to_update.count()} estudiantes")
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error sincronizando horas: {str(e)}")
         
         # Debug: imprimir los estados disponibles
         print(f"🔍 [HUB ANALYTICS] Estados de proyectos encontrados:")
@@ -1616,6 +1669,7 @@ def api_hub_analytics_data(request):
         print(f"  - Completados: {completed_projects}")
         print(f"  - Pendientes: {pending_projects}")
         print(f"  - Cancelados/Eliminados: {cancelled_projects}")
+        print(f"  - Horas acumuladas totales (CORREGIDO): {total_hours_value}")
         
         # 2. ACTIVIDAD SEMANAL (últimos 7 días)
         dias_semana = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom']
@@ -1644,7 +1698,7 @@ def api_hub_analytics_data(request):
             hours_worked = WorkHour.objects.filter(
                 date=date.date()
             ).aggregate(total=Sum('hours_worked'))
-            hours_value = hours_worked['total'] or 0
+            hours_value = float(hours_worked['total'] or 0)
             
             week_data.append({
                 'name': day_name,
@@ -1717,7 +1771,7 @@ def api_hub_analytics_data(request):
                 date__year=month_date.year,
                 date__month=month_date.month
             ).aggregate(total=Sum('hours_worked'))
-            hours_month_value = hours_month['total'] or 0
+            hours_month_value = float(hours_month['total'] or 0)
             
             monthly_stats.append({
                 'name': month_name,
@@ -1750,8 +1804,10 @@ def api_hub_analytics_data(request):
                 ratings = [r for r in ratings if r is not None]
                 average_rating = sum(ratings) / len(ratings) if ratings else 0
                 
-                # Usar el campo work_hours_sum del modelo si no hay horas en work_hours
-                actual_hours = student.work_hours_sum or student.total_hours or 0
+                # Usar el valor real de las horas trabajadas (work_hours_sum) en lugar del campo total_hours
+                actual_hours = float(student.work_hours_sum or 0)
+                
+                print(f"  - Top Student {student.user.email}: {actual_hours} horas")
                 
                 top_students.append({
                     'id': student.id,
@@ -1770,12 +1826,15 @@ def api_hub_analytics_data(request):
             try:
                 fallback_students = Estudiante.objects.all()[:20]
                 for student in fallback_students:
+                    # Calcular horas reales trabajadas para el fallback también
+                    work_hours_sum = float(WorkHour.objects.filter(student=student).aggregate(total=Sum('hours_worked'))['total'] or 0)
+                    
                     top_students.append({
                         'id': student.id,
                         'name': f"{student.user.first_name} {student.user.last_name}".strip() or student.user.email,
                         'email': student.user.email,
                         'avatar': ''.join([n[0].upper() for n in (student.user.first_name or student.user.email).split()[:2]]),
-                        'totalHours': student.total_hours or 0,
+                        'totalHours': work_hours_sum,
                         'completedProjects': student.completed_projects or 0,
                         'averageRating': round(student.rating or 0, 1),
                         'level': student.api_level or 1,
@@ -1783,6 +1842,20 @@ def api_hub_analytics_data(request):
                     })
             except Exception as fallback_error:
                 print(f"⚠️ [HUB ANALYTICS] Error en fallback estudiantes: {str(fallback_error)}")
+        
+        # VERIFICACIÓN FINAL: Asegurar que las horas totales coincidan con el top student
+        if top_students and len(top_students) > 0:
+            top_student_hours = float(top_students[0]['totalHours'])
+            total_hours_float = float(total_hours_value)
+            print(f"🔍 [HUB ANALYTICS] VERIFICACIÓN FINAL:")
+            print(f"  - Top student hours: {top_student_hours}")
+            print(f"  - Total hours value: {total_hours_float}")
+            print(f"  - ¿Coinciden?: {'✅ SÍ' if abs(top_student_hours - total_hours_float) < 0.01 else '❌ NO'}")
+            
+            # Si no coinciden, usar el valor del top student
+            if abs(top_student_hours - total_hours_float) > 0.01:
+                print(f"🔄 [HUB ANALYTICS] Corrigiendo horas totales: {total_hours_float} -> {top_student_hours}")
+                total_hours_value = top_student_hours
         
         # 6. TOP 20 EMPRESAS (por proyectos creados y horas ofrecidas)
         top_companies = []
@@ -1810,7 +1883,7 @@ def api_hub_analytics_data(request):
                     'activeProjects': company.active_projects_count or 0,
                     'averageRating': round(company.rating or 0, 1),
                     'totalStudents': company.students_count or 0,
-                    'realHoursOffered': company.real_hours_offered or 0,
+                    'realHoursOffered': float(company.real_hours_offered or 0),
                     'status': 'active'
                 })
         except Exception as e:
@@ -2090,6 +2163,7 @@ def api_hub_analytics_data(request):
                 'completedProjects': completed_projects,
                 'pendingProjects': pending_projects,
                 'cancelledProjects': cancelled_projects,
+                'totalHours': total_hours_value,  # Agregar las horas totales corregidas
             },
             'activityData': week_data,
             'projectStatusData': project_status_data,

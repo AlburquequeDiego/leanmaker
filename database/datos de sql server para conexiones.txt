@@ -1,5 +1,5 @@
 ADMINISTRADOS:
-admin@gmail.com                 admin
+admin@gmail.com                 admin123
 estudiantes:
 juan.perez@inacapmail.cl        Estudiante123!
 joaco.gomez@inacapmail.cl       Estudiante123!

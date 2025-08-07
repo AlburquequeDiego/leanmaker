@@ -101,6 +101,8 @@ export const GestionEmpresasAdmin = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showEditDialog, setShowEditDialog] = useState(false); // Nuevo estado para el modal de edición
+  const [editFormData, setEditFormData] = useState<any>({}); // Estado para los datos del formulario de edición
   
   // Estados para paginación y filtros
   const [pageSize, setPageSize] = useState<number | 'todos'>(20);
@@ -363,7 +365,17 @@ export const GestionEmpresasAdmin = () => {
               <IconButton
                 onClick={() => {
                   setSelectedCompany(row);
-                  // setShowEditDialog(true); // Asume que existe un estado y modal para editar
+                  setEditFormData({
+                    name: row.name || '',
+                    email: row.email || '',
+                    phone: row.phone || '',
+                    website: row.website || '',
+                    industry: row.industry || '',
+                    size: row.size || '',
+                    description: row.description || '',
+                    status: row.status || 'active'
+                  });
+                  setShowEditDialog(true);
                 }}
                 sx={{
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -991,6 +1003,413 @@ export const GestionEmpresasAdmin = () => {
             }}
           >
             Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de edición de empresa */}
+      <Dialog 
+        open={showEditDialog} 
+        onClose={() => {
+          setShowEditDialog(false);
+          setEditFormData({});
+        }}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 'bold',
+          py: 3, // Aumentar el padding vertical
+          px: 3
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <BusinessIcon />
+            <Typography variant="h6">
+              Editar Empresa - {selectedCompany?.name}
+            </Typography>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ 
+          p: 3, 
+          pt: 6, // Aumentar el padding top para dar más espacio
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          {selectedCompany && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
+              {/* Información básica */}
+              <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                <TextField
+                  label="Nombre de la empresa"
+                  value={editFormData.name || selectedCompany.name || ''}
+                  onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                  fullWidth
+                  variant="outlined"
+                  InputLabelProps={{ 
+                    shrink: true,
+                    sx: {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }
+                  }}
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': { 
+                      borderRadius: 2,
+                      backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                      minHeight: '56px',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    },
+                  }}
+                />
+                <TextField
+                  label="Email"
+                  value={editFormData.email || selectedCompany.email || ''}
+                  onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
+                  fullWidth
+                  variant="outlined"
+                  InputLabelProps={{ 
+                    shrink: true,
+                    sx: {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }
+                  }}
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': { 
+                      borderRadius: 2,
+                      backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                      minHeight: '56px',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    },
+                  }}
+                />
+              </Box>
+
+              {/* Información adicional */}
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  label="Teléfono"
+                  value={editFormData.phone || selectedCompany.phone || ''}
+                  onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
+                  fullWidth
+                  variant="outlined"
+                  InputLabelProps={{ 
+                    shrink: true,
+                    sx: {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }
+                  }}
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': { 
+                      borderRadius: 2,
+                      backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                      minHeight: '56px',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    },
+                  }}
+                />
+                <TextField
+                  label="Sitio web"
+                  value={editFormData.website || selectedCompany.website || ''}
+                  onChange={(e) => setEditFormData({...editFormData, website: e.target.value})}
+                  fullWidth
+                  variant="outlined"
+                  InputLabelProps={{ 
+                    shrink: true,
+                    sx: {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }
+                  }}
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': { 
+                      borderRadius: 2,
+                      backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                      minHeight: '56px',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    },
+                  }}
+                />
+              </Box>
+
+              {/* Industria y tamaño */}
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  label="Industria"
+                  value={editFormData.industry || selectedCompany.industry || ''}
+                  onChange={(e) => setEditFormData({...editFormData, industry: e.target.value})}
+                  fullWidth
+                  variant="outlined"
+                  InputLabelProps={{ 
+                    shrink: true,
+                    sx: {
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }
+                  }}
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': { 
+                      borderRadius: 2,
+                      backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                      minHeight: '56px',
+                      '& fieldset': {
+                        borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    },
+                  }}
+                />
+                <FormControl fullWidth>
+                  <InputLabel 
+                    sx={{
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      '&.Mui-focused': {
+                        color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }}
+                    shrink={true}
+                  >
+                    Tamaño de la empresa
+                  </InputLabel>
+                  <Select
+                    value={editFormData.size || selectedCompany.size || ''}
+                    label="Tamaño de la empresa"
+                    onChange={(e) => setEditFormData({...editFormData, size: e.target.value})}
+                    sx={{ 
+                      borderRadius: 2,
+                      backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                      minHeight: '56px',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                      },
+                    }}
+                  >
+                    <MenuItem value="startup">Startup</MenuItem>
+                    <MenuItem value="small">Pequeña (1-50 empleados)</MenuItem>
+                    <MenuItem value="medium">Mediana (51-200 empleados)</MenuItem>
+                    <MenuItem value="large">Grande (200+ empleados)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* Descripción */}
+              <TextField
+                label="Descripción"
+                value={editFormData.description || selectedCompany.description || ''}
+                onChange={(e) => setEditFormData({...editFormData, description: e.target.value})}
+                fullWidth
+                multiline
+                rows={3}
+                variant="outlined"
+                InputLabelProps={{ 
+                  shrink: true,
+                  sx: {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }
+                }}
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  },
+                }}
+              />
+
+              {/* Estado de la empresa */}
+              <FormControl fullWidth>
+                <InputLabel 
+                  sx={{
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}
+                  shrink={true}
+                >
+                  Estado
+                </InputLabel>
+                <Select
+                  value={editFormData.status || selectedCompany.status || 'active'}
+                  label="Estado"
+                  onChange={(e) => setEditFormData({...editFormData, status: e.target.value})}
+                  sx={{ 
+                    borderRadius: 2,
+                    backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                    minHeight: '56px',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}
+                >
+                  <MenuItem value="active">Activa</MenuItem>
+                  <MenuItem value="suspended">Suspendida</MenuItem>
+                  <MenuItem value="blocked">Bloqueada</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+        </DialogContent>
+        
+        <DialogActions sx={{ 
+          p: 3,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
+          <Button 
+            onClick={() => {
+              setShowEditDialog(false);
+              setEditFormData({});
+            }}
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            variant="contained"
+            onClick={async () => {
+              try {
+                if (selectedCompany) {
+                  const updateData = {
+                    company_name: editFormData.name || selectedCompany.name,
+                    contact_email: editFormData.email || selectedCompany.email,
+                    contact_phone: editFormData.phone || selectedCompany.phone,
+                    website: editFormData.website || selectedCompany.website,
+                    industry: editFormData.industry || selectedCompany.industry,
+                    size: editFormData.size || selectedCompany.size,
+                    description: editFormData.description || selectedCompany.description,
+                    status: editFormData.status || selectedCompany.status,
+                  };
+
+                  await apiService.patch(`/api/companies/${selectedCompany.id}/update/`, updateData);
+                  setSuccessMessage('Empresa actualizada exitosamente');
+                  setShowSuccess(true);
+                  setShowEditDialog(false);
+                  setEditFormData({});
+                  fetchData();
+                }
+              } catch (error) {
+                console.error('Error updating company:', error);
+                setErrorMessage('Error al actualizar la empresa');
+                setShowError(true);
+              }
+            }}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Guardar Cambios
           </Button>
         </DialogActions>
       </Dialog>
