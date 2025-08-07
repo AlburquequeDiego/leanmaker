@@ -55,28 +55,28 @@ def create_all_initial_data(apps, schema_editor):
         for trl_data in trl_levels:
             TRLLevel.objects.create(**trl_data)
     
-    # Configuraciones de plataforma
-    PlatformSetting = apps.get_model('platform_settings', 'PlatformSetting')
-    if not PlatformSetting.objects.exists():
-        settings = [
-            {'key': 'max_strikes_student', 'value': '3', 'setting_type': 'INTEGER', 'description': 'Número máximo de strikes permitidos para un estudiante antes de ser suspendido'},
-            {'key': 'min_hours_project', 'value': '20', 'setting_type': 'INTEGER', 'description': 'Horas mínimas requeridas para un proyecto'},
-            {'key': 'max_hours_project', 'value': '350', 'setting_type': 'INTEGER', 'description': 'Horas máximas permitidas para un proyecto'},
-            {'key': 'default_api_level', 'value': '1', 'setting_type': 'INTEGER', 'description': 'Nivel API por defecto para nuevos estudiantes'},
-            {'key': 'project_approval_required', 'value': 'false', 'setting_type': 'BOOLEAN', 'description': 'Si los proyectos requieren aprobación del administrador antes de ser publicados'},
-            {'key': 'student_assignment_period_days', 'value': '10', 'setting_type': 'INTEGER', 'description': 'Período en días para asignar estudiantes a proyectos publicados'},
-            {'key': 'max_students_per_project', 'value': '1', 'setting_type': 'INTEGER', 'description': 'Número máximo de estudiantes por proyecto'},
-            {'key': 'platform_name', 'value': 'LeanMaker', 'setting_type': 'STRING', 'description': 'Nombre de la plataforma'},
-            {'key': 'platform_description', 'value': 'Plataforma de conexión entre empresas y estudiantes para proyectos de innovación', 'setting_type': 'STRING', 'description': 'Descripción de la plataforma'},
-            {'key': 'contact_email', 'value': 'soporte@leanmaker.cl', 'setting_type': 'STRING', 'description': 'Email de contacto para soporte'},
-            {'key': 'maintenance_mode', 'value': 'false', 'setting_type': 'BOOLEAN', 'description': 'Si la plataforma está en modo mantenimiento'},
-            {'key': 'notification_enabled', 'value': 'true', 'setting_type': 'BOOLEAN', 'description': 'Si las notificaciones están habilitadas'},
-            {'key': 'auto_approve_applications', 'value': 'false', 'setting_type': 'BOOLEAN', 'description': 'Si las aplicaciones de estudiantes se aprueban automáticamente'},
-            {'key': 'max_projects_per_company', 'value': '10', 'setting_type': 'INTEGER', 'description': 'Número máximo de proyectos activos por empresa'},
-            {'key': 'max_applications_per_student', 'value': '5', 'setting_type': 'INTEGER', 'description': 'Número máximo de aplicaciones activas por estudiante'}
-        ]
-        for setting_data in settings:
-            PlatformSetting.objects.create(**setting_data)
+    # Configuraciones de plataforma (eliminadas - app no existe)
+    # PlatformSetting = apps.get_model('platform_settings', 'PlatformSetting')
+    # if not PlatformSetting.objects.exists():
+    #     settings = [
+    #         {'key': 'max_strikes_student', 'value': '3', 'setting_type': 'INTEGER', 'description': 'Número máximo de strikes permitidos para un estudiante antes de ser suspendido'},
+    #         {'key': 'min_hours_project', 'value': '20', 'setting_type': 'INTEGER', 'description': 'Horas mínimas requeridas para un proyecto'},
+    #         {'key': 'max_hours_project', 'value': '350', 'setting_type': 'INTEGER', 'description': 'Horas máximas permitidas para un proyecto'},
+    #         {'key': 'default_api_level', 'value': '1', 'setting_type': 'INTEGER', 'description': 'Nivel API por defecto para nuevos estudiantes'},
+    #         {'key': 'project_approval_required', 'value': 'false', 'setting_type': 'BOOLEAN', 'description': 'Si los proyectos requieren aprobación del administrador antes de ser publicados'},
+    #         {'key': 'student_assignment_period_days', 'value': '10', 'setting_type': 'INTEGER', 'description': 'Período en días para asignar estudiantes a proyectos publicados'},
+    #         {'key': 'max_students_per_project', 'value': '1', 'setting_type': 'INTEGER', 'description': 'Número máximo de estudiantes por proyecto'},
+    #         {'key': 'platform_name', 'value': 'LeanMaker', 'setting_type': 'STRING', 'description': 'Nombre de la plataforma'},
+    #         {'key': 'platform_description', 'value': 'Plataforma de conexión entre empresas y estudiantes para proyectos de innovación', 'setting_type': 'STRING', 'description': 'Descripción de la plataforma'},
+    #         {'key': 'contact_email', 'value': 'soporte@leanmaker.cl', 'setting_type': 'STRING', 'description': 'Email de contacto para soporte'},
+    #         {'key': 'maintenance_mode', 'value': 'false', 'setting_type': 'BOOLEAN', 'description': 'Si la plataforma está en modo mantenimiento'},
+    #         {'key': 'notification_enabled', 'value': 'true', 'setting_type': 'BOOLEAN', 'description': 'Si las notificaciones están habilitadas'},
+    #         {'key': 'auto_approve_applications', 'value': 'false', 'setting_type': 'BOOLEAN', 'description': 'Si las aplicaciones de estudiantes se aprueban automáticamente'},
+    #         {'key': 'max_projects_per_company', 'value': '10', 'setting_type': 'INTEGER', 'description': 'Número máximo de proyectos activos por empresa'},
+    #         {'key': 'max_applications_per_student', 'value': '5', 'setting_type': 'INTEGER', 'description': 'Número máximo de aplicaciones activas por estudiante'}
+    #     ]
+    #     for setting_data in settings:
+    #         PlatformSetting.objects.create(**setting_data)
     
     # Categorías de evaluación
     EvaluationCategory = apps.get_model('evaluation_categories', 'EvaluationCategory')
@@ -100,13 +100,13 @@ def reverse_create_all_initial_data(apps, schema_editor):
     ProjectStatus = apps.get_model('project_status', 'ProjectStatus')
     Area = apps.get_model('areas', 'Area')
     TRLLevel = apps.get_model('trl_levels', 'TRLLevel')
-    PlatformSetting = apps.get_model('platform_settings', 'PlatformSetting')
+    # PlatformSetting = apps.get_model('platform_settings', 'PlatformSetting') # Eliminado
     EvaluationCategory = apps.get_model('evaluation_categories', 'EvaluationCategory')
     
     ProjectStatus.objects.all().delete()
     Area.objects.all().delete()
     TRLLevel.objects.all().delete()
-    PlatformSetting.objects.all().delete()
+    # PlatformSetting.objects.all().delete() # Eliminado
     EvaluationCategory.objects.all().delete()
 
 
@@ -116,7 +116,7 @@ class Migration(migrations.Migration):
         ('project_status', '0003_initial'),
         ('areas', '0001_initial'),
         ('trl_levels', '0001_initial'),
-        ('platform_settings', '0001_initial'),
+        # ('platform_settings', '0001_initial'), # Eliminado
         ('evaluation_categories', '0001_initial'),
     ]
 

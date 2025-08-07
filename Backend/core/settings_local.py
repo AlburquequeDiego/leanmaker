@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'calendar_events',
     'strikes',
     'questionnaires',
-    'platform_settings',
     'trl_levels',
     'areas',
     'project_status',
@@ -51,11 +50,6 @@ INSTALLED_APPS = [
     'evaluation_categories',
     'ratings',
     'mass_notifications',
-    'disciplinary_records',
-    'documents',
-    'activity_logs',
-    'reports',
-    'data_backups',
     'custom_admin',
 ]
 

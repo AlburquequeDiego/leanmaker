@@ -20,13 +20,13 @@ class TrafficMonitoringMiddleware(MiddlewareMixin):
         # Marcar tiempo de inicio
         request.start_time = time.time()
         
-        # Registrar petición en el monitor
-        if hasattr(settings, 'TRAFFIC_MONITOR_ENABLED') and settings.TRAFFIC_MONITOR_ENABLED:
-            try:
-                from monitoring.traffic_monitor import traffic_monitor
-                # La petición se registrará en process_response
-            except ImportError:
-                pass
+        # Registrar petición en el monitor (deshabilitado - app eliminada)
+        # if hasattr(settings, 'TRAFFIC_MONITOR_ENABLED') and settings.TRAFFIC_MONITOR_ENABLED:
+        #     try:
+        #         from monitoring.traffic_monitor import traffic_monitor
+        #         # La petición se registrará en process_response
+        #     except ImportError:
+        #         pass
                 
     def process_response(self, request, response):
         """Procesar respuesta saliente"""
@@ -34,13 +34,13 @@ class TrafficMonitoringMiddleware(MiddlewareMixin):
         if hasattr(request, 'start_time'):
             response_time = time.time() - request.start_time
             
-            # Registrar en el monitor de tráfico
-            if hasattr(settings, 'TRAFFIC_MONITOR_ENABLED') and settings.TRAFFIC_MONITOR_ENABLED:
-                try:
-                    from monitoring.traffic_monitor import traffic_monitor
-                    traffic_monitor.record_request(request, response, response_time)
-                except ImportError:
-                    pass
+            # Registrar en el monitor de tráfico (deshabilitado - app eliminada)
+            # if hasattr(settings, 'TRAFFIC_MONITOR_ENABLED') and settings.TRAFFIC_MONITOR_ENABLED:
+            #     try:
+            #         from monitoring.traffic_monitor import traffic_monitor
+            #         traffic_monitor.record_request(request, response, response_time)
+            #     except ImportError:
+            #         pass
                     
             # Agregar header con tiempo de respuesta
             response['X-Response-Time'] = f"{response_time:.3f}s"
@@ -52,16 +52,16 @@ class TrafficMonitoringMiddleware(MiddlewareMixin):
         # Registrar excepción en logs
         logger.error(f"Excepción en {request.path}: {str(exception)}")
         
-        # Registrar en monitor de tráfico si está habilitado
-        if hasattr(settings, 'TRAFFIC_MONITOR_ENABLED') and settings.TRAFFIC_MONITOR_ENABLED:
-            try:
-                from monitoring.traffic_monitor import traffic_monitor
-                # Crear respuesta de error para el monitor
-                error_response = type('Response', (), {'status_code': 500})()
-                response_time = time.time() - getattr(request, 'start_time', time.time())
-                traffic_monitor.record_request(request, error_response, response_time)
-            except ImportError:
-                pass
+        # Registrar en monitor de tráfico si está habilitado (deshabilitado - app eliminada)
+        # if hasattr(settings, 'TRAFFIC_MONITOR_ENABLED') and settings.TRAFFIC_MONITOR_ENABLED:
+        #     try:
+        #         from monitoring.traffic_monitor import traffic_monitor
+        #         # Crear respuesta de error para el monitor
+        #         error_response = type('Response', (), {'status_code': 500})()
+        #         response_time = time.time() - getattr(request, 'start_time', time.time())
+        #         traffic_monitor.record_request(request, error_response, response_time)
+        #     except ImportError:
+        #         pass
 
 class SecurityMiddleware(MiddlewareMixin):
     """Middleware para seguridad adicional"""

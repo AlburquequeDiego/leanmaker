@@ -82,9 +82,6 @@ export const API_ENDPOINTS = {
   // Questionnaires (endpoints reales del backend)
   QUESTIONNAIRES: '/questionnaires/',
   
-  // Platform Settings (endpoints reales del backend)
-  PLATFORM_SETTINGS: '/platform-settings/',
-  
   // TRL Levels (endpoints reales del backend)
   TRL_LEVELS: '/trl-levels/',
   
@@ -99,21 +96,6 @@ export const API_ENDPOINTS = {
   
   // Ratings (endpoints reales del backend)
   RATINGS: '/ratings/',
-  
-  // Disciplinary Records (endpoints reales del backend)
-  DISCIPLINARY_RECORDS: '/disciplinary-records/',
-  
-  // Documents (endpoints reales del backend)
-  DOCUMENTS: '/documents/',
-  
-  // Activity Logs (endpoints reales del backend)
-  ACTIVITY_LOGS: '/activity-logs/',
-  
-  // Reports (endpoints reales del backend)
-  REPORTS: '/reports/',
-  
-  // Data Backups (endpoints reales del backend)
-  DATA_BACKUPS: '/data-backups/',
   
   // Admin (endpoints reales del backend)
   ADMIN: '/api/admin/',

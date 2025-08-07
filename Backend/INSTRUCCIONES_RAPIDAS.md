@@ -1,19 +1,17 @@
 # 🚀 LEANMAKER - INSTRUCCIONES RÁPIDAS DE MIGRACIÓN
 
-```bash
-# 1. Navegar al directorio Backend
+cd Frontend
+npm install --legacy-peer-deps
+npm run dev
+
 cd Backend
-
-# 2. Instalar dependencias
 pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 
-# 3. Ejecutar migración automática
-python migrate_all_apps.py
 
-# 4. Verificar que todo esté correcto
-python verify_migration.py
-```
 
+opciones avanzadas
 # Ver estructura de la BD
 python manage.py inspectdb
 

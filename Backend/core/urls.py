@@ -40,7 +40,6 @@ urlpatterns = [
     #path('calendar/', include('calendar_events.urls')),
     path('api/strikes/', include('strikes.urls')),
     path('questionnaires/', include('questionnaires.urls')),
-    path('platform-settings/', include('platform_settings.urls')),
     path('trl-levels/', include('trl_levels.urls')),
     path('api/areas/', include('areas.urls')),
     path('project-status/', include('project_status.urls')),
@@ -48,11 +47,6 @@ urlpatterns = [
     path('evaluation-categories/', include('evaluation_categories.urls')),
     path('ratings/', include('ratings.urls')),
     path('api/mass-notifications/', include('mass_notifications.urls')),
-    path('disciplinary-records/', include('disciplinary_records.urls')),
-    path('documents/', include('documents.urls')),
-    path('activity-logs/', include('activity_logs.urls')),
-    path('reports/', include('reports.urls')),
-    path('data-backups/', include('data_backups.urls')),
     path('api/admin/', include('custom_admin.urls')),
     
     # API endpoints (para futuras implementaciones)
