@@ -21,7 +21,8 @@ from django.utils import timezone
 
 from django.db.models import Count, Avg, Sum, Q
 import calendar
-from applications.models import Aplicacion as AplicacionProyecto
+from projects.models import Proyecto
+from applications.models import Aplicacion
 from students.models import Estudiante, ApiLevelRequest
 from companies.models import Empresa
 from work_hours.models import WorkHour
@@ -906,11 +907,11 @@ def api_dashboard_company_stats(request):
             print(f'📊 [COMPANY STATS] Proyectos completados: {completed_projects}')
             
             # 4. Total de aplicaciones recibidas
-            total_applications = AplicacionProyecto.objects.filter(project__company=company).count()
+            total_applications = Aplicacion.objects.filter(project__company=company).count()
             print(f'📊 [COMPANY STATS] Total aplicaciones: {total_applications}')
             
             # 5. Aplicaciones pendientes
-            pending_applications = AplicacionProyecto.objects.filter(
+            pending_applications = Aplicacion.objects.filter(
                 project__company=company, 
                 status='pending'
             ).count()
@@ -918,7 +919,7 @@ def api_dashboard_company_stats(request):
             
             # 6. Estudiantes activos (estudiantes que están trabajando actualmente en proyectos)
             # Estudiantes con aplicaciones aceptadas, activas o completadas
-            active_students = AplicacionProyecto.objects.filter(
+            active_students = Aplicacion.objects.filter(
                 project__company=company,
                 status__in=['accepted', 'active', 'completed']
             ).values('student').distinct().count()
@@ -950,7 +951,7 @@ def api_dashboard_company_stats(request):
             print(f'📊 [COMPANY STATS] Proyectos este mes: {projects_this_month}')
             
             # 10. Aplicaciones recibidas este mes
-            applications_this_month = AplicacionProyecto.objects.filter(
+            applications_this_month = Aplicacion.objects.filter(
                 project__company=company,
                 applied_at__gte=first_day_month
             ).count()
@@ -1034,17 +1035,17 @@ def api_dashboard_student_stats(request):
         try:
             print(f"🔍 [STUDENT DASHBOARD] Calculando estadísticas para estudiante: {student.user.email}")
             
-            total_applications = AplicacionProyecto.objects.filter(student=student).count()
+            total_applications = Aplicacion.objects.filter(student=student).count()
             print(f"📝 [STUDENT DASHBOARD] Total aplicaciones: {total_applications}")
             
-            pending_applications = AplicacionProyecto.objects.filter(student=student, status='pending').count()
+            pending_applications = Aplicacion.objects.filter(student=student, status='pending').count()
             print(f"⏳ [STUDENT DASHBOARD] Aplicaciones pendientes: {pending_applications}")
             
-            accepted_applications = AplicacionProyecto.objects.filter(student=student, status='accepted').count()
+            accepted_applications = Aplicacion.objects.filter(student=student, status='accepted').count()
             print(f"✅ [STUDENT DASHBOARD] Aplicaciones aceptadas: {accepted_applications}")
             
             # Obtener proyectos del estudiante a través de aplicaciones aceptadas
-            accepted_applications_objs = AplicacionProyecto.objects.filter(student=student, status='accepted')
+            accepted_applications_objs = Aplicacion.objects.filter(student=student, status='accepted')
             print(f"🔗 [STUDENT DASHBOARD] Objetos de aplicaciones aceptadas: {accepted_applications_objs.count()}")
             
             student_projects = Proyecto.objects.filter(application_project__in=accepted_applications_objs)
@@ -1065,7 +1066,7 @@ def api_dashboard_student_stats(request):
             
             # Calcular proyectos disponibles (proyectos publicados, no postulados, cumple nivel API)
             published_projects = Proyecto.objects.filter(status__name='published')
-            applied_project_ids = AplicacionProyecto.objects.filter(student=student).values_list('project', flat=True)
+            applied_project_ids = Aplicacion.objects.filter(student=student).values_list('project', flat=True)
             available_projects = published_projects.exclude(id__in=applied_project_ids).filter(
                 min_api_level__lte=student.api_level
             ).count()
@@ -1584,24 +1585,24 @@ def api_hub_analytics_data(request):
         
         # Filtrar por nombre del estado usando la relación - hacer más flexible
         active_projects = Proyecto.objects.filter(
-            status__name__icontains='activo'
+            status__name__in=['active', 'published']
         ).count()
         
         completed_projects = Proyecto.objects.filter(
-            status__name__icontains='completado'
+            status__name__in=['completed']
         ).count()
         
         pending_projects = Proyecto.objects.filter(
-            status__name__icontains='pendiente'
+            status__name__in=['draft']
         ).count()
         
         # Los proyectos cancelados incluyen tanto los cancelados como los eliminados
         cancelled_projects = Proyecto.objects.filter(
-            status__name__in=['cancelado', 'deleted', 'eliminado']
+            status__name__in=['deleted']
         ).count()
         
         # Obtener total de aplicaciones y horas para datos de ejemplo
-        total_applications = AplicacionProyecto.objects.count()
+        total_applications = Aplicacion.objects.count()
         
         # DEBUG: Verificar exactamente cuántas horas hay y de dónde vienen
         print("🔍 [HUB ANALYTICS] DEBUGGING HORAS:")
@@ -1690,8 +1691,8 @@ def api_hub_analytics_data(request):
             ).count()
             
             # Aplicaciones enviadas ese día
-            applications_sent = AplicacionProyecto.objects.filter(
-                created_at__date=date.date()
+            applications_sent = Aplicacion.objects.filter(
+                applied_at__date=date.date()
             ).count()
             
             # Horas trabajadas ese día
@@ -1894,9 +1895,9 @@ def api_hub_analytics_data(request):
         recent_activity = []
         try:
             # Últimas aplicaciones
-            recent_applications = AplicacionProyecto.objects.select_related(
+            recent_applications = Aplicacion.objects.select_related(
                 'student__user', 'project'
-            ).order_by('-created_at')[:3]
+            ).order_by('-applied_at')[:3]
             
             for app in recent_applications:
                 recent_activity.append({
@@ -1904,7 +1905,7 @@ def api_hub_analytics_data(request):
                     'user': f"{app.student.user.first_name} {app.student.user.last_name}".strip() or app.student.user.email,
                     'action': 'Aplicó al proyecto',
                     'project': app.project.title,
-                    'time': f"{timezone.now() - app.created_at}",
+                    'time': f"{timezone.now() - app.applied_at}",
                     'status': app.status
                 })
             
@@ -1976,14 +1977,22 @@ def api_hub_analytics_data(request):
         # 2. MÉTRICAS DE APLICACIONES Y PROCESO DE SELECCIÓN
         try:
             # Tasa de aceptación de aplicaciones
-            total_applications = AplicacionProyecto.objects.count()
-            accepted_applications = AplicacionProyecto.objects.filter(status='accepted').count()
+            total_applications = Aplicacion.objects.count()
+            accepted_applications = Aplicacion.objects.filter(status='accepted').count()
             application_acceptance_rate = (accepted_applications / total_applications * 100) if total_applications > 0 else 0
             
             # Aplicaciones por estado
-            applications_by_status = AplicacionProyecto.objects.values('status').annotate(
+            applications_by_status = Aplicacion.objects.values('status').annotate(
                 count=Count('id')
             ).order_by('-count')
+            
+            # Convertir a formato esperado por el frontend
+            applications_by_status_formatted = []
+            for item in applications_by_status:
+                applications_by_status_formatted.append({
+                    'estado': item['status'],
+                    'count': item['count']
+                })
             
             # Top proyectos más solicitados
             top_requested_projects = Proyecto.objects.annotate(
@@ -1996,7 +2005,7 @@ def api_hub_analytics_data(request):
                 'totalApplications': total_applications,
                 'acceptedApplications': accepted_applications,
                 'acceptanceRate': round(application_acceptance_rate, 1),
-                'byStatus': list(applications_by_status),
+                'byStatus': applications_by_status_formatted,
                 'topRequestedProjects': [
                     {
                         'id': str(project.id),
@@ -2187,9 +2196,16 @@ def api_hub_analytics_data(request):
         print(f"  - topStudents: {len(top_students)} estudiantes")
         print(f"  - topCompanies: {len(top_companies)} empresas")
         print(f"  - applicationsMetrics: {applications_metrics['totalApplications']} aplicaciones")
+        print(f"  - applicationsMetrics.byStatus: {len(applications_metrics['byStatus'])} estados")
         print(f"  - strikesMetrics: {strikes_metrics['activeStrikes']} strikes activos")
         print(f"  - notificationsMetrics: {notifications_metrics['totalNotifications']} notificaciones")
         print(f"  - apiTrlMetrics: {api_trl_metrics['totalApiRequests']} solicitudes API")
+        
+        # Debug adicional para verificar datos específicos
+        print(f"🔍 [HUB ANALYTICS] Debug adicional:")
+        print(f"  - activityData sample: {week_data[:2] if week_data else 'No data'}")
+        print(f"  - monthlyStats sample: {monthly_stats[:2] if monthly_stats else 'No data'}")
+        print(f"  - applicationsMetrics.byStatus: {applications_metrics['byStatus']}")
         
         print(f"📊 [HUB ANALYTICS] Datos enviados exitosamente")
         return JsonResponse(response_data)

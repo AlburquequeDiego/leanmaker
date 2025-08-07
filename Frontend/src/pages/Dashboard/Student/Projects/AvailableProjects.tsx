@@ -149,8 +149,10 @@ export default function AvailableProjects() {
     try {
       const applications = await apiService.get('/api/applications/');
       if (applications.data && Array.isArray(applications.data)) {
+        // Obtener todos los IDs de proyectos que ya tienen aplicaciones (sin importar el estado)
         const appliedProjectIds = applications.data.map((app: any) => app.project_id || app.project);
         setApplied(appliedProjectIds);
+        console.log('🔍 [AvailableProjects] Proyectos ya aplicados:', appliedProjectIds);
       }
     } catch (error) {
       console.error('Error fetching existing applications:', error);
@@ -289,6 +291,9 @@ export default function AvailableProjects() {
     (project.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
     project.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Filtrar proyectos que ya tienen aplicaciones (sin importar el estado)
+  filteredProjects = filteredProjects.filter(project => !applied.includes(project.id));
 
   if (area) {
     filteredProjects = filteredProjects.filter(project =>

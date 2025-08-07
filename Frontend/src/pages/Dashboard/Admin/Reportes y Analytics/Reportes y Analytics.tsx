@@ -416,7 +416,7 @@ export const ReportesYAnalytics = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={activityData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="semana" />
+                    <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip 
                       formatter={(value, name) => {
@@ -519,14 +519,14 @@ export const ReportesYAnalytics = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={monthlyStats}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="mes" />
+                    <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip 
                       formatter={(value, name) => {
                         const labels = {
-                          usuarios: 'Usuarios',
+                          estudiantes: 'Estudiantes',
                           proyectos: 'Proyectos',
-                          aplicaciones: 'Aplicaciones',
+                          empresas: 'Empresas',
                           horas: 'Horas'
                         };
                         return [value, labels[name as keyof typeof labels] || name];
@@ -535,17 +535,17 @@ export const ReportesYAnalytics = () => {
                     <Legend 
                       formatter={(value) => {
                         const labels = {
-                          usuarios: 'Usuarios',
+                          estudiantes: 'Estudiantes',
                           proyectos: 'Proyectos',
-                          aplicaciones: 'Aplicaciones',
+                          empresas: 'Empresas',
                           horas: 'Horas'
                         };
                         return labels[value as keyof typeof labels] || value;
                       }}
                     />
-                    <Bar dataKey="usuarios" fill="#22c55e" />
+                    <Bar dataKey="estudiantes" fill="#22c55e" />
                     <Bar dataKey="proyectos" fill="#3b82f6" />
-                    <Bar dataKey="aplicaciones" fill="#f59e0b" />
+                    <Bar dataKey="empresas" fill="#f59e0b" />
                     {monthlyStats.some(item => item.horas !== undefined) && (
                       <Bar dataKey="horas" fill="#8b5cf6" />
                     )}
@@ -996,29 +996,7 @@ export const ReportesYAnalytics = () => {
                 </Box>
               </Box>
 
-              {/* Gráfico de Aplicaciones por Estado */}
-              {applicationsMetrics.byStatus.length > 0 && (
-                <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Distribución de Aplicaciones por Estado
-                  </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={applicationsMetrics.byStatus}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="estado" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
-                        }}
-                      />
-                      <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </Box>
-              )}
+
             </CardContent>
           </Card>
         </Box>
