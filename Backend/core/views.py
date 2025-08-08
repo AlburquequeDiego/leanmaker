@@ -390,14 +390,24 @@ def api_register(request):
         data = json.loads(request.body)
         
         # DEBUG: Log datos clave recibidos
-        print(f"[api_register] birthdate: {data.get('birthdate')}, gender: {data.get('gender')}, education_level: {data.get('education_level')}, university: {data.get('university')}")
-        print(f"[api_register] Campos específicos de empresa:")
-        print(f"  - personality: {data.get('personality')}")
-        print(f"  - rut: {data.get('rut')}")
-        print(f"  - business_name: {data.get('business_name')}")
-        print(f"  - company_address: {data.get('company_address')}")
-        print(f"  - company_phone: {data.get('company_phone')}")
-        print(f"  - company_email: {data.get('company_email')}")
+        print(f"[api_register] Iniciando registro - role: {data.get('role')}")
+        print(f"[api_register] Datos básicos - email: {data.get('email')}, first_name: {data.get('first_name')}, last_name: {data.get('last_name')}")
+        print(f"[api_register] birthdate: {data.get('birthdate')}, gender: {data.get('gender')}")
+        
+        if data.get('role') == 'student':
+            print(f"[api_register] Campos específicos de estudiante:")
+            print(f"  - career: {data.get('career')}")
+            print(f"  - university: {data.get('university')}")
+            print(f"  - education_level: {data.get('education_level')}")
+        elif data.get('role') == 'company':
+            print(f"[api_register] Campos específicos de empresa:")
+            print(f"  - company_name: {data.get('company_name')}")
+            print(f"  - personality: {data.get('personality')}")
+            print(f"  - rut: {data.get('rut')}")
+            print(f"  - business_name: {data.get('business_name')}")
+            print(f"  - company_address: {data.get('company_address')}")
+            print(f"  - company_phone: {data.get('company_phone')}")
+            print(f"  - company_email: {data.get('company_email')}")
         
         # Validar campos requeridos
         required_fields = ['email', 'password', 'password_confirm', 'first_name', 'last_name', 'role']
@@ -426,6 +436,30 @@ def api_register(request):
                 'error': 'El email ya está registrado'
             }, status=400)
         
+        # Crear usuario
+        username = email.split('@')[0]  # Usar parte del email como username
+        
+        # Validar que el username sea válido
+        if not username or len(username) < 3:
+            return JsonResponse({
+                'error': 'El email debe tener un formato válido con al menos 3 caracteres antes del @'
+            }, status=400)
+        
+        # Verificar si el username ya existe y generar uno único si es necesario
+        original_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{original_username}{counter}"
+            counter += 1
+            # Evitar bucles infinitos
+            if counter > 1000:
+                return JsonResponse({
+                    'error': 'No se pudo generar un nombre de usuario único. Por favor, use un email diferente.'
+                }, status=400)
+        
+        # Si se generó un username diferente, informar al frontend
+        username_changed = username != original_username
+        
         # Validación específica para dominio de INACAP
         if email and '@' in email:
             domain = email.split('@')[1].lower()
@@ -434,89 +468,134 @@ def api_register(request):
                     'error': 'El dominio @inacap.cl no está permitido. Use @inacapmail.cl en su lugar.'
                 }, status=400)
         
-        # Crear usuario
-        username = email.split('@')[0]  # Usar parte del email como username
-        
         # Procesar fecha de nacimiento
         birthdate = None
         if data.get('birthdate'):
             try:
                 from datetime import datetime
                 birthdate = datetime.strptime(data.get('birthdate'), '%Y-%m-%d').date()
+                print(f"[api_register] birthdate procesado: {birthdate}")
             except Exception as e:
                 print(f"[api_register] Error procesando birthdate: {e}")
                 birthdate = None
         
         print(f"[api_register] Creando usuario con birthdate: {birthdate}, gender: {data.get('gender', '')}")
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            role=role,
-            phone=data.get('phone', ''),
-            career=data.get('career', ''),
-            company_name=data.get('company_name', ''),
-            birthdate=birthdate,
-            gender=data.get('gender', ''),
-        )
-        print(f"[api_register] Usuario creado - birthdate: {user.birthdate}, gender: {user.gender}")
         
-        # Crear perfil específico según el rol
-        if role == 'student':
-            from students.models import Estudiante
-            print(f"[api_register] Creando estudiante con university: {data.get('university', '')}, education_level: {data.get('education_level', '')}")
-            estudiante = Estudiante.objects.create(
-                user=user,
+        # Crear usuario con transacción para asegurar consistencia
+        from django.db import transaction
+        
+        with transaction.atomic():
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                role=role,
+                phone=data.get('phone', ''),
                 career=data.get('career', ''),
-                university=data.get('university', ''),
-                education_level=data.get('education_level', ''),
-            )
-            print(f"[api_register] Estudiante creado - university: {estudiante.university}, education_level: {estudiante.education_level}")
-            
-            # Actualizar TRL automáticamente
-            estudiante.actualizar_trl_segun_api()
-            
-            # Crear perfil detallado del estudiante
-            from students.models import PerfilEstudiante
-            print(f"[api_register] Creando perfil detallado con fecha_nacimiento: {birthdate}, genero: {data.get('gender', '')}, universidad: {data.get('university', '')}")
-            perfil = PerfilEstudiante.objects.create(
-                estudiante=estudiante,
-                fecha_nacimiento=birthdate,
-                genero=data.get('gender', ''),
-                universidad=data.get('university', ''),
-            )
-            print(f"[api_register] Perfil detallado creado - fecha_nacimiento: {perfil.fecha_nacimiento}, genero: {perfil.genero}, universidad: {perfil.universidad}")
-            
-        elif role == 'company':
-            from companies.models import Empresa
-            print(f"[api_register] Creando empresa con company_name: {data.get('company_name', '')}, rut: {data.get('rut', '')}, personality: {data.get('personality', '')}")
-            empresa = Empresa.objects.create(
-                user=user,
                 company_name=data.get('company_name', ''),
-                rut=data.get('rut', ''),
-                personality=data.get('personality', ''),
-                business_name=data.get('business_name', ''),
-                company_address=data.get('company_address', ''),
-                company_phone=data.get('company_phone', ''),
-                company_email=data.get('company_email', ''),
-                industry=data.get('industry', ''),
-                size=data.get('size', ''),
-                website=data.get('website', ''),
-                address=data.get('address', ''),
-                city=data.get('city', ''),
-                country=data.get('country', 'Chile'),
+                birthdate=birthdate,
+                gender=data.get('gender', ''),
             )
-            print(f"[api_register] Empresa creada - company_name: {empresa.company_name}, rut: {empresa.rut}, personality: {empresa.personality}")
-            print(f"[api_register] Empresa creada - company_address: {empresa.company_address}, company_phone: {empresa.company_phone}, company_email: {empresa.company_email}")
-            print(f"[api_register] Empresa creada - business_name: {empresa.business_name}, industry: {empresa.industry}, size: {empresa.size}")
-            print(f"[api_register] Empresa creada - website: {empresa.website}, city: {empresa.city}, country: {empresa.country}")
-            print(f"[api_register] Usuario de empresa - birthdate: {user.birthdate}, gender: {user.gender}")
-            print(f"[api_register] Verificando datos guardados en la base de datos:")
-            print(f"  - empresa.personality: {empresa.personality}")
-            print(f"  - user.birthdate: {user.birthdate}")
-            print(f"  - user.gender: {user.gender}")
+            print(f"[api_register] Usuario creado exitosamente - ID: {user.id}, birthdate: {user.birthdate}, gender: {user.gender}")
+            
+            # Crear perfil específico según el rol
+            if role == 'student':
+                from students.models import Estudiante, PerfilEstudiante
+                
+                print(f"[api_register] Creando perfil de estudiante...")
+                estudiante = Estudiante.objects.create(
+                    user=user,
+                    career=data.get('career', ''),
+                    university=data.get('university', ''),
+                    education_level=data.get('education_level', ''),
+                    semester=data.get('semester'),
+                    graduation_year=data.get('graduation_year'),
+                    status='approved',  # Por defecto aprobado
+                    api_level=1,  # Nivel inicial
+                    trl_level=1,  # Nivel inicial
+                    strikes=0,
+                    gpa=0.0,
+                    completed_projects=0,
+                    total_hours=0,
+                    experience_years=0,
+                    availability='flexible',
+                    location=data.get('location', ''),
+                    area=data.get('area', ''),
+                    rating=0.0,
+                    skills=json.dumps(data.get('skills', [])) if data.get('skills') else None,
+                    languages=json.dumps(data.get('languages', [])) if data.get('languages') else None,
+                )
+                print(f"[api_register] Estudiante creado exitosamente - ID: {estudiante.id}")
+                print(f"[api_register] Datos del estudiante - university: {estudiante.university}, education_level: {estudiante.education_level}")
+                
+                # Actualizar TRL automáticamente
+                estudiante.actualizar_trl_segun_api()
+                print(f"[api_register] TRL actualizado - trl_level: {estudiante.trl_level}")
+                
+                # Crear perfil detallado del estudiante
+                print(f"[api_register] Creando perfil detallado del estudiante...")
+                perfil = PerfilEstudiante.objects.create(
+                    estudiante=estudiante,
+                    fecha_nacimiento=birthdate,
+                    genero=data.get('gender', ''),
+                    nacionalidad=data.get('nacionalidad', ''),
+                    universidad=data.get('university', ''),
+                    facultad=data.get('facultad', ''),
+                    promedio_historico=data.get('promedio_historico'),
+                    experiencia_laboral=data.get('experiencia_laboral', ''),
+                    certificaciones=json.dumps(data.get('certificaciones', [])) if data.get('certificaciones') else None,
+                    proyectos_personales=json.dumps(data.get('proyectos_personales', [])) if data.get('proyectos_personales') else None,
+                    tecnologias_preferidas=json.dumps(data.get('tecnologias_preferidas', [])) if data.get('tecnologias_preferidas') else None,
+                    industrias_interes=json.dumps(data.get('industrias_interes', [])) if data.get('industrias_interes') else None,
+                    tipo_proyectos_preferidos=json.dumps(data.get('tipo_proyectos_preferidos', [])) if data.get('tipo_proyectos_preferidos') else None,
+                    telefono_emergencia=data.get('telefono_emergencia', ''),
+                    contacto_emergencia=data.get('contacto_emergencia', ''),
+                )
+                print(f"[api_register] Perfil detallado creado exitosamente - ID: {perfil.id}")
+                
+            elif role == 'company':
+                from companies.models import Empresa
+                
+                print(f"[api_register] Creando perfil de empresa...")
+                empresa = Empresa.objects.create(
+                    user=user,
+                    company_name=data.get('company_name', ''),
+                    description=data.get('description', ''),
+                    industry=data.get('industry', ''),
+                    size=data.get('size', ''),
+                    website=data.get('website', ''),
+                    address=data.get('address', ''),
+                    city=data.get('city', ''),
+                    country=data.get('country', 'Chile'),
+                    rut=data.get('rut', ''),
+                    personality=data.get('personality', ''),
+                    business_name=data.get('business_name', ''),
+                    company_address=data.get('company_address', ''),
+                    company_phone=data.get('company_phone', ''),
+                    company_email=data.get('company_email', ''),
+                    founded_year=data.get('founded_year'),
+                    logo_url=data.get('logo_url', ''),
+                    verified=False,  # Por defecto no verificada
+                    rating=0.0,
+                    total_projects=0,
+                    projects_completed=0,
+                    total_hours_offered=0,
+                    technologies_used=json.dumps(data.get('technologies_used', [])) if data.get('technologies_used') else None,
+                    benefits_offered=json.dumps(data.get('benefits_offered', [])) if data.get('benefits_offered') else None,
+                    remote_work_policy=data.get('remote_work_policy', ''),
+                    internship_duration=data.get('internship_duration', ''),
+                    stipend_range=data.get('stipend_range', ''),
+                    contact_email=data.get('contact_email', ''),
+                    contact_phone=data.get('contact_phone', ''),
+                    status='active',
+                )
+                print(f"[api_register] Empresa creada exitosamente - ID: {empresa.id}")
+                print(f"[api_register] Datos de la empresa - company_name: {empresa.company_name}, rut: {empresa.rut}")
+                print(f"[api_register] Datos de la empresa - personality: {empresa.personality}, business_name: {empresa.business_name}")
+                print(f"[api_register] Datos de la empresa - company_address: {empresa.company_address}, company_phone: {empresa.company_phone}")
+                print(f"[api_register] Datos de la empresa - company_email: {empresa.company_email}, industry: {empresa.industry}")
         
         # Preparar respuesta con datos del usuario creado
         response_data = {
@@ -539,6 +618,14 @@ def api_register(request):
             }
         }
         
+        # Agregar información sobre el username si fue modificado
+        if username_changed:
+            response_data['username_info'] = {
+                'original_username': original_username,
+                'generated_username': username,
+                'message': f'El nombre de usuario "{original_username}" ya estaba en uso. Se generó automáticamente: "{username}"'
+            }
+        
         # Agregar datos específicos según el rol
         if role == 'student':
             response_data['student'] = {
@@ -546,27 +633,75 @@ def api_register(request):
                 'career': estudiante.career,
                 'university': estudiante.university,
                 'education_level': estudiante.education_level,
+                'semester': estudiante.semester,
+                'graduation_year': estudiante.graduation_year,
                 'status': estudiante.status,
                 'api_level': estudiante.api_level,
                 'trl_level': estudiante.trl_level,
+                'strikes': estudiante.strikes,
+                'gpa': float(estudiante.gpa),
+                'completed_projects': estudiante.completed_projects,
+                'total_hours': estudiante.total_hours,
+                'experience_years': estudiante.experience_years,
+                'availability': estudiante.availability,
+                'location': estudiante.location,
+                'area': estudiante.area,
+                'rating': float(estudiante.rating),
+                'skills': estudiante.get_skills_list(),
+                'languages': estudiante.get_languages_list(),
+            }
+            response_data['student_profile'] = {
+                'id': str(perfil.id),
+                'fecha_nacimiento': perfil.fecha_nacimiento.isoformat() if perfil.fecha_nacimiento else None,
+                'genero': perfil.genero,
+                'nacionalidad': perfil.nacionalidad,
+                'universidad': perfil.universidad,
+                'facultad': perfil.facultad,
+                'promedio_historico': float(perfil.promedio_historico) if perfil.promedio_historico else None,
+                'experiencia_laboral': perfil.experiencia_laboral,
+                'certificaciones': perfil.get_certificaciones_list(),
+                'proyectos_personales': perfil.get_proyectos_personales_list(),
+                'tecnologias_preferidas': perfil.get_tecnologias_preferidas_list(),
+                'industrias_interes': perfil.get_industrias_interes_list(),
+                'tipo_proyectos_preferidos': perfil.get_tipo_proyectos_preferidos_list(),
+                'telefono_emergencia': perfil.telefono_emergencia,
+                'contacto_emergencia': perfil.contacto_emergencia,
             }
         elif role == 'company':
             response_data['company'] = {
                 'id': str(empresa.id),
                 'company_name': empresa.company_name,
+                'description': empresa.description,
+                'industry': empresa.industry,
+                'size': empresa.size,
+                'website': empresa.website,
+                'address': empresa.address,
+                'city': empresa.city,
+                'country': empresa.country,
                 'rut': empresa.rut,
                 'personality': empresa.personality,
                 'business_name': empresa.business_name,
                 'company_address': empresa.company_address,
                 'company_phone': empresa.company_phone,
                 'company_email': empresa.company_email,
-                'industry': empresa.industry,
-                'size': empresa.size,
-                'website': empresa.website,
-                'city': empresa.city,
-                'country': empresa.country,
+                'founded_year': empresa.founded_year,
+                'logo_url': empresa.logo_url,
+                'verified': empresa.verified,
+                'rating': float(empresa.rating),
+                'total_projects': empresa.total_projects,
+                'projects_completed': empresa.projects_completed,
+                'total_hours_offered': empresa.total_hours_offered,
+                'technologies_used': empresa.get_technologies_used_list(),
+                'benefits_offered': empresa.get_benefits_offered_list(),
+                'remote_work_policy': empresa.remote_work_policy,
+                'internship_duration': empresa.internship_duration,
+                'stipend_range': empresa.stipend_range,
+                'contact_email': empresa.contact_email,
+                'contact_phone': empresa.contact_phone,
+                'status': empresa.status,
             }
         
+        print(f"[api_register] Registro completado exitosamente para {role}")
         return JsonResponse(response_data, status=201)
         
     except json.JSONDecodeError:
@@ -574,8 +709,11 @@ def api_register(request):
             'error': 'JSON inválido'
         }, status=400)
     except Exception as e:
+        print(f"[api_register] Error durante el registro: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return JsonResponse({
-            'error': str(e)
+            'error': f'Error durante el registro: {str(e)}'
         }, status=500)
 
 @csrf_exempt
@@ -957,6 +1095,51 @@ def api_dashboard_company_stats(request):
             ).count()
             print(f'📊 [COMPANY STATS] Aplicaciones este mes: {applications_this_month}')
             
+            # 11. Distribución de proyectos por área
+            from django.db.models import Count
+            area_distribution = Proyecto.objects.filter(
+                company=company,
+                area__isnull=False
+            ).values('area__name').annotate(
+                count=Count('id')
+            ).order_by('-count')
+            
+            area_data = []
+            for area in area_distribution:
+                area_data.append({
+                    'name': area['area__name'],
+                    'count': area['count']
+                })
+            print(f'📊 [COMPANY STATS] Distribución por área: {area_data}')
+            
+            # 12. Actividad mensual (últimos 6 meses)
+            monthly_activity = []
+            for i in range(6):
+                month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(days=30*i)
+                month_end = month_start.replace(day=28) + timedelta(days=4)
+                month_end = month_end.replace(day=1) - timedelta(days=1)
+                
+                month_projects = Proyecto.objects.filter(
+                    company=company,
+                    created_at__gte=month_start,
+                    created_at__lte=month_end
+                ).count()
+                
+                month_applications = Aplicacion.objects.filter(
+                    project__company=company,
+                    applied_at__gte=month_start,
+                    applied_at__lte=month_end
+                ).count()
+                
+                monthly_activity.append({
+                    'month': month_start.strftime('%B %Y'),
+                    'projects': month_projects,
+                    'applications': month_applications
+                })
+            
+            monthly_activity.reverse()  # Ordenar de más antiguo a más reciente
+            print(f'📊 [COMPANY STATS] Actividad mensual: {monthly_activity}')
+            
         except Exception as e:
             print('❌ Error calculando estadísticas:', e)
             traceback.print_exc()
@@ -978,6 +1161,8 @@ def api_dashboard_company_stats(request):
             'total_hours_offered': total_hours_offered,
             'projects_this_month': projects_this_month,
             'applications_this_month': applications_this_month,
+            'area_distribution': area_data,
+            'monthly_activity': monthly_activity,
             'recent_activity': []
         }
         print('✅ Datos del dashboard:', response_data)
@@ -1108,6 +1293,68 @@ def api_dashboard_student_stats(request):
         gpa = float(student.gpa)
         print(f"📊 [STUDENT DASHBOARD] GPA: {gpa}")
         
+        # 11. Distribución de aplicaciones por estado
+        from django.db.models import Count
+        application_distribution = Aplicacion.objects.filter(
+            student=student
+        ).values('status').annotate(
+            count=Count('id')
+        ).order_by('-count')
+        
+        application_data = []
+        for app in application_distribution:
+            status_name = {
+                'pending': 'Pendientes',
+                'accepted': 'Aceptadas',
+                'rejected': 'Rechazadas',
+                'completed': 'Completadas',
+                'withdrawn': 'Retiradas'
+            }.get(app['status'], app['status'])
+            
+            application_data.append({
+                'name': status_name,
+                'count': app['count']
+            })
+        print(f'📊 [STUDENT DASHBOARD] Distribución de aplicaciones: {application_data}')
+        
+        # 12. Actividad mensual (últimos 6 meses)
+        from django.utils import timezone
+        from datetime import datetime, timedelta
+        
+        monthly_activity = []
+        for i in range(6):
+            month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(days=30*i)
+            month_end = month_start.replace(day=28) + timedelta(days=4)
+            month_end = month_end.replace(day=1) - timedelta(days=1)
+            
+            # Aplicaciones enviadas este mes
+            month_applications = Aplicacion.objects.filter(
+                student=student,
+                applied_at__gte=month_start,
+                applied_at__lte=month_end
+            ).count()
+            
+            # Horas trabajadas este mes
+            from work_hours.models import WorkHour
+            from django.db.models import Sum
+            month_hours_result = WorkHour.objects.filter(
+                student=student,
+                date__gte=month_start,
+                date__lte=month_end
+            ).aggregate(total_hours=Sum('hours_worked'))['total_hours']
+            
+            # Convertir a float si es Decimal
+            month_hours = float(month_hours_result) if month_hours_result else 0
+            
+            monthly_activity.append({
+                'month': month_start.strftime('%B %Y'),
+                'applications': month_applications,
+                'hours': month_hours
+            })
+        
+        monthly_activity.reverse()  # Ordenar de más antiguo a más reciente
+        print(f'📊 [STUDENT DASHBOARD] Actividad mensual: {monthly_activity}')
+        
         # Preparar respuesta
         response_data = {
             'total_applications': total_applications,
@@ -1122,6 +1369,8 @@ def api_dashboard_student_stats(request):
             'gpa': gpa,
             'available_projects': available_projects,
             'unread_notifications': unread_notifications,
+            'application_distribution': application_data,
+            'monthly_activity': monthly_activity,
             'recent_activity': []  # Placeholder para actividad reciente
         }
         
@@ -2314,3 +2563,29 @@ def api_change_password(request):
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_check_username(request):
+    """API endpoint para verificar si un username ya existe."""
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        
+        if not username:
+            return JsonResponse({
+                'error': 'Username es requerido'
+            }, status=400)
+        
+        # Verificar si el username ya existe
+        exists = User.objects.filter(username=username).exists()
+        
+        return JsonResponse({
+            'exists': exists,
+            'username': username
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)

@@ -426,7 +426,17 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       // Obtener proyectos de la empresa
       const projectsResponse = await api.get('/api/projects/company_projects/');
       const projects = Array.isArray(projectsResponse.data) ? projectsResponse.data : (projectsResponse.data?.data || []);
-      setCompanyProjects(projects);
+      
+      // Filtrar solo proyectos activos o publicados (excluir completados, cancelados, etc.)
+      const activeProjects = projects.filter((project: any) => {
+        const status = project.status?.toLowerCase() || '';
+        // Solo permitir proyectos activos o publicados para crear eventos
+        const allowedStatuses = ['active', 'published', 'activo', 'publicado', 'en progreso', 'in-progress'];
+        return allowedStatuses.includes(status);
+      });
+      
+      console.log(`Proyectos totales: ${projects.length}, Proyectos activos/publicados: ${activeProjects.length}`);
+      setCompanyProjects(activeProjects);
 
       // Obtener postulaciones recibidas
       const applicationsResponse = await api.get('/api/applications/received_applications/');
@@ -550,6 +560,23 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       if (endHour > 19) {
         alert(`Los eventos no pueden extenderse más allá de las 19:00 PM (7:00 PM). Hora de fin: ${endHour}:00`);
         return;
+      }
+      
+      // Validar que el proyecto seleccionado esté activo
+      if (selectedProject) {
+        const selectedProjectData = companyProjects.find(p => p.id === selectedProject);
+        if (!selectedProjectData) {
+          alert('El proyecto seleccionado no está disponible o no está activo.');
+          return;
+        }
+        
+        const projectStatus = selectedProjectData.status?.toLowerCase() || '';
+        const allowedStatuses = ['active', 'published', 'activo', 'publicado', 'en progreso', 'in-progress'];
+        
+        if (!allowedStatuses.includes(projectStatus)) {
+          alert(`No se pueden crear eventos para proyectos con estado "${selectedProjectData.status}". Solo se permiten proyectos activos o publicados.`);
+          return;
+        }
       }
       
       // Asegurar que si hay un participante seleccionado, se agregue como attendee
@@ -1803,8 +1830,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       },
                     }}
               >
-                <MenuItem value="">Selecciona un proyecto</MenuItem>
-                {companyProjects.map(project => (
+                <MenuItem value="">Selecciona un proyecto (solo activos/publicados)</MenuItem>
+                {companyProjects.length === 0 ? (
+                  <MenuItem disabled>
+                    No hay proyectos activos disponibles
+                  </MenuItem>
+                ) : (
+                  companyProjects.map(project => (
                       <MenuItem key={project.id} value={project.id} sx={{
                         bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
@@ -1812,9 +1844,19 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                           bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
                         },
                       }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                        <Typography variant="body2" fontWeight={600}>
                         {project.title}
+                        </Typography>
+                        <Typography variant="caption" sx={{ 
+                          color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
+                        }}>
+                          Estado: {project.status}
+                        </Typography>
+                      </Box>
                       </MenuItem>
-                ))}
+                  ))
+                )}
               </Select>
             </FormControl>
                 

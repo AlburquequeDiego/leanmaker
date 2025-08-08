@@ -529,7 +529,6 @@ export default function UsuariosAdmin() {
                       backgroundColor: themeMode === 'dark' 
                         ? 'rgba(102, 126, 234, 0.1)'
                         : 'rgba(102, 126, 234, 0.05)',
-                      transform: 'translateY(-1px)',
                       transition: 'all 0.2s ease-in-out',
                     }
                   }}
@@ -794,7 +793,6 @@ export default function UsuariosAdmin() {
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -842,7 +840,7 @@ export default function UsuariosAdmin() {
                   },
                 }}
               />
-              <FormControl fullWidth required>
+              <FormControl fullWidth>
                 <InputLabel 
                   sx={{
                     color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
@@ -897,7 +895,6 @@ export default function UsuariosAdmin() {
                 value={formData.first_name}
                 onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -950,7 +947,6 @@ export default function UsuariosAdmin() {
                 value={formData.last_name}
                 onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -1008,7 +1004,6 @@ export default function UsuariosAdmin() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -1228,7 +1223,6 @@ export default function UsuariosAdmin() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -1282,7 +1276,6 @@ export default function UsuariosAdmin() {
                 value={formData.confirm_password}
                 onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -1392,7 +1385,6 @@ export default function UsuariosAdmin() {
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -1440,7 +1432,7 @@ export default function UsuariosAdmin() {
                   },
                 }}
               />
-              <FormControl fullWidth required>
+              <FormControl fullWidth>
                 <InputLabel 
                   sx={{
                     color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
@@ -1495,7 +1487,6 @@ export default function UsuariosAdmin() {
                 value={formData.first_name}
                 onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -1548,7 +1539,6 @@ export default function UsuariosAdmin() {
                 value={formData.last_name}
                 onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,
@@ -1606,7 +1596,6 @@ export default function UsuariosAdmin() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 fullWidth
-                required
                 variant="outlined"
                 InputLabelProps={{ 
                   shrink: true,

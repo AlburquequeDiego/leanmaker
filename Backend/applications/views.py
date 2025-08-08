@@ -408,11 +408,11 @@ def company_applications_list(request):
             
             # Obtener certificados del estudiante
             student_certificates = []
-            if hasattr(student, 'certificates') and student.certificates:
-                try:
-                    student_certificates = json.loads(student.certificates)
-                except:
-                    student_certificates = []
+            try:
+                if hasattr(student, 'perfil_detallado') and student.perfil_detallado:
+                    student_certificates = student.perfil_detallado.get_certificaciones_list()
+            except:
+                student_certificates = []
             
             applications_data.append({
                 'id': str(application.id),
@@ -424,7 +424,7 @@ def company_applications_list(request):
                 'status': application.status,
                 'cover_letter': application.cover_letter or '',
                 'applied_at': application.applied_at.isoformat(),
-                'compatibility_score': application.compatibility_score,
+                'compatibility_score': None,  # Campo no disponible en el modelo actual
                 'portfolio_url': application.portfolio_url,
                 'github_url': application.github_url,
                 'linkedin_url': application.linkedin_url,
@@ -438,9 +438,9 @@ def company_applications_list(request):
                 'student_phone': getattr(student_user, 'phone', None),
                 'student_location': getattr(student_user, 'location', None),
                 'student_university': getattr(student, 'university', None),
-                'student_major': getattr(student, 'major', None),
+                'student_major': getattr(student, 'career', None),  # Usar 'career' en lugar de 'major'
                 'student_certificates': student_certificates,
-                'student_cv_url': getattr(student, 'cv_url', None),
+                'student_cv_url': getattr(student, 'cv_link', None),  # Usar 'cv_link' en lugar de 'cv_url'
             })
         
         return JsonResponse({

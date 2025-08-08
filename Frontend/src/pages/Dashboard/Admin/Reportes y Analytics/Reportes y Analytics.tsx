@@ -54,12 +54,84 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Colores para los estados de proyectos
+// Paleta de colores estilo Power BI mejorada
+const powerBIColors = [
+  '#01B8AA', // Teal principal
+  '#374649', // Dark Gray
+  '#FD625E', // Red
+  '#F2C80F', // Yellow
+  '#5F6B6D', // Gray
+  '#8AD4EB', // Light Blue
+  '#FE9666', // Orange
+  '#A66999', // Purple
+  '#3599B8', // Blue
+  '#DFBFBF'  // Light Pink
+];
+
+// Gradientes Power BI
+const powerBIGradients = {
+  primary: 'linear-gradient(135deg, #01B8AA 0%, #374649 100%)',
+  secondary: 'linear-gradient(135deg, #FD625E 0%, #F2C80F 100%)',
+  tertiary: 'linear-gradient(135deg, #8AD4EB 0%, #3599B8 100%)',
+  success: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+  warning: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+  error: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+  info: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+  purple: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
+};
+
+// Colores para los estados de proyectos mejorados
 const projectStatusColors = {
-  'Activos': '#10B981',
-  'Completados': '#3B82F6', 
-  'Pendientes': '#F59E0B',
-  'Cancelados': '#EF4444'
+  'Activos': '#01B8AA',
+  'Completados': '#374649', 
+  'Pendientes': '#FD625E',
+  'Cancelados': '#F2C80F'
+};
+
+// Estilos Power BI para cards
+const powerBICardStyles = {
+  borderRadius: '16px',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+  backdropFilter: 'blur(20px)',
+  position: 'relative' as const,
+  overflow: 'hidden' as const,
+  '&::before': {
+    content: '""',
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    background: 'linear-gradient(90deg, #01B8AA 0%, #374649 50%, #FD625E 100%)',
+  }
+};
+
+// Estilos Power BI para tooltips
+const powerBITooltipStyles = {
+  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+  backdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  borderRadius: '16px',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1)',
+  padding: '16px 20px',
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#1e293b'
+};
+
+// Estilos Power BI para dark mode tooltips
+const powerBITooltipDarkStyles = {
+  backgroundColor: 'rgba(30, 41, 59, 0.95)',
+  backdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  borderRadius: '16px',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2)',
+  padding: '16px 20px',
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#f1f5f9'
 };
 
 const getStatusColor = (status: string) => {
@@ -405,52 +477,216 @@ export const ReportesYAnalytics = () => {
         {/* Gráfico de Actividad Semanal */}
         <Box sx={{ flex: '2 1 600px', minWidth: 400 }}>
           <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: 3,
+            ...powerBICardStyles,
             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: powerBIGradients.primary,
+            }
           }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Actividad Semanal</Typography>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ 
+                mb: 3, 
+                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+                fontWeight: 700,
+                fontSize: '1.25rem',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                📊 Actividad Semanal
+              </Typography>
               {activityData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={350}>
                   <LineChart data={activityData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <defs>
+                      <linearGradient id="usuariosGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1}/>
+                      </linearGradient>
+                      <linearGradient id="proyectosGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                      </linearGradient>
+                      <linearGradient id="aplicacionesGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.1}/>
+                      </linearGradient>
+                      <linearGradient id="horasGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid 
+                      strokeDasharray="3 3" 
+                      stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                      opacity={0.3}
+                    />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ 
+                        fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b', 
+                        fontSize: 12, 
+                        fontWeight: 600 
+                      }}
+                      axisLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                      tickLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                    />
+                    <YAxis 
+                      tick={{ 
+                        fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b', 
+                        fontSize: 12, 
+                        fontWeight: 600 
+                      }}
+                      axisLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                      tickLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                    />
                     <Tooltip 
+                      contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                       formatter={(value, name) => {
                         const labels = {
-                          usuarios: 'Usuarios',
-                          proyectos: 'Proyectos',
-                          aplicaciones: 'Aplicaciones',
-                          horas: 'Horas'
+                          usuarios: '👥 Usuarios',
+                          proyectos: '📋 Proyectos',
+                          aplicaciones: '📝 Aplicaciones',
+                          horas: '⏰ Horas'
                         };
                         return [value, labels[name as keyof typeof labels] || name];
                       }}
                     />
                     <Legend 
+                      wrapperStyle={{
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        paddingTop: '20px'
+                      }}
                       formatter={(value) => {
                         const labels = {
-                          usuarios: 'Usuarios',
-                          proyectos: 'Proyectos',
-                          aplicaciones: 'Aplicaciones',
-                          horas: 'Horas'
+                          usuarios: '👥 Usuarios',
+                          proyectos: '📋 Proyectos',
+                          aplicaciones: '📝 Aplicaciones',
+                          horas: '⏰ Horas'
                         };
                         return labels[value as keyof typeof labels] || value;
                       }}
                     />
-                    <Line type="monotone" dataKey="usuarios" stroke="#22c55e" strokeWidth={2} />
-                    <Line type="monotone" dataKey="proyectos" stroke="#3b82f6" strokeWidth={2} />
-                    <Line type="monotone" dataKey="aplicaciones" stroke="#f59e0b" strokeWidth={2} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="usuarios" 
+                      stroke="#22c55e" 
+                      strokeWidth={3}
+                      dot={{ 
+                        fill: '#22c55e', 
+                        strokeWidth: 3, 
+                        r: 6,
+                        stroke: '#ffffff',
+                        filter: 'drop-shadow(0 2px 4px rgba(34, 197, 94, 0.3))'
+                      }}
+                      activeDot={{ 
+                        r: 8, 
+                        stroke: '#22c55e', 
+                        strokeWidth: 3,
+                        fill: '#ffffff',
+                        filter: 'drop-shadow(0 4px 8px rgba(34, 197, 94, 0.4))'
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="proyectos" 
+                      stroke="#3b82f6" 
+                      strokeWidth={3}
+                      dot={{ 
+                        fill: '#3b82f6', 
+                        strokeWidth: 3, 
+                        r: 6,
+                        stroke: '#ffffff',
+                        filter: 'drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3))'
+                      }}
+                      activeDot={{ 
+                        r: 8, 
+                        stroke: '#3b82f6', 
+                        strokeWidth: 3,
+                        fill: '#ffffff',
+                        filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.4))'
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="aplicaciones" 
+                      stroke="#f59e0b" 
+                      strokeWidth={3}
+                      dot={{ 
+                        fill: '#f59e0b', 
+                        strokeWidth: 3, 
+                        r: 6,
+                        stroke: '#ffffff',
+                        filter: 'drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3))'
+                      }}
+                      activeDot={{ 
+                        r: 8, 
+                        stroke: '#f59e0b', 
+                        strokeWidth: 3,
+                        fill: '#ffffff',
+                        filter: 'drop-shadow(0 4px 8px rgba(245, 158, 11, 0.4))'
+                      }}
+                    />
                     {activityData.some(item => item.horas !== undefined) && (
-                      <Line type="monotone" dataKey="horas" stroke="#8b5cf6" strokeWidth={2} />
+                      <Line 
+                        type="monotone" 
+                        dataKey="horas" 
+                        stroke="#8b5cf6" 
+                        strokeWidth={3}
+                        dot={{ 
+                          fill: '#8b5cf6', 
+                          strokeWidth: 3, 
+                          r: 6,
+                          stroke: '#ffffff',
+                          filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
+                        }}
+                        activeDot={{ 
+                          r: 8, 
+                          stroke: '#8b5cf6', 
+                          strokeWidth: 3,
+                          fill: '#ffffff',
+                          filter: 'drop-shadow(0 4px 8px rgba(139, 92, 246, 0.4))'
+                        }}
+                      />
                     )}
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de actividad disponibles</Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  height: 350,
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+                  borderRadius: '12px',
+                  border: '1px dashed rgba(255,255,255,0.2)'
+                }}>
+                  <Typography sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                    fontSize: '1.1rem',
+                    fontWeight: 500
+                  }}>
+                    📊 No hay datos de actividad disponibles
+                  </Typography>
                 </Box>
               )}
             </CardContent>
@@ -460,42 +696,94 @@ export const ReportesYAnalytics = () => {
                         {/* Gráfico de Estado de Proyectos */}
         <Box sx={{ flex: '1 1 300px', minWidth: 300 }}>
           <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: 3,
+            ...powerBICardStyles,
             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: powerBIGradients.secondary,
+            }
           }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Estado de Proyectos</Typography>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ 
+                mb: 3, 
+                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', 
+                fontWeight: 700,
+                fontSize: '1.25rem',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                🎯 Estado de Proyectos
+              </Typography>
               {projectStatusData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={350}>
                   <PieChart>
+                    <defs>
+                      <filter id="pieShadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                      </filter>
+                    </defs>
                     <Pie
                       data={projectStatusData}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
                       label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
-                      outerRadius={80}
-                      innerRadius={40}
+                      outerRadius={100}
+                      innerRadius={50}
                       dataKey="value"
+                      stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
+                      strokeWidth={3}
+                      filter="url(#pieShadow)"
                     >
                       {projectStatusData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color || projectStatusColors[entry.name as keyof typeof projectStatusColors] || '#3B82F6'} />
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={powerBIColors[index % powerBIColors.length]}
+                          stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                          strokeWidth={2}
+                        />
                       ))}
                     </Pie>
                     <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#ffffff', 
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px'
+                      contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                      formatter={(value, name) => [
+                        `${value} proyectos`, 
+                        `${name}`
+                      ]}
+                    />
+                    <Legend 
+                      wrapperStyle={{
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        paddingTop: '20px'
                       }}
+                      formatter={(value) => `📊 ${value}`}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de proyectos disponibles</Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  height: 350,
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+                  borderRadius: '12px',
+                  border: '1px dashed rgba(255,255,255,0.2)'
+                }}>
+                  <Typography sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                    fontSize: '1.1rem',
+                    fontWeight: 500
+                  }}>
+                    🎯 No hay datos de proyectos disponibles
+                  </Typography>
                 </Box>
               )}
             </CardContent>
@@ -508,52 +796,164 @@ export const ReportesYAnalytics = () => {
         {/* Gráfico de Estadísticas Mensuales */}
         <Box sx={{ flex: '1 1 100%', minWidth: 600 }}>
           <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: 3,
+            ...powerBICardStyles,
             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: powerBIGradients.tertiary,
+            }
           }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Estadísticas Mensuales</Typography>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ 
+                mb: 3, 
+                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', 
+                fontWeight: 700,
+                fontSize: '1.25rem',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                📈 Estadísticas Mensuales
+              </Typography>
               {monthlyStats.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={350}>
                   <BarChart data={monthlyStats}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <defs>
+                      <linearGradient id="estudiantesGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
+                      </linearGradient>
+                      <linearGradient id="proyectosGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                      </linearGradient>
+                      <linearGradient id="empresasGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                      </linearGradient>
+                      <linearGradient id="horasGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid 
+                      strokeDasharray="3 3" 
+                      stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                      opacity={0.3}
+                    />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ 
+                        fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b', 
+                        fontSize: 12, 
+                        fontWeight: 600 
+                      }}
+                      axisLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                      tickLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                    />
+                    <YAxis 
+                      tick={{ 
+                        fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b', 
+                        fontSize: 12, 
+                        fontWeight: 600 
+                      }}
+                      axisLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                      tickLine={{ 
+                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                        strokeWidth: 2
+                      }}
+                    />
                     <Tooltip 
+                      contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                       formatter={(value, name) => {
                         const labels = {
-                          estudiantes: 'Estudiantes',
-                          proyectos: 'Proyectos',
-                          empresas: 'Empresas',
-                          horas: 'Horas'
+                          estudiantes: '👥 Estudiantes',
+                          proyectos: '📋 Proyectos',
+                          empresas: '🏢 Empresas',
+                          horas: '⏰ Horas'
                         };
                         return [value, labels[name as keyof typeof labels] || name];
                       }}
                     />
                     <Legend 
+                      wrapperStyle={{
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        paddingTop: '20px'
+                      }}
                       formatter={(value) => {
                         const labels = {
-                          estudiantes: 'Estudiantes',
-                          proyectos: 'Proyectos',
-                          empresas: 'Empresas',
-                          horas: 'Horas'
+                          estudiantes: '👥 Estudiantes',
+                          proyectos: '📋 Proyectos',
+                          empresas: '🏢 Empresas',
+                          horas: '⏰ Horas'
                         };
                         return labels[value as keyof typeof labels] || value;
                       }}
                     />
-                    <Bar dataKey="estudiantes" fill="#22c55e" />
-                    <Bar dataKey="proyectos" fill="#3b82f6" />
-                    <Bar dataKey="empresas" fill="#f59e0b" />
+                    <Bar 
+                      dataKey="estudiantes" 
+                      fill="url(#estudiantesGradient)" 
+                      radius={[8, 8, 0, 0]}
+                      stroke="#22c55e"
+                      strokeWidth={1}
+                    />
+                    <Bar 
+                      dataKey="proyectos" 
+                      fill="url(#proyectosGradient)" 
+                      radius={[8, 8, 0, 0]}
+                      stroke="#3b82f6"
+                      strokeWidth={1}
+                    />
+                    <Bar 
+                      dataKey="empresas" 
+                      fill="url(#empresasGradient)" 
+                      radius={[8, 8, 0, 0]}
+                      stroke="#f59e0b"
+                      strokeWidth={1}
+                    />
                     {monthlyStats.some(item => item.horas !== undefined) && (
-                      <Bar dataKey="horas" fill="#8b5cf6" />
+                      <Bar 
+                        dataKey="horas" 
+                        fill="url(#horasGradient)" 
+                        radius={[8, 8, 0, 0]}
+                        stroke="#8b5cf6"
+                        strokeWidth={1}
+                      />
                     )}
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos mensuales disponibles</Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  height: 350,
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+                  borderRadius: '12px',
+                  border: '1px dashed rgba(255,255,255,0.2)'
+                }}>
+                  <Typography sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                    fontSize: '1.1rem',
+                    fontWeight: 500
+                  }}>
+                    📈 No hay datos mensuales disponibles
+                  </Typography>
                 </Box>
               )}
             </CardContent>
@@ -562,100 +962,100 @@ export const ReportesYAnalytics = () => {
       </Box>
 
        {/* Tablas de Top 20 */}
-       <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', mt: 6 }}>
-         {/* Top 20 Estudiantes */}
-         <Box sx={{ flex: '1 1 500px', minWidth: 400 }}>
-           <Card sx={{ 
-             borderRadius: 3, 
-             boxShadow: 3,
-             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-             color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
-           }}>
-             <CardContent>
-               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                 <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Top 20 Estudiantes</Typography>
-                 <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>Por horas en proyectos</Typography>
-               </Box>
-               {topStudents.length > 0 ? (
-                 <TableContainer>
-                   <Table>
-                     <TableHead>
-                       <TableRow>
-                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiante</TableCell>
-                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Nivel API</TableCell>
-                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas</TableCell>
-                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
-                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
-                       </TableRow>
-                     </TableHead>
-                     <TableBody>
-                       {topStudents.map((student, index) => (
-                         <TableRow 
-                           key={student.id} 
-                           sx={index === 0 ? { 
-                             bgcolor: themeMode === 'dark' ? '#334155' : '#fef3c7', 
-                             '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#fde68a' } 
-                           } : {
-                             '&:hover': { bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }
-                           }}
-                         >
-                           <TableCell>
-                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                               <Avatar sx={{ width: 32, height: 32, fontSize: '0.875rem' }}>
-                                 {index < 3 ? ['🥇', '🥈', '🥉'][index] : student.name.charAt(0)}
-                               </Avatar>
-                               <Box>
-                                 <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                                   {student.name}
-                                 </Typography>
-                                 <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                                   {student.email}
-                                 </Typography>
-                               </Box>
-                             </Box>
-                           </TableCell>
-                           <TableCell>
-                             <Chip 
-                               label={`API ${student.level}`}
-                               size="small"
-                               color={student.level >= 3 ? 'success' : student.level >= 2 ? 'warning' : 'default'}
-                               variant={student.level >= 3 ? 'filled' : 'outlined'}
-                             />
-                           </TableCell>
-                           <TableCell>
-                             <Typography variant="body2" sx={{ color: '#22c55e', fontWeight: 600 }}>
-                               {student.totalHours.toLocaleString()}
-                             </Typography>
-                           </TableCell>
-                           <TableCell>
-                             <Chip 
-                               label={student.completedProjects}
-                               size="small"
-                               color={student.completedProjects > 0 ? 'primary' : 'default'}
-                               variant={student.completedProjects > 0 ? 'filled' : 'outlined'}
-                             />
-                           </TableCell>
-                           <TableCell>
-                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                               {student.averageRating ? student.averageRating.toFixed(1) : '0.0'} ⭐
-                             </Typography>
-                           </TableCell>
-                         </TableRow>
-                       ))}
-                     </TableBody>
-                   </Table>
-                 </TableContainer>
-               ) : (
-                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                   <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de estudiantes disponibles</Typography>
-                 </Box>
-               )}
-             </CardContent>
-           </Card>
-         </Box>
+       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mt: 6 }}>
+        {/* Top 20 Estudiantes */}
+        <Box sx={{ width: '100%' }}>
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: 3,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+          }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Top 20 Estudiantes</Typography>
+                <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>Por horas en proyectos</Typography>
+              </Box>
+              {topStudents.length > 0 ? (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiante</TableCell>
+                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Nivel API</TableCell>
+                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas</TableCell>
+                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
+                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {topStudents.map((student, index) => (
+                        <TableRow 
+                          key={student.id} 
+                          sx={index === 0 ? { 
+                            bgcolor: themeMode === 'dark' ? '#334155' : '#fef3c7', 
+                            '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#fde68a' } 
+                          } : {
+                            '&:hover': { bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }
+                          }}
+                        >
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Avatar sx={{ width: 32, height: 32, fontSize: '0.875rem' }}>
+                                {index < 3 ? ['🥇', '🥈', '🥉'][index] : student.name.charAt(0)}
+                              </Avatar>
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                                  {student.name}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                                  {student.email}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={`API ${student.level}`}
+                              size="small"
+                              color={student.level >= 3 ? 'success' : student.level >= 2 ? 'warning' : 'default'}
+                              variant={student.level >= 3 ? 'filled' : 'outlined'}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" sx={{ color: '#22c55e', fontWeight: 600 }}>
+                              {student.totalHours.toLocaleString()}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={student.completedProjects}
+                              size="small"
+                              color={student.completedProjects > 0 ? 'primary' : 'default'}
+                              variant={student.completedProjects > 0 ? 'filled' : 'outlined'}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                              {student.averageRating ? student.averageRating.toFixed(1) : '0.0'} ⭐
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de estudiantes disponibles</Typography>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Box>
 
          {/* Top 20 Empresas */}
-         <Box sx={{ flex: '1 1 500px', minWidth: 400 }}>
+         <Box sx={{ width: '100%' }}>
            <Card sx={{ 
              borderRadius: 3, 
              boxShadow: 3,
@@ -863,10 +1263,16 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
                 {/* Gráfico de Barras - Total de Aplicaciones vs Aceptadas */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Comparación de Aplicaciones
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    📊 Comparación de Aplicaciones
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={[
                       { 
                         name: 'Total', 
@@ -874,125 +1280,175 @@ export const ReportesYAnalytics = () => {
                         aceptadas: applicationsMetrics.acceptedApplications || 0 
                       }
                     ]}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
+                      <defs>
+                        <linearGradient id="totalAppsGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                        </linearGradient>
+                        <linearGradient id="acceptedAppsGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="name" 
+                        tick={{ 
+                          fontSize: 14, 
+                          fontWeight: 700, 
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
                         }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <YAxis 
+                        tick={{ 
+                          fontSize: 12, 
+                          fontWeight: 600, 
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                        }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <Tooltip 
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                         formatter={(value, name) => [
                           value, 
-                          name === 'aplicaciones' ? 'Total Aplicaciones' : 'Aplicaciones Aceptadas'
+                          name === 'aplicaciones' ? '📝 Total Aplicaciones' : '✅ Aplicaciones Aceptadas'
                         ]}
                       />
                       <Legend 
+                        wrapperStyle={{
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          paddingTop: '20px'
+                        }}
                         formatter={(value) => 
-                          value === 'aplicaciones' ? 'Total Aplicaciones' : 'Aplicaciones Aceptadas'
+                          value === 'aplicaciones' ? '📝 Total Aplicaciones' : '✅ Aplicaciones Aceptadas'
                         }
                       />
-                      <Bar dataKey="aplicaciones" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="aceptadas" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                      <Bar 
+                        dataKey="aplicaciones" 
+                        fill="url(#totalAppsGradient)" 
+                        radius={[8, 8, 0, 0]}
+                        stroke="#3b82f6"
+                        strokeWidth={1}
+                      />
+                      <Bar 
+                        dataKey="aceptadas" 
+                        fill="url(#acceptedAppsGradient)" 
+                        radius={[8, 8, 0, 0]}
+                        stroke="#22c55e"
+                        strokeWidth={1}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
-                  {applicationsMetrics.totalApplications === 0 && (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      alignItems: 'center', 
-                      height: 50,
-                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
-                      fontStyle: 'italic',
-                      mt: 2
-                    }}>
-                      No hay aplicaciones registradas
-                    </Box>
-                  )}
                 </Box>
 
                 {/* Gráfico Circular - Tasa de Aceptación */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Tasa de Aceptación
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    🎯 Tasa de Aceptación
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
+                      <defs>
+                        <filter id="pieShadow2" x="-50%" y="-50%" width="200%" height="200%">
+                          <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                        </filter>
+                      </defs>
                       <Pie
                         data={
                           applicationsMetrics.totalApplications > 0 
                             ? [
                                 { 
-                                  name: 'Aceptadas', 
+                                  name: '✅ Aceptadas', 
                                   value: applicationsMetrics.acceptedApplications || 0, 
-                                  color: '#22c55e' 
+                                  color: powerBIColors[0]
                                 },
                                 { 
-                                  name: 'Pendientes/Rechazadas', 
+                                  name: '⏳ Pendientes/Rechazadas', 
                                   value: (applicationsMetrics.totalApplications || 0) - (applicationsMetrics.acceptedApplications || 0), 
-                                  color: '#f59e0b' 
+                                  color: powerBIColors[2]
                                 }
                               ].filter(item => item.value > 0)
                             : [
-                                { name: 'Sin Datos', value: 1, color: '#e2e8f0' }
+                                { name: '📊 Sin Datos', value: 1, color: '#e2e8f0' }
                               ]
                         }
                         cx="50%"
                         cy="50%"
                         labelLine={false}
                         label={({ name, percent }) => 
-                          name === 'Sin Datos' 
-                            ? 'Sin Datos' 
+                          name === '📊 Sin Datos' 
+                            ? '📊 Sin Datos' 
                             : `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`
                         }
-                        outerRadius={80}
-                        fill="#8884d8"
+                        outerRadius={100}
+                        innerRadius={50}
+                        stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
+                        strokeWidth={3}
                         dataKey="value"
+                        filter="url(#pieShadow2)"
                       >
                         {(
                           applicationsMetrics.totalApplications > 0 
                             ? [
                                 { 
-                                  name: 'Aceptadas', 
+                                  name: '✅ Aceptadas', 
                                   value: applicationsMetrics.acceptedApplications || 0, 
-                                  color: '#22c55e' 
+                                  color: powerBIColors[0]
                                 },
                                 { 
-                                  name: 'Pendientes/Rechazadas', 
+                                  name: '⏳ Pendientes/Rechazadas', 
                                   value: (applicationsMetrics.totalApplications || 0) - (applicationsMetrics.acceptedApplications || 0), 
-                                  color: '#f59e0b' 
+                                  color: powerBIColors[2]
                                 }
                               ].filter(item => item.value > 0)
                             : [
-                                { name: 'Sin Datos', value: 1, color: '#e2e8f0' }
+                                { name: '📊 Sin Datos', value: 1, color: '#e2e8f0' }
                               ]
                         ).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color}
+                            stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                            strokeWidth={2}
+                          />
                         ))}
                       </Pie>
                       <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
-                        }}
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                        formatter={(value, name) => [
+                          `${value} aplicaciones`, 
+                          name
+                        ]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
-                  {applicationsMetrics.totalApplications === 0 && (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      alignItems: 'center', 
-                      height: 50,
-                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
-                      fontStyle: 'italic',
-                      mt: 2
-                    }}>
-                      No hay aplicaciones para calcular la tasa
-                    </Box>
-                  )}
                 </Box>
               </Box>
 
@@ -1113,28 +1569,82 @@ export const ReportesYAnalytics = () => {
                 {/* Gráfico de Líneas - Tendencia de Strikes */}
                 {strikesMetrics.monthlyTrend.length > 0 && (
                   <Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                      Tendencia Mensual de Strikes
+                    <Typography variant="h6" sx={{ 
+                      mb: 3, 
+                      fontWeight: 700, 
+                      color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                      fontSize: '1.1rem',
+                      textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}>
+                      📈 Tendencia Mensual de Strikes
                     </Typography>
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={300}>
                       <LineChart data={strikesMetrics.monthlyTrend}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                        <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#ffffff', 
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '8px'
+                        <defs>
+                          <linearGradient id="strikesGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid 
+                          strokeDasharray="3 3" 
+                          stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                          opacity={0.3}
+                        />
+                        <XAxis 
+                          dataKey="month" 
+                          tick={{ 
+                            fontSize: 12, 
+                            fontWeight: 600,
+                            fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
                           }}
+                          axisLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
+                          }}
+                          tickLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
+                          }}
+                        />
+                        <YAxis 
+                          tick={{ 
+                            fontSize: 12, 
+                            fontWeight: 600,
+                            fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
+                          axisLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
+                          }}
+                          tickLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
+                          }}
+                        />
+                        <Tooltip 
+                          contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                          formatter={(value, name) => [`${value} strikes`, '⚠️ Strikes']}
                         />
                         <Line 
                           type="monotone" 
                           dataKey="strikes" 
                           stroke="#ef4444" 
                           strokeWidth={3}
-                          dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                          activeDot={{ r: 6, stroke: '#ef4444', strokeWidth: 2 }}
+                          dot={{ 
+                            fill: '#ef4444', 
+                            strokeWidth: 3, 
+                            r: 6,
+                            stroke: '#ffffff',
+                            filter: 'drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3))'
+                          }}
+                          activeDot={{ 
+                            r: 8, 
+                            stroke: '#ef4444', 
+                            strokeWidth: 3,
+                            fill: '#ffffff',
+                            filter: 'drop-shadow(0 4px 8px rgba(239, 68, 68, 0.4))'
+                          }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -1143,38 +1653,94 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico de Barras - Distribución de Strikes */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Distribución de Strikes
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    📊 Distribución de Strikes
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={[
                       { 
-                        categoria: 'Strikes Activos', 
+                        categoria: '⚠️ Strikes Activos', 
                         cantidad: strikesMetrics.activeStrikes,
                         color: '#ef4444'
                       },
                       { 
-                        categoria: 'Estudiantes con Strikes', 
+                        categoria: '👥 Estudiantes con Strikes', 
                         cantidad: strikesMetrics.studentsWithStrikes,
                         color: '#f59e0b'
                       },
                       { 
-                        categoria: 'Empresas Reportando', 
+                        categoria: '🏢 Empresas Reportando', 
                         cantidad: strikesMetrics.topReportingCompanies.length,
                         color: '#22c55e'
                       }
                     ]}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="categoria" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
+                      <defs>
+                        <linearGradient id="activeStrikesGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0.3}/>
+                        </linearGradient>
+                        <linearGradient id="studentsStrikesGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                        </linearGradient>
+                        <linearGradient id="companiesReportingGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="categoria" 
+                        tick={{ 
+                          fontSize: 11, 
+                          fontWeight: 600,
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
                         }}
                       />
-                      <Bar dataKey="cantidad" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                      <YAxis 
+                        tick={{ 
+                          fontSize: 12, 
+                          fontWeight: 600,
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <Tooltip 
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                        formatter={(value, name) => [value, 'Cantidad']}
+                      />
+                      <Bar 
+                        dataKey="cantidad" 
+                        fill="url(#activeStrikesGradient)" 
+                        radius={[8, 8, 0, 0]}
+                        stroke="#ef4444"
+                        strokeWidth={1}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </Box>
@@ -1294,37 +1860,72 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
                 {/* Gráfico Circular - Tasa de Lectura */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Tasa de Lectura de Notificaciones
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    📊 Tasa de Lectura de Notificaciones
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
+                      <defs>
+                        <filter id="pieShadow3" x="-50%" y="-50%" width="200%" height="200%">
+                          <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                        </filter>
+                      </defs>
                       <Pie
                         data={[
-                          { name: 'Leídas', value: notificationsMetrics.readNotifications, color: '#22c55e' },
-                          { name: 'No Leídas', value: notificationsMetrics.totalNotifications - notificationsMetrics.readNotifications, color: '#f59e0b' }
+                          { 
+                            name: '✅ Leídas', 
+                            value: notificationsMetrics.readNotifications, 
+                            color: powerBIColors[0] 
+                          },
+                          { 
+                            name: '📧 No Leídas', 
+                            value: notificationsMetrics.totalNotifications - notificationsMetrics.readNotifications, 
+                            color: powerBIColors[2] 
+                          }
                         ]}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
                         label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
+                        outerRadius={100}
+                        innerRadius={50}
+                        stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
+                        strokeWidth={3}
                         dataKey="value"
+                        filter="url(#pieShadow3)"
                       >
                         {[
-                          { name: 'Leídas', value: notificationsMetrics.readNotifications, color: '#22c55e' },
-                          { name: 'No Leídas', value: notificationsMetrics.totalNotifications - notificationsMetrics.readNotifications, color: '#f59e0b' }
+                          { 
+                            name: '✅ Leídas', 
+                            value: notificationsMetrics.readNotifications, 
+                            color: powerBIColors[0] 
+                          },
+                          { 
+                            name: '📧 No Leídas', 
+                            value: notificationsMetrics.totalNotifications - notificationsMetrics.readNotifications, 
+                            color: powerBIColors[2] 
+                          }
                         ].map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color}
+                            stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                            strokeWidth={2}
+                          />
                         ))}
                       </Pie>
                       <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
-                        }}
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                        formatter={(value, name) => [
+                          `${value} notificaciones`, 
+                          name
+                        ]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -1333,22 +1934,70 @@ export const ReportesYAnalytics = () => {
                 {/* Gráfico de Notificaciones por Tipo */}
                 {notificationsMetrics.byType.length > 0 && (
                   <Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                      Notificaciones por Tipo
+                    <Typography variant="h6" sx={{ 
+                      mb: 3, 
+                      fontWeight: 700, 
+                      color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                      fontSize: '1.1rem',
+                      textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}>
+                      📋 Notificaciones por Tipo
                     </Typography>
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={notificationsMetrics.byType}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                        <XAxis dataKey="type" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#ffffff', 
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '8px'
+                        <defs>
+                          <linearGradient id="notificationsGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid 
+                          strokeDasharray="3 3" 
+                          stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                          opacity={0.3}
+                        />
+                        <XAxis 
+                          dataKey="type" 
+                          tick={{ 
+                            fontSize: 12, 
+                            fontWeight: 600,
+                            fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
+                          axisLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
+                          }}
+                          tickLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
                           }}
                         />
-                        <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        <YAxis 
+                          tick={{ 
+                            fontSize: 12, 
+                            fontWeight: 600,
+                            fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
+                          axisLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
+                          }}
+                          tickLine={{ 
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            strokeWidth: 2
+                          }}
+                        />
+                        <Tooltip 
+                          contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                          formatter={(value, name) => [value, 'Notificaciones']}
+                        />
+                        <Bar 
+                          dataKey="count" 
+                          fill="url(#notificationsGradient)" 
+                          radius={[8, 8, 0, 0]}
+                          stroke="#3b82f6"
+                          strokeWidth={1}
+                        />
                       </BarChart>
                     </ResponsiveContainer>
                   </Box>
@@ -1469,135 +2118,195 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
                 {/* Gráfico de Barras - Solicitudes API */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Estado de Solicitudes API
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    📊 Estado de Solicitudes API
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={[
                       { 
-                        estado: 'Total', 
+                        estado: '📋 Total', 
                         solicitudes: apiTrlMetrics.totalApiRequests || 0,
-                        color: '#3b82f6'
+                        color: powerBIColors[0]
                       },
                       { 
-                        estado: 'Pendientes', 
+                        estado: '⏳ Pendientes', 
                         solicitudes: apiTrlMetrics.pendingApiRequests || 0,
-                        color: '#f59e0b'
+                        color: powerBIColors[2]
                       },
                       { 
-                        estado: 'Aprobadas', 
+                        estado: '✅ Aprobadas', 
                         solicitudes: apiTrlMetrics.approvedApiRequests || 0,
-                        color: '#22c55e'
+                        color: powerBIColors[4]
                       }
                     ]}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="estado" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
+                      <defs>
+                        <linearGradient id="totalApiGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                        </linearGradient>
+                        <linearGradient id="pendingApiGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                        </linearGradient>
+                        <linearGradient id="approvedApiGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="estado" 
+                        tick={{ 
+                          fontSize: 12, 
+                          fontWeight: 600, 
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
                         }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <YAxis 
+                        tick={{ 
+                          fontSize: 12, 
+                          fontWeight: 600, 
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                        }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <Tooltip 
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                         formatter={(value, name) => [value, 'Solicitudes']}
                       />
-                      <Bar dataKey="solicitudes" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                      <Bar 
+                        dataKey="solicitudes" 
+                        fill="url(#totalApiGradient)" 
+                        radius={[8, 8, 0, 0]}
+                        stroke="#3b82f6"
+                        strokeWidth={1}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </Box>
 
                 {/* Gráfico Circular - Distribución de Solicitudes */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Distribución de Solicitudes API
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    🎯 Distribución de Solicitudes API
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
+                      <defs>
+                        <filter id="pieShadow4" x="-50%" y="-50%" width="200%" height="200%">
+                          <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                        </filter>
+                      </defs>
                       <Pie
                         data={
                           apiTrlMetrics.totalApiRequests > 0 
                             ? [
                                 { 
-                                  name: 'Aprobadas', 
+                                  name: '✅ Aprobadas', 
                                   value: apiTrlMetrics.approvedApiRequests || 0, 
-                                  color: '#22c55e' 
+                                  color: powerBIColors[0]
                                 },
                                 { 
-                                  name: 'Pendientes', 
+                                  name: '⏳ Pendientes', 
                                   value: apiTrlMetrics.pendingApiRequests || 0, 
-                                  color: '#f59e0b' 
+                                  color: powerBIColors[2]
                                 },
                                 { 
-                                  name: 'Rechazadas', 
+                                  name: '❌ Rechazadas', 
                                   value: Math.max(0, (apiTrlMetrics.totalApiRequests || 0) - (apiTrlMetrics.approvedApiRequests || 0) - (apiTrlMetrics.pendingApiRequests || 0)), 
-                                  color: '#ef4444' 
+                                  color: powerBIColors[4]
                                 }
                               ].filter(item => item.value > 0)
                             : [
-                                { name: 'Sin Datos', value: 1, color: '#e2e8f0' }
+                                { name: '📊 Sin Datos', value: 1, color: '#e2e8f0' }
                               ]
                         }
                         cx="50%"
                         cy="50%"
                         labelLine={false}
                         label={({ name, percent }) => 
-                          name === 'Sin Datos' 
-                            ? 'Sin Datos' 
+                          name === '📊 Sin Datos' 
+                            ? '📊 Sin Datos' 
                             : `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`
                         }
-                        outerRadius={80}
-                        fill="#8884d8"
+                        outerRadius={100}
+                        innerRadius={50}
+                        stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
+                        strokeWidth={3}
                         dataKey="value"
+                        filter="url(#pieShadow4)"
                       >
                         {(
                           apiTrlMetrics.totalApiRequests > 0 
                             ? [
                                 { 
-                                  name: 'Aprobadas', 
+                                  name: '✅ Aprobadas', 
                                   value: apiTrlMetrics.approvedApiRequests || 0, 
-                                  color: '#22c55e' 
+                                  color: powerBIColors[0]
                                 },
                                 { 
-                                  name: 'Pendientes', 
+                                  name: '⏳ Pendientes', 
                                   value: apiTrlMetrics.pendingApiRequests || 0, 
-                                  color: '#f59e0b' 
+                                  color: powerBIColors[2]
                                 },
                                 { 
-                                  name: 'Rechazadas', 
+                                  name: '❌ Rechazadas', 
                                   value: Math.max(0, (apiTrlMetrics.totalApiRequests || 0) - (apiTrlMetrics.approvedApiRequests || 0) - (apiTrlMetrics.pendingApiRequests || 0)), 
-                                  color: '#ef4444' 
+                                  color: powerBIColors[4]
                                 }
                               ].filter(item => item.value > 0)
                             : [
-                                { name: 'Sin Datos', value: 1, color: '#e2e8f0' }
+                                { name: '📊 Sin Datos', value: 1, color: '#e2e8f0' }
                               ]
                         ).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color}
+                            stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                            strokeWidth={2}
+                          />
                         ))}
                       </Pie>
                       <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
-                        }}
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                        formatter={(value, name) => [
+                          `${value} solicitudes`, 
+                          name
+                        ]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
-                  {/* Mensaje cuando no hay datos */}
-                  {apiTrlMetrics.totalApiRequests === 0 && (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      alignItems: 'center', 
-                      height: 50,
-                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
-                      fontStyle: 'italic',
-                      mt: 2
-                    }}>
-                      No hay solicitudes API registradas
-                    </Box>
-                  )}
                 </Box>
               </Box>
 
@@ -1605,10 +2314,16 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4, mt: 4 }}>
                 {/* Gráfico de Estudiantes por Nivel API */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Distribución de Estudiantes por Nivel API
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    👥 Distribución de Estudiantes por Nivel API
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={
                       apiTrlMetrics.studentsByApiLevel.length > 0 
                         ? apiTrlMetrics.studentsByApiLevel.map(item => ({
@@ -1623,33 +2338,94 @@ export const ReportesYAnalytics = () => {
                             { api_level: 'API 5', count: 0 }
                           ]
                     }>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="api_level" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
+                      <defs>
+                        <linearGradient id="apiLevelGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="api_level" 
+                        tick={{ 
+                          fontSize: 12, 
+                          fontWeight: 600,
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
                         }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <YAxis 
+                        tick={{ 
+                          fontSize: 12, 
+                          fontWeight: 600,
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <Tooltip 
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                         formatter={(value, name) => [value, 'Estudiantes']}
                       />
-                      <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                      <Bar 
+                        dataKey="count" 
+                        fill="url(#apiLevelGradient)" 
+                        radius={[8, 8, 0, 0]}
+                        stroke="#8b5cf6"
+                        strokeWidth={1}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                   {apiTrlMetrics.studentsByApiLevel.length === 0 && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                      <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de distribución de estudiantes por nivel API</Typography>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      height: 200,
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+                      borderRadius: '12px',
+                      border: '1px dashed rgba(255,255,255,0.2)'
+                    }}>
+                      <Typography sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                        fontSize: '1.1rem',
+                        fontWeight: 500
+                      }}>
+                        📊 No hay datos de distribución de estudiantes por nivel API
+                      </Typography>
                     </Box>
                   )}
                 </Box>
 
                 {/* Gráfico de Proyectos por Nivel TRL */}
                 <Box>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
-                    Proyectos por Nivel TRL
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    📋 Proyectos por Nivel TRL
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={
                       apiTrlMetrics.projectsByTrl.length > 0 
                         ? apiTrlMetrics.projectsByTrl.map(item => ({
@@ -1668,23 +2444,78 @@ export const ReportesYAnalytics = () => {
                             { trl_level: 'TRL 9', count: 0 }
                           ]
                     }>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="trl_level" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px'
+                      <defs>
+                        <linearGradient id="trlLevelGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="trl_level" 
+                        tick={{ 
+                          fontSize: 11, 
+                          fontWeight: 600,
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
                         }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <YAxis 
+                        tick={{ 
+                          fontSize: 12, 
+                          fontWeight: 600,
+                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        axisLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                        tickLine={{ 
+                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                          strokeWidth: 2
+                        }}
+                      />
+                      <Tooltip 
+                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                         formatter={(value, name) => [value, 'Proyectos']}
                       />
-                      <Bar dataKey="count" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                      <Bar 
+                        dataKey="count" 
+                        fill="url(#trlLevelGradient)" 
+                        radius={[8, 8, 0, 0]}
+                        stroke="#f59e0b"
+                        strokeWidth={1}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                   {apiTrlMetrics.projectsByTrl.length === 0 && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                      <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de distribución de proyectos por nivel TRL</Typography>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      height: 200,
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+                      borderRadius: '12px',
+                      border: '1px dashed rgba(255,255,255,0.2)'
+                    }}>
+                      <Typography sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                        fontSize: '1.1rem',
+                        fontWeight: 500
+                      }}>
+                        📊 No hay datos de distribución de proyectos por nivel TRL
+                      </Typography>
                     </Box>
                   )}
                 </Box>

@@ -34,11 +34,10 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
       borderRadius: 3,
       justifyContent: 'space-between',
       cursor: 'pointer',
-      transition: 'transform 0.2s, box-shadow 0.2s',
+      transition: 'box-shadow 0.2s',
       flexShrink: 0,
       flexGrow: 0,
       '&:hover': {
-        transform: 'translateY(-2px)',
         boxShadow: 4
       }
     }}>

@@ -11,7 +11,7 @@ SECURITY_CONFIG = {
     'SECURE_BROWSER_XSS_FILTER': True,
     'SECURE_CONTENT_TYPE_NOSNIFF': True,
     'X_FRAME_OPTIONS': 'DENY',
-    'SECURE_HSTS_SECONDS': 31536000,  # 1 año
+    'SECURE_HSTS_SECONDS': 31536000,  # 1 año lo calcule con mi celu jakejhajdhsaksdLA
     'SECURE_HSTS_INCLUDE_SUBDOMAINS': True,
     'SECURE_HSTS_PRELOAD': True,
     
@@ -24,7 +24,7 @@ SECURITY_CONFIG = {
     'CSRF_COOKIE_SAMESITE': 'Strict',
     
     # Configuración de sesiones
-    'SESSION_COOKIE_AGE': 3600,  # 1 hora
+    'SESSION_COOKIE_AGE': 3600,  # 1 hora de duracion por sesion para los usuarios #tamokabron
     'SESSION_EXPIRE_AT_BROWSER_CLOSE': True,
     'SESSION_SAVE_EVERY_REQUEST': True,
     

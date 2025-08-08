@@ -75,12 +75,12 @@ const initialValues = {
   responsible_password: '',
 };
 
-// Lista de instituciones permitidas y dominios
+// Lista de instituciones permitidas y dominios para los estudiantes , la idea es de que se pueda agregar mas instituciones
 const INSTITUTIONS = [
   { name: 'INACAP', domain: 'inacapmail.cl' },
 ];
 
-// Función para generar el email automáticamente basado en nombre y apellido
+// Función para generar el email automáticamente basado en nombre y apellido, aunque tambien puede cambiar el dominio
 const generateEmail = (firstName: string, lastName: string) => {
   if (firstName && lastName) {
     const first = firstName.toLowerCase().trim();
@@ -96,7 +96,83 @@ const getEmailPlaceholder = (university: string) => {
   if (institution) {
     return `ejemplo@${institution.domain}`;
   }
-  return 'ejemplo@institucion.cl';
+  return 'ejemplodecorreo@institucion.cl';
+};
+
+// Función para obtener placeholders dinámicos según el campo y tipo de usuario
+const getFieldPlaceholder = (fieldName: string, userType: UserType) => {
+  const placeholders = {
+    // Campos comunes
+    first_name: 'Ej: Juan Carlos',
+    last_name: 'Ej: Pérez González',
+    phone: 'Ej: 912345678',
+    birthdate: 'Ej: 2000-01-15',
+    email: userType === 'student' ? 'Ej: juan.perez@inacapmail.cl' : 'Ej: contacto@empresa.cl',
+    password: 'Ej: MiContraseña123!',
+    password_confirm: 'Ej: MiContraseña123!',
+    
+    // Campos específicos de estudiante
+    career: 'Ej: Ingeniería Informática',
+    university: 'Ej: INACAP',
+    education_level: 'Ej: Universidad',
+    
+    // Campos específicos de empresa
+    rut: 'Ej: 12345678-9',
+    personality: 'Ej: Jurídica',
+    business_name: 'Ej: Empresa Tecnológica SPA',
+    company_name: 'Ej: TechCorp',
+    company_address: 'Ej: Av. Providencia 1234, Santiago',
+    company_phone: 'Ej: 912345678',
+    company_email: 'Ej: contacto@techcorp.cl',
+    industry: 'Ej: Tecnología',
+    size: 'Ej: Mediana',
+    website: 'Ej: https://www.techcorp.cl',
+    address: 'Ej: Av. Providencia 1234',
+    city: 'Ej: Santiago',
+  };
+  
+  return placeholders[fieldName as keyof typeof placeholders] || '';
+};
+
+// Función para obtener helper text dinámico
+const getFieldHelperText = (fieldName: string, userType: UserType, hasError: boolean, errorMessage?: string) => {
+  if (hasError && errorMessage) {
+    return errorMessage;
+  }
+  
+  const helperTexts = {
+    // Campos comunes
+    first_name: 'Ingresa tu nombre completo',
+    last_name: 'Ingresa tu apellido completo',
+    phone: 'Ingresa solo números (9 dígitos)',
+    birthdate: 'Selecciona tu fecha de nacimiento',
+    email: userType === 'student' 
+      ? 'Se generará automáticamente con formato: nombre.apellido@inacapmail.cl'
+      : 'Ingresa el correo electrónico de la empresa',
+    password: 'Mínimo 8 caracteres, una mayúscula y un carácter especial',
+    password_confirm: 'Repite la misma contraseña',
+    
+    // Campos específicos de estudiante
+    career: 'Ingresa tu carrera o programa de estudios',
+    university: 'Selecciona tu institución educativa',
+    education_level: 'Selecciona tu nivel educativo actual',
+    
+    // Campos específicos de empresa
+    rut: 'Ingresa el RUT sin puntos ni guión (ej: 123456789)',
+    personality: 'Selecciona el tipo de personalidad jurídica',
+    business_name: 'Ingresa la razón social registrada',
+    company_name: 'Ingresa el nombre comercial de la empresa',
+    company_address: 'Ingresa la dirección completa de la empresa',
+    company_phone: 'Ingresa solo números (9 dígitos)',
+    company_email: 'Ingresa el correo electrónico corporativo',
+    industry: 'Ingresa el sector o industria de la empresa',
+    size: 'Selecciona el tamaño de la empresa',
+    website: 'Ingresa la URL del sitio web (opcional)',
+    address: 'Ingresa la dirección de la empresa',
+    city: 'Ingresa la ciudad donde se ubica la empresa',
+  };
+  
+  return helperTexts[fieldName as keyof typeof helperTexts] || '';
 };
 
 // Esquema de validación
@@ -129,7 +205,7 @@ const getValidationSchema = (userType: UserType) => {
     phone: yup
       .string()
       .required('El teléfono es requerido')
-      .matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 XXXX XXXX)')
+      .matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 digitos XXXXXXXX)')
       .test('phone-length', 'El teléfono debe tener 9 dígitos', function(value) {
         return value ? value.length === 9 : false;
       }),
@@ -167,8 +243,6 @@ const EDUCATION_LEVELS = [
   { value: 'IP', label: 'Instituto Profesional' },
   { value: 'Universidad', label: 'Universidad' },
 ];
-
-
 
 // Recuadro de normas de conducta para estudiantes
 const studentConduct = (
@@ -218,6 +292,36 @@ export const Register = () => {
     responsible_password_confirm: false,
   });
   const [formKey, setFormKey] = useState(Date.now());
+  const [usernameWarning, setUsernameWarning] = useState('');
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+
+  // Función para verificar si el username existe
+  const checkUsername = async (username: string) => {
+    if (!username || username.length < 3) return;
+    
+    setIsCheckingUsername(true);
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/check-username/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.exists) {
+        setUsernameWarning(`El nombre de usuario "${username}" ya está en uso. Se generará automáticamente un nombre único.`);
+      } else {
+        setUsernameWarning('');
+      }
+    } catch (error) {
+      console.error('Error checking username:', error);
+    } finally {
+      setIsCheckingUsername(false);
+    }
+  };
 
   const formik = useFormik({
     initialValues,
@@ -275,7 +379,15 @@ export const Register = () => {
         console.log('  - birthdate:', registerData.birthdate);
         console.log('  - gender:', registerData.gender);
 
-        await register(registerData);
+        const result = await register(registerData);
+        
+        // Verificar si se generó un username automáticamente
+        if (result?.username_info) {
+          console.log('Username generado automáticamente:', result.username_info);
+          // Mostrar mensaje de éxito con información del username
+          alert(`¡Registro exitoso! ${result.username_info.message}`);
+        }
+        
         navigate('/dashboard');
       } catch (err) {
         console.error('Registration failed:', err);
@@ -283,89 +395,20 @@ export const Register = () => {
     },
   });
 
-  const handleUserTypeChange = (type: UserType) => {
-    setUserType(type);
-    setFormKey(Date.now()); // Forzar re-renderizado
-    
-    // Función para limpiar completamente
-    const clearFormCompletely = () => {
-      // Reset de Formik
-      formik.resetForm();
-      
-      // Reset de estados
-      setShowPasswords({
-        password: false,
-        password_confirm: false,
-        responsible_password: false,
-        responsible_password_confirm: false,
-      });
-      setShowConduct(false);
-      
-      // Limpiar todos los campos del DOM
-      const inputs = document.querySelectorAll('input, select, textarea');
-      inputs.forEach((input: any) => {
-        if (input.type === 'checkbox') {
-          input.checked = false;
-        } else if (input.type === 'date') {
-          input.value = '';
-        } else {
-          input.value = '';
-        }
-        // Forzar el evento change
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-      
-      // Reset del formulario HTML
-      const forms = document.querySelectorAll('form');
-      forms.forEach(form => {
-        form.reset();
-      });
-    };
-    
-    // Ejecutar limpieza inmediatamente
-    clearFormCompletely();
-    
-    // Ejecutar limpieza después de delays para asegurar que se ejecute
-    setTimeout(clearFormCompletely, 50);
-    setTimeout(clearFormCompletely, 200);
-    setTimeout(clearFormCompletely, 500);
-  };
-
-  // Función para manejar el cambio de institución
-  const handleUniversityChange = (event: any) => {
-    const newUniversity = event.target.value;
-    formik.setFieldValue('university', newUniversity);
-    
-    // Generar automáticamente el email basado en nombre y apellido
-    if (newUniversity === 'INACAP' && formik.values.first_name && formik.values.last_name) {
-      const generatedEmail = generateEmail(formik.values.first_name, formik.values.last_name);
-      formik.setFieldValue('email', generatedEmail);
-    }
-  };
-
-  // Función para manejar cambios en nombre y apellido
-  const handleNameChange = (field: string, value: string) => {
-    formik.setFieldValue(field, value);
-    
-    // Generar automáticamente el email si ya se seleccionó INACAP
-    if (formik.values.university === 'INACAP') {
-      const firstName = field === 'first_name' ? value : formik.values.first_name;
-      const lastName = field === 'last_name' ? value : formik.values.last_name;
-      
-      if (firstName && lastName) {
-        const generatedEmail = generateEmail(firstName, lastName);
-        formik.setFieldValue('email', generatedEmail);
+  // Verificar username cuando cambie el email
+  useEffect(() => {
+    const email = formik.values.email;
+    if (email && email.includes('@')) {
+      const username = email.split('@')[0];
+      if (username.length >= 3) {
+        const timeoutId = setTimeout(() => {
+          checkUsername(username);
+        }, 500); // Debounce de 500ms
+        
+        return () => clearTimeout(timeoutId);
       }
     }
-  };
-
-  // Función para manejar la visibilidad de las contraseñas
-  const handleTogglePasswordVisibility = (field: keyof typeof showPasswords) => {
-    setShowPasswords(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
-  };
+  }, [formik.values.email]);
 
   // useEffect para limpiar el formulario al montar el componente
   useEffect(() => {
@@ -471,6 +514,90 @@ export const Register = () => {
       }
     }
   }, [userType, formik.values]);
+
+  const handleUserTypeChange = (type: UserType) => {
+    setUserType(type);
+    setFormKey(Date.now()); // Forzar re-renderizado
+    
+    // Función para limpiar completamente
+    const clearFormCompletely = () => {
+      // Reset de Formik
+      formik.resetForm();
+      
+      // Reset de estados
+      setShowPasswords({
+        password: false,
+        password_confirm: false,
+        responsible_password: false,
+        responsible_password_confirm: false,
+      });
+      setShowConduct(false);
+      
+      // Limpiar todos los campos del DOM
+      const inputs = document.querySelectorAll('input, select, textarea');
+      inputs.forEach((input: any) => {
+        if (input.type === 'checkbox') {
+          input.checked = false;
+        } else if (input.type === 'date') {
+          input.value = '';
+        } else {
+          input.value = '';
+        }
+        // Forzar el evento change
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      
+      // Reset del formulario HTML
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.reset();
+      });
+    };
+    
+    // Ejecutar limpieza inmediatamente
+    clearFormCompletely();
+    
+    // Ejecutar limpieza después de delays para asegurar que se ejecute
+    setTimeout(clearFormCompletely, 50);
+    setTimeout(clearFormCompletely, 200);
+    setTimeout(clearFormCompletely, 500);
+  };
+
+  // Función para manejar el cambio de institución
+  const handleUniversityChange = (event: any) => {
+    const newUniversity = event.target.value;
+    formik.setFieldValue('university', newUniversity);
+    
+    // Generar automáticamente el email basado en nombre y apellido
+    if (newUniversity === 'INACAP' && formik.values.first_name && formik.values.last_name) {
+      const generatedEmail = generateEmail(formik.values.first_name, formik.values.last_name);
+      formik.setFieldValue('email', generatedEmail);
+    }
+  };
+
+  // Función para manejar cambios en nombre y apellido
+  const handleNameChange = (field: string, value: string) => {
+    formik.setFieldValue(field, value);
+    
+    // Generar automáticamente el email si ya se seleccionó INACAP
+    if (formik.values.university === 'INACAP') {
+      const firstName = field === 'first_name' ? value : formik.values.first_name;
+      const lastName = field === 'last_name' ? value : formik.values.last_name;
+      
+      if (firstName && lastName) {
+        const generatedEmail = generateEmail(firstName, lastName);
+        formik.setFieldValue('email', generatedEmail);
+      }
+    }
+  };
+
+  // Función para manejar la visibilidad de las contraseñas
+  const handleTogglePasswordVisibility = (field: keyof typeof showPasswords) => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
 
   return (
     <Box
@@ -611,10 +738,15 @@ export const Register = () => {
                         fullWidth
                         name="first_name"
                         label="Nombre"
+                        placeholder={getFieldPlaceholder('first_name', userType)}
                         value={formik.values.first_name}
                         onChange={(e) => handleNameChange('first_name', e.target.value)}
                         error={formik.touched.first_name && Boolean(formik.errors.first_name)}
-                        helperText={formik.touched.first_name && formik.errors.first_name}
+                        helperText={
+                          formik.touched.first_name && formik.errors.first_name
+                            ? formik.errors.first_name
+                            : getFieldHelperText('first_name', userType, false)
+                        }
                         disabled={loading}
                         autoComplete="off"
                         inputProps={{ autoComplete: 'off' }}
@@ -626,10 +758,15 @@ export const Register = () => {
                         fullWidth
                         name="last_name"
                         label="Apellido"
+                        placeholder={getFieldPlaceholder('last_name', userType)}
                         value={formik.values.last_name}
                         onChange={(e) => handleNameChange('last_name', e.target.value)}
                         error={formik.touched.last_name && Boolean(formik.errors.last_name)}
-                        helperText={formik.touched.last_name && formik.errors.last_name}
+                        helperText={
+                          formik.touched.last_name && formik.errors.last_name
+                            ? formik.errors.last_name
+                            : getFieldHelperText('last_name', userType, false)
+                        }
                         disabled={loading}
                         autoComplete="off"
                         inputProps={{ autoComplete: 'off' }}
@@ -643,13 +780,18 @@ export const Register = () => {
                         fullWidth
                         name="phone"
                         label="Teléfono"
+                        placeholder={getFieldPlaceholder('phone', userType)}
                         value={formik.values.phone.replace(/[^0-9]/g, '').slice(0, 9)}
                         onChange={e => {
                           const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 9);
                           formik.setFieldValue('phone', value);
                         }}
                         error={formik.touched.phone && Boolean(formik.errors.phone)}
-                        helperText={formik.touched.phone && formik.errors.phone}
+                        helperText={
+                          formik.touched.phone && formik.errors.phone
+                            ? formik.errors.phone
+                            : getFieldHelperText('phone', userType, false)
+                        }
                         disabled={loading}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">+56</InputAdornment>,
@@ -674,6 +816,16 @@ export const Register = () => {
                             </MenuItem>
                           ))}
                         </Select>
+                        {formik.touched.education_level && formik.errors.education_level && (
+                          <Typography color="error" variant="caption" display="block" sx={{ mt: 0.5 }}>
+                            {formik.errors.education_level}
+                          </Typography>
+                        )}
+                        {!formik.errors.education_level && (
+                          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                            {getFieldHelperText('education_level', userType, false)}
+                          </Typography>
+                        )}
                       </FormControl>
                     </Box>
                   </Box>
@@ -688,7 +840,11 @@ export const Register = () => {
                         value={formik.values.birthdate}
                         onChange={formik.handleChange}
                         error={formik.touched.birthdate && Boolean(formik.errors.birthdate)}
-                        helperText={formik.touched.birthdate && formik.errors.birthdate}
+                        helperText={
+                          formik.touched.birthdate && formik.errors.birthdate
+                            ? formik.errors.birthdate
+                            : getFieldHelperText('birthdate', userType, false)
+                        }
                         disabled={loading}
                         InputLabelProps={{ shrink: true }}
                       />
@@ -708,6 +864,11 @@ export const Register = () => {
                           <MenuItem value="Femenino">Femenino</MenuItem>
                           <MenuItem value="Otro">Otro</MenuItem>
                         </Select>
+                        {formik.touched.gender && formik.errors.gender && (
+                          <Typography color="error" variant="caption" display="block" sx={{ mt: 0.5 }}>
+                            {formik.errors.gender}
+                          </Typography>
+                        )}
                       </FormControl>
                     </Box>
                   </Box>
@@ -738,6 +899,16 @@ export const Register = () => {
                             </MenuItem>
                           ))}
                         </Select>
+                        {formik.touched.university && formik.errors.university && (
+                          <Typography color="error" variant="caption" display="block" sx={{ mt: 0.5 }}>
+                            {formik.errors.university}
+                          </Typography>
+                        )}
+                        {!formik.errors.university && (
+                          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                            {getFieldHelperText('university', userType, false)}
+                          </Typography>
+                        )}
                       </FormControl>
                     </Box>
 
@@ -747,15 +918,14 @@ export const Register = () => {
                         name="email"
                         label="Correo electrónico"
                         type="email"
+                        placeholder={getFieldPlaceholder('email', userType)}
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         error={formik.touched.email && Boolean(formik.errors.email)}
                         helperText={
                           formik.touched.email && formik.errors.email 
                             ? formik.errors.email 
-                            : formik.values.university === 'INACAP'
-                              ? 'Formato: nombre.apellido@inacapmail.cl'
-                              : 'Selecciona INACAP para generar tu correo automáticamente y corrige el formato real si es necesario'
+                            : getFieldHelperText('email', userType, false)
                         }
                         disabled={loading}
                         autoComplete="new-email"
@@ -763,6 +933,24 @@ export const Register = () => {
                       />
                     </Box>
                   </Box>
+
+                  {/* Advertencia de username duplicado */}
+                  {usernameWarning && (
+                    <Alert severity="warning" sx={{ mt: 1, mb: 2 }}>
+                      <Typography variant="body2">
+                        <strong>⚠️ Nombre de usuario:</strong> {usernameWarning}
+                      </Typography>
+                    </Alert>
+                  )}
+
+                  {/* Indicador de carga para verificación de username */}
+                  {isCheckingUsername && (
+                    <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
+                      <Typography variant="body2">
+                        <strong>🔍 Verificando nombre de usuario...</strong>
+                      </Typography>
+                    </Alert>
+                  )}
 
                   {/* Aviso informativo para estudiantes */}
                   <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
@@ -778,10 +966,15 @@ export const Register = () => {
                         fullWidth
                         name="career"
                         label="Carrera"
+                        placeholder={getFieldPlaceholder('career', userType)}
                         value={formik.values.career}
                         onChange={formik.handleChange}
                         error={formik.touched.career && Boolean(formik.errors.career)}
-                        helperText={formik.touched.career && formik.errors.career}
+                        helperText={
+                          formik.touched.career && formik.errors.career
+                            ? formik.errors.career
+                            : getFieldHelperText('career', userType, false)
+                        }
                         disabled={loading}
                       />
                     </Box>
@@ -796,10 +989,15 @@ export const Register = () => {
                           name="password"
                           label="Contraseña"
                           type={showPasswords.password ? 'text' : 'password'}
+                          placeholder={getFieldPlaceholder('password', userType)}
                           value={formik.values.password}
                           onChange={formik.handleChange}
                           error={formik.touched.password && Boolean(formik.errors.password)}
-                          helperText={formik.touched.password && formik.errors.password}
+                          helperText={
+                            formik.touched.password && formik.errors.password
+                              ? formik.errors.password
+                              : getFieldHelperText('password', userType, false)
+                          }
                           disabled={loading}
                           autoComplete="new-password"
                           inputProps={{ autoComplete: 'new-password' }}
@@ -825,10 +1023,15 @@ export const Register = () => {
                           name="password_confirm"
                           label="Confirmar contraseña"
                           type={showPasswords.password_confirm ? 'text' : 'password'}
+                          placeholder={getFieldPlaceholder('password_confirm', userType)}
                           value={formik.values.password_confirm}
                           onChange={formik.handleChange}
                           error={formik.touched.password_confirm && Boolean(formik.errors.password_confirm)}
-                          helperText={formik.touched.password_confirm && formik.errors.password_confirm}
+                          helperText={
+                            formik.touched.password_confirm && formik.errors.password_confirm
+                              ? formik.errors.password_confirm
+                              : getFieldHelperText('password_confirm', userType, false)
+                          }
                           disabled={loading}
                           autoComplete="new-password"
                           inputProps={{ autoComplete: 'new-password' }}
@@ -910,10 +1113,15 @@ export const Register = () => {
                         fullWidth
                         name="first_name"
                         label="Nombre"
+                        placeholder={getFieldPlaceholder('first_name', userType)}
                         value={formik.values.first_name}
                         onChange={formik.handleChange}
                         error={formik.touched.first_name && Boolean(formik.errors.first_name)}
-                        helperText={formik.touched.first_name && formik.errors.first_name}
+                        helperText={
+                          formik.touched.first_name && formik.errors.first_name
+                            ? formik.errors.first_name
+                            : getFieldHelperText('first_name', userType, false)
+                        }
                         disabled={loading}
                       />
                     </Box>
@@ -923,10 +1131,15 @@ export const Register = () => {
                         fullWidth
                         name="last_name"
                         label="Apellido"
+                        placeholder={getFieldPlaceholder('last_name', userType)}
                         value={formik.values.last_name}
                         onChange={formik.handleChange}
                         error={formik.touched.last_name && Boolean(formik.errors.last_name)}
-                        helperText={formik.touched.last_name && formik.errors.last_name}
+                        helperText={
+                          formik.touched.last_name && formik.errors.last_name
+                            ? formik.errors.last_name
+                            : getFieldHelperText('last_name', userType, false)
+                        }
                         disabled={loading}
                       />
                     </Box>
@@ -939,10 +1152,15 @@ export const Register = () => {
                         name="email"
                         label="Correo electrónico"
                         type="email"
+                        placeholder={getFieldPlaceholder('email', userType)}
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={formik.touched.email && formik.errors.email}
+                        helperText={
+                          formik.touched.email && formik.errors.email
+                            ? formik.errors.email
+                            : getFieldHelperText('email', userType, false)
+                        }
                         disabled={loading}
                       />
                     </Box>
@@ -952,13 +1170,18 @@ export const Register = () => {
                         fullWidth
                         name="phone"
                         label="Teléfono"
+                        placeholder={getFieldPlaceholder('phone', userType)}
                         value={formik.values.phone.replace(/[^0-9]/g, '').slice(0, 9)}
                         onChange={e => {
                           const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 9);
                           formik.setFieldValue('phone', value);
                         }}
                         error={formik.touched.phone && Boolean(formik.errors.phone)}
-                        helperText={formik.touched.phone && formik.errors.phone}
+                        helperText={
+                          formik.touched.phone && formik.errors.phone
+                            ? formik.errors.phone
+                            : getFieldHelperText('phone', userType, false)
+                        }
                         disabled={loading}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">+56</InputAdornment>,
@@ -978,7 +1201,11 @@ export const Register = () => {
                         value={formik.values.birthdate}
                         onChange={formik.handleChange}
                         error={formik.touched.birthdate && Boolean(formik.errors.birthdate)}
-                        helperText={formik.touched.birthdate && formik.errors.birthdate}
+                        helperText={
+                          formik.touched.birthdate && formik.errors.birthdate
+                            ? formik.errors.birthdate
+                            : getFieldHelperText('birthdate', userType, false)
+                        }
                         disabled={loading}
                         InputLabelProps={{ shrink: true }}
                       />
@@ -998,6 +1225,11 @@ export const Register = () => {
                           <MenuItem value="Femenino">Femenino</MenuItem>
                           <MenuItem value="Otro">Otro</MenuItem>
                         </Select>
+                        {formik.touched.gender && formik.errors.gender && (
+                          <Typography color="error" variant="caption" display="block" sx={{ mt: 0.5 }}>
+                            {formik.errors.gender}
+                          </Typography>
+                        )}
                       </FormControl>
                     </Box>
                   </Box>
@@ -1014,10 +1246,15 @@ export const Register = () => {
                         fullWidth 
                         name="rut" 
                         label="RUT" 
+                        placeholder={getFieldPlaceholder('rut', userType)}
                         value={formik.values.rut} 
                         onChange={formik.handleChange} 
                         error={formik.touched.rut && Boolean(formik.errors.rut)} 
-                        helperText={formik.touched.rut && formik.errors.rut} 
+                        helperText={
+                          formik.touched.rut && formik.errors.rut
+                            ? formik.errors.rut
+                            : getFieldHelperText('rut', userType, false)
+                        }
                         disabled={loading} 
                       />
                     </Box>
@@ -1035,6 +1272,16 @@ export const Register = () => {
                           <MenuItem value="Natural">Natural</MenuItem>
                           <MenuItem value="Otra">Otra</MenuItem>
                         </Select>
+                        {formik.touched.personality && formik.errors.personality && (
+                          <Typography color="error" variant="caption" display="block" sx={{ mt: 0.5 }}>
+                            {formik.errors.personality}
+                          </Typography>
+                        )}
+                        {!formik.errors.personality && (
+                          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                            {getFieldHelperText('personality', userType, false)}
+                          </Typography>
+                        )}
                       </FormControl>
                     </Box>
                   </Box>
@@ -1045,10 +1292,15 @@ export const Register = () => {
                         fullWidth 
                         name="business_name" 
                         label="Razón Social" 
+                        placeholder={getFieldPlaceholder('business_name', userType)}
                         value={formik.values.business_name} 
                         onChange={formik.handleChange} 
                         error={formik.touched.business_name && Boolean(formik.errors.business_name)} 
-                        helperText={formik.touched.business_name && formik.errors.business_name} 
+                        helperText={
+                          formik.touched.business_name && formik.errors.business_name
+                            ? formik.errors.business_name
+                            : getFieldHelperText('business_name', userType, false)
+                        }
                         disabled={loading}
                         autoComplete="off"
                         inputProps={{ autoComplete: 'off' }}
@@ -1059,10 +1311,15 @@ export const Register = () => {
                         fullWidth 
                         name="company_name" 
                         label="Nombre de la Empresa" 
+                        placeholder={getFieldPlaceholder('company_name', userType)}
                         value={formik.values.company_name} 
                         onChange={formik.handleChange} 
                         error={formik.touched.company_name && Boolean(formik.errors.company_name)} 
-                        helperText={formik.touched.company_name && formik.errors.company_name} 
+                        helperText={
+                          formik.touched.company_name && formik.errors.company_name
+                            ? formik.errors.company_name
+                            : getFieldHelperText('company_name', userType, false)
+                        }
                         disabled={loading}
                         autoComplete="off"
                         inputProps={{ autoComplete: 'off' }}
@@ -1076,10 +1333,15 @@ export const Register = () => {
                         fullWidth 
                         name="company_address" 
                         label="Dirección" 
+                        placeholder={getFieldPlaceholder('company_address', userType)}
                         value={formik.values.company_address} 
                         onChange={formik.handleChange} 
                         error={formik.touched.company_address && Boolean(formik.errors.company_address)} 
-                        helperText={formik.touched.company_address && formik.errors.company_address} 
+                        helperText={
+                          formik.touched.company_address && formik.errors.company_address
+                            ? formik.errors.company_address
+                            : getFieldHelperText('company_address', userType, false)
+                        }
                         disabled={loading}
                         autoComplete="off"
                         inputProps={{ autoComplete: 'off' }}
@@ -1090,13 +1352,18 @@ export const Register = () => {
                         fullWidth 
                         name="company_phone" 
                         label="Teléfono de la Empresa" 
+                        placeholder={getFieldPlaceholder('company_phone', userType)}
                         value={formik.values.company_phone.replace(/[^0-9]/g, '').slice(0, 9)} 
                         onChange={e => { 
                           const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 9); 
                           formik.setFieldValue('company_phone', value); 
                         }} 
                         error={formik.touched.company_phone && Boolean(formik.errors.company_phone)} 
-                        helperText={formik.touched.company_phone && formik.errors.company_phone} 
+                        helperText={
+                          formik.touched.company_phone && formik.errors.company_phone
+                            ? formik.errors.company_phone
+                            : getFieldHelperText('company_phone', userType, false)
+                        }
                         disabled={loading}
                         autoComplete="off"
                         inputProps={{ 
@@ -1118,10 +1385,15 @@ export const Register = () => {
                         name="company_email" 
                         label="Correo Electrónico de la Empresa" 
                         type="email" 
+                        placeholder={getFieldPlaceholder('company_email', userType)}
                         value={formik.values.company_email} 
                         onChange={formik.handleChange} 
                         error={formik.touched.company_email && Boolean(formik.errors.company_email)} 
-                        helperText={formik.touched.company_email && formik.errors.company_email} 
+                        helperText={
+                          formik.touched.company_email && formik.errors.company_email
+                            ? formik.errors.company_email
+                            : getFieldHelperText('company_email', userType, false)
+                        }
                         disabled={loading}
                         autoComplete="new-email"
                         inputProps={{ autoComplete: 'new-email' }}
@@ -1143,10 +1415,15 @@ export const Register = () => {
                          name="password"
                          label="Contraseña"
                          type={showPasswords.password ? 'text' : 'password'}
+                         placeholder={getFieldPlaceholder('password', userType)}
                          value={formik.values.password}
                          onChange={formik.handleChange}
                          error={formik.touched.password && Boolean(formik.errors.password)}
-                         helperText={formik.touched.password && formik.errors.password}
+                         helperText={
+                           formik.touched.password && formik.errors.password
+                             ? formik.errors.password
+                             : getFieldHelperText('password', userType, false)
+                         }
                          disabled={loading}
                          autoComplete="new-password"
                          inputProps={{ autoComplete: 'new-password' }}
@@ -1172,10 +1449,15 @@ export const Register = () => {
                          name="password_confirm"
                          label="Confirmar contraseña"
                          type={showPasswords.password_confirm ? 'text' : 'password'}
+                         placeholder={getFieldPlaceholder('password_confirm', userType)}
                          value={formik.values.password_confirm}
                          onChange={formik.handleChange}
                          error={formik.touched.password_confirm && Boolean(formik.errors.password_confirm)}
-                         helperText={formik.touched.password_confirm && formik.errors.password_confirm}
+                         helperText={
+                           formik.touched.password_confirm && formik.errors.password_confirm
+                             ? formik.errors.password_confirm
+                             : getFieldHelperText('password_confirm', userType, false)
+                         }
                          disabled={loading}
                          autoComplete="new-password"
                          inputProps={{ autoComplete: 'new-password' }}

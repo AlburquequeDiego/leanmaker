@@ -421,8 +421,8 @@ export const Notifications = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: 3,
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
+          transition: 'box-shadow 0.2s',
+          '&:hover': { boxShadow: '0 8px 25px rgba(0,0,0,0.15)' }
         }}>
           <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -442,8 +442,8 @@ export const Notifications = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: 3,
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
+          transition: 'box-shadow 0.2s',
+          '&:hover': { boxShadow: '0 8px 25px rgba(0,0,0,0.15)' }
         }}>
           <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -463,8 +463,8 @@ export const Notifications = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: 3,
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
+          transition: 'box-shadow 0.2s',
+          '&:hover': { boxShadow: '0 8px 25px rgba(0,0,0,0.15)' }
         }}>
           <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -484,8 +484,8 @@ export const Notifications = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: 3,
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
+          transition: 'box-shadow 0.2s',
+          '&:hover': { boxShadow: '0 8px 25px rgba(0,0,0,0.15)' }
         }}>
           <Box sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

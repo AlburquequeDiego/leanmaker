@@ -64,6 +64,7 @@ urlpatterns = [
         path('token/verify/', views.api_verify_token, name='api_verify_token'),
         path('auth/register/', views.api_register, name='api_register'),
         path('auth/logout/', views.api_logout, name='api_logout'),
+        path('auth/check-username/', views.api_check_username, name='api_check_username'),
     ])),
     path('api/test-projects/', views.api_test_projects, name='api_test_projects'),
     path('api/test-admin-stats/', views.api_test_admin_stats, name='api_test_admin_stats'),

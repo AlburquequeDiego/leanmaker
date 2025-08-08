@@ -199,6 +199,33 @@ class Estudiante(models.Model):
             self.rating = 0
         self.save(update_fields=['gpa', 'rating'])
 
+    def actualizar_api_level_automaticamente(self):
+        """Actualiza automáticamente el nivel de API basándose en horas trabajadas y proyectos completados"""
+        nuevo_api_level = 1
+        
+        # Criterios para subir de nivel:
+        # API 1 -> API 2: 20+ horas o 1+ proyecto completado
+        # API 2 -> API 3: 40+ horas o 2+ proyectos completados
+        # API 3 -> API 4: 80+ horas o 3+ proyectos completados
+        
+        if self.total_hours >= 80 or self.completed_projects >= 3:
+            nuevo_api_level = 4
+        elif self.total_hours >= 40 or self.completed_projects >= 2:
+            nuevo_api_level = 3
+        elif self.total_hours >= 20 or self.completed_projects >= 1:
+            nuevo_api_level = 2
+        else:
+            nuevo_api_level = 1
+        
+        # Solo actualizar si el nuevo nivel es mayor al actual
+        if nuevo_api_level > self.api_level:
+            self.api_level = nuevo_api_level
+            self.save(update_fields=['api_level'])
+            print(f"🎯 [API LEVEL] Estudiante {self.user.email} actualizado de API {self.api_level - (nuevo_api_level - self.api_level)} a API {nuevo_api_level}")
+            return True
+        
+        return False
+
 class PerfilEstudiante(models.Model):
     """
     Modelo para información adicional del perfil del estudiante
@@ -352,24 +379,67 @@ def student_cv_path(instance, filename):
     # Ruta por defecto para guardar CVs
     return f'students/cvs/{instance.estudiante.user.id}/{filename}'
 
-# @receiver(post_save, sender=User)
-# def crear_perfil_estudiante(sender, instance, created, **kwargs):
-#     if created and instance.role == 'student':
-#         from .models import Estudiante
-#         if not hasattr(instance, 'estudiante_profile'):
-#             estudiante = Estudiante.objects.create(user=instance)
-#             # Calcular TRL automáticamente al crear
-#             estudiante.actualizar_trl_segun_api()
+# Signal para crear automáticamente el perfil de estudiante cuando se crea un usuario
+@receiver(post_save, sender=User)
+def crear_perfil_estudiante(sender, instance, created, **kwargs):
+    """Crea automáticamente el perfil de estudiante cuando se crea un usuario con rol 'student'."""
+    if created and instance.role == 'student':
+        try:
+            # Verificar si ya existe un perfil de estudiante
+            if not hasattr(instance, 'estudiante_profile'):
+                print(f"[crear_perfil_estudiante] Creando perfil de estudiante para usuario {instance.id}")
+                estudiante = Estudiante.objects.create(
+                    user=instance,
+                    career=instance.career or '',
+                    university='',
+                    education_level='',
+                    status='approved',
+                    api_level=1,
+                    trl_level=1,
+                    strikes=0,
+                    gpa=0.0,
+                    completed_projects=0,
+                    total_hours=0,
+                    experience_years=0,
+                    availability='flexible',
+                    location='',
+                    area='',
+                    rating=0.0,
+                )
+                # Calcular TRL automáticamente al crear
+                estudiante.actualizar_trl_segun_api()
+                print(f"[crear_perfil_estudiante] Perfil de estudiante creado exitosamente - ID: {estudiante.id}")
+                
+                # Crear perfil detallado
+                perfil = PerfilEstudiante.objects.create(
+                    estudiante=estudiante,
+                    fecha_nacimiento=instance.birthdate,
+                    genero=instance.gender,
+                    universidad='',
+                )
+                print(f"[crear_perfil_estudiante] Perfil detallado creado exitosamente - ID: {perfil.id}")
+        except Exception as e:
+            print(f"[crear_perfil_estudiante] Error creando perfil de estudiante: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
 @receiver(post_save, sender=Estudiante)
 def actualizar_trl_automaticamente(sender, instance, **kwargs):
-    """Actualiza automáticamente el TRL cuando cambia el nivel API"""
-    # Solo actualizar si el TRL no coincide con el calculado
-    trl_calculado = instance.trl_permitido_segun_api
-    if instance.trl_level != trl_calculado:
-        instance.trl_level = trl_calculado
-        # Evitar recursión infinita
-        Estudiante.objects.filter(id=instance.id).update(trl_level=trl_calculado)
+    """Actualiza automáticamente el nivel TRL cuando se actualiza el nivel API"""
+    # Solo actualizar si se modificó el api_level y no estamos ya actualizando el trl_level
+    if (kwargs.get('update_fields') and 'api_level' in kwargs['update_fields'] and 
+        'trl_level' not in kwargs.get('update_fields', [])):
+        # Usar update() para evitar disparar signals nuevamente
+        Estudiante.objects.filter(id=instance.id).update(trl_level=instance.trl_permitido_segun_api)
+
+@receiver(post_save, sender=Estudiante)
+def actualizar_api_level_automaticamente(sender, instance, **kwargs):
+    """Actualiza automáticamente el nivel API cuando se actualizan horas o proyectos"""
+    # Solo actualizar si se modificaron las horas o proyectos completados
+    if (kwargs.get('update_fields') and 
+        any(field in kwargs['update_fields'] for field in ['total_hours', 'completed_projects']) and
+        'api_level' not in kwargs.get('update_fields', [])):
+        instance.actualizar_api_level_automaticamente()
 
 @receiver(post_save, sender='evaluations.Evaluation')
 def actualizar_gpa_estudiante_post_save(sender, instance, **kwargs):

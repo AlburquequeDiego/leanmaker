@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Paper, Typography, CircularProgress, Tooltip, IconButton } from '@mui/material';
+import { Box, Paper, Typography, CircularProgress, Tooltip, IconButton, Grid } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -11,13 +11,13 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-
 import SchoolIcon from '@mui/icons-material/School';
 import InfoIcon from '@mui/icons-material/Info';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 
 // Componente de tarjeta KPI reutilizable
 interface KPICardProps {
@@ -54,13 +54,12 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
       borderRadius: 3,
       justifyContent: 'space-between',
       cursor: 'pointer',
-      transition: 'transform 0.2s, box-shadow 0.2s',
+      transition: 'box-shadow 0.2s',
       flexShrink: 0,
       flexGrow: 0,
       position: 'relative',
       overflow: 'hidden',
       '&:hover': {
-        transform: 'translateY(-2px)',
         boxShadow: isGradient ? '0 12px 40px rgba(99, 102, 241, 0.4)' : 4
       },
       '&::before': isGradient ? {
@@ -269,6 +268,8 @@ export default function CompanyDashboard() {
       console.log('  - active_students:', stats.active_students);
       console.log('  - rating:', stats.rating);
       console.log('  - total_hours_offered:', stats.total_hours_offered);
+      console.log('  - monthly_activity:', stats.monthly_activity);
+      console.log('  - area_distribution:', stats.area_distribution);
     }
   }, [stats]);
 
@@ -447,8 +448,147 @@ export default function CompanyDashboard() {
                 textColor="white"
               />
            </Box>
-        </>
-      )}
-    </Box>
-  );
-}
+            
+            {/* Gráficos */}
+            <Grid container spacing={3} sx={{ mt: 2 }}>
+              {/* Gráfico de Dona - Distribución de Proyectos por Área */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ 
+                  p: 3, 
+                  height: 400,
+                  bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+                  border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+                }}>
+                  <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                    Distribución de Proyectos por Área
+                  </Typography>
+                  {stats?.area_distribution && stats.area_distribution.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={stats.area_distribution}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          paddingAngle={5}
+                          dataKey="count"
+                          nameKey="name"
+                        >
+                          {stats.area_distribution.map((entry: any, index: number) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={[
+                                '#3b82f6', '#16a34a', '#f59e0b', '#ef4444', 
+                                '#8b5cf6', '#06b6d4', '#84cc16', '#f97316', '#ec4899'
+                              ][index % 9]} 
+                            />
+                          ))}
+                        </Pie>
+                        <RechartsTooltip 
+                          contentStyle={{
+                            backgroundColor: themeMode === 'dark' ? '#1e293b' : 'white',
+                            border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
+                          formatter={(value: any, name: any) => [
+                            `${value} proyectos`, 
+                            name
+                          ]}
+                        />
+                        <Legend 
+                          verticalAlign="bottom" 
+                          height={36}
+                          wrapperStyle={{
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      height: 300,
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        No hay proyectos disponibles
+                      </Typography>
+                      <Typography variant="body2">
+                        Los proyectos aparecerán aquí cuando crees y publiques proyectos
+                      </Typography>
+                    </Box>
+                  )}
+                </Paper>
+              </Grid>
+
+              {/* Gráfico de Barras - Actividad Mensual */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ 
+                  p: 3, 
+                  height: 400,
+                  bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+                  border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+                }}>
+                  <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                    Actividad Mensual
+                  </Typography>
+                  {stats?.monthly_activity && stats.monthly_activity.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={stats.monthly_activity}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={themeMode === 'dark' ? '#334155' : '#e2e8f0'} />
+                        <XAxis 
+                          dataKey="month" 
+                          tick={{ fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}
+                          fontSize={12}
+                        />
+                        <YAxis 
+                          tick={{ fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}
+                          fontSize={12}
+                        />
+                        <RechartsTooltip 
+                          contentStyle={{
+                            backgroundColor: themeMode === 'dark' ? '#1e293b' : 'white',
+                            border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
+                        />
+                        <Legend 
+                          wrapperStyle={{
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}
+                        />
+                        <Bar dataKey="projects" fill="#3b82f6" name="Proyectos Creados" />
+                        <Bar dataKey="applications" fill="#16a34a" name="Aplicaciones Recibidas" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      height: 300,
+                      color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+                    }}>
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        No hay datos de actividad mensual
+                      </Typography>
+                      <Typography variant="body2">
+                        La actividad aparecerá aquí cuando crees proyectos o recibas aplicaciones
+                      </Typography>
+                    </Box>
+                  )}
+                </Paper>
+              </Grid>
+            </Grid>
+          </>
+        )}
+      </Box>
+    );
+  }

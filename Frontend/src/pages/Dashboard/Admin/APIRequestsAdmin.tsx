@@ -488,7 +488,6 @@ export default function APIRequestsAdmin() {
                               fontWeight: 600,
                               boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
                               '&:hover': {
-                                transform: 'translateY(-1px)',
                                 boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)'
                               }
                             }}
@@ -634,7 +633,6 @@ export default function APIRequestsAdmin() {
               fontWeight: 600,
               boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
               '&:hover': {
-                transform: 'translateY(-1px)',
                 boxShadow: '0 6px 16px rgba(239, 68, 68, 0.4)'
               }
             }}
@@ -653,7 +651,6 @@ export default function APIRequestsAdmin() {
               fontWeight: 600,
               boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
               '&:hover': {
-                transform: 'translateY(-1px)',
                 boxShadow: '0 6px 16px rgba(34, 197, 94, 0.4)'
               }
             }}

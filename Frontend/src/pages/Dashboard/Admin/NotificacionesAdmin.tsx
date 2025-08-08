@@ -692,9 +692,8 @@ export default function NotificacionesAdmin() {
               borderRadius: 3,
               boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
               border: '1px solid rgba(0,0,0,0.05)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
+              transition: 'box-shadow 0.2s',
               '&:hover': {
-                transform: 'translateY(-4px)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
               }
             }}>

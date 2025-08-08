@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiService } from '../services/api.service';
 import { authService } from '../services/auth.service';
 
@@ -132,39 +132,84 @@ export interface HubAnalyticsData {
   };
 }
 
+// Cache for analytics data
+const analyticsCache = new Map<string, { data: HubAnalyticsData; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export const useHubAnalytics = () => {
   const [data, setData] = useState<HubAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
     try {
+      // Check cache first
+      const cacheKey = 'analytics-data';
+      const cachedData = analyticsCache.get(cacheKey);
+      
+      if (!forceRefresh && cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
+        setData(cachedData.data);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       
-                   // Debug: Verificar si hay token
-             const token = authService.getAccessToken();
-             console.log('🔍 [HUB ANALYTICS] Token disponible:', !!token);
+      // Cancel previous request if it exists
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
       
-      const response = await apiService.get('/api/hub/analytics/');
+      // Create new abort controller
+      abortControllerRef.current = new AbortController();
+      
+      // Debug: Verificar si hay token
+      const token = authService.getAccessToken();
+      console.log('🔍 [HUB ANALYTICS] Token disponible:', !!token);
+      
+      const response = await apiService.get('/api/hub/analytics/', {
+        signal: abortControllerRef.current.signal
+      });
+      
       console.log('📊 [HUB ANALYTICS] Datos recibidos:', response);
+      
+      // Cache the data
+      analyticsCache.set(cacheKey, {
+        data: response,
+        timestamp: Date.now()
+      });
       
       setData(response);
     } catch (err) {
+      // Don't set error if request was aborted
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
+      
       console.error('❌ [HUB ANALYTICS] Error obteniendo datos:', err);
       setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+    
+    // Cleanup function to abort request on unmount
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [fetchData]);
 
-  const refreshData = () => {
-    fetchData();
-  };
+  const refreshData = useCallback(() => {
+    fetchData(true);
+  }, [fetchData]);
 
   return {
     data,

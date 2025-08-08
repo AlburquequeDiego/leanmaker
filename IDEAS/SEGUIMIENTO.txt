@@ -1,0 +1,124 @@
+
+USUARIOS ACTIVOS EN LA BASE DE DATOS: 
+
+ADMINISTRADOS:
+admin@gmail.com                 admin123
+
+estudiantes:
+juan.perez@inacapmail.cl        Estudiante123!
+joaco.gomez@inacapmail.cl       Estudiante123!
+
+EMPRESAS:
+lucia.amaya@gmail.com           Empresa123!
+
+
+
+##HACER QUE ESTAS INTERFACES DONDE SI SALEN DIRECTAMENTE LOS GPA 
+FUNCINOEN REALMENTE 
+-----------------ESTUDIANTE
+Mis Evaluaciones      
+tarjeta en dashboard
+-----------------EMPRESA
+Evaluaciones
+tarjeta en dashboard
+Strikes
+-----------------ADMIN
+gestion de empresas 
+gestion de estudiantes gpa + strikes
+Gestión de Calificaciones Mutuas: Calificaciones Mutuas , Gestión de 
+Reportes de Strikes
+Asignaciones de Strikes
+Gestión de Analytics y Reportes:
+Métricas de Strikes y Disciplina
+
+# LAS EVALUACIONES DE TODOS LO USUSARIOS LAS INTERFACES AHORA 
+# SOLO SON FRONT PORQUE LOS ENDPOINDTS ESTABAN MAL 
+
+TODA LA LOGICA DEL BACKEND DEBE SER ELIMINADA 
+Y LA BASE DE DATOS MEJORADA PARA QUE EVALUACIONES FUNCINOE BIEN 
+REMODELACION CON LAS EVALUACIONES
+
+La variable para la solicitud de eventos para saber cuántos 
+confirman su asistencia a un evento - nuevo gráfico al análiyics 
+
+LA BASE DE DATOS NO ESTA LISTA  PARA MANEJAR LAS EVALUACIONES
+
+LA EMPRESA PUEDE EDITAR LA PUBLICACION , CUANDO ESTE EN PUCBLICACION 
+Y ESE ESTADO TENDRA 5 DIAR PARA PODER EDITARLO PASANSO ESE TIEMPO YA NO
+PODRA EDITARLO 
+
+LAS NOTIFICAIONES DE EVENTO MEJORARLAS , LAS GENERACIONES MASIVAS DEBEN DE
+SER MAS INTERACTIVAS LAS DE EVENTOS EN SEDE Y LOS EVENTOS DEBEN TENER 
+UN MENSAJE NORMAL PERO CON UN BOTON Y ADMVENTENCIA DE ASISTENCIA 
+DE ASISTENCIAS ASISTIRIAS AL EVENTO EN SEDE AL CUAL ESTAS INVITADO EN SEDE 
+
+ESOS DATOS DE EVENTOS Y ASISTENCIAS EN LA INTERFAZ DE NOTIFICACIONES
+DEBE TENER SU GRAFICA EN ANALITICS ADMIN
+
+EN ANALITICS Las ASISTENCIAS A EVENTOS DEBEN FUNCIONAR 
+
+AL TERMINAR LA BASE DE DATOS DEBEMOS PODER HACER CONSULTAS 
+YA SEA CUALQUIER EDITOR QUE SE ADAPTE A MI BASE DE DATOS
+
+## AL FINALIZAR DEJAR OK , LA BASE DE DATOS , Y EL FRONT Y 
+EL BACKEDN , HACER LIMPIEZA DE TODO LO QUE NO SE USA y correcciones de codigo##
+
+
+🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢
+AREAS ORDENADAS DE MÁS FÁCIL A MÁS COMPLEJO
+🟢 NIVEL 1 - FÁCIL (Frontend/UI)
+Mejorar notificaciones de eventos
+Hacer las generaciones masivas más interactivas
+Agregar botón de confirmación de asistencia
+Mejorar mensajes de eventos en sede
+Agregar gráfico de asistencias a eventos en Analytics Admin
+Nuevo gráfico para mostrar cuántos confirman asistencia
+Integrar datos de eventos y asistencias
+Limitar edición de publicaciones (5 días)
+Agregar validación de tiempo para editar proyectos
+Bloquear edición después de 5 días en estado "publicación"
+
+
+🟡 NIVEL 2 - MEDIO (Backend/Validaciones)
+Mejorar validaciones en crear proyectos
+Arreglar lógica de cálculo de horas por TRL
+Mejorar limitantes del calendario
+Validaciones más coherentes para duración de proyectos
+Hacer funcionales las asistencias a eventos en Analytics
+Conectar datos reales de asistencias
+Implementar métricas de eventos
+
+
+🔴 NIVEL 3 - COMPLEJO (Base de Datos/Reestructuración)
+Reestructurar base de datos de evaluaciones
+Eliminar toda la lógica actual del backend
+Rediseñar modelos de evaluaciones
+Crear nuevas migraciones
+Implementar funcionalidad real de evaluaciones
+Conectar interfaces frontend con nuevo backend
+Implementar GPA real para estudiantes
+Conectar tarjetas de dashboard con datos reales
+Implementar sistema de strikes completo
+Modelos de strikes
+Gestión de strikes para admin
+Reportes y métricas de strikes
+
+
+
+
+
+🟡🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 
+JOACO EXAMINA ESTE PROBLEMA QUE FUNCINE BIEN LA LOGICA 
+ESTA MALA , UN PROYECTO TRL 1 DE 20 HORAS PODRIA DURAR 1 SEMANA POR EJMPLO 
+LAS HORAS DEBERIAN DE CALCULARSE COHERENTEMENTE PARA UNA MEJOR MANEJO DEHORAS 
+LO DEJE MAL AL TRATAR DE HACERLO RAPIDO PERO ME DI CUENTA QUE ES MAS LOGICA DE A QUE PARECE
+Mejorar validaciones en crear proyectos
+Ubicación: Frontend/src/pages/Dashboard/Company/PublishProjects.tsx
+Problema: Validaciones insuficientes
+Solución: Agregar más limitantes y validaciones
+En crear proyectos , poner mas limitantes de como poner nos datos 
+y limitar el calendario
+
+
+LA EMPRESA NO DEBE SABER QUE SON LOS TRL NUNCA
+🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡

@@ -316,8 +316,8 @@ export const MyProjects = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: '0 4px 20px rgba(30, 64, 175, 0.3)',
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
+          transition: 'box-shadow 0.2s',
+          '&:hover': { boxShadow: '0 8px 32px rgba(30, 64, 175, 0.4)' }
         }}>
           <CardContent sx={{ textAlign: 'center', p: 3 }}>
             <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
@@ -338,8 +338,8 @@ export const MyProjects = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: '0 4px 20px rgba(132, 204, 22, 0.3)',
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
+          transition: 'box-shadow 0.2s',
+          '&:hover': { boxShadow: '0 8px 32px rgba(132, 204, 22, 0.4)' }
         }}>
           <CardContent sx={{ textAlign: 'center', p: 3 }}>
             <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
@@ -360,8 +360,8 @@ export const MyProjects = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
-          transition: 'transform 0.2s',
-          '&:hover': { transform: 'translateY(-4px)' }
+          transition: 'box-shadow 0.2s',
+          '&:hover': { boxShadow: '0 8px 32px rgba(16, 185, 129, 0.4)' }
         }}>
           <CardContent sx={{ textAlign: 'center', p: 3 }}>
             <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
@@ -447,11 +447,10 @@ export const MyProjects = () => {
                     border: themeMode === 'dark' 
                       ? '2px solid #475569' 
                       : '2px solid #1976d2',
-                    transition: 'all 0.3s ease',
+                    transition: 'box-shadow 0.3s ease',
                     display: 'flex',
                     flexDirection: 'column',
                     '&:hover': { 
-                      transform: 'translateY(-8px) scale(1.02)', 
                       boxShadow: themeMode === 'dark' 
                         ? '0 12px 40px rgba(96, 165, 250, 0.3)' 
                         : '0 12px 40px rgba(25, 118, 210, 0.3)',
@@ -593,11 +592,10 @@ export const MyProjects = () => {
                   border: themeMode === 'dark' 
                     ? '2px solid #475569' 
                     : '2px solid #388e3c',
-                  transition: 'all 0.3s ease',
+                  transition: 'box-shadow 0.3s ease',
                   display: 'flex',
                   flexDirection: 'column',
                   '&:hover': { 
-                    transform: 'translateY(-8px) scale(1.02)', 
                     boxShadow: themeMode === 'dark' 
                       ? '0 12px 40px rgba(156, 39, 176, 0.3)' 
                       : '0 12px 40px rgba(156, 39, 176, 0.3)',
@@ -742,7 +740,6 @@ export const MyProjects = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   '&:hover': { 
-                    transform: 'translateY(-8px) scale(1.02)', 
                     boxShadow: themeMode === 'dark' 
                       ? '0 12px 40px rgba(34, 197, 94, 0.3)' 
                       : '0 12px 40px rgba(33, 150, 243, 0.3)',

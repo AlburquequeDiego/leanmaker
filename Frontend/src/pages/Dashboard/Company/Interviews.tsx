@@ -339,7 +339,7 @@ export const CompanyInterviews: React.FC = () => {
             <CardContent sx={{ textAlign: 'center', p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
-                  <GroupIcon sx={{ fontSize: 28 }} />
+                  <GroupIcon sx={{ fontSize: 28, color: 'white' }} />
                 </Avatar>
               </Box>
               <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
@@ -366,7 +366,7 @@ export const CompanyInterviews: React.FC = () => {
             <CardContent sx={{ textAlign: 'center', p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
-                  <ScheduleIcon sx={{ fontSize: 28 }} />
+                  <ScheduleIcon sx={{ fontSize: 28, color: 'white' }} />
                 </Avatar>
               </Box>
               <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
@@ -393,7 +393,7 @@ export const CompanyInterviews: React.FC = () => {
             <CardContent sx={{ textAlign: 'center', p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
-                  <CheckCircleIcon sx={{ fontSize: 28 }} />
+                  <CheckCircleIcon sx={{ fontSize: 28, color: 'white' }} />
                 </Avatar>
               </Box>
               <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
@@ -424,7 +424,7 @@ export const CompanyInterviews: React.FC = () => {
                   width: 56, 
                   height: 56 
                 }}>
-                  <AccessTimeIcon sx={{ fontSize: 28 }} />
+                  <AccessTimeIcon sx={{ fontSize: 28, color: themeMode === 'dark' ? 'white' : '#2c3e50' }} />
                 </Avatar>
               </Box>
               <Typography variant="h2" fontWeight={800} sx={{ mb: 1 }}>
@@ -484,7 +484,7 @@ export const CompanyInterviews: React.FC = () => {
           <Tab 
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
-                <ScheduleIcon sx={{ fontSize: 20 }} />
+                <ScheduleIcon sx={{ fontSize: 20, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }} />
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
                   Próximas Entrevistas
                 </Typography>
@@ -506,7 +506,7 @@ export const CompanyInterviews: React.FC = () => {
           <Tab 
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
-                <CheckCircleIcon sx={{ fontSize: 20 }} />
+                <CheckCircleIcon sx={{ fontSize: 20, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }} />
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
                   Completadas
                 </Typography>
@@ -528,7 +528,7 @@ export const CompanyInterviews: React.FC = () => {
           <Tab 
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
-                <AssessmentIcon sx={{ fontSize: 20 }} />
+                <AssessmentIcon sx={{ fontSize: 20, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }} />
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
                   Historial Completo
                 </Typography>
@@ -595,9 +595,8 @@ export const CompanyInterviews: React.FC = () => {
                         boxShadow: themeMode === 'dark' 
                           ? '0 8px 25px rgba(0,0,0,0.3)' 
                           : '0 8px 25px rgba(0,0,0,0.1)',
-                        transition: 'all 0.3s ease',
+                        transition: 'box-shadow 0.3s ease',
                         '&:hover': {
-                          transform: 'translateY(-5px)',
                           boxShadow: themeMode === 'dark' 
                             ? '0 15px 35px rgba(0,0,0,0.5)' 
                             : '0 15px 35px rgba(0,0,0,0.15)',
@@ -793,9 +792,8 @@ export const CompanyInterviews: React.FC = () => {
                         boxShadow: themeMode === 'dark' 
                           ? '0 8px 25px rgba(0,0,0,0.3)' 
                           : '0 8px 25px rgba(0,0,0,0.1)',
-                        transition: 'all 0.3s ease',
+                        transition: 'box-shadow 0.3s ease',
                         '&:hover': {
-                          transform: 'translateY(-5px)',
                           boxShadow: themeMode === 'dark' 
                             ? '0 15px 35px rgba(0,0,0,0.5)' 
                             : '0 15px 35px rgba(0,0,0,0.15)',
@@ -1065,9 +1063,8 @@ export const CompanyInterviews: React.FC = () => {
                         boxShadow: themeMode === 'dark' 
                           ? '0 4px 15px rgba(0,0,0,0.3)' 
                           : '0 4px 15px rgba(0,0,0,0.08)',
-                        transition: 'all 0.3s ease',
+                        transition: 'box-shadow 0.3s ease',
                         '&:hover': {
-                          transform: 'translateY(-3px)',
                           boxShadow: themeMode === 'dark' 
                             ? '0 8px 25px rgba(0,0,0,0.5)' 
                             : '0 8px 25px rgba(0,0,0,0.12)',
@@ -1185,7 +1182,7 @@ export const CompanyInterviews: React.FC = () => {
           borderRadius: '12px 12px 0 0'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <GroupIcon sx={{ fontSize: 28 }} />
+            <GroupIcon sx={{ fontSize: 28, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }} />
             <Typography variant="h6">Detalles de la Entrevista</Typography>
           </Box>
         </DialogTitle>

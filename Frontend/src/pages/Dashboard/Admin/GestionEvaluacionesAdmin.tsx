@@ -1,835 +1,423 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Typography,
-  Paper,
-  Tabs,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  IconButton,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   Card,
   CardContent,
   Avatar,
-  Rating,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
-  Stack,
-  Snackbar,
-  Alert,
-  CircularProgress,
+  Chip,
 } from '@mui/material';
 import {
+  Assessment as AssessmentIcon,
   Business as BusinessIcon,
   Person as PersonIcon,
-  Visibility as VisibilityIcon,
-  Assessment as AssessmentIcon,
-  CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
-  Star as StarIcon,
-  Search as SearchIcon,
-  Clear as ClearIcon,
+  CheckCircle as CheckCircleIcon,
+  Schedule as ScheduleIcon,
+  Cancel as CancelIcon,
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-import { adaptEvaluation, adaptStrikeReport } from '../../../utils/adapters';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Evaluation {
   id: string;
   student_name: string;
-  student_id: string;
   company_name: string;
-  company_id: string;
   project_title: string;
-  project_id: string;
   score: number;
-  comments: string;
-  evaluation_date: string;
   status: 'pending' | 'completed' | 'flagged';
-  evaluator_name: string;
   evaluator_type: 'company' | 'student';
-  criteria_scores?: {
-    [key: string]: number;
-  };
-}
-
-interface EvaluationCriteria {
-  id: string;
-  name: string;
-  description: string;
-  weight: number;
-  category: string;
 }
 
 interface StrikeReport {
   id: string;
   student_name: string;
-  student_id: string;
   company_name: string;
-  company_id: string;
   project_title: string;
-  project_id: string;
-  evaluation_date: string;
   status: 'pending' | 'approved' | 'rejected';
   reason: string;
-  evaluator_name: string;
-  evaluator_type: 'company' | 'student';
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`evaluation-tabpanel-${index}`}
-      aria-labelledby={`evaluation-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
 }
 
 export const GestionEvaluacionesAdmin = () => {
-  const [tabValue, setTabValue] = useState(0);
-  const [selectedEvaluation, setSelectedEvaluation] = useState<Evaluation | null>(null);
-  const [actionDialog, setActionDialog] = useState(false);
-  const [actionType, setActionType] = useState<'view' | null>(null);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [evaluationsLimit, setEvaluationsLimit] = useState<number | 'all'>(20);
-  const [usersLimit, setUsersLimit] = useState<number | 'all'>(20);
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
-  const [strikeReports, setStrikeReports] = useState<StrikeReport[]>([]);
-  const [criteria, setCriteria] = useState<EvaluationCriteria[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [showViewDialog, setShowViewDialog] = useState(false);
+  const { themeMode } = useTheme();
+  const [evaluations] = useState<Evaluation[]>([]);
+  const [strikeReports] = useState<StrikeReport[]>([]);
+  const [showLimit, setShowLimit] = useState(15);
 
-  useEffect(() => {
-    fetchEvaluations();
-    fetchStrikeReports();
-    fetchCriteria();
-  }, []);
+  // Estadísticas calculadas
+  const totalEvaluations = evaluations.length;
+  const companyToStudentEvaluations = evaluations.filter(e => e.evaluator_type === 'company').length;
+  const studentToCompanyEvaluations = evaluations.filter(e => e.evaluator_type === 'student').length;
+  const totalStrikes = strikeReports.length;
 
-  // Efecto para recargar reportes cuando cambie el filtro de estado
-  useEffect(() => {
-    if (tabValue === 1) { // Solo si estamos en la pestaña de strikes
-      fetchStrikeReports();
-    }
-  }, [statusFilter, tabValue]);
-
-  const fetchEvaluations = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.getEvaluations({
-        page: 1,
-        limit: 100,
-        status: statusFilter || undefined,
-        type: typeFilter || undefined,
-      });
-      
-      console.log('Datos del backend:', response.results);
-      const formattedEvaluations = response.results ? 
-        response.results.map((evaluation: any) => adaptEvaluation(evaluation)) : [];
-      console.log('Evaluaciones adaptadas:', formattedEvaluations);
-      
-      setEvaluations(formattedEvaluations);
-    } catch (error) {
-      console.error('Error fetching evaluations:', error);
-      setSuccessMessage('Error al cargar las evaluaciones');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStrikeReports = async () => {
-    try {
-      console.log('🔍 Fetching strike reports with filter:', statusFilter);
-      const response = await apiService.getStrikeReports({
-        page: 1,
-        limit: 100,
-        status: statusFilter || undefined,
-      });
-      
-      console.log('📊 Reportes de strikes del backend:', response.results);
-      const formattedReports = response.results ? 
-        response.results.map((report: any) => adaptStrikeReport(report)) : [];
-      console.log('✅ Reportes adaptados:', formattedReports);
-      console.log('🎯 Filtro aplicado:', statusFilter);
-      
-      setStrikeReports(formattedReports);
-    } catch (error) {
-      console.error('❌ Error fetching strike reports:', error);
-      setSuccessMessage('Error al cargar los reportes de strikes');
-    }
-  };
-
-  const fetchCriteria = async () => {
-    try {
-      const staticCriteria = [
-        {
-          id: '1',
-          name: 'Calidad del Trabajo',
-          description: 'Calidad general del trabajo realizado',
-          weight: 1,
-          category: 'General',
-        },
-        {
-          id: '2',
-          name: 'Comunicación',
-          description: 'Habilidad de comunicación y colaboración',
-          weight: 1,
-          category: 'General',
-        },
-        {
-          id: '3',
-          name: 'Puntualidad',
-          description: 'Cumplimiento de fechas y horarios',
-          weight: 1,
-          category: 'General',
-        },
-        {
-          id: '4',
-          name: 'Iniciativa',
-          description: 'Proactividad y toma de iniciativa',
-          weight: 1,
-          category: 'General',
-        },
-      ];
-      
-      setCriteria(staticCriteria);
-    } catch (error) {
-      console.error('Error fetching criteria:', error);
-    }
-  };
-
-  const handleApproveEvaluation = async (evaluationId: string) => {
-    try {
-      await apiService.approveEvaluation(evaluationId);
-      setSuccessMessage('Evaluación aprobada exitosamente');
-      await fetchEvaluations();
-    } catch (error) {
-      console.error('Error approving evaluation:', error);
-      setSuccessMessage('Error al aprobar la evaluación');
-    }
-  };
-
-  const handleRejectEvaluation = async (evaluationId: string) => {
-    try {
-      await apiService.rejectEvaluation(evaluationId);
-      setSuccessMessage('Evaluación rechazada exitosamente');
-      await fetchEvaluations();
-    } catch (error) {
-      console.error('Error rejecting evaluation:', error);
-      setSuccessMessage('Error al rechazar la evaluación');
-    }
-  };
-
-  const handleApproveStrikeReport = async (reportId: string) => {
-    try {
-      await apiService.approveStrikeReport(reportId);
-      setSuccessMessage('Reporte de strike aprobado exitosamente');
-      await fetchStrikeReports();
-    } catch (error) {
-      console.error('Error approving strike report:', error);
-      setSuccessMessage('Error al aprobar el reporte de strike');
-    }
-  };
-
-  const handleRejectStrikeReport = async (reportId: string) => {
-    try {
-      await apiService.rejectStrikeReport(reportId);
-      setSuccessMessage('Reporte de strike rechazado exitosamente');
-      await fetchStrikeReports();
-    } catch (error) {
-      console.error('Error rejecting strike report:', error);
-      setSuccessMessage('Error al rechazar el reporte de strike');
-    }
-  };
-
-  const getDialogTitle = () => {
-    switch (actionType) {
-      case 'view': return 'Detalles de Evaluación';
-      default: return '';
-    }
-  };
-
-  const getDialogContent = () => {
-    if (!selectedEvaluation) return null;
-
-    if (actionType === 'view') {
       return (
-        <Box>
-          <Typography variant="h6" gutterBottom>Evaluación del Proyecto</Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            {selectedEvaluation.project_title}
-          </Typography>
-          
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>Información General:</Typography>
-            <Typography><strong>De:</strong> {selectedEvaluation.student_name}</Typography>
-            <Typography><strong>Para:</strong> {selectedEvaluation.company_name}</Typography>
-            <Typography><strong>Fecha:</strong> {new Date(selectedEvaluation.evaluation_date).toLocaleDateString()}</Typography>
-          </Box>
-          
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>Calificación:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Rating value={selectedEvaluation.score} readOnly size="large" />
-              <Typography variant="h6" fontWeight={600}>
-                {selectedEvaluation.score}/5
-              </Typography>
-            </Box>
-          </Box>
-          
-          {selectedEvaluation.comments && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="subtitle1" gutterBottom>Comentarios:</Typography>
-              <Typography variant="body2" sx={{ 
-                p: 2, 
-                bgcolor: 'grey.50', 
-                borderRadius: 1,
-                border: '1px solid',
-                borderColor: 'grey.200'
+    <Box sx={{ flexGrow: 1, p: 3 }}>
+      {/* Header con tarjeta morada */}
+      <Card sx={{ 
+        mb: 4, 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        borderRadius: 3,
+        overflow: 'hidden'
+      }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5, 
+                mr: 2,
+                backdropFilter: 'blur(10px)'
               }}>
-                {selectedEvaluation.comments}
+                <AssessmentIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+        <Box>
+                <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5, textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
+                  Gestión de Evaluaciones
+          </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
+                  Administra y revisa todas las evaluaciones y reportes de strikes en la plataforma
               </Typography>
             </Box>
-          )}
-          
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>Estado:</Typography>
-            <Chip 
-              label={getStatusText(selectedEvaluation.status)} 
-              color={getStatusColor(selectedEvaluation.status) as any}
-              variant="filled"
-              sx={{ fontWeight: 600 }}
-            />
           </Box>
-        </Box>
-      );
-    }
-    
-    return null;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'success';
-      case 'flagged': return 'error';
-      case 'pending': return 'warning';
-      case 'approved': return 'success';
-      case 'rejected': return 'error';
-      default: return 'default';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'completed': return 'Aprobada';
-      case 'flagged': return 'Rechazada';
-      case 'pending': return 'Pendiente';
-      case 'approved': return 'Aprobado';
-      case 'rejected': return 'Rechazado';
-      default: return status;
-    }
-  };
-
-  const filteredEvaluations = evaluations.filter(evaluation => {
-    const searchLower = searchTerm.toLowerCase().trim();
-    const matchesSearch = !searchTerm || 
-      evaluation.student_name.toLowerCase().includes(searchLower) ||
-      evaluation.company_name.toLowerCase().includes(searchLower) ||
-      evaluation.project_title.toLowerCase().includes(searchLower) ||
-      evaluation.project_id.toLowerCase().includes(searchLower);
-    
-    const matchesStatus = !statusFilter || evaluation.status === statusFilter;
-    const matchesType = !typeFilter || evaluation.evaluator_type === typeFilter;
-    
-    // Debug logs
-    if (typeFilter) {
-      console.log(`Evaluación ${evaluation.id}: evaluator_type=${evaluation.evaluator_type}, typeFilter=${typeFilter}, matchesType=${matchesType}`);
-    }
-    
-    return matchesSearch && matchesStatus && matchesType;
-  });
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-
-  const handleAction = (evaluation: Evaluation, type: 'view') => {
-    setSelectedEvaluation(evaluation);
-    setActionType(type);
-    setActionDialog(true);
-  };
-
-  // Esta función ya no se necesita ya que eliminamos el botón "Ver Detalles"
-
-  const handleConfirmDelete = (evaluation: Evaluation) => {
-    // This function is no longer needed as deletion is removed
-  };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('');
-    setTypeFilter('');
-  };
-
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, px: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <AssessmentIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-        <Typography variant="h4">Gestión de Calificaciones Mutuas</Typography>
-      </Box>
-
-      <Paper sx={{ borderRadius: 3, boxShadow: 2 }}>
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Tab label="Evaluaciones" />
-          <Tab label="Asignación de Strikes a Estudiantes" />
-        </Tabs>
-
-        <TabPanel value={tabValue} index={0}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <StarIcon color="primary" />
-              Calificaciones Mutuas
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Gestión de calificaciones entre empresas y estudiantes por participación en proyectos
-            </Typography>
           </Box>
+        </CardContent>
+      </Card>
 
-          {/* Filtros */}
-          <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <SearchIcon color="primary" />
-                Filtros y Búsqueda
+      {/* Estadísticas con colores suaves - 3 tarjetas */}
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+        gap: 3, 
+        mb: 4 
+      }}>
+        <Card sx={{ 
+          background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
+          color: 'white', 
+          borderRadius: 3, 
+          boxShadow: '0 4px 20px rgba(79, 70, 229, 0.2)', 
+          transition: 'box-shadow 0.3s ease',
+          height: '100%',
+          '&:hover': { 
+            boxShadow: '0 8px 32px rgba(79, 70, 229, 0.3)'
+          }
+        }}>
+          <CardContent sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }}>
+                {totalEvaluations}
               </Typography>
-              <Button
-                variant="outlined"
-                startIcon={<ClearIcon />}
-                onClick={clearFilters}
-                size="small"
-                sx={{ borderRadius: 2 }}
-              >
-                Limpiar Filtros
-              </Button>
+              <Avatar sx={{ 
+                bgcolor: 'rgba(255, 255, 255, 0.2)', 
+                width: 64, 
+                height: 64 
+              }}>
+                <AssessmentIcon sx={{ fontSize: 32, color: 'white' }} />
+              </Avatar>
             </Box>
-            
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1, minWidth: 0 }}>
-                <TextField
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Buscar por proyecto, empresa o estudiante..."
-                  size="small"
-                  InputProps={{
-                    startAdornment: (
-                      <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                    ),
-                  }}
+            <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }}>
+              Total Evaluaciones
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ 
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          color: 'white', 
+          borderRadius: 3, 
+          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.2)', 
+          transition: 'box-shadow 0.3s ease',
+          height: '100%',
+          '&:hover': { 
+            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)'
+          }
+        }}>
+          <CardContent sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }}>
+                {totalStrikes}
+              </Typography>
+              <Avatar sx={{ 
+                bgcolor: 'rgba(255, 255, 255, 0.2)', 
+                width: 64, 
+                height: 64 
+              }}>
+                <WarningIcon sx={{ fontSize: 32, color: 'white' }} />
+              </Avatar>
+          </Box>
+            <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }}>
+              Reportes de Strikes
+            </Typography>
+          </CardContent>
+        </Card>
+        
+        <Card sx={{ 
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          color: 'white', 
+          borderRadius: 3, 
+          boxShadow: '0 4px 20px rgba(245, 158, 11, 0.2)', 
+          transition: 'box-shadow 0.3s ease',
+          height: '100%',
+          '&:hover': { 
+            boxShadow: '0 8px 32px rgba(245, 158, 11, 0.3)'
+          }
+        }}>
+          <CardContent sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }}>
+                {companyToStudentEvaluations + studentToCompanyEvaluations}
+              </Typography>
+              <Avatar sx={{ 
+                bgcolor: 'rgba(255, 255, 255, 0.2)', 
+                width: 64, 
+                height: 64 
+              }}>
+                <CheckCircleIcon sx={{ fontSize: 32, color: 'white' }} />
+              </Avatar>
+      </Box>
+            <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }}>
+              Evaluaciones Mutuas
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* Sección 1: Evaluaciones de Empresa a Estudiante */}
+      <Card sx={{ 
+        mb: 4, 
+        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ 
+          p: 3, 
+          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <BusinessIcon sx={{ fontSize: 24, color: 'white' }} />
+              <Typography variant="h6" fontWeight={700}>
+                Evaluaciones de Empresa a Estudiante
+            </Typography>
+          </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#ffffff' : '#1e293b',
+                fontWeight: 600 
+              }}>
+                Mostrar
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select
+                  value={showLimit}
+                  onChange={(e) => setShowLimit(Number(e.target.value))}
                   sx={{ 
-                    borderRadius: 2,
-                    minWidth: 180,
-                    flex: 1,
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: 'divider',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'primary.main',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'primary.main',
-                      },
-                    },
+                    bgcolor: 'white',
+                    color: '#1e293b',
+                    '& .MuiSelect-icon': { color: '#1e293b' },
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0, 0, 0, 0.2)' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0, 0, 0, 0.4)' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' }
                   }}
-                />
-                <FormControl sx={{ minWidth: 180, flex: 1 }} size="small">
-                  <InputLabel>Estado</InputLabel>
-                  <Select
-                    value={statusFilter}
-                    label="Estado"
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <MenuItem value="">Todas</MenuItem>
-                    <MenuItem value="pending">Pendientes</MenuItem>
-                    <MenuItem value="completed">Aprobadas</MenuItem>
-                    <MenuItem value="flagged">Rechazadas</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 180, flex: 1 }} size="small">
-                  <InputLabel>Tipo de Evaluador</InputLabel>
-                  <Select
-                    value={typeFilter}
-                    label="Tipo de Evaluador"
-                    onChange={(e) => setTypeFilter(e.target.value)}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="company">Empresa → Estudiante</MenuItem>
-                    <MenuItem value="student">Estudiante → Empresa</MenuItem>
-                  </Select>
-                </FormControl>
-              </Stack>
-              <Box sx={{ minWidth: 150, ml: { xs: 0, sm: 2 }, mt: { xs: 2, sm: 0 } }}>
-                <TextField
-                  select
-                  size="small"
-                  label="Mostrar"
-                  value={evaluationsLimit}
-                  onChange={e => setEvaluationsLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                  sx={{ minWidth: 110 }}
                 >
-                  {[20, 50, 100, 200, 250].map(val => (
-                    <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-                  ))}
-                  <MenuItem value="all">Todas</MenuItem>
-                </TextField>
+                  <MenuItem value={15}>Últimos 15</MenuItem>
+                  <MenuItem value={50}>Últimos 50</MenuItem>
+                  <MenuItem value={100}>Últimos 100</MenuItem>
+                  <MenuItem value={-1}>Todas</MenuItem>
+                  </Select>
+                </FormControl>
               </Box>
             </Box>
-            
-            {/* Contador de resultados */}
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Mostrando {filteredEvaluations.length} de {evaluations.length} evaluaciones
+          <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+            Revisa las evaluaciones que las empresas realizan a los estudiantes por proyecto
               </Typography>
-              {(searchTerm || statusFilter || typeFilter) && (
-                <Chip 
-                  label="Filtros activos" 
-                  color="primary" 
-                  variant="outlined" 
-                  size="small"
-                />
-              )}
-            </Box>
           </Box>
 
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Proyecto</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Empresa</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estudiante</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Calificación</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Estado</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 600 }}>Fecha</TableCell>
-                  <TableCell align="center" sx={{ color: 'white', fontWeight: 600 }}>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredEvaluations.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                        <SearchIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
-                        <Typography variant="h6" color="text.secondary">
-                          No se encontraron evaluaciones
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {searchTerm || statusFilter || typeFilter 
-                            ? 'Intenta ajustar los filtros o la búsqueda'
-                            : 'No hay evaluaciones disponibles'
-                          }
-                        </Typography>
-                        {(searchTerm || statusFilter || typeFilter) && (
-                          <Button
-                            variant="outlined"
-                            startIcon={<ClearIcon />}
-                            onClick={clearFilters}
-                            size="small"
-                          >
-                            Limpiar Filtros
-                          </Button>
-                        )}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  (evaluationsLimit === 'all' ? filteredEvaluations : filteredEvaluations.slice(0, evaluationsLimit)).map(evaluation => (
-                    <TableRow key={evaluation.id} hover>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={600}>
-                          {evaluation.project_title}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          ID: {evaluation.project_id}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
-                            <BusinessIcon />
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Avatar sx={{ 
+            width: 80, 
+            height: 80, 
+            bgcolor: themeMode === 'dark' ? '#64748b' : '#e2e8f0', 
+            mx: 'auto', 
+            mb: 3 
+          }}>
+            <BusinessIcon sx={{ fontSize: 40, color: themeMode === 'dark' ? '#94a3b8' : '#64748b' }} />
                           </Avatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              {evaluation.company_name}
+          <Typography variant="h5" sx={{ 
+            fontWeight: 600, 
+            mb: 1,
+            color: themeMode === 'dark' ? '#ffffff' : '#1e293b'
+          }}>
+            No hay evaluaciones de empresa a estudiante aún
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              Publicó el proyecto
+          <Typography variant="body1" sx={{ 
+            mb: 3,
+            color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+          }}>
+            Las evaluaciones aparecerán aquí una vez que las empresas evalúen a los estudiantes
                             </Typography>
                           </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                            <PersonIcon />
-                          </Avatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              {evaluation.student_name}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              Participó en el proyecto
+      </Card>
+
+      {/* Sección 2: Evaluaciones de Estudiante a Empresa */}
+      <Card sx={{ 
+        mb: 4, 
+        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ 
+          p: 3, 
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <PersonIcon sx={{ fontSize: 24, color: 'white' }} />
+              <Typography variant="h6" fontWeight={700}>
+                Evaluaciones de Estudiante a Empresa
                             </Typography>
                           </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Rating value={evaluation.score} readOnly size="small" />
-                          <Typography variant="body2" fontWeight={600}>
-                            {evaluation.score.toFixed(1)}/5
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={getStatusText(evaluation.status)} 
-                          color={getStatusColor(evaluation.status) as any}
-                          variant="filled"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell>{new Date(evaluation.evaluation_date).toLocaleDateString()}</TableCell>
-                      <TableCell align="center">
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, flexWrap: 'wrap' }}>
-                          <IconButton 
-                            color="info" 
-                            title="Ver detalles"
-                            onClick={() => handleAction(evaluation, 'view')}
-                            size="small"
-                          >
-                            <VisibilityIcon />
-                          </IconButton>
-                          {evaluation.status === 'pending' && (
-                            <>
-                              <IconButton
-                                size="small"
-                                color="success"
-                                onClick={() => handleApproveEvaluation(evaluation.id)}
-                                title="Aprobar evaluación"
-                              >
-                                <CheckCircleIcon />
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                color="warning"
-                                onClick={() => handleRejectEvaluation(evaluation.id)}
-                                title="Rechazar evaluación"
-                              >
-                                <WarningIcon />
-                              </IconButton>
-                            </>
-                          )}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </TabPanel>
-
-        {/* Tab: Asignación de Strikes a Estudiantes */}
-        <TabPanel value={tabValue} index={1}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <WarningIcon color="warning" /> Gestión de Reportes de Strikes
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Revisa y gestiona reportes de strikes enviados por empresas sobre estudiantes
-            </Typography>
-          </Box>
-
-          {/* Filtros para reportes */}
-          <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-              <FormControl sx={{ minWidth: 180 }} size="small">
-                <InputLabel>Estado del Reporte</InputLabel>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#ffffff' : '#1e293b',
+                fontWeight: 600 
+              }}>
+                Mostrar
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
                 <Select
-                  value={statusFilter}
-                  label="Estado del Reporte"
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  value={showLimit}
+                  onChange={(e) => setShowLimit(Number(e.target.value))}
+                  sx={{ 
+                    bgcolor: 'white',
+                    color: '#1e293b',
+                    '& .MuiSelect-icon': { color: '#1e293b' },
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0, 0, 0, 0.2)' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0, 0, 0, 0.4)' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#10b981' }
+                  }}
                 >
-                  <MenuItem value="">Todos</MenuItem>
-                  <MenuItem value="pending">Pendientes</MenuItem>
-                  <MenuItem value="approved">Aprobados</MenuItem>
-                  <MenuItem value="rejected">Rechazados</MenuItem>
+                  <MenuItem value={15}>Últimos 15</MenuItem>
+                  <MenuItem value={50}>Últimos 50</MenuItem>
+                  <MenuItem value={100}>Últimos 100</MenuItem>
+                  <MenuItem value={-1}>Todas</MenuItem>
                 </Select>
               </FormControl>
-              <TextField
-                select
-                size="small"
-                label="Mostrar"
-                value={usersLimit}
-                onChange={e => setUsersLimit(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                sx={{ minWidth: 110 }}
-              >
-                {[20, 50, 100, 200, 250].map(val => (
-                  <MenuItem key={val} value={val}>Últimos {val}</MenuItem>
-                ))}
-                <MenuItem value="all">Todas</MenuItem>
-              </TextField>
+            </Box>
+                        </Box>
+          <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+            Revisa las evaluaciones que los estudiantes realizan a las empresas
+                          </Typography>
+                        </Box>
+        
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Avatar sx={{ 
+            width: 80, 
+            height: 80, 
+            bgcolor: themeMode === 'dark' ? '#64748b' : '#e2e8f0', 
+            mx: 'auto', 
+            mb: 3 
+          }}>
+            <PersonIcon sx={{ fontSize: 40, color: themeMode === 'dark' ? '#94a3b8' : '#64748b' }} />
+          </Avatar>
+          <Typography variant="h5" sx={{ 
+            fontWeight: 600, 
+            mb: 1,
+            color: themeMode === 'dark' ? '#ffffff' : '#1e293b'
+          }}>
+            No hay evaluaciones de estudiante a empresa aún
+            </Typography>
+          <Typography variant="body1" sx={{ 
+            mb: 3,
+            color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+          }}>
+            Las evaluaciones aparecerán aquí una vez que los estudiantes evalúen a las empresas
+            </Typography>
+          </Box>
+      </Card>
+
+      {/* Sección 3: Strikes de Empresa a Estudiantes */}
+      <Card sx={{ 
+        mb: 4, 
+        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ 
+          p: 3, 
+          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <WarningIcon sx={{ fontSize: 24, color: 'white' }} />
+              <Typography variant="h6" fontWeight={700}>
+                Strikes de Empresa a Estudiantes
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ 
+                color: themeMode === 'dark' ? '#ffffff' : '#1e293b',
+                fontWeight: 600 
+              }}>
+                Mostrar
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select
+                  value={showLimit}
+                  onChange={(e) => setShowLimit(Number(e.target.value))}
+                  sx={{ 
+                    bgcolor: 'white',
+                    color: '#1e293b',
+                    '& .MuiSelect-icon': { color: '#1e293b' },
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0, 0, 0, 0.2)' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0, 0, 0, 0.4)' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#ef4444' }
+                  }}
+                >
+                  <MenuItem value={15}>Últimos 15</MenuItem>
+                  <MenuItem value={50}>Últimos 50</MenuItem>
+                  <MenuItem value={100}>Últimos 100</MenuItem>
+                  <MenuItem value={-1}>Todas</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
           </Box>
-          
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 3 }}>
-            {(usersLimit === 'all' ? strikeReports : strikeReports.slice(0, usersLimit)).map((report) => (
-              <Card key={report.id} sx={{ borderRadius: 3, boxShadow: 2 }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar sx={{ mr: 2, bgcolor: 'warning.main' }}>
-                      <WarningIcon />
-                    </Avatar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="h6">{report.student_name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Reportado por {report.company_name}
-                      </Typography>
-                    </Box>
-                    <Chip 
-                      label={getStatusText(report.status)}
-                      color={getStatusColor(report.status) as any}
-                      variant="filled"
-                    />
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2">Proyecto:</Typography>
-                    <Typography variant="body2" fontWeight="bold">{report.project_title}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                    <Typography variant="body2">Fecha:</Typography>
-                    <Typography variant="body2" fontWeight="bold">
-                      {new Date(report.evaluation_date).toLocaleDateString()}
+          <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+            Gestiona los reportes de strikes que las empresas envían sobre estudiantes
                     </Typography>
                   </Box>
                   
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Motivo: {report.reason}
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Avatar sx={{ 
+            width: 80, 
+            height: 80, 
+            bgcolor: themeMode === 'dark' ? '#64748b' : '#e2e8f0', 
+            mx: 'auto', 
+            mb: 3 
+          }}>
+            <WarningIcon sx={{ fontSize: 40, color: themeMode === 'dark' ? '#94a3b8' : '#64748b' }} />
+          </Avatar>
+          <Typography variant="h5" sx={{ 
+            fontWeight: 600, 
+            mb: 1,
+            color: themeMode === 'dark' ? '#ffffff' : '#1e293b'
+          }}>
+            No hay reportes de strikes aún
+          </Typography>
+          <Typography variant="body1" sx={{ 
+            mb: 3,
+            color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+          }}>
+            Los reportes de strikes aparecerán aquí una vez que las empresas los envíen
                   </Typography>
-                  
-                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                    {report.status === 'pending' && (
-                      <>
-                        <Button 
-                          size="small" 
-                          variant="contained" 
-                          color="success" 
-                          sx={{ flex: 1 }}
-                          onClick={() => handleApproveStrikeReport(report.id)}
-                        >
-                          Aprobar Strike
-                        </Button>
-                        <Button 
-                          size="small" 
-                          variant="outlined" 
-                          color="error" 
-                          sx={{ flex: 1 }}
-                          onClick={() => handleRejectStrikeReport(report.id)}
-                        >
-                          Rechazar
-                        </Button>
-                      </>
-                    )}
                   </Box>
-                </CardContent>
               </Card>
-            ))}
-          </Box>
-        </TabPanel>
-      </Paper>
-
-      {/* Diálogo de acción */}
-      <Dialog 
-        open={actionDialog} 
-        onClose={() => setActionDialog(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {actionType === 'view' && <VisibilityIcon color="info" />}
-          {getDialogTitle()}
-        </DialogTitle>
-        <DialogContent>
-          {getDialogContent()}
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={() => setActionDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2 }}
-          >
-            Cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog para crear evaluación */}
-      {/* This dialog is no longer needed as creation is removed */}
-
-      {/* Dialog para confirmar eliminación */}
-      {/* This dialog is no longer needed as deletion is removed */}
-
-      <Snackbar
-        open={!!successMessage}
-        autoHideDuration={6000}
-        onClose={() => setSuccessMessage('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setSuccessMessage('')} severity="success" sx={{ width: '100%' }}>
-          {successMessage}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

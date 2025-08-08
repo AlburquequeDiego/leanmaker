@@ -95,6 +95,16 @@ export interface Student {
   // Campos adicionales del registro
   university?: string;
   education_level?: string;
+  // Campo para aplicaciones (usado en SearchStudents)
+  applications?: Array<{
+    id: string;
+    project_title: string;
+    project_id: string;
+    status: string;
+    applied_at: string;
+    compatibility_score?: number;
+    cover_letter?: string;
+  }>;
 }
 
 // Tipos de empresa - Coinciden con el modelo Empresa del backend
@@ -561,6 +571,27 @@ export interface DashboardStats {
   api_questionnaire_requests: number; // Nuevo campo para solicitudes de cuestionario API
   pending_hours: number; // Nuevo campo para horas pendientes
   top_students: TopStudent[]; // Nuevo campo para top 10 estudiantes
+  // Nuevos campos para gráficos
+  area_distribution?: Array<{
+    name: string;
+    count: number;
+  }>;
+  monthly_activity?: Array<{
+    month: string;
+    projects: number;
+    applications: number;
+  }>;
+  // Campos específicos para estudiantes
+  application_distribution?: Array<{
+    name: string;
+    count: number;
+  }>;
+  // Campos específicos para estudiantes (monthly_activity con hours)
+  student_monthly_activity?: Array<{
+    month: string;
+    applications: number;
+    hours: number;
+  }>;
 }
 
 // Universidades disponibles

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   AppBar,
@@ -78,28 +78,29 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
-  const handleDrawerToggle = () => {
+  const handleDrawerToggle = useCallback(() => {
     setMobileOpen(!mobileOpen);
-  };
+  }, [mobileOpen]);
 
-  const handleSidebarToggle = () => {
+  const handleSidebarToggle = useCallback(() => {
     setSidebarCollapsed(!sidebarCollapsed);
-  };
+  }, [sidebarCollapsed]);
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleProfileMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  const handleProfileMenuClose = () => {
+  const handleProfileMenuClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     navigate('/login');
-  };
+  }, [logout, navigate]);
 
-  const getMenuItems = () => {
+  // Memoize menu items to prevent unnecessary re-renders
+  const menuItems = useMemo(() => {
     const commonItems = {
       admin: [
         { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/admin' },
@@ -149,9 +150,10 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
     };
 
     return [...commonItems[userRole], ...roleSpecificItems[userRole]];
-  };
+  }, [userRole]);
 
-  const drawer = (
+  // Memoize the drawer content
+  const drawer = useMemo(() => (
     <Box sx={{ 
       bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
       color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
@@ -190,7 +192,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       </Toolbar>
       <Divider sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#e2e8f0' }} />
       <List>
-        {getMenuItems().map((item) => {
+        {menuItems.map((item) => {
           // Lógica mejorada para la selección
           let selected = false;
           
@@ -273,46 +275,45 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         })}
       </List>
     </Box>
-  );
+  ), [menuItems, location.pathname, sidebarCollapsed, themeMode, navigate]);
 
   // Helper para obtener el nombre de la sección actual
-  const getSectionName = () => {
+  const sectionName = useMemo(() => {
     const path = location.pathname;
-    const sections = getMenuItems();
-    
-    // Buscar coincidencia exacta primero
-    const exactMatch = sections.find((item) => path === item.path);
+    const exactMatch = menuItems.find((item) => path === item.path);
     if (exactMatch) {
       return exactMatch.text;
     }
     
-    // Si no hay coincidencia exacta, buscar coincidencia parcial
     // pero excluir el dashboard para evitar que se muestre "Dashboard" en todas las páginas
-    const partialMatch = sections.find((item) => {
+    const partialMatch = menuItems.find((item) => {
       if (item.text === 'Dashboard') {
-        return false; // No mostrar "Dashboard" para rutas que no sean exactamente el dashboard
+        return false;
       }
       return path.startsWith(item.path) && item.path !== '/dashboard/admin' && item.path !== '/dashboard/company' && item.path !== '/dashboard/student';
     });
     
     return partialMatch ? partialMatch.text : '';
-  };
+  }, [location.pathname, menuItems]);
+
+  // Memoize the AppBar styles
+  const appBarStyles = useMemo(() => ({
+    width: { sm: `calc(100vw - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` },
+    ml: { sm: `${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px` },
+    bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+    boxShadow: themeMode === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
+    maxWidth: '100vw',
+    overflowX: 'hidden',
+    transition: 'width 0.2s ease-in-out, margin-left 0.2s ease-in-out',
+  }), [sidebarCollapsed, themeMode]);
 
   return (
     <Box sx={{ display: 'flex', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', minHeight: '100vh' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{
-          width: { sm: `calc(100vw - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` },
-          ml: { sm: `${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px` },
-          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-          boxShadow: themeMode === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
-          maxWidth: '100vw',
-          overflowX: 'hidden',
-          transition: 'width 0.3s, margin-left 0.3s',
-        }}
+        sx={appBarStyles}
       >
         <Toolbar>
           <IconButton
@@ -330,7 +331,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             component="div"
             sx={{ fontWeight: 600, flexGrow: 1, textAlign: { xs: 'center', sm: 'left' }, color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6' }}
           >
-            {getSectionName()}
+            {sectionName}
           </Typography>
           {/* Iconos adicionales a la derecha */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 1 }}>
@@ -396,7 +397,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         sx={{ 
           width: { sm: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth }, 
           flexShrink: { sm: 0 },
-          transition: 'width 0.3s'
+          transition: 'width 0.2s ease-in-out'
         }}
       >
         <Drawer
@@ -433,7 +434,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
               background: themeMode === 'dark' ? '#1e293b' : '#ffffff',
               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
               borderRight: 0,
-              transition: 'width 0.3s',
+              transition: 'width 0.2s ease-in-out',
             },
           }}
           open
@@ -449,7 +450,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           width: { sm: `calc(100vw - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` }, 
           maxWidth: '100vw', 
           overflowX: 'hidden',
-          transition: 'width 0.3s',
+          transition: 'width 0.2s ease-in-out',
           bgcolor: themeMode === 'dark' ? '#0f172a' : '#f8fafc',
         }}
       >

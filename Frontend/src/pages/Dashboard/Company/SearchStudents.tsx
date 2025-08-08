@@ -6,56 +6,29 @@ import {
   Button,
   Card,
   CardContent,
-  CardActions,
   Avatar,
   Chip,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Rating,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  List,
-  ListItem,
-  ListItemText,
   CircularProgress,
   Alert,
   Paper,
   Grid,
-  Divider,
-  Badge,
-  IconButton,
-  Tooltip,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   FilterList as FilterIcon,
-  Person as PersonIcon,
-  School as SchoolIcon,
-  Work as WorkIcon,
-  Star as StarIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  Language as LanguageIcon,
-  GitHub as GitHubIcon,
-  LinkedIn as LinkedInIcon,
-  Visibility as VisibilityIcon,
   Send as SendIcon,
-  Business as BusinessIcon,
-  Assignment as AssignmentIcon,
-  TrendingUp as TrendingUpIcon,
   Group as GroupIcon,
-  LocationOn as LocationIcon,
-  CalendarToday as CalendarIcon,
-  CheckCircle as CheckCircleIcon,
-  Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { notificationService } from '../../../services/notification.service';
-import { adaptStudentList } from '../../../utils/adapters';
 import type { Student } from '../../../types';
 import { useTheme } from '../../../contexts/ThemeContext';
 
@@ -73,7 +46,6 @@ export const SearchStudents: React.FC = () => {
   const [showAllStudents, setShowAllStudents] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
-  const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showContactDialog, setShowContactDialog] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
@@ -88,66 +60,91 @@ export const SearchStudents: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      console.log('🚀 Iniciando carga de estudiantes...');
+      console.log('🚀 Iniciando carga de estudiantes postulantes...');
       
-      // Obtener usuarios con rol student
+      // Obtener solo los estudiantes que han postulado a proyectos de la empresa
       try {
-        const usersResponse = await api.get('/api/users/');
-        console.log('🔍 Users response:', usersResponse);
-        const studentUsers = usersResponse.data ? usersResponse.data.filter((user: any) => user.role === 'student') : [];
-        console.log('👥 Estudiantes encontrados en users:', studentUsers.length);
-        setUsers(studentUsers);
-      } catch (userError) {
-        console.error('❌ Error cargando usuarios:', userError);
-        setUsers([]);
-      }
-
-      // Obtener perfiles de estudiantes que hayan participado en proyectos
-      try {
-        const studentsResponse = await api.get('/api/students/');
-        console.log('🔍 Students response completa:', studentsResponse);
+        const applicationsResponse = await api.get('/api/applications/company/');
+        console.log('🔍 Applications response:', applicationsResponse);
         
-        // Manejar diferentes formatos de respuesta
-        let studentsData;
-        if (studentsResponse && studentsResponse.results) {
-          studentsData = studentsResponse.results;
-          console.log('📊 Usando studentsResponse.results');
-        } else if (Array.isArray(studentsResponse)) {
-          studentsData = studentsResponse;
-          console.log('📊 Usando studentsResponse como array');
+        let applicationsData;
+        if (applicationsResponse && applicationsResponse.results) {
+          applicationsData = applicationsResponse.results;
+          console.log('📊 Usando applicationsResponse.results');
+        } else if (Array.isArray(applicationsResponse)) {
+          applicationsData = applicationsResponse;
+          console.log('📊 Usando applicationsResponse como array');
         } else {
-          studentsData = [];
-          console.log('📊 No se encontraron datos de estudiantes');
+          applicationsData = [];
+          console.log('📊 No se encontraron postulaciones');
         }
         
-              // Mostrar TODOS los estudiantes que han postulado a proyectos
-      // La empresa verá un registro completo de todos los postulantes
-      const allStudents = studentsData;
-      
-      console.log('📊 Total de estudiantes disponibles:', allStudents.length);
+        console.log('📊 Total de postulaciones encontradas:', applicationsData.length);
         
-        console.log('📊 Datos de estudiantes sin adaptar:', studentsData);
-        console.log('📊 Todos los estudiantes:', allStudents);
-        
-        if (allStudents.length > 0) {
-          console.log('📊 Primer estudiante sin adaptar:', allStudents[0]);
-          const adaptedStudents = adaptStudentList(allStudents);
-          console.log('✅ Primer estudiante adaptado:', adaptedStudents[0]);
-          console.log('✅ Total de estudiantes adaptados:', adaptedStudents.length);
-          setStudents(adaptedStudents);
+        if (applicationsData.length > 0) {
+          // Crear un mapa de estudiantes únicos basado en las postulaciones
+          const uniqueStudents = new Map();
+          
+          applicationsData.forEach((application: any) => {
+            const studentId = application.student_id;
+            if (!uniqueStudents.has(studentId)) {
+              // Crear objeto estudiante con datos de la postulación
+              const student = {
+                id: studentId,
+                user: studentId, // Para compatibilidad con el sistema existente
+                name: application.student_name,
+                email: application.student_email,
+                university: application.student_university || 'No especificada',
+                career: application.student_major || 'No especificada',
+                skills: application.student_skills || [],
+                experience_years: application.student_experience_years || 0,
+                availability: application.student_availability || 'No especificada',
+                bio: application.student_bio || '',
+                phone: application.student_phone || '',
+                location: application.student_location || '',
+                gpa: application.student_gpa || null,
+                api_level: application.student_api_level || 1,
+                cv_url: application.student_cv_url || '',
+                portfolio_url: application.portfolio_url || '',
+                github_url: application.github_url || '',
+                linkedin_url: application.linkedin_url || '',
+                // Datos adicionales de la postulación
+                applications: []
+              };
+              
+              uniqueStudents.set(studentId, student);
+            }
+            
+            // Agregar información de la postulación al estudiante
+            const student = uniqueStudents.get(studentId);
+            student.applications.push({
+              id: application.id,
+              project_title: application.project_title,
+              project_id: application.project_id,
+              status: application.status,
+              applied_at: application.applied_at,
+              compatibility_score: application.compatibility_score,
+              cover_letter: application.cover_letter
+            });
+          });
+          
+          const studentsList = Array.from(uniqueStudents.values());
+          console.log('✅ Estudiantes únicos encontrados:', studentsList.length);
+          setStudents(studentsList);
         } else {
-          console.log('⚠️ No hay estudiantes disponibles');
+          console.log('⚠️ No hay estudiantes que hayan postulado a proyectos de la empresa');
           setStudents([]);
         }
         
-      } catch (studentError) {
-        console.error('❌ Error cargando estudiantes:', studentError);
+      } catch (applicationsError) {
+        console.error('❌ Error cargando postulaciones:', applicationsError);
+        setError('Error al cargar los estudiantes postulantes. Intenta de nuevo.');
         setStudents([]);
       }
       
     } catch (err: any) {
       console.error('❌ Error general cargando estudiantes:', err);
-      setError(err.message || 'Error al cargar estudiantes');
+      setError(err.message || 'Error al cargar estudiantes postulantes');
     } finally {
       setLoading(false);
     }
@@ -155,7 +152,17 @@ export const SearchStudents: React.FC = () => {
 
   // Combinar datos de usuario y perfil de estudiante
   const getStudentWithUser = (student: Student): Student & { userData?: any } => {
-    const userData = users.find(user => user.id === student.user);
+    // Crear un objeto userData simulado con los datos que ya tenemos
+    const userData = {
+      id: student.user,
+      full_name: student.name,
+      first_name: student.name?.split(' ')[0] || '',
+      last_name: student.name?.split(' ').slice(1).join(' ') || '',
+      email: student.email,
+      bio: student.bio || '',
+      phone: student.phone || '',
+      location: student.location || ''
+    };
     return { ...student, userData };
   };
 
@@ -184,7 +191,7 @@ export const SearchStudents: React.FC = () => {
         const matchesSkills = selectedSkills.length === 0 || 
           selectedSkills.some(skill => student.skills?.includes(skill));
         
-                return matchesSearch && matchesSkills;
+        return matchesSearch && matchesSkills;
       });
 
     // Aplicar límite de resultados según la selección del usuario
@@ -193,7 +200,7 @@ export const SearchStudents: React.FC = () => {
     } else {
       return filtered.slice(0, resultsLimit); // Mostrar según límite seleccionado
     }
-      }, [students, searchTerm, selectedSkills, resultsLimit, showAllStudents, users]);
+  }, [students, searchTerm, selectedSkills, resultsLimit, showAllStudents]);
 
   const handleSkillToggle = (skill: string) => {
     setSelectedSkills(prev => 
@@ -203,7 +210,7 @@ export const SearchStudents: React.FC = () => {
     );
   };
 
-  const handleContactStudent = (student: Student & { userData?: User }) => {
+  const handleContactStudent = (student: Student & { userData?: any }) => {
     console.log('🔍 Datos del estudiante seleccionado:', student);
     console.log('🔍 Datos del usuario seleccionado:', student.userData);
     setSelectedStudent(student);
@@ -343,7 +350,7 @@ export const SearchStudents: React.FC = () => {
                     mb: 1,
                   }}
                 >
-                  Registro de Estudiantes Postulantes
+                  Estudiantes Postulantes
                 </Typography>
                 <Typography
                   variant="h6"
@@ -353,7 +360,7 @@ export const SearchStudents: React.FC = () => {
                     textShadow: '0 1px 2px rgba(0,0,0,0.2)',
                   }}
                 >
-                  Historial completo de todos los estudiantes que han postulado a proyectos de tu empresa.
+                  Historial completo de todos los estudiantes que han postulado a proyectos de tu empresa. Solo puedes contactar a estudiantes que han mostrado interés en tus proyectos.
                 </Typography>
               </Box>
             </Box>
@@ -572,7 +579,7 @@ export const SearchStudents: React.FC = () => {
                 Habilidades Únicas
               </Typography>
             </Box>
-            <TrendingUpIcon sx={{ fontSize: 48, opacity: 0.9 }} />
+            <GroupIcon sx={{ fontSize: 48, opacity: 0.9 }} />
           </Box>
         </Paper>
       </Box>
@@ -675,7 +682,7 @@ export const SearchStudents: React.FC = () => {
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
-            Registro de Postulantes
+            Estudiantes Postulantes
           </Typography>
           <Chip 
             label={filteredStudents.length} 
@@ -686,7 +693,7 @@ export const SearchStudents: React.FC = () => {
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-            {showAllStudents ? 'Mostrando todos los estudiantes' : `Mostrando últimos ${resultsLimit}`}
+            {showAllStudents ? 'Mostrando todos los postulantes' : `Mostrando últimos ${resultsLimit} postulantes`}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
             ({filteredStudents.length} de {students.length} total)
@@ -744,82 +751,13 @@ export const SearchStudents: React.FC = () => {
                         </Box>
                       </Box>
                     </Box>
-
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {student.university && (
-                        <Chip
-                          icon={<SchoolIcon sx={{ fontSize: 16 }} />}
-                          label={student.university}
-                          size="small"
-                          variant="outlined"
-                          sx={{ fontSize: '0.7rem', height: 24 }}
-                        />
-                      )}
-                      {student.career && (
-                        <Chip
-                          icon={<WorkIcon sx={{ fontSize: 16 }} />}
-                          label={student.career}
-                          size="small"
-                          variant="outlined"
-                          sx={{ fontSize: '0.7rem', height: 24 }}
-                        />
-                      )}
-                    </Box>
                   </Box>
 
                   {/* Contenido del estudiante */}
                   <Box sx={{ p: 3, pt: 2, bgcolor: themeMode === 'dark' ? '#1e293b' : 'white' }}>
-
-                    {/* Habilidades */}
-                    {student.skills && student.skills.length > 0 && (
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, mb: 1, display: 'block', color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                          Habilidades:
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                          {student.skills.slice(0, 3).map((skill, index) => (
-                            <Chip
-                              key={index}
-                              label={skill}
-                              size="small"
-                              variant="outlined"
-                              sx={{ fontSize: '0.65rem', height: 20 }}
-                            />
-                          ))}
-                          {student.skills.length > 3 && (
-                            <Chip
-                              label={`+${student.skills.length - 3}`}
-                              size="small"
-                              variant="outlined"
-                              sx={{ fontSize: '0.65rem', height: 20 }}
-                            />
-                          )}
-                        </Box>
-                      </Box>
-                    )}
-
-                    {/* Botones de acción */}
+                    
+                    {/* Botón de contacto */}
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        color="info"
-                        onClick={() => {
-                          setSelectedStudent(student);
-                          setSelectedUser(userData);
-                          setShowDetailDialog(true);
-                        }}
-                        sx={{ 
-                          borderRadius: 2, 
-                          textTransform: 'none',
-                          flex: 1,
-                          fontSize: '0.8rem',
-                          fontWeight: 600
-                        }}
-                        startIcon={<PersonIcon />}
-                      >
-                        Ver Portafolio
-                      </Button>
                       <Button
                         size="small"
                         variant="contained"
@@ -855,12 +793,12 @@ export const SearchStudents: React.FC = () => {
           border: themeMode === 'dark' ? '2px dashed #475569' : '2px dashed #cbd5e1',
           boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : 'none'
         }}>
-          <PersonIcon sx={{ fontSize: 80, color: themeMode === 'dark' ? '#94a3b8' : '#cbd5e1', mb: 2 }} />
+          <GroupIcon sx={{ fontSize: 80, color: themeMode === 'dark' ? '#94a3b8' : '#cbd5e1', mb: 2 }} />
           <Typography variant="h5" color="text.secondary" fontWeight={500} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'text.secondary' }}>
             No se encontraron estudiantes postulantes
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-            Aún no hay estudiantes que hayan postulado a proyectos de tu empresa. Intenta ajustar los filtros de búsqueda.
+            Aún no hay estudiantes que hayan postulado a proyectos de tu empresa. Los estudiantes aparecerán aquí una vez que postulen a tus proyectos.
           </Typography>
           <Button 
             variant="outlined" 
@@ -875,168 +813,6 @@ export const SearchStudents: React.FC = () => {
         </Box>
       )}
 
-      {/* Dialog de detalles del estudiante */}
-      <Dialog 
-        open={showDetailDialog} 
-        onClose={() => setShowDetailDialog(false)} 
-        maxWidth="lg" 
-        fullWidth
-        PaperProps={{
-          sx: { borderRadius: 3 }
-        }}
-      >
-        <DialogTitle sx={{ 
-          bgcolor: 'primary.main', 
-          color: 'white',
-          fontWeight: 600
-        }}>
-          Perfil Completo del Estudiante
-        </DialogTitle>
-        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
-          {selectedStudent && selectedUser && (
-            <Box sx={{ pt: 2 }}>
-              {console.log('🎨 Renderizando portafolio con datos:', { selectedStudent, selectedUser })}
-              
-              {/* Header con nombre y apellido */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main', boxShadow: 3 }}>
-                  <PersonIcon sx={{ fontSize: 40 }} />
-                </Avatar>
-                <Box>
-                  <Typography variant="h5" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                    {selectedUser.full_name || `${selectedUser.first_name || ''} ${selectedUser.last_name || ''}` || '-'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                    {selectedUser.email || '-'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                    {selectedUser.phone || '-'}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa' }}>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Fecha de Nacimiento:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.perfil_detallado?.fecha_nacimiento || '-'}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Género:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.perfil_detallado?.genero || '-'}</Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Carrera:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.career || '-'}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Nivel Educativo:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.api_level || '-'}</Typography>
-                  </Box>
-                </Box>
-              </Paper>
-
-              {/* Habilidades */}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Habilidades</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                {(selectedStudent.skills || []).map((h: string) => (
-                  <Chip key={h} label={h} color="primary" />
-                ))}
-                {(!selectedStudent.skills || selectedStudent.skills.length === 0) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>-</Typography>}
-              </Box>
-
-              {/* Documentos */}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Documentos</Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-                {selectedStudent.cv_link && (
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>CV:</strong> <a href={selectedStudent.cv_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.cv_link}</a>
-                  </Typography>
-                )}
-                {selectedStudent.certificado_link && (
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>Certificado:</strong> <a href={selectedStudent.certificado_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.certificado_link}</a>
-                  </Typography>
-                )}
-                {(!selectedStudent.cv_link && !selectedStudent.certificado_link) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay documentos</Typography>}
-              </Box>
-
-              {/* Área de interés y modalidades */}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Área y Modalidad</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-                <Box sx={{ flex: 1, minWidth: 220 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Área de interés:</Typography>
-                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.area || '-'}</Typography>
-                </Box>
-                <Box sx={{ flex: 1, minWidth: 220 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Modalidad:</Typography>
-                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedStudent.availability || '-'}</Typography>
-                </Box>
-              </Box>
-
-              {/* Experiencia previa */}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Experiencia Previa</Typography>
-              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>{selectedStudent.experience_years ? `${selectedStudent.experience_years} años` : '-'}</Typography>
-
-              {/* Enlaces */}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Enlaces</Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-                {selectedStudent.linkedin_url && (
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>LinkedIn:</strong> <a href={selectedStudent.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.linkedin_url}</a>
-                  </Typography>
-                )}
-                {selectedStudent.github_url && (
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>GitHub:</strong> <a href={selectedStudent.github_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.github_url}</a>
-                  </Typography>
-                )}
-                {selectedStudent.portfolio_url && (
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>Portafolio:</strong> <a href={selectedStudent.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedStudent.portfolio_url}</a>
-                  </Typography>
-                )}
-                {(!selectedStudent.linkedin_url && !selectedStudent.github_url && !selectedStudent.portfolio_url) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay enlaces</Typography>}
-              </Box>
-
-              {/* Carta de Presentación */}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Carta de Presentación</Typography>
-              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                {selectedStudent.bio || selectedStudent.user_data?.bio || '-'}
-              </Typography>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5', gap: 2 }}>
-          <Button 
-            onClick={() => setShowDetailDialog(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2, px: 3 }}
-          >
-            Cerrar
-          </Button>
-          <Button
-            onClick={() => {
-              setShowDetailDialog(false);
-              handleContactStudent(selectedStudent!);
-            }}
-            variant="contained"
-            color="primary"
-            sx={{ borderRadius: 2, px: 3 }}
-            startIcon={<SendIcon />}
-          >
-            Contactar Estudiante
-          </Button>
-        </DialogActions>
-      </Dialog>
       {/* Dialog de contacto */}
       <Dialog 
         open={showContactDialog} 

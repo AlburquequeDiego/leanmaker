@@ -13,7 +13,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
+  register: (userData: RegisterData) => Promise<any>;
   logout: () => Promise<void>;
   clearError: () => void;
   isAuthenticated: boolean;
@@ -95,6 +95,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: userData.email,
         password: userData.password
       });
+      
+      return response; // Retornar la respuesta del backend
     } catch (error: any) {
       console.error('Registration error:', error);
       setError(error.response?.data?.detail || error.message || 'Error al registrarse');

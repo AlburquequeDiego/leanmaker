@@ -1,59 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Box, Paper, Typography, LinearProgress, Tooltip, IconButton } from '@mui/material';
+import { Box, Paper, Typography, Tooltip, IconButton, Grid } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import SchoolIcon from '@mui/icons-material/School';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
-import InfoIcon from '@mui/icons-material/Info';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CodeIcon from '@mui/icons-material/Code';
+import InfoIcon from '@mui/icons-material/Info';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
-
-// Componente gráfico circular simple (SVG)
-function CircularProgressWithLabel({ value, label, subtitle }: { value: number, label: string, subtitle: string }) {
-  const radius = 40;
-  const stroke = 7;
-  const normalizedRadius = radius - stroke / 2;
-  const circumference = normalizedRadius * 2 * Math.PI;
-  const progress = Math.min(Math.max(value, 0), 100);
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
-
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 120 }}>
-      <svg height={radius * 2} width={radius * 2}>
-        <circle
-          stroke="#e0e0e0"
-          fill="transparent"
-          strokeWidth={stroke}
-          r={normalizedRadius}
-          cx={radius}
-          cy={radius}
-        />
-        <circle
-          stroke="#1976d2"
-          fill="transparent"
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={circumference + ' ' + circumference}
-          style={{ strokeDashoffset, transition: 'stroke-dashoffset 0.5s' }}
-          r={normalizedRadius}
-          cx={radius}
-          cy={radius}
-        />
-        <text x="50%" y="50%" textAnchor="middle" dy="0.3em" fontSize="1.3em" fontWeight="bold" fill="#1976d2">
-          {`${Math.round(progress)}%`}
-        </text>
-      </svg>
-      <Typography variant="body2" sx={{ mt: 1 }}>{label}</Typography>
-      <Typography variant="caption" color="text.secondary">{subtitle}</Typography>
-    </Box>
-  );
-}
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 
 // Componente de tarjeta KPI reutilizable
 interface KPICardProps {
@@ -83,11 +42,10 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
       borderRadius: 3,
       justifyContent: 'space-between',
       cursor: 'pointer',
-      transition: 'transform 0.2s, box-shadow 0.2s',
+      transition: 'box-shadow 0.2s',
       flexShrink: 0,
       flexGrow: 0,
       '&:hover': {
-        transform: 'translateY(-2px)',
         boxShadow: 4
       }
     }}>
@@ -178,7 +136,6 @@ export default function StudentDashboard() {
   const maxStrikes = 3;
   const gpa = stats?.gpa ?? 0;
   const totalHours = stats?.total_hours ?? 0;
-  const totalProjects = stats?.total_projects ?? 0;
   const activeProjects = stats?.active_projects ?? 0;
   const totalApplications = stats?.total_applications ?? 0;
   const availableProjects = stats?.available_projects ?? 0;
@@ -187,6 +144,15 @@ export default function StudentDashboard() {
   const completedProjects = stats?.completed_projects ?? 0;
   const apiLevel = stats?.api_level ?? 1;
   const unreadNotifications = stats?.unread_notifications ?? 0;
+
+  // Log para debugging de gráficos
+  useEffect(() => {
+    if (stats) {
+      console.log('[StudentDashboard] Stats received:', stats);
+      console.log('[StudentDashboard] Application distribution:', stats.application_distribution);
+      console.log('[StudentDashboard] Monthly activity:', stats.monthly_activity);
+    }
+  }, [stats]);
 
   if (loading) {
     return (
@@ -341,6 +307,145 @@ export default function StudentDashboard() {
            textColor="white"
          />
       </Box>
+      
+      {/* Gráficos */}
+      <Grid container spacing={3} sx={{ mt: 2 }}>
+        {/* Gráfico de Dona - Distribución de Aplicaciones por Estado */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ 
+            p: 3, 
+            height: 400,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+            border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+          }}>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+              Distribución de Aplicaciones por Estado
+            </Typography>
+            {stats?.application_distribution && stats.application_distribution.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={stats.application_distribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="count"
+                    nameKey="name"
+                  >
+                    {stats.application_distribution.map((_: any, index: number) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={[
+                          '#3b82f6', '#16a34a', '#f59e0b', '#ef4444', 
+                          '#8b5cf6', '#06b6d4', '#84cc16', '#f97316', '#ec4899'
+                        ][index % 9]} 
+                      />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={{
+                      backgroundColor: themeMode === 'dark' ? '#1e293b' : 'white',
+                      border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                    }}
+                    formatter={(value: any, name: any) => [
+                      `${value} aplicaciones`, 
+                      name
+                    ]}
+                  />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    wrapperStyle={{
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: 300,
+                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+              }}>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  No hay aplicaciones disponibles
+                </Typography>
+                <Typography variant="body2">
+                  Las aplicaciones aparecerán aquí cuando postules a proyectos
+                </Typography>
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+
+        {/* Gráfico de Barras - Actividad Mensual */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ 
+            p: 3, 
+            height: 400,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+            border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+          }}>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+              Actividad Mensual
+            </Typography>
+            {stats?.monthly_activity && stats.monthly_activity.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={stats.monthly_activity}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={themeMode === 'dark' ? '#334155' : '#e2e8f0'} />
+                  <XAxis 
+                    dataKey="month" 
+                    tick={{ fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    tick={{ fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}
+                    fontSize={12}
+                  />
+                  <RechartsTooltip 
+                    contentStyle={{
+                      backgroundColor: themeMode === 'dark' ? '#1e293b' : 'white',
+                      border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                    }}
+                  />
+                  <Legend 
+                    wrapperStyle={{
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                    }}
+                  />
+                  <Bar dataKey="applications" fill="#3b82f6" name="Aplicaciones Enviadas" />
+                  <Bar dataKey="hours" fill="#16a34a" name="Horas Trabajadas" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: 300,
+                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+              }}>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  No hay datos de actividad mensual
+                </Typography>
+                <Typography variant="body2">
+                  La actividad aparecerá aquí cuando postules a proyectos o trabajes en ellos
+                </Typography>
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 } 

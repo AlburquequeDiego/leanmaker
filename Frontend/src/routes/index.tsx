@@ -24,7 +24,7 @@ import SearchStudents from '../pages/Dashboard/Company/SearchStudents';
 import CompanyStudentSelection from '../pages/Dashboard/Company/Evaluations';
 import CompanyInterviews from '../pages/Dashboard/Company/Interviews';
 import CompanyCalendar from '../pages/Dashboard/Company/Calendar';
-import CompanyStrikes from '../pages/Dashboard/Company/Strikes';
+import { CompanyStrikes } from '../pages/Dashboard/Company/Strikes';
 import AdminDashboard from '../pages/Dashboard/Admin';
 import UsuariosAdmin from '../pages/Dashboard/Admin/UsuariosAdmin';
 import ValidacionHorasAdmin from '../pages/Dashboard/Admin/ValidacionHorasAdmin';

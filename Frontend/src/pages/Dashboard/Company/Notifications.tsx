@@ -467,8 +467,8 @@ export const CompanyNotifications: React.FC = () => {
             color: 'white',
             borderRadius: 3,
             boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(25, 118, 210, 0.4)' : 3,
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-4px)' }
+            transition: 'box-shadow 0.2s',
+            '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(25, 118, 210, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
           }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -487,8 +487,8 @@ export const CompanyNotifications: React.FC = () => {
             color: 'white',
             borderRadius: 3,
             boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(251, 140, 0, 0.4)' : 3,
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-4px)' }
+            transition: 'box-shadow 0.2s',
+            '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(251, 140, 0, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
           }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -507,8 +507,8 @@ export const CompanyNotifications: React.FC = () => {
             color: 'white',
             borderRadius: 3,
             boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(56, 142, 60, 0.4)' : 3,
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-4px)' }
+            transition: 'box-shadow 0.2s',
+            '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(56, 142, 60, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
           }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -527,8 +527,8 @@ export const CompanyNotifications: React.FC = () => {
             color: 'white',
             borderRadius: 3,
             boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(211, 47, 47, 0.4)' : 3,
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-4px)' }
+            transition: 'box-shadow 0.2s',
+            '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(211, 47, 47, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
           }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>

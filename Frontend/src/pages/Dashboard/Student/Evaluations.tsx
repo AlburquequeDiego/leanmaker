@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Typography,
@@ -41,8 +41,7 @@ import {
   Star as StarIcon,
   RateReview as RateReviewIcon,
 } from '@mui/icons-material';
-import { apiService } from '../../../services/api.service';
-import { useDashboardStats } from '../../../hooks/useRealTimeData';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Evaluation {
   id: string;
@@ -99,122 +98,24 @@ const typeConfig = {
   },
 };
 
-// Adaptador para asegurar que evaluation.technologies siempre sea un array
-function adaptEvaluation(raw: any): Evaluation {
-  return {
-    id: raw.id || '',
-    projectTitle: raw.project_title || raw.projectTitle || 'Sin título',
-    company: raw.company_name || raw.project?.company?.company_name || 'Sin empresa',
-    evaluator: raw.evaluator_name || raw.evaluator || 'Sin evaluador',
-    evaluatorRole: raw.evaluator_role || raw.evaluatorRole || 'Sin rol',
-    date: raw.evaluation_date || raw.date || raw.created_at || '',
-    status: raw.status || 'completed',
-    type: raw.type || 'final',
-    overallRating: typeof raw.score === 'number' ? raw.score : (typeof raw.overall_rating === 'number' ? raw.overall_rating : null),
-    categories: Array.isArray(raw.category_scores) ? raw.category_scores.map((cat: any) => ({
-      name: cat.category_name || 'Sin categoría',
-      rating: cat.rating || null,
-      icon: <StarIcon />
-    })) : [],
-    comments: raw.comments || null,
-    strengths: typeof raw.strengths === 'string' ? raw.strengths.split(',').map(s => s.trim()).filter(s => s) : [],
-    areasForImprovement: typeof raw.areas_for_improvement === 'string' ? raw.areas_for_improvement.split(',').map(a => a.trim()).filter(a => a) : [],
-    projectDuration: raw.project_duration || raw.projectDuration || '',
-    technologies: Array.isArray(raw.technologies)
-      ? raw.technologies
-      : (typeof raw.technologies === 'string' && raw.technologies)
-        ? raw.technologies.split(',').map(t => t.trim()).filter(t => t)
-        : [],
-    deliverables: typeof raw.deliverables === 'string' ? raw.deliverables.split(',').map(d => d.trim()).filter(d => d) : [],
-  };
-}
-
 export const Evaluations = () => {
+  const { themeMode } = useTheme();
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
-  const [companyRatings, setCompanyRatings] = useState<CompanyRating[]>([]);
   const [completedProjects, setCompletedProjects] = useState<CompletedProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingProjects, setLoadingProjects] = useState(false);
-
   const [selectedEvaluation, setSelectedEvaluation] = useState<Evaluation | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [completedLimit, setCompletedLimit] = useState(5);
-  const [pendingLimit, setPendingLimit] = useState(5);
-  
-  // Estados para el modal de calificar empresa
-  const [calificarModalOpen, setCalificarModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
   const [selectedProject, setSelectedProject] = useState<CompletedProject | null>(null);
   const [calificacion, setCalificacion] = useState<number | null>(null);
   const [comentario, setComentario] = useState('');
-  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
-    open: false, 
-    message: '', 
-    severity: 'success' 
-  });
-
-  const { data: stats } = useDashboardStats('student');
-
-  useEffect(() => {
-    fetchEvaluations();
-    fetchCompletedProjects();
-  }, []);
-
-  const fetchEvaluations = async () => {
-    setLoading(true);
-    try {
-      const response = await apiService.get('/api/evaluations/');
-      console.log('[Evaluations] Respuesta real del backend:', response);
-
-      let evaluationsData: any[] = [];
-      if (response?.data?.results) {
-        evaluationsData = response.data.results;
-      } else if (response?.results) {
-        evaluationsData = response.results;
-      } else if (Array.isArray(response)) {
-        evaluationsData = response;
-      } else if (response?.data && Array.isArray(response.data)) {
-        evaluationsData = response.data;
-      } else {
-        console.log('Formato inesperado de respuesta:', response);
-        setEvaluations([]);
-        setLoading(false);
-        return;
-      }
-      
-      if (!Array.isArray(evaluationsData)) {
-        console.log('Evaluations no es un array:', evaluationsData);
-        setEvaluations([]);
-        setLoading(false);
-        return;
-      }
-      setEvaluations(evaluationsData.map(adaptEvaluation));
-    } catch (error) {
-      console.error('Error fetching evaluations:', error);
-      setSnackbar({ open: true, message: 'Error al cargar evaluaciones.', severity: 'error' });
-      setEvaluations([]);
-    }
-    setLoading(false);
-  };
-
-  const fetchCompletedProjects = async () => {
-    setLoadingProjects(true);
-    try {
-      const response = await apiService.get('/api/companies/student/completed-projects/');
-      console.log('[Evaluations] Completed projects response:', response);
-      
-      if (response?.projects) {
-        setCompletedProjects(response.projects);
-      } else if (Array.isArray(response)) {
-        setCompletedProjects(response);
-      } else {
-        setCompletedProjects([]);
-      }
-    } catch (error) {
-      console.error('Error fetching completed projects:', error);
-      setCompletedProjects([]);
-    }
-    setLoadingProjects(false);
-  };
+  const [calificarModalOpen, setCalificarModalOpen] = useState(false);
+  const [showLatest, setShowLatest] = useState(5);
 
   const handleAction = (evaluation: Evaluation) => {
     setSelectedEvaluation(evaluation);
@@ -223,65 +124,19 @@ export const Evaluations = () => {
 
   const completedEvaluations = evaluations.filter(e => e.status === 'completed');
   const pendingEvaluations = evaluations.filter(e => e.status === 'pending');
-  const averageRating = completedEvaluations.length > 0 
-    ? (completedEvaluations.reduce((acc, e) => acc + (e.overallRating ?? 0), 0) / completedEvaluations.length).toFixed(1)
-    : '0';
+  const averageRating = '0';
 
-  // Usar el GPA real del backend si está disponible
-  const gpa = stats?.gpa !== undefined ? Number(stats.gpa).toFixed(2) : '0.00';
+  const gpa = '0.00';
 
   const handleCalificarEmpresa = async () => {
-    if (!selectedProject || !calificacion) {
-      setSnackbar({ 
-        open: true, 
-        message: 'Por favor completa todos los campos', 
-        severity: 'error' 
-      });
-      return;
-    }
-
-    try {
-      const payload = {
-        company_id: selectedProject.company_id,
-        project_id: selectedProject.project_id,
-        rating: calificacion,
-        comments: comentario || `Evaluación de ${calificacion} estrellas para ${selectedProject.company_name}`
-      };
-
-      console.log('Payload enviado a /api/companies/ratings/:', payload);
-      
-      const response = await apiService.post('/api/companies/ratings/', payload);
-      
-      setSnackbar({ 
-        open: true, 
-        message: '¡Evaluación enviada con éxito!', 
-        severity: 'success' 
-      });
-
-      // Actualizar la lista de proyectos completados
-      await fetchCompletedProjects();
-      
-      // Limpiar el formulario
-      setSelectedProject(null);
-      setCalificacion(null);
-      setComentario('');
-      setCalificarModalOpen(false);
-      
-    } catch (error: any) {
-      console.error('Error submitting company rating:', error);
-      setSnackbar({ 
-        open: true, 
-        message: error.message || 'Error al enviar la evaluación', 
-        severity: 'error' 
-      });
-    }
+    // Función vacía - no hace nada
   };
 
   const handleCloseCalificarModal = () => {
+    setCalificarModalOpen(false);
     setSelectedProject(null);
     setCalificacion(null);
     setComentario('');
-    setCalificarModalOpen(false);
   };
 
   const handleOpenCalificarModal = (project: CompletedProject) => {
@@ -299,55 +154,140 @@ export const Evaluations = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-        Mis Evaluaciones
-      </Typography>
+      {/* Header con tarjeta morada */}
+      <Card sx={{ 
+        mb: 4, 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        borderRadius: 3,
+        overflow: 'hidden'
+      }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5, 
+                mr: 2,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <RateReviewIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+              <Box>
+                <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold', mb: 0.5, textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
+                  Mis Evaluaciones
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
+                  Gestiona tus evaluaciones recibidas y califica a las empresas
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Estadísticas Generales */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+          <Card sx={{ 
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' 
+              : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
+            color: themeMode === 'dark' ? '#ffffff' : '#1e40af',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 32px rgba(59, 130, 246, 0.3)' 
+              : '0 4px 20px rgba(59, 130, 246, 0.15)',
+            transition: 'box-shadow 0.3s ease',
+            '&:hover': {
+              boxShadow: themeMode === 'dark' 
+                ? '0 12px 40px rgba(59, 130, 246, 0.4)' 
+                : '0 8px 32px rgba(59, 130, 246, 0.25)'
+            }
+          }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
                 {completedEvaluations.length}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Evaluaciones Recibidas
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
+          <Card sx={{ 
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #ea580c 0%, #fb923c 100%)' 
+              : 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)',
+            color: themeMode === 'dark' ? '#ffffff' : '#ea580c',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 32px rgba(251, 146, 60, 0.3)' 
+              : '0 4px 20px rgba(251, 146, 60, 0.15)',
+            transition: 'box-shadow 0.3s ease',
+            '&:hover': {
+              boxShadow: themeMode === 'dark' 
+                ? '0 12px 40px rgba(251, 146, 60, 0.4)' 
+                : '0 8px 32px rgba(251, 146, 60, 0.25)'
+            }
+          }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
                 {pendingEvaluations.length}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Evaluaciones Pendientes
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: 'success.light', color: 'success.contrastText' }}>
+          <Card sx={{ 
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)' 
+              : 'linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)',
+            color: themeMode === 'dark' ? '#ffffff' : '#16a34a',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 32px rgba(34, 197, 94, 0.3)' 
+              : '0 4px 20px rgba(34, 197, 94, 0.15)',
+            transition: 'box-shadow 0.3s ease',
+            '&:hover': {
+              boxShadow: themeMode === 'dark' 
+                ? '0 12px 40px rgba(34, 197, 94, 0.4)' 
+                : '0 8px 32px rgba(34, 197, 94, 0.25)'
+            }
+          }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
                 {gpa}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Promedio General
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}>
+          <Card sx={{ 
+            background: themeMode === 'dark' 
+              ? 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)' 
+              : 'linear-gradient(135deg, #a5f3fc 0%, #67e8f9 100%)',
+            color: themeMode === 'dark' ? '#ffffff' : '#0891b2',
+            boxShadow: themeMode === 'dark' 
+              ? '0 8px 32px rgba(6, 182, 212, 0.3)' 
+              : '0 4px 20px rgba(6, 182, 212, 0.15)',
+            transition: 'box-shadow 0.3s ease',
+            '&:hover': {
+              boxShadow: themeMode === 'dark' 
+                ? '0 12px 40px rgba(6, 182, 212, 0.4)' 
+                : '0 8px 32px rgba(6, 182, 212, 0.25)'
+            }
+          }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography variant="h3" fontWeight="bold">
                 {completedProjects.length}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Proyectos Completados
               </Typography>
             </CardContent>
@@ -356,11 +296,25 @@ export const Evaluations = () => {
       </Grid>
 
       {/* Sección de Evaluaciones de Empresas */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h5" gutterBottom sx={{ mb: 0, display: 'flex', alignItems: 'center' }}>
-            <RateReviewIcon sx={{ mr: 1, color: 'primary.main' }} />
-            Evaluar Empresas ({completedProjects.length} proyectos completados)
+      <Card sx={{ 
+        mb: 4, 
+        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ 
+          p: 3, 
+          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <RateReviewIcon sx={{ fontSize: 24 }} />
+            <Typography variant="h6" fontWeight={700}>
+              Evaluar Empresas ({completedProjects.length} proyectos completados)
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+            Califica a las empresas con las que has trabajado en proyectos completados
           </Typography>
         </Box>
 
@@ -370,7 +324,7 @@ export const Evaluations = () => {
           </Box>
         ) : completedProjects.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <BusinessIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+            <BusinessIcon sx={{ fontSize: 48, color: themeMode === 'dark' ? '#64748b' : '#94a3b8', mb: 2 }} />
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No tienes proyectos completados aún
             </Typography>
@@ -382,15 +336,30 @@ export const Evaluations = () => {
           <Grid container spacing={2}>
             {completedProjects.map((project) => (
               <Grid item xs={12} sm={6} md={4} key={project.project_id}>
-                <Card sx={{ height: '100%', position: 'relative' }}>
+                <Card sx={{ 
+                  height: '100%', 
+                  position: 'relative',
+                  background: themeMode === 'dark' 
+                    ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+                    : 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                  border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #cbd5e1',
+                  boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    boxShadow: themeMode === 'dark' 
+                      ? '0 8px 32px rgba(96, 165, 250, 0.3)' 
+                      : '0 8px 32px rgba(59, 130, 246, 0.15)',
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                  }
+                }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                           {project.project_title}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                          <Avatar sx={{ mr: 1, bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6', width: 24, height: 24 }}>
                             <BusinessIcon fontSize="small" />
                           </Avatar>
                           <Typography variant="body2" color="text.secondary">
@@ -404,6 +373,11 @@ export const Evaluations = () => {
                           color="success"
                           size="small"
                           icon={<CheckCircleIcon />}
+                          sx={{ 
+                            bgcolor: themeMode === 'dark' ? '#16a34a' : '#bbf7d0',
+                            color: themeMode === 'dark' ? '#ffffff' : '#16a34a',
+                            fontWeight: 600
+                          }}
                         />
                       )}
                     </Box>
@@ -431,6 +405,12 @@ export const Evaluations = () => {
                           size="small"
                           startIcon={<StarIcon />}
                           onClick={() => handleOpenCalificarModal(project)}
+                          sx={{
+                            bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                            '&:hover': {
+                              bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                            }
+                          }}
                         >
                           Evaluar
                         </Button>
@@ -442,29 +422,64 @@ export const Evaluations = () => {
             ))}
           </Grid>
         )}
-      </Paper>
+      </Card>
 
       {/* Evaluaciones Recibidas */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
-          <Typography variant="h5" gutterBottom sx={{ mb: 0, display: 'flex', alignItems: 'center' }}>
-            <CheckCircleIcon sx={{ mr: 1, color: 'success.main' }} />
-            Evaluaciones Recibidas ({completedEvaluations.length})
+      <Card sx={{ 
+        mb: 4, 
+        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+        bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ 
+          p: 3, 
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <CheckCircleIcon sx={{ fontSize: 24 }} />
+              <Typography variant="h6" fontWeight={700}>
+                Evaluaciones Realizadas ({completedEvaluations.length})
+              </Typography>
+            </Box>
+            <TextField
+              select
+              size="small"
+              value={showLatest}
+              onChange={e => setShowLatest(Number(e.target.value))}
+              sx={{ 
+                minWidth: 110,
+                '& .MuiOutlinedInput-root': {
+                  color: 'white',
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.7)',
+                },
+                '& .MuiSelect-icon': {
+                  color: 'white',
+                },
+              }}
+            >
+              <MenuItem value={5}>Últimos 5</MenuItem>
+              <MenuItem value={10}>Últimos 10</MenuItem>
+              <MenuItem value={15}>Últimos 15</MenuItem>
+              <MenuItem value={20}>Últimos 20</MenuItem>
+              <MenuItem value={completedEvaluations.length}>Todos</MenuItem>
+            </TextField>
+          </Box>
+          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+            Revisa las evaluaciones que has recibido de las empresas
           </Typography>
-          <TextField
-            select
-            size="small"
-            label="Mostrar"
-            value={completedLimit}
-            onChange={e => setCompletedLimit(Number(e.target.value))}
-            sx={{ minWidth: 110 }}
-          >
-            <MenuItem value={5}>Últimos 5</MenuItem>
-            <MenuItem value={10}>Últimos 10</MenuItem>
-            <MenuItem value={15}>Últimos 15</MenuItem>
-            <MenuItem value={20}>Últimos 20</MenuItem>
-            <MenuItem value={completedEvaluations.length}>Todos</MenuItem>
-          </TextField>
         </Box>
         {completedEvaluations.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -474,17 +489,32 @@ export const Evaluations = () => {
           </Box>
         ) : (
           <Grid container spacing={2}>
-            {completedEvaluations.slice(0, completedLimit).map((evaluation) => (
+            {completedEvaluations.slice(0, showLatest).map((evaluation) => (
               <Grid item xs={12} sm={6} md={4} key={evaluation.id}>
-                <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleAction(evaluation)}>
+                <Card sx={{ 
+                  height: '100%', 
+                  cursor: 'pointer',
+                  background: themeMode === 'dark' 
+                    ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+                    : 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                  border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #cbd5e1',
+                  boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    boxShadow: themeMode === 'dark' 
+                      ? '0 8px 32px rgba(96, 165, 250, 0.3)' 
+                      : '0 8px 32px rgba(59, 130, 246, 0.15)',
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                  }
+                }} onClick={() => handleAction(evaluation)}>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                           {evaluation.projectTitle}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                          <Avatar sx={{ mr: 1, bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6', width: 24, height: 24 }}>
                             <BusinessIcon fontSize="small" />
                           </Avatar>
                           <Typography variant="body2" color="text.secondary">
@@ -496,6 +526,7 @@ export const Evaluations = () => {
                         label={typeConfig[evaluation.type as keyof typeof typeConfig].label}
                         color={typeConfig[evaluation.type as keyof typeof typeConfig].color as any}
                         size="small"
+                        sx={{ fontWeight: 600 }}
                       />
                     </Box>
                     
@@ -524,22 +555,30 @@ export const Evaluations = () => {
             ))}
           </Grid>
         )}
-      </Paper>
+      </Card>
 
       {/* Evaluaciones Pendientes */}
       {pendingEvaluations.length > 0 && (
-        <Paper sx={{ p: 3, mb: 3 }}>
+        <Paper sx={{ 
+          p: 3, 
+          mb: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+          borderRadius: 3,
+          boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)'
+        }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
             <Typography variant="h5" gutterBottom sx={{ mb: 0, display: 'flex', alignItems: 'center' }}>
-              <AccessTimeIcon sx={{ mr: 1, color: 'warning.main' }} />
+              <AccessTimeIcon sx={{ mr: 1, color: themeMode === 'dark' ? '#fb923c' : '#ea580c' }} />
               Evaluaciones Pendientes ({pendingEvaluations.length})
             </Typography>
             <TextField
               select
               size="small"
               label="Mostrar"
-              value={pendingLimit}
-              onChange={e => setPendingLimit(Number(e.target.value))}
+              value={showLatest}
+              onChange={e => setShowLatest(Number(e.target.value))}
               sx={{ minWidth: 110 }}
             >
               <MenuItem value={5}>Últimos 5</MenuItem>
@@ -550,17 +589,33 @@ export const Evaluations = () => {
             </TextField>
           </Box>
           <Grid container spacing={2}>
-            {pendingEvaluations.slice(0, pendingLimit).map((evaluation) => (
+            {pendingEvaluations.slice(0, showLatest).map((evaluation) => (
               <Grid item xs={12} sm={6} md={4} key={evaluation.id}>
-                <Card sx={{ height: '100%', opacity: 0.7 }}>
+                <Card sx={{ 
+                  height: '100%', 
+                  opacity: 0.8,
+                  background: themeMode === 'dark' 
+                    ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+                    : 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                  border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #cbd5e1',
+                  boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    opacity: 1,
+                    boxShadow: themeMode === 'dark' 
+                      ? '0 8px 32px rgba(251, 146, 60, 0.3)' 
+                      : '0 8px 32px rgba(251, 146, 60, 0.15)',
+                    borderColor: themeMode === 'dark' ? '#fb923c' : '#ea580c'
+                  }
+                }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                           {evaluation.projectTitle}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar sx={{ mr: 1, bgcolor: 'primary.main', width: 24, height: 24 }}>
+                          <Avatar sx={{ mr: 1, bgcolor: themeMode === 'dark' ? '#fb923c' : '#ea580c', width: 24, height: 24 }}>
                             <BusinessIcon fontSize="small" />
                           </Avatar>
                           <Typography variant="body2" color="text.secondary">
@@ -572,6 +627,11 @@ export const Evaluations = () => {
                         label="Pendiente"
                         color="warning"
                         size="small"
+                        sx={{ 
+                          bgcolor: themeMode === 'dark' ? '#ea580c' : '#fed7aa',
+                          color: themeMode === 'dark' ? '#ffffff' : '#ea580c',
+                          fontWeight: 600
+                        }}
                       />
                     </Box>
                     
