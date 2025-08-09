@@ -10,6 +10,7 @@ from django.db.models import Q
 from users.models import User
 from .models import Strike, StrikeReport
 from core.views import verify_token
+from django.utils import timezone
 
 
 @csrf_exempt
@@ -173,23 +174,70 @@ def strike_reports_create(request):
         
         # Solo empresas pueden crear reportes
         if current_user.role != 'company':
-            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+            return JsonResponse({'error': 'Acceso denegado. Solo empresas pueden reportar strikes.'}, status=403)
         
         # Procesar datos
         data = json.loads(request.body)
         
+        # Validar campos requeridos
+        required_fields = ['student_id', 'project_id', 'reason']
+        for field in required_fields:
+            if field not in data:
+                return JsonResponse({'error': f'Campo requerido: {field}'}, status=400)
+        
+        try:
+            from projects.models import Proyecto
+            from applications.models import Aplicacion
+            from students.models import Estudiante
+            from companies.models import Empresa
+            
+            # Obtener objetos
+            project = Proyecto.objects.get(id=data['project_id'])
+            student = Estudiante.objects.get(id=data['student_id'])
+            company = Empresa.objects.get(user=current_user)
+            
+            # Verificar que el proyecto pertenece a la empresa
+            if project.company != company:
+                return JsonResponse({'error': 'El proyecto no pertenece a tu empresa'}, status=403)
+            
+            # Verificar que el estudiante participó en el proyecto
+            try:
+                application = Aplicacion.objects.get(
+                    project=project,
+                    student=student,
+                    status__in=['accepted', 'active', 'completed']
+                )
+            except Aplicacion.DoesNotExist:
+                return JsonResponse({'error': 'El estudiante no participó en este proyecto'}, status=400)
+            
+            # Verificar que no haya un reporte previo para este estudiante en este proyecto
+            existing_report = StrikeReport.objects.filter(
+                company=company,
+                student=student,
+                project=project,
+                status='pending'
+            ).first()
+            
+            if existing_report:
+                return JsonResponse({'error': 'Ya existe un reporte pendiente para este estudiante en este proyecto'}, status=400)
+            
+        except (Proyecto.DoesNotExist, Estudiante.DoesNotExist, Empresa.DoesNotExist):
+            return JsonResponse({'error': 'Proyecto, estudiante o empresa no encontrado'}, status=404)
+        
         # Crear reporte
         report = StrikeReport.objects.create(
-            company_id=data.get('company_id'),
-            student_id=data.get('student_id'),
-            project_id=data.get('project_id'),
+            company=company,
+            student=student,
+            project=project,
             reason=data.get('reason'),
-            description=data.get('description'),
+            description=data.get('description', ''),
+            status='pending'
         )
         
         return JsonResponse({
-            'message': 'Reporte de strike creado correctamente',
-            'id': str(report.id)
+            'message': 'Reporte de strike creado correctamente. Pendiente de revisión administrativa.',
+            'id': str(report.id),
+            'status': 'pending'
         }, status=201)
         
     except json.JSONDecodeError:
@@ -273,7 +321,7 @@ def strike_reports_list(request):
 @csrf_exempt
 @require_http_methods(["PATCH"])
 def strike_report_approve(request, report_id):
-    """Aprobar reporte de strike (admin)."""
+    """Aprobar reporte de strike (solo admin)."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -285,31 +333,54 @@ def strike_report_approve(request, report_id):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Solo admins pueden aprobar reportes
+        # Solo admins pueden aprobar strikes
         if current_user.role != 'admin':
-            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+            return JsonResponse({'error': 'Acceso denegado. Solo administradores pueden aprobar strikes.'}, status=403)
         
-        # Obtener reporte
         try:
             report = StrikeReport.objects.get(id=report_id)
         except StrikeReport.DoesNotExist:
-            return JsonResponse({'error': 'Reporte no encontrado'}, status=404)
+            return JsonResponse({'error': 'Reporte de strike no encontrado'}, status=404)
+        
+        # Verificar que el reporte esté pendiente
+        if report.status != 'pending':
+            return JsonResponse({'error': 'El reporte ya ha sido procesado'}, status=400)
         
         # Procesar datos
         data = json.loads(request.body) if request.body else {}
-        notes = data.get('notes')
+        admin_notes = data.get('admin_notes', '')
         
-        # Aprobar reporte
-        report.approve(current_user, notes)
+        # Actualizar reporte
+        report.status = 'approved'
+        report.reviewed_by = current_user
+        report.reviewed_at = timezone.now()
+        report.admin_notes = admin_notes
+        report.save()
+        
+        # Crear el strike real
+        from strikes.models import Strike
+        strike = Strike.objects.create(
+            student=report.student,
+            company=report.company,
+            project=report.project,
+            reason=report.reason,
+            description=report.description,
+            severity='medium',  # Por defecto
+            issued_by=report.company.user,
+            is_active=True
+        )
+        
+        # Actualizar contador de strikes del estudiante
+        report.student.strikes = min(report.student.strikes + 1, 3)  # Máximo 3 strikes
+        report.student.save()
         
         return JsonResponse({
-            'message': 'Reporte aprobado correctamente',
-            'id': str(report.id),
-            'status': report.status
+            'message': 'Strike aprobado correctamente',
+            'strike_id': str(strike.id),
+            'report_id': str(report.id),
+            'student_strikes': report.student.strikes
         })
         
-    except ValueError as e:
-        return JsonResponse({'error': str(e)}, status=400)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
@@ -319,7 +390,7 @@ def strike_report_approve(request, report_id):
 @csrf_exempt
 @require_http_methods(["PATCH"])
 def strike_report_reject(request, report_id):
-    """Rechazar reporte de strike (admin)."""
+    """Rechazar reporte de strike (solo admin)."""
     try:
         # Verificar autenticación
         auth_header = request.headers.get('Authorization')
@@ -331,31 +402,35 @@ def strike_report_reject(request, report_id):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
-        # Solo admins pueden rechazar reportes
+        # Solo admins pueden rechazar strikes
         if current_user.role != 'admin':
-            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+            return JsonResponse({'error': 'Acceso denegado. Solo administradores pueden rechazar strikes.'}, status=403)
         
-        # Obtener reporte
         try:
             report = StrikeReport.objects.get(id=report_id)
         except StrikeReport.DoesNotExist:
-            return JsonResponse({'error': 'Reporte no encontrado'}, status=404)
+            return JsonResponse({'error': 'Reporte de strike no encontrado'}, status=404)
+        
+        # Verificar que el reporte esté pendiente
+        if report.status != 'pending':
+            return JsonResponse({'error': 'El reporte ya ha sido procesado'}, status=400)
         
         # Procesar datos
         data = json.loads(request.body) if request.body else {}
-        notes = data.get('notes')
+        admin_notes = data.get('admin_notes', '')
         
-        # Rechazar reporte
-        report.reject(current_user, notes)
+        # Actualizar reporte
+        report.status = 'rejected'
+        report.reviewed_by = current_user
+        report.reviewed_at = timezone.now()
+        report.admin_notes = admin_notes
+        report.save()
         
         return JsonResponse({
-            'message': 'Reporte rechazado correctamente',
-            'id': str(report.id),
-            'status': report.status
+            'message': 'Strike rechazado correctamente',
+            'report_id': str(report.id)
         })
         
-    except ValueError as e:
-        return JsonResponse({'error': str(e)}, status=400)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:

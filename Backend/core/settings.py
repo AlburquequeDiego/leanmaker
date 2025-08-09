@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'areas',
     'project_status',
     'assignments',
-    'evaluation_categories',
-    'ratings',
+
+    # 'ratings',  # ELIMINADO - Sistema duplicado
     'mass_notifications',
     'custom_admin',  # Nueva app de administración
 ]

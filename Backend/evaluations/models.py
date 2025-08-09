@@ -5,7 +5,7 @@ from projects.models import Proyecto, AplicacionProyecto
 from companies.models import Empresa
 from students.models import Estudiante
 from users.models import User
-from evaluation_categories.models import EvaluationCategory
+
 import uuid
 import json
 from django.db.models.signals import post_save
@@ -36,7 +36,7 @@ class Evaluation(models.Model):
     project = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='evaluations')
     student = models.ForeignKey('students.Estudiante', on_delete=models.CASCADE, related_name='evaluations_received')
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_done')
-    category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE, related_name='evaluations')  # Campo agregado para coincidir con frontend
+
     
     # NUEVO: Tipo de evaluación
     evaluation_type = models.CharField(
@@ -117,58 +117,9 @@ class Evaluation(models.Model):
         self.criteria_scores = criteria_dict
         self.save(update_fields=['criteria_scores'])
 
-class EvaluationCategoryScore(models.Model):
-    """Puntaje por categoría/criterio en una evaluación"""
-    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE, related_name='categories')
-    category = models.ForeignKey(EvaluationCategory, on_delete=models.CASCADE)
-    rating = models.FloatField()
 
-    class Meta:
-        verbose_name = 'Puntaje de Categoría'
-        verbose_name_plural = 'Puntajes de Categoría'
-        unique_together = ('evaluation', 'category')
 
-    def __str__(self):
-        return f"{self.evaluation} - {self.category}: {self.rating}"
 
-class EvaluationTemplate(models.Model):
-    """Plantillas de evaluación para diferentes tipos de proyectos"""
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-    
-    # Categorías incluidas en la plantilla (JSON como TextField)
-    categories = models.TextField(default='[]')  # Lista de categorías
-    
-    # Configuración
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        db_table = 'evaluation_templates'
-        verbose_name = 'Plantilla de Evaluación'
-        verbose_name_plural = 'Plantillas de Evaluación'
-    
-    def __str__(self):
-        return self.name
-    
-    def get_categories_list(self):
-        """Obtiene la lista de categorías como lista de Python"""
-        if self.categories:
-            try:
-                return json.loads(self.categories)
-            except json.JSONDecodeError:
-                return []
-        return []
-    
-    def set_categories_list(self, categories_list):
-        """Establece la lista de categorías desde una lista de Python"""
-        if isinstance(categories_list, list):
-            self.categories = json.dumps(categories_list, ensure_ascii=False)
-        else:
-            self.categories = '[]'
 
 class StudentSkill(models.Model):
     """Habilidades de los estudiantes con niveles de experiencia"""
@@ -329,9 +280,8 @@ class StudentAchievement(models.Model):
 @receiver(post_save, sender=Evaluation)
 def actualizar_gpa_estudiante(sender, instance, **kwargs):
     try:
-        # Buscar el perfil de estudiante correspondiente al usuario evaluado
-        from students.models import Estudiante
-        estudiante = Estudiante.objects.get(user=instance.student)
-        estudiante.actualizar_calificacion()
-    except Estudiante.DoesNotExist:
+        # instance.student ya es un Estudiante, no necesitamos buscarlo
+        instance.student.actualizar_calificacion()
+    except Exception as e:
+        print(f"Error actualizando GPA en evaluations/models.py: {e}")
         pass

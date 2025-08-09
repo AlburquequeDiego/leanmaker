@@ -188,8 +188,12 @@ class Estudiante(models.Model):
     def actualizar_calificacion(self, _=None):
         """Actualiza la calificación promedio del estudiante (GPA y rating)"""
         from evaluations.models import Evaluation
-        # Buscar todas las evaluaciones completadas para este estudiante
-        evaluaciones = Evaluation.objects.filter(student__id=self.user.id, status='completed')
+        # CORREGIDO: Buscar evaluaciones donde este estudiante es el evaluado
+        evaluaciones = Evaluation.objects.filter(
+            student=self,  # ← CAMBIO: usar self en lugar de self.user.id
+            status='completed',
+            evaluation_type='company_to_student'  # ← AGREGADO: solo evaluaciones de empresas a estudiantes
+        )
         if evaluaciones.exists():
             promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
             self.gpa = round(promedio, 2)
@@ -444,15 +448,17 @@ def actualizar_api_level_automaticamente(sender, instance, **kwargs):
 @receiver(post_save, sender='evaluations.Evaluation')
 def actualizar_gpa_estudiante_post_save(sender, instance, **kwargs):
     try:
-        estudiante = Estudiante.objects.get(user=instance.student)
-        estudiante.actualizar_calificacion()
-    except Estudiante.DoesNotExist:
+        # instance.student ya es un Estudiante, no necesitamos buscarlo
+        instance.student.actualizar_calificacion()
+    except Exception as e:
+        print(f"Error actualizando GPA: {e}")
         pass
 
 @receiver(post_delete, sender='evaluations.Evaluation')
 def actualizar_gpa_estudiante_post_delete(sender, instance, **kwargs):
     try:
-        estudiante = Estudiante.objects.get(user=instance.student)
-        estudiante.actualizar_calificacion()
-    except Estudiante.DoesNotExist:
+        # instance.student ya es un Estudiante, no necesitamos buscarlo
+        instance.student.actualizar_calificacion()
+    except Exception as e:
+        print(f"Error actualizando GPA: {e}")
         pass

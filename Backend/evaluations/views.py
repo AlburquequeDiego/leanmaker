@@ -649,7 +649,7 @@ def company_evaluate_student(request):
             data = json.loads(request.body)
             
             # Validar campos requeridos
-            required_fields = ['student_id', 'project_id', 'rating', 'comments']
+            required_fields = ['student_id', 'project_id', 'rating']
             for field in required_fields:
                 if field not in data:
                     return JsonResponse({'error': f'Campo requerido: {field}'}, status=400)
@@ -785,6 +785,92 @@ def company_evaluate_student(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
+def company_completed_evaluations(request):
+    """Endpoint para que empresas vean evaluaciones ya realizadas"""
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token requerido'}, status=401)
+    
+    token = auth_header.split(' ')[1]
+    user = verify_token(token)
+    if not user or not user.is_authenticated or getattr(user, 'role', None) != 'company':
+        return JsonResponse({'error': 'Solo empresas pueden acceder a este endpoint.'}, status=403)
+    
+    try:
+        from companies.models import Empresa
+        from applications.models import Aplicacion
+        from projects.models import Proyecto
+        from project_status.models import ProjectStatus
+        from .models import Evaluation
+        
+        print(f"[DEBUG] Iniciando company_completed_evaluations para usuario: {user.full_name}")
+        
+        # Obtener la empresa
+        company = Empresa.objects.get(user=user)
+        print(f"[DEBUG] Empresa encontrada: {company.company_name} (ID: {company.id}, User ID: {company.user.id})")
+        
+        # Buscar directamente las evaluaciones de la empresa
+        company_evaluations = Evaluation.objects.filter(
+            evaluator=user,
+            evaluation_type='company_to_student'
+        ).select_related('student__user', 'project')
+        
+        print(f"[DEBUG] Evaluaciones encontradas: {company_evaluations.count()}")
+        
+        completed_evaluations_data = []
+        
+        for evaluation in company_evaluations:
+            project = evaluation.project
+            student = evaluation.student
+            print(f"[DEBUG] Procesando evaluación: {evaluation.id} - Proyecto: {project.title}")
+            
+            # Buscar la aplicación correspondiente
+            try:
+                application = Aplicacion.objects.get(
+                    student=student,
+                    project=project
+                )
+                
+                completed_evaluations_data.append({
+                    'student_id': str(student.id),
+                    'student_name': student.user.full_name,
+                    'student_email': student.user.email,
+                    'project_id': str(project.id),
+                    'project_title': project.title,
+                    'project_description': project.description or '',
+                    'completion_date': application.updated_at.isoformat(),
+                    'already_evaluated': True,
+                    'evaluation_id': str(evaluation.id),
+                    'rating': evaluation.score
+                })
+                
+                print(f"[DEBUG] Agregada evaluación: {project.title} - Score: {evaluation.score}")
+                
+            except Aplicacion.DoesNotExist:
+                print(f"[DEBUG] No se encontró aplicación para proyecto: {project.title}")
+                continue
+        
+        response_data = {
+            'success': True,
+            'data': completed_evaluations_data,
+            'total': len(completed_evaluations_data),
+            'company_name': company.company_name,
+            'total_evaluations_completed': len(completed_evaluations_data)
+        }
+        
+        print(f"[DEBUG] Respuesta final: {response_data}")
+        return JsonResponse(response_data)
+        
+    except Empresa.DoesNotExist:
+        return JsonResponse({'error': 'Perfil de empresa no encontrado'}, status=404)
+    except Exception as e:
+        print(f"[DEBUG] Error en company_completed_evaluations: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
 def company_students_to_evaluate(request):
     """Endpoint para que empresas vean estudiantes que pueden evaluar"""
     # Autenticación por token
@@ -798,35 +884,73 @@ def company_students_to_evaluate(request):
         return JsonResponse({'error': 'Solo empresas pueden acceder a este endpoint.'}, status=403)
     
     try:
-        from companies.models import Company
+        from companies.models import Empresa
         from applications.models import Aplicacion
         from projects.models import Proyecto
         
         # Obtener la empresa
-        company = Company.objects.get(user=user)
+        company = Empresa.objects.get(user=user)
         
         # Obtener proyectos completados de la empresa
-        completed_projects = Proyecto.objects.filter(
-            company=company,
-            status='completed'
-        )
+        from project_status.models import ProjectStatus
+        try:
+            status_completado = ProjectStatus.objects.get(name='Completado')
+            completed_projects = Proyecto.objects.filter(
+                company=company,
+                status=status_completado
+            )
+        except ProjectStatus.DoesNotExist:
+            # Si no existe el estado 'Completado', buscar por nombre alternativo
+            try:
+                status_completado = ProjectStatus.objects.get(name='completed')
+                completed_projects = Proyecto.objects.filter(
+                    company=company,
+                    status=status_completado
+                )
+            except ProjectStatus.DoesNotExist:
+                # Si no existe ningún estado de completado, usar lista vacía
+                completed_projects = Proyecto.objects.none()
         
         students_data = []
+        print(f"[DEBUG] Proyectos completados encontrados: {completed_projects.count()}")
+        
         for project in completed_projects:
+            print(f"[DEBUG] Procesando proyecto: {project.title}")
+            
             # Obtener estudiantes que completaron este proyecto
             completed_applications = Aplicacion.objects.filter(
                 project=project,
                 status='completed'
             ).select_related('student__user')
             
+            # Si no hay aplicaciones con status 'completed', usar todas las aplicaciones del proyecto
+            if completed_applications.count() == 0:
+                print(f"[DEBUG] No hay aplicaciones con status 'completed' para el proyecto {project.title}")
+                all_applications = Aplicacion.objects.filter(
+                    project=project
+                ).select_related('student__user')
+                
+                # Marcar todas las aplicaciones como completadas
+                for app in all_applications:
+                    if app.status != 'completed':
+                        app.status = 'completed'
+                        app.save()
+                        print(f"[DEBUG] Marcada aplicación {app.id} del proyecto {project.title} como completada")
+                
+                completed_applications = all_applications
+            
+            print(f"[DEBUG] Aplicaciones completadas para {project.title}: {completed_applications.count()}")
+            
             for application in completed_applications:
                 student = application.student
+                print(f"[DEBUG] Procesando estudiante: {student.user.full_name}")
                 
                 # Verificar si ya evaluó este estudiante para este proyecto
                 existing_evaluation = Evaluation.objects.filter(
                     project=project,
                     student=student,
-                    evaluator=user
+                    evaluator=user,
+                    evaluation_type='company_to_student'
                 ).first()
                 
                 students_data.append({
@@ -835,6 +959,7 @@ def company_students_to_evaluate(request):
                     'student_email': student.user.email,
                     'project_id': str(project.id),
                     'project_title': project.title,
+                    'project_description': project.description,
                     'completion_date': application.updated_at.isoformat(),
                     'already_evaluated': existing_evaluation is not None,
                     'evaluation_id': str(existing_evaluation.id) if existing_evaluation else None,
@@ -842,12 +967,606 @@ def company_students_to_evaluate(request):
                 })
         
         return JsonResponse({
+            'success': True,
+            'data': students_data,
+            'total': len(students_data),
             'company_name': company.company_name,
-            'total_students_to_evaluate': len([s for s in students_data if not s['already_evaluated']]),
-            'students': students_data
+            'total_students_to_evaluate': len([s for s in students_data if not s['already_evaluated']])
         })
         
-    except Company.DoesNotExist:
+    except Empresa.DoesNotExist:
         return JsonResponse({'error': 'Perfil de empresa no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST", "GET"])
+def student_evaluate_company(request):
+    """Endpoint para que estudiantes evalúen empresas con estrellas (1-5)"""
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token requerido'}, status=401)
+    
+    token = auth_header.split(' ')[1]
+    user = verify_token(token)
+    if not user or not user.is_authenticated or getattr(user, 'role', None) != 'student':
+        return JsonResponse({'error': 'Solo estudiantes pueden evaluar empresas.'}, status=403)
+    
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            
+            # Validar campos requeridos
+            required_fields = ['company_id', 'project_id', 'rating']
+            for field in required_fields:
+                if field not in data:
+                    return JsonResponse({'error': f'Campo requerido: {field}'}, status=400)
+            
+            # Validar rating (1-5 estrellas)
+            rating = data.get('rating')
+            if not isinstance(rating, (int, float)) or rating < 1 or rating > 5:
+                return JsonResponse({'error': 'Rating debe ser un número entre 1 y 5'}, status=400)
+            
+            # Verificar que el proyecto existe y el estudiante participó
+            try:
+                from projects.models import Proyecto
+                from applications.models import Aplicacion
+                from companies.models import Empresa
+                from students.models import Estudiante
+                
+                project = Proyecto.objects.get(id=data['project_id'])
+                company = Empresa.objects.get(id=data['company_id'])
+                student = Estudiante.objects.get(user=user)
+                
+                # Verificar que el estudiante participó en el proyecto y está completado
+                application = Aplicacion.objects.get(
+                    project=project,
+                    student=student,
+                    status='completed'
+                )
+                
+                # Verificar que el proyecto pertenece a la empresa
+                if project.company != company:
+                    return JsonResponse({'error': 'El proyecto no pertenece a la empresa especificada'}, status=400)
+                
+            except (Proyecto.DoesNotExist, Empresa.DoesNotExist, Estudiante.DoesNotExist, Aplicacion.DoesNotExist):
+                return JsonResponse({'error': 'Proyecto, empresa o aplicación no encontrada'}, status=404)
+            
+            # Verificar que no haya evaluación previa para este proyecto
+            existing_evaluation = Evaluation.objects.filter(
+                project=project,
+                evaluator=user,
+                evaluation_type='student_to_company'
+            ).first()
+            
+            if existing_evaluation:
+                return JsonResponse({'error': 'Ya has evaluado esta empresa para este proyecto'}, status=400)
+            
+            # Crear la evaluación
+            evaluation = Evaluation.objects.create(
+                project=project,
+                student=student,
+                evaluator=user,
+                score=rating,
+                comments=data.get('comments', ''),
+                evaluation_date=timezone.now(),
+                status='completed',
+                evaluation_type='student_to_company'
+            )
+            
+            # Actualizar rating de la empresa
+            company.actualizar_calificacion()
+            
+            return JsonResponse({
+                'message': 'Evaluación enviada correctamente',
+                'evaluation_id': str(evaluation.id),
+                'rating': rating,
+                'company_name': company.company_name,
+                'project_title': project.title
+            }, status=201)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'JSON inválido'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif request.method == "GET":
+        # Obtener evaluaciones de empresas por estudiante
+        try:
+            from students.models import Estudiante
+            student = Estudiante.objects.get(user=user)
+            evaluations = Evaluation.objects.filter(
+                evaluator=user,
+                evaluation_type='student_to_company'
+            ).select_related('project__company')
+            
+            evaluations_data = []
+            for evaluation in evaluations:
+                evaluations_data.append({
+                    'id': str(evaluation.id),
+                    'rating': evaluation.score,
+                    'comments': evaluation.comments,
+                    'evaluation_date': evaluation.evaluation_date.isoformat(),
+                    'company_name': evaluation.project.company.company_name,
+                    'company_id': str(evaluation.project.company.id),
+                    'project_title': evaluation.project.title,
+                    'project_id': str(evaluation.project.id)
+                })
+            
+            return JsonResponse({
+                'student_name': student.user.full_name,
+                'total_evaluations': len(evaluations_data),
+                'evaluations': evaluations_data
+            })
+            
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def student_companies_to_evaluate(request):
+    """Endpoint para que estudiantes vean empresas que pueden evaluar"""
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token requerido'}, status=401)
+    
+    token = auth_header.split(' ')[1]
+    user = verify_token(token)
+    if not user or not user.is_authenticated or getattr(user, 'role', None) != 'student':
+        return JsonResponse({'error': 'Solo estudiantes pueden acceder a este endpoint.'}, status=403)
+    
+    try:
+        from students.models import Estudiante
+        from applications.models import Aplicacion
+        from projects.models import Proyecto
+        from project_status.models import ProjectStatus
+        from .models import Evaluation
+        
+        # Obtener el estudiante
+        student = Estudiante.objects.get(user=user)
+        print(f"[DEBUG] Estudiante encontrado: {student.user.full_name} (ID: {student.id})")
+        print(f"[DEBUG] Usuario: {user.full_name} (ID: {user.id}, Role: {user.role})")
+        
+        # Obtener proyectos completados del estudiante
+        # Primero buscar el status de proyecto completado
+        try:
+            completed_status = ProjectStatus.objects.get(name='Completado')
+        except ProjectStatus.DoesNotExist:
+            try:
+                completed_status = ProjectStatus.objects.get(name='completed')
+            except ProjectStatus.DoesNotExist:
+                print("[DEBUG] No se encontró status de proyecto completado")
+                return JsonResponse({
+                    'success': True,
+                    'data': [],
+                    'total': 0,
+                    'student_name': student.user.full_name,
+                    'total_companies_to_evaluate': 0
+                })
+        
+        print(f"[DEBUG] Status completado encontrado: {completed_status.name} (ID: {completed_status.id})")
+        
+        # Buscar TODAS las aplicaciones del estudiante en proyectos completados
+        completed_applications = Aplicacion.objects.filter(
+            student=student,
+            project__status=completed_status
+        ).select_related('project__company')
+        
+        print(f"[DEBUG] Aplicaciones en proyectos completados: {completed_applications.count()}")
+        
+        # Verificar todas las aplicaciones del estudiante para debug
+        all_applications = Aplicacion.objects.filter(student=student).select_related('project__company', 'project__status')
+        print(f"[DEBUG] Total aplicaciones del estudiante: {all_applications.count()}")
+        
+        for app in all_applications[:10]:  # Mostrar las primeras 10
+            if app.project:
+                project_status = app.project.status.name if app.project.status else "Sin status"
+                project_title = app.project.title
+            else:
+                project_status = "Sin proyecto"
+                project_title = "Sin proyecto"
+            print(f"[DEBUG] Aplicación {app.id}: proyecto={project_title}, status_app={app.status}, status_proyecto={project_status}")
+        
+        # Marcar todas las aplicaciones de proyectos completados como 'completed'
+        updated_count = 0
+        for app in completed_applications:
+            if app.status != 'completed':
+                app.status = 'completed'
+                app.save()
+                updated_count += 1
+                print(f"[DEBUG] Marcada aplicación {app.id} como completada")
+        
+        print(f"[DEBUG] Aplicaciones actualizadas: {updated_count}")
+        
+        # Ahora buscar aplicaciones con status 'completed' (que deberían ser todas las de proyectos completados)
+        final_applications = Aplicacion.objects.filter(
+            student=student,
+            status='completed'
+        ).select_related('project__company')
+        
+        print(f"[DEBUG] Aplicaciones finales con status 'completed': {final_applications.count()}")
+        
+        # Limpiar evaluaciones con proyectos inexistentes
+        print("[DEBUG] Limpiando evaluaciones con proyectos inexistentes...")
+        evaluations_to_delete = []
+        for eval in Evaluation.objects.filter(evaluator=user, evaluation_type='student_to_company'):
+            try:
+                # Intentar acceder al proyecto para verificar si existe
+                _ = eval.project.id
+            except Exception:
+                evaluations_to_delete.append(eval.id)
+                print(f"[DEBUG] Evaluación {eval.id} marcada para eliminar (proyecto inexistente)")
+        
+        if evaluations_to_delete:
+            Evaluation.objects.filter(id__in=evaluations_to_delete).delete()
+            print(f"[DEBUG] {len(evaluations_to_delete)} evaluaciones eliminadas")
+        
+        # Limpiar aplicaciones con proyectos inexistentes
+        print("[DEBUG] Limpiando aplicaciones con proyectos inexistentes...")
+        applications_to_delete = []
+        for app in Aplicacion.objects.filter(student=student):
+            try:
+                # Intentar acceder al proyecto para verificar si existe
+                _ = app.project.id
+            except Exception:
+                applications_to_delete.append(app.id)
+                print(f"[DEBUG] Aplicación {app.id} marcada para eliminar (proyecto inexistente)")
+        
+        if applications_to_delete:
+            Aplicacion.objects.filter(id__in=applications_to_delete).delete()
+            print(f"[DEBUG] {len(applications_to_delete)} aplicaciones eliminadas")
+        
+        # Debug: Ver todas las evaluaciones del estudiante (después de limpieza)
+        all_student_evaluations = Evaluation.objects.filter(
+            evaluator=user,
+            evaluation_type='student_to_company'
+        )
+        print(f"[DEBUG] Total evaluaciones del estudiante (después de limpieza): {all_student_evaluations.count()}")
+        for eval in all_student_evaluations:
+            project_title = eval.project.title if eval.project else "Sin proyecto"
+            print(f"[DEBUG] Evaluación: ID={eval.id}, Proyecto={project_title}, Score={eval.score}")
+        
+        companies_data = []
+        print(f"[DEBUG] Aplicaciones completadas encontradas: {final_applications.count()}")
+        
+        for application in final_applications:
+            project = application.project
+            if not project:
+                print(f"[DEBUG] Aplicación {application.id} sin proyecto, saltando...")
+                continue
+                
+            company = project.company
+            if not company:
+                print(f"[DEBUG] Proyecto {project.title} sin empresa, saltando...")
+                continue
+                
+            print(f"[DEBUG] Procesando proyecto: {project.title} - Empresa: {company.company_name}")
+            
+            # Verificar si ya evaluó esta empresa para este proyecto
+            existing_evaluation = Evaluation.objects.filter(
+                project=project,
+                evaluator=user,
+                evaluation_type='student_to_company'
+            ).first()
+            
+            print(f"[DEBUG] Proyecto {project.title}: existing_evaluation = {existing_evaluation}")
+            if existing_evaluation:
+                print(f"[DEBUG] Evaluación encontrada: ID={existing_evaluation.id}, Score={existing_evaluation.score}")
+            else:
+                print(f"[DEBUG] No se encontró evaluación para proyecto {project.title}")
+                # Debug adicional: verificar todas las evaluaciones del usuario para este proyecto
+                all_project_evals = Evaluation.objects.filter(project=project, evaluator=user)
+                print(f"[DEBUG] Todas las evaluaciones del usuario para este proyecto: {all_project_evals.count()}")
+                for eval in all_project_evals:
+                    print(f"[DEBUG]   - Tipo: {eval.evaluation_type}, Score: {eval.score}")
+            
+            companies_data.append({
+                'company_id': str(company.id),
+                'company_name': company.company_name,
+                'company_email': company.user.email,
+                'project_id': str(project.id),
+                'project_title': project.title,
+                'project_description': project.description,
+                'completion_date': application.updated_at.isoformat(),
+                'already_evaluated': existing_evaluation is not None,
+                'evaluation_id': str(existing_evaluation.id) if existing_evaluation else None,
+                'rating': existing_evaluation.score if existing_evaluation else None
+            })
+        
+        # Filtrar solo proyectos NO evaluados para la sección "Evaluar Empresas"
+        projects_to_evaluate = [c for c in companies_data if not c['already_evaluated']]
+        
+        response_data = {
+            'success': True,
+            'data': projects_to_evaluate,  # Solo proyectos NO evaluados
+            'total': len(projects_to_evaluate),
+            'student_name': student.user.full_name,
+            'total_companies_to_evaluate': len(projects_to_evaluate)
+        }
+        print(f"[DEBUG] Respuesta final: {response_data}")
+        print(f"[DEBUG] Proyectos para evaluar: {len(projects_to_evaluate)}")
+        print(f"[DEBUG] Proyectos ya evaluados: {len([c for c in companies_data if c['already_evaluated']])}")
+        return JsonResponse(response_data)
+        
+    except Estudiante.DoesNotExist:
+        print(f"[DEBUG] Error: Perfil de estudiante no encontrado para usuario {user.id}")
+        return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+    except Exception as e:
+        print(f"[DEBUG] Error inesperado: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def student_completed_evaluations(request):
+    """Endpoint para que estudiantes vean evaluaciones ya realizadas"""
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token requerido'}, status=401)
+    
+    token = auth_header.split(' ')[1]
+    user = verify_token(token)
+    if not user or not user.is_authenticated or getattr(user, 'role', None) != 'student':
+        return JsonResponse({'error': 'Solo estudiantes pueden acceder a este endpoint.'}, status=403)
+    
+    try:
+        from students.models import Estudiante
+        from applications.models import Aplicacion
+        from projects.models import Proyecto
+        from project_status.models import ProjectStatus
+        from .models import Evaluation
+        
+        print(f"[DEBUG] Iniciando student_completed_evaluations para usuario: {user.full_name}")
+        
+        # Obtener el estudiante
+        student = Estudiante.objects.get(user=user)
+        print(f"[DEBUG] Estudiante encontrado: {student.user.full_name} (ID: {student.id}, User ID: {student.user.id})")
+        print(f"[DEBUG] Usuario: {user.full_name} (ID: {user.id}, Email: {user.email})")
+        
+        # Buscar directamente las evaluaciones del estudiante
+        student_evaluations = Evaluation.objects.filter(
+            evaluator=user,
+            evaluation_type='student_to_company'
+        ).select_related('project__company')
+        
+        print(f"[DEBUG] Evaluaciones encontradas: {student_evaluations.count()}")
+        
+        completed_evaluations_data = []
+        
+        for evaluation in student_evaluations:
+            project = evaluation.project
+            company = project.company
+            print(f"[DEBUG] Procesando evaluación: {evaluation.id} - Proyecto: {project.title}")
+            
+            # Buscar la aplicación correspondiente
+            try:
+                application = Aplicacion.objects.get(
+                    student=student,
+                    project=project
+                )
+                
+                completed_evaluations_data.append({
+                    'company_id': str(company.id),
+                    'company_name': company.company_name,
+                    'company_email': company.user.email,
+                    'project_id': str(project.id),
+                    'project_title': project.title,
+                    'project_description': project.description or '',
+                    'completion_date': application.updated_at.isoformat(),
+                    'already_evaluated': True,
+                    'evaluation_id': str(evaluation.id),
+                    'rating': evaluation.score
+                })
+                
+                print(f"[DEBUG] Agregada evaluación: {project.title} - Score: {evaluation.score}")
+                
+            except Aplicacion.DoesNotExist:
+                print(f"[DEBUG] No se encontró aplicación para proyecto: {project.title}")
+                continue
+        
+        response_data = {
+            'success': True,
+            'data': completed_evaluations_data,
+            'total': len(completed_evaluations_data),
+            'student_name': student.user.full_name,
+            'total_evaluations_completed': len(completed_evaluations_data)
+        }
+        
+        print(f"[DEBUG] Respuesta final: {response_data}")
+        return JsonResponse(response_data)
+        
+    except Estudiante.DoesNotExist:
+        print(f"[DEBUG] Error: Perfil de estudiante no encontrado para usuario {user.id}")
+        return JsonResponse({'error': 'Perfil de estudiante no encontrado'}, status=404)
+    except Exception as e:
+        print(f"[DEBUG] Error inesperado: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_evaluations_management(request):
+    """Endpoint para que admin gestione todas las evaluaciones"""
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token requerido'}, status=401)
+    
+    token = auth_header.split(' ')[1]
+    user = verify_token(token)
+    if not user or not user.is_authenticated or getattr(user, 'role', None) != 'admin':
+        return JsonResponse({'error': 'Solo administradores pueden acceder a este endpoint.'}, status=403)
+    
+    try:
+        # Parámetros de paginación y filtros
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        evaluation_type = request.GET.get('evaluation_type', '')
+        status = request.GET.get('status', '')
+        
+        # Query base
+        queryset = Evaluation.objects.select_related(
+            'project', 'student__user', 'project__company', 'evaluator'
+        ).all()
+        
+        # Filtros
+        if evaluation_type:
+            queryset = queryset.filter(evaluation_type=evaluation_type)
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Contar total
+        total_count = queryset.count()
+        
+        # Paginar
+        evaluations = queryset[offset:offset + limit]
+        
+        # Serializar datos
+        evaluations_data = []
+        for evaluation in evaluations:
+            evaluations_data.append({
+                'id': str(evaluation.id),
+                'evaluation_type': evaluation.evaluation_type,
+                'score': evaluation.score,
+                'comments': evaluation.comments,
+                'status': evaluation.status,
+                'evaluation_date': evaluation.evaluation_date.isoformat() if evaluation.evaluation_date else None,
+                'project_id': str(evaluation.project.id),
+                'project_title': evaluation.project.title,
+                'student_id': str(evaluation.student.id),
+                'student_name': evaluation.student.user.full_name,
+                'student_email': evaluation.student.user.email,
+                'company_id': str(evaluation.project.company.id),
+                'company_name': evaluation.project.company.company_name,
+                'evaluator_id': str(evaluation.evaluator.id),
+                'evaluator_name': evaluation.evaluator.full_name,
+                'evaluator_role': evaluation.evaluator.role,
+                'created_at': evaluation.created_at.isoformat(),
+                'updated_at': evaluation.updated_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'results': evaluations_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_strikes_management(request):
+    """Endpoint para que admin gestione todos los strikes"""
+    # Autenticación por token
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token requerido'}, status=401)
+    
+    token = auth_header.split(' ')[1]
+    user = verify_token(token)
+    if not user or not user.is_authenticated or getattr(user, 'role', None) != 'admin':
+        return JsonResponse({'error': 'Solo administradores pueden acceder a este endpoint.'}, status=403)
+    
+    try:
+        from strikes.models import Strike, StrikeReport
+        
+        # Parámetros de paginación y filtros
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        status = request.GET.get('status', '')
+        
+        # Query base - incluir tanto strikes como reportes
+        strikes_queryset = Strike.objects.select_related(
+            'student__user', 'company', 'project', 'issued_by'
+        ).all()
+        
+        reports_queryset = StrikeReport.objects.select_related(
+            'student__user', 'company', 'project', 'reviewed_by'
+        ).all()
+        
+        # Filtros
+        if status:
+            strikes_queryset = strikes_queryset.filter(is_active=(status == 'active'))
+            reports_queryset = reports_queryset.filter(status=status)
+        
+        # Combinar y ordenar
+        strikes_data = []
+        for strike in strikes_queryset[offset:offset + limit]:
+            strikes_data.append({
+                'id': str(strike.id),
+                'type': 'strike',
+                'student_id': str(strike.student.id),
+                'student_name': strike.student.user.full_name,
+                'student_email': strike.student.user.email,
+                'company_id': str(strike.company.id),
+                'company_name': strike.company.company_name,
+                'project_id': str(strike.project.id) if strike.project else None,
+                'project_title': strike.project.title if strike.project else None,
+                'reason': strike.reason,
+                'description': strike.description,
+                'severity': strike.severity,
+                'status': 'active' if strike.is_active else 'inactive',
+                'issued_by_id': str(strike.issued_by.id) if strike.issued_by else None,
+                'issued_by_name': strike.issued_by.full_name if strike.issued_by else None,
+                'issued_at': strike.issued_at.isoformat(),
+                'expires_at': strike.expires_at.isoformat() if strike.expires_at else None,
+                'resolved_at': strike.resolved_at.isoformat() if strike.resolved_at else None,
+                'resolution_notes': strike.resolution_notes,
+                'created_at': strike.created_at.isoformat(),
+                'updated_at': strike.updated_at.isoformat(),
+            })
+        
+        reports_data = []
+        for report in reports_queryset[offset:offset + limit]:
+            reports_data.append({
+                'id': str(report.id),
+                'type': 'report',
+                'student_id': str(report.student.id),
+                'student_name': report.student.user.full_name,
+                'student_email': report.student.user.email,
+                'company_id': str(report.company.id),
+                'company_name': report.company.company_name,
+                'project_id': str(report.project.id) if report.project else None,
+                'project_title': report.project.title if report.project else None,
+                'reason': report.reason,
+                'description': report.description,
+                'status': report.status,
+                'reviewed_by_id': str(report.reviewed_by.id) if report.reviewed_by else None,
+                'reviewed_by_name': report.reviewed_by.full_name if report.reviewed_by else None,
+                'reviewed_at': report.reviewed_at.isoformat() if report.reviewed_at else None,
+                'admin_notes': report.admin_notes,
+                'created_at': report.created_at.isoformat(),
+                'updated_at': report.updated_at.isoformat(),
+            })
+        
+        # Combinar ambos tipos
+        all_data = strikes_data + reports_data
+        total_count = strikes_queryset.count() + reports_queryset.count()
+        
+        return JsonResponse({
+            'results': all_data,
+            'count': total_count,
+            'page': page,
+            'limit': limit,
+            'total_pages': (total_count + limit - 1) // limit
+        })
+        
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

@@ -63,6 +63,16 @@ export const API_ENDPOINTS = {
   EVALUATIONS_DETAIL: '/api/evaluations/{id}/',
   EVALUATIONS_UPDATE: '/api/evaluations/{id}/update/',
   
+  // NUEVOS ENDPOINTS PARA EVALUACIONES MUTUAS
+  EVALUATIONS_COMPANY_EVALUATE_STUDENT: '/api/evaluations/company-evaluate-student/',
+  EVALUATIONS_COMPANY_STUDENTS_TO_EVALUATE: '/api/evaluations/company-students-to-evaluate/',
+  EVALUATIONS_STUDENT_EVALUATE_COMPANY: '/api/evaluations/student-evaluate-company/',
+  EVALUATIONS_STUDENT_COMPANIES_TO_EVALUATE: '/api/evaluations/student-companies-to-evaluate/',
+  
+  // ENDPOINTS PARA ADMIN - GESTIÓN DE EVALUACIONES Y STRIKES
+  EVALUATIONS_ADMIN_MANAGEMENT: '/api/evaluations/admin/management/',
+  EVALUATIONS_ADMIN_STRIKES_MANAGEMENT: '/api/evaluations/admin/strikes-management/',
+  
   // Notifications (endpoints reales del backend)
   NOTIFICATIONS: '/api/notifications/',
   MASS_NOTIFICATIONS: '/api/mass-notifications/',
@@ -78,6 +88,12 @@ export const API_ENDPOINTS = {
   
   // Strikes (endpoints reales del backend)
   STRIKES: '/api/strikes/',
+  STRIKES_DETAIL: '/api/strikes/{id}/',
+  STRIKES_REPORTS: '/api/strikes/reports/',
+  STRIKES_REPORTS_CREATE: '/api/strikes/reports/create/',
+  STRIKES_REPORTS_APPROVE: '/api/strikes/reports/{id}/approve/',
+  STRIKES_REPORTS_REJECT: '/api/strikes/reports/{id}/reject/',
+  STRIKES_REPORTS_COMPANY: '/api/strikes/reports/company/',
   
   // Questionnaires (endpoints reales del backend)
   QUESTIONNAIRES: '/questionnaires/',
@@ -90,12 +106,6 @@ export const API_ENDPOINTS = {
   
   // Assignments (endpoints reales del backend)
   ASSIGNMENTS: '/assignments/',
-  
-  // Evaluation Categories (endpoints reales del backend)
-  EVALUATION_CATEGORIES: '/evaluation-categories/',
-  
-  // Ratings (endpoints reales del backend)
-  RATINGS: '/ratings/',
   
   // Admin (endpoints reales del backend)
   ADMIN: '/api/admin/',

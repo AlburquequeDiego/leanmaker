@@ -5,10 +5,10 @@ Serializers para la app evaluations.
 import json
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from .models import Evaluation, EvaluationCategoryScore, EvaluationTemplate, StudentSkill, StudentPortfolio, StudentAchievement
+from .models import Evaluation, StudentSkill, StudentPortfolio, StudentAchievement
 from users.models import User
 from projects.models import Proyecto
-from evaluation_categories.models import EvaluationCategory
+
 
 class EvaluationSerializer:
     """Serializer para el modelo Evaluation"""
@@ -25,8 +25,8 @@ class EvaluationSerializer:
             'student_user_id': evaluation.student.user.id if hasattr(evaluation.student, 'user') else '',
             'evaluator_id': str(evaluation.evaluator.id) if evaluation.evaluator else None,
             'evaluator_name': evaluation.evaluator.full_name if evaluation.evaluator else None,
-            'category_id': evaluation.category.id if evaluation.category else None,
-            'category_name': evaluation.category.name if evaluation.category else None,
+            'evaluation_type': evaluation.evaluation_type,
+            'criteria_scores': evaluation.criteria_scores,
             'score': evaluation.score,
             'evaluation_date': evaluation.evaluation_date.isoformat() if evaluation.evaluation_date else None,
             'status': evaluation.status,
@@ -39,14 +39,7 @@ class EvaluationSerializer:
             'deliverables': evaluation.deliverables,
             'created_at': evaluation.created_at.isoformat(),
             'updated_at': evaluation.updated_at.isoformat(),
-            'category_scores': [
-                {
-                    'category_id': score.category.id,
-                    'category_name': score.category.name,
-                    'rating': score.rating
-                }
-                for score in evaluation.category_scores.all()
-            ] if hasattr(evaluation, 'category_scores') else []
+            'criteria_scores': evaluation.criteria_scores or {}
         }
     
     @staticmethod
@@ -75,22 +68,18 @@ class EvaluationSerializer:
             except Exception as e:
                 errors['student_id'] = f'Error al validar el estudiante: {str(e)}'
         
-        # Validar category_id
-        if 'category_id' in data and data['category_id']:
-            try:
-                category = EvaluationCategory.objects.get(id=data['category_id'])
-                data['category'] = category
-            except EvaluationCategory.DoesNotExist:
-                errors['category_id'] = 'La categoría especificada no existe'
-            except Exception as e:
-                errors['category_id'] = f'Error al validar la categoría: {str(e)}'
+        # Validar evaluation_type
+        if 'evaluation_type' in data and data['evaluation_type']:
+            valid_types = ['company_to_student', 'student_to_company']
+            if data['evaluation_type'] not in valid_types:
+                errors['evaluation_type'] = 'El tipo de evaluación debe ser company_to_student o student_to_company'
         
         # Validar score
         if 'score' in data:
             try:
                 score = float(data['score'])
-                if score < 0 or score > 100:
-                    errors['score'] = 'El puntaje debe estar entre 0 y 100'
+                if score < 1 or score > 5:
+                    errors['score'] = 'El puntaje debe estar entre 1 y 5'
                 data['score'] = score
             except (ValueError, TypeError):
                 errors['score'] = 'El puntaje debe ser un número'
@@ -126,7 +115,7 @@ class EvaluationSerializer:
                 project=data.get('project'),
                 student=data.get('student'),
                 evaluator=user,
-                category=data.get('category'),
+                evaluation_type=data.get('evaluation_type', 'company_to_student'),
                 score=data.get('score', 0),
                 status=data.get('status', 'pendiente'),
                 type=data.get('type', 'proyecto'),
@@ -160,82 +149,13 @@ class EvaluationSerializer:
                 evaluation.project = data['project']
             if 'student' in data:
                 evaluation.student = data['student']
-            if 'category' in data:
-                evaluation.category = data['category']
+            if 'evaluation_type' in data:
+                evaluation.evaluation_type = data['evaluation_type']
             
             evaluation.save()
             return evaluation
 
-class EvaluationTemplateSerializer:
-    """Serializer para el modelo EvaluationTemplate"""
-    
-    @staticmethod
-    def to_dict(template):
-        """Convierte un objeto EvaluationTemplate a diccionario"""
-        return {
-            'id': str(template.id),
-            'name': template.name,
-            'description': template.description,
-            'categories': template.get_categories_list(),
-            'is_active': template.is_active,
-            'created_at': template.created_at.isoformat(),
-            'updated_at': template.updated_at.isoformat()
-        }
-    
-    @staticmethod
-    def validate_data(data):
-        """Valida los datos de la plantilla"""
-        errors = {}
-        
-        # Validar campos requeridos
-        if 'name' not in data or not data['name']:
-            errors['name'] = 'El nombre es requerido'
-        elif len(data['name'].strip()) < 3:
-            errors['name'] = 'El nombre debe tener al menos 3 caracteres'
-        else:
-            data['name'] = data['name'].strip()
-        
-        # Validar categories
-        if 'categories' in data and data['categories']:
-            try:
-                if isinstance(data['categories'], str):
-                    json.loads(data['categories'])
-                elif isinstance(data['categories'], list):
-                    json.dumps(data['categories'])
-            except (json.JSONDecodeError, TypeError):
-                errors['categories'] = 'El campo categories debe ser un JSON válido'
-        
-        return errors
-    
-    @staticmethod
-    def create(data):
-        """Crea una nueva plantilla"""
-        with transaction.atomic():
-            template = EvaluationTemplate.objects.create(
-                name=data['name'],
-                description=data.get('description', ''),
-                categories=data.get('categories', '[]'),
-                is_active=data.get('is_active', True)
-            )
-            
-            return template
-    
-    @staticmethod
-    def update(template, data):
-        """Actualiza una plantilla existente"""
-        with transaction.atomic():
-            # Actualizar campos
-            if 'name' in data:
-                template.name = data['name']
-            if 'description' in data:
-                template.description = data['description']
-            if 'categories' in data:
-                template.categories = data['categories']
-            if 'is_active' in data:
-                template.is_active = data['is_active']
-            
-            template.save()
-            return template
+
 
 class StudentSkillSerializer:
     """Serializer para el modelo StudentSkill"""

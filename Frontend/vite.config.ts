@@ -13,6 +13,7 @@ export default defineConfig({
     port: 3000,
     host: true,
     open: true,
+    strictPort: true, // Fuerza el uso del puerto 3000
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

@@ -120,12 +120,21 @@ class Empresa(models.Model):
         """Verifica si la empresa puede publicar proyectos"""
         return self.verified and self.user.is_active and self.status == 'active'
     
-    def actualizar_calificacion(self, nueva_calificacion):
-        """Actualiza la calificación promedio de la empresa"""
-        total_actual = self.rating * self.total_projects
-        self.total_projects += 1
-        self.rating = (total_actual + nueva_calificacion) / self.total_projects
-        self.save(update_fields=['rating', 'total_projects'])
+    def actualizar_calificacion(self, nueva_calificacion=None):
+        """Actualiza la calificación promedio de la empresa basada en evaluaciones"""
+        from evaluations.models import Evaluation
+        # Buscar evaluaciones donde esta empresa es evaluada por estudiantes
+        evaluaciones = Evaluation.objects.filter(
+            project__company=self,
+            status='completed',
+            evaluation_type='student_to_company'
+        )
+        if evaluaciones.exists():
+            promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
+            self.rating = round(promedio, 2)
+        else:
+            self.rating = 0
+        self.save(update_fields=['rating'])
     
     def incrementar_proyectos_publicados(self):
         """Incrementa el contador de proyectos publicados"""
@@ -268,3 +277,16 @@ def actualizar_rating_empresa_post_delete(sender, instance, **kwargs):
     else:
         empresa.rating = 0
     empresa.save(update_fields=['rating'])
+
+# Signal para actualizar rating de empresa cuando se crea/actualiza una evaluación del sistema evaluations/
+@receiver(post_save, sender='evaluations.Evaluation')
+def actualizar_rating_empresa_evaluations_post_save(sender, instance, **kwargs):
+    """Actualiza el rating de la empresa cuando se crea una evaluación estudiante->empresa"""
+    if instance.evaluation_type == 'student_to_company' and instance.company:
+        instance.company.actualizar_calificacion()
+
+@receiver(post_delete, sender='evaluations.Evaluation')
+def actualizar_rating_empresa_evaluations_post_delete(sender, instance, **kwargs):
+    """Actualiza el rating de la empresa cuando se elimina una evaluación estudiante->empresa"""
+    if instance.evaluation_type == 'student_to_company' and instance.company:
+        instance.company.actualizar_calificacion()

@@ -1097,6 +1097,7 @@ def api_dashboard_company_stats(request):
             
             # 11. Distribución de proyectos por área
             from django.db.models import Count
+            
             area_distribution = Proyecto.objects.filter(
                 company=company,
                 area__isnull=False
@@ -1110,7 +1111,25 @@ def api_dashboard_company_stats(request):
                     'name': area['area__name'],
                     'count': area['count']
                 })
-            print(f'📊 [COMPANY STATS] Distribución por área: {area_data}')
+            
+            # Si no hay datos de área, crear datos por defecto basados en proyectos sin área
+            if not area_data:
+                total_projects_without_area = Proyecto.objects.filter(
+                    company=company,
+                    area__isnull=True
+                ).count()
+                
+                if total_projects_without_area > 0:
+                    area_data.append({
+                        'name': 'Sin área asignada',
+                        'count': total_projects_without_area
+                    })
+                else:
+                    # Si no hay proyectos en absoluto, mostrar mensaje
+                    area_data.append({
+                        'name': 'Sin proyectos',
+                        'count': 0
+                    })
             
             # 12. Actividad mensual (últimos 6 meses)
             monthly_activity = []

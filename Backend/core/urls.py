@@ -9,7 +9,7 @@ from django.views.generic import RedirectView
 
 # Importar vistas personalizadas
 from . import views
-from companies.views import company_ratings
+# from companies.views import company_ratings  # ELIMINADO - Sistema duplicado
 
 urlpatterns = [
     # Admin
@@ -44,8 +44,8 @@ urlpatterns = [
     path('api/areas/', include('areas.urls')),
     path('project-status/', include('project_status.urls')),
     path('assignments/', include('assignments.urls')),
-    path('evaluation-categories/', include('evaluation_categories.urls')),
-    path('ratings/', include('ratings.urls')),
+
+    # path('ratings/', include('ratings.urls')),  # ELIMINADO - Sistema duplicado
     path('api/mass-notifications/', include('mass_notifications.urls')),
     path('api/admin/', include('custom_admin.urls')),
     
@@ -71,7 +71,7 @@ urlpatterns = [
     path('api/test-auth-admin-stats/', views.api_test_auth_admin_stats, name='api_test_auth_admin_stats'),
     path('api/test-communication/', views.test_communication, name='test_communication'),
     path('api/test-simple/', views.test_simple, name='test_simple'),
-    path('api/company-ratings/', company_ratings, name='company_ratings'),
+    # path('api/company-ratings/', company_ratings, name='company_ratings'),  # ELIMINADO - Sistema duplicado
     
     # Redirección por defecto
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),

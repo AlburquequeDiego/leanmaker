@@ -14,6 +14,46 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 
+// Paleta de colores estilo Power BI
+const powerBIColors = [
+  '#01B8AA', // Teal principal
+  '#374649', // Dark Gray
+  '#FD625E', // Red
+  '#F2C80F', // Yellow
+  '#5F6B6D', // Gray
+  '#8AD4EB', // Light Blue
+  '#FE9666', // Orange
+  '#A66999', // Purple
+  '#3599B8', // Blue
+  '#DFBFBF'  // Light Pink
+];
+
+// Estilos Power BI para tooltips
+const powerBITooltipStyles = {
+  backgroundColor: 'rgba(255, 255, 255, 0.98)',
+  backdropFilter: 'blur(20px)',
+  border: '1px solid rgba(0, 0, 0, 0.1)',
+  borderRadius: '16px',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1)',
+  padding: '16px 20px',
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#1e293b'
+};
+
+// Estilos Power BI para dark mode tooltips
+const powerBITooltipDarkStyles = {
+  backgroundColor: 'rgba(15, 23, 42, 0.98)',
+  backdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  borderRadius: '16px',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2)',
+  padding: '16px 20px',
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#f8fafc'
+};
+
 // Componente de tarjeta KPI reutilizable
 interface KPICardProps {
   title: string;
@@ -324,45 +364,54 @@ export default function StudentDashboard() {
             {stats?.application_distribution && stats.application_distribution.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                  <Pie
-                    data={stats.application_distribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="count"
-                    nameKey="name"
-                  >
+                  <defs>
+                    <filter id="pieShadow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                    </filter>
+                  </defs>
+                                     <Pie
+                     data={stats.application_distribution}
+                     cx="50%"
+                     cy="50%"
+                     labelLine={false}
+                     label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
+                     outerRadius={100}
+                     innerRadius={50}
+                     dataKey="count"
+                     stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                     strokeWidth={3}
+                     filter="url(#pieShadow)"
+                     labelStyle={{
+                       fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                       fontSize: '12px',
+                       fontWeight: 600
+                     }}
+                   >
                     {stats.application_distribution.map((_: any, index: number) => (
                       <Cell 
                         key={`cell-${index}`} 
-                        fill={[
-                          '#3b82f6', '#16a34a', '#f59e0b', '#ef4444', 
-                          '#8b5cf6', '#06b6d4', '#84cc16', '#f97316', '#ec4899'
-                        ][index % 9]} 
+                        fill={powerBIColors[index % powerBIColors.length]}
+                        stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                        strokeWidth={2}
                       />
                     ))}
                   </Pie>
                   <RechartsTooltip 
-                    contentStyle={{
-                      backgroundColor: themeMode === 'dark' ? '#1e293b' : 'white',
-                      border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                    }}
+                    contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                     formatter={(value: any, name: any) => [
                       `${value} aplicaciones`, 
                       name
                     ]}
                   />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36}
-                    wrapperStyle={{
-                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                    }}
-                  />
+                                     <Legend 
+                     verticalAlign="bottom" 
+                     height={36}
+                     wrapperStyle={{
+                       color: themeMode === 'dark' ? '#f8fafc' : '#1e293b',
+                       fontSize: '13px',
+                       fontWeight: 600
+                     }}
+                   />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -399,31 +448,85 @@ export default function StudentDashboard() {
             {stats?.monthly_activity && stats.monthly_activity.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={stats.monthly_activity}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={themeMode === 'dark' ? '#334155' : '#e2e8f0'} />
-                  <XAxis 
-                    dataKey="month" 
-                    tick={{ fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}
-                    fontSize={12}
+                  <defs>
+                    <linearGradient id="applicationsGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    </linearGradient>
+                    <linearGradient id="hoursGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid 
+                    strokeDasharray="3 3" 
+                    stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                    opacity={0.3}
                   />
-                  <YAxis 
-                    tick={{ fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}
-                    fontSize={12}
-                  />
+                                     <XAxis 
+                     dataKey="month" 
+                     tick={{ 
+                       fontSize: 12, 
+                       fontWeight: 600,
+                       fill: themeMode === 'dark' ? '#f8fafc' : '#1e293b'
+                     }}
+                     axisLine={{ 
+                       stroke: themeMode === 'dark' ? '#475569' : '#cbd5e1',
+                       strokeWidth: 2
+                     }}
+                     tickLine={{ 
+                       stroke: themeMode === 'dark' ? '#475569' : '#cbd5e1',
+                       strokeWidth: 2
+                     }}
+                   />
+                   <YAxis 
+                     tick={{ 
+                       fontSize: 12, 
+                       fontWeight: 600,
+                       fill: themeMode === 'dark' ? '#f8fafc' : '#1e293b'
+                     }}
+                     axisLine={{ 
+                       stroke: themeMode === 'dark' ? '#475569' : '#cbd5e1',
+                       strokeWidth: 2
+                     }}
+                     tickLine={{ 
+                       stroke: themeMode === 'dark' ? '#475569' : '#cbd5e1',
+                       strokeWidth: 2
+                     }}
+                   />
                   <RechartsTooltip 
-                    contentStyle={{
-                      backgroundColor: themeMode === 'dark' ? '#1e293b' : 'white',
-                      border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                    contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                    formatter={(value: any, name: any) => [value, name]}
+                  />
+                                     <Legend 
+                     wrapperStyle={{
+                       color: themeMode === 'dark' ? '#f8fafc' : '#1e293b',
+                       fontSize: '13px',
+                       fontWeight: 600,
+                       paddingTop: '20px'
+                     }}
+                    formatter={(value) => {
+                      const labels = {
+                        applications: '📝 Aplicaciones Enviadas',
+                        hours: '⏰ Horas Trabajadas'
+                      };
+                      return labels[value as keyof typeof labels] || value;
                     }}
                   />
-                  <Legend 
-                    wrapperStyle={{
-                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                    }}
+                  <Bar 
+                    dataKey="applications" 
+                    fill="url(#applicationsGradient)" 
+                    radius={[8, 8, 0, 0]}
+                    stroke="#3b82f6"
+                    strokeWidth={1}
                   />
-                  <Bar dataKey="applications" fill="#3b82f6" name="Aplicaciones Enviadas" />
-                  <Bar dataKey="hours" fill="#16a34a" name="Horas Trabajadas" />
+                  <Bar 
+                    dataKey="hours" 
+                    fill="url(#hoursGradient)" 
+                    radius={[8, 8, 0, 0]}
+                    stroke="#22c55e"
+                    strokeWidth={1}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

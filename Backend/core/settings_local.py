@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'areas',
     'project_status',
     'assignments',
-    'evaluation_categories',
+
     'ratings',
     'mass_notifications',
     'custom_admin',

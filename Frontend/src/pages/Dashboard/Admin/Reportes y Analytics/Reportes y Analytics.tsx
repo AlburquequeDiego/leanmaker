@@ -963,96 +963,96 @@ export const ReportesYAnalytics = () => {
 
        {/* Tablas de Top 20 */}
        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mt: 6 }}>
-        {/* Top 20 Estudiantes */}
+         {/* Top 20 Estudiantes */}
         <Box sx={{ width: '100%' }}>
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: 3,
-            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
-          }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Top 20 Estudiantes</Typography>
-                <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>Por horas en proyectos</Typography>
-              </Box>
-              {topStudents.length > 0 ? (
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiante</TableCell>
-                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Nivel API</TableCell>
-                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas</TableCell>
-                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
-                        <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {topStudents.map((student, index) => (
-                        <TableRow 
-                          key={student.id} 
-                          sx={index === 0 ? { 
-                            bgcolor: themeMode === 'dark' ? '#334155' : '#fef3c7', 
-                            '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#fde68a' } 
-                          } : {
-                            '&:hover': { bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }
-                          }}
-                        >
-                          <TableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Avatar sx={{ width: 32, height: 32, fontSize: '0.875rem' }}>
-                                {index < 3 ? ['🥇', '🥈', '🥉'][index] : student.name.charAt(0)}
-                              </Avatar>
-                              <Box>
-                                <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                                  {student.name}
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                                  {student.email}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Chip 
-                              label={`API ${student.level}`}
-                              size="small"
-                              color={student.level >= 3 ? 'success' : student.level >= 2 ? 'warning' : 'default'}
-                              variant={student.level >= 3 ? 'filled' : 'outlined'}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{ color: '#22c55e', fontWeight: 600 }}>
-                              {student.totalHours.toLocaleString()}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Chip 
-                              label={student.completedProjects}
-                              size="small"
-                              color={student.completedProjects > 0 ? 'primary' : 'default'}
-                              variant={student.completedProjects > 0 ? 'filled' : 'outlined'}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                              {student.averageRating ? student.averageRating.toFixed(1) : '0.0'} ⭐
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                  <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de estudiantes disponibles</Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Box>
+           <Card sx={{ 
+             borderRadius: 3, 
+             boxShadow: 3,
+             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+             color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+           }}>
+             <CardContent>
+               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                 <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Top 20 Estudiantes</Typography>
+                 <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>Por horas en proyectos</Typography>
+               </Box>
+               {topStudents.length > 0 ? (
+                 <TableContainer>
+                   <Table>
+                     <TableHead>
+                       <TableRow>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiante</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Nivel API</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
+                       </TableRow>
+                     </TableHead>
+                     <TableBody>
+                       {topStudents.map((student, index) => (
+                         <TableRow 
+                           key={student.id} 
+                           sx={index === 0 ? { 
+                             bgcolor: themeMode === 'dark' ? '#334155' : '#fef3c7', 
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#fde68a' } 
+                           } : {
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }
+                           }}
+                         >
+                           <TableCell>
+                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                               <Avatar sx={{ width: 32, height: 32, fontSize: '0.875rem' }}>
+                                 {index < 3 ? ['🥇', '🥈', '🥉'][index] : student.name.charAt(0)}
+                               </Avatar>
+                               <Box>
+                                 <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                                   {student.name}
+                                 </Typography>
+                                 <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                                   {student.email}
+                                 </Typography>
+                               </Box>
+                             </Box>
+                           </TableCell>
+                           <TableCell>
+                             <Chip 
+                               label={`API ${student.level}`}
+                               size="small"
+                               color={student.level >= 3 ? 'success' : student.level >= 2 ? 'warning' : 'default'}
+                               variant={student.level >= 3 ? 'filled' : 'outlined'}
+                             />
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" sx={{ color: '#22c55e', fontWeight: 600 }}>
+                               {student.totalHours.toLocaleString()}
+                             </Typography>
+                           </TableCell>
+                           <TableCell>
+                             <Chip 
+                               label={student.completedProjects}
+                               size="small"
+                               color={student.completedProjects > 0 ? 'primary' : 'default'}
+                               variant={student.completedProjects > 0 ? 'filled' : 'outlined'}
+                             />
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                               {student.averageRating ? student.averageRating.toFixed(1) : '0.0'} ⭐
+                             </Typography>
+                           </TableCell>
+                         </TableRow>
+                       ))}
+                     </TableBody>
+                   </Table>
+                 </TableContainer>
+               ) : (
+                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+                   <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de estudiantes disponibles</Typography>
+                 </Box>
+               )}
+             </CardContent>
+           </Card>
+         </Box>
 
          {/* Top 20 Empresas */}
          <Box sx={{ width: '100%' }}>

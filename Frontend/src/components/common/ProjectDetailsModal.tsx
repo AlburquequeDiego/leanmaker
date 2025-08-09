@@ -218,22 +218,22 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
       {/* Contenido principal */}
       <Box sx={{ 
         p: 2.5, 
-        bgcolor: themeMode === 'dark' ? '#1e293b' : '#fafafa',
-        color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+        bgcolor: themeMode === 'dark' ? '#2d3748' : '#fafafa',
+        color: themeMode === 'dark' ? '#e2e8f0' : 'inherit',
         maxHeight: 'calc(90vh - 140px)',
         overflow: 'auto',
         '&::-webkit-scrollbar': {
           width: '6px',
         },
         '&::-webkit-scrollbar-track': {
-          background: themeMode === 'dark' ? '#334155' : '#f1f1f1',
+          background: themeMode === 'dark' ? '#4a5568' : '#f1f1f1',
           borderRadius: '3px',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: themeMode === 'dark' ? '#475569' : '#c1c1c1',
+          background: themeMode === 'dark' ? '#718096' : '#c1c1c1',
           borderRadius: '3px',
           '&:hover': {
-            background: themeMode === 'dark' ? '#64748b' : '#a8a8a8',
+            background: themeMode === 'dark' ? '#a0aec0' : '#a8a8a8',
           },
         },
       }}>
@@ -250,10 +250,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 p: 2, 
                 mb: 2, 
                 borderRadius: 2,
-                background: themeMode === 'dark' ? 'linear-gradient(145deg, #334155 0%, #1e293b 100%)' : 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+                background: themeMode === 'dark' ? 'linear-gradient(145deg, #4a5568 0%, #2d3748 100%)' : 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
-                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+                border: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(255,255,255,0.8)',
+                color: themeMode === 'dark' ? '#e2e8f0' : 'inherit'
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                   <Box sx={{ 
@@ -273,7 +273,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 </Box>
                 <Typography variant="body2" sx={{ 
                   lineHeight: 1.6, 
-                  color: themeMode === 'dark' ? '#f1f5f9' : '#374151',
+                  color: themeMode === 'dark' ? '#e2e8f0' : '#374151',
                   fontSize: '1rem'
                 }}>
                   {project.description || 'Sin descripción disponible'}
@@ -286,10 +286,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   p: 2, 
                   mb: 2, 
                   borderRadius: 2,
-                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #064e3b 0%, #065f46 100%)' : 'linear-gradient(145deg, #e8f5e8 0%, #f0f8f0 100%)',
+                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #22543d 0%, #276749 100%)' : 'linear-gradient(145deg, #e8f5e8 0%, #f0f8f0 100%)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  border: themeMode === 'dark' ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid rgba(76, 175, 80, 0.2)',
-                  color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+                  border: themeMode === 'dark' ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(76, 175, 80, 0.2)',
+                  color: themeMode === 'dark' ? '#e2e8f0' : 'inherit'
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                     <Box sx={{ 
@@ -309,7 +309,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   </Box>
                   <Typography variant="body2" sx={{ 
                     lineHeight: 1.6, 
-                    color: themeMode === 'dark' ? '#f1f5f9' : '#374151',
+                    color: themeMode === 'dark' ? '#e2e8f0' : '#374151',
                     fontSize: '1rem'
                   }}>
                     {project.objetivo}
@@ -323,10 +323,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                   p: 2, 
                   mb: 2, 
                   borderRadius: 2,
-                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #451a03 0%, #78350f 100%)' : 'linear-gradient(145deg, #fff3e0 0%, #fef7f0 100%)',
+                  background: themeMode === 'dark' ? 'linear-gradient(145deg, #744210 0%, #92400e 100%)' : 'linear-gradient(145deg, #fff3e0 0%, #fef7f0 100%)',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  border: themeMode === 'dark' ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid rgba(255, 152, 0, 0.2)',
-                  color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+                  border: themeMode === 'dark' ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(255, 152, 0, 0.2)',
+                  color: themeMode === 'dark' ? '#e2e8f0' : 'inherit'
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                     <Box sx={{ 
