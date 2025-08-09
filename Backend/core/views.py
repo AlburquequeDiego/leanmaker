@@ -2430,6 +2430,123 @@ def api_hub_analytics_data(request):
                 'approvedApiRequests': 0
             }
         
+        # 7. MÉTRICAS DE ASISTENCIAS A EVENTOS
+        try:
+            from calendar_events.models import CalendarEvent, EventAttendance
+            
+            # Total de eventos
+            total_events = CalendarEvent.objects.count()
+            
+            # Total de invitaciones (registros de asistencia)
+            total_invitations = EventAttendance.objects.count()
+            
+            # Asistencias por estado
+            confirmed_attendances = EventAttendance.objects.filter(status='confirmed').count()
+            declined_attendances = EventAttendance.objects.filter(status='declined').count()
+            maybe_attendances = EventAttendance.objects.filter(status='maybe').count()
+            pending_attendances = EventAttendance.objects.filter(status='pending').count()
+            
+            # Tasa de confirmación
+            total_responses = confirmed_attendances + declined_attendances + maybe_attendances
+            confirmation_rate = (confirmed_attendances / total_responses * 100) if total_responses > 0 else 0
+            
+            # Asistencias por tipo de evento
+            attendance_by_event_type = []
+            event_types = CalendarEvent.objects.values_list('event_type', flat=True).distinct()
+            
+            for event_type in event_types:
+                events_of_type = CalendarEvent.objects.filter(event_type=event_type)
+                event_ids = events_of_type.values_list('id', flat=True)
+                
+                attendances = EventAttendance.objects.filter(event_id__in=event_ids)
+                total = attendances.count()
+                confirmed = attendances.filter(status='confirmed').count()
+                declined = attendances.filter(status='declined').count()
+                maybe = attendances.filter(status='maybe').count()
+                pending = attendances.filter(status='pending').count()
+                
+                attendance_by_event_type.append({
+                    'event_type': event_type,
+                    'total': total,
+                    'confirmed': confirmed,
+                    'declined': declined,
+                    'maybe': maybe,
+                    'pending': pending
+                })
+            
+            # Tendencia mensual de asistencias
+            attendance_by_month = []
+            for i in range(6):
+                month_date = now - timedelta(days=30*i)
+                events_this_month = CalendarEvent.objects.filter(
+                    start_date__year=month_date.year,
+                    start_date__month=month_date.month
+                )
+                event_ids = events_this_month.values_list('id', flat=True)
+                
+                attendances_this_month = EventAttendance.objects.filter(event_id__in=event_ids)
+                total_attendances = attendances_this_month.count()
+                confirmed_this_month = attendances_this_month.filter(status='confirmed').count()
+                attendance_rate = (confirmed_this_month / total_attendances * 100) if total_attendances > 0 else 0
+                
+                attendance_by_month.append({
+                    'month': month_date.strftime('%Y-%m'),
+                    'events': events_this_month.count(),
+                    'confirmations': confirmed_this_month,
+                    'attendance_rate': round(attendance_rate, 1)
+                })
+            attendance_by_month.reverse()
+            
+            # Top eventos por confirmaciones
+            top_events = []
+            events_with_attendance = CalendarEvent.objects.annotate(
+                total_invited=Count('attendance_records'),
+                confirmed_count=Count('attendance_records', filter=Q(attendance_records__status='confirmed')),
+                declined_count=Count('attendance_records', filter=Q(attendance_records__status='declined')),
+                maybe_count=Count('attendance_records', filter=Q(attendance_records__status='maybe'))
+            ).filter(total_invited__gt=0).order_by('-total_invited')[:10]
+            
+            for event in events_with_attendance:
+                confirmation_rate_event = (event.confirmed_count / event.total_invited * 100) if event.total_invited > 0 else 0
+                top_events.append({
+                    'id': str(event.id),
+                    'title': event.title,
+                    'event_type': event.event_type,
+                    'total_invited': event.total_invited,
+                    'confirmed': event.confirmed_count,
+                    'declined': event.declined_count,
+                    'maybe': event.maybe_count,
+                    'confirmation_rate': round(confirmation_rate_event, 1)
+                })
+            
+            event_attendance_metrics = {
+                'totalEvents': total_events,
+                'totalInvitations': total_invitations,
+                'confirmedAttendances': confirmed_attendances,
+                'declinedAttendances': declined_attendances,
+                'maybeAttendances': maybe_attendances,
+                'pendingAttendances': pending_attendances,
+                'confirmationRate': round(confirmation_rate, 1),
+                'byEventType': attendance_by_event_type,
+                'byMonth': attendance_by_month,
+                'topEvents': top_events
+            }
+            
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas de asistencias: {str(e)}")
+            event_attendance_metrics = {
+                'totalEvents': 0,
+                'totalInvitations': 0,
+                'confirmedAttendances': 0,
+                'declinedAttendances': 0,
+                'maybeAttendances': 0,
+                'pendingAttendances': 0,
+                'confirmationRate': 0,
+                'byEventType': [],
+                'byMonth': [],
+                'topEvents': []
+            }
+        
         response_data = {
             'stats': {
                 'totalUsers': total_users,
@@ -2454,6 +2571,7 @@ def api_hub_analytics_data(request):
             'strikesMetrics': strikes_metrics,
             'notificationsMetrics': notifications_metrics,
             'apiTrlMetrics': api_trl_metrics,
+            'eventAttendanceMetrics': event_attendance_metrics,
         }
         
         # Debug: imprimir resumen de datos enviados
@@ -2468,6 +2586,7 @@ def api_hub_analytics_data(request):
         print(f"  - strikesMetrics: {strikes_metrics['activeStrikes']} strikes activos")
         print(f"  - notificationsMetrics: {notifications_metrics['totalNotifications']} notificaciones")
         print(f"  - apiTrlMetrics: {api_trl_metrics['totalApiRequests']} solicitudes API")
+        print(f"  - eventAttendanceMetrics: {event_attendance_metrics['totalEvents']} eventos")
         
         # Debug adicional para verificar datos específicos
         print(f"🔍 [HUB ANALYTICS] Debug adicional:")

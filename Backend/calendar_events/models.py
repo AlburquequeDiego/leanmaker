@@ -51,7 +51,7 @@ class CalendarEvent(models.Model):
     location = models.CharField(max_length=200, null=True, blank=True)
     
     # Participantes - coinciden con frontend
-    attendees = models.ManyToManyField(User, related_name='attended_events', blank=True)  # Campo para coincidir con frontend
+    attendees = models.ManyToManyField(User, related_name='attended_events', blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_events')  # Campo para coincidir con frontend
     
     # Campos adicionales para compatibilidad
@@ -83,7 +83,7 @@ class CalendarEvent(models.Model):
     recurrence_rule = models.TextField(default='{}')  # JSON dict de reglas de recurrencia
     
     # Recordatorios
-    reminder_minutes = models.PositiveIntegerField(default=15)  # Minutos antes del evento
+    reminder_minutes = models.PositiveIntegerField(default=15)
     reminder_sent = models.BooleanField(default=False)
     
     # Colores y personalización
@@ -175,6 +175,86 @@ class CalendarEvent(models.Model):
         if reason:
             self.description = f"{self.description}\n\nCANCELADO: {reason}"
         self.save(update_fields=['status', 'description'])
+
+class EventAttendance(models.Model):
+    """
+    Modelo para tracking de confirmaciones de asistencia a eventos
+    """
+    STATUS_CHOICES = (
+        ('pending', 'Pendiente'),
+        ('confirmed', 'Confirmado'),
+        ('declined', 'Declinado'),
+        ('maybe', 'Tal vez'),
+        ('no_response', 'Sin respuesta'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    event = models.ForeignKey(CalendarEvent, on_delete=models.CASCADE, related_name='attendance_records')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_attendance')
+    
+    # Estado de asistencia
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Información adicional
+    response_date = models.DateTimeField(null=True, blank=True)
+    notes = models.TextField(blank=True, null=True)
+    
+    # Fechas
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'event_attendance'
+        verbose_name = 'Asistencia a Evento'
+        verbose_name_plural = 'Asistencias a Eventos'
+        unique_together = ['event', 'user']
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['event', 'status']),
+            models.Index(fields=['user', 'status']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.event.title} ({self.get_status_display()})"
+    
+    def confirm_attendance(self, notes=None):
+        """Confirma la asistencia al evento"""
+        self.status = 'confirmed'
+        self.response_date = timezone.now()
+        if notes:
+            self.notes = notes
+        self.save(update_fields=['status', 'response_date', 'notes'])
+    
+    def decline_attendance(self, notes=None):
+        """Declina la asistencia al evento"""
+        self.status = 'declined'
+        self.response_date = timezone.now()
+        if notes:
+            self.notes = notes
+        self.save(update_fields=['status', 'response_date', 'notes'])
+    
+    def maybe_attendance(self, notes=None):
+        """Marca como posible asistencia"""
+        self.status = 'maybe'
+        self.response_date = timezone.now()
+        if notes:
+            self.notes = notes
+        self.save(update_fields=['status', 'response_date', 'notes'])
+    
+    @property
+    def is_confirmed(self):
+        """Verifica si la asistencia está confirmada"""
+        return self.status == 'confirmed'
+    
+    @property
+    def is_declined(self):
+        """Verifica si la asistencia fue declinada"""
+        return self.status == 'declined'
+    
+    @property
+    def has_responded(self):
+        """Verifica si el usuario ha respondido"""
+        return self.status in ['confirmed', 'declined', 'maybe']
 
 class EventReminder(models.Model):
     """Recordatorios específicos para eventos"""
