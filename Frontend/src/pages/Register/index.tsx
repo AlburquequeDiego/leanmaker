@@ -232,7 +232,27 @@ const getValidationSchema = (userType: UserType) => {
       company_name: yup.string().required('El nombre de la empresa es requerido'),
       company_address: yup.string().required('La dirección es requerida'),
       company_phone: yup.string().required('El teléfono es requerido').matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 XXXX XXXX)'),
-      company_email: yup.string().email('Debe ser un correo válido').required('El correo es requerido'),
+      company_email: yup
+        .string()
+        .email('Debe ser un correo válido')
+        .required('El correo es requerido')
+        .test('unique-company-email', 'Este correo corporativo ya está registrado', async function(value) {
+          if (!value || userType !== 'company') return true;
+          
+          try {
+            const response = await fetch('http://localhost:8000/api/auth/check-company-email/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ company_email: value }),
+            });
+            
+            const data = await response.json();
+            return !data.exists; // Retorna true si NO existe (válido)
+          } catch (error) {
+            console.error('Error checking company email:', error);
+            return true; // En caso de error, permitir el registro
+          }
+        }),
     });
   }
 };

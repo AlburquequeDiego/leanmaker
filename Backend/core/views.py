@@ -436,6 +436,21 @@ def api_register(request):
                 'error': 'El email ya está registrado'
             }, status=400)
         
+        # Validar que el company_email sea único (solo para empresas)
+        if role == 'company':
+            company_email = data.get('company_email')
+            if not company_email:
+                return JsonResponse({
+                    'error': 'El correo corporativo es requerido para empresas'
+                }, status=400)
+            
+            # Verificar que el company_email no esté duplicado
+            from companies.models import Empresa
+            if Empresa.objects.filter(company_email=company_email).exists():
+                return JsonResponse({
+                    'error': 'El correo corporativo ya está registrado por otra empresa'
+                }, status=400)
+        
         # Crear usuario
         username = email.split('@')[0]  # Usar parte del email como username
         
@@ -2602,6 +2617,32 @@ def api_check_username(request):
         return JsonResponse({
             'exists': exists,
             'username': username
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_check_company_email(request):
+    """API endpoint para verificar si un company_email ya existe."""
+    try:
+        data = json.loads(request.body)
+        company_email = data.get('company_email')
+        
+        if not company_email:
+            return JsonResponse({
+                'error': 'Company email es requerido'
+            }, status=400)
+        
+        from companies.models import Empresa
+        exists = Empresa.objects.filter(company_email=company_email).exists()
+        
+        return JsonResponse({
+            'exists': exists,
+            'company_email': company_email
         })
         
     except Exception as e:
