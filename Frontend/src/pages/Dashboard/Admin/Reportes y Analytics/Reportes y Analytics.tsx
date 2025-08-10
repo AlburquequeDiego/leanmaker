@@ -1037,7 +1037,7 @@ export const ReportesYAnalytics = () => {
                          <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Nivel API</TableCell>
                          <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas</TableCell>
                          <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
-                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>GPA</TableCell>
                        </TableRow>
                      </TableHead>
                      <TableBody>
@@ -1088,8 +1088,8 @@ export const ReportesYAnalytics = () => {
                              />
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                               {student.averageRating ? student.averageRating.toFixed(1) : '0.0'} ⭐
+                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontStyle: 'italic' }}>
+                               En desarrollo ⚠️
                              </Typography>
                            </TableCell>
                          </TableRow>
@@ -1129,7 +1129,7 @@ export const ReportesYAnalytics = () => {
                          <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Activos</TableCell>
                          <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiantes</TableCell>
                          <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Horas Ofrecidas</TableCell>
-                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Rating</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>GPA</TableCell>
                        </TableRow>
                      </TableHead>
                      <TableBody>
@@ -1185,8 +1185,8 @@ export const ReportesYAnalytics = () => {
                              </Typography>
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                               {company.averageRating ? company.averageRating.toFixed(1) : '0.0'} ⭐
+                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontStyle: 'italic' }}>
+                               En desarrollo ⚠️
                              </Typography>
                            </TableCell>
                          </TableRow>

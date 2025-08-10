@@ -57,7 +57,7 @@ interface Company {
   email: string;
   status: 'active' | 'suspended' | 'blocked' | string;
   projects_count: number;
-  gpa: number; // Usar rating como gpa
+  gpa: number; // GPA de la empresa
   join_date: string;
   last_activity: string;
   description?: string;
@@ -115,7 +115,7 @@ export const GestionEmpresasAdmin = () => {
     activeCompanies: 0,
     suspendedCompanies: 0,
     blockedCompanies: 0,
-    averageRating: 0,
+    averageGpa: 0,
     totalProjects: 0
   });
   const [filters, setFilters] = useState<any>({});
@@ -139,7 +139,7 @@ export const GestionEmpresasAdmin = () => {
       
       if (filters.search) params.append('search', filters.search);
       if (filters.status) params.append('status', filters.status);
-      if (filters.rating) params.append('rating', filters.rating);
+      if (filters.gpa) params.append('gpa', filters.gpa);
       
       console.log('🔍 Filtros aplicados:', filters);
       console.log('📡 URL de la petición:', `/api/admin/companies/?${params.toString()}`);
@@ -155,7 +155,7 @@ export const GestionEmpresasAdmin = () => {
         email: c.user_data?.email || c.contact_email || 'Sin email',
         status: c.status || 'active',
         projects_count: c.total_projects || 0,
-        gpa: c.rating || 0,
+        gpa: c.gpa || 0,
         join_date: c.created_at || '',
         last_activity: c.updated_at || '',
         description: c.description || '',
@@ -264,9 +264,9 @@ export const GestionEmpresasAdmin = () => {
     }
   };
 
-  const getRatingText = (rating: number) => {
-    if (rating >= 4.5) return 'Alto';
-    if (rating >= 3.5) return 'Medio';
+  const getGpaText = (gpa: number) => {
+    if (gpa >= 4.5) return 'Alto';
+    if (gpa >= 3.5) return 'Medio';
     return 'Bajo';
   };
 

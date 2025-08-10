@@ -306,7 +306,7 @@ export default function CompanyDashboard() {
       console.log('  - pending_applications:', stats.pending_applications);
       console.log('  - total_applications:', stats.total_applications);
       console.log('  - active_students:', stats.active_students);
-      console.log('  - rating:', stats.rating);
+      console.log('  - gpa:', stats.gpa);
       console.log('  - total_hours_offered:', stats.total_hours_offered);
       console.log('  - monthly_activity:', stats.monthly_activity);
       console.log('  - area_distribution:', stats.area_distribution);
@@ -342,7 +342,7 @@ export default function CompanyDashboard() {
   const pendingApplications = stats?.pending_applications || 0;
   const totalApplications = stats?.total_applications || 0;
   const activeStudents = stats?.active_students || 0;
-  const averageRating = stats?.rating || 0;
+  const averageRating = stats?.gpa || 0;
   const totalHoursOffered = stats?.total_hours_offered || 0;
 
   // Datos para el gráfico circular - solo datos reales
@@ -480,11 +480,7 @@ export default function CompanyDashboard() {
                            {/* GPA Empresa - Azul índigo vibrante con gradiente */}
               <KPICard
                 title="GPA Empresa"
-                value={
-                  averageRating && averageRating > 0 
-                    ? `${averageRating.toFixed(1)}/5.0` 
-                    : 'Sin calificaciones'
-                }
+                value={averageRating > 0 ? `${averageRating.toFixed(1)}/5` : 'Sin calificaciones'}
                 description="Calificación promedio que la empresa ha recibido de los estudiantes. Refleja la satisfacción y calidad de la experiencia proporcionada."
                 icon={<StarIcon sx={{ fontSize: 28 }} />}
                 bgColor="linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)"

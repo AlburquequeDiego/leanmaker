@@ -13,124 +13,32 @@ lucia.amaya@gmail.com           Empresa123!
 
 
 
-##HACER QUE ESTAS INTERFACES DONDE SI SALEN DIRECTAMENTE LOS GPA 
-FUNCINOEN REALMENTE 
------------------ESTUDIANTE
-Mis Evaluaciones      
-tarjeta en dashboard
------------------EMPRESA
-Evaluaciones
-tarjeta en dashboard
-Strikes
------------------ADMIN
-gestion de empresas 
-gestion de estudiantes gpa + strikes
-Gestión de Calificaciones Mutuas: Calificaciones Mutuas , Gestión de 
-Reportes de Strikes
-Asignaciones de Strikes
-Gestión de Analytics y Reportes:
-Métricas de Strikes y Disciplina
 
+JOACO y dani : 
 
+MEJORAS DE EVENTOS Y NOTIFICACIONES
 
+- Implementar sistema de notificaciones push para eventos
+- Agregar botones de acción en las notificaciones:
+  * Botón "Asistir" 
+  * Botón "No asistir"
+  * Botón "Recordarme más tarde"
+  * Botón "Ver detalles"
 
+EL ADMIN ENVIA UNA NOTIFICAION DE TIPO "EVENTO" , 
+EL ESTUDIANTE Y LA EMPRESA LES LLEGA LA NOTIFICACION AL DARLE CLICK PARA VER DETALLES 
+LES DEBE SALIR LA TARJETA DE DETALLES PERO CON UN DISEÑO MEJOR MUY BUENO Y DEBE TENER 
+BOTONES PARA TENER ACCINES SOBRE EL EVENTO LA EMPRESA Y EL ESTUDIANTE 
 
-La variable para la solicitud de eventos para saber cuántos 
-confirman su asistencia a un evento - nuevo gráfico al análiyics 
 
 LA EMPRESA PUEDE EDITAR LA PUBLICACION , CUANDO ESTE EN PUCBLICACION 
 Y ESE ESTADO TENDRA 5 DIAR PARA PODER EDITARLO PASANSO ESE TIEMPO YA NO
 PODRA EDITARLO 
 
-IAN:
-
-✅ MEJORAR LA TARJETA DE NOTIFICACION A ESPRESAS Y ESTUDIANTES Y ADMIN
-✅ UN MEJOR DISEÑO TALVEZ CON UNA ANIMACION ? NOSE
-- IMPLEMENTADO: Animaciones sutiles (fade-in, slide, zoom)
-- IMPLEMENTADO: Mejor iconografía según tipo de contenido
-- IMPLEMENTADO: Indicadores visuales de prioridad
-- IMPLEMENTADO: Efectos hover mejorados
-- IMPLEMENTADO: Badge con animación pulse
-- IMPLEMENTADO: Tooltips informativos
-- IMPLEMENTADO: Mejor organización visual
-
-✅ LAS NOTIFICAIONES DE EVENTO MEJORARLAS , LAS GENERACIONES MASIVAS DEBEN DE
-SER MAS INTERACTIVAS LAS DE EVENTOS EN SEDE Y LOS EVENTOS DEBEN TENER 
-UN MENSAJE NORMAL PERO CON UN BOTON Y ADMVENTENCIA DE ASISTENCIA 
-DE ASISTENCIAS ASISTIRIAS AL EVENTO EN SEDE AL CUAL ESTAS INVITADO EN SEDE
-- IMPLEMENTADO: Modelo EventAttendance para tracking de confirmaciones
-- IMPLEMENTADO: Servicio EventAttendanceService para manejar confirmaciones
-- IMPLEMENTADO: Componente EventNotificationCard con botones de confirmación
-- IMPLEMENTADO: Botones "Confirmar", "Tal vez", "Declinar" con animaciones
-- IMPLEMENTADO: Advertencia visual para eventos presenciales
-- IMPLEMENTADO: Diálogo para agregar notas opcionales
-- IMPLEMENTADO: Integración en NotificationCenter existente
-- IMPLEMENTADO: Estados visuales de confirmación (confirmado, declinado, tal vez) 
-
-✅ ESOS DATOS DE EVENTOS Y ASISTENCIAS EN LA INTERFAZ DE NOTIFICACIONES
-DEBE TENER SU GRAFICA EN ANALITICS ADMIN 
-SE DEBERA AGREGAR A ALA BASE DE DATOS? 
-- IMPLEMENTADO: Métricas de asistencias en backend analytics
-- IMPLEMENTADO: Hook useHubAnalytics actualizado con eventAttendanceMetrics
-- IMPLEMENTADO: Nueva tarjeta KPI "Eventos Creados" con tasa de confirmación
-- IMPLEMENTADO: Gráfico de barras "Estado de Asistencias" (confirmadas, declinadas, tal vez, pendientes)
-- IMPLEMENTADO: Gráfico de líneas "Tendencia Mensual de Asistencias"
-- IMPLEMENTADO: Tabla "Top Eventos por Confirmaciones" con métricas detalladas
-- IMPLEMENTADO: Integración completa con el sistema de analytics existente
-
-✅ EN ANALITICS Las ASISTENCIAS A EVENTOS DEBEN FUNCIONAR
-- IMPLEMENTADO: Backend conectado con modelo EventAttendance
-- IMPLEMENTADO: Métricas en tiempo real de confirmaciones
-- IMPLEMENTADO: Cálculo automático de tasas de asistencia
-- IMPLEMENTADO: Tracking por tipo de evento y período temporal 
-
-
-#########################################################################
-
-AREAS ORDENADAS DE MÁS FÁCIL A MÁS COMPLEJO
-🟢 NIVEL 1 - FÁCIL (Frontend/UI)
-Mejorar notificaciones de eventos
-Hacer las generaciones masivas más interactivas
-Agregar botón de confirmación de asistencia
-Mejorar mensajes de eventos en sede
-Agregar gráfico de asistencias a eventos en Analytics Admin
-Nuevo gráfico para mostrar cuántos confirman asistencia
-Integrar datos de eventos y asistencias
-Limitar edición de publicaciones (5 días)
-Agregar validación de tiempo para editar proyectos
-Bloquear edición después de 5 días en estado "publicación"
-
-
-🟡 NIVEL 2 - MEDIO (Backend/Validaciones)
-Mejorar validaciones en crear proyectos
-Arreglar lógica de cálculo de horas por TRL
-Mejorar limitantes del calendario
-Validaciones más coherentes para duración de proyectos
-Hacer funcionales las asistencias a eventos en Analytics
-Conectar datos reales de asistencias
-Implementar métricas de eventos
-
-
-🔴 NIVEL 3 - COMPLEJO (Base de Datos/Reestructuración)
-Reestructurar base de datos de evaluaciones
-Eliminar toda la lógica actual del backend
-Rediseñar modelos de evaluaciones
-Crear nuevas migraciones
-Implementar funcionalidad real de evaluaciones
-Conectar interfaces frontend con nuevo backend
-Implementar GPA real para estudiantes
-Conectar tarjetas de dashboard con datos reales
-Implementar sistema de strikes completo
-Modelos de strikes
-Gestión de strikes para admin
-Reportes y métricas de strikes
-
-
-
-
-
-🟡🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 
-JOACO EXAMINA ESTE PROBLEMA QUE FUNCINE BIEN LA LOGICA 
+LA EMPRESA NO PUEDE COMPLETAR UN PROYECTO SIN ANTES ALCANZAR A FECHA DE TERMINO ESTABLECIDA
+DEPENDIENDO EL TRL QUE TENGA TENDRA UN LAPSO SE - O + DIAS DE TERMINO ANTES DEL DIA DICHO
+ 
+EXAMINAR ESTE PROBLEMA QUE FUNCINE BIEN LA LOGICA 
 ESTA MALA , UN PROYECTO TRL 1 DE 20 HORAS PODRIA DURAR 1 SEMANA POR EJMPLO 
 LAS HORAS DEBERIAN DE CALCULARSE COHERENTEMENTE PARA UNA MEJOR MANEJO DEHORAS 
 LO DEJE MAL AL TRATAR DE HACERLO RAPIDO PERO ME DI CUENTA QUE ES MAS LOGICA DE A QUE PARECE
@@ -142,5 +50,6 @@ En crear proyectos , poner mas limitantes de como poner nos datos
 y limitar el calendario
 
 
-LA EMPRESA NO DEBE SABER QUE SON LOS TRL NUNCA
-🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡 🟡
+LA EMPRESA NO DEBE SABER QUE SON LOS TRL NUNCA NUUUUUUUNCA
+
+

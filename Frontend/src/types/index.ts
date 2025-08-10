@@ -54,7 +54,6 @@ export interface Student {
   availability: 'full-time' | 'part-time' | 'flexible';
   location?: string;
   area?: string; // <-- AÑADIDO
-  rating: number;
   skills?: string[]; // JSON array
   languages?: string[]; // JSON array
   created_at: string;
@@ -122,7 +121,6 @@ export interface Company {
   founded_year?: number;
   logo_url?: string;
   verified: boolean;
-  rating: number;
   total_projects: number;
   projects_completed: number;
   total_hours_offered: number;
@@ -281,12 +279,19 @@ export interface Notification {
   user: string; // UUID del usuario
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: 'info' | 'success' | 'warning' | 'error' | 'event';
   priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   read: boolean;
   related_url?: string;
   created_at: string;
   updated_at: string;
+  metadata?: {
+    event_date?: string;
+    event_location?: string;
+    event_description?: string;
+    event_capacity?: number;
+    event_type?: string;
+  };
 }
 
 // Tipos de strike - Coinciden con el modelo Strike del backend

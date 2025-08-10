@@ -957,12 +957,14 @@ export const Notifications = () => {
             borderRadius: 3,
             boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+            maxWidth: '90vw',
+            width: '100%'
           }
         }}
       >
         {selectedNotification && (
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ p: 3, overflow: 'hidden' }}>
             {/* Header del diálogo */}
             <Box sx={{ 
               display: 'flex', 
@@ -976,7 +978,8 @@ export const Notifications = () => {
                 : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
               border: themeMode === 'dark' 
                 ? '1px solid rgba(255,255,255,0.1)' 
-                : '1px solid rgba(0,0,0,0.05)'
+                : '1px solid rgba(0,0,0,0.05)',
+              overflow: 'hidden'
             }}>
               <Avatar sx={{ 
                 bgcolor: selectedNotification.read 
@@ -991,10 +994,14 @@ export const Notifications = () => {
               }}>
                 {getNotificationIcon(selectedNotification.type)}
               </Avatar>
-              <Box sx={{ flex: 1 }}>
+              <Box sx={{ flex: 1, overflow: 'hidden' }}>
                 <Typography variant="h5" fontWeight={700} sx={{ 
                   mb: 1, 
-                  color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' 
+                  color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  maxWidth: '100%',
+                  overflow: 'hidden'
                 }}>
                   {selectedNotification.title}
                 </Typography>
@@ -1027,7 +1034,11 @@ export const Notifications = () => {
             }}>
               <Typography variant="body1" sx={{ 
                 color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary', 
-                lineHeight: 1.7 
+                lineHeight: 1.7,
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                maxWidth: '100%',
+                overflow: 'hidden'
               }} component="div">
                 {selectedNotification.message}
               </Typography>

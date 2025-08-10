@@ -44,6 +44,7 @@ import {
 import { notificationService } from '../../services/notification.service';
 import type { Notification } from '../../services/notification.service';
 import { EventNotificationCard } from './EventNotificationCard';
+import { EventNotificationModal } from './EventNotificationModal';
 
 interface NotificationCenterProps {
   onNotificationClick?: (notification: Notification) => void;
@@ -55,8 +56,15 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<{ notification: Notification; eventId: string } | null>(null);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
 
   const open = Boolean(anchorEl);
+
+  // Log cuando el componente se monta
+  useEffect(() => {
+    console.log('🚀 NotificationCenter montado');
+  }, []);
 
   // Cargar notificaciones y conteo no leído
   const loadNotifications = async () => {
@@ -64,20 +72,31 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
       setLoading(true);
       setError(null);
       
+      console.log('🔄 Cargando notificaciones...');
+      
       const [notificationsResponse, unreadResponse] = await Promise.all([
         notificationService.getNotifications({ limit: 10 }),
         notificationService.getUnreadCount()
       ]);
 
+      console.log('📨 Respuesta de notificaciones:', notificationsResponse);
+      console.log('📨 Respuesta de conteo no leído:', unreadResponse);
+
       if (notificationsResponse.success) {
+        console.log('✅ Notificaciones cargadas:', notificationsResponse.data);
         setNotifications(notificationsResponse.data);
+      } else {
+        console.error('❌ Error al cargar notificaciones:', notificationsResponse);
       }
       
       if (unreadResponse.success) {
+        console.log('✅ Conteo no leído cargado:', unreadResponse.data);
         setUnreadCount(unreadResponse.data.unread_count);
+      } else {
+        console.error('❌ Error al cargar conteo no leído:', unreadResponse);
       }
     } catch (err) {
-      console.error('Error loading notifications:', err);
+      console.error('❌ Error loading notifications:', err);
       setError('Error al cargar notificaciones');
     } finally {
       setLoading(false);
@@ -87,6 +106,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
   // Cargar datos al abrir el popover
   useEffect(() => {
     if (open) {
+      console.log('🔓 Popover abierto, cargando notificaciones...');
       loadNotifications();
     }
   }, [open]);
@@ -138,6 +158,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
     }
 
     handleClose();
+  };
+
+  const handleEventClick = (notification: Notification) => {
+    // Para eventos, no abrimos modal, solo marcamos como leída
+    if (!notification.read) {
+      handleNotificationClick(notification);
+    }
   };
 
   const handleMarkAllAsRead = async () => {
@@ -269,6 +296,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
 
   return (
     <>
+      {/* Log de renderizado */}
+      {console.log('🎨 NotificationCenter renderizando con', notifications.length, 'notificaciones')}
+      
       <IconButton
         color="inherit"
         onClick={handleClick}
@@ -313,17 +343,25 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
         }}
         PaperProps={{
           sx: {
-            width: 420,
+            width: 450,
             maxHeight: 600,
-            mt: 1,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-            borderRadius: 2
+            borderRadius: 3,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+            border: '2px solid',
+            borderColor: 'divider'
           }
         }}
-        TransitionComponent={Slide}
-        transitionDuration={200}
+        slotProps={{
+          paper: {
+            onLoad: () => console.log('📋 Popover cargado')
+          }
+        }}
       >
         <Box sx={{ p: 2 }}>
+          {/* Log de contenido del popover */}
+          {console.log('📋 Contenido del popover renderizando')}
+          
+          {/* Header */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <NotificationsActiveIcon color="primary" />
@@ -380,30 +418,72 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
                   </Box>
                 </Fade>
               ) : (
-                                <List sx={{ p: 0 }}>
-                  {notifications.map((notification, index) => {
-                    // Verificar si es una notificación de evento
-                    const isEventNotification = notification.title.toLowerCase().includes('evento') || 
-                                               notification.title.toLowerCase().includes('reunión') ||
-                                               notification.title.toLowerCase().includes('entrevista') ||
-                                               notification.title.toLowerCase().includes('invitación');
+                <>
+                  {/* Mensaje de debug */}
+                  <Alert severity="info" sx={{ mb: 2 }}>
+                    <Typography variant="body2">
+                      🔍 Debug: Procesando {notifications.length} notificaciones
+                    </Typography>
+                  </Alert>
+                  
+                  <List sx={{ p: 0 }}>
+                    {/* Log de lista de notificaciones */}
+                    {console.log('📋 Lista de notificaciones renderizando con', notifications.length, 'notificaciones')}
                     
-                    return (
-                      <Fade in={true} timeout={300 + (index * 100)} key={notification.id}>
-                        <React.Fragment>
-                          {isEventNotification ? (
-                            // Usar componente especial para eventos
-                            <Box sx={{ px: 1, py: 0.5 }}>
-                              <EventNotificationCard
-                                notification={notification}
-                                onStatusChange={(notificationId, newStatus) => {
-                                  // Actualizar estado local si es necesario
-                                  console.log(`Notification ${notificationId} status changed to ${newStatus}`);
-                                }}
-                                onClose={() => handleNotificationClick(notification)}
-                              />
-                            </Box>
-                          ) : (
+                    {notifications.map((notification, index) => {
+                      // Debug: Log para verificar todas las notificaciones
+                      console.log(`🔍 Notificación ${index + 1}:`, {
+                        id: notification.id,
+                        title: notification.title,
+                        type: notification.type,
+                        message: notification.message,
+                        read: notification.read
+                      });
+                      
+                      // Verificar si es una notificación de evento
+                      const isEventNotification = notification.type === 'event' ||
+                                                 (notification.title && notification.title.toLowerCase().includes('evento')) || 
+                                                 (notification.title && notification.title.toLowerCase().includes('reunión')) ||
+                                                 (notification.title && notification.title.toLowerCase().includes('entrevista')) ||
+                                                 (notification.title && notification.title.toLowerCase().includes('invitación')) ||
+                                                 (notification.message && notification.message.toLowerCase().includes('evento')) ||
+                                                 (notification.message && notification.message.toLowerCase().includes('reunión')) ||
+                                                 (notification.message && notification.message.toLowerCase().includes('entrevista')) ||
+                                                 (notification.message && notification.message.toLowerCase().includes('invitación'));
+                      
+                      // Debug: Log para verificar detección de eventos
+                      if (isEventNotification) {
+                        console.log('🎯 EVENTO DETECTADO:', notification.title, 'Type:', notification.type, 'Message:', notification.message);
+                      }
+                      
+                      return (
+                        <Fade in={true} timeout={300 + (index * 100)} key={notification.id}>
+                          {/* Log de renderizado de notificación */}
+                          {console.log(`📋 Renderizando notificación ${index + 1}:`, notification.title)}
+                          
+                          <React.Fragment>
+                            {isEventNotification ? (
+                              // Usar componente especial para eventos
+                              <Box sx={{ px: 1, py: 0.5 }}>
+                                {/* Log de renderizado de EventNotificationCard */}
+                                {console.log(`🎯 Renderizando EventNotificationCard para evento:`, notification.title)}
+                                
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                  🐛 Debug: Renderizando EventNotificationCard para evento
+                                </Typography>
+                                <EventNotificationCard
+                                  notification={notification}
+                                  onStatusChange={(notificationId, newStatus) => {
+                                    // Actualizar estado local si es necesario
+                                    console.log(`Notification ${notificationId} status changed to ${newStatus}`);
+                                  }}
+                                  onClose={() => handleEventClick(notification)}
+                                />
+                                <Typography variant="caption" color="success.main" sx={{ display: 'block', mt: 1 }}>
+                                  ✅ EventNotificationCard renderizado exitosamente
+                                </Typography>
+                              </Box>
+                            ) : (
                             // Usar componente normal para otras notificaciones
                             <ListItem
                               sx={{
@@ -545,11 +625,28 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
                     );
                   })}
                 </List>
+              </>
               )}
             </>
           )}
         </Box>
       </Popover>
+
+      {/* Modal de evento especial */}
+      {selectedEvent && (
+        <EventNotificationModal
+          open={eventModalOpen}
+          onClose={() => {
+            setEventModalOpen(false);
+            setSelectedEvent(null);
+          }}
+          eventId={selectedEvent.eventId}
+          notification={selectedEvent.notification}
+        />
+      )}
+      
+      {/* Log de renderizado completo */}
+      {console.log('🎨 NotificationCenter renderizado completamente')}
     </>
   );
 }; 

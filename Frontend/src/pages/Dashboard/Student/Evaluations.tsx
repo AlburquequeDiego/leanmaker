@@ -131,7 +131,7 @@ interface Evaluation {
 interface CompanyRating {
   id: string;
   company: string;
-  rating: number;
+  score: number;
   comment: string;
   date: string;
   project_title?: string;
@@ -145,8 +145,8 @@ interface CompletedProject {
   company_name: string;
   completion_date: string;
   already_rated: boolean;
-  rating?: number | null | undefined;
-  rating_id?: string;
+  score?: number | null | undefined;
+  score_id?: string;
 }
 
 const typeConfig = {
@@ -185,6 +185,11 @@ export const Evaluations = () => {
     loadData();
   }, []);
 
+  // Debug: monitorear cambios en el estado del modal
+  useEffect(() => {
+    console.log('🔍 Estado del modal de calificación cambió:', calificarModalOpen);
+  }, [calificarModalOpen]);
+
   const loadData = async () => {
     setLoading(true);
     setLoadingProjects(true);
@@ -218,8 +223,8 @@ export const Evaluations = () => {
           company_name: company.company_name,
           completion_date: company.completion_date,
           already_rated: false, // Estos son proyectos NO evaluados
-          rating: undefined,
-          rating_id: undefined
+          score: undefined,
+          score_id: undefined
         }));
         console.log('✅ Proyectos para evaluar cargados:', projectsToEvaluate.length);
       }
@@ -241,8 +246,8 @@ export const Evaluations = () => {
           company_name: company.company_name,
           completion_date: company.completion_date,
           already_rated: true, // Estos son proyectos YA evaluados
-          rating: company.rating ? Number(company.rating) : undefined,
-          rating_id: company.evaluation_id
+          score: company.score ? Number(company.score) : undefined,
+          score_id: company.evaluation_id
         }));
         console.log('✅ Evaluaciones completadas cargadas:', evaluatedProjects.length);
       } else {
@@ -289,7 +294,10 @@ export const Evaluations = () => {
   console.log('🔍 [DEBUG] Proyectos evaluados:', evaluatedProjects.length);
 
   const handleCalificarEmpresa = async () => {
+    console.log('🚀 Iniciando evaluación para empresa:', selectedProject?.company_name, 'con calificación:', calificacion);
+    
     if (!selectedProject || !calificacion) {
+      console.log('❌ Validación fallida: selectedProject o calificacion es null');
       setSnackbar({
         open: true,
         message: 'Por favor selecciona una calificación',
@@ -299,24 +307,32 @@ export const Evaluations = () => {
     }
 
     try {
+      console.log('📡 Enviando evaluación a la API...');
       const response = await apiService.studentEvaluateCompany({
         company_id: selectedProject.company_id,
         project_id: selectedProject.project_id,
-        rating: calificacion,
+        score: calificacion,
         comments: '' // Sin comentarios, solo calificación
       });
 
-      if (response && typeof response === 'object' && 'success' in response && response.success) {
+      console.log('📥 Respuesta de la API recibida:', response);
+      
+      // El backend devuelve status 201 y un mensaje de éxito
+      if (response && typeof response === 'object' && 'message' in response && response.message === 'Evaluación enviada correctamente') {
         setSnackbar({
           open: true,
           message: 'Evaluación enviada correctamente',
           severity: 'success'
         });
         
+        console.log('✅ Evaluación exitosa, cerrando modal...');
+        
         // Cerrar modal inmediatamente
         setCalificarModalOpen(false);
         setSelectedProject(null);
         setCalificacion(null);
+        
+        console.log('🔒 Estado del modal después de cerrar:', false);
         
         // Recargar datos para actualizar la lista
         setTimeout(() => {
@@ -352,12 +368,14 @@ export const Evaluations = () => {
   };
 
   const handleCloseCalificarModal = () => {
+    console.log('🔒 Cerrando modal manualmente...');
     setCalificarModalOpen(false);
     setSelectedProject(null);
     setCalificacion(null);
   };
 
   const handleOpenCalificarModal = (project: CompletedProject) => {
+    console.log('🔓 Abriendo modal para calificar empresa:', project.company_name);
     setSelectedProject(project);
     setCalificarModalOpen(true);
   };
@@ -786,9 +804,9 @@ export const Evaluations = () => {
                       </Box>
                       
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <StarRating value={project.rating || 0} readOnly size="small" />
+                        <StarRating value={project.score || 0} readOnly size="small" />
                         <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
-                          {project.rating}/5
+                          {project.score}/5
                         </Typography>
                       </Box>
 
@@ -1073,6 +1091,7 @@ export const Evaluations = () => {
 
       {/* Modal para calificar empresa */}
       <Dialog 
+        key={`calificar-modal-${calificarModalOpen}-${selectedProject?.project_id || 'none'}`}
         open={calificarModalOpen} 
         onClose={handleCloseCalificarModal} 
         maxWidth="sm" 
@@ -1107,7 +1126,10 @@ export const Evaluations = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
                   <StarRating
                     value={calificacion}
-                    onChange={(newValue) => setCalificacion(newValue)}
+                    onChange={(newValue) => {
+                      console.log('⭐ Calificación seleccionada:', newValue);
+                      setCalificacion(newValue);
+                    }}
                     size="large"
                   />
                   <Typography variant="body2" color="text.secondary">
@@ -1130,7 +1152,7 @@ export const Evaluations = () => {
             color="primary"
             disabled={!selectedProject || !calificacion}
           >
-            Enviar Evaluación
+            Enviar Evaluación {calificacion ? `(${calificacion}/5)` : ''}
           </Button>
         </DialogActions>
       </Dialog>

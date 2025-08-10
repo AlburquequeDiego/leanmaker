@@ -78,10 +78,18 @@ export const CompanyNotifications: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('🔍 Cargando notificaciones...');
+      
       const response = await api.get('/api/notifications/');
+      console.log('🔍 Respuesta de la API al cargar notificaciones:', response);
+      
       const adaptedNotifications = adaptNotificationList(response.data.data || response.data);
+      console.log('🔍 Notificaciones adaptadas:', adaptedNotifications);
+      
       setNotifications(adaptedNotifications);
+      console.log('🔍 Estado de notificaciones actualizado:', adaptedNotifications);
     } catch (err: any) {
+      console.error('❌ Error al cargar notificaciones:', err);
       setError(err.response?.data?.error || 'Error al cargar notificaciones');
     } finally {
       setLoading(false);
@@ -321,9 +329,19 @@ export const CompanyNotifications: React.FC = () => {
   const hasActiveFilters = search || priorityFilter !== 'all' || typeFilter !== 'all' || readStatusFilter !== 'all';
 
   const handleNotificationClick = (notification: Notification) => {
+    console.log('🔍 handleNotificationClick ejecutado para notificación:', {
+      id: notification.id,
+      title: notification.title,
+      read: notification.read,
+      type: notification.type
+    });
+    
     setSelectedNotification(notification);
     if (!notification.read) {
+      console.log('🔍 Notificación no leída, llamando markAsRead...');
       markAsRead(notification.id);
+    } else {
+      console.log('🔍 Notificación ya está leída, no se llama markAsRead');
     }
   };
 
@@ -333,18 +351,40 @@ export const CompanyNotifications: React.FC = () => {
 
   const markAsRead = async (id: string) => {
     try {
+      console.log('🔍 Iniciando markAsRead para notificación ID:', id);
+      console.log('🔍 Estado actual de notificaciones:', notifications);
+      
       const response = await api.post(`/api/notifications/${id}/mark-read/`);
+      console.log('🔍 Respuesta de la API:', response);
       
       // Solo actualizar el estado si la respuesta fue exitosa
       if (response && response.data && response.data.success) {
-        setNotifications(prev => 
-          prev.map(n => n.id === id ? { ...n, read: true } : n)
-        );
+        console.log('🔍 API respondió exitosamente, actualizando estado local...');
+        
+        setNotifications(prev => {
+          console.log('🔍 Estado previo:', prev);
+          const updatedNotifications = prev.map(n => {
+            if (n.id === id) {
+              console.log('🔍 Encontrada notificación para actualizar:', n);
+              return { ...n, read: true };
+            }
+            return n;
+          });
+          console.log('🔍 Estado actualizado:', updatedNotifications);
+          return updatedNotifications;
+        });
+        
+        console.log('🔍 Estado local actualizado exitosamente');
+      } else {
+        console.warn('⚠️ API no respondió con success:', response);
       }
     } catch (error: any) {
-      console.error('Error marking notification as read:', error);
-      // No mostrar error al usuario por ahora, solo log
-      // El error 405 ya no debería ocurrir después del fix
+      console.error('❌ Error marking notification as read:', error);
+      console.error('❌ Detalles del error:', {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status
+      });
     }
   };
 
@@ -836,28 +876,38 @@ export const CompanyNotifications: React.FC = () => {
           </Box>
         ) : (
           <List sx={{ p: 0 }}>
-            {filteredNotifications.slice(0, displayCount).map((notification, index) => (
-              <Box key={notification.id}>
-                <ListItem
-                  onClick={() => handleNotificationClick(notification)}
-                  sx={{
-                    backgroundColor: notification.read 
-                      ? 'transparent' 
-                      : themeMode === 'dark' 
-                        ? 'rgba(25, 118, 210, 0.1)' 
-                        : 'rgba(25, 118, 210, 0.04)',
-                    '&:hover': {
+            {filteredNotifications.slice(0, displayCount).map((notification, index) => {
+              // Debug: Log para verificar el estado de cada notificación al renderizar
+              console.log(`🔍 Renderizando notificación ${index + 1}:`, {
+                id: notification.id,
+                title: notification.title,
+                read: notification.read,
+                type: notification.type,
+                priority: notification.priority
+              });
+              
+              return (
+                <Box key={notification.id}>
+                  <ListItem
+                    onClick={() => handleNotificationClick(notification)}
+                    sx={{
                       backgroundColor: notification.read 
-                        ? themeMode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)'
-                        : themeMode === 'dark' ? 'rgba(25, 118, 210, 0.15)' : 'rgba(25, 118, 210, 0.08)',
-                    },
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    py: 2, // Más padding vertical
-                    px: 3, // Más padding horizontal
-                    gap: 2, // Espacio entre elementos
-                  }}
-                >
+                        ? 'transparent' 
+                        : themeMode === 'dark' 
+                          ? 'rgba(25, 118, 210, 0.1)' 
+                          : 'rgba(25, 118, 210, 0.04)',
+                      '&:hover': {
+                        backgroundColor: notification.read 
+                          ? themeMode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)'
+                          : themeMode === 'dark' ? 'rgba(25, 118, 210, 0.15)' : 'rgba(25, 118, 210, 0.08)',
+                      },
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      py: 2, // Más padding vertical
+                      px: 3, // Más padding horizontal
+                      gap: 2, // Espacio entre elementos
+                    }}
+                  >
                   <ListItemAvatar>
                     <Box
                       sx={{
@@ -982,7 +1032,8 @@ export const CompanyNotifications: React.FC = () => {
                 </ListItem>
                 {index < filteredNotifications.length - 1 && <Divider />}
               </Box>
-            ))}
+            );
+          })}
           </List>
         )}
       </Paper>

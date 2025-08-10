@@ -2120,7 +2120,7 @@ def api_hub_analytics_data(request):
                         'avatar': ''.join([n[0].upper() for n in (student.user.first_name or student.user.email).split()[:2]]),
                         'totalHours': work_hours_sum,
                         'completedProjects': student.completed_projects or 0,
-                        'averageRating': round(student.rating or 0, 1),
+                        'averageRating': round(student.gpa or 0, 1),
                         'level': student.api_level or 1,
                         'status': 'active'
                     })
@@ -2447,19 +2447,21 @@ def api_hub_analytics_data(request):
         
         # 7. MÉTRICAS DE ASISTENCIAS A EVENTOS
         try:
-            from calendar_events.models import CalendarEvent, EventAttendance
+            from mass_notifications.models import MassNotification, EventRegistration
             
-            # Total de eventos
-            total_events = CalendarEvent.objects.count()
+            # Total de eventos (notificaciones masivas que son eventos)
+            total_events = MassNotification.objects.filter(
+                event_date__isnull=False
+            ).count()
             
             # Total de invitaciones (registros de asistencia)
-            total_invitations = EventAttendance.objects.count()
+            total_invitations = EventRegistration.objects.count()
             
             # Asistencias por estado
-            confirmed_attendances = EventAttendance.objects.filter(status='confirmed').count()
-            declined_attendances = EventAttendance.objects.filter(status='declined').count()
-            maybe_attendances = EventAttendance.objects.filter(status='maybe').count()
-            pending_attendances = EventAttendance.objects.filter(status='pending').count()
+            confirmed_attendances = EventRegistration.objects.filter(status='confirmed').count()
+            declined_attendances = EventRegistration.objects.filter(status='declined').count()
+            maybe_attendances = EventRegistration.objects.filter(status='maybe').count()
+            pending_attendances = EventRegistration.objects.filter(status='pending').count()
             
             # Tasa de confirmación
             total_responses = confirmed_attendances + declined_attendances + maybe_attendances
@@ -2467,13 +2469,18 @@ def api_hub_analytics_data(request):
             
             # Asistencias por tipo de evento
             attendance_by_event_type = []
-            event_types = CalendarEvent.objects.values_list('event_type', flat=True).distinct()
+            event_types = MassNotification.objects.filter(
+                event_date__isnull=False
+            ).values_list('event_type', flat=True).distinct()
             
             for event_type in event_types:
-                events_of_type = CalendarEvent.objects.filter(event_type=event_type)
+                events_of_type = MassNotification.objects.filter(
+                    event_date__isnull=False,
+                    event_type=event_type
+                )
                 event_ids = events_of_type.values_list('id', flat=True)
                 
-                attendances = EventAttendance.objects.filter(event_id__in=event_ids)
+                attendances = EventRegistration.objects.filter(event_id__in=event_ids)
                 total = attendances.count()
                 confirmed = attendances.filter(status='confirmed').count()
                 declined = attendances.filter(status='declined').count()
@@ -2481,7 +2488,7 @@ def api_hub_analytics_data(request):
                 pending = attendances.filter(status='pending').count()
                 
                 attendance_by_event_type.append({
-                    'event_type': event_type,
+                    'event_type': event_type or 'Sin tipo',
                     'total': total,
                     'confirmed': confirmed,
                     'declined': declined,
@@ -2493,13 +2500,14 @@ def api_hub_analytics_data(request):
             attendance_by_month = []
             for i in range(6):
                 month_date = now - timedelta(days=30*i)
-                events_this_month = CalendarEvent.objects.filter(
-                    start_date__year=month_date.year,
-                    start_date__month=month_date.month
+                events_this_month = MassNotification.objects.filter(
+                    event_date__isnull=False,
+                    event_date__year=month_date.year,
+                    event_date__month=month_date.month
                 )
                 event_ids = events_this_month.values_list('id', flat=True)
                 
-                attendances_this_month = EventAttendance.objects.filter(event_id__in=event_ids)
+                attendances_this_month = EventRegistration.objects.filter(event_id__in=event_ids)
                 total_attendances = attendances_this_month.count()
                 confirmed_this_month = attendances_this_month.filter(status='confirmed').count()
                 attendance_rate = (confirmed_this_month / total_attendances * 100) if total_attendances > 0 else 0
@@ -2514,11 +2522,13 @@ def api_hub_analytics_data(request):
             
             # Top eventos por confirmaciones
             top_events = []
-            events_with_attendance = CalendarEvent.objects.annotate(
-                total_invited=Count('attendance_records'),
-                confirmed_count=Count('attendance_records', filter=Q(attendance_records__status='confirmed')),
-                declined_count=Count('attendance_records', filter=Q(attendance_records__status='declined')),
-                maybe_count=Count('attendance_records', filter=Q(attendance_records__status='maybe'))
+            events_with_attendance = MassNotification.objects.filter(
+                event_date__isnull=False
+            ).annotate(
+                total_invited=Count('event_registrations'),
+                confirmed_count=Count('event_registrations', filter=Q(event_registrations__status='confirmed')),
+                declined_count=Count('event_registrations', filter=Q(event_registrations__status='declined')),
+                maybe_count=Count('event_registrations', filter=Q(event_registrations__status='maybe'))
             ).filter(total_invited__gt=0).order_by('-total_invited')[:10]
             
             for event in events_with_attendance:
@@ -2526,7 +2536,7 @@ def api_hub_analytics_data(request):
                 top_events.append({
                     'id': str(event.id),
                     'title': event.title,
-                    'event_type': event.event_type,
+                    'event_type': event.event_type or 'Sin tipo',
                     'total_invited': event.total_invited,
                     'confirmed': event.confirmed_count,
                     'declined': event.declined_count,

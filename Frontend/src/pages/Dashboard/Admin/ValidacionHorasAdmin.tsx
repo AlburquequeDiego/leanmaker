@@ -45,7 +45,7 @@ import { apiService } from '../../../services/api.service';
 import { DataTable } from '../../../components/common/DataTable';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { translateModality } from '../../../utils/adapters';
+
 import { useTheme } from '../../../contexts/ThemeContext';
 
 interface WorkHour {
@@ -74,8 +74,8 @@ interface WorkHour {
   project_duration_weeks?: number;
   project_hours_per_week?: number;
   project_required_hours?: number;
-  company_rating?: number;
-  student_rating?: number;
+  company_gpa?: number;
+  student_gpa?: number;
   approved?: boolean; // Added for filtering
 }
 
@@ -131,6 +131,21 @@ interface ProjectDetail {
     level: number;
   };
 }
+
+/**
+ * Traduce la modalidad del inglés al español
+ */
+const translateModality = (modality: string): string => {
+  const modalityMap: Record<string, string> = {
+    'remoto': 'Remoto',
+    'presencial': 'Presencial',
+    'híbrido': 'Híbrido',
+    'remote': 'Remoto',
+    'onsite': 'Presencial',
+    'hybrid': 'Híbrido',
+  };
+  return modalityMap[modality.toLowerCase()] || modality;
+};
 
 export default function ValidacionHorasAdmin() {
   const { themeMode } = useTheme();

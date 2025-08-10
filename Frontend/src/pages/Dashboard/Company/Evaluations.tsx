@@ -40,6 +40,7 @@ import {
   Star as StarIcon,
   RateReview as RateReviewIcon,
   Refresh as RefreshIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { apiService } from '../../../services/api.service';
@@ -115,12 +116,12 @@ interface StudentToEvaluate {
   completion_date: string;
   already_evaluated: boolean;
   evaluation_id?: string;
-  rating?: number;
+  score?: number;
 }
 
 interface CompletedEvaluation {
   id: string;
-  rating: number;
+  score: number;
   comments: string;
   evaluation_date: string;
   student_name: string;
@@ -151,12 +152,17 @@ export const Evaluations = () => {
   const [strikeModalOpen, setStrikeModalOpen] = useState(false);
   const [selectedStudentForStrike, setSelectedStudentForStrike] = useState<StudentToEvaluate | null>(null);
   const [strikeReason, setStrikeReason] = useState('');
-  const [strikeDescription, setStrikeDescription] = useState('');
+
 
   // Cargar datos al montar el componente
   useEffect(() => {
     loadData();
   }, []);
+
+  // Debug: monitorear cambios en el estado del modal
+  useEffect(() => {
+    console.log('🔍 Estado del modal de calificación cambió:', calificarModalOpen);
+  }, [calificarModalOpen]);
 
   const loadData = async () => {
     setLoading(true);
@@ -193,7 +199,7 @@ export const Evaluations = () => {
           completion_date: student.completion_date,
           already_evaluated: student.already_evaluated,
           evaluation_id: student.evaluation_id,
-          rating: student.rating
+          score: student.score || 0
         }));
         console.log('✅ Estudiantes para evaluar cargados:', studentsToEvaluateData.length);
       }
@@ -203,7 +209,7 @@ export const Evaluations = () => {
         const evaluations = completedEvaluationsResponse.data as any[];
         completedEvaluationsData = evaluations.map(evaluation => ({
           id: evaluation.id,
-          rating: evaluation.rating,
+          score: evaluation.score || 0,
           comments: evaluation.comments || '',
           evaluation_date: evaluation.evaluation_date,
           student_name: evaluation.student_name,
@@ -235,7 +241,10 @@ export const Evaluations = () => {
   const studentsEvaluated = studentsToEvaluate.filter(student => student.already_evaluated);
 
   const handleCalificarEstudiante = async () => {
+    console.log('🚀 Iniciando evaluación para:', selectedStudent?.student_name, 'con calificación:', calificacion);
+    
     if (!selectedStudent || !calificacion) {
+      console.log('❌ Validación fallida: selectedStudent o calificacion es null');
       setSnackbar({
         open: true,
         message: 'Por favor selecciona una calificación',
@@ -245,14 +254,20 @@ export const Evaluations = () => {
     }
 
     try {
+      console.log('📡 Enviando evaluación a la API...');
       const response = await apiService.companyEvaluateStudent({
-      student_id: selectedStudent.student_id,
-      project_id: selectedStudent.project_id,
-        rating: calificacion,
+        student_id: selectedStudent.student_id,
+        project_id: selectedStudent.project_id,
+        score: calificacion,
         comments: '' // Sin comentarios, solo calificación
       });
 
-      if (response && typeof response === 'object' && 'success' in response && response.success) {
+      console.log('📥 Respuesta de la API recibida:', response);
+      
+      // El backend devuelve status 201 y un mensaje de éxito
+      if (response && typeof response === 'object' && 'message' in response && response.message === 'Evaluación enviada correctamente') {
+        console.log('✅ Evaluación exitosa, cerrando modal...');
+        
         setSnackbar({
           open: true,
           message: 'Evaluación enviada correctamente',
@@ -263,6 +278,8 @@ export const Evaluations = () => {
         setCalificarModalOpen(false);
         setSelectedStudent(null);
         setCalificacion(null);
+        
+        console.log('🔒 Estado del modal después de cerrar:', false);
         
         // Recargar datos para actualizar la lista
         setTimeout(() => {
@@ -298,12 +315,14 @@ export const Evaluations = () => {
   };
 
   const handleCloseCalificarModal = () => {
+    console.log('🔒 Cerrando modal manualmente...');
     setCalificarModalOpen(false);
     setSelectedStudent(null);
     setCalificacion(null);
   };
 
   const handleOpenCalificarModal = (student: StudentToEvaluate) => {
+    console.log('🔓 Abriendo modal para calificar:', student.student_name);
     setSelectedStudent(student);
     setCalificarModalOpen(true);
   };
@@ -334,7 +353,6 @@ export const Evaluations = () => {
   const handleOpenStrikeModal = (student: StudentToEvaluate) => {
     setSelectedStudentForStrike(student);
     setStrikeReason('');
-    setStrikeDescription('');
     setStrikeModalOpen(true);
   };
 
@@ -342,14 +360,31 @@ export const Evaluations = () => {
     setStrikeModalOpen(false);
     setSelectedStudentForStrike(null);
     setStrikeReason('');
-    setStrikeDescription('');
   };
 
   const handleSubmitStrike = async () => {
-    if (!selectedStudentForStrike || !strikeReason.trim()) {
+    if (!selectedStudentForStrike) {
+      setSnackbar({
+        open: true,
+        message: 'Error: No se seleccionó un estudiante',
+        severity: 'error'
+      });
+      return;
+    }
+
+    if (!strikeReason.trim()) {
       setSnackbar({
         open: true,
         message: 'Por favor completa el motivo del strike',
+        severity: 'error'
+      });
+      return;
+    }
+
+    if (strikeReason.trim().length < 10) {
+      setSnackbar({
+        open: true,
+        message: 'El motivo del strike debe tener al menos 10 caracteres',
         severity: 'error'
       });
       return;
@@ -359,8 +394,7 @@ export const Evaluations = () => {
       await apiService.createStrikeReport({
         student_id: selectedStudentForStrike.student_id,
         project_id: selectedStudentForStrike.project_id,
-        reason: strikeReason.trim(),
-        description: strikeDescription.trim() || undefined
+        reason: strikeReason.trim()
       });
 
       setSnackbar({
@@ -481,17 +515,17 @@ export const Evaluations = () => {
               </Box>
               <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
                 {studentsEvaluated.length}
-    </Typography>
+              </Typography>
               <Typography variant="body1" sx={{ fontWeight: 600, mb: 1 }}>
                 Evaluaciones Realizadas
-               </Typography>
+              </Typography>
               <Typography variant="body2" sx={{ opacity: 0.8 }}>
                 Estudiantes que ya has calificado
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ 
             background: themeMode === 'dark' 
               ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' 
@@ -514,16 +548,18 @@ export const Evaluations = () => {
               </Box>
               <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
                 {studentsToEvaluate.length}
-    </Typography>
+              </Typography>
               <Typography variant="body1" sx={{ fontWeight: 600, mb: 1 }}>
                 Total Estudiantes
-    </Typography>
+              </Typography>
               <Typography variant="body2" sx={{ opacity: 0.8 }}>
                 Estudiantes en proyectos completados
               </Typography>
             </CardContent>
           </Card>
         </Grid>
+        
+
       </Grid>
 
       {/* Sección de Evaluar Estudiantes */}
@@ -776,9 +812,9 @@ export const Evaluations = () => {
                       </Box>
                       
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <StarRating value={student.rating || 0} readOnly size="small" />
+                      <StarRating value={student.score || 0} readOnly size="small" />
                       <Typography variant="body2" sx={{ ml: 1, fontWeight: 'bold' }}>
-                        {student.rating}/5
+                        {student.score ? `${student.score}/5` : 'N/A'}
                         </Typography>
                     </Box>
 
@@ -816,6 +852,7 @@ export const Evaluations = () => {
 
       {/* Modal para calificar estudiante */}
       <Dialog
+        key={`calificar-modal-${calificarModalOpen}-${selectedStudent?.student_id || 'none'}`}
         open={calificarModalOpen} 
         onClose={handleCloseCalificarModal} 
         maxWidth="sm" 
@@ -853,7 +890,10 @@ export const Evaluations = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
                   <StarRating
                     value={calificacion}
-                    onChange={(newValue) => setCalificacion(newValue)}
+                    onChange={(newValue) => {
+                      console.log('⭐ Calificación seleccionada:', newValue);
+                      setCalificacion(newValue);
+                    }}
                     size="large"
                   />
                       <Typography variant="body2" color="text.secondary">
@@ -874,7 +914,96 @@ export const Evaluations = () => {
             color="primary"
             disabled={!selectedStudent || !calificacion}
           >
-            Enviar Evaluación
+            Enviar Evaluación {calificacion ? `(${calificacion}/5)` : ''}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal para reportar strike */}
+      <Dialog
+        open={strikeModalOpen} 
+        onClose={handleCloseStrikeModal} 
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <WarningIcon color="error" />
+            <Typography variant="h6">
+              Reportar Strike
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedStudentForStrike && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+              {/* Información del estudiante y proyecto */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Estudiante: {selectedStudentForStrike.student_name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Email: {selectedStudentForStrike.student_email}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Proyecto: {selectedStudentForStrike.project_title}
+                </Typography>
+              </Box>
+
+              {/* Motivo del strike */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Motivo del strike *
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic' }}>
+                  Ejemplo: "No cumplió con los plazos establecidos del proyecto, entregó el trabajo 2 semanas tarde sin justificación válida"
+                </Typography>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={strikeReason}
+                  onChange={(e) => setStrikeReason(e.target.value)}
+                  placeholder="Describe detalladamente el motivo del strike..."
+                  variant="outlined"
+                  required
+                  error={strikeReason.trim() === '' || (strikeReason.trim() !== '' && strikeReason.trim().length < 10)}
+                  helperText={
+                    strikeReason.trim() === '' 
+                      ? 'El motivo del strike es obligatorio' 
+                      : strikeReason.trim().length < 10 
+                        ? `Mínimo 10 caracteres (${strikeReason.trim().length}/10)` 
+                        : ''
+                  }
+                />
+              </Box>
+
+
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseStrikeModal} color="inherit">
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleSubmitStrike} 
+            variant="contained" 
+            color="error"
+            disabled={!selectedStudentForStrike || !strikeReason.trim() || strikeReason.trim().length < 10}
+            sx={{ 
+              minWidth: 140,
+              '&:disabled': {
+                opacity: 0.6
+              }
+            }}
+          >
+            {strikeReason.trim() && strikeReason.trim().length >= 10 
+              ? 'Enviar Reporte' 
+              : strikeReason.trim() 
+                ? 'Mínimo 10 caracteres' 
+                : 'Completa el motivo'
+            }
           </Button>
         </DialogActions>
       </Dialog>

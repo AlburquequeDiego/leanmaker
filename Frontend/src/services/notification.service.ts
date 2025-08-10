@@ -5,12 +5,19 @@ export interface Notification {
   user: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: 'info' | 'success' | 'warning' | 'error' | 'event';
   read: boolean;
   priority?: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   related_url?: string;
   created_at: string;
   updated_at: string;
+  metadata?: {
+    event_date?: string;
+    event_location?: string;
+    event_description?: string;
+    event_capacity?: number;
+    event_type?: string;
+  };
 }
 
 export interface NotificationResponse {

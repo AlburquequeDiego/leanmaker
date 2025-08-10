@@ -533,7 +533,7 @@ class ApiService {
   async companyEvaluateStudent(evaluationData: {
     student_id: string;
     project_id: string;
-    rating: number;
+    score: number;
     comments?: string;
     strike?: {
       reason: string;
@@ -554,7 +554,7 @@ class ApiService {
   async studentEvaluateCompany(evaluationData: {
     company_id: string;
     project_id: string;
-    rating: number;
+    score: number;
     comments?: string;
   }) {
     return this.post('/api/evaluations/student-evaluate-company/', evaluationData);
@@ -618,6 +618,10 @@ class ApiService {
     return this.get(url);
   }
 
+  async getCompanyStrikeReports() {
+    return this.get('/api/strikes/reports/company/');
+  }
+
   async createStrikeReport(reportData: {
     student_id: string;
     project_id: string;
@@ -637,8 +641,9 @@ class ApiService {
     return this.patch(url, { admin_notes: adminNotes || '' });
   }
 
-  async getCompanyStrikeReports() {
-    return this.get('/api/strikes/reports/company/');
+  // MÉTODOS PARA ESTADÍSTICAS DEL DASHBOARD
+  async getCompanyStats() {
+    return this.get('/api/dashboard/company_stats/');
   }
 }
 

@@ -698,7 +698,6 @@ def company_evaluate_student(request):
                 evaluator=user,
                 score=rating,
                 comments=data.get('comments', ''),
-                evaluation_date=timezone.now(),
                 status='completed',
                 evaluation_type='company_to_student'
             )
@@ -728,7 +727,7 @@ def company_evaluate_student(request):
                 student.save()
             
             # Actualizar GPA del estudiante
-            student.update_gpa()
+            student.actualizar_calificacion()
             
             return JsonResponse({
                 'message': 'Evaluación enviada correctamente',
@@ -751,8 +750,8 @@ def company_evaluate_student(request):
             return JsonResponse({'error': 'company_id requerido'}, status=400)
         
         try:
-            from companies.models import Company
-            company = Company.objects.get(id=company_id)
+            from companies.models import Empresa
+            company = Empresa.objects.get(id=company_id)
             evaluations = Evaluation.objects.filter(
                 evaluator=company.user,
                 evaluation_type='company_to_student'
@@ -762,7 +761,7 @@ def company_evaluate_student(request):
             for evaluation in evaluations:
                 evaluations_data.append({
                     'id': str(evaluation.id),
-                    'rating': evaluation.score,
+                    'score': evaluation.score,
                     'comments': evaluation.comments,
                     'evaluation_date': evaluation.evaluation_date.isoformat(),
                     'student_name': evaluation.student.user.full_name,
@@ -777,7 +776,7 @@ def company_evaluate_student(request):
                 'evaluations': evaluations_data
             })
             
-        except Company.DoesNotExist:
+        except Empresa.DoesNotExist:
             return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -842,7 +841,7 @@ def company_completed_evaluations(request):
                     'completion_date': application.updated_at.isoformat(),
                     'already_evaluated': True,
                     'evaluation_id': str(evaluation.id),
-                    'rating': evaluation.score
+                    'score': evaluation.score
                 })
                 
                 print(f"[DEBUG] Agregada evaluación: {project.title} - Score: {evaluation.score}")
@@ -963,7 +962,7 @@ def company_students_to_evaluate(request):
                     'completion_date': application.updated_at.isoformat(),
                     'already_evaluated': existing_evaluation is not None,
                     'evaluation_id': str(existing_evaluation.id) if existing_evaluation else None,
-                    'rating': existing_evaluation.score if existing_evaluation else None
+                    'score': existing_evaluation.score if existing_evaluation else None
                 })
         
         return JsonResponse({
@@ -1086,7 +1085,7 @@ def student_evaluate_company(request):
             for evaluation in evaluations:
                 evaluations_data.append({
                     'id': str(evaluation.id),
-                    'rating': evaluation.score,
+                    'score': evaluation.score,
                     'comments': evaluation.comments,
                     'evaluation_date': evaluation.evaluation_date.isoformat(),
                     'company_name': evaluation.project.company.company_name,
@@ -1276,7 +1275,7 @@ def student_companies_to_evaluate(request):
                 'completion_date': application.updated_at.isoformat(),
                 'already_evaluated': existing_evaluation is not None,
                 'evaluation_id': str(existing_evaluation.id) if existing_evaluation else None,
-                'rating': existing_evaluation.score if existing_evaluation else None
+                'score': existing_evaluation.score if existing_evaluation else None
             })
         
         # Filtrar solo proyectos NO evaluados para la sección "Evaluar Empresas"
@@ -1364,7 +1363,7 @@ def student_completed_evaluations(request):
                     'completion_date': application.updated_at.isoformat(),
                     'already_evaluated': True,
                     'evaluation_id': str(evaluation.id),
-                    'rating': evaluation.score
+                    'score': evaluation.score
                 })
                 
                 print(f"[DEBUG] Agregada evaluación: {project.title} - Score: {evaluation.score}")

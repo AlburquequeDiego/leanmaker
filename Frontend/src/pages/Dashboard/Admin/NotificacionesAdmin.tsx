@@ -48,6 +48,7 @@ import {
   NotificationsActive as NotificationsActiveIcon,
   MarkEmailRead as MarkEmailReadIcon,
 } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 import { apiService } from '../../../services/api.service';
 
 interface MassNotification {
@@ -380,6 +381,17 @@ export default function NotificacionesAdmin() {
     }
   };
 
+  // Función para truncar texto largo
+  const truncateText = (text: string, maxLength: number = 100) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  // Función para verificar si el texto necesita ser truncado
+  const shouldTruncate = (text: string, maxLength: number = 100) => {
+    return text.length > maxLength;
+  };
+
   const filteredNotifications = notifications.filter(notification =>
     (notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
      notification.message.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -682,7 +694,15 @@ export default function NotificacionesAdmin() {
         />
       </Box>
       
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 3 }}>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))', 
+        gap: 3,
+        '& > *': {
+          minHeight: 'fit-content',
+          maxWidth: '600px'
+        }
+      }}>
         {(limit === -1 ? filteredNotifications : filteredNotifications.slice(0, limit)).map((notification) => (
           <Box key={notification.id}>
             <Card sx={{ 
@@ -693,20 +713,155 @@ export default function NotificacionesAdmin() {
               boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
               border: '1px solid rgba(0,0,0,0.05)',
               transition: 'box-shadow 0.2s',
+              position: 'relative',
               '&:hover': {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
               }
             }}>
+              {/* Indicador de texto truncado */}
+              {(shouldTruncate(notification.title, 80) || shouldTruncate(notification.message, 150)) && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: 'primary.main',
+                    opacity: 0.7,
+                    zIndex: 1
+                  }}
+                />
+              )}
               <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 2 }}>
                   {getTypeIcon(notification.notification_type)}
-                  <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
-                    {notification.title}
-                  </Typography>
+                  <Box sx={{ flexGrow: 1 }}>
+                                      <Tooltip 
+                    title={shouldTruncate(notification.title, 80) ? notification.title : ''}
+                    placement="top-start"
+                    arrow
+                  >
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontWeight: 600,
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        hyphens: 'auto',
+                        lineHeight: 1.3,
+                        maxHeight: '3.9em', // 3 líneas máximo
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        position: 'relative',
+                        cursor: shouldTruncate(notification.title, 80) ? 'help' : 'default'
+                      }}
+                    >
+                      {notification.title}
+                      {shouldTruncate(notification.title, 80) && (
+                        <Box
+                          component="span"
+                          sx={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            background: 'linear-gradient(90deg, transparent 0%, white 50%)',
+                            width: '2em',
+                            height: '1.5em',
+                            pointerEvents: 'none'
+                          }}
+                        />
+                      )}
+                    </Typography>
+                  </Tooltip>
+                    {shouldTruncate(notification.title, 80) && (
+                      <Typography 
+                        variant="caption" 
+                        color="primary.main" 
+                        sx={{ 
+                          mt: 0.5, 
+                          display: 'block',
+                          fontStyle: 'italic',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          '&:hover': { 
+                            textDecoration: 'underline',
+                            color: 'primary.dark'
+                          },
+                          transition: 'all 0.2s ease'
+                        }}
+                        onClick={() => setSelectedNotification(notification)}
+                      >
+                        📖 Ver título completo
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
-                  {notification.message}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Tooltip 
+                    title={shouldTruncate(notification.message, 150) ? notification.message : ''}
+                    placement="top-start"
+                    arrow
+                  >
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        lineHeight: 1.5,
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        hyphens: 'auto',
+                        maxHeight: '4.5em', // 3 líneas máximo
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        position: 'relative',
+                        cursor: shouldTruncate(notification.message, 150) ? 'help' : 'default'
+                      }}
+                    >
+                      {notification.message}
+                      {shouldTruncate(notification.message, 150) && (
+                        <Box
+                          component="span"
+                          sx={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            background: 'linear-gradient(90deg, transparent 0%, white 50%)',
+                            width: '2em',
+                            height: '1.5em',
+                            pointerEvents: 'none'
+                          }}
+                        />
+                      )}
+                    </Typography>
+                  </Tooltip>
+                  {shouldTruncate(notification.message, 150) && (
+                    <Typography 
+                      variant="caption" 
+                      color="primary.main" 
+                      sx={{ 
+                        mt: 1, 
+                        display: 'block',
+                        fontStyle: 'italic',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        '&:hover': { 
+                          textDecoration: 'underline',
+                          color: 'primary.dark'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                      onClick={() => setSelectedNotification(notification)}
+                    >
+                      📖 Ver mensaje completo
+                    </Typography>
+                  )}
+                </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                   <Chip 
                     label={getTypeText(notification.notification_type)} 
@@ -988,15 +1143,28 @@ export default function NotificacionesAdmin() {
             <DialogTitle sx={{ 
               bgcolor: 'primary.main', 
               color: 'white',
-              fontWeight: 600
+              fontWeight: 600,
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word'
             }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                 {getTypeIcon(selectedNotification.notification_type)}
-                {selectedNotification.title}
+                <Typography variant="h6" sx={{ lineHeight: 1.3 }}>
+                  {selectedNotification.title}
+                </Typography>
               </Box>
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
-              <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  mb: 2, 
+                  lineHeight: 1.6,
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  whiteSpace: 'pre-wrap'
+                }}
+              >
                 {selectedNotification.message}
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>

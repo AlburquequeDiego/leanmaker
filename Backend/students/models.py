@@ -59,7 +59,7 @@ class Estudiante(models.Model):
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='flexible')
     location = models.CharField(max_length=200, null=True, blank=True)
     area = models.CharField(max_length=200, null=True, blank=True, help_text="Área de interés del estudiante")
-    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+
     
     # Campos JSON (se almacenan como texto en SQL Server) - coinciden con frontend
     skills = models.TextField(null=True, blank=True)  # JSON array de habilidades
@@ -186,7 +186,7 @@ class Estudiante(models.Model):
         self.save(update_fields=['completed_projects'])
     
     def actualizar_calificacion(self, _=None):
-        """Actualiza la calificación promedio del estudiante (GPA y rating)"""
+        """Actualiza la calificación promedio del estudiante (GPA)"""
         from evaluations.models import Evaluation
         # CORREGIDO: Buscar evaluaciones donde este estudiante es el evaluado
         evaluaciones = Evaluation.objects.filter(
@@ -197,11 +197,9 @@ class Estudiante(models.Model):
         if evaluaciones.exists():
             promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
             self.gpa = round(promedio, 2)
-            self.rating = round(promedio, 2)
         else:
             self.gpa = 0
-            self.rating = 0
-        self.save(update_fields=['gpa', 'rating'])
+        self.save(update_fields=['gpa'])
 
     def actualizar_api_level_automaticamente(self):
         """Actualiza automáticamente el nivel de API basándose en horas trabajadas y proyectos completados"""
@@ -408,7 +406,7 @@ def crear_perfil_estudiante(sender, instance, created, **kwargs):
                     availability='flexible',
                     location='',
                     area='',
-                    rating=0.0,
+
                 )
                 # Calcular TRL automáticamente al crear
                 estudiante.actualizar_trl_segun_api()

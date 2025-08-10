@@ -62,14 +62,11 @@ export const adaptUser = (backendUser: any): User => ({
 export const adaptStudent = (backendStudent: any): Student => ({
   id: String(backendStudent.id),
   user: String(backendStudent.user),
-  name: backendStudent.name || backendStudent.user_data?.full_name || backendStudent.email || 'Sin nombre',
-  email: backendStudent.email || backendStudent.user_data?.email || 'Sin email',
   career: backendStudent.career,
   semester: backendStudent.semester,
   graduation_year: backendStudent.graduation_year,
   status: backendStudent.status,
   api_level: backendStudent.api_level,
-  trl_level: backendStudent.trl_level, // <-- Añadido correctamente
   strikes: backendStudent.strikes,
   gpa: Number(backendStudent.gpa),
   completed_projects: backendStudent.completed_projects,
@@ -83,14 +80,14 @@ export const adaptStudent = (backendStudent: any): Student => ({
   availability: backendStudent.availability || 'flexible',
   location: backendStudent.location,
   area: backendStudent.area, // <-- AÑADIDO
-  rating: backendStudent.rating || 0,
+          gpa: backendStudent.gpa || 0,
   skills: parseJsonArray(backendStudent.skills),
   languages: parseJsonArray(backendStudent.languages),
   created_at: backendStudent.created_at,
   updated_at: backendStudent.updated_at,
   user_data: backendStudent.user_data, // <-- Añadido
   perfil_detallado: backendStudent.perfil_detallado, // <-- AÑADIDO
-  bio: backendStudent.bio, // <-- AÑADIDO para carta de presentación
+
   university: backendStudent.university, // <-- AÑADIDO
   education_level: backendStudent.education_level, // <-- AÑADIDO
 });
@@ -112,7 +109,7 @@ export const adaptCompany = (backendCompany: any): Company => ({
   founded_year: backendCompany.founded_year,
   logo_url: backendCompany.logo_url,
   verified: backendCompany.verified || false,
-  rating: backendCompany.rating || 0,
+          gpa: backendCompany.gpa || 0,
   total_projects: backendCompany.total_projects || 0,
   projects_completed: backendCompany.projects_completed || 0,
   total_hours_offered: backendCompany.total_hours_offered || 0,
@@ -141,13 +138,16 @@ export const adaptCompany = (backendCompany: any): Company => ({
 /**
  * Traduce la modalidad del inglés al español
  */
-export const translateModality = (modality: string): string => {
-  const modalityMap: { [key: string]: string } = {
-    'remote': 'Remoto',
-    'onsite': 'Presencial',
-    'hybrid': 'Híbrido',
+const translateModality = (modality: string): 'remote' | 'hybrid' | 'onsite' => {
+  const modalityMap: Record<string, 'remote' | 'hybrid' | 'onsite'> = {
+    'remoto': 'remote',
+    'presencial': 'onsite',
+    'híbrido': 'hybrid',
+    'remote': 'remote',
+    'onsite': 'onsite',
+    'hybrid': 'hybrid',
   };
-  return modalityMap[modality] || modality;
+  return modalityMap[modality.toLowerCase()] || 'remote';
 };
 
 /**
@@ -234,8 +234,8 @@ export const adaptApplication = (backendApplication: any): Application => {
   return {
     id: String(backendApplication.id),
     project: String(project.id || backendApplication.project || ''),
-    // CAMBIO: student ahora es el objeto adaptado
-    student: adaptStudent(student),
+    // CAMBIO: student debe ser el UUID del estudiante, no el objeto completo
+    student: String(student.id || backendApplication.student || ''),
     status: backendApplication.status || 'pending',
     cover_letter: backendApplication.cover_letter || '',
     company_notes: backendApplication.company_notes || '',
@@ -251,8 +251,7 @@ export const adaptApplication = (backendApplication: any): Application => {
     // Campos adicionales extraídos de la estructura anidada del backend
     project_title: project.title || backendApplication.project_title || 'Proyecto no encontrado',
     project_description: project.description || 'Sin descripción',
-    requirements: project.requirements || '',
-    projectDuration: project.duration_weeks ? `${project.duration_weeks} semanas` : '',
+
     location: project.location || '',
     modality: project.modality || '',
     
@@ -313,18 +312,31 @@ export const adaptEvaluation = (backendEvaluation: any): Evaluation => {
 /**
  * Adapta una notificación del backend al formato del frontend
  */
-export const adaptNotification = (backendNotification: any): Notification => ({
-  id: String(backendNotification.id),
-  user: String(backendNotification.user_id || backendNotification.user || ''),
-  title: backendNotification.title,
-  message: backendNotification.message,
-  type: backendNotification.type,
-  priority: backendNotification.priority || 'normal',
-  read: backendNotification.read,
-  related_url: backendNotification.related_url,
-  created_at: backendNotification.created_at,
-  updated_at: backendNotification.updated_at,
-});
+export const adaptNotification = (backendNotification: any): Notification => {
+  console.log('🔍 adaptNotification - Notificación del backend:', backendNotification);
+  
+  const adaptedNotification = {
+    id: String(backendNotification.id),
+    user: String(backendNotification.user_id || backendNotification.user || ''),
+    title: backendNotification.title,
+    message: backendNotification.message,
+    type: backendNotification.type,
+    priority: backendNotification.priority || 'normal',
+    read: backendNotification.read,
+    related_url: backendNotification.related_url,
+    created_at: backendNotification.created_at,
+    updated_at: backendNotification.updated_at,
+  };
+  
+  console.log('🔍 adaptNotification - Notificación adaptada:', adaptedNotification);
+  console.log('🔍 adaptNotification - Campo read:', {
+    original: backendNotification.read,
+    adapted: adaptedNotification.read,
+    type: typeof adaptedNotification.read
+  });
+  
+  return adaptedNotification;
+};
 
 /**
  * Adapta un strike del backend al formato del frontend

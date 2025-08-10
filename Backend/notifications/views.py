@@ -49,7 +49,7 @@ def notification_list(request):
         # Serializar resultados
         notifications_data = []
         for notification in queryset:
-            notifications_data.append({
+            notification_item = {
                 'id': str(notification.id),
                 'title': notification.title,
                 'message': notification.message,
@@ -59,8 +59,11 @@ def notification_list(request):
                 'related_url': notification.related_url,
                 'created_at': notification.created_at.isoformat(),
                 'updated_at': notification.updated_at.isoformat(),
-            })
+            }
+            print(f"🔍 [notification_list] Notificación {notification.id}: read={notification.read}, is_read={notification.is_read}")
+            notifications_data.append(notification_item)
         
+        print(f"🔍 [notification_list] Total de notificaciones enviadas: {len(notifications_data)}")
         return JsonResponse({
             'success': True,
             'data': notifications_data,
@@ -121,22 +124,35 @@ def notification_detail(request, notification_id):
 def mark_as_read(request, notification_id):
     """Marca una notificación como leída."""
     try:
+        print(f"🔍 [mark_as_read] Iniciando para notificación ID: {notification_id}")
         user = get_user_from_token(request)
+        print(f"🔍 [mark_as_read] Usuario autenticado: {user.email}")
         
         # Validar UUID
         try:
             notification_uuid = uuid.UUID(notification_id)
+            print(f"🔍 [mark_as_read] UUID válido: {notification_uuid}")
         except ValueError:
+            print(f"❌ [mark_as_read] UUID inválido: {notification_id}")
             return JsonResponse({'error': 'ID de notificación inválido'}, status=400)
         
         # Buscar notificación del usuario
         try:
             notification = Notification.objects.get(id=notification_uuid, user=user)
+            print(f"🔍 [mark_as_read] Notificación encontrada: {notification.id}")
+            print(f"🔍 [mark_as_read] Estado actual - read: {notification.read}, is_read: {notification.is_read}")
         except Notification.DoesNotExist:
+            print(f"❌ [mark_as_read] Notificación no encontrada: {notification_uuid}")
             return JsonResponse({'error': 'Notificación no encontrada'}, status=404)
         
         # Marcar como leída
+        print(f"🔍 [mark_as_read] Marcando como leída...")
         notification.marcar_como_leida()
+        print(f"🔍 [mark_as_read] Después de marcar - read: {notification.read}, is_read: {notification.is_read}")
+        
+        # Verificar que se guardó correctamente
+        notification.refresh_from_db()
+        print(f"🔍 [mark_as_read] Después de refresh - read: {notification.read}, is_read: {notification.is_read}")
         
         return JsonResponse({
             'success': True,
@@ -144,6 +160,7 @@ def mark_as_read(request, notification_id):
         })
         
     except Exception as e:
+        print(f"❌ [mark_as_read] Error: {str(e)}")
         return JsonResponse({'error': f'Error al marcar notificación: {str(e)}'}, status=500)
 
 @csrf_exempt
