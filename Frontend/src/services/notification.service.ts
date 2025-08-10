@@ -7,6 +7,7 @@ export interface Notification {
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
   read: boolean;
+  priority?: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   related_url?: string;
   created_at: string;
   updated_at: string;

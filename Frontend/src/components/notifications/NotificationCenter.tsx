@@ -13,7 +13,11 @@ import {
   Button,
   Divider,
   CircularProgress,
-  Alert
+  Alert,
+  Fade,
+  Slide,
+  Zoom,
+  Tooltip
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -22,10 +26,24 @@ import {
   Warning as WarningIcon,
   Error as ErrorIcon,
   MarkEmailRead as MarkReadIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Event as EventIcon,
+  Assignment as AssignmentIcon,
+  Business as BusinessIcon,
+  NotificationsActive as NotificationsActiveIcon,
+  PriorityHigh as PriorityHighIcon,
+  Schedule as ScheduleIcon,
+  LocationOn as LocationIcon,
+  VideoCall as VideoCallIcon,
+  Group as GroupIcon,
+  Announcement as AnnouncementIcon,
+  Campaign as CampaignIcon,
+  Celebration as CelebrationIcon,
+  NotificationsNone as NotificationsNoneIcon
 } from '@mui/icons-material';
 import { notificationService } from '../../services/notification.service';
 import type { Notification } from '../../services/notification.service';
+import { EventNotificationCard } from './EventNotificationCard';
 
 interface NotificationCenterProps {
   onNotificationClick?: (notification: Notification) => void;
@@ -151,7 +169,26 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
     }
   };
 
-  const getNotificationIcon = (type: string) => {
+  // Mejorada función de iconos con más tipos específicos
+  const getNotificationIcon = (type: string, priority?: string) => {
+    // Iconos específicos por tipo de contenido
+    if (type.includes('event') || type.includes('meeting')) {
+      return <EventIcon color="primary" />;
+    }
+    if (type.includes('project') || type.includes('assignment')) {
+      return <AssignmentIcon color="secondary" />;
+    }
+    if (type.includes('company') || type.includes('business')) {
+      return <BusinessIcon color="info" />;
+    }
+    if (type.includes('announcement') || type.includes('campaign')) {
+      return <AnnouncementIcon color="warning" />;
+    }
+    if (type.includes('celebration') || type.includes('achievement')) {
+      return <CelebrationIcon color="success" />;
+    }
+    
+    // Iconos por tipo de notificación
     switch (type) {
       case 'success':
         return <SuccessIcon color="success" />;
@@ -159,12 +196,19 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
         return <WarningIcon color="warning" />;
       case 'error':
         return <ErrorIcon color="error" />;
+      case 'urgent':
+        return <PriorityHighIcon color="error" />;
       default:
         return <InfoIcon color="info" />;
     }
   };
 
-  const getNotificationColor = (type: string) => {
+  const getNotificationColor = (type: string, priority?: string) => {
+    // Prioridad alta sobrescribe el tipo
+    if (priority === 'urgent' || priority === 'high') {
+      return 'error';
+    }
+    
     switch (type) {
       case 'success':
         return 'success';
@@ -172,9 +216,25 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
         return 'warning';
       case 'error':
         return 'error';
+      case 'urgent':
+        return 'error';
       default:
         return 'info';
     }
+  };
+
+  // Función para obtener el color de fondo según prioridad
+  const getNotificationBackground = (read: boolean, priority?: string) => {
+    if (!read) {
+      if (priority === 'urgent') {
+        return 'error.light';
+      }
+      if (priority === 'high') {
+        return 'warning.light';
+      }
+      return 'action.hover';
+    }
+    return 'transparent';
   };
 
   const formatDate = (dateString: string) => {
@@ -191,14 +251,50 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
     }
   };
 
+  // Función para obtener el texto de prioridad
+  const getPriorityText = (priority?: string) => {
+    switch (priority) {
+      case 'urgent':
+        return 'Urgente';
+      case 'high':
+        return 'Alta';
+      case 'medium':
+        return 'Media';
+      case 'low':
+        return 'Baja';
+      default:
+        return 'Normal';
+    }
+  };
+
   return (
     <>
       <IconButton
         color="inherit"
         onClick={handleClick}
-        sx={{ ml: 1 }}
+        sx={{ 
+          ml: 1,
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.05)',
+            backgroundColor: 'action.hover'
+          }
+        }}
       >
-        <Badge badgeContent={unreadCount} color="error">
+        <Badge 
+          badgeContent={unreadCount} 
+          color="error"
+          sx={{
+            '& .MuiBadge-badge': {
+              animation: unreadCount > 0 ? 'pulse 2s infinite' : 'none',
+              '@keyframes pulse': {
+                '0%': { transform: 'scale(1)' },
+                '50%': { transform: 'scale(1.1)' },
+                '100%': { transform: 'scale(1)' }
+              }
+            }
+          }}
+        >
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -217,31 +313,52 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
         }}
         PaperProps={{
           sx: {
-            width: 400,
-            maxHeight: 500,
-            mt: 1
+            width: 420,
+            maxHeight: 600,
+            mt: 1,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            borderRadius: 2
           }
         }}
+        TransitionComponent={Slide}
+        transitionDuration={200}
       >
         <Box sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6">
-              Notificaciones
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <NotificationsActiveIcon color="primary" />
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Notificaciones
+              </Typography>
+              {unreadCount > 0 && (
+                <Chip 
+                  label={unreadCount} 
+                  size="small" 
+                  color="error" 
+                  sx={{ ml: 1, fontWeight: 'bold' }}
+                />
+              )}
+            </Box>
             {unreadCount > 0 && (
-              <Button
-                size="small"
-                startIcon={<MarkReadIcon />}
-                onClick={handleMarkAllAsRead}
-              >
-                Marcar todas como leídas
-              </Button>
+              <Tooltip title="Marcar todas como leídas">
+                <Button
+                  size="small"
+                  startIcon={<MarkReadIcon />}
+                  onClick={handleMarkAllAsRead}
+                  sx={{ 
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': { transform: 'scale(1.05)' }
+                  }}
+                >
+                  Marcar leídas
+                </Button>
+              </Tooltip>
             )}
           </Box>
 
           {loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-              <CircularProgress size={24} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress size={32} />
             </Box>
           )}
 
@@ -254,75 +371,179 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
           {!loading && !error && (
             <>
               {notifications.length === 0 ? (
-                <Box sx={{ textAlign: 'center', py: 3 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No hay notificaciones
-                  </Typography>
-                </Box>
+                <Fade in={true} timeout={500}>
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <NotificationsNoneIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+                    <Typography variant="body2" color="text.secondary">
+                      No hay notificaciones
+                    </Typography>
+                  </Box>
+                </Fade>
               ) : (
-                <List sx={{ p: 0 }}>
-                  {notifications.map((notification, index) => (
-                    <React.Fragment key={notification.id}>
-                      <ListItem
-                        sx={{
-                          backgroundColor: notification.read ? 'transparent' : 'action.hover',
-                          '&:hover': {
-                            backgroundColor: 'action.selected'
-                          },
-                          cursor: 'pointer'
-                        }}
-                        onClick={() => handleNotificationClick(notification)}
-                      >
-                        <ListItemIcon>
-                          {getNotificationIcon(notification.type)}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  fontWeight: notification.read ? 'normal' : 'bold',
-                                  flex: 1
+                                <List sx={{ p: 0 }}>
+                  {notifications.map((notification, index) => {
+                    // Verificar si es una notificación de evento
+                    const isEventNotification = notification.title.toLowerCase().includes('evento') || 
+                                               notification.title.toLowerCase().includes('reunión') ||
+                                               notification.title.toLowerCase().includes('entrevista') ||
+                                               notification.title.toLowerCase().includes('invitación');
+                    
+                    return (
+                      <Fade in={true} timeout={300 + (index * 100)} key={notification.id}>
+                        <React.Fragment>
+                          {isEventNotification ? (
+                            // Usar componente especial para eventos
+                            <Box sx={{ px: 1, py: 0.5 }}>
+                              <EventNotificationCard
+                                notification={notification}
+                                onStatusChange={(notificationId, newStatus) => {
+                                  // Actualizar estado local si es necesario
+                                  console.log(`Notification ${notificationId} status changed to ${newStatus}`);
                                 }}
-                              >
-                                {notification.title}
-                              </Typography>
-                              <IconButton
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteNotification(notification.id);
-                                }}
-                                sx={{ ml: 1 }}
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
+                                onClose={() => handleNotificationClick(notification)}
+                              />
                             </Box>
-                          }
-                          secondary={
-                            <Box>
-                              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                {notification.message}
-                              </Typography>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Chip
-                                  label={notification.type}
-                                  size="small"
-                                  color={getNotificationColor(notification.type) as any}
-                                  variant="outlined"
-                                />
-                                <Typography variant="caption" color="text.secondary">
-                                  {formatDate(notification.created_at)}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          }
-                        />
-                      </ListItem>
-                      {index < notifications.length - 1 && <Divider />}
-                    </React.Fragment>
-                  ))}
+                          ) : (
+                            // Usar componente normal para otras notificaciones
+                            <ListItem
+                              sx={{
+                                backgroundColor: getNotificationBackground(notification.read, notification.priority),
+                                borderRadius: 1,
+                                mb: 1,
+                                transition: 'all 0.3s ease-in-out',
+                                border: notification.read ? 'none' : '2px solid',
+                                borderColor: notification.priority === 'urgent' ? 'error.main' : 
+                                            notification.priority === 'high' ? 'warning.main' : 'transparent',
+                                '&:hover': {
+                                  backgroundColor: 'action.selected',
+                                  transform: 'translateX(4px)',
+                                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                },
+                                cursor: 'pointer',
+                                position: 'relative',
+                                overflow: 'hidden',
+                                '&::before': notification.read ? {} : {
+                                  content: '""',
+                                  position: 'absolute',
+                                  left: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  width: 4,
+                                  backgroundColor: notification.priority === 'urgent' ? 'error.main' : 
+                                                notification.priority === 'high' ? 'warning.main' : 'primary.main'
+                                }
+                              }}
+                              onClick={() => handleNotificationClick(notification)}
+                            >
+                              <ListItemIcon sx={{ minWidth: 40 }}>
+                                <Zoom in={true} timeout={400 + (index * 100)}>
+                                  {getNotificationIcon(notification.type, notification.priority)}
+                                </Zoom>
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        fontWeight: notification.read ? 400 : 600,
+                                        flex: 1,
+                                        color: notification.read ? 'text.primary' : 'text.primary',
+                                        lineHeight: 1.4
+                                      }}
+                                    >
+                                      {notification.title}
+                                    </Typography>
+                                    <Tooltip title="Eliminar notificación">
+                                      <IconButton
+                                        size="small"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteNotification(notification.id);
+                                        }}
+                                        sx={{ 
+                                          ml: 1,
+                                          opacity: 0.6,
+                                          transition: 'all 0.2s ease-in-out',
+                                          '&:hover': {
+                                            opacity: 1,
+                                            transform: 'scale(1.05)',
+                                            color: 'error.main'
+                                          }
+                                        }}
+                                      >
+                                        <DeleteIcon fontSize="small" />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </Box>
+                                }
+                                secondary={
+                                  <Box sx={{ mt: 1 }}>
+                                    <Typography 
+                                      variant="body2" 
+                                      color="text.secondary" 
+                                      sx={{ 
+                                        mb: 1.5,
+                                        lineHeight: 1.5,
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden'
+                                      }}
+                                    >
+                                      {notification.message}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                        <Chip
+                                          label={notification.type}
+                                          size="small"
+                                          color={getNotificationColor(notification.type, notification.priority) as any}
+                                          variant="outlined"
+                                          sx={{ 
+                                            fontSize: '0.7rem',
+                                            height: 20,
+                                            '& .MuiChip-label': { px: 1 }
+                                          }}
+                                        />
+                                        {notification.priority && notification.priority !== 'normal' && (
+                                          <Chip
+                                            label={getPriorityText(notification.priority)}
+                                            size="small"
+                                            color={notification.priority === 'urgent' ? 'error' : 
+                                                   notification.priority === 'high' ? 'warning' : 'default'}
+                                            variant="filled"
+                                            sx={{ 
+                                              fontSize: '0.7rem',
+                                              height: 20,
+                                              '& .MuiChip-label': { px: 1 }
+                                            }}
+                                          />
+                                        )}
+                                      </Box>
+                                      <Typography 
+                                        variant="caption" 
+                                        color="text.secondary"
+                                        sx={{ 
+                                          fontSize: '0.7rem',
+                                          whiteSpace: 'nowrap'
+                                        }}
+                                      >
+                                        {formatDate(notification.created_at)}
+                                      </Typography>
+                                    </Box>
+                                  </Box>
+                                }
+                              />
+                            </ListItem>
+                          )}
+                          {index < notifications.length - 1 && (
+                            <Divider sx={{ opacity: 0.3, my: 0.5 }} />
+                          )}
+                        </React.Fragment>
+                      </Fade>
+                    );
+                  })}
                 </List>
               )}
             </>
