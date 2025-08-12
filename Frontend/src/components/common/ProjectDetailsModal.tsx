@@ -43,6 +43,7 @@ interface ProjectDetailsModalProps {
   loading?: boolean;
   showStudents?: boolean;
   userRole?: 'student' | 'company' | 'admin';
+  applicationData?: any; // Agregar datos de la aplicación original
 }
 
 const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
@@ -51,7 +52,8 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
   project,
   loading = false,
   showStudents = false,
-  userRole = 'student'
+  userRole = 'student',
+  applicationData = null
 }) => {
   const { themeMode } = useTheme();
   
@@ -65,6 +67,75 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
 
   // Get TRL level from either trl_level or trl.level
   const trlLevel = project.trl_level || (project.trl && project.trl.level) || 1;
+
+  // Función inteligente para obtener la información de la empresa
+  const getCompanyInfo = () => {
+    console.log('🔍 [getCompanyInfo] Project company_name:', project.company_name);
+    console.log('🔍 [getCompanyInfo] Project company:', project.company);
+    console.log('🔍 [getCompanyInfo] ApplicationData company:', applicationData?.company);
+    console.log('🔍 [getCompanyInfo] ApplicationData company_name:', applicationData?.company_name);
+    
+    // Función helper para extraer el nombre de la empresa
+    const extractCompanyName = (companyData: any): string | null => {
+      if (!companyData) return null;
+      
+      // Si es un string, devolverlo directamente
+      if (typeof companyData === 'string') {
+        return companyData.trim() !== '' && companyData !== 'null' && companyData !== 'undefined' 
+          ? companyData.trim() 
+          : null;
+      }
+      
+      // Si es un objeto, buscar el nombre
+      if (typeof companyData === 'object') {
+        // Prioridad 1: name
+        if (companyData.name && typeof companyData.name === 'string' && 
+            companyData.name.trim() !== '' && companyData.name !== 'null' && companyData.name !== 'undefined') {
+          return companyData.name.trim();
+        }
+        
+        // Prioridad 2: email (como fallback)
+        if (companyData.email && typeof companyData.email === 'string' && 
+            companyData.email.trim() !== '' && companyData.email !== 'null' && companyData.email !== 'undefined') {
+          return companyData.email.trim();
+        }
+      }
+      
+      return null;
+    };
+    
+    // Prioridad 1: company_name del proyecto (formato estándar)
+    const projectCompanyName = extractCompanyName(project.company_name);
+    if (projectCompanyName) {
+      console.log('🔍 [getCompanyInfo] Usando project.company_name:', projectCompanyName);
+      return projectCompanyName;
+    }
+    
+    // Prioridad 2: company de la aplicación original
+    const appCompanyName = extractCompanyName(applicationData?.company);
+    if (appCompanyName) {
+      console.log('🔍 [getCompanyInfo] Usando applicationData.company:', appCompanyName);
+      return appCompanyName;
+    }
+    
+    // Prioridad 3: company del proyecto (formato alternativo)
+    const projectCompany = extractCompanyName(project.company);
+    if (projectCompany) {
+      console.log('🔍 [getCompanyInfo] Usando project.company:', projectCompany);
+      return projectCompany;
+    }
+    
+    // Prioridad 4: company_name de la aplicación (por si acaso)
+    const appCompanyNameAlt = extractCompanyName(applicationData?.company_name);
+    if (appCompanyNameAlt) {
+      console.log('🔍 [getCompanyInfo] Usando applicationData.company_name:', appCompanyNameAlt);
+      return appCompanyNameAlt;
+    }
+    
+    // Fallback final
+    console.log('🔍 [getCompanyInfo] Usando fallback: Empresa no especificada');
+    return 'Empresa no especificada';
+  };
 
   const getStatusConfig = (status: string) => {
     const configs = {
@@ -196,7 +267,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', mt: 1.5 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'rgba(255,255,255,0.2)', px: 1.5, py: 0.5, borderRadius: 1.5 }}>
               <BusinessIcon sx={{ fontSize: 16 }} />
-              <Typography variant="body2" fontWeight={600}>{project.company_name || 'Empresa no especificada'}</Typography>
+              <Typography variant="body2" fontWeight={600}>{getCompanyInfo()}</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'rgba(255,255,255,0.2)', px: 1.5, py: 0.5, borderRadius: 1.5 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

@@ -859,6 +859,7 @@ export const MyProjects = () => {
           loading={loadingProjectDetail}
           showStudents={false}
           userRole="student"
+          applicationData={selectedProjectDetail} // Pasar el proyecto como applicationData para que se use como fallback
         />
       )}
     </Box>

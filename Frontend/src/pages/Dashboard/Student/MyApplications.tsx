@@ -605,81 +605,107 @@ export const MyApplications: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-
-          {/* Estadísticas rápidas */}
-          <Grid container spacing={3} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                p: 2,
-                bgcolor: 'rgba(255,255,255,0.1)',
-                borderRadius: 2,
-                border: '1px solid rgba(255,255,255,0.2)'
-              }}>
-                <Badge badgeContent={pendingApplications.length} color="warning">
-                  <ScheduleIcon sx={{ color: 'white', fontSize: 30 }} />
-                </Badge>
-                <Box>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
-                    {pendingApplications.length}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                    Pendientes
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                p: 2,
-                bgcolor: 'rgba(255,255,255,0.1)',
-                borderRadius: 2,
-                border: '1px solid rgba(255,255,255,0.2)'
-              }}>
-                <Badge badgeContent={acceptedApplications.length} color="success">
-                  <CheckCircleIcon sx={{ color: 'white', fontSize: 30 }} />
-                </Badge>
-                <Box>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
-                    {acceptedApplications.length}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                    Aceptadas
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                p: 2,
-                bgcolor: 'rgba(255,255,255,0.1)',
-                borderRadius: 2,
-                border: '1px solid rgba(255,255,255,0.2)'
-              }}>
-                <Badge badgeContent={rejectedApplications.length} color="error">
-                  <CancelIcon sx={{ color: 'white', fontSize: 30 }} />
-                </Badge>
-                <Box>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
-                    {rejectedApplications.length}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                    Rechazadas
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
+
+      {/* Tarjetas de estadísticas separadas */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(245, 158, 11, 0.3)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 12px 40px rgba(245, 158, 11, 0.4)',
+            }
+          }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              <Badge badgeContent={pendingApplications.length} color="warning">
+                <ScheduleIcon sx={{ color: 'white', fontSize: 40, mb: 2 }} />
+              </Badge>
+              <Typography variant="h3" fontWeight={700} sx={{ color: 'white', mb: 1 }}>
+                {pendingApplications.length}
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                Pendientes
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 12px 40px rgba(59, 130, 246, 0.4)',
+            }
+          }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              <Badge badgeContent={reviewingApplications.length} color="info">
+                <TrendingUpIcon sx={{ color: 'white', fontSize: 40, mb: 2 }} />
+              </Badge>
+              <Typography variant="h3" fontWeight={700} sx={{ color: 'white', mb: 1 }}>
+                {reviewingApplications.length}
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                En Revisión
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 12px 40px rgba(16, 185, 129, 0.4)',
+            }
+          }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              <Badge badgeContent={acceptedApplications.length} color="success">
+                <CheckCircleIcon sx={{ color: 'white', fontSize: 40, mb: 2 }} />
+              </Badge>
+              <Typography variant="h3" fontWeight={700} sx={{ color: 'white', mb: 1 }}>
+                {acceptedApplications.length}
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                Aceptadas
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            borderRadius: 3,
+            boxShadow: '0 12px 40px rgba(239, 68, 68, 0.3)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 16px 48px rgba(239, 68, 68, 0.4)',
+            }
+          }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              <Badge badgeContent={rejectedApplications.length} color="error">
+                <CancelIcon sx={{ color: 'white', fontSize: 40, mb: 2 }} />
+              </Badge>
+              <Typography variant="h3" fontWeight={700} sx={{ color: 'white', mb: 1 }}>
+                {rejectedApplications.length}
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                Rechazadas
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Filtros mejorados */}
       <Card 

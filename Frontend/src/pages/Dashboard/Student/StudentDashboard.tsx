@@ -45,21 +45,55 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 
 /**
  * 🎨 PALETA DE COLORES ESTILO POWER BI
- * Colores profesionales y accesibles para las visualizaciones de datos
+ * Colores profesionales, claros y vibrantes para mejor visibilidad
  * Cada color tiene un propósito específico en la interfaz
  */
 const powerBIColors = [
-  '#FF8C00', // Naranja principal - Color principal del sistema
-  '#9370DB', // Púrpura claro - Color secundario
-  '#FFA500', // Naranja estándar - Para elementos destacados
-  '#DDA0DD', // Púrpura claro suave - Para elementos premium
-  '#FF7F50', // Coral naranja - Para elementos importantes
-  '#BA55D3', // Púrpura medio - Para elementos de confianza
-  '#FF6347', // Tomate naranja - Para alertas
-  '#8A2BE2', // Púrpura azulado - Para elementos especiales
-  '#FF4500', // Naranja rojizo - Para elementos críticos
-  '#D8BFD8'  // Púrpura muy claro - Para elementos suaves
+  '#00D4AA', // Teal brillante - Color principal del sistema
+  '#6366F1', // Indigo vibrante - Color secundario
+  '#EF4444', // Rojo brillante - Para elementos destacados
+  '#F59E0B', // Amarillo dorado - Para elementos premium
+  '#10B981', // Verde esmeralda - Para elementos importantes
+  '#3B82F6', // Azul brillante - Para elementos de confianza
+  '#F97316', // Naranja vibrante - Para alertas
+  '#8B5CF6', // Púrpura vibrante - Para elementos especiales
+  '#06B6D4', // Cian brillante - Para elementos críticos
+  '#EC4899'  // Rosa vibrante - Para elementos suaves
 ];
+
+/**
+ * 🌍 FUNCIÓN PARA TRADUCIR MESES DEL INGLÉS AL ESPAÑOL
+ * Convierte los nombres de meses recibidos del backend en inglés a español
+ * para mostrar en la interfaz del usuario
+ */
+const translateMonthToSpanish = (month: string): string => {
+  const monthTranslations: { [key: string]: string } = {
+    'January': 'Enero',
+    'February': 'Febrero',
+    'March': 'Marzo',
+    'April': 'Abril',
+    'May': 'Mayo',
+    'June': 'Junio',
+    'July': 'Julio',
+    'August': 'Agosto',
+    'September': 'Septiembre',
+    'October': 'Octubre',
+    'November': 'Noviembre',
+    'December': 'Diciembre'
+  };
+  
+  // Buscar el mes en el objeto de traducciones
+  for (const [englishMonth, spanishMonth] of Object.entries(monthTranslations)) {
+    if (month.includes(englishMonth)) {
+      // Si el mes incluye el año (ej: "March 2025"), mantener el año
+      const year = month.replace(englishMonth, '').trim();
+      return year ? `${spanishMonth} ${year}` : spanishMonth;
+    }
+  }
+  
+  // Si no se encuentra traducción, devolver el mes original
+  return month;
+};
 
 /**
  * 🎨 ESTILOS POWER BI PARA TOOLTIPS EN TEMA CLARO
@@ -68,12 +102,12 @@ const powerBIColors = [
 const powerBITooltipStyles = {
   backgroundColor: 'rgba(255, 255, 255, 0.98)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(0, 0, 0, 0.1)',
+  border: '2px solid rgba(0, 0, 0, 0.15)',
   borderRadius: '16px',
-  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.15)',
   padding: '16px 20px',
   fontSize: '14px',
-  fontWeight: 600,
+  fontWeight: 700,
   color: '#1e293b'
 };
 
@@ -82,15 +116,15 @@ const powerBITooltipStyles = {
  * Adaptación de los estilos para el modo oscuro manteniendo la consistencia visual
  */
 const powerBITooltipDarkStyles = {
-  backgroundColor: 'rgba(15, 23, 42, 0.98)',
+  backgroundColor: 'rgba(30, 41, 59, 0.98)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
+  border: '2px solid rgba(255, 255, 255, 0.2)',
   borderRadius: '16px',
-  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2)',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)',
   padding: '16px 20px',
   fontSize: '14px',
-  fontWeight: 600,
-  color: '#f8fafc'
+  fontWeight: 700,
+  color: '#ffffff'
 };
 
 /**
@@ -369,6 +403,56 @@ export default function StudentDashboard() {
     );
   }
 
+  // Función para traducir nombres de estados del inglés al español
+  const translateChartData = (data: any[]) => {
+    if (!data || !Array.isArray(data)) return [];
+    
+    return data.map(item => ({
+      ...item,
+      name: item.name === 'reviewing' ? 'En Revisión' : 
+            item.name === 'pending' ? 'Pendiente' :
+            item.name === 'accepted' ? 'Aceptada' :
+            item.name === 'rejected' ? 'Rechazada' :
+            item.name === 'completed' ? 'Completada' :
+            item.name === 'active' ? 'Activa' :
+            item.name === 'withdrawn' ? 'Retirada' :
+            item.name
+    }));
+  };
+
+  // Datos traducidos para el gráfico circular
+  const translatedApplicationData = translateChartData(stats?.application_distribution || []);
+
+  // Componente de tooltip personalizado para el gráfico circular
+  const CustomPieTooltip = ({ active, payload, themeMode }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0];
+      return (
+        <Box
+          sx={{
+            backgroundColor: themeMode === 'dark' ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(20px)',
+            border: themeMode === 'dark' ? '2px solid rgba(255, 255, 255, 0.2)' : '2px solid rgba(0, 0, 0, 0.15)',
+            borderRadius: '16px',
+            boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)' : '0 12px 40px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.15)',
+            padding: '16px 20px',
+            fontSize: '14px',
+            fontWeight: 700,
+            color: themeMode === 'dark' ? '#ffffff' : '#1e293b'
+          }}
+        >
+          <Typography variant="body2" sx={{ color: 'inherit', fontWeight: 600 }}>
+            {data.name}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'inherit', fontWeight: 700, mt: 1 }}>
+            {data.value} aplicaciones
+          </Typography>
+        </Box>
+      );
+    }
+    return null;
+  };
+
   /**
    * 🎨 RENDERIZADO PRINCIPAL DEL DASHBOARD
    * 
@@ -532,7 +616,7 @@ export default function StudentDashboard() {
             </Typography>
             
             {/* Renderizado condicional del gráfico de dona */}
-            {stats?.application_distribution && stats.application_distribution.length > 0 ? (
+            {translatedApplicationData && translatedApplicationData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   {/* Definición de filtros para efectos visuales */}
@@ -544,7 +628,7 @@ export default function StudentDashboard() {
                   
                   {/* Componente principal del gráfico de dona */}
                   <Pie
-                    data={stats.application_distribution}
+                    data={translatedApplicationData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -555,36 +639,30 @@ export default function StudentDashboard() {
                     stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
                     strokeWidth={3}
                     filter="url(#pieShadow)"
+                    labelStyle={{
+                      fill: themeMode === 'dark' ? '#fbbf24' : '#1e293b',
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      textShadow: themeMode === 'dark' ? '3px 3px 6px rgba(0,0,0,1)' : '2px 2px 4px rgba(255,255,255,0.9)',
+                      stroke: themeMode === 'dark' ? '#000000' : '#ffffff',
+                      strokeWidth: themeMode === 'dark' ? '2px' : '1px'
+                    }}
                   >
                     {/* Celdas del gráfico con colores personalizados */}
-                    {stats.application_distribution.map((_: any, index: number) => (
+                    {translatedApplicationData.map((_: any, index: number) => (
                       <Cell 
                         key={`cell-${index}`} 
                         fill={powerBIColors[index % powerBIColors.length]}
-                        stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
-                        strokeWidth={2}
+                        stroke={themeMode === 'dark' ? '#ffffff' : '#ffffff'}
+                        strokeWidth={themeMode === 'dark' ? 3 : 2}
+                        opacity={0.9}
                       />
                     ))}
                   </Pie>
                   
                   {/* Tooltip personalizado para el gráfico */}
                   <RechartsTooltip 
-                    contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
-                    formatter={(value: any, name: any) => [
-                      `${value} aplicaciones`, 
-                      name
-                    ]}
-                  />
-                  
-                  {/* Leyenda del gráfico */}
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36}
-                    wrapperStyle={{
-                      color: themeMode === 'dark' ? '#f8fafc' : '#1e293b',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
+                    content={<CustomPieTooltip themeMode={themeMode} />}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -647,6 +725,7 @@ export default function StudentDashboard() {
                   {/* Eje X con configuración de tema */}
                   <XAxis 
                     dataKey="month" 
+                    tickFormatter={translateMonthToSpanish}
                     tick={{ 
                       fontSize: 12, 
                       fontWeight: 600,
@@ -682,7 +761,13 @@ export default function StudentDashboard() {
                   {/* Tooltip personalizado */}
                   <RechartsTooltip 
                     contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
-                    formatter={(value: any, name: any) => [value, name]}
+                    formatter={(value: any, name: any) => {
+                      const labels = {
+                        applications: '📝 Aplicaciones Enviadas',
+                        hours: '⏰ Horas Trabajadas'
+                      };
+                      return [value, labels[name as keyof typeof labels] || name];
+                    }}
                   />
                   
                   {/* Leyenda con etiquetas personalizadas */}

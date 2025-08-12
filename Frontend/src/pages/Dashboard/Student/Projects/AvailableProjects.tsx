@@ -345,6 +345,7 @@ export default function AvailableProjects() {
       onClose={handleCloseDetail} 
       project={project}
       userRole="student"
+      applicationData={project} // Pasar el proyecto como applicationData para que se use como fallback
     />
   );
 
@@ -413,77 +414,79 @@ export default function AvailableProjects() {
               </Typography>
             </Box>
           </Box>
-
-          {/* Estadísticas rápidas */}
-          <Grid container spacing={3} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                p: 2,
-                bgcolor: 'rgba(255,255,255,0.1)',
-                borderRadius: 2,
-                border: '1px solid rgba(255,255,255,0.2)'
-              }}>
-                <Badge badgeContent={filteredProjects.length} color="error">
-                  <WorkOutlineIcon sx={{ color: 'white', fontSize: 30 }} />
-                </Badge>
-                <Box>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
-                    {filteredProjects.length}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                    Proyectos Disponibles
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                p: 2,
-                bgcolor: 'rgba(255,255,255,0.1)',
-                borderRadius: 2,
-                border: '1px solid rgba(255,255,255,0.2)'
-              }}>
-                <TrendingUpIcon sx={{ color: 'white', fontSize: 30 }} />
-                <Box>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
-                    {studentApiLevel}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                    Tu Nivel API
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                p: 2,
-                bgcolor: 'rgba(255,255,255,0.1)',
-                borderRadius: 2,
-                border: '1px solid rgba(255,255,255,0.2)'
-              }}>
-                <LightbulbIcon sx={{ color: 'white', fontSize: 30 }} />
-                <Box>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: 'white' }}>
-                    {applied.length}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                    Postulaciones Enviadas
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
+
+      {/* Tarjetas de estadísticas separadas */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(245, 158, 11, 0.3)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 12px 40px rgba(245, 158, 11, 0.4)',
+            }
+          }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              <Badge badgeContent={filteredProjects.length} color="error">
+                <WorkOutlineIcon sx={{ color: 'white', fontSize: 40, mb: 2 }} />
+              </Badge>
+              <Typography variant="h3" fontWeight={700} sx={{ color: 'white', mb: 1 }}>
+                {filteredProjects.length}
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                Proyectos Disponibles
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={4}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 12px 40px rgba(59, 130, 246, 0.4)',
+            }
+          }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              <TrendingUpIcon sx={{ color: 'white', fontSize: 40, mb: 2 }} />
+              <Typography variant="h3" fontWeight={700} sx={{ color: 'white', mb: 1 }}>
+                {studentApiLevel}
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                Tu Nivel API
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={4}>
+          <Card sx={{ 
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 12px 40px rgba(16, 185, 129, 0.4)',
+            }
+          }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              <LightbulbIcon sx={{ color: 'white', fontSize: 40, mb: 2 }} />
+              <Typography variant="h3" fontWeight={700} sx={{ color: 'white', mb: 1 }}>
+                {applied.length}
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                Postulaciones Enviadas
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
