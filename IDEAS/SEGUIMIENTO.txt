@@ -6,50 +6,9 @@ admin@gmail.com                 admin123
 
 estudiantes:
 juan.perez@inacapmail.cl        Estudiante123!
-joaco.gomez@inacapmail.cl       Estudiante123!
 
 EMPRESAS:
 lucia.amaya@gmail.com           Empresa123!
 
-
-
-
-JOACO y dani : 
-
-MEJORAS DE EVENTOS Y NOTIFICACIONES
-
-- Implementar sistema de notificaciones push para eventos
-- Agregar botones de acción en las notificaciones:
-  * Botón "Asistir" 
-  * Botón "No asistir"
-  * Botón "Recordarme más tarde"
-  * Botón "Ver detalles"
-
-EL ADMIN ENVIA UNA NOTIFICAION DE TIPO "EVENTO" , 
-EL ESTUDIANTE Y LA EMPRESA LES LLEGA LA NOTIFICACION AL DARLE CLICK PARA VER DETALLES 
-LES DEBE SALIR LA TARJETA DE DETALLES PERO CON UN DISEÑO MEJOR MUY BUENO Y DEBE TENER 
-BOTONES PARA TENER ACCINES SOBRE EL EVENTO LA EMPRESA Y EL ESTUDIANTE 
-
-
-LA EMPRESA PUEDE EDITAR LA PUBLICACION , CUANDO ESTE EN PUCBLICACION 
-Y ESE ESTADO TENDRA 5 DIAR PARA PODER EDITARLO PASANSO ESE TIEMPO YA NO
-PODRA EDITARLO 
-
-LA EMPRESA NO PUEDE COMPLETAR UN PROYECTO SIN ANTES ALCANZAR A FECHA DE TERMINO ESTABLECIDA
-DEPENDIENDO EL TRL QUE TENGA TENDRA UN LAPSO SE - O + DIAS DE TERMINO ANTES DEL DIA DICHO
- 
-EXAMINAR ESTE PROBLEMA QUE FUNCINE BIEN LA LOGICA 
-ESTA MALA , UN PROYECTO TRL 1 DE 20 HORAS PODRIA DURAR 1 SEMANA POR EJMPLO 
-LAS HORAS DEBERIAN DE CALCULARSE COHERENTEMENTE PARA UNA MEJOR MANEJO DEHORAS 
-LO DEJE MAL AL TRATAR DE HACERLO RAPIDO PERO ME DI CUENTA QUE ES MAS LOGICA DE A QUE PARECE
-Mejorar validaciones en crear proyectos
-Ubicación: Frontend/src/pages/Dashboard/Company/PublishProjects.tsx
-Problema: Validaciones insuficientes
-Solución: Agregar más limitantes y validaciones
-En crear proyectos , poner mas limitantes de como poner nos datos 
-y limitar el calendario
-
-
-LA EMPRESA NO DEBE SABER QUE SON LOS TRL NUNCA NUUUUUUUNCA
 
 

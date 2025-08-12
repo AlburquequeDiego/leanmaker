@@ -267,12 +267,14 @@ def received_applications(request):
         
         # Obtener la empresa del usuario
         try:
-            company = current_user.company_profile
+            company = current_user.empresa_profile
         except Exception:
             return JsonResponse({'error': 'Perfil de empresa no encontrado'}, status=404)
         
         # Obtener aplicaciones de proyectos de la empresa
         from .models import Aplicacion
+        print(f"🔍 [BACKEND] Buscando aplicaciones para empresa: {company.company_name}")
+        
         applications = Aplicacion.objects.filter(
             project__company=company
         ).select_related(
@@ -280,6 +282,10 @@ def received_applications(request):
             'student', 
             'student__user'
         ).order_by('-applied_at')
+        
+        print(f"🔍 [BACKEND] Aplicaciones encontradas: {applications.count()}")
+        for app in applications:
+            print(f"🔍 [BACKEND] - {app.id}: {app.project.title if app.project else 'Sin proyecto'} -> {app.student.user.full_name if app.student and app.student.user else 'Sin estudiante'}")
         
         applications_data = []
         for app in applications:
@@ -359,7 +365,8 @@ def received_applications(request):
             })
         
         return JsonResponse({
-            'results': applications_data, 
+            'success': True,
+            'data': applications_data,  # Cambiar 'results' por 'data' para consistencia
             'total': applications.count()
         })
         

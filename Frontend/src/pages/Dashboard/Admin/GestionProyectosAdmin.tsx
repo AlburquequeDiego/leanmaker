@@ -58,7 +58,7 @@ interface Project {
   company_name: string;
   company_id: string;
   description: string;
-  status: 'active' | 'suspended' | 'completed' | 'cancelled';
+  status: 'activo' | 'suspendido' | 'completado' | 'eliminado' | 'publicado';
   required_api_level: number;
   required_trl_level: number;
   students_needed: number;
@@ -81,11 +81,11 @@ interface Application {
   api_level: number;
   gpa: number;
   compatibility_score: number;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pendiente' | 'aceptado' | 'rechazado';
   application_date: string;
 }
 
-export const GestionProyectosAdmin = () => {
+const GestionProyectosAdmin = () => {
   const { themeMode } = useTheme();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [actionDialog, setActionDialog] = useState(false);
@@ -102,7 +102,7 @@ export const GestionProyectosAdmin = () => {
   const [loadingProjectDetail, setLoadingProjectDetail] = useState(false);
 
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number | 'todos'>(50);
+  const [pageSize, setPageSize] = useState<number | 'ultimos' | 'todos'>(50);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
@@ -138,7 +138,10 @@ export const GestionProyectosAdmin = () => {
       if (filters.trl_level) params.append('trl_level', filters.trl_level);
       if (filters.area) params.append('area', filters.area);
 
-      const response = await apiService.get(`/api/admin/projects/?${params.toString()}`);
+      console.log('🔍 Parámetros de consulta:', params.toString());
+      console.log('🔍 Filtros aplicados:', filters);
+
+      const response: any = await apiService.get(`/api/admin/projects/?${params.toString()}`);
       
       // Mapear datos del backend al formato esperado por el frontend
       const mappedProjects = (response.results || []).map((p: any) => ({
@@ -147,7 +150,7 @@ export const GestionProyectosAdmin = () => {
         company_name: p.company_name || 'Sin empresa',
         company_id: p.company_id || '',
         description: p.description || '',
-        status: p.status || 'active',
+        status: p.status || 'activo',
         required_api_level: p.api_level || 1,
         required_trl_level: p.trl_level || 1,
         students_needed: p.max_students || 1,
@@ -175,8 +178,10 @@ export const GestionProyectosAdmin = () => {
         area: p.area
       }));
       
-      console.log('📊 Datos recibidos del backend:', response.results);
-      console.log('🔄 Proyectos mapeados:', mappedProjects);
+      // Datos procesados correctamente
+      console.log('🔍 Estados de proyectos recibidos:', mappedProjects.map(p => ({ id: p.id, title: p.title, status: p.status })));
+      console.log('🔍 Datos completos del primer proyecto:', mappedProjects[0] || 'No hay proyectos');
+      console.log('🔍 Total de proyectos:', mappedProjects.length);
       
       setProjects(mappedProjects);
       setTotalCount(response.count || 0);
@@ -188,9 +193,7 @@ export const GestionProyectosAdmin = () => {
     setLoading(false);
   };
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+  // Función eliminada - no se usa en este componente
 
   const handleAction = (project: Project, type: 'edit' | 'suspend' | 'delete' | 'view_students') => {
     setSelectedProject(project);
@@ -211,7 +214,7 @@ export const GestionProyectosAdmin = () => {
     
     try {
       // Obtener detalles completos del proyecto desde el backend
-      const response = await apiService.get(`/api/projects/${project.id}/`);
+      const response: any = await apiService.get(`/api/projects/${project.id}/`);
       setSelectedProjectDetail(response.data || response);
     } catch (error) {
       console.error('Error obteniendo detalles del proyecto:', error);
@@ -236,7 +239,7 @@ export const GestionProyectosAdmin = () => {
       // Endpoint 1: participants (participante activo del proyecto)
       try {
         response = await apiService.get(`/api/projects/${projectId}/participants/`);
-        console.log('📊 Respuesta del endpoint participants:', response);
+        // Respuesta del endpoint participants procesada
         
         if (response.participantes && response.participantes.length > 0) {
           student = response.participantes[0]; // Solo el primer participante
@@ -255,7 +258,7 @@ export const GestionProyectosAdmin = () => {
       if (!student) {
         try {
           response = await apiService.get(`/api/projects/${projectId}/`);
-          console.log('📊 Respuesta del endpoint project detail:', response);
+          // Respuesta del endpoint project detail procesada
           
           if (response.estudiantes && response.estudiantes.length > 0) {
             student = response.estudiantes[0];
@@ -273,7 +276,7 @@ export const GestionProyectosAdmin = () => {
       if (!student) {
         try {
           response = await apiService.get(`/api/applications/`);
-          console.log('📊 Respuesta del endpoint applications:', response);
+          // Respuesta del endpoint applications procesada
           
           // Filtrar aplicaciones para este proyecto específico
           let projectApplications = [];
@@ -285,7 +288,7 @@ export const GestionProyectosAdmin = () => {
             projectApplications = response.filter((app: any) => app.project_id === projectId);
           }
           
-          console.log('📊 Aplicaciones para este proyecto:', projectApplications);
+          // Aplicaciones para este proyecto procesadas
           
           // Obtener la primera aplicación aceptada
           const acceptedApplication = projectApplications.find((app: any) => 
@@ -294,8 +297,8 @@ export const GestionProyectosAdmin = () => {
           
           if (acceptedApplication) {
             try {
-              const appDetail = await apiService.get(`/api/applications/${acceptedApplication.id}/`);
-              console.log('📊 Detalle de aplicación:', appDetail);
+              const appDetail: any = await apiService.get(`/api/applications/${acceptedApplication.id}/`);
+              // Detalle de aplicación procesado
               
               if (appDetail.student) {
                 student = {
@@ -358,24 +361,39 @@ export const GestionProyectosAdmin = () => {
 
   // Reemplazar getStatusText y getStatusColor para que usen español y colores llamativos
   const getStatusText = (status: string) => {
+    // Debug: mostrar el estado que llega del backend
+    console.log('🔍 Estado del proyecto recibido:', status);
+    
     switch (status) {
       case 'published':
+      case 'publicado':
         return 'Publicado';
       case 'active':
+      case 'activo':
         return 'Activo';
       case 'completed':
+      case 'completado':
         return 'Completado';
       case 'pending':
+      case 'pendiente':
         return 'Pendiente';
       case 'accepted':
+      case 'aceptado':
         return 'Aceptado';
       case 'rejected':
+      case 'rechazado':
         return 'Rechazado';
       case 'cancelled':
+      case 'eliminado':
+      case 'deleted':
+      case 'closed':
+      case 'terminated':
         return 'Eliminado';
       case 'suspended':
+      case 'suspendido':
         return 'Suspendido';
       default:
+        console.log('⚠️ Estado no reconocido:', status);
         return status;
     }
   };
@@ -383,21 +401,32 @@ export const GestionProyectosAdmin = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'published':
+      case 'publicado':
         return 'info'; // Azul
+      case 'suspended':
+      case 'suspendido':
+        return 'warning'; // Amarillo
       case 'active':
+      case 'activo':
         return 'success'; // Verde
       case 'completed':
+      case 'completado':
         return 'primary'; // Azul fuerte
       case 'pending':
+      case 'pendiente':
         return 'warning'; // Amarillo
       case 'accepted':
+      case 'aceptado':
         return 'success'; // Verde
       case 'rejected':
+      case 'rechazado':
         return 'error'; // Rojo
       case 'cancelled':
+      case 'eliminado':
+      case 'deleted':
+      case 'closed':
+      case 'terminated':
         return 'error'; // Rojo
-      case 'suspended':
-        return 'warning'; // Amarillo
       default:
         return 'default';
     }
@@ -406,20 +435,31 @@ export const GestionProyectosAdmin = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
+      case 'pendiente':
         return <ScheduleIcon />;
       case 'accepted':
+      case 'aceptado':
         return <CheckCircleIcon />;
       case 'rejected':
+      case 'rechazado':
         return <CancelIcon />;
       case 'completed':
+      case 'completado':
         return <TrendingUpIcon />;
       case 'active':
+      case 'activo':
         return <CheckCircleIcon />;
       case 'published':
+      case 'publicado':
         return <ScheduleIcon />;
       case 'cancelled':
+      case 'eliminado':
+      case 'deleted':
+      case 'closed':
+      case 'terminated':
         return <CancelIcon />;
       case 'suspended':
+      case 'suspendido':
         return <ScheduleIcon />;
       default:
         return <AssignmentIcon />;
@@ -546,10 +586,11 @@ export const GestionProyectosAdmin = () => {
       label: 'Estado',
       type: 'select' as const,
       options: [
-        { value: 'active', label: 'Activo' },
-        { value: 'suspended', label: 'Suspendido' },
-        { value: 'completed', label: 'Completado' },
-        { value: 'cancelled', label: 'Eliminados' }
+        { value: 'activo', label: 'Activo' },
+        { value: 'suspendido', label: 'Suspendido' },
+        { value: 'completado', label: 'Completado' },
+        { value: 'eliminado', label: 'Eliminado' },
+        { value: 'deleted', label: 'Eliminado' }
       ]
     },
     {
@@ -571,6 +612,7 @@ export const GestionProyectosAdmin = () => {
   ];
 
   const handleFilterChange = (newFilters: any) => {
+    console.log('🔍 Filtros aplicados:', newFilters);
     setFilters(newFilters);
     setCurrentPage(1); // Resetear a la primera página
   };
@@ -628,7 +670,7 @@ export const GestionProyectosAdmin = () => {
           </IconButton>
         </span>
       </Tooltip>
-      {row.status === 'active' && (
+      {(row.status === 'activo') && (
         <Tooltip title="Suspender">
           <span>
             <IconButton
@@ -734,144 +776,308 @@ export const GestionProyectosAdmin = () => {
         </CardContent>
       </Card>
 
-      {/* Tarjetas de estadísticas */}
-      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+      {/* 5 tarjetas estáticas - Tamaño fijo y sin responsive */}
+      <Box sx={{ 
+        display: 'flex', 
+        gap: 3, 
+        mb: 4,
+        justifyContent: 'center',
+        flexWrap: 'nowrap',
+        overflowX: 'auto',
+        '&::-webkit-scrollbar': {
+          height: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'rgba(0, 0, 0, 0.1)',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: 'rgba(0, 0, 0, 0.3)',
+          borderRadius: '4px',
+        }
+      }}>
+        {/* Tarjeta 1: Total Proyectos */}
         <Card sx={{ 
-          minWidth: 200, 
-          flex: '1 1 200px',
+          height: 200,
+          width: 280,
+          flexShrink: 0,
           background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
-          boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)',
-          borderRadius: 3,
+          boxShadow: '0 12px 35px rgba(78, 205, 196, 0.4)',
+          borderRadius: 4,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}>
-          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
-                  Total Proyectos
-                </Typography>
-                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
-                  {projects.length}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
-                  Registrados en la plataforma
-                </Typography>
-              </Box>
-              <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                borderRadius: 2, 
-                p: 1.5,
-                backdropFilter: 'blur(10px)'
-              }}>
-                <WorkIcon sx={{ color: 'white', fontSize: 32 }} />
-              </Box>
-            </Box>
+          <CardContent sx={{ 
+            p: 4, 
+            textAlign: 'center',
+            position: 'relative', 
+            zIndex: 2,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+
+            <Typography variant="h3" sx={{ 
+              color: 'white', 
+              fontWeight: 800, 
+              mb: 1,
+              fontSize: '3.5rem',
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+              {projects.length || 0}
+            </Typography>
+            <Typography variant="h6" sx={{ 
+              color: 'white', 
+              fontWeight: 600, 
+              mb: 1,
+              fontSize: '1.1rem'
+            }}>
+              Total Proyectos
+            </Typography>
+            <Typography variant="body2" sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              fontSize: '0.9rem',
+              fontWeight: 500
+            }}>
+              Registrados en la plataforma
+            </Typography>
           </CardContent>
         </Card>
 
+        {/* Tarjeta 2: Proyectos Activos */}
         <Card sx={{ 
-          minWidth: 200, 
-          flex: '1 1 200px',
+          height: 200,
+          width: 280,
+          flexShrink: 0,
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-          borderRadius: 3,
+          boxShadow: '0 12px 35px rgba(102, 126, 234, 0.4)',
+          borderRadius: 4,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}>
-          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
-                  Proyectos Activos
-                </Typography>
-                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
-                  {projects.filter(p => p.status === 'active' || p.status === 'published').length}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
-                  En desarrollo
-                </Typography>
-              </Box>
-              <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                borderRadius: 2, 
-                p: 1.5,
-                backdropFilter: 'blur(10px)'
-              }}>
-                <CheckCircleIcon sx={{ color: 'white', fontSize: 32 }} />
-              </Box>
-            </Box>
+          <CardContent sx={{ 
+            p: 4, 
+            textAlign: 'center',
+            position: 'relative', 
+            zIndex: 2,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+
+            <Typography variant="h3" sx={{ 
+              color: 'white', 
+              fontWeight: 800, 
+              mb: 1,
+              fontSize: '3.5rem',
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+              {projects.filter(p => 
+                p.status === 'activo' || 
+                p.status === 'active' || 
+                p.status === 'publicado' || 
+                p.status === 'published' || 
+                p.status === 'open' || 
+                p.status === 'in-progress'
+              ).length}
+            </Typography>
+            <Typography variant="h6" sx={{ 
+              color: 'white', 
+              fontWeight: 600, 
+              mb: 1,
+              fontSize: '1.1rem'
+            }}>
+              Proyectos Activos
+            </Typography>
+            <Typography variant="body2" sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              fontSize: '0.9rem',
+              fontWeight: 500
+            }}>
+              En desarrollo
+            </Typography>
           </CardContent>
         </Card>
 
+        {/* Tarjeta 3: Total Aplicaciones */}
         <Card sx={{ 
-          minWidth: 200, 
-          flex: '1 1 200px',
+          height: 200,
+          width: '100%',
+          background: 'linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%)',
+          boxShadow: '0 12px 35px rgba(155, 89, 182, 0.4)',
+          borderRadius: 4,
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <CardContent sx={{ 
+            p: 4, 
+            textAlign: 'center',
+            position: 'relative', 
+            zIndex: 2,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+
+            <Typography variant="h3" sx={{ 
+              color: 'white', 
+              fontWeight: 800, 
+              mb: 1,
+              fontSize: '3.5rem',
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+              {projects.reduce((sum, project) => sum + (project.applications_count || 0), 0)}
+            </Typography>
+            <Typography variant="h6" sx={{ 
+              color: 'white', 
+              fontWeight: 600, 
+              mb: 1,
+              fontSize: '1.1rem'
+            }}>
+              Total Aplicaciones
+            </Typography>
+            <Typography variant="body2" sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              fontSize: '0.9rem',
+              fontWeight: 500
+            }}>
+              Solicitudes recibidas
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* Tarjeta 4: Proyectos Completados */}
+        <Card sx={{ 
+          height: 200,
+          width: '100%',
           background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
-          boxShadow: '0 8px 25px rgba(255, 107, 107, 0.3)',
-          borderRadius: 3,
+          boxShadow: '0 12px 35px rgba(255, 107, 107, 0.4)',
+          borderRadius: 4,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}>
-          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
-                  Completados
-                </Typography>
-                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
-                  {projects.filter(p => p.status === 'completed').length}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
-                  Proyectos finalizados
-                </Typography>
-              </Box>
-              <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                borderRadius: 2, 
-                p: 1.5,
-                backdropFilter: 'blur(10px)'
-              }}>
-                <TrendingUpIcon sx={{ color: 'white', fontSize: 32 }} />
-              </Box>
-            </Box>
+          <CardContent sx={{ 
+            p: 4, 
+            textAlign: 'center',
+            position: 'relative', 
+            zIndex: 2,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+
+            <Typography variant="h3" sx={{ 
+              color: 'white', 
+              fontWeight: 800, 
+              mb: 1,
+              fontSize: '3.5rem',
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+              {projects.filter(p => 
+                p.status === 'completado' || 
+                p.status === 'completed'
+              ).length}
+            </Typography>
+            <Typography variant="h6" sx={{ 
+              color: 'white', 
+              fontWeight: 600, 
+              mb: 1,
+              fontSize: '1.1rem'
+            }}>
+              Completados
+            </Typography>
+            <Typography variant="body2" sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              fontSize: '0.9rem',
+              fontWeight: 500
+            }}>
+              Proyectos finalizados
+            </Typography>
           </CardContent>
         </Card>
 
+        {/* Tarjeta 5: Proyectos Inactivos */}
         <Card sx={{ 
-          minWidth: 200, 
-          flex: '1 1 200px',
-          background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
-          boxShadow: '0 8px 25px rgba(243, 156, 18, 0.3)',
-          borderRadius: 3,
+          height: 200,
+          width: '100%',
+          background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+          boxShadow: '0 12px 35px rgba(231, 76, 60, 0.4)',
+          borderRadius: 4,
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}>
-          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
-                  Total Horas
-                </Typography>
-                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
-                  {projects.reduce((sum, project) => sum + project.hours_offered, 0)}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
-                  Horas ofrecidas
-                </Typography>
-              </Box>
-              <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                borderRadius: 2, 
-                p: 1.5,
-                backdropFilter: 'blur(10px)'
-              }}>
-                <TimerIcon sx={{ color: 'white', fontSize: 32 }} />
-              </Box>
-            </Box>
+          <CardContent sx={{ 
+            p: 4, 
+            textAlign: 'center',
+            position: 'relative', 
+            zIndex: 2,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+
+            <Typography variant="h3" sx={{ 
+              color: 'white', 
+              fontWeight: 800, 
+              mb: 1,
+              fontSize: '3.5rem',
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+              {projects.filter(p => 
+                p.status === 'eliminado' || 
+                p.status === 'deleted' || 
+                p.status === 'cancelled' || 
+                p.status === 'closed' || 
+                p.status === 'terminated' || 
+                p.status === 'suspendido' || 
+                p.status === 'suspended'
+              ).length}
+            </Typography>
+            <Typography variant="h6" sx={{ 
+              color: 'white', 
+              fontWeight: 600, 
+              mb: 1,
+              fontSize: '1.1rem'
+            }}>
+              Inactivos
+            </Typography>
+            <Typography variant="body2" sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              fontSize: '0.9rem',
+              fontWeight: 500
+            }}>
+              Eliminados/Suspendidos
+            </Typography>
           </CardContent>
         </Card>
       </Box>
+      
+
 
       {/* Filtros y tabla de proyectos con diseño mejorado */}
       <Card sx={{ 
@@ -926,6 +1132,25 @@ export const GestionProyectosAdmin = () => {
 
           {/* Filtros mejorados */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                setFilters({});
+                setCurrentPage(1);
+              }}
+              sx={{ 
+                borderRadius: 2,
+                borderColor: '#667eea',
+                color: '#667eea',
+                '&:hover': {
+                  borderColor: '#5a6fd8',
+                  backgroundColor: 'rgba(102, 126, 234, 0.04)',
+                }
+              }}
+            >
+              Limpiar Filtros
+            </Button>
             <TextField
               label="Buscar por título o empresa"
               variant="outlined"
@@ -956,11 +1181,11 @@ export const GestionProyectosAdmin = () => {
                 sx={{ borderRadius: 2 }}
               >
                 <MenuItem value="">Todos</MenuItem>
-                <MenuItem value="active">Activo</MenuItem>
-                <MenuItem value="published">Publicado</MenuItem>
-                <MenuItem value="completed">Completado</MenuItem>
-                <MenuItem value="suspended">Suspendido</MenuItem>
-                <MenuItem value="cancelled">Eliminado</MenuItem>
+                <MenuItem value="activo">Activo</MenuItem>
+                <MenuItem value="publicado">Publicado</MenuItem>
+                <MenuItem value="completado">Completado</MenuItem>
+                <MenuItem value="suspendido">Suspendido</MenuItem>
+                <MenuItem value="eliminado">Eliminado</MenuItem>
               </Select>
             </FormControl>
             <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
@@ -983,6 +1208,21 @@ export const GestionProyectosAdmin = () => {
                 <MenuItem value="Servicios y Atención al Cliente">Servicios y Atención al Cliente</MenuItem>
                 <MenuItem value="Sostenibilidad y Medio Ambiente">Sostenibilidad y Medio Ambiente</MenuItem>
                 <MenuItem value="Otro">Otro</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
+              <InputLabel>Nivel API</InputLabel>
+              <Select
+                label="Nivel API"
+                value={filters.api_level || ''}
+                onChange={e => handleFilterChange({ ...filters, api_level: e.target.value })}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="1">API 1</MenuItem>
+                <MenuItem value="2">API 2</MenuItem>
+                <MenuItem value="3">API 3</MenuItem>
+                <MenuItem value="4">API 4</MenuItem>
               </Select>
             </FormControl>
             <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
@@ -1016,12 +1256,12 @@ export const GestionProyectosAdmin = () => {
             onPageSizeChange={handlePageSizeChange}
             totalCount={totalCount}
             currentPage={currentPage}
-            pageSize={pageSize}
+            pageSize={typeof pageSize === 'number' ? pageSize : undefined}
             showPagination={false}
             showPageSizeSelector={false}
             actions={actions}
             emptyMessage="No hay proyectos registrados"
-            pageSizeOptions={[50, 100, 200, 500, 1000, 'todos']}
+            pageSizeOptions={[50, 100, 200, 500, 1000]}
           />
         </CardContent>
       </Card>

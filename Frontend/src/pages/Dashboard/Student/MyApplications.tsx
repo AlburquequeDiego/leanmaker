@@ -72,9 +72,9 @@ interface Application {
   current_students?: string;
   trl_level?: string;
   api_level?: string;
-  area?: string; // <-- Agregado
+  area?: string;
   objetivo?: string;
-  project_id?: string; // ID del proyecto
+  project_id?: string;
 }
 
 interface FilterOptions {
@@ -85,7 +85,7 @@ interface FilterOptions {
   nivel?: string;
   duracion?: string;
   tecnologias?: string[];
-  estado?: string; // <-- Agregado
+  estado?: string;
 }
 
 // Opciones de filtros
@@ -107,14 +107,13 @@ const niveles = ['Básico', 'Intermedio', 'Avanzado'];
 const duraciones = ['1 mes', '3 meses', '6 meses', '12 meses'];
 const tecnologias = ['React', 'Node.js', 'Python', 'Java', 'Figma'];
 
-// Componente de filtros (ahora separado y tipado)
+// Componente de filtros
 interface FiltrosProyectosDisponiblesProps {
   onFilter?: (filters: FilterOptions) => void;
   historyLimit: number;
   setHistoryLimit: (limit: number) => void;
 }
 
-// Componente de filtros mejorado
 const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter, historyLimit, setHistoryLimit }) => {
   const { themeMode } = useTheme();
   const [busqueda, setBusqueda] = useState('');
@@ -316,7 +315,7 @@ const adaptApplicationData = (backendData: any): Application => {
     api_level: backendData.api_level || '',
     area: backendData.area || '',
     objetivo: backendData.objetivo || '',
-    project_id: backendData.project || undefined, // El campo project ahora es directamente el ID
+    project_id: backendData.project || undefined,
   };
   
   console.log('🔍 [Frontend] Datos adaptados:', adapted);
@@ -327,9 +326,8 @@ const adaptApplicationData = (backendData: any): Application => {
 export const MyApplications: React.FC = () => {
   const { themeMode } = useTheme();
   const [applications, setApplications] = useState<Application[]>([]);
-
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
-  const [historyLimit, setHistoryLimit] = useState(15); // Por defecto 15
+  const [historyLimit, setHistoryLimit] = useState(15);
   
   // Estados para el modal de detalles del proyecto
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -340,7 +338,6 @@ export const MyApplications: React.FC = () => {
     async function fetchApplications() {
       try {
         console.log('🔍 [Frontend] Iniciando fetch de aplicaciones...');
-        // Forzar recarga sin caché
         const timestamp = Date.now();
         const data = await apiService.get(`/api/applications/my_applications/?t=${timestamp}&nocache=true`);
         console.log('🔍 [Frontend] Datos recibidos del backend:', data);
@@ -391,7 +388,6 @@ export const MyApplications: React.FC = () => {
     
     setLoadingProjectDetail(true);
     try {
-      // Obtener los detalles completos del proyecto desde la API
       console.log('🔍 [MyApplications] Haciendo llamada a API para obtener detalles del proyecto');
       const projectData = await apiService.get(`/api/projects/${application.project_id}/`);
       console.log('🔍 [MyApplications] Datos del proyecto recibidos:', projectData);
@@ -444,7 +440,7 @@ export const MyApplications: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'secondary'; // Morado
+        return 'secondary';
       case 'pending':
       case 'reviewing':
         return 'warning';
@@ -453,7 +449,7 @@ export const MyApplications: React.FC = () => {
       case 'rejected':
         return 'error';
       case 'completed':
-        return 'primary'; // Azul
+        return 'primary';
       default:
         return 'default';
     }
@@ -508,13 +504,39 @@ export const MyApplications: React.FC = () => {
 
   // Agregar tabs visuales:
   const [selectedTab, setSelectedTab] = useState(0);
+  const [showLatest, setShowLatest] = useState(10);
 
   const tabContents = [
-    { label: `Todas (${filteredApplications.length})`, data: filteredApplications },
-    { label: `Pendientes (${pendingApplications.length})`, data: pendingApplications },
-    { label: `En Revisión (${reviewingApplications.length})`, data: reviewingApplications },
-    { label: `Aceptadas (${acceptedApplications.length})`, data: acceptedApplications },
-    { label: `Rechazadas (${rejectedApplications.length})`, data: rejectedApplications },
+    { 
+      label: `Todas (${filteredApplications.length})`, 
+      data: filteredApplications,
+      color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      icon: <AssignmentIcon />
+    },
+    { 
+      label: `Pendientes (${pendingApplications.length})`, 
+      data: pendingApplications,
+      color: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+      icon: <ScheduleIcon />
+    },
+    { 
+      label: `En Revisión (${reviewingApplications.length})`, 
+      data: reviewingApplications,
+      color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+      icon: <TrendingUpIcon />
+    },
+    { 
+      label: `Aceptadas (${acceptedApplications.length})`, 
+      data: acceptedApplications,
+      color: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      icon: <CheckCircleIcon />
+    },
+    { 
+      label: `Rechazadas (${rejectedApplications.length})`, 
+      data: rejectedApplications,
+      color: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      icon: <CancelIcon />
+    },
   ];
 
   return (
@@ -699,28 +721,93 @@ export const MyApplications: React.FC = () => {
         borderRadius: 2,
         p: 1
       }}>
-        <Tabs 
-          value={selectedTab} 
-          onChange={(_, v) => setSelectedTab(v)}
-          sx={{
-            '& .MuiTab-root': {
-              fontWeight: 600,
-              borderRadius: 1.5,
-              mx: 0.5,
-              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
-              '&.Mui-selected': {
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Tabs 
+            value={selectedTab} 
+            onChange={(_, v) => setSelectedTab(v)}
+            sx={{
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                borderRadius: 2,
+                mx: 0.5,
+                minHeight: 56,
+                textTransform: 'none',
+                fontSize: '0.95rem',
+                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  background: themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(102, 126, 234, 0.05)',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#667eea',
+                }
+              },
+              '& .MuiTabs-indicator': {
+                height: 4,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                boxShadow: '0 2px 8px rgba(96, 165, 250, 0.4)'
               }
-            }
-          }}
-        >
-          {tabContents.map((tab, idx) => (
-            <Tab key={tab.label} label={tab.label} />
-          ))}
-        </Tabs>
+            }}
+          >
+            {tabContents.map((tab, idx) => (
+              <Tab 
+                key={tab.label} 
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {tab.icon}
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {tab.label}
+                    </Typography>
+                  </Box>
+                } 
+                sx={{
+                  '&.Mui-selected': {
+                    background: tab.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.4)',
+                    transform: 'translateY(-2px)',
+                  }
+                }}
+              />
+            ))}
+          </Tabs>
+          
+          {/* Selector de cantidad */}
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel id="cantidad-label" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>
+              Mostrar
+            </InputLabel>
+            <Select
+              labelId="cantidad-label"
+              value={showLatest}
+              label="Mostrar"
+              onChange={(e) => setShowLatest(Number(e.target.value))}
+              sx={{ 
+                borderRadius: 2,
+                bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db'
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                }
+              }}
+            >
+              <MenuItem value={5}>Últimos 5</MenuItem>
+              <MenuItem value={10}>Últimos 10</MenuItem>
+              <MenuItem value={25}>Últimos 25</MenuItem>
+              <MenuItem value={50}>Últimos 50</MenuItem>
+              <MenuItem value={100}>Últimos 100</MenuItem>
+              <MenuItem value={-1}>Todas</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
+
+
 
       {/* Tabla mejorada */}
       {tabContents[selectedTab].data.length === 0 ? (
@@ -766,7 +853,7 @@ export const MyApplications: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {(historyLimit === -1 ? tabContents[selectedTab].data : tabContents[selectedTab].data.slice(0, historyLimit)).map((application) => (
+              {(showLatest === -1 ? tabContents[selectedTab].data : tabContents[selectedTab].data.slice(0, showLatest)).map((application) => (
                 <TableRow 
                   key={application.id} 
                   hover
@@ -867,8 +954,6 @@ export const MyApplications: React.FC = () => {
         </TableContainer>
       )}
 
-
-
       {/* Modal de detalles del proyecto */}
       <ProjectDetailsModal
         open={detailModalOpen}
@@ -879,7 +964,5 @@ export const MyApplications: React.FC = () => {
     </Box>
   );
 };
-
-
 
 export default MyApplications; 

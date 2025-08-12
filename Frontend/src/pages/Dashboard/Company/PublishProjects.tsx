@@ -11,80 +11,17 @@ const steps = ['Información Básica', 'Etapa y Duración', 'General', 'Resumen'
 const trlToApi = { 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 4 } as const;
 const apiToHours = { 1: 20, 2: 40, 3: 80, 4: 160 } as const;
 
-// Nuevos límites de horas por TRL con validaciones mejoradas
+// Nuevos límites de horas por TRL
 const TRL_HOURS_LIMITS = {
-  1: { 
-    min: 20, 
-    max: 40, 
-    minHoursPerWeek: 5,
-    maxHoursPerWeek: 15,
-    description: 'Opción 1-2: Proyectos en fase de idea',
-    warning: 'Proyectos de baja complejidad - horas limitadas para evitar sobrecarga'
-  },
-  2: { 
-    min: 20, 
-    max: 40, 
-    minHoursPerWeek: 5,
-    maxHoursPerWeek: 15,
-    description: 'Opción 1-2: Proyectos en fase de idea',
-    warning: 'Proyectos de baja complejidad - horas limitadas para evitar sobrecarga'
-  },
-  3: { 
-    min: 40, 
-    max: 80, 
-    minHoursPerWeek: 8,
-    maxHoursPerWeek: 20,
-    description: 'Opción 3-4: Prototipos básicos',
-    warning: 'Proyectos de complejidad media - distribución equilibrada recomendada'
-  },
-  4: { 
-    min: 40, 
-    max: 80, 
-    minHoursPerWeek: 8,
-    maxHoursPerWeek: 20,
-    description: 'Opción 3-4: Prototipos básicos',
-    warning: 'Proyectos de complejidad media - distribución equilibrada recomendada'
-  },
-  5: { 
-    min: 80, 
-    max: 160, 
-    minHoursPerWeek: 10,
-    maxHoursPerWeek: 25,
-    description: 'Opción 5-6: Prototipos avanzados',
-    warning: 'Proyectos de alta complejidad - requiere mayor dedicación'
-  },
-  6: { 
-    min: 80, 
-    max: 160, 
-    minHoursPerWeek: 10,
-    maxHoursPerWeek: 25,
-    description: 'Opción 5-6: Prototipos avanzados',
-    warning: 'Proyectos de alta complejidad - requiere mayor dedicación'
-  },
-  7: { 
-    min: 160, 
-    max: 350, 
-    minHoursPerWeek: 15,
-    maxHoursPerWeek: 35,
-    description: 'Opción 7-9: Productos desarrollados',
-    warning: 'Proyectos de máxima complejidad - máximo 35 horas por semana'
-  },
-  8: { 
-    min: 160, 
-    max: 350, 
-    minHoursPerWeek: 15,
-    maxHoursPerWeek: 35,
-    description: 'Opción 7-9: Productos desarrollados',
-    warning: 'Proyectos de máxima complejidad - máximo 35 horas por semana'
-  },
-  9: { 
-    min: 160, 
-    max: 350, 
-    minHoursPerWeek: 15,
-    maxHoursPerWeek: 35,
-    description: 'Opción 7-9: Productos desarrollados',
-    warning: 'Proyectos de máxima complejidad - máximo 35 horas por semana'
-  },
+  1: { min: 20, max: 40, description: 'Opción 1-2: Proyectos en fase de idea' },
+  2: { min: 20, max: 40, description: 'Opción 1-2: Proyectos en fase de idea' },
+  3: { min: 40, max: 80, description: 'Opción 3-4: Prototipos básicos' },
+  4: { min: 40, max: 80, description: 'Opción 3-4: Prototipos básicos' },
+  5: { min: 80, max: 160, description: 'Opción 5-6: Prototipos avanzados' },
+  6: { min: 80, max: 160, description: 'Opción 5-6: Prototipos avanzados' },
+  7: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+  8: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+  9: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
 } as const;
 
 const trlOptions = [
@@ -144,13 +81,12 @@ export const PublishProjects: React.FC = () => {
     studentsNeeded: 1,
     meses: '',
     trl: 1,
-    horas: '' // aseguramos que horas siempre sea string
+    horas: '' // <-- aseguramos que horas siempre sea string
   });
   const [trlSelected, setTrlSelected] = useState(1);
   const [hoursError, setHoursError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [dateError, setDateError] = useState<string | null>(null);
   
   // Usar los nuevos límites de TRL
   const trlKey = trlSelected as keyof typeof TRL_HOURS_LIMITS;
@@ -228,87 +164,6 @@ export const PublishProjects: React.FC = () => {
     return meses.toString();
   };
 
-  // Función para validar fechas según límites de TRL
-  const validarFechasSegunTRL = (fechaInicio: string, fechaFin: string, horasTotales: number) => {
-    if (!fechaInicio || !fechaFin || !horasTotales) return { valido: true, mensaje: '' };
-    
-    const inicio = new Date(fechaInicio);
-    const fin = new Date(fechaFin);
-    
-    if (fin <= inicio) {
-      return { valido: false, mensaje: 'La fecha de fin debe ser posterior a la fecha de inicio.' };
-    }
-    
-    const diferenciaMs = fin.getTime() - inicio.getTime();
-    const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
-    const semanas = Math.max(1, Math.ceil(diferenciaDias / 7)); // Mínimo 1 semana
-    
-    const horasPorSemana = Math.ceil(horasTotales / semanas);
-    const trlKey = trlSelected as keyof typeof TRL_HOURS_LIMITS;
-    const trlLimits = TRL_HOURS_LIMITS[trlKey];
-    
-    // Validar horas por semana según TRL
-    if (horasPorSemana > trlLimits.maxHoursPerWeek) {
-      return { 
-        valido: false, 
-        mensaje: `⚠️ **EXCESO DE HORAS**: ${horasPorSemana}h/semana excede el máximo de ${trlLimits.maxHoursPerWeek}h para TRL ${trlSelected}. Considera extender la duración del proyecto.` 
-      };
-    }
-    
-    if (horasPorSemana < trlLimits.minHoursPerWeek) {
-      return { 
-        valido: false, 
-        mensaje: `⚠️ **HORAS INSUFICIENTES**: ${horasPorSemana}h/semana es menor al mínimo de ${trlLimits.minHoursPerWeek}h para TRL ${trlSelected}. Considera reducir la duración del proyecto.` 
-      };
-    }
-    
-    // Validar límite general de 35 horas por semana
-    if (horasPorSemana > 35) {
-      return { 
-        valido: false, 
-        mensaje: `🚨 **LÍMITE MÁXIMO EXCEDIDO**: ${horasPorSemana}h/semana excede el límite general de 35h. Esto puede afectar el rendimiento académico del estudiante.` 
-      };
-    }
-    
-    return { valido: true, mensaje: '' };
-  };
-
-  // Función para calcular la fecha máxima permitida según TRL
-  const calcularFechaMaximaPermitida = (fechaInicio: string, horasTotales: number) => {
-    if (!fechaInicio || !horasTotales) return '';
-    
-    const trlKey = trlSelected as keyof typeof TRL_HOURS_LIMITS;
-    const trlLimits = TRL_HOURS_LIMITS[trlKey];
-    const maxHorasPorSemana = Math.min(trlLimits.maxHoursPerWeek, 35); // Respetar el límite general
-    
-    const semanasMinimas = Math.max(1, Math.ceil(horasTotales / maxHorasPorSemana));
-    const diasMinimos = semanasMinimas * 7;
-    
-    const inicio = new Date(fechaInicio);
-    const fechaMaxima = new Date(inicio);
-    fechaMaxima.setDate(fechaMaxima.getDate() + diasMinimos);
-    
-    return fechaMaxima.toISOString().split('T')[0];
-  };
-
-  // Función para calcular la fecha mínima permitida según TRL
-  const calcularFechaMinimaPermitida = (fechaInicio: string, horasTotales: number) => {
-    if (!fechaInicio || !horasTotales) return '';
-    
-    const trlKey = trlSelected as keyof typeof TRL_HOURS_LIMITS;
-    const trlLimits = TRL_HOURS_LIMITS[trlKey];
-    const minHorasPorSemana = trlLimits.minHoursPerWeek;
-    
-    const semanasMaximas = Math.max(1, Math.ceil(horasTotales / minHorasPorSemana));
-    const diasMaximos = semanasMaximas * 7;
-    
-    const inicio = new Date(fechaInicio);
-    const fechaMinima = new Date(inicio);
-    fechaMinima.setDate(fechaMinima.getDate() + diasMaximos);
-    
-    return fechaMinima.toISOString().split('T')[0];
-  };
-
   // Efecto para validación (sin avance automático)
   useEffect(() => {
     const currentStepErrors = validateCurrentStep();
@@ -365,9 +220,6 @@ export const PublishProjects: React.FC = () => {
     if (error) {
       setError(null);
     }
-    if (dateError) {
-      setDateError(null);
-    }
     
     if (e.target.name === 'horas') {
       let numValue = Number(value);
@@ -393,18 +245,6 @@ export const PublishProjects: React.FC = () => {
         setHoursError(null);
       }
       return;
-    }
-    
-    // Validaciones específicas para fechas
-    if (e.target.name === 'fechaFin' && form.fechaInicio && form.horas) {
-      const validacion = validarFechasSegunTRL(form.fechaInicio, value, Number(form.horas));
-      if (!validacion.valido) {
-        setDateError(validacion.mensaje);
-        // No actualizar el formulario si la fecha no es válida
-        return;
-      } else {
-        setDateError(null);
-      }
     }
     
     setForm({ ...form, [e.target.name]: value });
@@ -520,13 +360,6 @@ export const PublishProjects: React.FC = () => {
         if (form.fechaInicio && form.fechaFin && new Date(form.fechaInicio) >= new Date(form.fechaFin)) {
           errors.push('La fecha de finalización debe ser posterior a la fecha de inicio.');
         }
-        // Validar fechas según límites de TRL
-        if (form.fechaInicio && form.fechaFin && form.horas) {
-          const validacion = validarFechasSegunTRL(form.fechaInicio, form.fechaFin, Number(form.horas));
-          if (!validacion.valido) {
-            errors.push(validacion.mensaje);
-          }
-        }
         break;
     }
     
@@ -566,14 +399,6 @@ export const PublishProjects: React.FC = () => {
       const warning = getHorasPorSemanaWarning(horasPorSemana);
       if (warning) {
         errors.push(warning);
-      }
-    }
-    
-    // Validar fechas según límites de TRL
-    if (form.fechaInicio && form.fechaFin && form.horas) {
-      const validacion = validarFechasSegunTRL(form.fechaInicio, form.fechaFin, Number(form.horas));
-      if (!validacion.valido) {
-        errors.push(validacion.mensaje);
       }
     }
     
@@ -893,24 +718,9 @@ export const PublishProjects: React.FC = () => {
            />
            <Alert severity="info" sx={{ mt: 1, mb: 2 }}>
              <Typography variant="body2">
-               <strong>Importante:</strong> Considera 2-3 semanas para seleccionar al estudiante. La fecha de fin se calculará automáticamente para respetar los límites de horas por semana según el TRL seleccionado.
+               <strong>Importante:</strong> Considera 2-3 semanas para seleccionar al estudiante. La fecha de fin se calculará automáticamente para no exceder 35 horas/semana.
              </Typography>
            </Alert>
-           
-           {/* Mostrar fechas recomendadas según TRL */}
-           {form.fechaInicio && form.horas && (
-             <Box sx={{ p: 2, bgcolor: '#e8f5e8', borderRadius: 1, border: '1px solid #4caf50', mb: 2 }}>
-               <Typography variant="subtitle2" sx={{ color: '#2e7d32', mb: 1 }}>
-                 📅 Fechas recomendadas para TRL {trlSelected}:
-               </Typography>
-               <Typography variant="body2" sx={{ color: '#2e7d32' }}>
-                 <strong>Fecha mínima:</strong> {calcularFechaMinimaPermitida(form.fechaInicio, Number(form.horas))}<br/>
-                 <strong>Fecha máxima:</strong> {calcularFechaMaximaPermitida(form.fechaInicio, Number(form.horas))}<br/>
-                 <strong>Duración recomendada:</strong> {Math.ceil(Number(form.horas) / Math.min(trlLimits.maxHoursPerWeek, 35))} - {Math.ceil(Number(form.horas) / trlLimits.minHoursPerWeek)} semanas
-               </Typography>
-             </Box>
-           )}
-           
            <TextField 
              label="¿Cuándo te gustaría terminarlo?" 
              name="fechaFin" 
@@ -918,37 +728,9 @@ export const PublishProjects: React.FC = () => {
              value={form.fechaFin} 
              onChange={handleChange}
              fullWidth 
-             error={!!dateError}
-             helperText={dateError || "Fecha recomendada (puedes modificarla respetando los límites de TRL)"}
-             InputLabelProps={{ shrink: true, required: false }}
-             inputProps={{
-               min: form.fechaInicio ? calcularFechaMinimaPermitida(form.fechaInicio, Number(form.horas) || 0) : undefined,
-               max: form.fechaInicio ? calcularFechaMaximaPermitida(form.fechaInicio, Number(form.horas) || 0) : undefined
-             }}
+             InputLabelProps={{ shrink: true, required: false }} 
+             helperText="Fecha recomendada (puedes modificarla si lo deseas)"
            />
-           
-           {/* Mostrar advertencia si hay error de fechas */}
-           {dateError && (
-             <Alert severity="warning" sx={{ mt: 1 }}>
-               <Typography variant="body2">
-                 {dateError}
-               </Typography>
-             </Alert>
-           )}
-           
-           {/* Mostrar información de distribución de horas */}
-           {form.fechaInicio && form.fechaFin && form.horas && !dateError && (
-             <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #2196f3' }}>
-               <Typography variant="subtitle2" sx={{ color: '#1976d2', mb: 1 }}>
-                 📊 Distribución de horas calculada:
-               </Typography>
-               <Typography variant="body2" sx={{ color: '#1976d2' }}>
-                 <strong>Horas por semana:</strong> {calcularHorasPorSemana(Number(form.horas), Number(form.meses))} horas<br/>
-                 <strong>Duración:</strong> {form.meses} mes(es) = {(Number(form.meses) || 1) * 4} semanas<br/>
-                 <strong>Estado:</strong> ✅ Distribución válida según TRL {trlSelected}
-               </Typography>
-             </Box>
-           )}
            <TextField 
              label="Duración calculada (meses)" 
              name="meses" 
@@ -992,12 +774,12 @@ export const PublishProjects: React.FC = () => {
             variant="contained" 
             color="primary" 
             onClick={nextStep} 
-            disabled={activeStep === 2 && (!!hoursError || !!dateError)}
+            disabled={activeStep === 2 && !!hoursError}
           >
             Siguiente
           </Button>
         ) : (
-          <Button variant="contained" color="success" onClick={handleSubmit} disabled={!!hoursError || !!dateError}>Publicar Proyecto</Button>
+          <Button variant="contained" color="success" onClick={handleSubmit} disabled={!!hoursError}>Publicar Proyecto</Button>
         )}
       </Box>
     </Box>

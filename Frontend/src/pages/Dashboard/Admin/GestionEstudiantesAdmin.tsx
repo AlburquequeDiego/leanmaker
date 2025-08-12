@@ -198,7 +198,6 @@ export default function GestionEstudiantesAdmin() {
           graduation_year: student.graduation_year,
           completed_projects: student.completed_projects,
           experience_years: student.experience_years,
-          gpa: student.gpa,
           skills: student.skills || [],
           languages: student.languages || [],
           user_data: student.user_data,

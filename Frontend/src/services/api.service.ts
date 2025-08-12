@@ -18,21 +18,14 @@ class ApiService {
       url = `${API_BASE_URL}${endpoint}`;
     }
     
-    // Debug: Log URL being requested
-    console.log(`🔍 [API] Requesting URL: ${url}`);
-    console.log(`🔍 [API] Endpoint: ${endpoint}`);
-    console.log(`🔍 [API] API_BASE_URL: ${API_BASE_URL}`);
+
     
 
     
     // Get access token
     const token = authService.getAccessToken();
     
-    // Debug: Log token info for hub analytics endpoint
-    if (endpoint.includes('/api/hub/analytics/')) {
-      console.log('🔍 [API] Token para hub analytics:', token ? 'Presente' : 'Ausente');
-      console.log('🔍 [API] Token value:', token);
-    }
+
     
     const config: RequestInit = {
       headers: {
@@ -46,10 +39,7 @@ class ApiService {
       ...options,
     };
     
-    // Debug: Log headers for hub analytics endpoint
-    if (endpoint.includes('/api/hub/analytics/')) {
-      console.log('🔍 [API] Headers configurados:', config.headers);
-    }
+
 
     try {
       const response = await fetch(url, config);
@@ -100,50 +90,9 @@ class ApiService {
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
         
-        // DEBUG: Log datos recibidos para endpoints específicos
-        if (endpoint.includes('/api/users/profile/') || endpoint.includes('/api/students/me/')) {
-          console.log(`🔍 [API] Datos recibidos de ${endpoint}:`, data);
-        }
+
         
-        // DEBUG: Log datos de proyectos
-        if (endpoint.includes('/api/projects/company_projects/')) {
-          console.log(`🔍 [API] Datos de proyectos de empresa recibidos de ${endpoint}:`, data);
-          console.log(`🔍 [API] Estructura de datos:`);
-          console.log(`  - success: ${data?.success}`);
-          console.log(`  - count: ${data?.count}`);
-          console.log(`  - data length: ${data?.data?.length || 0}`);
-          if (data?.data && Array.isArray(data.data)) {
-            data.data.forEach((project: any, index: number) => {
-              console.log(`  - Proyecto ${index + 1}: ${project.title}`);
-              console.log(`    - estudiantes length: ${project.estudiantes?.length || 0}`);
-              console.log(`    - estudiantes:`, project.estudiantes);
-            });
-          }
-        }
-        
-        // DEBUG: Log datos de detalle de proyecto
-        if (endpoint.includes('/api/projects/') && endpoint.match(/\/\d+\/$/)) { // Solo endpoints con ID numérico
-          console.log(`🔍 [API] Datos de detalle de proyecto recibidos de ${endpoint}:`, data);
-          console.log(`🔍 [API] Campos del proyecto:`);
-          console.log(`  - title: ${data?.title}`);
-          console.log(`  - status: ${data?.status}`);
-          console.log(`  - estudiantes length: ${data?.estudiantes?.length || 0}`);
-          console.log(`  - estudiantes:`, data?.estudiantes);
-        }
-        
-        // DEBUG: Log datos de empresa
-        if (endpoint.includes('/api/companies/company_me/')) {
-          console.log(`🔍 [API] Datos de empresa recibidos de ${endpoint}:`, data);
-          console.log(`🔍 [API] Campos específicos de empresa:`);
-          console.log(`  - company_address: ${data?.company_address}`);
-          console.log(`  - company_phone: ${data?.company_phone}`);
-          console.log(`  - company_email: ${data?.company_email}`);
-          console.log(`  - rut: ${data?.rut}`);
-          console.log(`  - personality: ${data?.personality}`);
-          console.log(`  - business_name: ${data?.business_name}`);
-          console.log(`  - user_data.birthdate: ${data?.user_data?.birthdate}`);
-          console.log(`  - user_data.gender: ${data?.user_data?.gender}`);
-        }
+
         
         // Aplicar adaptadores según el endpoint
         return this.applyAdapter(data, endpoint) as T;

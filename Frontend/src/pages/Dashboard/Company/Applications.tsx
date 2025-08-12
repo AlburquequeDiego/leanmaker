@@ -32,11 +32,13 @@ import {
   Language as LanguageIcon,
   GitHub as GitHubIcon,
   LinkedIn as LinkedInIcon,
+  Warning as WarningIcon,
+  Info as InfoIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptApplication, adaptApplicationList } from '../../../utils/adapters';
 import { API_ENDPOINTS } from '../../../config/api.config';
-import type { Application } from '../../../types';
+import type { Application, Student } from '../../../types';
 import { useTheme } from '../../../contexts/ThemeContext';
 
 const cantidadOpciones = [5, 10, 50, 100, 150, 200, 'todas'];
@@ -47,7 +49,7 @@ export const CompanyApplications: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(1);
   
   // Log cuando cambia el tab seleccionado
   useEffect(() => {
@@ -57,6 +59,14 @@ export const CompanyApplications: React.FC = () => {
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [cantidadPorTab, setCantidadPorTab] = useState<(number | string)[]>([5, 5, 5, 5, 5]);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+
+  // Estados para diálogos de confirmación
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    applicationId: string;
+    newStatus: Application['status'];
+    actionType: 'review' | 'accept' | 'reject';
+  } | null>(null);
 
   useEffect(() => {
     // Agregar un pequeño delay para evitar múltiples llamadas simultáneas
@@ -83,9 +93,24 @@ export const CompanyApplications: React.FC = () => {
       const applicationsData = response.results || response.data?.results || response.data || [];
       console.log('📊 Datos de aplicaciones sin adaptar:', applicationsData);
       
+      // Debug: Ver la primera aplicación sin adaptar
+      if (applicationsData.length > 0) {
+        console.log('🔍 Primera aplicación sin adaptar:', applicationsData[0]);
+        console.log('🔍 Estructura del estudiante en la primera aplicación:', applicationsData[0].student);
+        console.log('🔍 Tipo del campo student:', typeof applicationsData[0].student);
+        if (applicationsData[0].student && typeof applicationsData[0].student === 'object') {
+          console.log('🔍 Propiedades del objeto student:', Object.keys(applicationsData[0].student));
+        }
+      }
+      
       // Aplicar adaptador a cada aplicación individualmente para mejor manejo
       const adaptedApplications = Array.isArray(applicationsData) 
-        ? applicationsData.map(app => adaptApplication(app))
+        ? applicationsData.map(app => {
+            const adapted = adaptApplication(app);
+            console.log('🔍 Aplicación adaptada:', adapted);
+            console.log('🔍 student_data en aplicación adaptada:', adapted.student_data);
+            return adapted;
+          })
         : [];
       console.log('✅ Aplicaciones adaptadas:', adaptedApplications);
       
@@ -225,6 +250,89 @@ export const CompanyApplications: React.FC = () => {
     setShowDetailDialog(true);
   };
 
+  // Función para mostrar diálogo de confirmación antes de cambiar estado
+  const handleStatusChangeWithConfirmation = (applicationId: string, newStatus: Application['status']) => {
+    let actionType: 'review' | 'accept' | 'reject';
+    
+    if (newStatus === 'reviewing') actionType = 'review';
+    else if (newStatus === 'accepted') actionType = 'accept';
+    else if (newStatus === 'rejected') actionType = 'reject';
+    else {
+      // Para otros estados, ejecutar directamente sin confirmación
+      handleStatusChange(applicationId, newStatus);
+      return;
+    }
+
+    setConfirmAction({ applicationId, newStatus, actionType });
+    setShowConfirmDialog(true);
+  };
+
+  // Función para ejecutar el cambio de estado después de confirmación
+  const executeStatusChange = async () => {
+    if (!confirmAction) return;
+    
+    setShowConfirmDialog(false);
+    await handleStatusChange(confirmAction.applicationId, confirmAction.newStatus);
+    setConfirmAction(null);
+  };
+
+  // Función para cancelar la confirmación
+  const cancelStatusChange = () => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
+  };
+
+  // Función para obtener el mensaje de advertencia según el tipo de acción
+  const getWarningMessage = (actionType: 'review' | 'accept' | 'reject') => {
+    switch (actionType) {
+      case 'review':
+        return {
+          title: '⚠️ Confirmar Cambio a "En Revisión"',
+          message: '¿Estás seguro de que quieres marcar esta postulación como "En Revisión"?',
+          consequences: [
+            '• El estudiante será notificado de que su postulación está siendo revisada',
+            '• Se activará el proceso de evaluación formal',
+            '• Este cambio puede afectar la experiencia del estudiante',
+            '• Se registrará la fecha de inicio de revisión'
+          ],
+          severity: 'warning' as const
+        };
+      case 'accept':
+        return {
+          title: '✅ Confirmar Aceptación de Postulación',
+          message: '¿Estás seguro de que quieres ACEPTAR esta postulación?',
+          consequences: [
+            '• El estudiante será notificado de la aceptación',
+            '• Se iniciará el proceso de incorporación al proyecto',
+            '• Esta acción NO se puede deshacer fácilmente',
+            '• Se registrará la fecha de aceptación oficial',
+            '• El estudiante tendrá acceso a recursos del proyecto'
+          ],
+          severity: 'success' as const
+        };
+      case 'reject':
+        return {
+          title: '❌ Confirmar Rechazo de Postulación',
+          message: '¿Estás seguro de que quieres RECHAZAR esta postulación?',
+          consequences: [
+            '• El estudiante será notificado del rechazo',
+            '• Esta acción NO se puede deshacer fácilmente',
+            '• Se registrará la fecha de rechazo oficial',
+            '• El estudiante no podrá volver a postularse al mismo proyecto',
+            '• Se enviará notificación al sistema de seguimiento'
+          ],
+          severity: 'error' as const
+        };
+      default:
+        return {
+          title: 'Confirmar Acción',
+          message: '¿Estás seguro de que quieres realizar esta acción?',
+          consequences: [],
+          severity: 'info' as const
+        };
+    }
+  };
+
   // Logs de depuración para verificar estados
   console.log('🔍 Aplicaciones cargadas:', applications.length);
   console.log('🔍 Estados de aplicaciones:', applications.map(app => ({ id: app.id, status: app.status, student: app.student_name })));
@@ -360,6 +468,8 @@ export const CompanyApplications: React.FC = () => {
         </Box>
       </Box>
 
+
+
       {/* Estadísticas mejoradas */}
       <Box sx={{ 
         display: 'grid', 
@@ -372,8 +482,8 @@ export const CompanyApplications: React.FC = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(25, 118, 210, 0.4)' : 3,
-          transition: 'box-shadow 0.2s',
-          '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(25, 118, 210, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
+          transition: 'transform 0.2s',
+          '&:hover': { transform: 'translateY(-4px)' }
         }}>
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -390,8 +500,8 @@ export const CompanyApplications: React.FC = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(251, 140, 0, 0.4)' : 3,
-          transition: 'box-shadow 0.2s',
-          '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(251, 140, 0, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
+          transition: 'transform 0.2s',
+          '&:hover': { transform: 'translateY(-4px)' }
         }}>
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -408,8 +518,8 @@ export const CompanyApplications: React.FC = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(56, 142, 60, 0.4)' : 3,
-          transition: 'box-shadow 0.2s',
-          '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(56, 142, 60, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
+          transition: 'transform 0.2s',
+          '&:hover': { transform: 'translateY(-4px)' }
         }}>
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -426,8 +536,8 @@ export const CompanyApplications: React.FC = () => {
           color: 'white',
           borderRadius: 3,
           boxShadow: themeMode === 'dark' ? '0 8px 32px rgba(244, 67, 54, 0.4)' : 3,
-          transition: 'box-shadow 0.2s',
-          '&:hover': { boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(244, 67, 54, 0.5)' : '0 8px 25px rgba(0,0,0,0.15)' }
+          transition: 'transform 0.2s',
+          '&:hover': { transform: 'translateY(-4px)' }
         }}>
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -595,6 +705,8 @@ export const CompanyApplications: React.FC = () => {
                 <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
                   Postuló: {new Date(application.applied_at).toLocaleDateString()}
                 </Typography>
+                
+
               </CardContent>
               <CardActions sx={{ p: 3, pt: 0, gap: 1, flexWrap: 'wrap' }}>
                 <Button
@@ -612,9 +724,18 @@ export const CompanyApplications: React.FC = () => {
                     size="small"
                     variant="contained"
                     color="warning"
-                    onClick={() => handleStatusChange(application.id, 'reviewing')}
+                    onClick={() => handleStatusChangeWithConfirmation(application.id, 'reviewing')}
                     disabled={updatingStatus === application.id}
-                    sx={{ borderRadius: 2, fontWeight: 600 }}
+                    startIcon={<InfoIcon />}
+                    sx={{ 
+                      borderRadius: 2, 
+                      fontWeight: 600,
+                      boxShadow: 2,
+                      '&:hover': {
+                        boxShadow: 4,
+                        transform: 'translateY(-1px)'
+                      }
+                    }}
                   >
                     {updatingStatus === application.id ? <CircularProgress size={16} /> : 'En Revisión'}
                   </Button>
@@ -626,9 +747,18 @@ export const CompanyApplications: React.FC = () => {
                       size="small"
                       variant="contained"
                       color="success"
-                      onClick={() => handleStatusChange(application.id, 'accepted')}
+                      onClick={() => handleStatusChangeWithConfirmation(application.id, 'accepted')}
                       disabled={updatingStatus === application.id}
-                      sx={{ borderRadius: 2, fontWeight: 600 }}
+                      startIcon={<CheckCircleIcon />}
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontWeight: 600,
+                        boxShadow: 2,
+                        '&:hover': {
+                          boxShadow: 4,
+                          transform: 'translateY(-1px)'
+                        }
+                      }}
                     >
                       {updatingStatus === application.id ? <CircularProgress size={16} /> : '✓ Aceptar'}
                     </Button>
@@ -636,9 +766,18 @@ export const CompanyApplications: React.FC = () => {
                       size="small"
                       variant="contained"
                       color="error"
-                      onClick={() => handleStatusChange(application.id, 'rejected')}
+                      onClick={() => handleStatusChangeWithConfirmation(application.id, 'rejected')}
                       disabled={updatingStatus === application.id}
-                      sx={{ borderRadius: 2, fontWeight: 600 }}
+                      startIcon={<CancelIcon />}
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontWeight: 600,
+                        boxShadow: 2,
+                        '&:hover': {
+                          boxShadow: 4,
+                          transform: 'translateY(-1px)'
+                        }
+                      }}
                     >
                       {updatingStatus === application.id ? <CircularProgress size={16} /> : '✗ Rechazar'}
                     </Button>
@@ -677,75 +816,98 @@ export const CompanyApplications: React.FC = () => {
         }}>
           Perfil Completo del Estudiante
         </DialogTitle>
-        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
-          {selectedApplication && (
-            <Box>
-              {/* Header con nombre y apellido */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main', boxShadow: 3 }}>
-                  <PersonIcon sx={{ fontSize: 40 }} />
-                </Avatar>
-                <Box>
-                  <Typography variant="h5" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                    {(selectedApplication.student?.user_data?.first_name || '') + ' ' + (selectedApplication.student?.user_data?.last_name || '') || selectedApplication.student?.name || '-'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                    {selectedApplication.student?.user_data?.email || selectedApplication.student?.email || '-'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                    {selectedApplication.student?.user_data?.phone || selectedApplication.student?.phone || '-'}
-                  </Typography>
-                </Box>
-              </Box>
+                 <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#ffffff' : '#1e293b' }}>
+           {selectedApplication && (
+             <Box>
+               {/* Debug: Mostrar estructura de datos */}
+               <Box sx={{ mb: 2, p: 2, bgcolor: 'rgba(0,0,0,0.05)', borderRadius: 1, fontSize: '12px' }}>
+                 <Typography variant="caption" sx={{ fontWeight: 'bold' }}>Debug - Estructura de datos:</Typography>
+                 <pre style={{ margin: '8px 0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                   {JSON.stringify(selectedApplication, null, 2)}
+                 </pre>
+               </Box>
+                             {/* Header con nombre y apellido */}
+               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                 <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main', boxShadow: 3 }}>
+                   <PersonIcon sx={{ fontSize: 40 }} />
+                 </Avatar>
+                 <Box>
+                   <Typography variant="h5" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                     {selectedApplication.student_data?.user_data?.full_name || 
+                      (selectedApplication.student_data?.user_data ? 
+                        `${selectedApplication.student_data.user_data.first_name || ''} ${selectedApplication.student_data.user_data.last_name || ''}`.trim() : '') ||
+                      selectedApplication.student_name || 'Estudiante'}
+                   </Typography>
+                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                     {selectedApplication.student_data?.user_data?.email || selectedApplication.student_email || 'Email no disponible'}
+                   </Typography>
+                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                     {selectedApplication.student_data?.user_data?.phone || 'Teléfono no disponible'}
+                   </Typography>
+                 </Box>
+               </Box>
 
-              <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa' }}>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Fecha de Nacimiento:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.perfil_detallado?.fecha_nacimiento || '-'}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Género:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.perfil_detallado?.genero || '-'}</Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Carrera:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.career || '-'}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1, minWidth: 220 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Nivel Educativo:</Typography>
-                    <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.api_level || '-'}</Typography>
-                  </Box>
-                </Box>
-              </Paper>
+                             <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa' }}>
+                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                   <Box sx={{ flex: 1, minWidth: 220 }}>
+                     <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Fecha de Nacimiento:</Typography>
+                     <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                       {selectedApplication.student_data?.perfil_detallado?.fecha_nacimiento || 'No disponible'}
+                     </Typography>
+                   </Box>
+                   <Box sx={{ flex: 1, minWidth: 220 }}>
+                     <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Género:</Typography>
+                     <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                       {selectedApplication.student_data?.perfil_detallado?.genero || 'No disponible'}
+                     </Typography>
+                   </Box>
+                 </Box>
+                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+                   <Box sx={{ flex: 1, minWidth: 220 }}>
+                     <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Carrera:</Typography>
+                     <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                       {selectedApplication.student_data?.career || 'No disponible'}
+                     </Typography>
+                   </Box>
+                   <Box sx={{ flex: 1, minWidth: 220 }}>
+                     <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Nivel Educativo:</Typography>
+                     <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                       {selectedApplication.student_data?.api_level || 'No disponible'}
+                     </Typography>
+                   </Box>
+                 </Box>
+               </Paper>
 
-              {/* Habilidades */}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Habilidades</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                {(selectedApplication.student?.skills || []).map((h: string) => (
-                  <Chip key={h} label={h} color="primary" />
-                ))}
-                {(!selectedApplication.student?.skills || selectedApplication.student.skills.length === 0) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>-</Typography>}
-              </Box>
+                             {/* Habilidades */}
+               <Divider sx={{ my: 2 }} />
+               <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Habilidades</Typography>
+               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                 {selectedApplication.student_data?.skills && Array.isArray(selectedApplication.student_data.skills) && selectedApplication.student_data.skills.length > 0 ? (
+                   selectedApplication.student_data.skills.map((h: string, index: number) => (
+                     <Chip key={index} label={h} color="primary" />
+                   ))
+                 ) : (
+                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
+                     No hay habilidades registradas
+                   </Typography>
+                 )}
+               </Box>
 
               {/* Documentos */}
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Documentos</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-                {selectedApplication.student?.cv_link && (
+                {selectedApplication.student_data?.cv_link && (
                   <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>CV:</strong> <a href={selectedApplication.student.cv_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.cv_link}</a>
+                    <strong>CV:</strong> <a href={selectedApplication.student_data.cv_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student_data.cv_link}</a>
                   </Typography>
                 )}
-                {selectedApplication.student?.certificado_link && (
+                {selectedApplication.student_data?.certificado_link && (
                   <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>Certificado:</strong> <a href={selectedApplication.student.certificado_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.certificado_link}</a>
+                    <strong>Certificado:</strong> <a href={selectedApplication.student_data.certificado_link} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student_data.certificado_link}</a>
                   </Typography>
                 )}
-                {(!selectedApplication.student?.cv_link && !selectedApplication.student?.certificado_link) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay documentos</Typography>}
+                {(!selectedApplication.student_data?.cv_link && !selectedApplication.student_data?.certificado_link) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay documentos</Typography>}
               </Box>
 
               {/* Área de interés y modalidades */}
@@ -754,46 +916,46 @@ export const CompanyApplications: React.FC = () => {
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                 <Box sx={{ flex: 1, minWidth: 220 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Área de interés:</Typography>
-                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.area || '-'}</Typography>
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student_data?.area || '-'}</Typography>
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 220 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>Modalidad:</Typography>
-                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student?.availability || '-'}</Typography>
+                  <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>{selectedApplication.student_data?.availability || '-'}</Typography>
                 </Box>
               </Box>
 
               {/* Experiencia previa */}
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Experiencia Previa</Typography>
-              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>{selectedApplication.student?.experience_years ? `${selectedApplication.student.experience_years} años` : '-'}</Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>{selectedApplication.student_data?.experience_years ? `${selectedApplication.student_data.experience_years} años` : '-'}</Typography>
 
               {/* Enlaces */}
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Enlaces</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-                {selectedApplication.student?.linkedin_url && (
+                {selectedApplication.student_data?.linkedin_url && (
                   <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>LinkedIn:</strong> <a href={selectedApplication.student.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.linkedin_url}</a>
+                    <strong>LinkedIn:</strong> <a href={selectedApplication.student_data.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student_data.linkedin_url}</a>
                   </Typography>
                 )}
-                {selectedApplication.student?.github_url && (
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>GitHub:</strong> <a href={selectedApplication.student.github_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.github_url}</a>
+                {selectedApplication.student_data?.github_url && (
+                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}> 
+                    <strong>GitHub:</strong> <a href={selectedApplication.student_data.github_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student_data.github_url}</a>
                   </Typography>
                 )}
-                {selectedApplication.student?.portfolio_url && (
+                {selectedApplication.student_data?.portfolio_url && (
                   <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    <strong>Portafolio:</strong> <a href={selectedApplication.student.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student.portfolio_url}</a>
+                    <strong>Portafolio:</strong> <a href={selectedApplication.student_data.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' }}>{selectedApplication.student_data.portfolio_url}</a>
                   </Typography>
                 )}
-                {(!selectedApplication.student?.linkedin_url && !selectedApplication.student?.github_url && !selectedApplication.student?.portfolio_url) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay enlaces</Typography>}
+                {(!selectedApplication.student_data?.linkedin_url && !selectedApplication.student_data?.github_url && !selectedApplication.student_data?.portfolio_url) && <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>No hay enlaces</Typography>}
               </Box>
 
               {/* Carta de Presentación */}
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Carta de Presentación</Typography>
               <Typography variant="body2" sx={{ mb: 2, color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                {selectedApplication.cover_letter || selectedApplication.student?.bio || selectedApplication.student?.user_data?.bio || '-'}
+                {selectedApplication.cover_letter || selectedApplication.student_data?.user_data?.bio || '-'}
               </Typography>
             </Box>
           )}
@@ -805,7 +967,7 @@ export const CompanyApplications: React.FC = () => {
               variant="contained"
               color="warning"
               onClick={() => {
-                handleStatusChange(selectedApplication.id, 'reviewing');
+                handleStatusChangeWithConfirmation(selectedApplication.id, 'reviewing');
                 setShowDetailDialog(false);
               }}
               disabled={updatingStatus === selectedApplication.id}
@@ -821,7 +983,7 @@ export const CompanyApplications: React.FC = () => {
                 variant="contained"
                 color="success"
                 onClick={() => {
-                  handleStatusChange(selectedApplication.id, 'accepted');
+                  handleStatusChangeWithConfirmation(selectedApplication.id, 'accepted');
                   setShowDetailDialog(false);
                 }}
                 disabled={updatingStatus === selectedApplication.id}
@@ -833,7 +995,7 @@ export const CompanyApplications: React.FC = () => {
                 variant="contained"
                 color="error"
                 onClick={() => {
-                  handleStatusChange(selectedApplication.id, 'rejected');
+                  handleStatusChangeWithConfirmation(selectedApplication.id, 'rejected');
                   setShowDetailDialog(false);
                 }}
                 disabled={updatingStatus === selectedApplication.id}
@@ -853,6 +1015,134 @@ export const CompanyApplications: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+             {/* Dialog de Confirmación con Advertencias */}
+       <Dialog
+         open={showConfirmDialog}
+         onClose={cancelStatusChange}
+         aria-labelledby="confirm-dialog-title"
+         aria-describedby="confirm-dialog-description"
+         maxWidth="md"
+         fullWidth
+       >
+         {confirmAction && (
+           <>
+             <DialogTitle 
+               id="confirm-dialog-title" 
+               sx={{ 
+                 bgcolor: getWarningMessage(confirmAction.actionType).severity === 'error' ? 'error.main' : 
+                         getWarningMessage(confirmAction.actionType).severity === 'success' ? 'success.main' : 'warning.main', 
+                 color: 'white', 
+                 fontWeight: 600,
+                 display: 'flex',
+                 alignItems: 'center',
+                 gap: 1
+               }}
+             >
+               {getWarningMessage(confirmAction.actionType).severity === 'error' ? <WarningIcon /> : 
+                getWarningMessage(confirmAction.actionType).severity === 'success' ? <CheckCircleIcon /> : <InfoIcon />}
+               {getWarningMessage(confirmAction.actionType).title}
+             </DialogTitle>
+             
+             <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+               <Alert 
+                 severity={getWarningMessage(confirmAction.actionType).severity} 
+                 sx={{ mb: 3 }}
+                 icon={false}
+               >
+                 <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+                   {getWarningMessage(confirmAction.actionType).message}
+                 </Typography>
+                 
+                 <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>
+                   Esta acción tendrá las siguientes consecuencias:
+                 </Typography>
+                 
+                 <Box sx={{ pl: 2 }}>
+                   {getWarningMessage(confirmAction.actionType).consequences.map((consequence, index) => (
+                     <Typography 
+                       key={index} 
+                       variant="body2" 
+                       sx={{ 
+                         mb: 1,
+                         color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                         display: 'flex',
+                         alignItems: 'flex-start',
+                         gap: 1
+                       }}
+                     >
+                       <Box 
+                         component="span" 
+                         sx={{ 
+                           color: getWarningMessage(confirmAction.actionType).severity === 'error' ? 'error.main' : 
+                                   getWarningMessage(confirmAction.actionType).severity === 'success' ? 'success.main' : 'warning.main',
+                           fontWeight: 'bold',
+                           mt: 0.2
+                         }}
+                       >
+                         •
+                       </Box>
+                       {consequence}
+                     </Typography>
+                   ))}
+                 </Box>
+                 
+                 {confirmAction.actionType === 'accept' || confirmAction.actionType === 'reject' ? (
+                   <Alert severity="error" sx={{ mt: 2, bgcolor: 'rgba(244, 67, 54, 0.1)' }}>
+                     <Typography variant="body2" fontWeight={600}>
+                       ⚠️ IMPORTANTE: Esta acción NO se puede deshacer fácilmente y tendrá consecuencias permanentes.
+                     </Typography>
+                   </Alert>
+                 ) : (
+                   <Alert severity="warning" sx={{ mt: 2, bgcolor: 'rgba(255, 152, 0, 0.1)' }}>
+                     <Typography variant="body2" fontWeight={600}>
+                       ⚠️ ATENCIÓN: Este cambio activará notificaciones y procesos automáticos.
+                     </Typography>
+                   </Alert>
+                 )}
+               </Alert>
+             </DialogContent>
+             
+             <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5', gap: 2 }}>
+               <Button
+                 variant="contained"
+                 color={getWarningMessage(confirmAction.actionType).severity}
+                 onClick={executeStatusChange}
+                 disabled={updatingStatus === confirmAction.applicationId}
+                 sx={{ 
+                   borderRadius: 2, 
+                   px: 3,
+                   fontWeight: 600,
+                   minWidth: 120
+                 }}
+                 startIcon={getWarningMessage(confirmAction.actionType).severity === 'error' ? <CancelIcon /> : 
+                           getWarningMessage(confirmAction.actionType).severity === 'success' ? <CheckCircleIcon /> : <ScheduleIcon />}
+               >
+                 {updatingStatus === confirmAction.applicationId ? (
+                   <CircularProgress size={16} />
+                 ) : (
+                   confirmAction.actionType === 'review' ? 'Marcar en Revisión' :
+                   confirmAction.actionType === 'accept' ? 'Sí, Aceptar' :
+                   confirmAction.actionType === 'reject' ? 'Sí, Rechazar' : 'Confirmar'
+                 )}
+               </Button>
+               
+               <Button
+                 variant="outlined"
+                 onClick={cancelStatusChange}
+                 sx={{ 
+                   borderRadius: 2, 
+                   px: 3,
+                   fontWeight: 600,
+                   minWidth: 120
+                 }}
+               >
+                 Cancelar
+               </Button>
+             </DialogActions>
+           </>
+         )}
+       </Dialog>
 
 
     </Box>

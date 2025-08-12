@@ -136,6 +136,19 @@ class Empresa(models.Model):
             self.rating = 0
         self.save(update_fields=['rating'])
     
+    def calcular_gpa_real(self):
+        """Calcula el GPA real basado en evaluaciones actuales"""
+        from evaluations.models import Evaluation
+        evaluaciones = Evaluation.objects.filter(
+            project__company=self,
+            status='completed',
+            evaluation_type='student_to_company'
+        )
+        if evaluaciones.exists():
+            promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
+            return round(promedio, 2)
+        return 0.0
+    
     def incrementar_proyectos_publicados(self):
         """Incrementa el contador de proyectos publicados"""
         self.total_projects += 1

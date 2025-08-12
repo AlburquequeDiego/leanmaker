@@ -101,7 +101,13 @@ def calendar_events_list(request):
                 'color': event.color,
                 'icon': event.icon,
                 'created_by': str(event.created_by.id) if event.created_by else None,
-                'attendees': [str(att.id) for att in event.attendees.all()],
+                'attendees': [
+                    {
+                        'id': str(att.id),
+                        'full_name': att.get_full_name(),
+                        'email': att.email
+                    } for att in event.attendees.all()
+                ],
                 'project': str(event.project.id) if event.project else None,
                 'created_at': event.created_at.isoformat(),
                 'updated_at': event.updated_at.isoformat(),
@@ -212,10 +218,29 @@ def calendar_events_create(request):
             return JsonResponse({'error': 'Token inválido'}, status=401)
         
         data = json.loads(request.body)
+        
+        # Debug: Imprimir todos los datos recibidos
+        print(f"🔍 [BACKEND] Datos recibidos en calendar_events_create:")
+        print(f"🔍 [BACKEND] Data completa: {data}")
+        print(f"🔍 [BACKEND] Claves disponibles: {list(data.keys())}")
+        print(f"🔍 [BACKEND] attendees recibido: {data.get('attendees')}")
+        print(f"🔍 [BACKEND] Tipo de attendees: {type(data.get('attendees'))}")
+        if data.get('attendees'):
+            print(f"🔍 [BACKEND] Longitud de attendees: {len(data.get('attendees'))}")
+            print(f"🔍 [BACKEND] Contenido de attendees: {data.get('attendees')}")
+        
         required_fields = ['title', 'start_date', 'end_date']
         for field in required_fields:
             if not data.get(field):
                 return JsonResponse({'error': f'El campo {field} es requerido'}, status=400)
+        
+        # Validar que se haya seleccionado un proyecto
+        if not data.get('project'):
+            return JsonResponse({'error': 'Debes seleccionar un proyecto para crear el evento'}, status=400)
+        
+        # Validar que se haya seleccionado al menos un estudiante
+        if not data.get('attendees') or len(data.get('attendees', [])) == 0:
+            return JsonResponse({'error': 'Debes seleccionar al menos un estudiante para el evento'}, status=400)
         
         # Validar fechas
         try:
@@ -271,8 +296,10 @@ def calendar_events_create(request):
         if data.get('project'):
             try:
                 project_instance = Proyecto.objects.get(id=data['project'])
+                print(f"🔍 [BACKEND] Proyecto encontrado: {project_instance.title} (ID: {project_instance.id})")
             except Proyecto.DoesNotExist:
-                pass
+                print(f"❌ [BACKEND] Proyecto no encontrado con ID: {data['project']}")
+                return JsonResponse({'error': f'Proyecto no encontrado con ID: {data["project"]}'}, status=400)
 
         event = CalendarEvent.objects.create(
             title=data['title'],
@@ -301,23 +328,73 @@ def calendar_events_create(request):
             representative_position=data.get('representative_position')
         )
         
+        print(f"🔍 [BACKEND] Evento creado exitosamente con ID: {event.id}")
+        
         # Establecer reglas de recurrencia si aplica
         if data.get('recurrence_rule'):
             event.set_recurrence_rule_dict(data['recurrence_rule'])
             event.save()
         
         # Agregar participantes si se especifican
+        print(f"🔍 [BACKEND] === PROCESANDO ATTENDEES ====")
+        print(f"🔍 [BACKEND] Evento ID: {event.id}")
+        print(f"🔍 [BACKEND] data.get('attendees'): {data.get('attendees')}")
+        print(f"🔍 [BACKEND] Tipo de attendees: {type(data.get('attendees'))}")
+        print(f"🔍 [BACKEND] bool(data.get('attendees')): {bool(data.get('attendees'))}")
+        print(f"🔍 [BACKEND] data completo: {data}")
+        
         if data.get('attendees'):
             from users.models import User
-            for attendee_id in data['attendees']:
+            attendees_list = data['attendees']
+            print(f"🔍 [BACKEND] Lista de attendees: {attendees_list}")
+            print(f"🔍 [BACKEND] Tipo de attendees_list: {type(attendees_list)}")
+            print(f"🔍 [BACKEND] Longitud de attendees_list: {len(attendees_list) if isinstance(attendees_list, (list, tuple)) else 'No es lista'}")
+            print(f"🔍 [BACKEND] Es lista: {isinstance(attendees_list, (list, tuple))}")
+            print(f"🔍 [BACKEND] Es string: {isinstance(attendees_list, str)}")
+            
+            # Asegurar que attendees_list sea una lista
+            if isinstance(attendees_list, str):
+                attendees_list = [attendees_list]
+            elif not isinstance(attendees_list, (list, tuple)):
+                attendees_list = [attendees_list]
+            
+            print(f"🔍 [BACKEND] Attendees normalizados: {attendees_list}")
+            
+            for i, attendee_id in enumerate(attendees_list):
+                print(f"🔍 [BACKEND] Procesando attendee {i}: {attendee_id} (tipo: {type(attendee_id)})")
                 try:
                     attendee = User.objects.get(id=attendee_id)
+                    print(f"🔍 [BACKEND] Usuario encontrado: {attendee.get_full_name()} (ID: {attendee.id})")
                     event.attendees.add(attendee)
+                    print(f"✅ [BACKEND] Participante agregado: {attendee.get_full_name()} (ID: {attendee.id})")
                 except User.DoesNotExist:
+                    print(f"❌ [BACKEND] Usuario no encontrado con ID: {attendee_id}")
                     pass
+                except Exception as e:
+                    print(f"❌ [BACKEND] Error procesando attendee {attendee_id}: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    pass
+        else:
+            print("⚠️ [BACKEND] No se recibieron participantes para el evento")
+            print(f"⚠️ [BACKEND] data.keys(): {list(data.keys())}")
+            print(f"⚠️ [BACKEND] Valor de 'attendees' en data: {data.get('attendees', 'NO EXISTE')}")
+        
+        print(f"🔍 [BACKEND] === FIN PROCESAMIENTO ATTENDEES ====")
         
         # Agregar log para depuración de asistentes
-        print("Attendees recibidos:", data.get('attendees'))
+        print(f"🔍 [BACKEND] Total de participantes en el evento: {event.attendees.count()}")
+        print(f"🔍 [BACKEND] IDs de participantes en el evento:")
+        for attendee in event.attendees.all():
+            print(f"  - {attendee.get_full_name()} (ID: {attendee.id})")
+        
+        # Debug: Verificar que el evento se guardó correctamente
+        print(f"🔍 [BACKEND] Evento creado exitosamente:")
+        print(f"  - ID: {event.id}")
+        print(f"  - Título: {event.title}")
+        print(f"  - Proyecto: {event.project.title if event.project else 'Sin proyecto'}")
+        print(f"  - Attendees count: {event.attendees.count()}")
+        print(f"  - Attendees IDs: {[str(a.id) for a in event.attendees.all()]}")
 
         event_data = {
             'id': str(event.id),
@@ -336,7 +413,14 @@ def calendar_events_create(request):
             'color': event.color,
             'icon': event.icon,
             'created_by': event.created_by.get_full_name(),
-            'attendees': [attendee.get_full_name() for attendee in event.attendees.all()],
+            'attendees': [
+                {
+                    'id': str(attendee.id),
+                    'full_name': attendee.get_full_name(),
+                    'email': attendee.email
+                } for attendee in event.attendees.all()
+            ],
+            'project': str(event.project.id) if event.project else None,
             'created_at': event.created_at.isoformat(),
             'updated_at': event.updated_at.isoformat(),
             # Nuevos campos para reuniones/entrevistas
@@ -351,6 +435,9 @@ def calendar_events_create(request):
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
+        print(f"❌ [BACKEND] Error general en calendar_events_create: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
@@ -425,7 +512,13 @@ def calendar_events_update(request, calendar_events_id):
             'color': event.color,
             'icon': event.icon,
             'created_by': event.created_by.get_full_name(),
-            'attendees': [attendee.get_full_name() for attendee in event.attendees.all()],
+            'attendees': [
+                {
+                    'id': str(attendee.id),
+                    'full_name': attendee.get_full_name(),
+                    'email': attendee.email
+                } for attendee in event.attendees.all()
+            ],
             'created_at': event.created_at.isoformat(),
             'updated_at': event.updated_at.isoformat(),
             # Nuevos campos para reuniones/entrevistas
@@ -566,12 +659,26 @@ def student_events(request):
         if current_user.role != 'student':
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
+        print(f"🔍 [STUDENT EVENTS] Estudiante autenticado: {current_user.get_full_name()} (ID: {current_user.id})")
+        
         # Obtener eventos del estudiante
         queryset = CalendarEvent.objects.select_related('created_by', 'user', 'project', 'project__company').prefetch_related('attendees').filter(
             models.Q(created_by=current_user) | 
             models.Q(attendees=current_user) | 
             models.Q(is_public=True)
         ).distinct().order_by('start_date')
+        
+        print(f"🔍 [STUDENT EVENTS] Eventos encontrados: {queryset.count()}")
+        
+        # Debug: Mostrar información de cada evento
+        for event in queryset:
+            print(f"🔍 [STUDENT EVENTS] Evento: {event.title}")
+            print(f"  - ID: {event.id}")
+            print(f"  - Creado por: {event.created_by.get_full_name() if event.created_by else 'N/A'}")
+            print(f"  - Participantes: {[a.get_full_name() for a in event.attendees.all()]}")
+            print(f"  - Proyecto: {event.project.title if event.project else 'Sin proyecto'}")
+            print(f"  - Es participante: {current_user in event.attendees.all()}")
+            print(f"  - Es creador: {event.created_by == current_user}")
         
         # Filtros adicionales
         start_date = request.GET.get('start_date')
@@ -590,6 +697,10 @@ def student_events(request):
         
         events_data = []
         for event in queryset:
+            # Determinar si el estudiante es participante o creador
+            is_participant = current_user in event.attendees.all()
+            is_creator = event.created_by == current_user
+            
             events_data.append({
                 'id': str(event.id),
                 'title': event.title,
@@ -632,11 +743,19 @@ def student_events(request):
                 'meeting_room': event.meeting_room,
                 'representative_name': event.representative_name,
                 'representative_position': event.representative_position,
+                # Campos adicionales para el estudiante
+                'is_participant': is_participant,
+                'is_creator': is_creator,
+                'role_in_event': 'Creador' if is_creator else 'Participante' if is_participant else 'Público'
             })
+        
+        print(f"🔍 [STUDENT EVENTS] Devolviendo {len(events_data)} eventos")
         
         return JsonResponse({'results': events_data}, safe=False)
     except Exception as e:
-        print(f'Error en student_events: {str(e)}')
+        print(f'❌ [STUDENT EVENTS] Error: {str(e)}')
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
@@ -652,6 +771,8 @@ def company_events(request):
         if not current_user:
             return JsonResponse({'error': 'Token inválido'}, status=401)
 
+        print(f"🔍 [COMPANY EVENTS] Empresa autenticada: {current_user.get_full_name()} (ID: {current_user.id})")
+
         from django.db import models
         # Mostrar todos los eventos relevantes para la empresa:
         queryset = CalendarEvent.objects.select_related('created_by', 'user', 'project', 'project__company').prefetch_related('attendees').filter(
@@ -660,6 +781,17 @@ def company_events(request):
             models.Q(attendees=current_user) |
             models.Q(is_public=True)
         ).distinct()
+
+        print(f"🔍 [COMPANY EVENTS] Eventos encontrados: {queryset.count()}")
+
+        # Debug: Mostrar información de cada evento
+        for event in queryset:
+            print(f"🔍 [COMPANY EVENTS] Evento: {event.title}")
+            print(f"  - ID: {event.id}")
+            print(f"  - Creado por: {event.created_by.get_full_name() if event.created_by else 'N/A'}")
+            print(f"  - Participantes: {[a.get_full_name() for a in event.attendees.all()]}")
+            print(f"  - Proyecto: {event.project.title if event.project else 'Sin proyecto'}")
+            print(f"  - Empresa del proyecto: {event.project.company.company_name if event.project and event.project.company else 'Sin empresa'}")
 
         # Filtros adicionales
         start_date = request.GET.get('start_date')
@@ -677,6 +809,11 @@ def company_events(request):
 
         events_data = []
         for event in queryset:
+            # Determinar el rol de la empresa en el evento
+            is_project_owner = event.project and event.project.company and event.project.company.user == current_user
+            is_creator = event.created_by == current_user
+            is_participant = current_user in event.attendees.all()
+            
             events_data.append({
                 'id': str(event.id),
                 'title': event.title,
@@ -716,15 +853,24 @@ def company_events(request):
                 'meeting_room': event.meeting_room,
                 'representative_name': event.representative_name,
                 'representative_position': event.representative_position,
+                # Campos adicionales para la empresa
+                'is_project_owner': is_project_owner,
+                'is_creator': is_creator,
+                'is_participant': is_participant,
+                'role_in_event': 'Propietaria del Proyecto' if is_project_owner else 'Creadora' if is_creator else 'Participante' if is_participant else 'Público'
             })
 
         # Depuración: mostrar usuario autenticado y eventos encontrados
-        print('Usuario autenticado:', current_user.id, current_user.role)
-        print('Eventos encontrados:', queryset.count())
+        print('🔍 [COMPANY EVENTS] Usuario autenticado:', current_user.id, current_user.role)
+        print('🔍 [COMPANY EVENTS] Eventos encontrados:', queryset.count())
         for e in queryset:
-            print('Evento:', e.id, e.title, 'project:', e.project_id)
+            print('🔍 [COMPANY EVENTS] Evento:', e.id, e.title, 'project:', e.project_id)
+
+        print(f"🔍 [COMPANY EVENTS] Devolviendo {len(events_data)} eventos")
 
         return JsonResponse({'results': events_data}, safe=False)
     except Exception as e:
-        print(f'Error en company_events: {str(e)}')
+        print(f'❌ [COMPANY EVENTS] Error: {str(e)}')
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)

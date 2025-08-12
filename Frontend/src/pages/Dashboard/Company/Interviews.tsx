@@ -67,6 +67,8 @@ export const CompanyInterviews: React.FC = () => {
   const [showCompleted, setShowCompleted] = useState(true);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [showPendingInterviews, setShowPendingInterviews] = useState(5);
+  const [showCompletedInterviews, setShowCompletedInterviews] = useState(5);
 
   const now = new Date();
   
@@ -483,15 +485,16 @@ export const CompanyInterviews: React.FC = () => {
         >
           <Tab 
             label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
                 <ScheduleIcon sx={{ fontSize: 20, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }} />
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                <Typography variant="body1" sx={{ fontWeight: 600, mr: 1 }}>
                   Próximas Entrevistas
                 </Typography>
                 <Badge 
                   badgeContent={pendingInterviews.length} 
                   color="error" 
                   sx={{ 
+                    ml: 0.5,
                     '& .MuiBadge-badge': {
                       fontSize: '0.75rem',
                       height: 20,
@@ -505,15 +508,16 @@ export const CompanyInterviews: React.FC = () => {
           />
           <Tab 
             label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
                 <CheckCircleIcon sx={{ fontSize: 20, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }} />
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                <Typography variant="body1" sx={{ fontWeight: 600, mr: 1 }}>
                   Completadas
                 </Typography>
                 <Badge 
                   badgeContent={completedInterviews.length} 
                   color="success" 
                   sx={{ 
+                    ml: 0.5,
                     '& .MuiBadge-badge': {
                       fontSize: '0.75rem',
                       height: 20,
@@ -542,12 +546,46 @@ export const CompanyInterviews: React.FC = () => {
       <Box sx={{ mt: 3 }}>
         {activeTab === 0 && (
           <Box>
-            <Typography variant="h5" fontWeight={700} sx={{ 
-              mb: 3, 
-              color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' 
-            }}>
-              Próximas Entrevistas
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h5" fontWeight={700} sx={{ 
+                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' 
+              }}>
+                Próximas Entrevistas
+              </Typography>
+              <TextField
+                select
+                size="small"
+                value={showPendingInterviews}
+                onChange={e => setShowPendingInterviews(Number(e.target.value))}
+                sx={{ 
+                  minWidth: 110,
+                  '& .MuiOutlinedInput-root': {
+                    color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                  },
+                }}
+              >
+                <MenuItem value={5}>Últimos 5</MenuItem>
+                <MenuItem value={10}>Últimos 10</MenuItem>
+                <MenuItem value={50}>Últimos 50</MenuItem>
+                <MenuItem value={100}>Últimos 100</MenuItem>
+                <MenuItem value={pendingInterviews.length}>Todas</MenuItem>
+              </TextField>
+            </Box>
             
             {pendingInterviews.length === 0 ? (
               <Paper sx={{ 
@@ -580,7 +618,7 @@ export const CompanyInterviews: React.FC = () => {
               </Paper>
             ) : (
               <Grid container spacing={3}>
-                {pendingInterviews.map((event) => {
+                {pendingInterviews.slice(0, showPendingInterviews).map((event) => {
                   const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   const timeUntil = getTimeUntil(event.start_date);
@@ -740,12 +778,46 @@ export const CompanyInterviews: React.FC = () => {
 
         {activeTab === 1 && (
           <Box>
-            <Typography variant="h5" fontWeight={700} sx={{ 
-              mb: 3, 
-              color: themeMode === 'dark' ? '#059669' : '#388e3c' 
-            }}>
-              Entrevistas Completadas
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h5" fontWeight={700} sx={{ 
+                color: themeMode === 'dark' ? '#059669' : '#388e3c' 
+              }}>
+                Entrevistas Completadas
+              </Typography>
+              <TextField
+                select
+                size="small"
+                value={showCompletedInterviews}
+                onChange={e => setShowCompletedInterviews(Number(e.target.value))}
+                sx={{ 
+                  minWidth: 110,
+                  '& .MuiOutlinedInput-root': {
+                    color: themeMode === 'dark' ? '#059669' : '#388e3c',
+                    '& fieldset': {
+                      borderColor: themeMode === 'dark' ? '#059669' : '#388e3c',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: themeMode === 'dark' ? '#047857' : '#2e7d32',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: themeMode === 'dark' ? '#059669' : '#388e3c',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: themeMode === 'dark' ? '#059669' : '#388e3c',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: themeMode === 'dark' ? '#059669' : '#388e3c',
+                  },
+                }}
+              >
+                <MenuItem value={5}>Últimos 5</MenuItem>
+                <MenuItem value={10}>Últimos 10</MenuItem>
+                <MenuItem value={50}>Últimos 50</MenuItem>
+                <MenuItem value={100}>Últimos 100</MenuItem>
+                <MenuItem value={completedInterviews.length}>Todas</MenuItem>
+              </TextField>
+            </Box>
             
             {completedInterviews.length === 0 ? (
               <Paper sx={{ 
@@ -778,7 +850,7 @@ export const CompanyInterviews: React.FC = () => {
               </Paper>
             ) : (
               <Grid container spacing={3}>
-                {completedInterviews.map((event) => {
+                {completedInterviews.slice(0, showCompletedInterviews).map((event) => {
                   const nombre = event.attendees?.[0]?.full_name || event.attendees?.[0]?.email || 'Estudiante no asignado';
                   const iniciales = nombre.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase();
                   

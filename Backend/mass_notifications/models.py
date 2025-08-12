@@ -96,66 +96,7 @@ class MassNotification(models.Model):
         """Verifica si es una notificación de evento"""
         return self.notification_type == 'event'
     
-    @property
-    def event_registrations_count(self):
-        """Cuenta total de registros para este evento"""
-        if self.is_event:
-            return self.event_registrations.count()
-        return 0
 
-
-class EventRegistration(models.Model):
-    """Modelo para confirmaciones de asistencia a eventos"""
-    
-    ATTENDANCE_STATUS_CHOICES = [
-        ('confirmed', 'Confirmado'),
-        ('maybe', 'Tal vez'),
-        ('declined', 'Declinado'),
-        ('pending', 'Pendiente'),
-    ]
-    
-    event = models.ForeignKey(
-        MassNotification,
-        on_delete=models.CASCADE,
-        related_name='event_registrations',
-        verbose_name='Evento'
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='event_registrations',
-        verbose_name='Usuario'
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=ATTENDANCE_STATUS_CHOICES,
-        default='pending',
-        verbose_name='Estado de asistencia'
-    )
-    notes = models.TextField(null=True, blank=True, verbose_name='Notas adicionales')
-    registered_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de registro')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='Última actualización')
-    
-    class Meta:
-        db_table = 'mass_notifications_eventregistration'
-        verbose_name = 'Registro de evento'
-        verbose_name_plural = 'Registros de eventos'
-        unique_together = ['event', 'user']  # Un usuario solo puede registrarse una vez por evento
-        ordering = ['-registered_at']
-    
-    def __str__(self):
-        return f"{self.user.get_full_name()} - {self.event.title} ({self.get_status_display()})"
-    
-    @property
-    def status_color(self):
-        """Retorna el color del estado para el frontend"""
-        status_colors = {
-            'confirmed': 'success',
-            'maybe': 'warning',
-            'declined': 'error',
-            'pending': 'default',
-        }
-        return status_colors.get(self.status, 'default')
 
 
 class NotificationTemplate(models.Model):

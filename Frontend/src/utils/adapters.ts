@@ -80,7 +80,6 @@ export const adaptStudent = (backendStudent: any): Student => ({
   availability: backendStudent.availability || 'flexible',
   location: backendStudent.location,
   area: backendStudent.area, // <-- AÑADIDO
-          gpa: backendStudent.gpa || 0,
   skills: parseJsonArray(backendStudent.skills),
   languages: parseJsonArray(backendStudent.languages),
   created_at: backendStudent.created_at,
@@ -95,45 +94,46 @@ export const adaptStudent = (backendStudent: any): Student => ({
 /**
  * Adapta una empresa del backend al formato del frontend
  */
-export const adaptCompany = (backendCompany: any): Company => ({
-  id: String(backendCompany.id),
-  user: backendCompany.user ? String(backendCompany.user) : undefined,
-  company_name: backendCompany.company_name,
-  description: backendCompany.description,
-  industry: backendCompany.industry,
-  size: backendCompany.size,
-  website: backendCompany.website,
-  address: backendCompany.address,
-  city: backendCompany.city,
-  country: backendCompany.country,
-  founded_year: backendCompany.founded_year,
-  logo_url: backendCompany.logo_url,
-  verified: backendCompany.verified || false,
-          gpa: backendCompany.gpa || 0,
-  total_projects: backendCompany.total_projects || 0,
-  projects_completed: backendCompany.projects_completed || 0,
-  total_hours_offered: backendCompany.total_hours_offered || 0,
-  technologies_used: parseJsonArray(backendCompany.technologies_used),
-  benefits_offered: parseJsonArray(backendCompany.benefits_offered),
-  remote_work_policy: backendCompany.remote_work_policy,
-  internship_duration: backendCompany.internship_duration,
-  stipend_range: backendCompany.stipend_range,
-  contact_email: backendCompany.contact_email,
-  contact_phone: backendCompany.contact_phone,
-  status: backendCompany.status || 'active',
-  created_at: backendCompany.created_at,
-  updated_at: backendCompany.updated_at,
-  // Campos adicionales del registro de empresa
-  rut: backendCompany.rut,
-  personality: backendCompany.personality,
-  business_name: backendCompany.business_name,
-  // Campos específicos del registro de empresa
-  company_address: backendCompany.company_address,
-  company_phone: backendCompany.company_phone,
-  company_email: backendCompany.company_email,
-  // Datos del usuario incluidos en la respuesta
-  user_data: backendCompany.user_data,
-});
+export const adaptCompany = (backendCompany: any): Company => {
+  return {
+    id: String(backendCompany.id),
+    user: backendCompany.user ? String(backendCompany.user) : undefined,
+    company_name: backendCompany.company_name,
+    description: backendCompany.description,
+    industry: backendCompany.industry,
+    size: backendCompany.size,
+    website: backendCompany.website,
+    address: backendCompany.address,
+    city: backendCompany.city,
+    country: backendCompany.country,
+    founded_year: backendCompany.founded_year,
+    logo_url: backendCompany.logo_url,
+    verified: backendCompany.verified,
+    total_projects: backendCompany.total_projects || 0,
+    projects_completed: backendCompany.projects_completed || 0,
+    total_hours_offered: backendCompany.total_hours_offered || 0,
+    technologies_used: parseJsonArray(backendCompany.technologies_used),
+    benefits_offered: parseJsonArray(backendCompany.benefits_offered),
+    remote_work_policy: backendCompany.remote_work_policy,
+    internship_duration: backendCompany.internship_duration,
+    stipend_range: backendCompany.stipend_range,
+    contact_email: backendCompany.contact_email,
+    contact_phone: backendCompany.contact_phone,
+    status: backendCompany.status || 'active',
+    created_at: backendCompany.created_at,
+    updated_at: backendCompany.updated_at,
+    // Campos adicionales para el perfil de empresa
+    rut: backendCompany.rut,
+    personality: backendCompany.personality,
+    business_name: backendCompany.business_name,
+    // Campos específicos del registro de empresa
+    company_address: backendCompany.company_address,
+    company_phone: backendCompany.company_phone,
+    company_email: backendCompany.company_email,
+    // Datos del usuario incluidos en la respuesta
+    user_data: backendCompany.user_data,
+  };
+};
 
 /**
  * Traduce la modalidad del inglés al español
@@ -231,6 +231,15 @@ export const adaptApplication = (backendApplication: any): Application => {
   const student = backendApplication.student || {};
   const company = project.company || {};
 
+  // Debug: Log the student object structure
+  console.log('🔍 [ADAPTER] Student object from backend:', student);
+  console.log('🔍 [ADAPTER] Student type:', typeof student);
+  console.log('🔍 [ADAPTER] Student keys:', Object.keys(student));
+  console.log('🔍 [ADAPTER] Student.id:', student.id);
+  console.log('🔍 [ADAPTER] Student.user:', student.user);
+  console.log('🔍 [ADAPTER] Student.email:', student.email);
+  console.log('🔍 [ADAPTER] Student.name:', student.name);
+
   return {
     id: String(backendApplication.id),
     project: String(project.id || backendApplication.project || ''),
@@ -251,25 +260,47 @@ export const adaptApplication = (backendApplication: any): Application => {
     // Campos adicionales extraídos de la estructura anidada del backend
     project_title: project.title || backendApplication.project_title || 'Proyecto no encontrado',
     project_description: project.description || 'Sin descripción',
-
-    location: project.location || '',
-    modality: project.modality || '',
-    
-    required_hours: project.required_hours || '',
-    hours_per_week: project.hours_per_week || '',
-    max_students: project.max_students || '',
-    current_students: project.current_students || '',
-    trl_level: project.trl_level || '',
-    api_level: project.api_level || '',
-    area: project.area || '',
-    company: project.company_name || company.company_name || company.name || backendApplication.company_name || 'Sin empresa',
+    // company: project.company_name || company.company_name || company.name || backendApplication.company_name || 'Sin empresa', // Removed - not in Application type
     // Campos adicionales para el perfil completo del estudiante
-    student_name: student.name || student.full_name || backendApplication.student_name || 'Estudiante no encontrado',
-    student_email: student.email || backendApplication.student_email || 'Sin email',
+    // student_name: student.name || student.full_name || backendApplication.student_name || 'Estudiante no encontrado', // Removed - not in Application type
+    // student_email: student.email || backendApplication.student_email || 'Sin email', // Removed - not in Application type
+    // student_career: student.career || backendApplication.student_career || '', // Removed - not in Application type
+    // student_semester: student.semester || backendApplication.student_semester || '', // Removed - not in Application type
     // Skills y requisitos
-    requiredSkills: Array.isArray(project.requirements) ? project.requirements : (typeof project.requirements === 'string' && project.requirements ? project.requirements.split(',').map((s: string) => s.trim()) : []),
-    compatibility: backendApplication.compatibility_score || 0,
-    notes: backendApplication.student_notes || backendApplication.cover_letter || undefined,
+    // requiredSkills: Array.isArray(project.requirements) ? project.requirements : (typeof project.requirements === 'string' && project.requirements ? project.requirements.split(',').map((s: string) => s.trim()) : []), // Removed - not in Application type
+    // compatibility: backendApplication.compatibility_score || 0, // Removed - not in Application type
+    // notes: backendApplication.student_notes || backendApplication.cover_letter || undefined, // Removed - not in Application type
+    // NUEVO: Incluir datos completos del estudiante para el perfil
+    student_data: (student && (student.id || student.user || student.email || student.name)) ? {
+      id: String(student.id || ''),
+      user: String(student.user || ''),
+      career: student.career,
+      semester: student.semester,
+      graduation_year: student.graduation_year,
+      status: student.status,
+      api_level: student.api_level,
+      strikes: student.strikes,
+      gpa: Number(student.gpa || 0),
+      completed_projects: student.completed_projects,
+      total_hours: student.total_hours || 0,
+      experience_years: student.experience_years || 0,
+      portfolio_url: student.portfolio_url,
+      github_url: student.github_url,
+      linkedin_url: student.linkedin_url,
+      cv_link: student.cv_link,
+      certificado_link: student.certificado_link,
+      availability: student.availability || 'flexible',
+      location: student.location,
+      area: student.area,
+      skills: parseJsonArray(student.skills),
+      languages: parseJsonArray(student.languages),
+      created_at: student.created_at,
+      updated_at: student.updated_at,
+      user_data: student.user_data,
+      perfil_detallado: student.perfil_detallado,
+      university: student.university,
+      education_level: student.education_level,
+    } : null,
   };
 };
 
@@ -313,8 +344,6 @@ export const adaptEvaluation = (backendEvaluation: any): Evaluation => {
  * Adapta una notificación del backend al formato del frontend
  */
 export const adaptNotification = (backendNotification: any): Notification => {
-  console.log('🔍 adaptNotification - Notificación del backend:', backendNotification);
-  
   const adaptedNotification = {
     id: String(backendNotification.id),
     user: String(backendNotification.user_id || backendNotification.user || ''),
@@ -327,13 +356,6 @@ export const adaptNotification = (backendNotification: any): Notification => {
     created_at: backendNotification.created_at,
     updated_at: backendNotification.updated_at,
   };
-  
-  console.log('🔍 adaptNotification - Notificación adaptada:', adaptedNotification);
-  console.log('🔍 adaptNotification - Campo read:', {
-    original: backendNotification.read,
-    adapted: adaptedNotification.read,
-    type: typeof adaptedNotification.read
-  });
   
   return adaptedNotification;
 };

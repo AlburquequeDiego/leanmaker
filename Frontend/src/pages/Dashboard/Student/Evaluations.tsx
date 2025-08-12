@@ -179,6 +179,7 @@ export const Evaluations = () => {
   const [showLatest, setShowLatest] = useState(5);
   const [projectDetailsModalOpen, setProjectDetailsModalOpen] = useState(false);
   const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
+  const [limitToShow, setLimitToShow] = useState(5);
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -577,11 +578,56 @@ export const Evaluations = () => {
           background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           color: 'white'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-            <RateReviewIcon sx={{ fontSize: 24 }} />
-            <Typography variant="h6" fontWeight={700}>
-              Evaluar Empresas ({projectsToEvaluate.length} proyectos por evaluar)
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <RateReviewIcon sx={{ fontSize: 24 }} />
+              <Typography variant="h6" fontWeight={700}>
+                Evaluar Empresas ({projectsToEvaluate.length} proyectos por evaluar)
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ opacity: 0.9, whiteSpace: 'nowrap' }}>
+                Mostrar últimas:
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 80 }}>
+                <Select
+                  value={limitToShow}
+                  onChange={(e) => setLimitToShow(Number(e.target.value))}
+                  sx={{
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.8)',
+                    },
+                    '& .MuiSvgIcon-root': {
+                      color: 'white',
+                    },
+                    '& .MuiSelect-select': {
+                      color: 'white',
+                      py: 0.5,
+                    }
+                  }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        bgcolor: themeMode === 'dark' ? '#374151' : '#ffffff',
+                        '& .MuiMenuItem-root': {
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        }
+                      }
+                    }
+                  }}
+                >
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                  <MenuItem value={50}>50</MenuItem>
+                  <MenuItem value={-1}>Todas</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Califica a las empresas con las que has trabajado en proyectos completados
@@ -603,97 +649,98 @@ export const Evaluations = () => {
             </Typography>
           </Box>
         ) : (
-          <Grid container spacing={2}>
-            {projectsToEvaluate.map((project) => (
-              <Grid item xs={12} sm={6} md={4} key={project.project_id}>
-                <Card sx={{ 
-                  height: '100%', 
-                  position: 'relative',
-                  background: themeMode === 'dark' 
-                    ? 'linear-gradient(135deg, #374151 0%, #4b5563 100%)' 
-                    : 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
-                  border: themeMode === 'dark' ? '1px solid #6b7280' : '1px solid #d1d5db',
-                  boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.1)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    boxShadow: themeMode === 'dark' 
-                      ? '0 8px 32px rgba(96, 165, 250, 0.4)' 
-                      : '0 8px 32px rgba(59, 130, 246, 0.2)',
-                    borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
-                    transform: 'translateY(-2px)'
-                  }
-                }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                          {project.project_title}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar sx={{ mr: 1, bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6', width: 24, height: 24 }}>
-                            <BusinessIcon fontSize="small" />
-                          </Avatar>
-                          <Typography variant="body2" color="text.secondary">
-                            {project.company_name}
-                          </Typography>
+          <>
+            <Grid container spacing={2}>
+              {projectsToEvaluate
+                .slice(0, limitToShow === -1 ? undefined : limitToShow)
+                .map((project) => (
+                  <Grid item xs={12} sm={6} md={4} key={project.project_id}>
+                    <Card sx={{ 
+                      height: '100%', 
+                      position: 'relative',
+                      background: themeMode === 'dark' 
+                        ? 'linear-gradient(135deg, #374151 0%, #4b5563 100%)' 
+                        : 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
+                      border: themeMode === 'dark' ? '1px solid #6b7280' : '1px solid #d1d5db',
+                      boxShadow: themeMode === 'dark' ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.1)',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        boxShadow: themeMode === 'dark' 
+                          ? '0 8px 32px rgba(96, 165, 250, 0.4)' 
+                          : '0 8px 32px rgba(59, 130, 246, 0.2)',
+                        borderColor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                        transform: 'translateY(-2px)'
+                      }
+                    }}>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                              {project.project_title}
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                              <Avatar sx={{ mr: 1, bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6', width: 24, height: 24 }}>
+                                <BusinessIcon fontSize="small" />
+                              </Avatar>
+                              <Typography variant="body2" color="text.secondary">
+                                {project.company_name}
+                              </Typography>
+                            </Box>
+                          </Box>
                         </Box>
-                      </Box>
-                      {/* Los proyectos ya evaluados no aparecen en esta sección */}
-                    </Box>
 
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {project.project_description?.substring(0, 100)}...
-                    </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          {project.project_description?.substring(0, 100)}...
+                        </Typography>
 
-                                                              {/* Los proyectos ya evaluados no aparecen en esta sección */}
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="caption" color="text.secondary">
-                        Completado: {new Date(project.completion_date).toLocaleDateString()}
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          startIcon={<VisibilityIcon />}
-                          onClick={() => handleViewProjectDetails(project)}
-                          sx={{
-                            bgcolor: project.already_rated 
-                              ? (themeMode === 'dark' ? '#10b981' : '#059669')
-                              : (themeMode === 'dark' ? '#3b82f6' : '#2563eb'),
-                            color: themeMode === 'dark' ? '#ffffff' : '#ffffff',
-                            '&:hover': {
-                              bgcolor: project.already_rated 
-                                ? (themeMode === 'dark' ? '#059669' : '#047857')
-                                : (themeMode === 'dark' ? '#2563eb' : '#1d4ed8')
-                            }
-                          }}
-                        >
-                          Ver detalle
-                        </Button>
-                        {!project.already_rated && (
-                          <Button
-                            variant="contained"
-                            size="small"
-                            startIcon={<StarIcon />}
-                            onClick={() => handleOpenCalificarModal(project)}
-                            sx={{
-                              bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
-                              '&:hover': {
-                                bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
-                              }
-                            }}
-                          >
-                            Evaluar
-                          </Button>
-                        )}
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Completado: {new Date(project.completion_date).toLocaleDateString()}
+                          </Typography>
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Button
+                              variant="contained"
+                              size="small"
+                              startIcon={<VisibilityIcon />}
+                              onClick={() => handleViewProjectDetails(project)}
+                              sx={{
+                                bgcolor: project.already_rated 
+                                  ? (themeMode === 'dark' ? '#10b981' : '#059669')
+                                  : (themeMode === 'dark' ? '#3b82f6' : '#2563eb'),
+                                color: themeMode === 'dark' ? '#ffffff' : '#ffffff',
+                                '&:hover': {
+                                  bgcolor: project.already_rated 
+                                    ? (themeMode === 'dark' ? '#059669' : '#047857')
+                                    : (themeMode === 'dark' ? '#2563eb' : '#1d4ed8')
+                                }
+                              }}
+                            >
+                              Ver detalle
+                            </Button>
+                            {!project.already_rated && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                startIcon={<StarIcon />}
+                                onClick={() => handleOpenCalificarModal(project)}
+                                sx={{
+                                  bgcolor: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                                  '&:hover': {
+                                    bgcolor: themeMode === 'dark' ? '#3b82f6' : '#2563eb'
+                                  }
+                                }}
+                              >
+                                Evaluar
+                              </Button>
+                            )}
+                          </Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+            </Grid>
+          </>
         )}
       </Card>
 

@@ -369,6 +369,11 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       setLoading(true);
       setError(null);
       
+      console.log('🔍 Iniciando carga de datos del calendario...');
+      console.log('🔍 Token de autorización disponible:', !!localStorage.getItem('accessToken'));
+      console.log('🔍 Token completo:', localStorage.getItem('accessToken')?.substring(0, 20) + '...');
+      console.log('🔍 Usuario actual:', localStorage.getItem('user'));
+      
       // Obtener eventos de calendario
       const eventsResponse = await api.get('/api/calendar/events/company_events/');
       // console.log('Raw company events response:', eventsResponse);
@@ -424,26 +429,121 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       setEvents(adaptedEvents);
 
       // Obtener proyectos de la empresa
+      console.log('🔍 Llamando endpoint de proyectos de empresa...');
       const projectsResponse = await api.get('/api/projects/company_projects/');
+      console.log('🔍 Respuesta del endpoint:', projectsResponse);
+      
       const projects = Array.isArray(projectsResponse.data) ? projectsResponse.data : (projectsResponse.data?.data || []);
+      console.log('🔍 Proyectos extraídos:', projects);
       
       // Filtrar solo proyectos activos o publicados (excluir completados, cancelados, etc.)
+      console.log('🔍 Aplicando filtro de proyectos...');
       const activeProjects = projects.filter((project: any) => {
         const status = project.status?.toLowerCase() || '';
+        console.log(`  🔍 Proyecto ${project.title}: estado='${status}'`);
+        
         // Solo permitir proyectos activos o publicados para crear eventos
-        const allowedStatuses = ['active', 'published', 'activo', 'publicado', 'en progreso', 'in-progress'];
-        return allowedStatuses.includes(status);
+        // El backend usa: 'open', 'in-progress', 'completed', 'cancelled'
+        const allowedStatuses = ['open', 'in-progress', 'active', 'published', 'activo', 'publicado'];
+        const isAllowed = allowedStatuses.includes(status);
+        console.log(`  🔍 Estado permitido: ${isAllowed}`);
+        
+        return isAllowed;
       });
       
-      console.log(`Proyectos totales: ${projects.length}, Proyectos activos/publicados: ${activeProjects.length}`);
+      console.log('🔍 Proyectos totales recibidos:', projects);
+      console.log('🔍 Estados de proyectos:', projects.map(p => ({ id: p.id, title: p.title, status: p.status })));
+      console.log(`📊 Proyectos totales: ${projects.length}, Proyectos activos/publicados: ${activeProjects.length}`);
+      console.log('🔍 Proyectos filtrados:', activeProjects);
       setCompanyProjects(activeProjects);
 
       // Obtener postulaciones recibidas
+      console.log('🔍 Llamando endpoint de aplicaciones recibidas...');
       const applicationsResponse = await api.get('/api/applications/received_applications/');
-      const applications = applicationsResponse.results || applicationsResponse.data || [];
+      console.log('🔍 Respuesta completa de aplicaciones:', applicationsResponse);
+      console.log('🔍 Tipo de respuesta:', typeof applicationsResponse);
+      console.log('🔍 Claves de respuesta:', Object.keys(applicationsResponse || {}));
+      
+      // El backend devuelve {'success': True, 'data': [...]}
+      const applications = applicationsResponse.data || applicationsResponse.results || [];
+      console.log('🔍 Aplicaciones extraídas:', applications);
+      console.log('🔍 Número de aplicaciones:', applications.length);
+      
+      // Debug: Imprimir información de las aplicaciones
+      if (applications.length > 0) {
+        console.log('🔍 Primera aplicación:', applications[0]);
+        console.log('🔍 Estructura del proyecto en primera aplicación:', applications[0].project);
+        console.log('🔍 Estructura del estudiante en primera aplicación:', applications[0].student);
+        console.log('🔍 ID del proyecto:', applications[0].project?.id);
+        console.log('🔍 ID del estudiante:', applications[0].student?.user);
+        
+        // Verificar que todas las aplicaciones tengan la estructura correcta
+        applications.forEach((app: any, index: number) => {
+          console.log(`🔍 Aplicación ${index}:`, {
+            id: app.id,
+            projectId: app.project?.id || app.project,
+            projectTitle: app.project?.title,
+            studentId: app.student?.id,
+            studentUserId: app.student?.user,
+            studentName: app.student?.name,
+            status: app.status
+          });
+        });
+      }
+      
+      // Normalizar la estructura de datos para asegurar consistencia
+      const normalizedApplications = applications.map((app: any) => {
+        // Extraer el ID del proyecto
+        let projectId = null;
+        if (app.project) {
+          if (typeof app.project === 'string') {
+            projectId = app.project;
+          } else if (app.project.id) {
+            projectId = app.project.id;
+          }
+        }
+        
+        // Extraer el ID del estudiante - CORREGIDO
+        let studentId = null;
+        if (app.student) {
+          // Prioridad 1: app.student.user (ID del usuario)
+          if (app.student.user) {
+            studentId = app.student.user;
+          }
+          // Prioridad 2: app.student.id (ID del perfil de estudiante)
+          else if (app.student.id) {
+            studentId = app.student.id;
+          }
+        }
+        
+        console.log(`🔍 [NORMALIZATION] Aplicación ${app.id}:`, {
+          originalProject: app.project,
+          originalStudent: app.student,
+          normalizedProjectId: projectId,
+          normalizedStudentId: studentId
+        });
+        
+        return {
+          ...app,
+          // Asegurar que project tenga siempre un ID accesible
+          project: projectId,
+          // Asegurar que student tenga siempre un ID accesible
+          student: {
+            ...app.student,
+            // Usar el ID del usuario (student.user) como identificador principal
+            id: app.student?.id || null,
+            user: studentId, // Este será el ID que usaremos para attendees
+            name: app.student?.name || 'Estudiante',
+            career: app.student?.career || null,
+            semester: app.student?.semester || null
+          }
+        };
+      });
+      
+      console.log('🔍 Aplicaciones normalizadas:', normalizedApplications);
       
       // Guardar todas las aplicaciones para filtrar después
-      setUsers(applications);
+      setUsers(normalizedApplications);
       
     } catch (err: any) {
       console.error('Error cargando datos del calendario:', err);
@@ -452,6 +552,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       setLoading(false);
     }
   }, []); // Remove api dependency to prevent infinite re-renders
+
+  // Debug: Verificar datos cuando cambian
+  useEffect(() => {
+    console.log('🔍 Estado actual de users:', users);
+    console.log('🔍 Estado actual de companyProjects:', companyProjects);
+    console.log('🔍 Proyecto seleccionado:', selectedProject);
+  }, [users, companyProjects, selectedProject]);
 
   const messages = {
     allDay: 'Todo el día', 
@@ -529,11 +636,29 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       start_date: format(slotInfo.start, "yyyy-MM-dd'T'HH:mm"),
       end_date: format(slotInfo.end, "yyyy-MM-dd'T'HH:mm"),
       title: 'Entrevista - [Selecciona un proyecto]', // Título sugerido
+      // IMPORTANTE: Preservar el array attendees
+      attendees: newEvent.attendees || []
     });
   };
 
   const handleAddEvent = async () => {
     try {
+      console.log('🔍 [EVENT CREATION] Iniciando creación de evento...');
+      console.log('🔍 [EVENT CREATION] Estado completo de newEvent:', newEvent);
+      console.log('🔍 [EVENT CREATION] selectedProject:', selectedProject);
+      
+      // Validar que se haya seleccionado un proyecto
+      if (!selectedProject) {
+        alert('Debes seleccionar un proyecto para crear el evento.');
+        return;
+      }
+      
+      // Validar que se haya seleccionado al menos un estudiante
+      if (!newEvent.attendees || newEvent.attendees.length === 0) {
+        alert('Debes seleccionar al menos un estudiante para el evento.');
+        return;
+      }
+      
       console.log('Fecha de inicio original:', newEvent.start_date);
       const startDate = new Date(newEvent.start_date);
       console.log('Fecha de inicio parseada:', startDate);
@@ -571,7 +696,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         }
         
         const projectStatus = selectedProjectData.status?.toLowerCase() || '';
-        const allowedStatuses = ['active', 'published', 'activo', 'publicado', 'en progreso', 'in-progress'];
+        const allowedStatuses = ['open', 'in-progress', 'active', 'published', 'activo', 'publicado'];
         
         if (!allowedStatuses.includes(projectStatus)) {
           alert(`No se pueden crear eventos para proyectos con estado "${selectedProjectData.status}". Solo se permiten proyectos activos o publicados.`);
@@ -579,12 +704,29 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         }
       }
       
-      // Asegurar que si hay un participante seleccionado, se agregue como attendee
-      let attendees = Array.isArray(newEvent.attendees) ? [...newEvent.attendees] : [];
-      // Si solo se permite seleccionar un estudiante, asegúrate de que sea un array con un solo ID
-      if (typeof attendees === 'string') {
-        attendees = [attendees];
+      // Asegurar que attendees sea siempre un array válido
+      let attendees = [];
+      if (Array.isArray(newEvent.attendees)) {
+        attendees = [...newEvent.attendees];
+      } else if (typeof newEvent.attendees === 'string' && newEvent.attendees) {
+        attendees = [newEvent.attendees];
+      } else if (newEvent.attendees) {
+        attendees = [newEvent.attendees];
       }
+      
+      // Validar que tengamos al menos un estudiante
+      if (attendees.length === 0) {
+        alert('Debes seleccionar al menos un estudiante para el evento.');
+        return;
+      }
+      
+      console.log('🔍 [EVENT CREATION] Estado de attendees antes de enviar:');
+      console.log('🔍 [EVENT CREATION] newEvent.attendees:', newEvent.attendees);
+      console.log('🔍 [EVENT CREATION] attendees procesado:', attendees);
+      console.log('🔍 [EVENT CREATION] selectedProject:', selectedProject);
+      console.log('🔍 [EVENT CREATION] Tipo de attendees:', typeof attendees);
+      console.log('🔍 [EVENT CREATION] Es array:', Array.isArray(attendees));
+      console.log('🔍 [EVENT CREATION] Longitud:', attendees.length);
       
       // Enviar las fechas en UTC al backend para evitar problemas de zona horaria
       const eventData = {
@@ -597,7 +739,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         attendees: attendees, // Siempre enviar el array de IDs
         is_public: newEvent.is_public,
         priority: newEvent.priority,
-        project: selectedProject || undefined, // Enviar el proyecto seleccionado
+        project: selectedProject, // Enviar el proyecto seleccionado
         meeting_type: newEvent.meeting_type,
         meeting_link: newEvent.meeting_link,
         meeting_room: newEvent.meeting_room,
@@ -605,19 +747,23 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         representative_position: newEvent.representative_position,
       };
 
-      console.log('Datos enviados al backend:', eventData);
-      console.log('start_date UTC:', startDate.toISOString());
-      console.log('end_date UTC:', endDate.toISOString());
-      console.log('Zona horaria offset:', startDate.getTimezoneOffset(), 'minutos');
+      console.log('🔍 [EVENT CREATION] Datos enviados al backend:', eventData);
+      console.log('🔍 [EVENT CREATION] start_date UTC:', startDate.toISOString());
+      console.log('🔍 [EVENT CREATION] end_date UTC:', endDate.toISOString());
+      console.log('🔍 [EVENT CREATION] attendees enviados:', attendees);
+      console.log('🔍 [EVENT CREATION] Zona horaria offset:', startDate.getTimezoneOffset(), 'minutos');
       
       const createdEventResponse = await api.post('/api/calendar/events/', eventData);
-      console.log('Respuesta del backend:', createdEventResponse);
+      console.log('🔍 [EVENT CREATION] Respuesta del backend:', createdEventResponse);
+      
       // Soportar ambos formatos de respuesta
       const createdEvent = createdEventResponse?.data?.id ? createdEventResponse.data : createdEventResponse;
 
       if (!createdEvent || !createdEvent.id) {
         throw new Error(createdEvent?.error || 'Error desconocido al crear el evento');
       }
+
+      console.log('🔍 [EVENT CREATION] Evento creado exitosamente:', createdEvent);
 
       // Adaptar el evento creado
       const adaptedEvent = {
@@ -643,8 +789,12 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         representative_position: createdEvent.representative_position,
       };
 
+      console.log('🔍 [EVENT CREATION] Evento adaptado:', adaptedEvent);
+
       setEvents(prev => [...prev, adaptedEvent]);
       setShowAddDialog(false);
+      
+      // Resetear el formulario
       setNewEvent({
         title: '',
         description: '',
@@ -661,9 +811,30 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         representative_name: '',
         representative_position: '',
       });
+      
+      // Resetear el proyecto seleccionado
+      setSelectedProject('');
+      
+      // Mostrar mensaje de éxito
+      alert('Evento creado exitosamente. Los estudiantes han sido notificados.');
+      
     } catch (error: any) {
-      console.error('Error creando evento:', error);
-      setError(error.response?.data?.error || 'Error al crear evento');
+      console.error('❌ [EVENT CREATION] Error creando evento:', error);
+      console.error('❌ [EVENT CREATION] Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
+      let errorMessage = 'Error al crear evento';
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
+      alert(`Error al crear el evento: ${errorMessage}`);
     }
   };
 
@@ -1869,9 +2040,35 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   }}>
                     Participante
                   </InputLabel>
+                  
+                  {/* Información de debug */}
+                  {selectedProject && (
+                    <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(255, 193, 7, 0.1)', borderRadius: 1, border: '1px solid rgba(255, 193, 7, 0.3)' }}>
+                      <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500 }}>
+                        🔍 Debug: {users.filter(u => String(u.project) === selectedProject).length} estudiantes disponibles para este proyecto
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500, display: 'block', mt: 0.5 }}>
+                        📋 Attendees actuales: {newEvent.attendees.length > 0 ? newEvent.attendees.join(', ') : 'NINGUNO'}
+                      </Typography>
+                    </Box>
+                  )}
               <Select
                     value={newEvent.attendees.length > 0 ? newEvent.attendees[0] : ''}
-                    onChange={e => setNewEvent((prev: any) => ({ ...prev, attendees: [e.target.value] }))}
+                    onChange={e => {
+                      const selectedStudentId = e.target.value;
+                      console.log('🔍 [SELECT CHANGE] Valor seleccionado:', selectedStudentId);
+                      console.log('🔍 [SELECT CHANGE] Estado previo:', newEvent);
+                      
+                      if (selectedStudentId) {
+                        const newState = { ...newEvent, attendees: [selectedStudentId] };
+                        console.log('🔍 [SELECT CHANGE] Nuevo estado:', newState);
+                        setNewEvent(newState);
+                      } else {
+                        const newState = { ...newEvent, attendees: [] };
+                        console.log('🔍 [SELECT CHANGE] Limpiando attendees:', newState);
+                        setNewEvent(newState);
+                      }
+                    }}
                     label="Participante"
                 disabled={!selectedProject}
                     sx={{
@@ -1889,28 +2086,111 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     }}
               >
                     <MenuItem value="">Selecciona un participante</MenuItem>
-                {users.filter(u => u.project === selectedProject).map(user => (
-                      <MenuItem key={user.student?.user || user.id} value={user.student?.user || user.id} sx={{
+                {!selectedProject && (
+                  <MenuItem disabled sx={{
+                    bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                    color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                    fontStyle: 'italic'
+                  }}>
+                    Primero selecciona un proyecto
+                  </MenuItem>
+                )}
+                {(() => {
+                  console.log('🔍 [STUDENT FILTER] Filtrando usuarios para proyecto:', selectedProject);
+                  console.log('🔍 [STUDENT FILTER] Usuarios disponibles:', users);
+                  console.log('🔍 [STUDENT FILTER] Estructura de usuarios:', users.map((u: any) => ({
+                    id: u.id,
+                    project: u.project,
+                    student: u.student,
+                    studentUser: u.student?.user,
+                    studentId: u.student?.id
+                  })));
+                  
+                  const filteredUsers = users.filter((u: any) => {
+                    // u.project ahora es directamente el ID del proyecto (string) después de la normalización
+                    const projectId = u.project;
+                    const isMatch = String(projectId) === selectedProject;
+                    console.log(`🔍 [STUDENT FILTER] Usuario ${u.id}: projectId=${projectId}, selectedProject=${selectedProject}, isMatch=${isMatch}`);
+                    return isMatch;
+                  });
+                  
+                  console.log('🔍 [STUDENT FILTER] Usuarios filtrados:', filteredUsers);
+                  console.log('🔍 [STUDENT FILTER] Detalle de usuarios filtrados:', filteredUsers.map((u: any) => ({
+                    id: u.id,
+                    project: u.project,
+                    student: u.student,
+                    studentUser: u.student?.user,
+                    studentId: u.student?.id,
+                    studentName: u.student?.name
+                  })));
+                  
+                  if (filteredUsers.length === 0 && selectedProject) {
+                    return (
+                      <MenuItem disabled sx={{
+                        bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                        color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                        fontStyle: 'italic'
+                      }}>
+                        No hay estudiantes postulados para este proyecto
+                      </MenuItem>
+                    );
+                  }
+                  
+                  return filteredUsers.map((user: any) => {
+                    // Usar el ID del usuario (student.user) como valor del Select
+                    const studentId = user.student?.user || user.student?.id || user.id;
+                    const studentName = user.student?.name || user.student_name || user.student_email || 'Estudiante';
+                    const studentCareer = user.student?.career;
+                    const studentSemester = user.student?.semester;
+                    
+                    console.log(`🔍 [STUDENT SELECT] Renderizando estudiante:`, {
+                      id: studentId,
+                      name: studentName,
+                      career: studentCareer,
+                      semester: studentSemester,
+                      studentUser: user.student?.user,
+                      studentId: user.student?.id
+                    });
+                    
+                    return (
+                      <MenuItem key={studentId} value={studentId} sx={{
                         bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
                         '&:hover': {
                           bgcolor: themeMode === 'dark' ? '#64748b' : '#f1f5f9',
                         },
                       }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <Typography variant="body2" fontWeight={600}>
-                            {user.student?.name || user.student?.user_data?.full_name || 'Estudiante'}
-                      </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                          <Typography variant="body2" fontWeight={600}>
+                            {studentName}
+                          </Typography>
                           <Typography variant="caption" sx={{ 
                             color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
                           }}>
                             Estado: {user.status === 'pending' ? 'Pendiente' : 
                                    user.status === 'accepted' ? 'Aceptado' : 
                                    user.status === 'rejected' ? 'Rechazado' : user.status}
-                      </Typography>
-                    </Box>
-                  </MenuItem>
-                ))}
+                          </Typography>
+                          {studentCareer && (
+                            <Typography variant="caption" sx={{ 
+                              color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
+                            }}>
+                              {studentCareer} - Semestre {studentSemester || 'N/A'}
+                            </Typography>
+                          )}
+                          {/* Debug: Mostrar IDs para verificación */}
+                          <Typography variant="caption" sx={{ 
+                            color: themeMode === 'dark' ? '#ef4444' : '#dc2626',
+                            fontFamily: 'monospace',
+                            fontSize: '10px'
+                          }}>
+                            User ID: {user.student?.user || 'N/A'} | Student ID: {user.student?.id || 'N/A'}
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                    );
+                  });
+                })()}
               </Select>
             </FormControl>
               </Box>
@@ -2522,6 +2802,54 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           >
             Cancelar
           </Button>
+          
+          {/* Botón de debug temporal */}
+          <Button 
+            onClick={() => {
+              console.log('🔍 DEBUG - Estado actual:');
+              console.log('🔍 users:', users);
+              console.log('🔍 companyProjects:', companyProjects);
+              console.log('🔍 selectedProject:', selectedProject);
+              console.log('🔍 newEvent:', newEvent);
+              
+              if (selectedProject) {
+                const filteredUsers = users.filter((u: any) => String(u.project) === selectedProject);
+                console.log('🔍 Usuarios filtrados para proyecto:', selectedProject, ':', filteredUsers);
+                
+                // Mostrar información detallada de cada usuario filtrado
+                filteredUsers.forEach((user: any, index: number) => {
+                  console.log(`🔍 Usuario ${index}:`, {
+                    id: user.id,
+                    project: user.project,
+                    student: user.student,
+                    studentId: user.student?.id,
+                    studentUserId: user.student?.user,
+                    studentName: user.student?.name,
+                    status: user.status
+                  });
+                });
+              }
+              
+              // Verificar la estructura de datos
+              console.log('🔍 Estructura de datos:');
+              console.log('  - users.length:', users.length);
+              console.log('  - companyProjects.length:', companyProjects.length);
+              console.log('  - selectedProject:', selectedProject);
+              console.log('  - newEvent.attendees:', newEvent.attendees);
+              console.log('  - newEvent.attendees type:', typeof newEvent.attendees);
+              console.log('  - newEvent.attendees isArray:', Array.isArray(newEvent.attendees));
+            }} 
+            variant="outlined"
+            color="warning"
+            sx={{ 
+              borderRadius: 2, 
+              px: 2,
+              fontSize: '0.75rem'
+            }}
+          >
+            Debug
+          </Button>
+          
           <Button 
             onClick={handleAddEvent} 
             variant="contained"
@@ -2781,26 +3109,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   Participantes
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {selectedEvent.attendee_names && selectedEvent.attendee_names.length > 0 ? (
-                    selectedEvent.attendee_names.map((attendeeName: string, index: number) => (
-                      <Box key={index} sx={{ 
-                        p: 1, 
-                        bgcolor: themeMode === 'dark' ? '#475569' : 'white', 
-                        borderRadius: 1, 
-                        border: themeMode === 'dark' ? '1px solid #64748b' : '1px solid #e0e0e0',
-                        minWidth: 200
-                      }}>
-                        <Typography variant="body2" fontWeight={600}>
-                          {attendeeName}
-                        </Typography>
-                        <Typography variant="caption" sx={{ 
-                          color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
-                        }}>
-                          Participante
-                        </Typography>
-                      </Box>
-                    ))
-                  ) : selectedEvent.attendees && selectedEvent.attendees.length > 0 ? (
+                  {selectedEvent.attendees && selectedEvent.attendees.length > 0 ? (
                     selectedEvent.attendees.map((attendee: any, index: number) => (
                       <Box key={index} sx={{ 
                         p: 1, 

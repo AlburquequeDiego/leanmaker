@@ -342,7 +342,13 @@ export default function CompanyDashboard() {
   const pendingApplications = stats?.pending_applications || 0;
   const totalApplications = stats?.total_applications || 0;
   const activeStudents = stats?.active_students || 0;
-  const averageRating = stats?.gpa || 0;
+  const averageRating = stats?.gpa ?? 0;
+  console.log('[CompanyDashboard] GPA Debug:', {
+    'stats.gpa': stats?.gpa,
+    'averageRating': averageRating,
+    'stats.gpa type': typeof stats?.gpa,
+    'averageRating type': typeof averageRating
+  });
   const totalHoursOffered = stats?.total_hours_offered || 0;
 
   // Datos para el gráfico circular - solo datos reales
@@ -480,7 +486,7 @@ export default function CompanyDashboard() {
                            {/* GPA Empresa - Azul índigo vibrante con gradiente */}
               <KPICard
                 title="GPA Empresa"
-                value={averageRating > 0 ? `${averageRating.toFixed(1)}/5` : 'Sin calificaciones'}
+                value={averageRating !== null && averageRating !== undefined ? `${averageRating.toFixed(1)}/5` : 'Sin calificaciones'}
                 description="Calificación promedio que la empresa ha recibido de los estudiantes. Refleja la satisfacción y calidad de la experiencia proporcionada."
                 icon={<StarIcon sx={{ fontSize: 28 }} />}
                 bgColor="linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)"

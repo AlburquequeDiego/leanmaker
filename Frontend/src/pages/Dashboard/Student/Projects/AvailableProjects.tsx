@@ -13,6 +13,9 @@ import {
   Alert,
   IconButton,
   Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   MenuItem,
   Autocomplete,
   Select,
@@ -115,6 +118,10 @@ export default function AvailableProjects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [studentApiLevel, setStudentApiLevel] = useState<number>(1);
+  const [confirmationDialog, setConfirmationDialog] = useState<{ open: boolean; projectId: string | null }>({
+    open: false,
+    projectId: null
+  });
 
   // Filtros avanzados
   const [area, setArea] = useState('');
@@ -189,6 +196,7 @@ export default function AvailableProjects() {
         message: '¡Postulación enviada con éxito!', 
         severity: 'success' 
       });
+      setConfirmationDialog({ open: false, projectId: null });
     } catch (error) {
       console.error('Error applying to project:', error);
       setSnackbar({ 
@@ -197,6 +205,14 @@ export default function AvailableProjects() {
         severity: 'error' 
       });
     }
+  };
+
+  const handleOpenConfirmation = (projectId: string) => {
+    setConfirmationDialog({ open: true, projectId });
+  };
+
+  const handleCloseConfirmation = () => {
+    setConfirmationDialog({ open: false, projectId: null });
   };
 
   const handleOpenDetail = (project: Project) => {
@@ -850,7 +866,7 @@ export default function AvailableProjects() {
                        size="small" 
                        variant="contained" 
                        color="success" 
-                       onClick={() => handleApply(project.id)} 
+                       onClick={() => handleOpenConfirmation(project.id)} 
                        sx={{ 
                          fontWeight: 600,
                          borderRadius: 1.5,
@@ -907,6 +923,93 @@ export default function AvailableProjects() {
       )}
 
       {selectedProject && renderProjectDetail(selectedProject)}
+
+      {/* Modal de confirmación para postulación */}
+      <Dialog
+        open={confirmationDialog.open}
+        onClose={handleCloseConfirmation}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 2,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          <WarningIcon sx={{ color: '#f57c00', fontSize: 28 }} />
+          <Typography variant="h6" fontWeight={600}>
+            Confirmar Postulación
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ 
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+              ¿Estás seguro de que quieres postularte a este proyecto?
+            </Typography>
+            
+            <Alert severity="warning" sx={{ mb: 3, bgcolor: themeMode === 'dark' ? '#7c2d12' : '#fff3e0' }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                ⚠️ Importante: Esta acción no se puede deshacer
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                • Una vez postulado, tu solicitud será enviada a la empresa
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                • La empresa revisará tu perfil y decidirá si te acepta o rechaza
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                • Si eres aceptado, deberás cumplir con los compromisos del proyecto
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                • No podrás retirar tu postulación una vez enviada
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#d32f2f' }}>
+                • Solo podrás postularte a un proyecto a la vez
+              </Typography>
+            </Alert>
+
+            <Typography variant="body2" sx={{ 
+              fontStyle: 'italic', 
+              color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+              textAlign: 'center'
+            }}>
+              Asegúrate de haber revisado todos los detalles del proyecto antes de continuar.
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ 
+          p: 3, 
+          gap: 2,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
+          <Button 
+            onClick={handleCloseConfirmation} 
+            variant="outlined"
+            sx={{ 
+              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={() => confirmationDialog.projectId && handleApply(confirmationDialog.projectId)} 
+            variant="contained" 
+            color="success"
+            sx={{ 
+              bgcolor: '#4caf50',
+              '&:hover': { bgcolor: '#45a049' }
+            }}
+          >
+            Sí, Postularme
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={snackbar.open}

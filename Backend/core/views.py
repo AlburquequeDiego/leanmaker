@@ -1039,7 +1039,7 @@ def api_dashboard_company_stats(request):
                 company=company,
                 status__name='published'
             ).filter(
-                application_project__status__in=['accepted', 'active', 'completed']
+                project_applications__estado__in=['accepted', 'completed']
             ).distinct().count()
             
             active_projects = active_status_projects + published_with_students
@@ -1071,16 +1071,92 @@ def api_dashboard_company_stats(request):
             print(f'📊 [COMPANY STATS] Aplicaciones pendientes: {pending_applications}')
             
             # 6. Estudiantes activos (estudiantes que están trabajando actualmente en proyectos)
-            # Estudiantes con aplicaciones aceptadas, activas o completadas
+            # Estudiantes con aplicaciones aceptadas o completadas
             active_students = Aplicacion.objects.filter(
                 project__company=company,
-                status__in=['accepted', 'active', 'completed']
+                status__in=['accepted', 'completed']
             ).values('student').distinct().count()
             print(f'📊 [COMPANY STATS] Estudiantes activos: {active_students}')
             
-            # 7. Rating promedio de la empresa
-            rating = float(company.rating) if company.rating else 0.0
-            print(f'📊 [COMPANY STATS] Rating: {rating}')
+            # 7. GPA promedio de la empresa (basado en evaluaciones reales)
+            from evaluations.models import Evaluation
+            evaluaciones_empresa = Evaluation.objects.filter(
+                project__company=company,
+                status='completed',
+                evaluation_type='student_to_company'
+            )
+            
+            print(f'🔍 [COMPANY STATS] Buscando evaluaciones para empresa: {company.company_name}')
+            print(f'🔍 [COMPANY STATS] Filtros aplicados: company={company.id}, status=completed, evaluation_type=student_to_company')
+            print(f'🔍 [COMPANY STATS] Evaluaciones encontradas: {evaluaciones_empresa.count()}')
+            
+            if evaluaciones_empresa.exists():
+                scores = [e.score for e in evaluaciones_empresa]
+                print(f'🔍 [COMPANY STATS] Scores individuales: {scores}')
+                gpa = sum(scores) / len(scores)
+                gpa = round(gpa, 2)
+                print(f'📊 [COMPANY STATS] GPA calculado: {gpa} (suma: {sum(scores)}, cantidad: {len(scores)})')
+            else:
+                gpa = 0.0
+                print(f'📊 [COMPANY STATS] No hay evaluaciones, GPA establecido en: {gpa}')
+            
+            # 7.1. Estadísticas de evaluaciones para las tarjetas del dashboard
+            # Estudiantes pendientes de evaluar (proyectos completados sin evaluación)
+            from django.db.models import Q, Count
+            proyectos_completados = Proyecto.objects.filter(
+                company=company,
+                status__name='completed'
+            )
+            
+            print(f'📊 [COMPANY STATS] Proyectos completados encontrados: {proyectos_completados.count()}')
+            
+            # Obtener todos los estudiantes únicos en proyectos completados
+            estudiantes_en_proyectos_completados = Aplicacion.objects.filter(
+                project__in=proyectos_completados,
+                status__in=['accepted', 'completed']
+            ).values('student').distinct()
+            
+            total_estudiantes_proyectos_completados = estudiantes_en_proyectos_completados.count()
+            print(f'📊 [COMPANY STATS] Total estudiantes únicos en proyectos completados: {total_estudiantes_proyectos_completados}')
+            
+            # Debug: mostrar detalles de cada proyecto completado
+            for proyecto in proyectos_completados:
+                estudiantes_proyecto = Aplicacion.objects.filter(
+                    project=proyecto,
+                    status__in=['accepted', 'completed']
+                ).values('student__user__email', 'status').distinct()
+                print(f'📋 [COMPANY STATS] Proyecto "{proyecto.title}": {estudiantes_proyecto.count()} estudiantes')
+                for app in estudiantes_proyecto:
+                    print(f'   - Estudiante: {app["student__user__email"]}, Status: {app["status"]}')
+            
+            # Contar evaluaciones completadas para estos estudiantes
+            evaluaciones_encontradas = Evaluation.objects.filter(
+                project__in=proyectos_completados,
+                student__in=estudiantes_en_proyectos_completados.values_list('student', flat=True),
+                evaluation_type='student_to_company',
+                status='completed'
+            ).values('student__user__email', 'project__title').distinct()
+            
+            estudiantes_evaluados = evaluaciones_encontradas.count()
+            print(f'📊 [COMPANY STATS] Evaluaciones encontradas: {estudiantes_evaluados}')
+            
+            # Debug: mostrar detalles de las evaluaciones
+            for eval in evaluaciones_encontradas:
+                print(f'   - Estudiante evaluado: {eval["student__user__email"]} en proyecto: {eval["project__title"]}')
+            
+            # Los pendientes son el total menos los evaluados
+            estudiantes_pendientes_evaluar = total_estudiantes_proyectos_completados - estudiantes_evaluados
+            
+            print(f'📊 [COMPANY STATS] Evaluaciones - Pendientes: {estudiantes_pendientes_evaluar}, Realizadas: {estudiantes_evaluados}, Total: {total_estudiantes_proyectos_completados}')
+            
+            # Debug adicional: verificar que los números sumen correctamente
+            suma_verificacion = estudiantes_pendientes_evaluar + estudiantes_evaluados
+            print(f'🔍 [COMPANY STATS] Verificación: {estudiantes_pendientes_evaluar} + {estudiantes_evaluados} = {suma_verificacion} (debería ser igual a {total_estudiantes_proyectos_completados})')
+            
+            if suma_verificacion != total_estudiantes_proyectos_completados:
+                print(f'⚠️ [COMPANY STATS] ¡DISCREPANCIA DETECTADA! Los números no suman correctamente')
+            else:
+                print(f'✅ [COMPANY STATS] Los números suman correctamente')
             
             # 8. Calcular horas ofrecidas totales
             from django.db.models import Sum, F, Case, When, Value, IntegerField
@@ -1191,15 +1267,20 @@ def api_dashboard_company_stats(request):
             'pending_applications': pending_applications,
             'completed_projects': completed_projects,
             'active_students': active_students,
-            'rating': rating,
+            'gpa': gpa,
             'total_hours_offered': total_hours_offered,
             'projects_this_month': projects_this_month,
             'applications_this_month': applications_this_month,
             'area_distribution': area_data,
             'monthly_activity': monthly_activity,
-            'recent_activity': []
+            'recent_activity': [],
+            # Estadísticas de evaluaciones para las tarjetas del dashboard
+            'evaluations_pending': estudiantes_pendientes_evaluar,
+            'evaluations_completed': estudiantes_evaluados,
+            'evaluations_total_students': total_estudiantes_proyectos_completados
         }
         print('✅ Datos del dashboard:', response_data)
+        print(f'🎯 [RESPONSE DEBUG] Campo GPA específico: {response_data.get("gpa")} (tipo: {type(response_data.get("gpa"))})')
         return JsonResponse(response_data)
         
     except Exception as e:
@@ -1263,8 +1344,9 @@ def api_dashboard_student_stats(request):
             accepted_applications = Aplicacion.objects.filter(student=student, status='accepted').count()
             print(f"✅ [STUDENT DASHBOARD] Aplicaciones aceptadas: {accepted_applications}")
             
-            # Obtener proyectos del estudiante a través de aplicaciones aceptadas
-            accepted_applications_objs = Aplicacion.objects.filter(student=student, status='accepted')
+            # Obtener proyectos del estudiante a través de aplicaciones aceptadas, activas O completadas
+            accepted_statuses = ['accepted', 'active', 'completed']
+            accepted_applications_objs = Aplicacion.objects.filter(student=student, status__in=accepted_statuses)
             print(f"🔗 [STUDENT DASHBOARD] Objetos de aplicaciones aceptadas: {accepted_applications_objs.count()}")
             
             student_projects = Proyecto.objects.filter(application_project__in=accepted_applications_objs)
@@ -2445,132 +2527,7 @@ def api_hub_analytics_data(request):
                 'approvedApiRequests': 0
             }
         
-        # 7. MÉTRICAS DE ASISTENCIAS A EVENTOS
-        try:
-            from mass_notifications.models import MassNotification, EventRegistration
-            
-            # Total de eventos (notificaciones masivas que son eventos)
-            total_events = MassNotification.objects.filter(
-                event_date__isnull=False
-            ).count()
-            
-            # Total de invitaciones (registros de asistencia)
-            total_invitations = EventRegistration.objects.count()
-            
-            # Asistencias por estado
-            confirmed_attendances = EventRegistration.objects.filter(status='confirmed').count()
-            declined_attendances = EventRegistration.objects.filter(status='declined').count()
-            maybe_attendances = EventRegistration.objects.filter(status='maybe').count()
-            pending_attendances = EventRegistration.objects.filter(status='pending').count()
-            
-            # Tasa de confirmación
-            total_responses = confirmed_attendances + declined_attendances + maybe_attendances
-            confirmation_rate = (confirmed_attendances / total_responses * 100) if total_responses > 0 else 0
-            
-            # Asistencias por tipo de evento
-            attendance_by_event_type = []
-            event_types = MassNotification.objects.filter(
-                event_date__isnull=False
-            ).values_list('event_type', flat=True).distinct()
-            
-            for event_type in event_types:
-                events_of_type = MassNotification.objects.filter(
-                    event_date__isnull=False,
-                    event_type=event_type
-                )
-                event_ids = events_of_type.values_list('id', flat=True)
-                
-                attendances = EventRegistration.objects.filter(event_id__in=event_ids)
-                total = attendances.count()
-                confirmed = attendances.filter(status='confirmed').count()
-                declined = attendances.filter(status='declined').count()
-                maybe = attendances.filter(status='maybe').count()
-                pending = attendances.filter(status='pending').count()
-                
-                attendance_by_event_type.append({
-                    'event_type': event_type or 'Sin tipo',
-                    'total': total,
-                    'confirmed': confirmed,
-                    'declined': declined,
-                    'maybe': maybe,
-                    'pending': pending
-                })
-            
-            # Tendencia mensual de asistencias
-            attendance_by_month = []
-            for i in range(6):
-                month_date = now - timedelta(days=30*i)
-                events_this_month = MassNotification.objects.filter(
-                    event_date__isnull=False,
-                    event_date__year=month_date.year,
-                    event_date__month=month_date.month
-                )
-                event_ids = events_this_month.values_list('id', flat=True)
-                
-                attendances_this_month = EventRegistration.objects.filter(event_id__in=event_ids)
-                total_attendances = attendances_this_month.count()
-                confirmed_this_month = attendances_this_month.filter(status='confirmed').count()
-                attendance_rate = (confirmed_this_month / total_attendances * 100) if total_attendances > 0 else 0
-                
-                attendance_by_month.append({
-                    'month': month_date.strftime('%Y-%m'),
-                    'events': events_this_month.count(),
-                    'confirmations': confirmed_this_month,
-                    'attendance_rate': round(attendance_rate, 1)
-                })
-            attendance_by_month.reverse()
-            
-            # Top eventos por confirmaciones
-            top_events = []
-            events_with_attendance = MassNotification.objects.filter(
-                event_date__isnull=False
-            ).annotate(
-                total_invited=Count('event_registrations'),
-                confirmed_count=Count('event_registrations', filter=Q(event_registrations__status='confirmed')),
-                declined_count=Count('event_registrations', filter=Q(event_registrations__status='declined')),
-                maybe_count=Count('event_registrations', filter=Q(event_registrations__status='maybe'))
-            ).filter(total_invited__gt=0).order_by('-total_invited')[:10]
-            
-            for event in events_with_attendance:
-                confirmation_rate_event = (event.confirmed_count / event.total_invited * 100) if event.total_invited > 0 else 0
-                top_events.append({
-                    'id': str(event.id),
-                    'title': event.title,
-                    'event_type': event.event_type or 'Sin tipo',
-                    'total_invited': event.total_invited,
-                    'confirmed': event.confirmed_count,
-                    'declined': event.declined_count,
-                    'maybe': event.maybe_count,
-                    'confirmation_rate': round(confirmation_rate_event, 1)
-                })
-            
-            event_attendance_metrics = {
-                'totalEvents': total_events,
-                'totalInvitations': total_invitations,
-                'confirmedAttendances': confirmed_attendances,
-                'declinedAttendances': declined_attendances,
-                'maybeAttendances': maybe_attendances,
-                'pendingAttendances': pending_attendances,
-                'confirmationRate': round(confirmation_rate, 1),
-                'byEventType': attendance_by_event_type,
-                'byMonth': attendance_by_month,
-                'topEvents': top_events
-            }
-            
-        except Exception as e:
-            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas de asistencias: {str(e)}")
-            event_attendance_metrics = {
-                'totalEvents': 0,
-                'totalInvitations': 0,
-                'confirmedAttendances': 0,
-                'declinedAttendances': 0,
-                'maybeAttendances': 0,
-                'pendingAttendances': 0,
-                'confirmationRate': 0,
-                'byEventType': [],
-                'byMonth': [],
-                'topEvents': []
-            }
+
         
         response_data = {
             'stats': {
@@ -2596,7 +2553,6 @@ def api_hub_analytics_data(request):
             'strikesMetrics': strikes_metrics,
             'notificationsMetrics': notifications_metrics,
             'apiTrlMetrics': api_trl_metrics,
-            'eventAttendanceMetrics': event_attendance_metrics,
         }
         
         # Debug: imprimir resumen de datos enviados
@@ -2611,7 +2567,6 @@ def api_hub_analytics_data(request):
         print(f"  - strikesMetrics: {strikes_metrics['activeStrikes']} strikes activos")
         print(f"  - notificationsMetrics: {notifications_metrics['totalNotifications']} notificaciones")
         print(f"  - apiTrlMetrics: {api_trl_metrics['totalApiRequests']} solicitudes API")
-        print(f"  - eventAttendanceMetrics: {event_attendance_metrics['totalEvents']} eventos")
         
         # Debug adicional para verificar datos específicos
         print(f"🔍 [HUB ANALYTICS] Debug adicional:")

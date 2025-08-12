@@ -29,6 +29,7 @@ import {
   Grid,
   IconButton,
   Tooltip,
+  Snackbar,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -51,11 +52,14 @@ import {
   Assignment as AssignmentIcon,
   Campaign as CampaignIcon,
   Celebration as CelebrationIcon,
+  People as PeopleIcon,
+  CalendarToday as CalendarTodayIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { adaptNotificationList } from '../../../utils/adapters';
 import { useTheme } from '../../../contexts/ThemeContext';
 import type { Notification } from '../../../types';
+import { notificationService } from '../../../services/notification.service';
 
 export const CompanyNotifications: React.FC = () => {
   const api = useApi();
@@ -69,6 +73,16 @@ export const CompanyNotifications: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [readStatusFilter, setReadStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState<string>('');
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
 
   useEffect(() => {
     loadNotifications();
@@ -78,163 +92,21 @@ export const CompanyNotifications: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🔍 Cargando notificaciones...');
       
       const response = await api.get('/api/notifications/');
-      console.log('🔍 Respuesta de la API al cargar notificaciones:', response);
-      
       const adaptedNotifications = adaptNotificationList(response.data.data || response.data);
-      console.log('🔍 Notificaciones adaptadas:', adaptedNotifications);
       
       setNotifications(adaptedNotifications);
-      console.log('🔍 Estado de notificaciones actualizado:', adaptedNotifications);
+      setUnreadCount(adaptedNotifications.filter(n => !n.read).length);
     } catch (err: any) {
-      console.error('❌ Error al cargar notificaciones:', err);
+      console.error('Error al cargar notificaciones:', err);
       setError(err.response?.data?.error || 'Error al cargar notificaciones');
     } finally {
       setLoading(false);
     }
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'success':
-        return <CheckCircleIcon sx={{ fontSize: 28 }} />;
-      case 'warning':
-        return <WarningIcon sx={{ fontSize: 28 }} />;
-      case 'error':
-        return <PriorityHighIcon sx={{ fontSize: 28 }} />;
-      case 'info':
-        return <InfoIcon sx={{ fontSize: 28 }} />;
-      case 'event':
-        return <EventIcon sx={{ fontSize: 28 }} />;
-      case 'announcement':
-        return <AnnouncementIcon sx={{ fontSize: 28 }} />;
-      case 'alert':
-        return <PriorityHighIcon sx={{ fontSize: 28 }} />;
-      case 'update':
-        return <UpdateIcon sx={{ fontSize: 28 }} />;
-      case 'deadline':
-        return <WarningIcon sx={{ fontSize: 28 }} />;
-      case 'reminder':
-        return <ScheduleIcon sx={{ fontSize: 28 }} />;
-      case 'application':
-        return <AssignmentIcon sx={{ fontSize: 28 }} />;
-      case 'project':
-        return <BusinessIcon sx={{ fontSize: 28 }} />;
-      case 'evaluation':
-        return <CheckCircleIcon sx={{ fontSize: 28 }} />;
-      case 'system':
-        return <InfoIcon sx={{ fontSize: 28 }} />;
-      default:
-        return <NotificationsIcon sx={{ fontSize: 28 }} />;
-    }
-  };
-
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'success':
-        return 'success';
-      case 'warning':
-        return 'warning';
-      case 'error':
-        return 'error';
-      case 'event':
-        return 'secondary';
-      case 'announcement':
-        return 'primary';
-      case 'alert':
-        return 'error';
-      case 'update':
-        return 'success';
-      case 'deadline':
-        return 'warning';
-      case 'reminder':
-        return 'warning';
-      case 'application':
-        return 'primary';
-      case 'project':
-        return 'info';
-      case 'evaluation':
-        return 'success';
-      case 'system':
-        return 'default';
-      case 'info':
-        return 'info';
-      default:
-        return 'info';
-    }
-  };
-
-  const getNotificationTypeLabel = (type: string) => {
-    switch (type) {
-      case 'success':
-        return 'Éxito';
-      case 'warning':
-        return 'Advertencia';
-      case 'error':
-        return 'Error';
-      case 'info':
-        return 'Información';
-      case 'event':
-        return 'Evento';
-      case 'announcement':
-        return 'Anuncio';
-      case 'alert':
-        return 'Alerta';
-      case 'update':
-        return 'Actualización';
-      case 'deadline':
-        return 'Fecha límite';
-      case 'reminder':
-        return 'Recordatorio';
-      case 'application':
-        return 'Aplicación';
-      case 'project':
-        return 'Proyecto';
-      case 'evaluation':
-        return 'Evaluación';
-      case 'system':
-        return 'Sistema';
-      default:
-        return 'Notificación';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent':
-        return 'error';
-      case 'high':
-        return 'warning';
-      case 'medium':
-        return 'info';
-      case 'normal':
-        return 'primary';
-      case 'low':
-        return 'default';
-      default:
-        return 'default';
-    }
-  };
-
-  const getPriorityLabel = (priority: string) => {
-    switch (priority) {
-      case 'urgent':
-        return 'Urgente';
-      case 'high':
-        return 'Alta';
-      case 'medium':
-        return 'Media';
-      case 'normal':
-        return 'Normal';
-      case 'low':
-        return 'Baja';
-      default:
-        return 'Normal';
-    }
-  };
-
+  // Función para obtener colores basados en el tipo de notificación - EXACTAMENTE IGUAL AL ESTUDIANTE
   const getNotificationBackground = (type: string) => {
     switch (type) {
       case 'event':
@@ -261,10 +133,10 @@ export const CompanyNotifications: React.FC = () => {
         return 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'; // Verde para evaluaciones
       case 'system':
         return 'linear-gradient(135deg, #757575 0%, #9e9e9e 100%)'; // Gris para sistema
-      case 'info':
-        return 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)'; // Azul para info
-      case 'error':
-        return 'linear-gradient(135deg, #d32f2f 0%, #f44336 100%)'; // Rojo para errores
+      case 'interview':
+        return 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'; // Verde para entrevistas
+      case 'calendar':
+        return 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)'; // Azul para calendario
       default:
         return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; // Gradiente por defecto
     }
@@ -297,12 +169,152 @@ export const CompanyNotifications: React.FC = () => {
         return `0 4px 16px rgba(46, 125, 50, ${intensity})`;
       case 'system':
         return `0 4px 16px rgba(117, 117, 117, ${intensity})`;
-      case 'info':
+      case 'interview':
+        return `0 4px 16px rgba(46, 125, 50, ${intensity})`;
+      case 'calendar':
         return `0 4px 16px rgba(25, 118, 210, ${intensity})`;
-      case 'error':
-        return `0 4px 16px rgba(211, 47, 47, ${intensity})`;
       default:
         return `0 4px 16px rgba(102, 126, 234, ${intensity})`;
+    }
+  };
+
+  // Función para obtener colores del avatar basados en el tipo - EXACTAMENTE IGUAL AL ESTUDIANTE
+  const getAvatarColors = (type: string) => {
+    switch (type) {
+      case 'event':
+        return 'linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%)';
+      case 'announcement':
+        return 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)';
+      case 'alert':
+        return 'linear-gradient(135deg, #d32f2f 0%, #f44336 100%)';
+      case 'update':
+        return 'linear-gradient(135deg, #388e3c 0%, #4caf50 100%)';
+      case 'deadline':
+        return 'linear-gradient(135deg, #f57c00 0%, #ff9800 100%)';
+      case 'reminder':
+        return 'linear-gradient(135deg, #ed6c02 0%, #ff9800 100%)';
+      case 'success':
+        return 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)';
+      case 'warning':
+        return 'linear-gradient(135deg, #ed6c02 0%, #ff9800 100%)';
+      case 'application':
+        return 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)';
+      case 'project':
+        return 'linear-gradient(135deg, #0288d1 0%, #03a9f4 100%)';
+      case 'evaluation':
+        return 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)';
+      case 'system':
+        return 'linear-gradient(135deg, #757575 0%, #9e9e9e 100%)';
+      case 'interview':
+        return 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)';
+      case 'calendar':
+        return 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)';
+      default:
+        return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    }
+  };
+
+  // Función para obtener iconos con colores - EXACTAMENTE IGUAL AL ESTUDIANTE
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'application':
+        return <AssignmentIcon sx={{ fontSize: 28, color: '#1976d2' }} />;
+      case 'project':
+        return <BusinessIcon sx={{ fontSize: 28, color: '#0288d1' }} />;
+      case 'evaluation':
+        return <CheckCircleIcon sx={{ fontSize: 28, color: '#2e7d32' }} />;
+      case 'reminder':
+        return <ScheduleIcon sx={{ fontSize: 28, color: '#ed6c02' }} />;
+      case 'system':
+        return <InfoIcon sx={{ fontSize: 28, color: '#757575' }} />;
+      case 'event':
+        return <EventIcon sx={{ fontSize: 28, color: '#7b1fa2' }} />;
+      case 'announcement':
+        return <AnnouncementIcon sx={{ fontSize: 28, color: '#1976d2' }} />;
+      case 'alert':
+        return <PriorityHighIcon sx={{ fontSize: 28, color: '#d32f2f' }} />;
+      case 'update':
+        return <UpdateIcon sx={{ fontSize: 28, color: '#388e3c' }} />;
+      case 'deadline':
+        return <WarningIcon sx={{ fontSize: 28, color: '#f57c00' }} />;
+      case 'success':
+        return <CheckCircleIcon sx={{ fontSize: 28, color: '#2e7d32' }} />;
+      case 'warning':
+        return <WarningIcon sx={{ fontSize: 28, color: '#ed6c02' }} />;
+      case 'info':
+        return <InfoIcon sx={{ fontSize: 28, color: '#1976d2' }} />;
+      case 'interview':
+        return <PeopleIcon sx={{ fontSize: 28, color: '#2e7d32' }} />;
+      case 'calendar':
+        return <CalendarTodayIcon sx={{ fontSize: 28, color: '#1976d2' }} />;
+      default:
+        return <NotificationsIcon sx={{ fontSize: 28, color: '#667eea' }} />;
+    }
+  };
+
+  // Función para obtener colores de prioridad - EXACTAMENTE IGUAL AL ESTUDIANTE
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent':
+        return 'error'; // Rojo fuerte
+      case 'high':
+        return 'warning'; // Naranja
+      case 'medium':
+        return 'info'; // Azul
+      case 'normal':
+        return 'info'; // Azul
+      case 'low':
+        return 'default'; // Gris
+      default:
+        return 'info';
+    }
+  };
+
+  // Función para obtener etiquetas de prioridad - EXACTAMENTE IGUAL AL ESTUDIANTE
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'Urgente';
+      case 'high': return 'Alta';
+      case 'medium': return 'Media';
+      case 'normal': return 'Normal';
+      case 'low': return 'Baja';
+      default: return 'Normal'; // Por defecto en español
+    }
+  };
+
+  // Función para obtener etiquetas de tipo - EXACTAMENTE IGUAL AL ESTUDIANTE
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'application':
+        return 'Aplicación';
+      case 'project':
+        return 'Proyecto';
+      case 'evaluation':
+        return 'Evaluación';
+      case 'reminder':
+        return 'Recordatorio';
+      case 'deadline':
+        return 'Fecha Límite';
+      case 'success':
+        return 'Éxito';
+      case 'system':
+        return 'Sistema';
+      case 'event':
+        return 'Evento';
+      case 'announcement':
+        return 'Anuncio';
+      case 'alert':
+        return 'Alerta';
+      case 'update':
+        return 'Actualización';
+      case 'warning':
+        return 'Advertencia';
+      case 'interview':
+        return 'Entrevista';
+      case 'calendar':
+        return 'Calendario';
+      default:
+        return 'Notificación'; // Por defecto en español
     }
   };
 
@@ -322,26 +334,12 @@ export const CompanyNotifications: React.FC = () => {
     });
   }, [notifications, search, priorityFilter, typeFilter, readStatusFilter]);
 
-  const unreadCount = useMemo(() => {
-    return notifications.filter(n => !n.read).length;
-  }, [notifications]);
-
   const hasActiveFilters = search || priorityFilter !== 'all' || typeFilter !== 'all' || readStatusFilter !== 'all';
 
   const handleNotificationClick = (notification: Notification) => {
-    console.log('🔍 handleNotificationClick ejecutado para notificación:', {
-      id: notification.id,
-      title: notification.title,
-      read: notification.read,
-      type: notification.type
-    });
-    
     setSelectedNotification(notification);
     if (!notification.read) {
-      console.log('🔍 Notificación no leída, llamando markAsRead...');
       markAsRead(notification.id);
-    } else {
-      console.log('🔍 Notificación ya está leída, no se llama markAsRead');
     }
   };
 
@@ -349,42 +347,46 @@ export const CompanyNotifications: React.FC = () => {
     setSelectedNotification(null);
   };
 
-  const markAsRead = async (id: string) => {
+  const markAsRead = async (notificationId: string) => {
     try {
-      console.log('🔍 Iniciando markAsRead para notificación ID:', id);
-      console.log('🔍 Estado actual de notificaciones:', notifications);
+      setLoading(true);
+      const response = await notificationService.markAsRead(notificationId);
       
-      const response = await api.post(`/api/notifications/${id}/mark-read/`);
-      console.log('🔍 Respuesta de la API:', response);
-      
-      // Solo actualizar el estado si la respuesta fue exitosa
-      if (response && response.data && response.data.success) {
-        console.log('🔍 API respondió exitosamente, actualizando estado local...');
+      if (response.success) {
+        // Actualizar el estado local inmediatamente
+        setNotifications(prevNotifications => 
+          prevNotifications.map(notification => 
+            notification.id === notificationId 
+              ? { ...notification, read: true, read_at: new Date().toISOString() }
+              : notification
+          )
+        );
         
-        setNotifications(prev => {
-          console.log('🔍 Estado previo:', prev);
-          const updatedNotifications = prev.map(n => {
-            if (n.id === id) {
-              console.log('🔍 Encontrada notificación para actualizar:', n);
-              return { ...n, read: true };
-            }
-            return n;
-          });
-          console.log('🔍 Estado actualizado:', updatedNotifications);
-          return updatedNotifications;
+        // Actualizar contadores
+        setUnreadCount(prev => Math.max(0, prev - 1));
+        
+        // Mostrar mensaje de éxito
+        setSnackbar({
+          open: true,
+          message: 'Notificación marcada como leída',
+          severity: 'success'
         });
-        
-        console.log('🔍 Estado local actualizado exitosamente');
       } else {
-        console.warn('⚠️ API no respondió con success:', response);
+        setSnackbar({
+          open: true,
+          message: 'Error al marcar como leída',
+          severity: 'error'
+        });
       }
-    } catch (error: any) {
-      console.error('❌ Error marking notification as read:', error);
-      console.error('❌ Detalles del error:', {
-        message: error.message,
-        response: error.response,
-        status: error.response?.status
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error al marcar como leída',
+        severity: 'error'
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -690,7 +692,17 @@ export const CompanyNotifications: React.FC = () => {
                 <MenuItem value="application">Aplicación</MenuItem>
                 <MenuItem value="project">Proyecto</MenuItem>
                 <MenuItem value="evaluation">Evaluación</MenuItem>
+                <MenuItem value="reminder">Recordatorio</MenuItem>
+                <MenuItem value="deadline">Fecha Límite</MenuItem>
+                <MenuItem value="success">Éxito</MenuItem>
                 <MenuItem value="system">Sistema</MenuItem>
+                <MenuItem value="event">Evento</MenuItem>
+                <MenuItem value="announcement">Anuncio</MenuItem>
+                <MenuItem value="alert">Alerta</MenuItem>
+                <MenuItem value="update">Actualización</MenuItem>
+                <MenuItem value="warning">Advertencia</MenuItem>
+                <MenuItem value="interview">Entrevista</MenuItem>
+                <MenuItem value="calendar">Calendario</MenuItem>
               </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 150 }}>
@@ -877,15 +889,8 @@ export const CompanyNotifications: React.FC = () => {
         ) : (
           <List sx={{ p: 0 }}>
             {filteredNotifications.slice(0, displayCount).map((notification, index) => {
-              // Debug: Log para verificar el estado de cada notificación al renderizar
-              console.log(`🔍 Renderizando notificación ${index + 1}:`, {
-                id: notification.id,
-                title: notification.title,
-                read: notification.read,
-                type: notification.type,
-                priority: notification.priority
-              });
-              
+              const icon = getNotificationIcon(notification.type);
+
               return (
                 <Box key={notification.id}>
                   <ListItem
@@ -893,33 +898,38 @@ export const CompanyNotifications: React.FC = () => {
                     sx={{
                       backgroundColor: notification.read 
                         ? 'transparent' 
-                        : themeMode === 'dark' 
-                          ? 'rgba(25, 118, 210, 0.1)' 
-                          : 'rgba(25, 118, 210, 0.04)',
+                        : getNotificationBackground(notification.type),
                       '&:hover': {
                         backgroundColor: notification.read 
                           ? themeMode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)'
-                          : themeMode === 'dark' ? 'rgba(25, 118, 210, 0.15)' : 'rgba(25, 118, 210, 0.08)',
+                          : getNotificationBackground(notification.type),
+                        transform: 'translateY(-2px)',
+                        boxShadow: notification.read 
+                          ? '0 4px 12px rgba(0,0,0,0.15)'
+                          : getNotificationShadow(notification.type, true),
                       },
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.3s ease',
                       py: 2, // Más padding vertical
                       px: 3, // Más padding horizontal
                       gap: 2, // Espacio entre elementos
+                      border: notification.read ? '1px solid #e0e0e0' : 'none',
+                      borderRadius: 2,
+                      mb: 1,
+                      boxShadow: notification.read 
+                        ? '0 2px 8px rgba(0,0,0,0.1)'
+                        : getNotificationShadow(notification.type),
                     }}
                   >
                   <ListItemAvatar>
-                    <Box
+                    <Avatar
                       sx={{
                         width: 56,
                         height: 56,
                         borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
                         background: notification.read 
                           ? 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)'
-                          : getNotificationBackground(notification.type),
+                          : getAvatarColors(notification.type),
                         boxShadow: notification.read 
                           ? '0 2px 8px rgba(0,0,0,0.1)'
                           : getNotificationShadow(notification.type),
@@ -934,13 +944,16 @@ export const CompanyNotifications: React.FC = () => {
                       }}
                     >
                       <Box sx={{ 
-                        color: notification.read ? '#757575' : 'white',
-                        filter: notification.read ? 'none' : 'brightness(0) invert(1)',
-                        transition: 'all 0.3s ease'
+                        color: notification.read ? '#757575' : '#ffffff',
+                        fontSize: '24px',
+                        transition: 'all 0.3s ease',
+                        '& svg': {
+                          filter: notification.read ? 'none' : 'brightness(0) invert(1)',
+                        }
                       }}>
-                        {getNotificationIcon(notification.type)}
+                        {icon}
                       </Box>
-                    </Box>
+                    </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
@@ -953,29 +966,58 @@ export const CompanyNotifications: React.FC = () => {
                             fontWeight: notification.read ? 500 : 700,
                             fontSize: '1rem',
                             lineHeight: 1.2,
-                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                            color: notification.read 
+                              ? (themeMode === 'dark' ? '#cbd5e1' : '#6b7280')
+                              : (themeMode === 'dark' ? '#f1f5f9' : '#1e293b')
                           }}
                         >
                           {notification.title}
                         </Box>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                          <Chip
-                            label={getNotificationTypeLabel(notification.type)}
-                            size="small"
-                            variant="outlined"
-                            sx={{ fontSize: '0.7rem', fontWeight: 600 }}
-                          />
-                          <Chip
-                            label={getPriorityLabel(notification.priority)}
-                            size="small"
-                            color={getPriorityColor(notification.priority) as any}
-                            sx={{ fontWeight: 600 }}
-                          />
+                        <Box component="span" sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                          <Box
+                            component="span"
+                            sx={{ 
+                              fontSize: '0.7rem', 
+                              fontWeight: 600,
+                              px: 1,
+                              py: 0.5,
+                              borderRadius: 1,
+                              border: `1px solid ${notification.read ? '#d1d5db' : '#ffffff'}`,
+                              color: notification.read ? '#6b7280' : '#ffffff',
+                              backgroundColor: notification.read ? 'transparent' : 'rgba(255,255,255,0.2)',
+                              display: 'inline-block',
+                              textAlign: 'center',
+                              minWidth: 'fit-content'
+                            }}
+                          >
+                            {getTypeLabel(notification.type)}
+                          </Box>
+                          <Box
+                            component="span"
+                            sx={{ 
+                              fontSize: '0.7rem', 
+                              fontWeight: 600,
+                              px: 1,
+                              py: 0.5,
+                              borderRadius: 1,
+                              color: 'white',
+                              display: 'inline-block',
+                              textAlign: 'center',
+                              minWidth: 'fit-content',
+                              ...(notification.priority === 'urgent' && { bgcolor: '#d32f2f' }),
+                              ...(notification.priority === 'high' && { bgcolor: '#ed6c02' }),
+                              ...(notification.priority === 'medium' && { bgcolor: '#1976d2' }),
+                              ...(notification.priority === 'normal' && { bgcolor: '#1976d2' }),
+                              ...(notification.priority === 'low' && { bgcolor: '#757575' })
+                            }}
+                          >
+                            {getPriorityLabel(notification.priority)}
+                          </Box>
                         </Box>
                       </Box>
                     }
                     secondary={
-                      <Box>
+                      <Box component="span">
                         <Box 
                           component="span"
                           sx={{ 
@@ -988,7 +1030,7 @@ export const CompanyNotifications: React.FC = () => {
                         >
                           {notification.message}
                         </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                           <Box 
                             component="span"
                             sx={{ 
@@ -1008,14 +1050,7 @@ export const CompanyNotifications: React.FC = () => {
                               minute: '2-digit',
                             })}
                           </Box>
-                          {!notification.read && (
-                            <Chip
-                              label="Nueva"
-                              size="small"
-                              color="primary"
-                              sx={{ fontSize: '0.6rem', height: 20 }}
-                            />
-                          )}
+
                         </Box>
                       </Box>
                     }
@@ -1055,14 +1090,14 @@ export const CompanyNotifications: React.FC = () => {
         {selectedNotification && (
           <>
             <DialogTitle sx={{ 
-              bgcolor: 'primary.main', 
+              background: getAvatarColors(selectedNotification.type),
               color: 'white',
               fontWeight: 600
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Avatar sx={{ 
                   bgcolor: 'white',
-                  color: 'primary.main',
+                  color: '#1976d2',
                   width: 48,
                   height: 48,
                 }}>
@@ -1073,7 +1108,7 @@ export const CompanyNotifications: React.FC = () => {
                     {selectedNotification.title}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    {getNotificationTypeLabel(selectedNotification.type)} • {getPriorityLabel(selectedNotification.priority)}
+                    {getTypeLabel(selectedNotification.type)} • {getPriorityLabel(selectedNotification.priority)}
                   </Typography>
                 </Box>
               </Box>
@@ -1082,24 +1117,41 @@ export const CompanyNotifications: React.FC = () => {
               <Box sx={{ mt: 2 }}>
                 <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
                   <Chip
-                    label={getNotificationTypeLabel(selectedNotification.type)}
-                    color={getNotificationColor(selectedNotification.type) as any}
+                    label={getTypeLabel(selectedNotification.type)}
                     size="small"
-                    sx={{ fontWeight: 600 }}
+                    sx={{ 
+                      fontWeight: 600,
+                      borderColor: '#1976d2',
+                      color: '#1976d2',
+                      backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                      border: '1px solid #1976d2'
+                    }}
                   />
                   <Chip
                     label={getPriorityLabel(selectedNotification.priority)}
+                    size="small"
                     color={getPriorityColor(selectedNotification.priority) as any}
-                    size="small"
-                    sx={{ fontWeight: 600 }}
+                    sx={{ 
+                      fontWeight: 600,
+                      '&.MuiChip-colorError': {
+                        bgcolor: '#d32f2f',
+                        color: 'white'
+                      },
+                      '&.MuiChip-colorWarning': {
+                        bgcolor: '#ed6c02',
+                        color: 'white'
+                      },
+                      '&.MuiChip-colorInfo': {
+                        bgcolor: '#1976d2',
+                        color: 'white'
+                      },
+                      '&.MuiChip-colorSuccess': {
+                        bgcolor: '#2e7d32',
+                        color: 'white'
+                      }
+                    }}
                   />
-                  <Chip
-                    label={selectedNotification.read ? 'Leída' : 'No leída'}
-                    color={selectedNotification.read ? 'success' : 'warning'}
-                    size="small"
-                    variant="outlined"
-                    sx={{ fontWeight: 600 }}
-                  />
+
                 </Box>
                 
                 <Paper sx={{ 
@@ -1144,6 +1196,22 @@ export const CompanyNotifications: React.FC = () => {
           </>
         )}
       </Dialog>
+
+      {/* Snackbar para notificaciones */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

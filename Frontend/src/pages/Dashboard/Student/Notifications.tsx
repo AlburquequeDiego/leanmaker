@@ -42,6 +42,8 @@ import {
   Campaign as CampaignIcon,
   Celebration as CelebrationIcon,
   MarkEmailRead as MarkEmailReadIcon,
+  People as PeopleIcon,
+  CalendarToday as CalendarTodayIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -194,6 +196,10 @@ export const Notifications = () => {
         return <CheckCircleIcon sx={{ fontSize: 28, color: '#2e7d32' }} />;
       case 'warning':
         return <WarningIcon sx={{ fontSize: 28, color: '#ed6c02' }} />;
+      case 'interview':
+        return <PeopleIcon sx={{ fontSize: 28, color: '#2e7d32' }} />;
+      case 'calendar':
+        return <CalendarTodayIcon sx={{ fontSize: 28, color: '#1976d2' }} />;
       case 'info':
         return <InfoIcon sx={{ fontSize: 28, color: '#1976d2' }} />;
       default:
@@ -225,7 +231,7 @@ export const Notifications = () => {
       case 'medium': return 'Media';
       case 'normal': return 'Normal';
       case 'low': return 'Baja';
-      default: return priority;
+      default: return 'Normal'; // Por defecto en español
     }
   };
 
@@ -239,6 +245,10 @@ export const Notifications = () => {
         return 'Evaluación';
       case 'reminder':
         return 'Recordatorio';
+      case 'deadline':
+        return 'Fecha Límite';
+      case 'success':
+        return 'Éxito';
       case 'system':
         return 'Sistema';
       case 'event':
@@ -251,8 +261,12 @@ export const Notifications = () => {
         return 'Actualización';
       case 'warning':
         return 'Advertencia';
+      case 'interview':
+        return 'Entrevista';
+      case 'calendar':
+        return 'Calendario';
       default:
-        return type;
+        return 'Notificación'; // Por defecto en español
     }
   };
 
@@ -280,6 +294,10 @@ export const Notifications = () => {
         return 'linear-gradient(135deg, #0288d1 0%, #03a9f4 100%)'; // Azul claro para proyectos
       case 'evaluation':
         return 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'; // Verde para evaluaciones
+      case 'interview':
+        return 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'; // Verde para entrevistas
+      case 'calendar':
+        return 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)'; // Azul para calendario
       case 'system':
         return 'linear-gradient(135deg, #757575 0%, #9e9e9e 100%)'; // Gris para sistema
       default:
@@ -312,6 +330,10 @@ export const Notifications = () => {
         return `0 4px 16px rgba(2, 136, 209, ${intensity})`;
       case 'evaluation':
         return `0 4px 16px rgba(46, 125, 50, ${intensity})`;
+      case 'interview':
+        return `0 4px 16px rgba(46, 125, 50, ${intensity})`;
+      case 'calendar':
+        return `0 4px 16px rgba(25, 118, 210, ${intensity})`;
       case 'system':
         return `0 4px 16px rgba(117, 117, 117, ${intensity})`;
       default:
@@ -608,6 +630,47 @@ export const Notifications = () => {
               }}
             />
             <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Tipo</InputLabel>
+              <Select
+                value={filters.type}
+                label="Tipo"
+                onChange={e => handleFilterChange('type', e.target.value)}
+                sx={{ 
+                  borderRadius: 2,
+                  bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                  },
+                }}
+              >
+                <MenuItem value="all">Todos los tipos</MenuItem>
+                <MenuItem value="application">Aplicación</MenuItem>
+                <MenuItem value="project">Proyecto</MenuItem>
+                <MenuItem value="evaluation">Evaluación</MenuItem>
+                <MenuItem value="reminder">Recordatorio</MenuItem>
+                <MenuItem value="deadline">Fecha Límite</MenuItem>
+                <MenuItem value="success">Éxito</MenuItem>
+                <MenuItem value="system">Sistema</MenuItem>
+                <MenuItem value="event">Evento</MenuItem>
+                <MenuItem value="announcement">Anuncio</MenuItem>
+                <MenuItem value="alert">Alerta</MenuItem>
+                <MenuItem value="update">Actualización</MenuItem>
+                <MenuItem value="warning">Advertencia</MenuItem>
+                <MenuItem value="interview">Entrevista</MenuItem>
+                <MenuItem value="calendar">Calendario</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 150 }}>
               <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Prioridad</InputLabel>
               <Select
                 value={filters.priority}
@@ -833,7 +896,7 @@ export const Notifications = () => {
                   </ListItemAvatar>
                                      <ListItemText
                     primary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+                      <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
                         <Box 
                           component="span"
                           sx={{ 
@@ -846,36 +909,45 @@ export const Notifications = () => {
                         >
                           {notification.title}
                         </Box>
-                        <Chip
-                          label={getTypeLabel(notification.type)}
-                          size="small"
-                          variant="outlined"
-                          sx={{ fontSize: '0.7rem' }}
-                        />
-                        <Chip
-                          label={getPriorityLabel(notification.priority)}
-                          size="small"
-                          color={getPriorityColor(notification.priority) as any}
-                          sx={{
+                        <Box
+                          component="span"
+                          sx={{ 
+                            fontSize: '0.7rem', 
                             fontWeight: 600,
-                            '&.MuiChip-colorError': {
-                              bgcolor: '#d32f2f',
-                              color: 'white'
-                            },
-                            '&.MuiChip-colorWarning': {
-                              bgcolor: '#ed6c02',
-                              color: 'white'
-                            },
-                            '&.MuiChip-colorInfo': {
-                              bgcolor: '#1976d2',
-                              color: 'white'
-                            },
-                            '&.MuiChip-colorSuccess': {
-                              bgcolor: '#1976d2',
-                              color: 'white'
-                            }
+                            px: 1,
+                            py: 0.5,
+                            borderRadius: 1,
+                            border: '1px solid #d1d5db',
+                            color: '#6b7280',
+                            backgroundColor: 'transparent',
+                            display: 'inline-block',
+                            textAlign: 'center',
+                            minWidth: 'fit-content'
                           }}
-                        />
+                        >
+                          {getTypeLabel(notification.type)}
+                        </Box>
+                        <Box
+                          component="span"
+                          sx={{ 
+                            fontSize: '0.7rem', 
+                            fontWeight: 600,
+                            px: 1,
+                            py: 0.5,
+                            borderRadius: 1,
+                            color: 'white',
+                            display: 'inline-block',
+                            textAlign: 'center',
+                            minWidth: 'fit-content',
+                            ...(notification.priority === 'urgent' && { bgcolor: '#d32f2f' }),
+                            ...(notification.priority === 'high' && { bgcolor: '#ed6c02' }),
+                            ...(notification.priority === 'medium' && { bgcolor: '#1976d2' }),
+                            ...(notification.priority === 'normal' && { bgcolor: '#1976d2' }),
+                            ...(notification.priority === 'low' && { bgcolor: '#757575' })
+                          }}
+                        >
+                          {getPriorityLabel(notification.priority)}
+                        </Box>
                       </Box>
                     }
                     secondary={
@@ -892,7 +964,7 @@ export const Notifications = () => {
                         >
                           {notification.message}
                         </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                           <Box 
                             component="span"
                             sx={{ 
@@ -909,22 +981,7 @@ export const Notifications = () => {
                               minute: '2-digit',
                             })}
                           </Box>
-                          {!notification.read && (
-                            <Chip
-                              label="Nueva"
-                              size="small"
-                              sx={{
-                                bgcolor: '#1976d2',
-                                color: 'white',
-                                fontSize: '0.6rem',
-                                height: 16,
-                                '& .MuiChip-label': {
-                                  px: 1,
-                                  py: 0.2
-                                }
-                              }}
-                            />
-                          )}
+
                         </Box>
                       </>
                     }

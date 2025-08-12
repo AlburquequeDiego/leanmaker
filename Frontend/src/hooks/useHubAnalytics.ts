@@ -130,39 +130,7 @@ export interface HubAnalyticsData {
     pendingApiRequests: number;
     approvedApiRequests: number;
   };
-  eventAttendanceMetrics: {
-    totalEvents: number;
-    totalInvitations: number;
-    confirmedAttendances: number;
-    declinedAttendances: number;
-    maybeAttendances: number;
-    pendingAttendances: number;
-    confirmationRate: number;
-    byEventType: Array<{
-      event_type: string;
-      total: number;
-      confirmed: number;
-      declined: number;
-      maybe: number;
-      pending: number;
-    }>;
-    byMonth: Array<{
-      month: string;
-      events: number;
-      confirmations: number;
-      attendance_rate: number;
-    }>;
-    topEvents: Array<{
-      id: string;
-      title: string;
-      event_type: string;
-      total_invited: number;
-      confirmed: number;
-      declined: number;
-      maybe: number;
-      confirmation_rate: number;
-    }>;
-  };
+
 }
 
 // Cache for analytics data

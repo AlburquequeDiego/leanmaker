@@ -149,36 +149,55 @@ export const Calendar = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log('🔍 [STUDENT] Iniciando fetchEvents...');
+      
       // Obtener eventos específicos del estudiante
       const eventsData = await apiService.get('/api/calendar/events/student_events/');
-      console.log('Raw events data from backend:', eventsData);
+      console.log('🔍 [STUDENT] Raw events data from backend:', eventsData);
+      console.log('🔍 [STUDENT] Tipo de respuesta:', typeof eventsData);
+      console.log('🔍 [STUDENT] Claves de respuesta:', Object.keys(eventsData || {}));
       
       const eventsArray = Array.isArray(eventsData)
         ? eventsData
         : (eventsData as any)?.results || [];
       
+      console.log('🔍 [STUDENT] Events array extraído:', eventsArray);
+      console.log('🔍 [STUDENT] Número de eventos:', eventsArray.length);
+      
       // Validar que eventsArray sea un array válido
       if (!Array.isArray(eventsArray)) {
-        console.error('eventsArray no es un array válido:', eventsArray);
+        console.error('❌ [STUDENT] eventsArray no es un array válido:', eventsArray);
         setEvents([]);
         return;
       }
       
-      console.log('Events array:', eventsArray);
+      // Debug: Imprimir información de cada evento
+      if (eventsArray.length > 0) {
+        console.log('🔍 [STUDENT] Primera evento:', eventsArray[0]);
+        console.log('🔍 [STUDENT] Estructura del evento:', {
+          id: eventsArray[0].id,
+          title: eventsArray[0].title,
+          start_date: eventsArray[0].start_date,
+          end_date: eventsArray[0].end_date,
+          attendees: eventsArray[0].attendees,
+          created_by: eventsArray[0].created_by
+        });
+      }
       
-      const formattedEvents = eventsArray.map((event: any) => {
+      const formattedEvents = eventsArray.map((event: any, index: number) => {
         try {
+          console.log(`🔍 [STUDENT] Procesando evento ${index}:`, event);
           const adapted = adaptCalendarEvent(event);
-          console.log('Adapted event:', adapted);
+          console.log(`✅ [STUDENT] Evento ${index} adaptado:`, adapted);
           return adapted;
         } catch (error) {
-          console.error('Error adaptando evento:', event, error);
+          console.error(`❌ [STUDENT] Error adaptando evento ${index}:`, event, error);
           return null;
         }
       }).filter((e): e is CalendarEvent => e !== null); // Filtrar eventos nulos
       
-      console.log('Calendar - Events loaded successfully:', formattedEvents.length);
-      console.log('Calendar - Formatted events details:', formattedEvents.map(e => ({
+      console.log('✅ [STUDENT] Calendar - Events loaded successfully:', formattedEvents.length);
+      console.log('🔍 [STUDENT] Calendar - Formatted events details:', formattedEvents.map(e => ({
         id: e.id,
         title: e.title,
         start: e.start,
@@ -186,9 +205,15 @@ export const Calendar = () => {
         isValidStart: !isNaN(e.start.getTime()),
         isValidEnd: !isNaN(e.end.getTime())
       })));
+      
       setEvents(formattedEvents);
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error('❌ [STUDENT] Error fetching events:', error);
+      console.error('❌ [STUDENT] Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       setError('Error al cargar los eventos del calendario');
       setEvents([]);
     } finally {
@@ -431,7 +456,10 @@ export const Calendar = () => {
           {error}
         </Alert>
       )}
-
+      
+      {/* Indicador de debug temporal */}
+      {/* ELIMINADO: Caja de debug temporal */}
+      
       {/* Resumen de eventos */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}>
         <Card sx={{ 
@@ -1274,6 +1302,26 @@ export const Calendar = () => {
           bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
         }}>
+          {/* Botón de debug temporal */}
+          <Button 
+            onClick={() => {
+              console.log('🔍 [STUDENT DEBUG] Estado actual:');
+              console.log('🔍 [STUDENT DEBUG] events:', events);
+              console.log('🔍 [STUDENT DEBUG] selectedEvent:', selectedEvent);
+              console.log('🔍 [STUDENT DEBUG] loading:', loading);
+              console.log('🔍 [STUDENT DEBUG] error:', error);
+            }} 
+            variant="outlined"
+            color="warning"
+            sx={{ 
+              borderRadius: 2, 
+              px: 2,
+              fontSize: '0.75rem'
+            }}
+          >
+            Debug
+          </Button>
+          
           <Button onClick={handleCloseDialog} color="secondary">Cerrar</Button>
         </DialogActions>
       </Dialog>

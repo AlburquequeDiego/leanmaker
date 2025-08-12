@@ -45,6 +45,7 @@ import {
 import { useTheme } from '../../../contexts/ThemeContext';
 import { apiService } from '../../../services/api.service';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
+import { useDashboardStats } from '../../../hooks/useRealTimeData';
 
 // Componente de estrellas personalizado
 interface StarRatingProps {
@@ -145,6 +146,7 @@ export const Evaluations = () => {
   const [calificacion, setCalificacion] = useState<number | null>(null);
   const [calificarModalOpen, setCalificarModalOpen] = useState(false);
   const [showLatest, setShowLatest] = useState(5);
+  const [showStudentsToEvaluate, setShowStudentsToEvaluate] = useState(5);
   const [projectDetailsModalOpen, setProjectDetailsModalOpen] = useState(false);
   const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
   
@@ -239,6 +241,27 @@ export const Evaluations = () => {
   // Filtrar estudiantes por evaluar (no evaluados)
   const studentsToEvaluateFiltered = studentsToEvaluate.filter(student => !student.already_evaluated);
   const studentsEvaluated = studentsToEvaluate.filter(student => student.already_evaluated);
+  
+  // Obtener estadísticas del dashboard si están disponibles
+  const { data: dashboardStats } = useDashboardStats('company');
+  
+  // Usar estadísticas del dashboard para las tarjetas si están disponibles, con validación básica
+  const evaluationsPending = (dashboardStats?.evaluations_pending >= 0) ? dashboardStats.evaluations_pending : studentsToEvaluateFiltered.length;
+  const evaluationsCompleted = (dashboardStats?.evaluations_completed >= 0) ? dashboardStats.evaluations_completed : studentsEvaluated.length;
+  const evaluationsTotalStudents = (dashboardStats?.evaluations_total_students >= 0) ? dashboardStats.evaluations_total_students : studentsToEvaluate.length;
+  
+  // Debug: monitorear estadísticas del dashboard
+  console.log('🔍 [Evaluations] Dashboard Stats:', {
+    dashboardStats,
+    evaluationsPending,
+    evaluationsCompleted,
+    evaluationsTotalStudents,
+    fallbackValues: {
+      studentsToEvaluateFiltered: studentsToEvaluateFiltered.length,
+      studentsEvaluated: studentsEvaluated.length,
+      studentsToEvaluate: studentsToEvaluate.length
+    }
+  });
 
   const handleCalificarEstudiante = async () => {
     console.log('🚀 Iniciando evaluación para:', selectedStudent?.student_name, 'con calificación:', calificacion);
@@ -481,7 +504,7 @@ export const Evaluations = () => {
                 <RateReviewIcon sx={{ fontSize: 32, mr: 1 }} />
              </Box>
               <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
-                {studentsToEvaluateFiltered.length}
+                {evaluationsPending}
                </Typography>
               <Typography variant="body1" sx={{ fontWeight: 600, mb: 1 }}>
                 Pendientes de Evaluar
@@ -514,7 +537,7 @@ export const Evaluations = () => {
                 <CheckCircleIcon sx={{ fontSize: 32, mr: 1 }} />
               </Box>
               <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
-                {studentsEvaluated.length}
+                {evaluationsCompleted}
               </Typography>
               <Typography variant="body1" sx={{ fontWeight: 600, mb: 1 }}>
                 Evaluaciones Realizadas
@@ -525,7 +548,7 @@ export const Evaluations = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card sx={{ 
             background: themeMode === 'dark' 
               ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' 
@@ -547,7 +570,7 @@ export const Evaluations = () => {
                 <PersonIcon sx={{ fontSize: 32, mr: 1 }} />
               </Box>
               <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
-                {studentsToEvaluate.length}
+                {evaluationsTotalStudents}
               </Typography>
               <Typography variant="body1" sx={{ fontWeight: 600, mb: 1 }}>
                 Total Estudiantes
@@ -574,11 +597,46 @@ export const Evaluations = () => {
             background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
             color: 'white'
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-              <RateReviewIcon sx={{ fontSize: 24 }} />
-              <Typography variant="h6" fontWeight={700}>
-              Evaluar Estudiantes ({studentsToEvaluateFiltered.length} estudiantes por evaluar)
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <RateReviewIcon sx={{ fontSize: 24 }} />
+                <Typography variant="h6" fontWeight={700}>
+                Evaluar Estudiantes ({studentsToEvaluateFiltered.length} estudiantes por evaluar)
+                </Typography>
+              </Box>
+              <TextField
+                select
+                size="small"
+                value={showStudentsToEvaluate}
+                onChange={e => setShowStudentsToEvaluate(Number(e.target.value))}
+                sx={{ 
+                  minWidth: 110,
+                  '& .MuiOutlinedInput-root': {
+                    color: 'white',
+                    '& fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'white',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(255, 255, 255, 0.7)',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: 'white',
+                  },
+                }}
+              >
+                <MenuItem value={5}>Últimos 5</MenuItem>
+                <MenuItem value={10}>Últimos 10</MenuItem>
+                <MenuItem value={50}>Últimos 50</MenuItem>
+                <MenuItem value={100}>Últimos 100</MenuItem>
+                <MenuItem value={studentsToEvaluateFiltered.length}>Todas</MenuItem>
+              </TextField>
             </Box>
             <Typography variant="body2" sx={{ opacity: 0.9 }}>
             Califica a los estudiantes que han trabajado en tus proyectos completados
@@ -601,7 +659,7 @@ export const Evaluations = () => {
               </Box>
             ) : (
           <Grid container spacing={2}>
-            {studentsToEvaluateFiltered.map((student) => (
+            {studentsToEvaluateFiltered.slice(0, showStudentsToEvaluate).map((student) => (
               <Grid item xs={12} sm={6} md={4} key={`${student.student_id}-${student.project_id}`}>
                 <Card sx={{ 
                   height: '100%', 

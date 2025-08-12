@@ -77,7 +77,7 @@ def admin_companies_list(request):
                 'industry': company.industry,
                 'size': company.size,
                 'verified': company.verified,
-                'rating': float(company.rating),
+                'gpa': company.calcular_gpa_real() if hasattr(company, 'calcular_gpa_real') else 0.0,
                 'total_projects': company.total_projects,
                 'projects_completed': company.projects_completed,
                 'total_hours_offered': company.total_hours_offered,

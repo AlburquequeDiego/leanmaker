@@ -237,6 +237,8 @@ export interface Application {
   // Campos adicionales del backend para compatibilidad
   project_id?: string; // ID del proyecto (para compatibilidad)
   student_id?: string; // ID del estudiante (para compatibilidad)
+  // NUEVO: Datos completos del estudiante para el perfil
+  student_data?: Student | null;
 }
 
 // Tipos de evaluación - Coinciden con el modelo Evaluacion del backend
@@ -279,19 +281,12 @@ export interface Notification {
   user: string; // UUID del usuario
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error' | 'event';
+  type: 'info' | 'success' | 'warning' | 'error';
   priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
   read: boolean;
   related_url?: string;
   created_at: string;
   updated_at: string;
-  metadata?: {
-    event_date?: string;
-    event_location?: string;
-    event_description?: string;
-    event_capacity?: number;
-    event_type?: string;
-  };
 }
 
 // Tipos de strike - Coinciden con el modelo Strike del backend

@@ -842,6 +842,13 @@ def company_projects(request):
         # Filtrar proyectos de la empresa
         from .models import Proyecto
         projects = Proyecto.objects.filter(company=empresa)
+        
+        # Debug: Imprimir información de proyectos
+        print(f"🔍 Empresa: {empresa.company_name}")
+        print(f"🔍 Proyectos encontrados: {projects.count()}")
+        for p in projects:
+            print(f"  - ID: {p.id}, Título: {p.title}, Estado: {p.status.name if p.status else 'Sin estado'}")
+        
         projects_data = []
         for project in projects:
             # Obtener estudiantes participantes (tanto aceptados como activos)
@@ -866,11 +873,15 @@ def company_projects(request):
                         'applied_at': app.applied_at.isoformat() if app.applied_at else None,
                     })
             
+            # Debug: Imprimir información del proyecto
+            project_status = project.status.name.lower() if project.status else 'Sin estado'
+            print(f"  🔍 Proyecto {project.title}: estado = '{project_status}'")
+            
             projects_data.append({
                 'id': str(project.id),
                 'title': project.title,
                 'description': project.description,
-                'status': project.status.name.lower() if project.status else 'Sin estado',
+                'status': project_status,
                 'status_id': project.status.id if project.status else None,
                 'area': project.area.name if project.area else 'Sin área',
                 'area_id': project.area.id if project.area else None,
@@ -895,6 +906,12 @@ def company_projects(request):
                 'tags': getattr(project, 'tags', []),
                 'estudiantes': estudiantes,  # Agregar estudiantes participantes
             })
+        
+        # Debug: Imprimir datos finales
+        print(f"🔍 Datos enviados al frontend: {len(projects_data)} proyectos")
+        for pd in projects_data:
+            print(f"  - {pd['title']}: estado = '{pd['status']}'")
+        
         return JsonResponse({'success': True, 'data': projects_data, 'count': len(projects_data)})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
