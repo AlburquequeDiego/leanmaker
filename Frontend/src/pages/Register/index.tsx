@@ -29,6 +29,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import LoadingButton from '../../components/common/LoadingButton';
 import { useAuth } from '../../hooks/useAuth';
 import { type UserRole } from '../../types';
+import { validateChileanRut } from '../../utils/rutValidator';
 
 // Tipos de usuario permitidos
 type UserType = 'student' | 'company';
@@ -226,7 +227,25 @@ const getValidationSchema = (userType: UserType) => {
   } else {
     return yup.object({
       ...baseSchema,
-      rut: yup.string().required('El RUT es requerido'),
+      rut: yup
+        .string()
+        .required('El RUT es requerido')
+        .test('valid-rut', 'RUT inválido', function(value) {
+          if (!value) return false;
+          const validation = validateChileanRut(value);
+          return validation.isValid;
+        })
+        .test('rut-format', 'Formato de RUT incorrecto', function(value) {
+          if (!value) return false;
+          const validation = validateChileanRut(value);
+          if (!validation.isValid) {
+            // Mostrar el error específico del validador
+            return this.createError({
+              message: validation.error || 'RUT inválido'
+            });
+          }
+          return true;
+        }),
       personality: yup.string().required('La personalidad es requerida'),
       business_name: yup.string().required('La razón social es requerida'),
       company_name: yup.string().required('El nombre de la empresa es requerido'),
@@ -1266,16 +1285,52 @@ export const Register = () => {
                         fullWidth 
                         name="rut" 
                         label="RUT" 
-                        placeholder={getFieldPlaceholder('rut', userType)}
+                        placeholder="12345678-9"
                         value={formik.values.rut} 
-                        onChange={formik.handleChange} 
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Limpiar y formatear automáticamente
+                          const cleanValue = value.replace(/[^0-9Kk]/g, '');
+                          if (cleanValue.length <= 9) {
+                            formik.setFieldValue('rut', cleanValue);
+                          }
+                        }}
+                        onBlur={(e) => {
+                          const value = e.target.value;
+                          if (value) {
+                            const validation = validateChileanRut(value);
+                            if (validation.isValid && validation.formattedRut) {
+                              formik.setFieldValue('rut', validation.formattedRut);
+                            }
+                          }
+                          formik.handleBlur(e);
+                        }}
                         error={formik.touched.rut && Boolean(formik.errors.rut)} 
                         helperText={
                           formik.touched.rut && formik.errors.rut
                             ? formik.errors.rut
                             : getFieldHelperText('rut', userType, false)
                         }
-                        disabled={loading} 
+                        disabled={loading}
+                        InputProps={{
+                          endAdornment: formik.values.rut && (
+                            <InputAdornment position="end">
+                              {(() => {
+                                const validation = validateChileanRut(formik.values.rut);
+                                if (validation.isValid) {
+                                  return (
+                                    <Tooltip title="RUT válido">
+                                      <Box component="span" sx={{ color: 'success.main', fontSize: '1.2rem' }}>
+                                        ✓
+                                      </Box>
+                                    </Tooltip>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </InputAdornment>
+                          )
+                        }}
                       />
                     </Box>
                     <Box flex={1} minWidth={200}>

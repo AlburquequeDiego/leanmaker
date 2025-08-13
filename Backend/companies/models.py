@@ -223,51 +223,51 @@ class CalificacionEmpresa(models.Model):
         self.empresa.actualizar_calificacion(self.puntuacion)
 
 # Signal para crear automáticamente el perfil de empresa cuando se crea un usuario
-@receiver(post_save, sender=User)
-def crear_perfil_empresa(sender, instance, created, **kwargs):
-    """Crea automáticamente el perfil de empresa cuando se crea un usuario con rol 'company'."""
-    if created and instance.role == 'company':
-        try:
-            # Verificar si ya existe un perfil de empresa
-            if not hasattr(instance, 'empresa_profile'):
-                print(f"[crear_perfil_empresa] Creando perfil de empresa para usuario {instance.id}")
-                empresa = Empresa.objects.create(
-                    user=instance,
-                    company_name=instance.company_name or instance.email,
-                    description='',
-                    industry='',
-                    size='',
-                    website='',
-                    address='',
-                    city='',
-                    country='Chile',
-                    rut='',
-                    personality='',
-                    business_name='',
-                    company_address='',
-                    company_phone='',
-                    company_email='',
-                    founded_year=None,
-                    logo_url='',
-                    verified=False,
-                    rating=0.0,
-                    total_projects=0,
-                    projects_completed=0,
-                    total_hours_offered=0,
-                    technologies_used=None,
-                    benefits_offered=None,
-                    remote_work_policy='',
-                    internship_duration='',
-                    stipend_range='',
-                    contact_email='',
-                    contact_phone='',
-                    status='active',
-                )
-                print(f"[crear_perfil_empresa] Perfil de empresa creado exitosamente - ID: {empresa.id}")
-        except Exception as e:
-            print(f"[crear_perfil_empresa] Error creando perfil de empresa: {str(e)}")
-            import traceback
-            traceback.print_exc()
+# TEMPORALMENTE COMENTADO PARA EVITAR CONFLICTOS EN EL REGISTRO
+# @receiver(post_save, sender=User)
+# def crear_perfil_empresa(sender, instance, created, **kwargs):
+#     """Crea automáticamente el perfil de empresa cuando se crea un usuario con rol 'company'."""
+#     if created and instance.role == 'company':
+#         try:
+#             # Verificar si ya existe un perfil de empresa
+#             if not hasattr(instance, 'empresa_profile'):
+#                 print(f"[crear_perfil_empresa] Creando perfil de empresa para usuario {instance.id}")
+#                 empresa = Empresa.objects.create(
+#                     user=instance,
+#                     company_name=instance.company_name or instance.email,
+#                     description='',
+#                     industry='',
+#                     size='',
+#                     website='',
+#                     city='',
+#                     country='Chile',
+#                     rut='',
+#                     personality='',
+#                     business_name='',
+#                     company_address='',
+#                     company_phone='',
+#                     company_email='',
+#                     founded_year=None,
+#                     logo_url='',
+#                     verified=False,
+#                     rating=0.0,
+#                     total_projects=0,
+#                     projects_completed=0,
+#                     total_hours_offered=0,
+#                     technologies_used=None,
+#                     benefits_offered=None,
+#                     remote_work_policy='',
+#                     internship_duration='',
+#                     stipend_range='',
+#                     contact_email='',
+#                     contact_phone='',
+#                     status='active',
+#                 )
+#                 print(f"[crear_perfil_empresa] Perfil de empresa creado exitosamente - ID: {empresa.id}")
+#         except Exception as e:
+#             print(f"[crear_perfil_empresa] Error creando perfil de empresa: {str(e)}")
+#             import traceback
+#             traceback.print_exc()
 
 @receiver(post_save, sender=CalificacionEmpresa)
 def actualizar_rating_empresa_post_save(sender, instance, **kwargs):

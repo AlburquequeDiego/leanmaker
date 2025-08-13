@@ -381,49 +381,50 @@ def student_cv_path(instance, filename):
     # Ruta por defecto para guardar CVs
     return f'students/cvs/{instance.estudiante.user.id}/{filename}'
 
+# TEMPORALMENTE COMENTADO PARA EVITAR CONFLICTOS EN EL REGISTRO
 # Signal para crear automáticamente el perfil de estudiante cuando se crea un usuario
-@receiver(post_save, sender=User)
-def crear_perfil_estudiante(sender, instance, created, **kwargs):
-    """Crea automáticamente el perfil de estudiante cuando se crea un usuario con rol 'student'."""
-    if created and instance.role == 'student':
-        try:
-            # Verificar si ya existe un perfil de estudiante
-            if not hasattr(instance, 'estudiante_profile'):
-                print(f"[crear_perfil_estudiante] Creando perfil de estudiante para usuario {instance.id}")
-                estudiante = Estudiante.objects.create(
-                    user=instance,
-                    career=instance.career or '',
-                    university='',
-                    education_level='',
-                    status='approved',
-                    api_level=1,
-                    trl_level=1,
-                    strikes=0,
-                    gpa=0.0,
-                    completed_projects=0,
-                    total_hours=0,
-                    experience_years=0,
-                    availability='flexible',
-                    location='',
-                    area='',
-
-                )
-                # Calcular TRL automáticamente al crear
-                estudiante.actualizar_trl_segun_api()
-                print(f"[crear_perfil_estudiante] Perfil de estudiante creado exitosamente - ID: {estudiante.id}")
-                
-                # Crear perfil detallado
-                perfil = PerfilEstudiante.objects.create(
-                    estudiante=estudiante,
-                    fecha_nacimiento=instance.birthdate,
-                    genero=instance.gender,
-                    universidad='',
-                )
-                print(f"[crear_perfil_estudiante] Perfil detallado creado exitosamente - ID: {perfil.id}")
-        except Exception as e:
-            print(f"[crear_perfil_estudiante] Error creando perfil de estudiante: {str(e)}")
-            import traceback
-            traceback.print_exc()
+# @receiver(post_save, sender=User)
+# def crear_perfil_estudiante(sender, instance, created, **kwargs):
+#     """Crea automáticamente el perfil de estudiante cuando se crea un usuario con rol 'student'."""
+#     if created and instance.role == 'student':
+#         try:
+#             # Verificar si ya existe un perfil de estudiante
+#             if not hasattr(instance, 'estudiante_profile'):
+#                 print(f"[crear_perfil_estudiante] Creando perfil de estudiante para usuario {instance.id}")
+#                 estudiante = Estudiante.objects.create(
+#                     user=instance,
+#                     career=instance.career or '',
+#                     university='',
+#                     education_level='',
+#                     status='approved',
+#                     api_level=1,
+#                     trl_level=1,
+#                     strikes=0,
+#                     gpa=0.0,
+#                     completed_projects=0,
+#                     total_hours=0,
+#                     experience_years=0,
+#                     availability='flexible',
+#                     location='',
+#                     area='',
+# 
+#                 )
+#                 # Calcular TRL automáticamente al crear
+#                 estudiante.actualizar_trl_segun_api()
+#                 print(f"[crear_perfil_estudiante] Perfil de estudiante creado exitosamente - ID: {estudiante.id}")
+#                 
+#                 # Crear perfil detallado
+#                 perfil = PerfilEstudiante.objects.create(
+#                     estudiante=estudiante,
+#                     fecha_nacimiento=instance.birthdate,
+#                     genero=instance.gender,
+#                     universidad='',
+#                 )
+#                 print(f"[crear_perfil_estudiante] Perfil detallado creado exitosamente - ID: {perfil.id}")
+#         except Exception as e:
+#             print(f"[crear_perfil_estudiante] Error creando perfil de estudiante: {str(e)}")
+#             import traceback
+#             traceback.print_exc()
 
 @receiver(post_save, sender=Estudiante)
 def actualizar_trl_automaticamente(sender, instance, **kwargs):

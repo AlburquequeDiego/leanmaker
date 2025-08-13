@@ -538,7 +538,6 @@ def api_register(request):
                     availability='flexible',
                     location=data.get('location', ''),
                     area=data.get('area', ''),
-                    rating=0.0,
                     skills=json.dumps(data.get('skills', [])) if data.get('skills') else None,
                     languages=json.dumps(data.get('languages', [])) if data.get('languages') else None,
                 )
@@ -570,11 +569,22 @@ def api_register(request):
                 )
                 print(f"[api_register] Perfil detallado creado exitosamente - ID: {perfil.id}")
                 
-            elif role == 'company':
-                from companies.models import Empresa
-                
-                print(f"[api_register] Creando perfil de empresa...")
-                empresa = Empresa.objects.create(
+                    elif role == 'company':
+            from companies.models import Empresa
+            from core.utils import validate_chilean_rut
+            
+            # Validar RUT antes de crear la empresa
+            rut = data.get('rut', '')
+            if rut:
+                rut_validation = validate_chilean_rut(rut)
+                if not rut_validation['is_valid']:
+                    return JsonResponse({
+                        'error': f'RUT inválido: {rut_validation["error"]}'
+                    }, status=400)
+                print(f"[api_register] RUT validado: {rut} -> {rut_validation['formatted_rut']}")
+            
+            print(f"[api_register] Creando perfil de empresa...")
+            empresa = Empresa.objects.create(
                     user=user,
                     company_name=data.get('company_name', ''),
                     description=data.get('description', ''),
@@ -661,7 +671,7 @@ def api_register(request):
                 'availability': estudiante.availability,
                 'location': estudiante.location,
                 'area': estudiante.area,
-                'rating': float(estudiante.rating),
+                'rating': 0.0,  # Valor por defecto ya que el modelo Estudiante no tiene campo rating
                 'skills': estudiante.get_skills_list(),
                 'languages': estudiante.get_languages_list(),
             }
