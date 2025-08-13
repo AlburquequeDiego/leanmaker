@@ -430,86 +430,166 @@ export const APIResults = () => {
         </CardContent>
       </Card>
 
-      {/* Historial de Peticiones de Subida de Nivel API */}
+      {/* Historial de Peticiones con diseño mejorado */}
       <Card sx={{ 
         boxShadow: themeMode === 'dark' 
-          ? '0 8px 32px rgba(0,0,0,0.3)' 
-          : '0 8px 32px rgba(0,0,0,0.1)',
+          ? '0 8px 30px rgba(0, 0, 0, 0.2)' 
+          : '0 8px 30px rgba(0, 0, 0, 0.08)',
         borderRadius: 3,
         bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-        color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+        border: themeMode === 'dark' 
+          ? '1px solid #475569'
+          : '1px solid #e2e8f0',
+        color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+        overflow: 'hidden'
       }}>
-        <CardContent sx={{ p: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        {/* Header con gradiente sutil */}
+        <Box sx={{
+          background: themeMode === 'dark'
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+            : 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+          borderBottom: themeMode === 'dark' 
+            ? '1px solid #475569'
+            : '1px solid #e2e8f0',
+          p: 3
+        }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <TimelineIcon sx={{ 
-                mr: 2, 
-                fontSize: '2rem', 
-                color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' 
-              }} />
-              <Typography variant="h5" sx={{ 
-                fontWeight: 'bold',
-                color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+              <Box sx={{
+                width: 44,
+                height: 44,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mr: 2.5,
+                boxShadow: '0 4px 16px rgba(59, 130, 246, 0.3)'
               }}>
-                Historial de Solicitudes
-              </Typography>
+                <TimelineIcon sx={{ fontSize: 22, color: 'white' }} />
+              </Box>
+              <Box>
+                <Typography variant="h5" sx={{ 
+                  fontWeight: 700,
+                  color: themeMode === 'dark' ? '#f8fafc' : '#1e293b',
+                  letterSpacing: '-0.025em',
+                  mb: 0.5
+                }}>
+                  Historial de Solicitudes
+                </Typography>
+                <Typography variant="body2" sx={{
+                  color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                  fontWeight: 500,
+                  fontSize: '0.875rem'
+                }}>
+                  Revisa el estado de tus peticiones de nivel API
+                </Typography>
+              </Box>
             </Box>
-            <ShowLatestFilter
-              value={showLatest}
-              onChange={setShowLatest}
-            />
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography variant="caption" sx={{
+                color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                fontWeight: 500,
+                display: 'block',
+                mb: 0.5
+              }}>
+                Mostrar
+              </Typography>
+              <ShowLatestFilter
+                value={showLatest}
+                onChange={setShowLatest}
+              />
+            </Box>
           </Box>
-          
-          <Divider sx={{ 
-            mb: 3,
-            borderColor: themeMode === 'dark' ? '#475569' : '#e0e0e0'
-          }} />
-          
+        </Box>
+        
+        <CardContent sx={{ p: 0 }}>
           {apiRequests.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <QuizIcon sx={{ 
-                fontSize: '4rem', 
-                color: themeMode === 'dark' ? '#64748b' : 'text.secondary', 
-                mb: 2 
-              }} />
+            <Box sx={{ textAlign: 'center', py: 6, px: 3 }}>
+              <Box sx={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: themeMode === 'dark' 
+                  ? 'rgba(100, 116, 139, 0.1)' 
+                  : 'rgba(100, 116, 139, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 3
+              }}>
+                <QuizIcon sx={{ 
+                  fontSize: 40, 
+                  color: themeMode === 'dark' ? '#64748b' : '#94a3b8'
+                }} />
+              </Box>
               <Typography variant="h6" sx={{ 
-                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', 
-                mb: 1 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#475569', 
+                mb: 1,
+                fontWeight: 600
               }}>
                 No tienes solicitudes de subida de nivel API
               </Typography>
               <Typography variant="body2" sx={{ 
-                color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'
+                color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                maxWidth: 400,
+                mx: 'auto'
               }}>
                 Cuando realices una solicitud, aparecerá aquí tu historial completo
               </Typography>
             </Box>
           ) : (
-            <TableContainer sx={{ borderRadius: 2, overflow: 'hidden' }}>
+            <TableContainer sx={{ 
+              borderRadius: 0,
+              overflow: 'hidden'
+            }}>
               <Table>
                 <TableHead>
                   <TableRow sx={{ 
-                    backgroundColor: themeMode === 'dark' ? '#334155' : 'primary.main' 
+                    backgroundColor: themeMode === 'dark' 
+                      ? 'rgba(59, 130, 246, 0.08)' 
+                      : 'rgba(59, 130, 246, 0.04)'
                   }}>
                     <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 'bold' 
+                      color: themeMode === 'dark' ? '#f8fafc' : '#1e293b', 
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      borderBottom: 'none',
+                      py: 2.5,
+                      px: 3
                     }}>Fecha</TableCell>
                     <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 'bold' 
+                      color: themeMode === 'dark' ? '#f8fafc' : '#1e293b', 
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      borderBottom: 'none',
+                      py: 2.5,
+                      px: 3
                     }}>Nivel Actual</TableCell>
                     <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 'bold' 
+                      color: themeMode === 'dark' ? '#f8fafc' : '#1e293b', 
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      borderBottom: 'none',
+                      py: 2.5,
+                      px: 3
                     }}>Nivel Solicitado</TableCell>
                     <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 'bold' 
+                      color: themeMode === 'dark' ? '#f8fafc' : '#1e293b', 
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      borderBottom: 'none',
+                      py: 2.5,
+                      px: 3
                     }}>Estado</TableCell>
                     <TableCell sx={{ 
-                      color: 'white', 
-                      fontWeight: 'bold' 
+                      color: themeMode === 'dark' ? '#f8fafc' : '#1e293b', 
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      borderBottom: 'none',
+                      py: 2.5,
+                      px: 3
                     }}>Feedback</TableCell>
                   </TableRow>
                 </TableHead>
@@ -538,46 +618,76 @@ export const APIResults = () => {
                           key={req.id}
                           sx={{ 
                             backgroundColor: index % 2 === 0 
-                              ? themeMode === 'dark' ? '#334155' : 'background.paper' 
-                              : themeMode === 'dark' ? '#475569' : 'action.hover',
+                              ? themeMode === 'dark' ? '#1e293b' : '#ffffff' 
+                              : themeMode === 'dark' ? '#334155' : '#f8fafc',
                             '&:hover': {
-                              backgroundColor: themeMode === 'dark' ? '#1e3a8a' : 'action.selected'
-                            }
+                              backgroundColor: themeMode === 'dark' 
+                                ? 'rgba(59, 130, 246, 0.08)' 
+                                : 'rgba(59, 130, 246, 0.04)'
+                            },
+                            transition: 'all 0.2s ease',
+                            '&:last-child td': { borderBottom: 0 }
                           }}
                         >
                           <TableCell sx={{ 
-                            fontWeight: 'medium',
-                            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+                            fontWeight: 500,
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#374151',
+                            fontSize: '0.875rem',
+                            py: 2.5,
+                            px: 3
                           }}>{fecha}</TableCell>
-                          <TableCell>
+                          <TableCell sx={{ py: 2.5, px: 3 }}>
                             <Chip 
                               label={`Nivel ${nivelActual}`} 
                               color={getLevelColor(Number(nivelActual)) as any} 
                               size="small"
-                              sx={{ fontWeight: 'bold' }}
+                              sx={{ 
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                                height: 24,
+                                '& .MuiChip-label': {
+                                  px: 1.5
+                                }
+                              }}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ py: 2.5, px: 3 }}>
                             <Chip 
                               label={`Nivel ${nivelSolicitado}`} 
                               color={getLevelColor(Number(nivelSolicitado)) as any} 
                               size="small"
-                              sx={{ fontWeight: 'bold' }}
+                              sx={{ 
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                                height: 24,
+                                '& .MuiChip-label': {
+                                  px: 1.5
+                                }
+                              }}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ py: 2.5, px: 3 }}>
                             <Chip 
                               label={getStatusText(req.status)} 
                               color={getStatusColor(req.status) as any} 
                               size="small"
                               icon={getStatusIcon(req.status)}
-                              sx={{ fontWeight: 'bold' }}
+                              sx={{ 
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                                height: 24,
+                                '& .MuiChip-label': {
+                                  px: 1.5
+                                }
+                              }}
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell sx={{ py: 2.5, px: 3 }}>
                             <Typography variant="body2" sx={{ 
                               maxWidth: 300,
-                              color: themeMode === 'dark' ? '#cbd5e1' : 'inherit'
+                              color: themeMode === 'dark' ? '#cbd5e1' : '#475569',
+                              fontSize: '0.875rem',
+                              lineHeight: 1.5
                             }}>
                               {req.feedback || avance || '-'}
                             </Typography>

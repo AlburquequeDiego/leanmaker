@@ -1210,6 +1210,7 @@ export const Evaluations = () => {
         onClose={() => setProjectDetailsModalOpen(false)}
         project={selectedProjectForDetails}
         userRole="student"
+        applicationData={selectedProjectForDetails} // Pasar el proyecto como applicationData para que se use como fallback
       />
 
       {/* Snackbar para notificaciones */}

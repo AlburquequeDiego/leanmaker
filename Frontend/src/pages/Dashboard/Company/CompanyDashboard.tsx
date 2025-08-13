@@ -19,44 +19,74 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 
-// Paleta de colores estilo Power BI
+// Paleta de colores estilo Power BI - Colores más claros y vibrantes para mejor visibilidad
 const powerBIColors = [
-  '#01B8AA', // Teal principal
-  '#374649', // Dark Gray
-  '#FD625E', // Red
-  '#F2C80F', // Yellow
-  '#5F6B6D', // Gray
-  '#8AD4EB', // Light Blue
-  '#FE9666', // Orange
-  '#A66999', // Purple
-  '#3599B8', // Blue
-  '#DFBFBF'  // Light Pink
+  '#00D4AA', // Teal brillante
+  '#6366F1', // Indigo vibrante
+  '#EF4444', // Rojo brillante
+  '#F59E0B', // Amarillo dorado
+  '#10B981', // Verde esmeralda
+  '#3B82F6', // Azul brillante
+  '#F97316', // Naranja vibrante
+  '#8B5CF6', // Púrpura vibrante
+  '#06B6D4', // Cian brillante
+  '#EC4899'  // Rosa vibrante
 ];
 
-// Estilos Power BI para tooltips
+// Función para traducir meses del inglés al español
+const translateMonthToSpanish = (month: string): string => {
+  const monthTranslations: { [key: string]: string } = {
+    'January': 'Enero',
+    'February': 'Febrero',
+    'March': 'Marzo',
+    'April': 'Abril',
+    'May': 'Mayo',
+    'June': 'Junio',
+    'July': 'Julio',
+    'August': 'Agosto',
+    'September': 'Septiembre',
+    'October': 'Octubre',
+    'November': 'Noviembre',
+    'December': 'Diciembre'
+  };
+  
+  // Buscar el mes en el objeto de traducciones
+  for (const [englishMonth, spanishMonth] of Object.entries(monthTranslations)) {
+    if (month.includes(englishMonth)) {
+      // Si el mes incluye el año (ej: "March 2025"), mantener el año
+      const year = month.replace(englishMonth, '').trim();
+      return year ? `${spanishMonth} ${year}` : spanishMonth;
+    }
+  }
+  
+  // Si no se encuentra traducción, devolver el mes original
+  return month;
+};
+
+// Estilos Power BI para tooltips - Mejorados para mayor visibilidad
 const powerBITooltipStyles = {
   backgroundColor: 'rgba(255, 255, 255, 0.98)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(0, 0, 0, 0.1)',
+  border: '2px solid rgba(0, 0, 0, 0.15)',
   borderRadius: '16px',
-  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.15)',
   padding: '16px 20px',
   fontSize: '14px',
-  fontWeight: 600,
+  fontWeight: 700,
   color: '#1e293b'
 };
 
-// Estilos Power BI para dark mode tooltips
+// Estilos Power BI para dark mode tooltips - Mejorados para mayor visibilidad
 const powerBITooltipDarkStyles = {
-  backgroundColor: 'rgba(15, 23, 42, 0.98)',
+  backgroundColor: 'rgba(30, 41, 59, 0.98)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
+  border: '2px solid rgba(255, 255, 255, 0.2)',
   borderRadius: '16px',
-  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2)',
+  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)',
   padding: '16px 20px',
   fontSize: '14px',
-  fontWeight: 600,
-  color: '#f8fafc'
+  fontWeight: 700,
+  color: '#ffffff'
 };
 
 // Componente de tarjeta KPI reutilizable
@@ -273,6 +303,36 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
   );
 };
 
+// Componente de tooltip personalizado para el gráfico circular
+const CustomPieTooltip = ({ active, payload, themeMode }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    return (
+      <Box
+        sx={{
+          backgroundColor: themeMode === 'dark' ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+          backdropFilter: 'blur(20px)',
+          border: themeMode === 'dark' ? '2px solid rgba(255, 255, 255, 0.2)' : '2px solid rgba(0, 0, 0, 0.15)',
+          borderRadius: '16px',
+          boxShadow: themeMode === 'dark' ? '0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.3)' : '0 12px 40px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.15)',
+          padding: '16px 20px',
+          fontSize: '14px',
+          fontWeight: 700,
+          color: themeMode === 'dark' ? '#ffffff' : '#1e293b'
+        }}
+      >
+        <Typography variant="body2" sx={{ color: 'inherit', fontWeight: 600 }}>
+          {data.name}
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'inherit', fontWeight: 700, mt: 1 }}>
+          {data.value} proyectos
+        </Typography>
+      </Box>
+    );
+  }
+  return null;
+};
+
 export default function CompanyDashboard() {
   const { user } = useAuth();
   const { themeMode } = useTheme();
@@ -351,8 +411,25 @@ export default function CompanyDashboard() {
   });
   const totalHoursOffered = stats?.total_hours_offered || 0;
 
-  // Datos para el gráfico circular - solo datos reales
-  const chartData = stats?.area_distribution || [];
+  // Función para traducir nombres de áreas/estados del inglés al español
+  const translateChartData = (data: any[]) => {
+    if (!data || !Array.isArray(data)) return [];
+    
+    return data.map(item => ({
+      ...item,
+      name: item.name === 'reviewing' ? 'En Revisión' : 
+            item.name === 'pending' ? 'Pendiente' :
+            item.name === 'accepted' ? 'Aceptado' :
+            item.name === 'rejected' ? 'Rechazado' :
+            item.name === 'completed' ? 'Completado' :
+            item.name === 'active' ? 'Activo' :
+            item.name === 'inactive' ? 'Inactivo' :
+            item.name
+    }));
+  };
+
+  // Datos para el gráfico circular - solo datos reales, traducidos al español
+  const chartData = translateChartData(stats?.area_distribution || []);
 
   return (
     <Box sx={{ 
@@ -538,26 +615,26 @@ export default function CompanyDashboard() {
                           strokeWidth={3}
                           filter="url(#pieShadow)"
                           labelStyle={{
-                            fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                            fontSize: '12px',
-                            fontWeight: 600
+                            fill: themeMode === 'dark' ? '#fbbf24' : '#1e293b',
+                            fontSize: '14px',
+                            fontWeight: 800,
+                            textShadow: themeMode === 'dark' ? '3px 3px 6px rgba(0,0,0,1)' : '2px 2px 4px rgba(255,255,255,0.9)',
+                            stroke: themeMode === 'dark' ? '#000000' : '#ffffff',
+                            strokeWidth: themeMode === 'dark' ? '2px' : '1px'
                           }}
                         >
                           {chartData.map((entry: any, index: number) => (
                             <Cell 
                               key={`cell-${index}`} 
                               fill={powerBIColors[index % powerBIColors.length]}
-                              stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
-                              strokeWidth={2}
+                              stroke={themeMode === 'dark' ? '#ffffff' : '#ffffff'}
+                              strokeWidth={themeMode === 'dark' ? 3 : 2}
+                              opacity={0.9}
                             />
                           ))}
                         </Pie>
                         <RechartsTooltip 
-                          contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
-                          formatter={(value: any, name: any) => [
-                            `${value} proyectos`, 
-                            name
-                          ]}
+                          content={<CustomPieTooltip themeMode={themeMode} />}
                         />
                       </PieChart>
                     </ResponsiveContainer>
@@ -612,6 +689,7 @@ export default function CompanyDashboard() {
                         />
                         <XAxis 
                           dataKey="month" 
+                          tickFormatter={translateMonthToSpanish}
                           tick={{ 
                             fontSize: 12, 
                             fontWeight: 600,
@@ -643,7 +721,13 @@ export default function CompanyDashboard() {
                         />
                         <RechartsTooltip 
                           contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
-                          formatter={(value: any, name: any) => [value, name]}
+                          formatter={(value: any, name: any) => {
+                            const labels = {
+                              projects: '📋 Proyectos Creados',
+                              applications: '📝 Aplicaciones Recibidas'
+                            };
+                            return [value, labels[name as keyof typeof labels] || name];
+                          }}
                         />
                         <Legend 
                           wrapperStyle={{

@@ -55,18 +55,18 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Paleta de colores estilo Power BI mejorada
+// Paleta de colores estilo Power BI mejorada - Colores más claros y vibrantes
 const powerBIColors = [
-  '#01B8AA', // Teal principal
-  '#374649', // Dark Gray
-  '#FD625E', // Red
-  '#F2C80F', // Yellow
-  '#5F6B6D', // Gray
-  '#8AD4EB', // Light Blue
-  '#FE9666', // Orange
-  '#A66999', // Purple
-  '#3599B8', // Blue
-  '#DFBFBF'  // Light Pink
+  '#00D4AA', // Teal brillante
+  '#6366F1', // Indigo vibrante
+  '#EF4444', // Rojo brillante
+  '#F59E0B', // Amarillo dorado
+  '#10B981', // Verde esmeralda
+  '#3B82F6', // Azul brillante
+  '#F97316', // Naranja vibrante
+  '#8B5CF6', // Púrpura vibrante
+  '#06B6D4', // Cian brillante
+  '#EC4899'  // Rosa vibrante
 ];
 
 // Gradientes Power BI
@@ -162,6 +162,36 @@ const getStatusIcon = (status: string) => {
     default:
       return <WarningIcon fontSize="small" />;
   }
+};
+
+// Función para traducir meses del inglés al español
+const translateMonthToSpanish = (month: string): string => {
+  const monthTranslations: { [key: string]: string } = {
+    'January': 'Enero',
+    'February': 'Febrero',
+    'March': 'Marzo',
+    'April': 'Abril',
+    'May': 'Mayo',
+    'June': 'Junio',
+    'July': 'Julio',
+    'August': 'Agosto',
+    'September': 'Septiembre',
+    'October': 'Octubre',
+    'November': 'Noviembre',
+    'December': 'Diciembre'
+  };
+  
+  // Buscar el mes en el objeto de traducciones
+  for (const [englishMonth, spanishMonth] of Object.entries(monthTranslations)) {
+    if (month.includes(englishMonth)) {
+      // Si el mes incluye el año (ej: "March 2025"), mantener el año
+      const year = month.replace(englishMonth, '').trim();
+      return year ? `${spanishMonth} ${year}` : spanishMonth;
+    }
+  }
+  
+  // Si no se encuentra traducción, devolver el mes original
+  return month;
 };
 
 export const ReportesYAnalytics = () => {
@@ -1598,6 +1628,7 @@ export const ReportesYAnalytics = () => {
                         />
                         <XAxis 
                           dataKey="month" 
+                          tickFormatter={translateMonthToSpanish}
                           tick={{ 
                             fontSize: 12, 
                             fontWeight: 600,

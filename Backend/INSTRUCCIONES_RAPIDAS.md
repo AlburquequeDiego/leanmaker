@@ -6,9 +6,7 @@ npm run dev
 
 cd Backend
 pip install -r requirements.txt
-python manage.py migrate
 python manage.py runserver
-
 
 
 opciones avanzadas
@@ -26,6 +24,3 @@ python manage.py showmigrations
 
 # Entrar al shell
 python manage.py shell
-
-
-

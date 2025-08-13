@@ -366,6 +366,12 @@ def projects_create(request):
                 technologies=data.get('technologies', '[]'),
                 tags=data.get('tags', '[]')
             )
+            
+            # Calcular automáticamente la fecha de fin si no se proporcionó
+            if not estimated_end_date and project.start_date and project.required_hours and project.hours_per_week:
+                project.actualizar_fecha_fin_estimada()
+                print(f"📅 Fecha de fin calculada automáticamente: {project.estimated_end_date}")
+            
         except Exception as e:
             print('--- ERROR AL CREAR PROYECTO ---')
             print(str(e))
