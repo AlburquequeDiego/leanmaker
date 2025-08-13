@@ -1,5 +1,6 @@
 import { apiService } from './api.service';
 import { adaptProjectList, adaptProject } from '../utils/adapters';
+import { API_ENDPOINTS } from '../config/api.config';
 
 
 export interface Project {
@@ -130,7 +131,7 @@ export class ProjectService {
   async getProjectApplications(params?: any): Promise<ProjectApplication[]> {
     try {
       const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
-      return await apiService.get<ProjectApplication[]>(`${API_ENDPOINTS.PROJECT_APPLICATIONS}${queryString}`);
+      return await apiService.get<ProjectApplication[]>(`${API_ENDPOINTS.APPLICATIONS}${queryString}`);
     } catch (error) {
       console.error('Error fetching project applications:', error);
       throw error;
@@ -139,7 +140,7 @@ export class ProjectService {
 
   async getProjectApplication(id: string): Promise<ProjectApplication> {
     try {
-      return await apiService.get<ProjectApplication>(`${API_ENDPOINTS.PROJECT_APPLICATIONS}${id}/`);
+      return await apiService.get<ProjectApplication>(`${API_ENDPOINTS.APPLICATIONS}${id}/`);
     } catch (error) {
       console.error(`Error fetching project application ${id}:`, error);
       throw error;
@@ -148,7 +149,7 @@ export class ProjectService {
 
   async createProjectApplication(applicationData: Partial<ProjectApplication>): Promise<ProjectApplication> {
     try {
-      return await apiService.post<ProjectApplication>(API_ENDPOINTS.PROJECT_APPLICATIONS, applicationData);
+      return await apiService.post<ProjectApplication>(API_ENDPOINTS.APPLICATIONS, applicationData);
     } catch (error) {
       console.error('Error creating project application:', error);
       throw error;
@@ -157,7 +158,7 @@ export class ProjectService {
 
   async updateProjectApplication(id: string, applicationData: Partial<ProjectApplication>): Promise<ProjectApplication> {
     try {
-      return await apiService.put<ProjectApplication>(`${API_ENDPOINTS.PROJECT_APPLICATIONS}${id}/`, applicationData);
+      return await apiService.put<ProjectApplication>(`${API_ENDPOINTS.APPLICATIONS}${id}/`, applicationData);
     } catch (error) {
       console.error(`Error updating project application ${id}:`, error);
       throw error;
@@ -166,7 +167,7 @@ export class ProjectService {
 
   async deleteProjectApplication(id: string): Promise<void> {
     try {
-      return await apiService.delete(`${API_ENDPOINTS.PROJECT_APPLICATIONS}${id}/`);
+      return await apiService.delete(`${API_ENDPOINTS.APPLICATIONS}${id}/`);
     } catch (error) {
       console.error(`Error deleting project application ${id}:`, error);
       throw error;
@@ -177,7 +178,7 @@ export class ProjectService {
   async getProjectMembers(params?: any): Promise<ProjectMember[]> {
     try {
       const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
-      return await apiService.get<ProjectMember[]>(`${API_ENDPOINTS.PROJECT_MEMBERS}${queryString}`);
+      return await apiService.get<ProjectMember[]>(`${API_ENDPOINTS.ASSIGNMENTS}${queryString}`);
     } catch (error) {
       console.error('Error fetching project members:', error);
       throw error;
@@ -186,7 +187,7 @@ export class ProjectService {
 
   async getProjectMember(id: string): Promise<ProjectMember> {
     try {
-      return await apiService.get<ProjectMember>(`${API_ENDPOINTS.PROJECT_MEMBERS}${id}/`);
+      return await apiService.get<ProjectMember>(`${API_ENDPOINTS.ASSIGNMENTS}${id}/`);
     } catch (error) {
       console.error(`Error fetching project member ${id}:`, error);
       throw error;
@@ -195,7 +196,7 @@ export class ProjectService {
 
   async createProjectMember(memberData: Partial<ProjectMember>): Promise<ProjectMember> {
     try {
-      return await apiService.post<ProjectMember>(API_ENDPOINTS.PROJECT_MEMBERS, memberData);
+      return await apiService.post<ProjectMember>(API_ENDPOINTS.ASSIGNMENTS, memberData);
     } catch (error) {
       console.error('Error creating project member:', error);
       throw error;
@@ -204,7 +205,7 @@ export class ProjectService {
 
   async updateProjectMember(id: string, memberData: Partial<ProjectMember>): Promise<ProjectMember> {
     try {
-      return await apiService.put<ProjectMember>(`${API_ENDPOINTS.PROJECT_MEMBERS}${id}/`, memberData);
+      return await apiService.put<ProjectMember>(`${API_ENDPOINTS.ASSIGNMENTS}${id}/`, memberData);
     } catch (error) {
       console.error(`Error updating project member ${id}:`, error);
       throw error;
@@ -213,7 +214,7 @@ export class ProjectService {
 
   async deleteProjectMember(id: string): Promise<void> {
     try {
-      return await apiService.delete(`${API_ENDPOINTS.PROJECT_MEMBERS}${id}/`);
+      return await apiService.delete(`${API_ENDPOINTS.ASSIGNMENTS}${id}/`);
     } catch (error) {
       console.error(`Error deleting project member ${id}:`, error);
       throw error;

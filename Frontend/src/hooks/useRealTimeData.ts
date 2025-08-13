@@ -156,7 +156,7 @@ export const useProjects = () => {
 // Hook específico para aplicaciones
 export const useApplications = () => {
   return useRealTimeData({
-    endpoint: API_ENDPOINTS.PROJECT_APPLICATIONS_MY_APPLICATIONS,
+    endpoint: API_ENDPOINTS.APPLICATIONS_MY,
     interval: 0, // Sin polling automático para evitar rate limiting
     enabled: true
   });

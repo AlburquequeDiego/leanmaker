@@ -53,6 +53,8 @@ import {
 import { useApi } from '../../../hooks/useApi';
 import { adaptCalendarEvent } from '../../../utils/adapters';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { useStudentProfile } from '../../../hooks/useStudentProfile';
+import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 
 export const CompanyInterviews: React.FC = () => {
   const api = useApi();
@@ -69,7 +71,14 @@ export const CompanyInterviews: React.FC = () => {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [showPendingInterviews, setShowPendingInterviews] = useState(5);
   const [showCompletedInterviews, setShowCompletedInterviews] = useState(5);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [projectDetailsModalOpen, setProjectDetailsModalOpen] = useState(false);
+  const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
 
+  // Hook para obtener el perfil detallado del estudiante
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
+  
   const now = new Date();
   
   // Filtros y datos procesados
@@ -188,6 +197,32 @@ export const CompanyInterviews: React.FC = () => {
   const handleViewDetails = (event: any) => {
     setSelectedEvent(event);
     setDetailDialogOpen(true);
+  };
+
+  const handleViewProfile = (event: any) => {
+    console.log('🔍 Abriendo perfil del estudiante:', event);
+    // Extraer el ID del estudiante del evento
+    const studentId = event.attendees?.[0]?.id || event.student_id;
+    if (studentId) {
+      setSelectedStudentId(studentId);
+      setShowProfileDialog(true);
+    } else {
+      console.error('❌ No se pudo obtener el ID del estudiante');
+    }
+  };
+
+  const handleViewProjectDetails = (event: any) => {
+    console.log('🔍 Abriendo detalles del proyecto:', event);
+    // Crear un objeto proyecto con la información disponible
+    const projectData = {
+      id: event.project_id || event.id,
+      title: event.project_title || event.title,
+      description: event.description || 'Descripción no disponible',
+      company: event.company || 'Empresa no especificada',
+      // Agregar otros campos que puedan estar disponibles
+    };
+    setSelectedProjectForDetails(projectData);
+    setProjectDetailsModalOpen(true);
   };
 
   const handleCloseDetails = () => {
@@ -750,22 +785,58 @@ export const CompanyInterviews: React.FC = () => {
                         </CardContent>
 
                         <CardActions sx={{ p: 3, pt: 0 }}>
-                          <Button 
-                            size="small" 
-                            startIcon={<VisibilityIcon />}
-                            variant="outlined"
-                            onClick={() => handleViewDetails(event)}
-                            sx={{
-                              color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
-                              borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
-                              '&:hover': {
-                                borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
-                                backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
-                              }
-                            }}
-                          >
-                            Ver Detalles
-                          </Button>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Button 
+                              size="small" 
+                              startIcon={<PersonIcon />}
+                              variant="outlined"
+                              onClick={() => handleViewProfile(event)}
+                              sx={{
+                                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                                borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                                '&:hover': {
+                                  borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
+                                  backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
+                                }
+                              }}
+                            >
+                              Ver Perfil
+                            </Button>
+                            {event.project_title && (
+                              <Button 
+                                size="small" 
+                                startIcon={<WorkIcon />}
+                                variant="outlined"
+                                onClick={() => handleViewProjectDetails(event)}
+                                sx={{
+                                  color: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                                  borderColor: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                                  '&:hover': {
+                                    borderColor: themeMode === 'dark' ? '#059669' : '#2e7d32',
+                                    backgroundColor: themeMode === 'dark' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 142, 60, 0.1)'
+                                  }
+                                }}
+                              >
+                                Ver Proyecto
+                              </Button>
+                            )}
+                            <Button 
+                              size="small" 
+                              startIcon={<VisibilityIcon />}
+                              variant="outlined"
+                              onClick={() => handleViewDetails(event)}
+                              sx={{
+                                color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                                borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                                '&:hover': {
+                                  borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
+                                  backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
+                                }
+                              }}
+                            >
+                              Ver Detalles
+                            </Button>
+                          </Box>
                         </CardActions>
                       </Card>
                     </Grid>
@@ -974,22 +1045,58 @@ export const CompanyInterviews: React.FC = () => {
                         </CardContent>
 
                         <CardActions sx={{ p: 3, pt: 0 }}>
-                          <Button 
-                            size="small" 
-                            startIcon={<VisibilityIcon />}
-                            variant="outlined"
-                            onClick={() => handleViewDetails(event)}
-                            sx={{
-                              color: themeMode === 'dark' ? '#10b981' : '#388e3c',
-                              borderColor: themeMode === 'dark' ? '#10b981' : '#388e3c',
-                              '&:hover': {
-                                borderColor: themeMode === 'dark' ? '#059669' : '#2e7d32',
-                                backgroundColor: themeMode === 'dark' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 142, 60, 0.1)'
-                              }
-                            }}
-                          >
-                            Ver Detalles
-                          </Button>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Button 
+                              size="small" 
+                              startIcon={<PersonIcon />}
+                              variant="outlined"
+                              onClick={() => handleViewProfile(event)}
+                              sx={{
+                                color: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                                borderColor: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                                '&:hover': {
+                                  borderColor: themeMode === 'dark' ? '#059669' : '#2e7d32',
+                                  backgroundColor: themeMode === 'dark' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 142, 60, 0.1)'
+                                }
+                              }}
+                            >
+                              Ver Perfil
+                            </Button>
+                            {event.project_title && (
+                              <Button 
+                                size="small" 
+                                startIcon={<WorkIcon />}
+                                variant="outlined"
+                                onClick={() => handleViewProjectDetails(event)}
+                                sx={{
+                                  color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                                  borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                                  '&:hover': {
+                                    borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
+                                    backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
+                                  }
+                                }}
+                              >
+                                Ver Proyecto
+                              </Button>
+                            )}
+                            <Button 
+                              size="small" 
+                              startIcon={<VisibilityIcon />}
+                              variant="outlined"
+                              onClick={() => handleViewDetails(event)}
+                              sx={{
+                                color: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                                borderColor: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                                '&:hover': {
+                                  borderColor: themeMode === 'dark' ? '#059669' : '#2e7d32',
+                                  backgroundColor: themeMode === 'dark' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 142, 60, 0.1)'
+                                }
+                              }}
+                            >
+                              Ver Detalles
+                            </Button>
+                          </Box>
                         </CardActions>
                       </Card>
                     </Grid>

@@ -11,6 +11,7 @@ urlpatterns = [
     path('', views.student_list, name='student_list'),
     path('me/', views.student_me, name='student_me'),
     path('<uuid:student_id>/', views.student_detail, name='student_detail'),
+    path('<uuid:student_id>/profile/', views.student_profile, name='student_profile'),
     path('<uuid:student_id>/update/', views.student_update, name='student_update'),
     path('update/', views.student_update, name='student_update_me'),
     path('api-level-request/', views.api_level_request_create, name='api_level_request_create'),

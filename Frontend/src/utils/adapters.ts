@@ -72,6 +72,7 @@ export const adaptStudent = (backendStudent: any): Student => ({
   completed_projects: backendStudent.completed_projects,
   total_hours: backendStudent.total_hours || 0,
   experience_years: backendStudent.experience_years || 0,
+  hours_per_week: backendStudent.hours_per_week || 20, // <-- AÑADIDO: horas semanales disponibles
   portfolio_url: backendStudent.portfolio_url,
   github_url: backendStudent.github_url,
   linkedin_url: backendStudent.linkedin_url,
@@ -229,7 +230,6 @@ export const adaptApplication = (backendApplication: any): Application => {
   // Extraer datos del proyecto (estructura anidada del backend)
   const project = backendApplication.project || {};
   const student = backendApplication.student || {};
-  const company = project.company || {};
 
   // Debug: Log the student object structure
   console.log('🔍 [ADAPTER] Student object from backend:', student);
@@ -239,6 +239,15 @@ export const adaptApplication = (backendApplication: any): Application => {
   console.log('🔍 [ADAPTER] Student.user:', student.user);
   console.log('🔍 [ADAPTER] Student.email:', student.email);
   console.log('🔍 [ADAPTER] Student.name:', student.name);
+  
+  // Verificar si el estudiante tiene datos válidos
+  const hasValidStudentData = student && (
+    student.id || 
+    student.user || 
+    student.email || 
+    student.name ||
+    Object.keys(student).length > 0
+  );
 
   return {
     id: String(backendApplication.id),
@@ -262,16 +271,16 @@ export const adaptApplication = (backendApplication: any): Application => {
     project_description: project.description || 'Sin descripción',
     // company: project.company_name || company.company_name || company.name || backendApplication.company_name || 'Sin empresa', // Removed - not in Application type
     // Campos adicionales para el perfil completo del estudiante
-    // student_name: student.name || student.full_name || backendApplication.student_name || 'Estudiante no encontrado', // Removed - not in Application type
-    // student_email: student.email || backendApplication.student_email || 'Sin email', // Removed - not in Application type
-    // student_career: student.career || backendApplication.student_career || '', // Removed - not in Application type
-    // student_semester: student.semester || backendApplication.student_semester || '', // Removed - not in Application type
+    student_name: student.name || student.full_name || backendApplication.student_name || 'Estudiante no encontrado',
+    student_email: student.email || backendApplication.student_email || 'Sin email',
+    // student_career: student.career || backendApplication.student_career || '',
+    // student_semester: student.semester || backendApplication.student_semester || '',
     // Skills y requisitos
     // requiredSkills: Array.isArray(project.requirements) ? project.requirements : (typeof project.requirements === 'string' && project.requirements ? project.requirements.split(',').map((s: string) => s.trim()) : []), // Removed - not in Application type
     // compatibility: backendApplication.compatibility_score || 0, // Removed - not in Application type
     // notes: backendApplication.student_notes || backendApplication.cover_letter || undefined, // Removed - not in Application type
     // NUEVO: Incluir datos completos del estudiante para el perfil
-    student_data: (student && (student.id || student.user || student.email || student.name)) ? {
+    student_data: hasValidStudentData ? {
       id: String(student.id || ''),
       user: String(student.user || ''),
       career: student.career,
@@ -284,6 +293,7 @@ export const adaptApplication = (backendApplication: any): Application => {
       completed_projects: student.completed_projects,
       total_hours: student.total_hours || 0,
       experience_years: student.experience_years || 0,
+      hours_per_week: student.hours_per_week || 20,
       portfolio_url: student.portfolio_url,
       github_url: student.github_url,
       linkedin_url: student.linkedin_url,

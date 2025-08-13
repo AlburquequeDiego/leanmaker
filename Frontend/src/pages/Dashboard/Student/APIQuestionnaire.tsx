@@ -155,7 +155,7 @@ export const APIQuestionnaire = () => {
     const fetchCurrentApiLevel = async () => {
       try {
         setLoadingApiLevel(true);
-        const data = await apiService.get('/api/students/me/');
+        const data = await apiService.get<any>('/api/students/me/');
         const apiLevel = Number(data.api_level);
         if (apiLevel && apiLevel > 0) {
           setCurrentApiLevel(apiLevel);
@@ -207,6 +207,12 @@ export const APIQuestionnaire = () => {
   const handleSubmit = async () => {
     const level = calculateAPILevel();
     if (level && currentApiLevel !== null) {
+      // Si el estudiante ya tiene el nivel máximo, no permitir envío
+      if (currentApiLevel === 4) {
+        setError('Ya tienes el nivel máximo (4). No puedes enviar una nueva petición.');
+        return;
+      }
+      
       setCalculatedLevel(level);
       setShowResults(true);
       setPendingApproval(false); // Inicialmente no está pendiente hasta confirmar
@@ -237,6 +243,8 @@ export const APIQuestionnaire = () => {
         if (errorMessage.includes('Ya tienes una petición pendiente') || 
             errorMessage.includes('Ya tienes una petición pendiente.')) {
           setError('Ya tienes una petición pendiente de aprobación. Por favor, espera a que el administrador la revise antes de enviar otra.');
+        } else if (errorMessage.includes('Ya tienes el nivel máximo')) {
+          setError('Ya tienes el nivel máximo aprobado. No puedes enviar una nueva petición.');
         } else {
           setError('Error al enviar la petición. Por favor, inténtalo de nuevo.');
         }
@@ -250,7 +258,10 @@ export const APIQuestionnaire = () => {
   };
 
   const progress = (Object.keys(answers).length / questions.length) * 100;
-  const canSubmit = Object.keys(answers).length === questions.length && !pendingApproval && currentApiLevel !== null;
+  const canSubmit = Object.keys(answers).length === questions.length && 
+                   !pendingApproval && 
+                   currentApiLevel !== null && 
+                   currentApiLevel < 4; // No permitir envío si ya tiene nivel máximo
 
   // Mostrar loading mientras se obtiene el nivel API
   if (loadingApiLevel) {
@@ -387,170 +398,74 @@ export const APIQuestionnaire = () => {
     );
   }
 
-  // Si el estudiante ya tiene el nivel máximo (API 4), mostrar mensaje de que no puede hacer el cuestionario
-  if (currentApiLevel >= 4) {
+  // Si el estudiante ya tiene el nivel máximo, mostrar mensaje
+  if (currentApiLevel === 4) {
     return (
       <Box sx={{ 
         flexGrow: 1, 
-        p: 3, 
-        backgroundColor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5', 
-        minHeight: '100vh' 
+        p: 3,
+        bgcolor: themeMode === 'dark' ? '#0f172a' : '#f5f5f5',
+        minHeight: '100vh'
       }}>
         {/* Banner superior con gradiente y contexto */}
         <Box
           sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
             borderRadius: '20px',
             p: 4,
             mb: 4,
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: '-50%',
-              left: '-50%',
-              width: '200%',
-              height: '200%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
-              animation: 'float 6s ease-in-out infinite',
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              bottom: '-30%',
-              right: '-30%',
-              width: '60%',
-              height: '60%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
-              animation: 'float 8s ease-in-out infinite reverse',
-            },
-            '@keyframes float': {
-              '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
-              '50%': { transform: 'translateY(-20px) rotate(180deg)' },
-            },
+            boxShadow: '0 8px 32px rgba(79, 172, 254, 0.3)',
           }}
         >
           <Box sx={{ position: 'relative', zIndex: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 2 }}>
-              <Box
-                sx={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backdropFilter: 'blur(10px)',
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
-                }}
-              >
-                <QuizIcon sx={{ fontSize: 32, color: 'white' }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    color: 'white',
-                    fontWeight: 'bold',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                    mb: 1,
-                  }}
-                >
-                  Cuestionario de Nivelación API
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    fontWeight: 300,
-                    textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                  }}
-                >
-                  Evalúa tu nivel de competencia y mejora tu perfil profesional
-                </Typography>
-              </Box>
-            </Box>
+            <Typography variant="h4" gutterBottom sx={{ 
+              color: 'white', 
+              fontWeight: 'bold',
+              textAlign: 'center'
+            }}>
+              🎉 ¡Felicidades! Ya tienes el nivel máximo
+            </Typography>
+            <Typography variant="h6" sx={{ 
+              color: 'white', 
+              textAlign: 'center',
+              opacity: 0.9
+            }}>
+              Nivel API 4: Asesoría + Propuesta + Implementación + Upgrade
+            </Typography>
           </Box>
         </Box>
 
-        {/* Tarjeta de felicitación con gradiente */}
-        <Card sx={{ 
-          mb: 4, 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
-        }}>
-          <CardContent sx={{ textAlign: 'center', p: 4 }}>
-            <EmojiEventsIcon sx={{ fontSize: 80, color: 'white', mb: 2 }} />
-            <Typography variant="h3" gutterBottom sx={{ color: 'white', fontWeight: 'bold' }}>
-              🎉 ¡Felicidades! Nivel Máximo Alcanzado
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <EmojiEventsIcon sx={{ fontSize: 80, color: 'warning.main', mb: 2 }} />
+          <Typography variant="h5" gutterBottom sx={{ color: 'warning.main', fontWeight: 'bold' }}>
+            ¡Has alcanzado el nivel máximo de competencia!
+          </Typography>
+          <Typography variant="body1" paragraph sx={{ mb: 3 }}>
+            Ya tienes el nivel API 4, que es el más alto disponible en el sistema. 
+            Esto significa que puedes:
+          </Typography>
+          
+          <Box sx={{ textAlign: 'left', maxWidth: 600, mx: 'auto', mb: 3 }}>
+            <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              ✅ Liderar proyectos complejos
             </Typography>
-            <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.9)', mb: 2 }}>
-              API Nivel {currentApiLevel}
+            <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              ✅ Innovar en soluciones técnicas
             </Typography>
-            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mb: 3 }}>
-              Has demostrado competencia máxima en todas las áreas evaluadas por el cuestionario.
-              Ya no puedes realizar este cuestionario porque has alcanzado la máxima competencia en el sistema.
+            <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              ✅ Mentorear a otros desarrolladores
             </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', fontStyle: 'italic' }}>
-              Puedes continuar participando en proyectos y mejorando tus habilidades, pero tu nivel API ya está en su máximo.
+            <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              ✅ Optimizar y escalar sistemas
             </Typography>
-          </CardContent>
-        </Card>
+          </Box>
 
-        {/* Tarjeta de capacidades */}
-        <Card sx={{ 
-          mb: 4, 
-          background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-          color: 'white',
-          boxShadow: '0 8px 32px rgba(17, 153, 142, 0.3)'
-        }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h4" gutterBottom sx={{ color: 'white', fontWeight: 'bold', mb: 3 }}>
-                {apiLevelDescriptions[4].title}
-              </Typography>
-            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mb: 3, fontSize: '1.1rem' }}>
-                {apiLevelDescriptions[4].description}
-              </Typography>
-            <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 'bold' }}>
-              Tus Capacidades:
-            </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {apiLevelDescriptions[4].capabilities.map((capability, index) => (
-                <Chip 
-                  key={index} 
-                  label={capability} 
-                  size="medium" 
-                  sx={{ 
-                    bgcolor: 'rgba(255,255,255,0.2)', 
-                    color: 'white',
-                    fontWeight: 'bold',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
-                  }} 
-                />
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-
-        {/* Tarjeta de estado */}
-        <Card sx={{ 
-          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-          color: 'white',
-          boxShadow: '0 8px 32px rgba(79, 172, 254, 0.3)'
-        }}>
-          <CardContent sx={{ textAlign: 'center', p: 3 }}>
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
-              ✅ Cuestionario Deshabilitado
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-              Ya tienes el nivel máximo disponible en el sistema.
-            </Typography>
-          </CardContent>
-        </Card>
+          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+            No necesitas hacer el cuestionario nuevamente. Tu nivel está aprobado y activo.
+          </Typography>
+        </Paper>
       </Box>
     );
   }

@@ -365,7 +365,7 @@ export const ManageProjects: React.FC = () => {
                       size="small"
                     />
                     <Chip
-                      label={`${project.duration_weeks} semanas`}
+                      label={`${project.duration_weeks} meses`}
                       color="secondary"
                       size="small"
                     />
@@ -446,7 +446,7 @@ export const ManageProjects: React.FC = () => {
             <Box sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
             <TextField
                 fullWidth
-              label="Duración (semanas)"
+                                 label="Duración (meses)"
               type="number"
               value={newProject.duration}
                 onChange={(e) => setNewProject(prev => ({ ...prev, duration: e.target.value }))}

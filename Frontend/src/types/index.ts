@@ -32,6 +32,34 @@ export interface User {
   company_profile?: Company;
 }
 
+export interface StudentProfileResponse {
+  student: Student;
+  user_data: {
+    full_name: string;
+    email: string;
+    phone?: string;
+    bio?: string;
+    first_name: string;
+    last_name: string;
+  };
+  perfil_detallado: {
+    fecha_nacimiento?: string;
+    genero?: string;
+    nacionalidad?: string;
+    universidad?: string;
+    facultad?: string;
+    promedio_historico?: number;
+    experiencia_laboral?: string;
+    certificaciones?: string[];
+    proyectos_personales?: string[];
+    tecnologias_preferidas?: string[];
+    industrias_interes?: string[];
+    tipo_proyectos_preferidos?: string[];
+    telefono_emergencia?: string;
+    contacto_emergencia?: string;
+  };
+}
+
 // Tipos de estudiante - Coinciden con el modelo Estudiante del backend
 export interface Student {
   id: string; // Cambiado a string para UUID
@@ -46,6 +74,7 @@ export interface Student {
   completed_projects: number;
   total_hours: number;
   experience_years: number;
+  hours_per_week: number; // <-- AÑADIDO: horas semanales disponibles
   portfolio_url?: string;
   github_url?: string;
   linkedin_url?: string;

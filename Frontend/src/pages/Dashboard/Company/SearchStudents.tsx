@@ -26,9 +26,11 @@ import {
   FilterList as FilterIcon,
   Send as SendIcon,
   Group as GroupIcon,
+  Person as PersonIcon,
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { notificationService } from '../../../services/notification.service';
+import { useStudentProfile } from '../../../hooks/useStudentProfile';
 import type { Student } from '../../../types';
 import { useTheme } from '../../../contexts/ThemeContext';
 
@@ -49,6 +51,11 @@ export const SearchStudents: React.FC = () => {
   const [showContactDialog, setShowContactDialog] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+
+  // Hook para obtener el perfil detallado del estudiante
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
 
   // Cargar estudiantes al montar el componente
   useEffect(() => {
@@ -82,11 +89,14 @@ export const SearchStudents: React.FC = () => {
         console.log('📊 Total de postulaciones encontradas:', applicationsData.length);
         
         if (applicationsData.length > 0) {
+          console.log('🔍 [SearchStudents] Primera aplicación:', applicationsData[0]);
           // Crear un mapa de estudiantes únicos basado en las postulaciones
           const uniqueStudents = new Map();
           
           applicationsData.forEach((application: any) => {
+            console.log('🔍 [SearchStudents] Procesando aplicación:', application);
             const studentId = application.student_id;
+            console.log('🔍 [SearchStudents] Student ID:', studentId);
             if (!uniqueStudents.has(studentId)) {
               // Crear objeto estudiante con datos de la postulación
               const student = {
@@ -155,12 +165,12 @@ export const SearchStudents: React.FC = () => {
     // Crear un objeto userData simulado con los datos que ya tenemos
     const userData = {
       id: student.user,
-      full_name: student.name,
-      first_name: student.name?.split(' ')[0] || '',
-      last_name: student.name?.split(' ').slice(1).join(' ') || '',
-      email: student.email,
-      bio: student.bio || '',
-      phone: student.phone || '',
+      full_name: student.user_data?.full_name || student.user_data?.first_name + ' ' + student.user_data?.last_name || 'Sin nombre',
+      first_name: student.user_data?.first_name || '',
+      last_name: student.user_data?.last_name || '',
+      email: student.user_data?.email || '',
+      bio: student.user_data?.bio || '',
+      phone: student.user_data?.phone || '',
       location: student.location || ''
     };
     return { ...student, userData };
@@ -218,13 +228,19 @@ export const SearchStudents: React.FC = () => {
     setShowContactDialog(true);
   };
 
+  const handleViewProfile = (student: Student & { userData?: any }) => {
+    console.log('🔍 Abriendo perfil del estudiante:', student);
+    setSelectedStudentId(student.id);
+    setShowProfileDialog(true);
+  };
+
   const handleSendMessage = async (student: Student & { userData?: any }) => {
     try {
       setSendingMessage(true);
       console.log(' Enviando notificación de contacto a estudiante:', student.id);
       
       const response = await notificationService.sendCompanyMessage({
-        student_id: student.id,
+        student_id: Number(student.id),
         message: 'La empresa quiere comunicarse contigo. Revisa tu correo institucional para más detalles.'
       });
       
@@ -760,6 +776,22 @@ export const SearchStudents: React.FC = () => {
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <Button
                         size="small"
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => handleViewProfile(student)}
+                        sx={{ 
+                          borderRadius: 2, 
+                          textTransform: 'none',
+                          flex: 1,
+                          fontSize: '0.8rem',
+                          fontWeight: 600
+                        }}
+                        startIcon={<PersonIcon />}
+                      >
+                        Ver Perfil
+                      </Button>
+                      <Button
+                        size="small"
                         variant="contained"
                         color="primary"
                         onClick={() => handleContactStudent(student)}
@@ -907,6 +939,231 @@ export const SearchStudents: React.FC = () => {
             startIcon={sendingMessage ? <CircularProgress size={16} /> : <SendIcon />}
           >
             {sendingMessage ? 'Enviando...' : 'Enviar Notificación'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog de perfil del estudiante */}
+      <Dialog 
+        open={showProfileDialog} 
+        onClose={() => setShowProfileDialog(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
+      >
+        <DialogTitle sx={{ 
+          bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc', 
+          borderBottom: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2
+        }}>
+          <PersonIcon color="primary" />
+          <Typography variant="h6" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+            Perfil Completo del Estudiante
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+          {profileLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : profileError ? (
+            <Alert severity="error" sx={{ borderRadius: 2 }}>
+              Error al cargar el perfil del estudiante: {profileError}
+            </Alert>
+          ) : studentProfile ? (
+            <Box sx={{ pt: 2 }}>
+              {/* Información básica del estudiante */}
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2, 
+                mb: 3,
+                p: 2,
+                bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                borderRadius: 2,
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0'
+              }}>
+                <Avatar sx={{ 
+                  width: 60, 
+                  height: 60, 
+                  bgcolor: '#3b82f6',
+                  fontSize: '1.5rem',
+                  fontWeight: 600
+                }}>
+                  {studentProfile.student?.name?.charAt(0).toUpperCase() || 'E'}
+                </Avatar>
+                <Box>
+                  <Typography variant="h6" fontWeight={600} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                    {studentProfile.student?.name || 'Nombre no disponible'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    {studentProfile.student?.email || 'Email no disponible'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    Teléfono: {studentProfile.student?.phone || 'No disponible'}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Información personal */}
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                Información Personal
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Fecha de Nacimiento:</strong><br />
+                    {studentProfile.perfil_detallado?.fecha_nacimiento || 'No disponible'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Género:</strong><br />
+                    {studentProfile.perfil_detallado?.genero || 'No disponible'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Carrera:</strong><br />
+                    {studentProfile.student?.career || 'No disponible'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Nivel API:</strong><br />
+                    {studentProfile.student?.api_level || 'No disponible'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Universidad:</strong><br />
+                    {studentProfile.student?.university || 'No disponible'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Nivel Educativo:</strong><br />
+                    {studentProfile.student?.education_level || 'No disponible'}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              {/* Habilidades básicas */}
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                Habilidades Básicas
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Habilidades:</strong><br />
+                    {studentProfile.student?.skills && studentProfile.student.skills.length > 0 ? (
+                      studentProfile.student.skills.map((skill: string, index: number) => (
+                        <Chip 
+                          key={index} 
+                          label={skill} 
+                          size="small" 
+                          sx={{ mr: 0.5, mb: 0.5 }} 
+                        />
+                      ))
+                    ) : (
+                      'No hay habilidades registradas'
+                    )}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Idiomas:</strong><br />
+                    {studentProfile.student?.languages && studentProfile.student.languages.length > 0 ? (
+                      studentProfile.student.languages.map((language: string, index: number) => (
+                        <Chip 
+                          key={index} 
+                          label={language} 
+                          size="small" 
+                          sx={{ mr: 0.5, mb: 0.5 }} 
+                        />
+                      ))
+                    ) : (
+                      'No hay idiomas registrados'
+                    )}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Área de Interés:</strong><br />
+                    {studentProfile.student?.area || 'No especificado'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Modalidad:</strong><br />
+                    {studentProfile.student?.modality || 'No especificado'}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              {/* Información académica */}
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                Información Académica
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Semestre:</strong><br />
+                    {studentProfile.student?.semester || 'No especificado'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Estado:</strong><br />
+                    {studentProfile.student?.status || 'No especificado'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Horas Semanales:</strong><br />
+                    {studentProfile.student?.hours_per_week || 'No especificado'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                    <strong>Experiencia Previa:</strong><br />
+                    {studentProfile.student?.experience_years || 'No especificado'}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              {/* Carta de presentación */}
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+                Carta de Presentación
+              </Typography>
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                borderRadius: 2,
+                border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0'
+              }}>
+                <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontStyle: 'italic' }}>
+                  {studentProfile.student?.bio || 'No se ha proporcionado carta de presentación'}
+                </Typography>
+              </Box>
+            </Box>
+          ) : (
+            <Alert severity="info" sx={{ borderRadius: 2 }}>
+              No se pudo cargar el perfil del estudiante
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc', borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0' }}>
+          <Button 
+            onClick={() => setShowProfileDialog(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2, textTransform: 'none' }}
+          >
+            Cerrar
           </Button>
         </DialogActions>
       </Dialog>

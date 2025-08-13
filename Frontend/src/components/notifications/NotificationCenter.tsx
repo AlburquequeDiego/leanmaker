@@ -352,7 +352,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
       >
         <Box sx={{ p: 2 }}>
           {/* Log de contenido del popover */}
-          {console.log('📋 Contenido del popover renderizando')}
+          {(() => { console.log('📋 Contenido del popover renderizando'); return null; })()}
           
           {/* Header */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -421,7 +421,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
                   
                   <List sx={{ p: 0 }}>
                     {/* Log de lista de notificaciones */}
-                    {console.log('📋 Lista de notificaciones renderizando con', notifications.length, 'notificaciones')}
+                    {(() => { console.log('📋 Lista de notificaciones renderizando con', notifications.length, 'notificaciones'); return null; })()}
                     
                     {notifications.map((notification, index) => {
                       // Debug: Log para verificar todas las notificaciones
@@ -437,10 +437,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
                       
                       return (
                         <Fade in={true} timeout={300 + (index * 100)} key={notification.id}>
-                          {/* Log de renderizado de notificación */}
-                          {console.log(`📋 Renderizando notificación ${index + 1}:`, notification.title)}
-                          
                           <React.Fragment>
+                            {/* Log de renderizado de notificación */}
+                            {(() => { console.log(`📋 Renderizando notificación ${index + 1}:`, notification.title); return null; })()}
                             <ListItem
                               sx={{
                                 backgroundColor: getNotificationBackground(notification.read, notification.priority),
@@ -590,7 +589,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNotifi
 
       
       {/* Log de renderizado completo */}
-      {console.log('🎨 NotificationCenter renderizado completamente')}
+      {(() => { console.log('🎨 NotificationCenter renderizado completamente'); return null; })()}
     </>
   );
-}; 
+};
+
+ 

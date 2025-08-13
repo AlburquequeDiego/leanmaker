@@ -171,19 +171,17 @@ export const useHubAnalytics = () => {
       const token = authService.getAccessToken();
       console.log('🔍 [HUB ANALYTICS] Token disponible:', !!token);
       
-      const response = await apiService.get('/api/hub/analytics/', {
-        signal: abortControllerRef.current.signal
-      });
+      const response = await apiService.get('/api/hub/analytics/');
       
       console.log('📊 [HUB ANALYTICS] Datos recibidos:', response);
       
       // Cache the data
       analyticsCache.set(cacheKey, {
-        data: response,
+        data: response as HubAnalyticsData,
         timestamp: Date.now()
       });
       
-      setData(response);
+      setData(response as HubAnalyticsData);
     } catch (err) {
       // Don't set error if request was aborted
       if (err instanceof Error && err.name === 'AbortError') {

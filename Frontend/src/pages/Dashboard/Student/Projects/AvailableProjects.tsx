@@ -145,19 +145,25 @@ export default function AvailableProjects() {
   const fetchStudentApiLevel = async () => {
     try {
       const studentData = await apiService.get('/api/students/me/');
-      setStudentApiLevel(Number(studentData.api_level) || 1);
+      const apiLevel = Number((studentData as any).api_level);
+      if (apiLevel && apiLevel > 0) {
+        setStudentApiLevel(apiLevel);
+      } else {
+        console.error('Nivel API no válido recibido:', (studentData as any).api_level);
+        // NO establecer valor por defecto - mantener el nivel actual
+      }
     } catch (error) {
       console.error('Error fetching student API level:', error);
-      setStudentApiLevel(1);
+      // NO establecer valor por defecto - mantener el nivel actual
     }
   };
 
   const fetchExistingApplications = async () => {
     try {
       const applications = await apiService.get('/api/applications/');
-      if (applications.data && Array.isArray(applications.data)) {
+      if ((applications as any).data && Array.isArray((applications as any).data)) {
         // Obtener todos los IDs de proyectos que ya tienen aplicaciones (sin importar el estado)
-        const appliedProjectIds = applications.data.map((app: any) => app.project_id || app.project);
+        const appliedProjectIds = (applications as any).data.map((app: any) => app.project_id || app.project);
         setApplied(appliedProjectIds);
         console.log('🔍 [AvailableProjects] Proyectos ya aplicados:', appliedProjectIds);
       }
@@ -171,7 +177,7 @@ export default function AvailableProjects() {
     try {
       setLoading(true);
       const data = await apiService.get('/api/projects/');
-      const availableProjects = Array.isArray(data.results) ? data.results : [];
+      const availableProjects = Array.isArray((data as any).results) ? (data as any).results : [];
       setProjects(availableProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);

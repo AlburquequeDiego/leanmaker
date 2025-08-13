@@ -342,7 +342,7 @@ export const MyApplications: React.FC = () => {
         const data = await apiService.get(`/api/applications/my_applications/?t=${timestamp}&nocache=true`);
         console.log('🔍 [Frontend] Datos recibidos del backend:', data);
         
-        const applicationsArray = data.results || data;
+        const applicationsArray = (data as any).results || data;
         console.log('🔍 [Frontend] applicationsArray:', applicationsArray);
         
         if (Array.isArray(applicationsArray) && applicationsArray.length > 0) {
@@ -429,7 +429,7 @@ export const MyApplications: React.FC = () => {
     }
     if (filters.estado) {
       if (filters.estado === 'pending') {
-        filtered = filtered.filter(app => app.status === 'pending' || app.status === 'reviewing');
+        filtered = filtered.filter(app => app.status === 'pending');
       } else {
         filtered = filtered.filter(app => app.status === filters.estado);
       }
@@ -497,7 +497,7 @@ export const MyApplications: React.FC = () => {
 
   // Cambiar la lógica de tabs y agrupación:
   const pendingApplications = filteredApplications.filter(app => app.status === 'pending');
-  const reviewingApplications = filteredApplications.filter(app => app.status === 'reviewing');
+  const reviewingApplications = filteredApplications.filter(app => app.status === 'pending');
   const acceptedApplications = filteredApplications.filter(app => app.status === 'accepted');
   const completedApplications = filteredApplications.filter(app => app.status === 'completed');
   const rejectedApplications = filteredApplications.filter(app => app.status === 'rejected');

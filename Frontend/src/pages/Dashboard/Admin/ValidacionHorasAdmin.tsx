@@ -1317,13 +1317,13 @@ export default function ValidacionHorasAdmin() {
                          fontWeight: 600, 
                          mb: 1 
                        }}>
-                         Duración (semanas)
+                         Duración (meses)
                        </Typography>
                        <Typography variant="body1" sx={{ 
                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
                          fontWeight: 500 
                        }}>
-                         {selectedProjectDetail.duration_weeks} semanas
+                         {selectedProjectDetail.duration_weeks} meses
                        </Typography>
                      </Box>
                      <Box sx={{ 

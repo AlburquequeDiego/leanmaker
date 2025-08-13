@@ -444,10 +444,12 @@ def projects_update(request, project_id):
         
         # Actualizar otros campos del proyecto
         fields_to_update = [
-            'title', 'description', 'company_id', 'status_id', 'area_id', 'trl_id',
+            'title', 'description', 'requirements', 'company_id', 'status_id', 'area_id', 'trl_id',
             'api_level', 'max_students', 'current_students', 'applications_count',
             'start_date', 'estimated_end_date', 'location', 'modality',
-            'duration_weeks', 'hours_per_week', 'required_hours', 'budget'
+            'duration_weeks', 'hours_per_week', 'required_hours', 'budget',
+            # Campos adicionales del formulario de creación
+            'tipo', 'objetivo', 'encargado', 'contacto'
         ]
         
         for field in fields_to_update:

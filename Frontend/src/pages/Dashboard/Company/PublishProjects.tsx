@@ -397,7 +397,7 @@ export const PublishProjects: React.FC = () => {
     }
          if (!form.description || form.description.trim().length < 5) {
        errors.push('La descripción es obligatoria y debe tener al menos 5 caracteres.');
-     }
+    }
     // Los requisitos son opcionales, pero si se proporcionan deben tener al menos 10 caracteres
     if (form.requirements && form.requirements.trim().length > 0 && form.requirements.trim().length < 10) {
       errors.push('Si proporcionas requisitos, deben tener al menos 10 caracteres.');
@@ -582,17 +582,17 @@ export const PublishProjects: React.FC = () => {
              InputLabelProps={{ required: false }}
            />
            
-                                               <TextField 
-               label="Requisitos del Proyecto" 
-               name="requirements" 
-               value={form.requirements} 
-               onChange={handleChange} 
-               fullWidth 
+           <TextField 
+             label="Requisitos del Proyecto" 
+             name="requirements" 
+             value={form.requirements} 
+             onChange={handleChange} 
+             fullWidth 
                multiline 
                minRows={2}
                placeholder="Este campo es OPCIONAL. Describe los conocimientos previos, habilidades técnicas y competencias que debe tener el estudiante para participar exitosamente en este proyecto. Ejemplos: conocimientos básicos en administración, experiencia en trabajo en equipo, disponibilidad de 20 horas semanales, responsabilidad, compromiso, habilidades de comunicación, capacidad de análisis, etc."
-               InputLabelProps={{ required: false }}
-             />
+             InputLabelProps={{ required: false }}
+           />
         </Box>
       )}
              {activeStep === 1 && (
@@ -706,16 +706,20 @@ export const PublishProjects: React.FC = () => {
              helperText="Teléfono o correo electrónico para contacto directo"
              InputLabelProps={{ required: false }} 
            />
-                                <TextField 
-             label="¿Cuándo te gustaría comenzar el proyecto?" 
-             name="fechaInicio" 
-             type="date" 
-             value={form.fechaInicio} 
-             onChange={handleChange} 
-             fullWidth 
-             required 
-             InputLabelProps={{ shrink: true, required: false }}
-           />
+                                            <TextField 
+              label="¿Cuándo te gustaría comenzar el proyecto?" 
+              name="fechaInicio" 
+              type="date" 
+              value={form.fechaInicio} 
+              onChange={handleChange} 
+              fullWidth 
+              required 
+              inputProps={{ 
+                min: new Date().toISOString().split('T')[0], // Solo permite fechas desde hoy
+                max: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 20).toISOString().split('T')[0] // Mes actual + 20 días
+              }}
+              InputLabelProps={{ shrink: true, required: false }}
+            />
            
            <TextField 
              label="Horas por semana que se dedicarán al proyecto" 
@@ -772,15 +776,15 @@ export const PublishProjects: React.FC = () => {
            
            <Alert severity="info" sx={{ mt: 1, mb: 1 }}>
              <Typography variant="body2">
-               <strong>Importante:</strong> Tendrás 10 días desde la publicación para que se asigne un estudiante al proyecto. Las entrevistas se realizarán en sede o online.
+               <strong>Importante:</strong> Tendrás 10 días desde la publicación para que se asigne un estudiante al proyecto. En el transcurso de estos días podrás editar datos del proyecto como horas ofrecidas de acuerdo con la disponibilidad del estudiante elegido. Las entrevistas se realizarán en sede si es en modo presencial o online dependiendo de tu elección de modalidad.
              </Typography>
            </Alert>
            
-           <Alert severity="warning" sx={{ mt: 1, mb: 1 }}>
-             <Typography variant="body2">
-               <strong>⚠️ Advertencia:</strong> Al momento de acordar las horas con el estudiante, podrás editar la publicación en el futuro. Recuerda que tendrás 10 días desde la publicación para hacer una entrevista y asignar a un estudiante. También podrás hacer más cambios al proyecto antes de publicarlo. Ten en cuenta que los estudiantes tendrán diferentes tiempos dependiendo de cada uno.
-             </Typography>
-           </Alert>
+                       <Alert severity="warning" sx={{ mt: 1, mb: 1 }}>
+              <Typography variant="body2">
+                <strong>⚠️ Advertencia:</strong> Recuerda que tendrás 10 días desde la publicación para hacer una entrevista y asignar a un estudiante. También podrás hacer más cambios al proyecto antes de activarlo. Ten en cuenta que los estudiantes tendrán diferentes tiempos dependiendo de cada uno.
+              </Typography>
+            </Alert>
         </Box>
       )}
              {activeStep === 3 && (

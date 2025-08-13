@@ -210,9 +210,9 @@ export const Calendar = () => {
     } catch (error) {
       console.error('❌ [STUDENT] Error fetching events:', error);
       console.error('❌ [STUDENT] Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
+        message: (error as any).message,
+        response: (error as any).response?.data,
+        status: (error as any).response?.status
       });
       setError('Error al cargar los eventos del calendario');
       setEvents([]);

@@ -139,7 +139,7 @@ export const APIResults = () => {
   const fetchApiRequests = async () => {
     try {
       setLoading(true);
-      const data = await apiService.get('/api/students/api-level-requests/');
+      const data = await apiService.get<any>('/api/students/api-level-requests/');
       setApiRequests(data.results || []);
     } catch (error) {
       console.error('Error fetching API level requests:', error);
@@ -151,11 +151,17 @@ export const APIResults = () => {
 
   const fetchStudentLevel = async () => {
     try {
-      const data = await apiService.get('/api/students/me/');
-      setCurrentApiLevel(Number(data.api_level) || 1);
+      const data = await apiService.get<any>('/api/students/me/');
+      const apiLevel = Number(data.api_level);
+      if (apiLevel && apiLevel > 0) {
+        setCurrentApiLevel(apiLevel);
+      } else {
+        console.error('Nivel API no válido recibido:', data.api_level);
+        // NO establecer valor por defecto - mantener el nivel actual
+      }
     } catch (error) {
       console.error('Error fetching student level:', error);
-      setCurrentApiLevel(1);
+      // NO establecer valor por defecto - mantener el nivel actual
     }
   };
 
@@ -610,7 +616,7 @@ export const APIResults = () => {
                       }
                       // Mensaje de avance si fue aprobado
                       let avance = '';
-                      if (req.status === 'approved' && nivelActual !== '-' && nivelSolicitado !== '-' && nivelActual !== nivelSolicitado) {
+                      if (req.status === 'approved' && nivelActual !== '-' && nivelSolicitado !== '-' && String(nivelActual) !== String(nivelSolicitado)) {
                         avance = `¡Felicidades! Subiste de nivel ${nivelActual} a nivel ${nivelSolicitado}.`;
                       }
                       return (

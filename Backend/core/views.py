@@ -569,22 +569,22 @@ def api_register(request):
                 )
                 print(f"[api_register] Perfil detallado creado exitosamente - ID: {perfil.id}")
                 
-                    elif role == 'company':
-            from companies.models import Empresa
-            from core.utils import validate_chilean_rut
-            
-            # Validar RUT antes de crear la empresa
-            rut = data.get('rut', '')
-            if rut:
-                rut_validation = validate_chilean_rut(rut)
-                if not rut_validation['is_valid']:
-                    return JsonResponse({
-                        'error': f'RUT inválido: {rut_validation["error"]}'
-                    }, status=400)
-                print(f"[api_register] RUT validado: {rut} -> {rut_validation['formatted_rut']}")
-            
-            print(f"[api_register] Creando perfil de empresa...")
-            empresa = Empresa.objects.create(
+            elif role == 'company':
+                from companies.models import Empresa
+                from core.utils import validate_chilean_rut
+                
+                # Validar RUT antes de crear la empresa
+                rut = data.get('rut', '')
+                if rut:
+                    rut_validation = validate_chilean_rut(rut)
+                    if not rut_validation['is_valid']:
+                        return JsonResponse({
+                            'error': f'RUT inválido: {rut_validation["error"]}'
+                        }, status=400)
+                    print(f"[api_register] RUT validado: {rut} -> {rut_validation['formatted_rut']}")
+                
+                print(f"[api_register] Creando perfil de empresa...")
+                empresa = Empresa.objects.create(
                     user=user,
                     company_name=data.get('company_name', ''),
                     description=data.get('description', ''),

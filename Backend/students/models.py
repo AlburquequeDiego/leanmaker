@@ -30,7 +30,6 @@ class Estudiante(models.Model):
     # Campos opcionales (NULL permitido) - coinciden con frontend
     career = models.CharField(max_length=200, null=True, blank=True)
     semester = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)])
-    graduation_year = models.IntegerField(null=True, blank=True)
     
     # Campos adicionales del registro
     university = models.CharField(max_length=200, null=True, blank=True)
@@ -39,6 +38,7 @@ class Estudiante(models.Model):
     # Campos de estado con valores por defecto - coinciden con frontend
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='approved')
     api_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(4)])
+    api_level_approved_by_admin = models.BooleanField(default=False, help_text="Indica si el nivel API fue aprobado manualmente por admin")
     trl_level = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(9)], help_text="Nivel TRL del 1 al 9 según el estado del proyecto")
     strikes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
     gpa = models.DecimalField(max_digits=3, decimal_places=2, default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
@@ -57,13 +57,13 @@ class Estudiante(models.Model):
     
     # Campos adicionales - coinciden con frontend
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='flexible')
+    hours_per_week = models.IntegerField(default=20, validators=[MinValueValidator(5), MaxValueValidator(35)], help_text="Horas semanales disponibles para proyectos")
     location = models.CharField(max_length=200, null=True, blank=True)
     area = models.CharField(max_length=200, null=True, blank=True, help_text="Área de interés del estudiante")
 
     
     # Campos JSON (se almacenan como texto en SQL Server) - coinciden con frontend
     skills = models.TextField(null=True, blank=True)  # JSON array de habilidades
-    languages = models.TextField(null=True, blank=True)  # JSON array de idiomas
     
     # Campos de fechas - coinciden con frontend
     created_at = models.DateTimeField(auto_now_add=True)
@@ -93,21 +93,7 @@ class Estudiante(models.Model):
         else:
             self.skills = None
     
-    def get_languages_list(self):
-        """Obtiene la lista de idiomas como lista de Python - coincide con frontend"""
-        if self.languages:
-            try:
-                return json.loads(self.languages)
-            except json.JSONDecodeError:
-                return []
-        return []
-    
-    def set_languages_list(self, languages_list):
-        """Establece la lista de idiomas desde una lista de Python - coincide con frontend"""
-        if isinstance(languages_list, list):
-            self.languages = json.dumps(languages_list, ensure_ascii=False)
-        else:
-            self.languages = None
+
     
     @property
     def puede_aplicar_proyectos(self):
@@ -201,32 +187,70 @@ class Estudiante(models.Model):
             self.gpa = 0
         self.save(update_fields=['gpa'])
 
-    def actualizar_api_level_automaticamente(self):
-        """Actualiza automáticamente el nivel de API basándose en horas trabajadas y proyectos completados"""
-        nuevo_api_level = 1
-        
-        # Criterios para subir de nivel:
-        # API 1 -> API 2: 20+ horas o 1+ proyecto completado
-        # API 2 -> API 3: 40+ horas o 2+ proyectos completados
-        # API 3 -> API 4: 80+ horas o 3+ proyectos completados
+    def proteger_api_level(self):
+        """Protege el nivel de API para que no se baje automáticamente"""
+        if self.api_level > 1:
+            # Marcar como aprobado por admin para evitar cambios automáticos
+            self.api_level_approved_by_admin = True
+            self.save(update_fields=['api_level_approved_by_admin'])
+            print(f"🛡️ [API LEVEL] Estudiante {self.user.email} con API {self.api_level} protegido contra cambios automáticos")
+            return True
+        return False
+    
+    # MÉTODO ELIMINADO: actualizar_api_level_automaticamente
+    # Este método causaba el reseteo automático de niveles de API
+    # Los niveles de API solo deben cambiarse manualmente por admin
+    
+    def sugerir_subida_api_level(self):
+        """Sugiere si el estudiante puede subir de nivel API (SOLO SUBIR, NUNCA BAJAR)"""
+        # Solo sugerir subida si el estudiante cumple criterios
+        # NUNCA sugerir bajada
         
         if self.total_hours >= 80 or self.completed_projects >= 3:
-            nuevo_api_level = 4
+            if self.api_level < 4:
+                return {
+                    'puede_subir': True,
+                    'nivel_sugerido': 4,
+                    'razon': f'Cumple criterios: {self.total_hours} horas o {self.completed_projects} proyectos'
+                }
         elif self.total_hours >= 40 or self.completed_projects >= 2:
-            nuevo_api_level = 3
+            if self.api_level < 3:
+                return {
+                    'puede_subir': True,
+                    'nivel_sugerido': 3,
+                    'razon': f'Cumple criterios: {self.total_hours} horas o {self.completed_projects} proyectos'
+                }
         elif self.total_hours >= 20 or self.completed_projects >= 1:
-            nuevo_api_level = 2
-        else:
-            nuevo_api_level = 1
+            if self.api_level < 2:
+                return {
+                    'puede_subir': True,
+                    'nivel_sugerido': 2,
+                    'razon': f'Cumple criterios: {self.total_hours} horas o {self.completed_projects} proyectos'
+                }
         
-        # Solo actualizar si el nuevo nivel es mayor al actual
-        if nuevo_api_level > self.api_level:
-            self.api_level = nuevo_api_level
-            self.save(update_fields=['api_level'])
-            print(f"🎯 [API LEVEL] Estudiante {self.user.email} actualizado de API {self.api_level - (nuevo_api_level - self.api_level)} a API {nuevo_api_level}")
-            return True
+        # No sugerir cambios si ya está en el nivel máximo o no cumple criterios
+        return {
+            'puede_subir': False,
+            'nivel_sugerido': self.api_level,
+            'razon': f'Nivel actual {self.api_level} es apropiado para {self.total_hours} horas y {self.completed_projects} proyectos'
+        }
+
+    def save(self, *args, **kwargs):
+        """Sobrescribir save para proteger el nivel API"""
+        # Si el estudiante ya tiene un nivel API aprobado por admin, NO permitir cambios
+        if self.pk:  # Solo para estudiantes existentes
+            try:
+                old_instance = Estudiante.objects.get(pk=self.pk)
+                if (old_instance.api_level_approved_by_admin and 
+                    old_instance.api_level > 1 and 
+                    self.api_level != old_instance.api_level):
+                    # Revertir el cambio del nivel API
+                    self.api_level = old_instance.api_level
+                    print(f"⚠️ [PROTECCIÓN] Intento de cambiar nivel API de {old_instance.api_level} a {self.api_level} bloqueado para estudiante {self.user.email}")
+            except Estudiante.DoesNotExist:
+                pass
         
-        return False
+        super().save(*args, **kwargs)
 
 class PerfilEstudiante(models.Model):
     """
@@ -435,14 +459,9 @@ def actualizar_trl_automaticamente(sender, instance, **kwargs):
         # Usar update() para evitar disparar signals nuevamente
         Estudiante.objects.filter(id=instance.id).update(trl_level=instance.trl_permitido_segun_api)
 
-@receiver(post_save, sender=Estudiante)
-def actualizar_api_level_automaticamente(sender, instance, **kwargs):
-    """Actualiza automáticamente el nivel API cuando se actualizan horas o proyectos"""
-    # Solo actualizar si se modificaron las horas o proyectos completados
-    if (kwargs.get('update_fields') and 
-        any(field in kwargs['update_fields'] for field in ['total_hours', 'completed_projects']) and
-        'api_level' not in kwargs.get('update_fields', [])):
-        instance.actualizar_api_level_automaticamente()
+# SIGNAL ELIMINADO: actualizar_api_level_automaticamente
+# Este signal causaba el reseteo automático de niveles de API
+# Los niveles de API solo deben cambiarse manualmente por admin
 
 @receiver(post_save, sender='evaluations.Evaluation')
 def actualizar_gpa_estudiante_post_save(sender, instance, **kwargs):

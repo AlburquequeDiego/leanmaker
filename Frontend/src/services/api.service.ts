@@ -24,6 +24,9 @@ class ApiService {
     
     // Get access token
     const token = authService.getAccessToken();
+    console.log('🔍 [API] Token obtenido:', token ? `${token.substring(0, 20)}...` : 'null');
+    console.log('🔍 [API] URL de la petición:', url);
+    console.log('🔍 [API] Método de la petición:', options.method || 'GET');
     
 
     
@@ -39,6 +42,7 @@ class ApiService {
       ...options,
     };
     
+    console.log('🔍 [API] Headers de la petición:', config.headers);
 
 
     try {

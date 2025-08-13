@@ -233,8 +233,8 @@ export const Evaluations = () => {
       // Procesar evaluaciones completadas
       console.log('🔍 Tipo de respuesta evaluaciones completadas:', typeof completedEvaluationsResponse);
       console.log('🔍 ¿Es objeto?', typeof completedEvaluationsResponse === 'object');
-      console.log('🔍 ¿Tiene success?', completedEvaluationsResponse && 'success' in completedEvaluationsResponse);
-      console.log('🔍 ¿Tiene data?', completedEvaluationsResponse && 'data' in completedEvaluationsResponse);
+      console.log('🔍 ¿Tiene success?', completedEvaluationsResponse && typeof completedEvaluationsResponse === 'object' && 'success' in (completedEvaluationsResponse as object));
+      console.log('🔍 ¿Tiene data?', completedEvaluationsResponse && typeof completedEvaluationsResponse === 'object' && 'data' in (completedEvaluationsResponse as object));
       
       if (completedEvaluationsResponse && typeof completedEvaluationsResponse === 'object' && 'success' in completedEvaluationsResponse && completedEvaluationsResponse.success && 'data' in completedEvaluationsResponse) {
         const companies = completedEvaluationsResponse.data as any[];
@@ -349,12 +349,12 @@ export const Evaluations = () => {
     } catch (error) {
       console.error('Error enviando evaluación:', error);
       let errorMessage = 'Error al enviar la evaluación';
-      let severity: 'error' | 'warning' = 'error';
+      let severity: 'error' | 'info' | 'success' = 'error';
       
       if (error instanceof Error) {
         if (error.message.includes('Ya has evaluado')) {
           errorMessage = 'Ya has evaluado esta empresa para este proyecto';
-          severity = 'warning';
+          severity = 'info';
         } else {
           errorMessage = error.message;
         }
@@ -1172,7 +1172,7 @@ export const Evaluations = () => {
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
                   <StarRating
-                    value={calificacion}
+                    value={calificacion || 0}
                     onChange={(newValue) => {
                       console.log('⭐ Calificación seleccionada:', newValue);
                       setCalificacion(newValue);

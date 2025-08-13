@@ -20,6 +20,13 @@ import {
   Alert,
   Grid,
   Paper,
+  Stepper,
+  Step,
+  StepLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  InputLabel,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import {
@@ -61,6 +68,47 @@ const getTrlDescription = (trlLevel: number) => {
 
 const COUNT_OPTIONS = [5, 20, 50, 100, 150, 200, 250, -1];
 
+// Constantes para edición de proyectos
+const editSteps = ['Información Básica', 'Etapa y Duración', 'General', 'Resumen'];
+
+const TRL_HOURS_LIMITS = {
+  1: { min: 20, max: 40, description: 'Opción 1-2: Proyectos en fase de idea' },
+  2: { min: 20, max: 40, description: 'Opción 1-2: Proyectos en fase de idea' },
+  3: { min: 40, max: 80, description: 'Opción 3-4: Prototipos básicos' },
+  4: { min: 40, max: 80, description: 'Opción 3-4: Prototipos básicos' },
+  5: { min: 80, max: 160, description: 'Opción 5-6: Prototipos avanzados' },
+  6: { min: 80, max: 160, description: 'Opción 5-6: Prototipos avanzados' },
+  7: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+  8: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+  9: { min: 160, max: 350, description: 'Opción 7-9: Productos desarrollados' },
+} as const;
+
+const TRL_QUESTIONS = [
+  'Este proyecto está en fase de idea, sin una definición clara y no cuenta con desarrollo previo.',
+  'Este proyecto cuenta con una definición clara y antecedentes de lo que se desea desarrollar.',
+  'Hemos desarrollados pruebas y validaciones de concepto. Algunos componentes del proyecto se han evaluado por separado.',
+  'Contamos con un prototipo mínimo viable que ha sido probado en condiciones controladas simples.',
+  'Contamos con un prototipo mínimo viable que ha sido probado en condiciones similares al entorno real.',
+  'Contamos con un prototipo que ha sido probado mediante un piloto en condiciones reales.',
+  'Contamos con un desarrollo que ha sido probado en condiciones reales, por un periodo de tiempo prolongado.',
+  'Contamos con un producto validado en lo técnico y lo comercial.',
+  'Contamos con un producto completamente desarrollado y disponible para la sociedad.'
+];
+
+const AREAS_ESTATICAS = [
+  { id: 1, name: 'Tecnología y Sistemas' },
+  { id: 2, name: 'Administración y Gestión' },
+  { id: 3, name: 'Comunicación y Marketing' },
+  { id: 4, name: 'Salud y Ciencias' },
+  { id: 5, name: 'Ingeniería y Construcción' },
+  { id: 6, name: 'Educación y Formación' },
+  { id: 7, name: 'Arte y Diseño' },
+  { id: 8, name: 'Investigación y Desarrollo' },
+  { id: 9, name: 'Servicios y Atención al Cliente' },
+  { id: 10, name: 'Sostenibilidad y Medio Ambiente' },
+  { id: 11, name: 'Otro' },
+];
+
 const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const location = useLocation();
   const api = useApi();
@@ -84,6 +132,13 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
   const [updatingProject, setUpdatingProject] = useState<string | null>(null);
   const [projectDetails, setProjectDetails] = useState<any | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editFormData, setEditFormData] = useState<any>({});
+  const [savingProject, setSavingProject] = useState(false);
+  const [editActiveStep, setEditActiveStep] = useState(0);
+  const [editTrlSelected, setEditTrlSelected] = useState(1);
+  const [editHoursError, setEditHoursError] = useState<string | null>(null);
 
   // Sincronizar tab con location.state.initialTab si cambia
   useEffect(() => {
@@ -380,6 +435,225 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
     setSelectedProject(null);
   };
 
+  const handleEditClick = (project: Project) => {
+    console.log('🔍 [Projects] Proyecto para editar:', project);
+    console.log('🔍 [Projects] Campos disponibles:', Object.keys(project));
+    console.log('🔍 [Projects] Valores específicos:');
+    console.log('  - tipo:', project.tipo);
+    console.log('  - objectives:', project.objectives);
+    console.log('  - objetivo:', project.objetivo);
+    console.log('  - encargado:', project.encargado);
+    console.log('  - company_mentor:', project.company_mentor);
+    console.log('  - contacto:', project.contacto);
+    console.log('  - company_contact:', project.company_contact);
+    console.log('  - start_date:', project.start_date);
+    console.log('  - estimated_end_date:', project.estimated_end_date);
+    
+    setEditingProject(project);
+    setEditTrlSelected(project.trl_level || 1);
+    
+    setEditFormData({
+      title: project.title || '',
+      description: project.description || '',
+      area: project.area || '',
+      tipo: project.tipo || project.objectives || '', // Intentar ambos campos
+      objetivo: project.objetivo || project.objectives || '', // Intentar ambos campos
+      trl: project.trl_level || 1,
+      horas: project.required_hours || '',
+      horasPorSemana: project.hours_per_week || 10,
+      modalidad: project.modality === 'remote' ? 'Remoto' : 
+                 project.modality === 'onsite' ? 'Presencial' : 
+                 project.modality === 'hybrid' ? 'Híbrido' : '',
+      encargado: project.encargado || project.company_mentor || '', // Intentar ambos campos
+      contacto: project.contacto || project.company_contact || '', // Intentar ambos campos
+      fechaInicio: project.start_date || '',
+      fechaFin: project.estimated_end_date || '',
+      requirements: project.requirements || '',
+      duration: project.duration_weeks || '',
+      studentsNeeded: 1,
+      meses: project.duration_weeks || ''
+    });
+    
+    console.log('🔍 [Projects] editFormData inicializado:', editFormData);
+    setEditDialogOpen(true);
+  };
+
+  // Función auxiliar para traducir la modalidad del backend al español
+  const translateModality = (modality: string) => {
+    switch (modality) {
+      case 'remote': return 'Remoto';
+      case 'onsite': return 'Presencial';
+      case 'hybrid': return 'Híbrido';
+      default: return modality;
+    }
+  };
+
+  const handleEditClose = () => {
+    setEditDialogOpen(false);
+    setEditingProject(null);
+    setEditFormData({});
+    setEditActiveStep(0);
+    setEditTrlSelected(1);
+    setEditHoursError(null);
+  };
+
+  const handleEditSave = async () => {
+    if (!editingProject) return;
+    
+    try {
+      setSavingProject(true);
+      
+      // Mapear los campos del formulario a los campos del backend
+      // Ahora el backend puede actualizar todos estos campos
+      const backendData = {
+        title: editFormData.title || '',
+        description: editFormData.description || '',
+        requirements: editFormData.requirements || '',
+        // Campos adicionales del formulario de creación
+        tipo: editFormData.tipo || '',
+        objetivo: editFormData.objetivo || '',
+        encargado: editFormData.encargado || '',
+        contacto: editFormData.contacto || '',
+        // Campos de configuración
+        required_hours: Number(editFormData.horas) || 0,
+        hours_per_week: Number(editFormData.horasPorSemana) || 10,
+        duration_weeks: Number(editFormData.meses) || 1,
+        start_date: editFormData.fechaInicio || null,
+        estimated_end_date: editFormData.fechaFin || null,
+        modality: editFormData.modalidad === 'Remoto' ? 'remote' : 
+                  editFormData.modalidad === 'Presencial' ? 'onsite' : 
+                  editFormData.modalidad === 'Híbrido' ? 'hybrid' : 'remote', // Convertir del frontend al backend
+        trl_id: Number(editFormData.trl) || 1, // El backend espera trl_id
+        // Nota: area_id se maneja por separado si es necesario
+        // Por ahora solo actualizamos el nombre del área
+      };
+      
+      const response = await api.patch(`/api/projects/${editingProject.id}/update/`, backendData);
+      
+      console.log('Respuesta del backend (editar):', response);
+      
+      if (response && response.id) {
+        // Actualizar el proyecto en la lista local
+        // Convertir la modalidad de vuelta al formato del frontend para la visualización
+        const updatedProject = {
+          ...editingProject,
+          ...backendData,
+          modality: editFormData.modalidad === 'Remoto' ? 'remote' : 
+                    editFormData.modalidad === 'Presencial' ? 'onsite' : 
+                    editFormData.modalidad === 'Híbrido' ? 'hybrid' : 'remote'
+        };
+        
+        setProjects(projects.map(p =>
+          p.id === editingProject.id ? updatedProject : p
+        ));
+        
+        // Cerrar el modal
+        handleEditClose();
+        
+        // Mostrar mensaje de éxito
+        setError(null);
+      } else {
+        setError('Respuesta inesperada del servidor al editar el proyecto');
+      }
+    } catch (error: any) {
+      console.error('Error editando proyecto:', error);
+      setError(error.response?.data?.error || 'Error al editar proyecto');
+    } finally {
+      setSavingProject(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: any) => {
+    setEditFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Lógica de cálculo automático para horas y duración
+      if (field === 'horasPorSemana') {
+        const horasPorSemana = Number(value);
+        const horas = Number(newData.horas);
+        if (horas > 0 && horasPorSemana > 0) {
+          // Calcular duración en meses basada en horas totales y horas por semana
+          const duracionMeses = Math.ceil(horas / (horasPorSemana * 4.33)); // 4.33 semanas por mes
+          newData.meses = duracionMeses.toString();
+        }
+      } else if (field === 'horas') {
+        const horas = Number(value);
+        const horasPorSemana = Number(newData.horasPorSemana);
+        if (horas > 0 && horasPorSemana > 0) {
+          // Calcular duración en meses basada en horas totales y horas por semana
+          const duracionMeses = Math.ceil(horas / (horasPorSemana * 4.33)); // 4.33 semanas por mes
+          newData.meses = duracionMeses.toString();
+        }
+      } else if (field === 'fechaInicio') {
+        // Si se cambia la fecha de inicio, recalcular la duración basada en horas y horas por semana
+        const horas = Number(newData.horas);
+        const horasPorSemana = Number(newData.horasPorSemana);
+        if (horas > 0 && horasPorSemana > 0) {
+          const duracionMeses = Math.ceil(horas / (horasPorSemana * 4.33));
+          newData.meses = duracionMeses.toString();
+        }
+      }
+      
+      return newData;
+    });
+  };
+
+  const handleEditTrlChange = (e: any) => {
+    const value = Number(e.target.value) as keyof typeof TRL_HOURS_LIMITS;
+    setEditTrlSelected(value);
+    setEditFormData(prev => ({ ...prev, trl: value }));
+    
+    // Validar las horas actuales contra el nuevo mínimo y máximo
+    const newLimits = TRL_HOURS_LIMITS[value];
+    const currentHours = Number(editFormData.horas);
+    
+    if (currentHours > 0) {
+      if (currentHours < newLimits.min) {
+        setEditHoursError(`El mínimo para ${newLimits.description} es ${newLimits.min} horas.`);
+      } else if (currentHours > newLimits.max) {
+        setEditHoursError(`El máximo para ${newLimits.description} es ${newLimits.max} horas.`);
+      } else {
+        setEditHoursError(null);
+      }
+    }
+  };
+
+  const handleEditHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numValue = Number(value);
+    
+    // Obtener límites del TRL actual
+    const trlKey = editTrlSelected as keyof typeof TRL_HOURS_LIMITS;
+    const trlLimits = TRL_HOURS_LIMITS[trlKey];
+    const minHours = trlLimits.min;
+    const maxHours = trlLimits.max;
+    
+    // Validar y corregir el valor si es necesario
+    let finalValue = value;
+    if (numValue > maxHours) {
+      finalValue = maxHours.toString();
+    }
+    
+    setEditFormData(prev => ({ ...prev, horas: finalValue }));
+    
+    // Validar y mostrar errores apropiados
+    if (numValue < minHours) {
+      setEditHoursError(`El mínimo para ${trlLimits.description} es ${minHours} horas.`);
+    } else if (numValue > maxHours) {
+      setEditHoursError(`El máximo para ${trlLimits.description} es ${maxHours} horas.`);
+    } else {
+      setEditHoursError(null);
+    }
+  };
+
+  const nextEditStep = () => {
+    setEditActiveStep((s) => Math.min(s + 1, editSteps.length - 1));
+  };
+  
+  const prevEditStep = () => {
+    setEditActiveStep((s) => Math.max(s - 1, 0));
+  };
+
   const handleViewClick = async (project: Project) => {
     setSelectedProject(project);
     setViewDialogOpen(true);
@@ -604,13 +878,19 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
                   <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
-                    {project.duration_weeks ? `${project.duration_weeks} semanas • ` : ''} {project.hours_per_week || 0} horas/semana
+                    {project.duration_weeks ? `${project.duration_weeks} meses • ` : ''} {project.hours_per_week || 0} horas/semana
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary', display: 'block', mt: 0.5 }}>
+                    Horas totales: {project.required_hours || ((project.duration_weeks || 0) * (project.hours_per_week || 0))} horas
                   </Typography>
                   <Chip 
                     label={`${project.current_students || 0}/${project.max_students || 1} estudiantes`} 
                     size="small" 
-                    color="success"
-                    sx={{ fontWeight: 600 }}
+                    color={project.current_students > 0 ? "success" : "warning"}
+                    sx={{ 
+                      fontWeight: 600,
+                      transition: 'all 0.2s ease-in-out'
+                    }}
                   />
                   {project.estudiantes && project.estudiantes.length > 0 && (
                     <Chip 
@@ -633,15 +913,22 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
               }}>
                 {project.status === 'published' && tab !== 1 && (
                   <IconButton 
-                    color="success" 
+                    color={project.current_students > 0 ? "success" : "warning"}
                     size="small" 
                     onClick={() => handleActivateClick(project)}
                     disabled={updatingProject === project.id}
                     sx={{ 
-                      bgcolor: 'success.light',
-                      color: 'success.contrastText',
-                      '&:hover': { bgcolor: 'success.main' }
+                      bgcolor: project.current_students > 0 ? 'success.light' : 'warning.light',
+                      color: project.current_students > 0 ? 'success.contrastText' : 'warning.contrastText',
+                      '&:hover': { 
+                        bgcolor: project.current_students > 0 ? 'success.main' : 'warning.main' 
+                      },
+                      transition: 'all 0.2s ease-in-out'
                     }}
+                    title={project.current_students > 0 ? 
+                      "Activar proyecto - Los estudiantes podrán comenzar a trabajar" : 
+                      "No se puede activar - Debes tener al menos un estudiante aceptado"
+                    }
                   >
                     {updatingProject === project.id ? <CircularProgress size={16} /> : <PlayArrowIcon />}
                   </IconButton>
@@ -673,6 +960,20 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                 >
                   <VisibilityIcon />
                 </IconButton>
+                {project.status === 'published' && (
+                  <IconButton 
+                    color="warning" 
+                    size="small" 
+                    onClick={() => handleEditClick(project)}
+                    sx={{ 
+                      bgcolor: 'warning.light',
+                      color: 'warning.contrastText',
+                      '&:hover': { bgcolor: 'warning.main' }
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                )}
                 {project.status === 'deleted' && (
                   <IconButton 
                     color="success" 
@@ -688,7 +989,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     {updatingProject === project.id ? <CircularProgress size={16} /> : <RestoreIcon />}
                   </IconButton>
                 )}
-                {project.status !== 'active' && tab !== 1 && (
+                {project.status === 'published' && tab !== 1 && (
                   <IconButton 
                     color="error" 
                     size="small" 
@@ -885,35 +1186,61 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
       {/* Diálogo de activar proyecto */}
       <Dialog open={activateDialogOpen} onClose={handleActivateCancel}>
         <DialogTitle sx={{ 
-          bgcolor: 'primary.main', 
+          bgcolor: selectedProject && selectedProject.current_students > 0 ? 'success.main' : 'warning.main', 
           color: 'white',
           fontWeight: 600
         }}>
-          ¿Activar proyecto?
+          {selectedProject && selectedProject.current_students > 0 ? '¿Activar proyecto?' : 'No se puede activar'}
         </DialogTitle>
         <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
-          <Typography variant="body1" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-            ¿Estás seguro de que deseas activar el proyecto <strong>"{selectedProject?.title}"</strong>?
-          </Typography>
-          
-          {/* Verificación de estudiantes aceptados */}
-          {selectedProject && (!selectedProject.estudiantes || selectedProject.estudiantes.length === 0) && (
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              ⚠️ <strong>Atención:</strong> Este proyecto no tiene estudiantes aceptados. 
-              Debes aceptar un estudiante para poder activar el proyecto.
-            </Alert>
+          {selectedProject && selectedProject.current_students > 0 ? (
+            <>
+              <Typography variant="body1" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                ¿Estás seguro de que deseas activar el proyecto <strong>"{selectedProject?.title}"</strong>?
+              </Typography>
+              
+              <Alert severity="info" sx={{ mb: 2 }}>
+                ✅ <strong>Proyecto listo para activar:</strong> Tienes {selectedProject.current_students} estudiante(s) aceptado(s).
+              </Alert>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
+                <strong>Al activar el proyecto:</strong><br/>
+                - El proyecto cambiará a estado "Activo".<br/>
+                - Los estudiantes aceptados pasarán a "Proyectos Activos" y podrán comenzar a trabajar.<br/>
+                - Los estudiantes recibirán una notificación de que el proyecto está en curso.<br/>
+                - Ya no podrás modificar los estudiantes asignados a este proyecto.<br/>
+                - El avance y las entregas de los estudiantes comenzarán a registrarse desde este momento.<br/>
+                - Debes haber realizado al menos una reunión de inicio con los estudiantes.<br/>
+                - El proyecto debe estar completamente preparado para comenzar.<br/>
+              </Typography>
+              
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                ⚠️ <strong>Importante:</strong> Esta acción no se puede deshacer. Una vez activado, el proyecto estará en curso.
+              </Alert>
+            </>
+          ) : (
+            <>
+              <Typography variant="body1" gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                El proyecto <strong>"{selectedProject?.title}"</strong> no se puede activar en este momento.
+              </Typography>
+              
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                ⚠️ <strong>No se puede activar:</strong> Este proyecto no tiene estudiantes aceptados.
+              </Alert>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
+                <strong>Para poder activar el proyecto necesitas:</strong><br/>
+                - Tener al menos un estudiante aceptado en el proyecto.<br/>
+                - Revisar las aplicaciones pendientes y aceptar a un estudiante.<br/>
+                - Asegurarte de que el estudiante esté disponible para comenzar.<br/>
+                - Tener todo preparado para el inicio del proyecto.<br/>
+              </Typography>
+              
+              <Alert severity="info" sx={{ mb: 2 }}>
+                💡 <strong>Sugerencia:</strong> Ve a la pestaña "Aplicaciones" para revisar y aceptar estudiantes.
+              </Alert>
+            </>
           )}
-          
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
-            - El proyecto cambiará a estado "Activo".<br/>
-            - Los estudiantes aceptados pasarán a "Proyectos Activos" y podrán comenzar a trabajar.<br/>
-            - Los estudiantes recibirán una notificación de que el proyecto está en curso.<br/>
-            - Ya no podrás modificar los estudiantes asignados a este proyecto.<br/>
-            - El avance y las entregas de los estudiantes comenzarán a registrarse desde este momento.<br/>
-          </Typography>
-          <Typography variant="body2" color="error" sx={{ color: themeMode === 'dark' ? '#fca5a5' : 'error.main' }}>
-            Esta acción no se puede deshacer.
-          </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5' }}>
           <Button 
@@ -923,18 +1250,26 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
           >
             Cancelar
           </Button>
-          <Button 
-            onClick={handleActivateConfirm} 
-            color="primary" 
-            variant="contained"
-            sx={{ borderRadius: 2, px: 3 }}
-            disabled={
-              updatingProject === selectedProject?.id || 
-              (selectedProject && (!selectedProject.estudiantes || selectedProject.estudiantes.length === 0))
-            }
-          >
-            {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Activar'}
-          </Button>
+          {selectedProject && selectedProject.current_students > 0 ? (
+            <Button 
+              onClick={handleActivateConfirm} 
+              color="success" 
+              variant="contained"
+              sx={{ borderRadius: 2, px: 3 }}
+              disabled={updatingProject === selectedProject?.id}
+            >
+              {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Activar Proyecto'}
+            </Button>
+          ) : (
+            <Button 
+              onClick={handleActivateCancel} 
+              color="warning" 
+              variant="contained"
+              sx={{ borderRadius: 2, px: 3 }}
+            >
+              Entendido
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
 
@@ -1048,10 +1383,10 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Duración
                   </Typography>
                   <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    {(projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0} semanas • {(projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0} horas/semana
+                    {(projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0} meses • {(projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0} horas/semana
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>
-                    Horas totales del proyecto: <b>{((projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0) * ((projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0)}</b>
+                    Horas totales del proyecto: <b>{projectDetails?.required_hours || selectedProject.required_hours || ((projectDetails?.duration_weeks || selectedProject.duration_weeks) || 0) * ((projectDetails?.hours_per_week || selectedProject.hours_per_week) || 0)}</b>
                   </Typography>
                 </Grid>
                 
@@ -1060,7 +1395,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                     Modalidad
                   </Typography>
                   <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'inherit' }}>
-                    {projectDetails?.modality || selectedProject.modality || 'No especificada'}
+                    {translateModality(projectDetails?.modality || selectedProject.modality) || 'No especificada'}
                   </Typography>
                 </Grid>
                 
@@ -1226,6 +1561,445 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
           >
             {updatingProject === selectedProject?.id ? <CircularProgress size={20} /> : 'Restaurar Proyecto'}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de editar proyecto */}
+      <Dialog open={editDialogOpen} onClose={handleEditClose} maxWidth="lg" fullWidth>
+        <DialogTitle sx={{ 
+          bgcolor: 'warning.main', 
+          color: 'white',
+          fontWeight: 600
+        }}>
+          Editar Proyecto
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+          {editingProject && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                ⚠️ <strong>Advertencia:</strong> Estás editando un proyecto publicado. 
+                Los cambios se reflejarán inmediatamente en la base de datos.
+              </Alert>
+
+              {/* Stepper */}
+              <Box sx={{ mb: 3 }}>
+                <Stepper activeStep={editActiveStep} sx={{ 
+                  '& .MuiStepLabel-root .Mui-completed': {
+                    color: 'success.main',
+                  },
+                  '& .MuiStepLabel-root .Mui-active': {
+                    color: 'warning.main',
+                  }
+                }}>
+                  {editSteps.map((label) => (
+                    <Step key={label}>
+                      <StepLabel>{label}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Box>
+
+              {/* Etapa 0: Información Básica */}
+              {editActiveStep === 0 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <Typography variant="h6" fontWeight={600} color="primary">
+                    Información Básica del Proyecto
+                  </Typography>
+                  
+                  <TextField
+                    fullWidth
+                    label="Título del Proyecto"
+                    value={editFormData.title || ''}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    variant="outlined"
+                    required
+                    helperText="Nombre descriptivo del proyecto"
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="Descripción"
+                    value={editFormData.description || ''}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    variant="outlined"
+                    multiline
+                    rows={4}
+                    required
+                    helperText="Descripción detallada del proyecto"
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="Tipo de Actividad"
+                    value={editFormData.tipo || ''}
+                    onChange={(e) => handleInputChange('tipo', e.target.value)}
+                    variant="outlined"
+                    required
+                    helperText="Tipo de actividad que se realizará"
+                  />
+                  
+                  <FormControl fullWidth required>
+                    <InputLabel>Área del Proyecto</InputLabel>
+                    <Select
+                      value={editFormData.area || ''}
+                      onChange={(e) => handleInputChange('area', e.target.value)}
+                      variant="outlined"
+                    >
+                      {AREAS_ESTATICAS.map((area) => (
+                        <MenuItem key={area.id} value={area.name}>
+                          {area.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  
+                  <TextField
+                    fullWidth
+                    label="Objetivo del Proyecto"
+                    value={editFormData.objetivo || ''}
+                    onChange={(e) => handleInputChange('objetivo', e.target.value)}
+                    variant="outlined"
+                    multiline
+                    rows={3}
+                    required
+                    helperText="Objetivo principal que se busca alcanzar"
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="Requisitos (Opcional)"
+                    value={editFormData.requirements || ''}
+                    onChange={(e) => handleInputChange('requirements', e.target.value)}
+                    variant="outlined"
+                    multiline
+                    rows={3}
+                    helperText="Requisitos que deben cumplir los estudiantes"
+                  />
+                </Box>
+              )}
+
+              {/* Etapa 1: Etapa y Duración */}
+              {editActiveStep === 1 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <Typography variant="h6" fontWeight={600} color="primary">
+                    Etapa de Desarrollo y Duración
+                  </Typography>
+                  
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    ¿En qué etapa de desarrollo se encuentra tu proyecto?
+                  </Typography>
+                  
+                  <RadioGroup value={editTrlSelected} onChange={handleEditTrlChange}>
+                    {TRL_QUESTIONS.map((q, idx) => {
+                      const trlKey = (idx + 1) as keyof typeof TRL_HOURS_LIMITS;
+                      const trlLimits = TRL_HOURS_LIMITS[trlKey];
+                      return (
+                        <Box
+                          key={idx + 1}
+                          sx={{
+                            borderRadius: 2,
+                            transition: 'background 0.2s',
+                            '&:hover': {
+                              background: themeMode === 'dark' ? '#475569' : '#f3f4f6',
+                            },
+                            mb: 1,
+                            p: 1,
+                          }}
+                        >
+                          <FormControlLabel
+                            value={idx + 1}
+                            control={<Radio />}
+                            label={
+                              <span>
+                                <b>Opción {idx + 1}:</b> {q}
+                                <br />
+                                <Typography variant="caption" color="text.secondary">
+                                  {trlLimits.description}: {trlLimits.min}-{trlLimits.max} horas
+                                </Typography>
+                              </span>
+                            }
+                          />
+                        </Box>
+                      );
+                    })}
+                  </RadioGroup>
+                  
+                  <TextField
+                    label="Horas ofrecidas"
+                    name="horas"
+                    type="number"
+                    value={editFormData.horas || ''}
+                    onChange={handleEditHoursChange}
+                    fullWidth
+                    required
+                    error={!!editHoursError}
+                    helperText={editHoursError || `${TRL_HOURS_LIMITS[editTrlSelected as keyof typeof TRL_HOURS_LIMITS].description}: ${TRL_HOURS_LIMITS[editTrlSelected as keyof typeof TRL_HOURS_LIMITS].min}-${TRL_HOURS_LIMITS[editTrlSelected as keyof typeof TRL_HOURS_LIMITS].max} horas`}
+                    inputProps={{ 
+                      min: TRL_HOURS_LIMITS[editTrlSelected as keyof typeof TRL_HOURS_LIMITS].min, 
+                      max: TRL_HOURS_LIMITS[editTrlSelected as keyof typeof TRL_HOURS_LIMITS].max 
+                    }}
+                  />
+                </Box>
+              )}
+
+              {/* Etapa 2: General */}
+              {editActiveStep === 2 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <Typography variant="h6" fontWeight={600} color="primary">
+                    Información General del Proyecto
+                  </Typography>
+                  
+                  <FormControl fullWidth required>
+                    <InputLabel>Modalidad</InputLabel>
+                    <Select
+                      name="modalidad"
+                      value={editFormData.modalidad || ''}
+                      label="Modalidad"
+                      onChange={(e) => handleInputChange('modalidad', e.target.value)}
+                      displayEmpty
+                    >
+                      <MenuItem value=""><em>Selecciona la modalidad</em></MenuItem>
+                      <MenuItem value="Remoto">
+                        <Box>
+                          <Typography variant="body1">Remoto</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Comunicación solo a través de correos
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="Presencial">
+                        <Box>
+                          <Typography variant="body1">Presencial</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            En sede, seleccionarás el fablab y cowork. Te reunirás con el estudiante en sede para entrevistas o presentaciones de avance
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="Híbrido">
+                        <Box>
+                          <Typography variant="body1">Híbrido</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Se puede hacer todo por correo, pero algunas veces se juntarán en la sede
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                  
+                  <TextField 
+                    label="Responsable del proyecto de la empresa" 
+                    name="encargado" 
+                    value={editFormData.encargado || ''} 
+                    onChange={(e) => handleInputChange('encargado', e.target.value)} 
+                    fullWidth 
+                    required 
+                    placeholder="Ejemplo: Juan Pérez - Gerente de Desarrollo"
+                    helperText="Nombre y cargo de la persona responsable del proyecto"
+                  />
+                  
+                  <TextField 
+                    label="Contacto de la Empresa" 
+                    name="contacto" 
+                    value={editFormData.contacto || ''} 
+                    onChange={(e) => handleInputChange('contacto', e.target.value)} 
+                    fullWidth 
+                    required 
+                    placeholder="Ejemplo: +56912345678 o contacto@empresa.cl"
+                    helperText="Teléfono o correo electrónico para contacto directo"
+                  />
+                  
+                  <TextField 
+                    label="¿Cuándo te gustaría comenzar el proyecto?" 
+                    name="fechaInicio" 
+                    type="date" 
+                    value={editFormData.fechaInicio || ''} 
+                    onChange={(e) => handleInputChange('fechaInicio', e.target.value)} 
+                    fullWidth 
+                    required 
+                    inputProps={{ 
+                      min: new Date().toISOString().split('T')[0]
+                    }}
+                    InputLabelProps={{ shrink: true, required: false }}
+                  />
+                  
+                  <TextField 
+                    label="Horas por semana que se dedicarán al proyecto" 
+                    name="horasPorSemana" 
+                    type="number" 
+                    value={editFormData.horasPorSemana || ''} 
+                    onChange={(e) => handleInputChange('horasPorSemana', e.target.value)}
+                    fullWidth 
+                    required 
+                    inputProps={{ min: 5, max: 35 }}
+                    helperText="Define cuántas horas por semana se dedicarán al proyecto. Mínimo 5, máximo 35 horas/semana."
+                  />
+                  
+                  <TextField 
+                    label="Fecha estimada de finalización" 
+                    name="fechaFin" 
+                    type="date" 
+                    value={editFormData.fechaFin || ''} 
+                    fullWidth 
+                    disabled
+                    helperText="Fecha estimada de finalización del proyecto (no editable)"
+                    InputLabelProps={{ shrink: true, required: false }} 
+                  />
+                  
+                  <TextField 
+                    label="Duración calculada (meses)" 
+                    name="meses" 
+                    value={editFormData.meses || ''} 
+                    fullWidth 
+                    disabled
+                    sx={{
+                      '& .MuiInputBase-input.Mui-disabled': {
+                        color: 'text.secondary',
+                        WebkitTextFillColor: 'text.secondary'
+                      }
+                    }}
+                    helperText="Duración del proyecto en meses (se calcula automáticamente)"
+                  />
+                  
+
+                  
+                  <Box sx={{ 
+                    p: 2, 
+                    bgcolor: 'background.paper', 
+                    borderRadius: 1, 
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    boxShadow: 1
+                  }}>
+                    <Typography variant="body2" color="text.primary">
+                      <strong>💡 Importante:</strong> Por proyecto solo puedes aceptar a un estudiante
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ 
+                    p: 2, 
+                    bgcolor: 'info.light', 
+                    borderRadius: 1, 
+                    border: '1px solid',
+                    borderColor: 'info.main',
+                    boxShadow: 1
+                  }}>
+                    <Typography variant="body2" color="info.contrastText">
+                      <strong>🔄 Cálculo Automático:</strong> Al cambiar las horas totales o las horas por semana, 
+                      la duración en meses se calcula automáticamente. La duración se muestra en gris porque no es editable.
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+
+              {/* Etapa 3: Resumen */}
+              {editActiveStep === 3 && (
+                <Box sx={{ maxWidth: '100%', mx: 'auto' }}>
+                  <Typography variant="h5" sx={{ textAlign: 'center', mb: 4, color: 'text.primary', fontWeight: 500 }}>
+                    Resumen de Cambios
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Información Básica
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Título:</strong> {editFormData.title}
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Área:</strong> {editFormData.area}
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Tipo:</strong> {editFormData.tipo}
+                      </Typography>
+                    </Grid>
+                    
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Etapa y Duración
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Etapa:</strong> Opción {editFormData.trl}
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Horas:</strong> {editFormData.horas} horas
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Horas/Semana:</strong> {editFormData.horasPorSemana} horas
+                      </Typography>
+                    </Grid>
+                    
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Información General
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Modalidad:</strong> {editFormData.modalidad}
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Responsable:</strong> {editFormData.encargado}
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Fecha Inicio:</strong> {editFormData.fechaInicio}
+                      </Typography>
+                    </Grid>
+                    
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Detalles
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Máximo Estudiantes:</strong> 1
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>Duración:</strong> {editFormData.meses} meses
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Box>
+              )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#334155' : '#f5f5f5' }}>
+          <Button 
+            onClick={handleEditClose}
+            variant="outlined"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
+            Cancelar
+          </Button>
+          
+          {editActiveStep > 0 && (
+            <Button 
+              onClick={prevEditStep}
+              variant="outlined"
+              sx={{ borderRadius: 2, px: 3 }}
+            >
+              Anterior
+            </Button>
+          )}
+          
+          {editActiveStep < editSteps.length - 1 ? (
+            <Button 
+              onClick={nextEditStep}
+              variant="contained"
+              color="primary"
+              sx={{ borderRadius: 2, px: 3 }}
+            >
+              Siguiente
+            </Button>
+          ) : (
+            <Button 
+              onClick={handleEditSave}
+              variant="contained"
+              color="warning"
+              sx={{ borderRadius: 2, px: 3 }}
+              disabled={savingProject}
+            >
+              {savingProject ? <CircularProgress size={20} /> : 'Guardar Cambios'}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </Box>

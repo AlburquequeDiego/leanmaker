@@ -281,25 +281,59 @@ def received_applications(request):
             'project', 
             'student', 
             'student__user'
-        ).order_by('-applied_at')
+        ).order_by('-created_at')
         
         print(f"🔍 [BACKEND] Aplicaciones encontradas: {applications.count()}")
         for app in applications:
             print(f"🔍 [BACKEND] - {app.id}: {app.project.title if app.project else 'Sin proyecto'} -> {app.student.user.full_name if app.student and app.student.user else 'Sin estudiante'}")
+            if app.student:
+                print(f"🔍 [BACKEND]   Estudiante ID: {app.student.id}")
+                print(f"🔍 [BACKEND]   Estudiante User: {app.student.user.id if app.student.user else 'Sin user'}")
+                print(f"🔍 [BACKEND]   Estudiante Keys: {[field.name for field in app.student._meta.fields]}")
+            else:
+                print(f"🔍 [BACKEND]   NO HAY ESTUDIANTE")
         
         applications_data = []
         for app in applications:
+            print(f"🔍 [BACKEND] Procesando aplicación {app.id}")
             student_user = app.student.user if app.student else None
+            print(f"🔍 [BACKEND] Student user: {student_user}")
             # Obtener perfil detallado si existe
             perfil_detallado = getattr(app.student, 'perfil_detallado', None) if app.student else None
+            print(f"🔍 [BACKEND] Perfil detallado: {perfil_detallado}")
             # Habilidades y certificados
-            student_skills = app.student.get_skills_list() if app.student else []
-            student_languages = app.student.get_languages_list() if app.student else []
-            certificaciones = perfil_detallado.get_certificaciones_list() if perfil_detallado else []
-            proyectos_personales = perfil_detallado.get_proyectos_personales_list() if perfil_detallado else []
-            tecnologias_preferidas = perfil_detallado.get_tecnologias_preferidas_list() if perfil_detallado else []
-            industrias_interes = perfil_detallado.get_industrias_interes_list() if perfil_detallado else []
-            tipo_proyectos_preferidos = perfil_detallado.get_tipo_proyectos_preferidos_list() if perfil_detallado else []
+            try:
+                student_skills = app.student.get_skills_list() if app.student else []
+            except:
+                student_skills = []
+            
+            # El modelo Estudiante no tiene campo languages, usar lista vacía
+            student_languages = []
+            
+            try:
+                certificaciones = perfil_detallado.get_certificaciones_list() if perfil_detallado else []
+            except:
+                certificaciones = []
+            
+            try:
+                proyectos_personales = perfil_detallado.get_proyectos_personales_list() if perfil_detallado else []
+            except:
+                proyectos_personales = []
+            
+            try:
+                tecnologias_preferidas = perfil_detallado.get_tecnologias_preferidas_list() if perfil_detallado else []
+            except:
+                tecnologias_preferidas = []
+            
+            try:
+                industrias_interes = perfil_detallado.get_industrias_interes_list() if perfil_detallado else []
+            except:
+                industrias_interes = []
+            
+            try:
+                tipo_proyectos_preferidos = perfil_detallado.get_tipo_proyectos_preferidos_list() if perfil_detallado else []
+            except:
+                tipo_proyectos_preferidos = []
             applications_data.append({
                 'id': str(app.id),
                 'project': {
@@ -316,10 +350,10 @@ def received_applications(request):
                     'career': app.student.career if app.student else None,
                     'semester': app.student.semester if app.student else None,
                     'api_level': app.student.api_level if app.student else 1,
-                                          'gpa': float(app.student.gpa) if app.student else 0,
+                    'gpa': float(app.student.gpa) if app.student else 0,
                     'university': app.student.university if app.student else None,
                     'education_level': app.student.education_level if app.student else None,
-                    'graduation_year': app.student.graduation_year if app.student else None,
+                    'graduation_year': None,  # Campo no existe en el modelo Estudiante
                     'availability': app.student.availability if app.student else None,
                     'location': app.student.location if app.student else None,
                     'area': app.student.area if app.student else None,
@@ -332,6 +366,7 @@ def received_applications(request):
                     'languages': student_languages,
                     'experience_years': app.student.experience_years if app.student else None,
                     'completed_projects': app.student.completed_projects if app.student else None,
+                    'hours_per_week': app.student.hours_per_week if app.student else 20,
                     'bio': student_user.bio if student_user else None,
                     'perfil_detallado': {
                         'fecha_nacimiento': perfil_detallado.fecha_nacimiento.isoformat() if perfil_detallado and perfil_detallado.fecha_nacimiento else None,
@@ -357,7 +392,7 @@ def received_applications(request):
                 'portfolio_url': app.portfolio_url,
                 'github_url': app.github_url,
                 'linkedin_url': app.linkedin_url,
-                'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                'applied_at': app.applied_at.isoformat() if app.applied_at else app.created_at.isoformat(),
                 'reviewed_at': app.reviewed_at.isoformat() if app.reviewed_at else None,
                 'responded_at': app.responded_at.isoformat() if app.responded_at else None,
                 'created_at': app.created_at.isoformat(),
@@ -390,18 +425,22 @@ def company_applications_list(request):
         company_projects = request.user.empresa_profile.proyectos.all()
         
         # Obtener postulaciones para esos proyectos
+        print(f"🔍 [BACKEND] Buscando postulaciones para {company_projects.count()} proyectos de la empresa")
         applications = Aplicacion.objects.filter(
             project__in=company_projects
         ).select_related(
             'student__user',
             'project'
-        ).order_by('-applied_at')
+        ).order_by('-created_at')
+        print(f"🔍 [BACKEND] Postulaciones encontradas: {applications.count()}")
         
         applications_data = []
         for application in applications:
+            print(f"🔍 [BACKEND] Procesando aplicación {application.id}")
             # Obtener datos del estudiante
             student = application.student
             student_user = student.user
+            print(f"🔍 [BACKEND] Student: {student}, User: {student_user}")
             
             # Obtener habilidades del estudiante
             student_skills = []
@@ -429,7 +468,7 @@ def company_applications_list(request):
                 'project_id': str(application.project.id),
                 'status': application.status,
                 'cover_letter': application.cover_letter or '',
-                'applied_at': application.applied_at.isoformat(),
+                'applied_at': application.applied_at.isoformat() if application.applied_at else application.created_at.isoformat(),
                 'compatibility_score': None,  # Campo no disponible en el modelo actual
                 'portfolio_url': application.portfolio_url,
                 'github_url': application.github_url,

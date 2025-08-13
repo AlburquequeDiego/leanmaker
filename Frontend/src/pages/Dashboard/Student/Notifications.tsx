@@ -91,7 +91,7 @@ export const Notifications = () => {
       try {
         const response = await apiService.get('/api/notifications/');
         // Si la respuesta es { success, data }
-        const backendNotifications = response.data ? response.data : response;
+        const backendNotifications = (response as any).data ? (response as any).data : response;
         const data = Array.isArray(backendNotifications.data)
           ? backendNotifications.data
           : Array.isArray(backendNotifications)

@@ -117,7 +117,7 @@ export const MyProjects = () => {
         console.log('[MyProjects] 🔍 Response completa:', response);
         
         // El backend devuelve {success: true, data: Array, total: number}
-        const projectsData = response.data || response;
+        const projectsData = (response as any).data || response;
         console.log('[MyProjects] 🔍 projectsData:', projectsData);
         
         const arr = Array.isArray(projectsData) ? projectsData : projectsData.data;
@@ -154,7 +154,7 @@ export const MyProjects = () => {
     try {
       // Obtener detalles completos del proyecto desde el backend
       const response = await apiService.get(`/api/projects/${project.id}/`);
-      setSelectedProjectDetail(response.data || response);
+      setSelectedProjectDetail((response as any).data || response);
     } catch (error) {
       console.error('Error obteniendo detalles del proyecto:', error);
     } finally {

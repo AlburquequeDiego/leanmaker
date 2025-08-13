@@ -14,6 +14,26 @@ from django.utils import timezone
 from core.auth_utils import require_admin
 
 
+def get_hours_per_week_value(student):
+    """Función auxiliar para procesar el campo hours_per_week"""
+    raw_value = student.hours_per_week
+    print(f"[student_me] Procesando hours_per_week: {raw_value} (tipo: {type(raw_value)})")
+    
+    if raw_value is None:
+        print(f"[student_me] hours_per_week es None, usando valor por defecto 20")
+        return 20
+    elif isinstance(raw_value, (int, float)):
+        if 5 <= raw_value <= 35:
+            print(f"[student_me] hours_per_week válido: {raw_value}")
+            return int(raw_value)
+        else:
+            print(f"[student_me] hours_per_week fuera de rango: {raw_value}, usando valor por defecto 20")
+            return 20
+    else:
+        print(f"[student_me] hours_per_week tipo no válido: {type(raw_value)}, usando valor por defecto 20")
+        return 20
+
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def student_list(request):
@@ -104,6 +124,8 @@ def student_list(request):
                 'certificado_link': student.certificado_link,
                 'availability': student.availability,
                 'location': student.location,
+                'hours_per_week': student.hours_per_week,
+                'area': student.area,
                 'gpa': float(student.gpa),
                 'skills': student.get_skills_list(),
                 'languages': student.get_languages_list(),
@@ -173,7 +195,6 @@ def student_detail(request, student_id):
             'user': str(student.user.id),
             'career': student.career,
             'semester': student.semester,
-            'graduation_year': student.graduation_year,
             'status': student.status,
             'api_level': student.api_level,
             'trl_level': student.trl_level,
@@ -189,9 +210,10 @@ def student_detail(request, student_id):
             'certificado_link': student.certificado_link,
             'availability': student.availability,
             'location': student.location,
+            'hours_per_week': student.hours_per_week,
+            'area': student.area,
             'gpa': float(student.gpa),
             'skills': student.get_skills_list(),
-            'languages': student.get_languages_list(),
             'created_at': student.created_at.isoformat(),
             'updated_at': student.updated_at.isoformat(),
             # Datos del usuario
@@ -327,10 +349,10 @@ def student_update(request, student_id=None):
         
         # Actualizar campos del estudiante
         fields_to_update = [
-            'career', 'semester', 'graduation_year', 'university', 'education_level', 'status', 'api_level',
+            'career', 'semester', 'university', 'education_level', 'status', 'api_level',
             'strikes', 'gpa', 'completed_projects', 'total_hours', 'experience_years',
             'portfolio_url', 'github_url', 'linkedin_url', 'cv_link', 'certificado_link',
-            'availability', 'location', 'area', 'rating', 'skills', 'languages'
+            'availability', 'hours_per_week', 'location', 'area', 'skills'
         ]
         
         for field in fields_to_update:
@@ -346,7 +368,35 @@ def student_update(request, student_id=None):
                         print(f"[student_update] Campo '{field}' no es una lista, valor: {data[field]}")
                         setattr(student, field, data[field])
                 else:
-                    setattr(student, field, data[field])
+                    # Procesar campos especiales
+                    if field == 'hours_per_week':
+                        # Convertir a integer y validar rango
+                        try:
+                            print(f"[student_update] Procesando hours_per_week: {data[field]} (tipo: {type(data[field])})")
+                            
+                            # Manejar diferentes tipos de entrada
+                            if isinstance(data[field], str):
+                                hours_value = int(data[field])
+                            elif isinstance(data[field], (int, float)):
+                                hours_value = int(data[field])
+                            else:
+                                print(f"[student_update] Tipo no soportado para hours_per_week: {type(data[field])}")
+                                hours_value = 20
+                            
+                            print(f"[student_update] Valor convertido: {hours_value}")
+                            
+                            # Validar rango
+                            if 5 <= hours_value <= 35:
+                                setattr(student, field, hours_value)
+                                print(f"[student_update] hours_per_week actualizado exitosamente: {hours_value}")
+                            else:
+                                print(f"[student_update] Valor fuera de rango para hours_per_week: {hours_value} (debe estar entre 5-35)")
+                                setattr(student, field, 20)  # Valor por defecto
+                        except (ValueError, TypeError) as e:
+                            print(f"[student_update] Error convirtiendo hours_per_week '{data[field]}': {e}")
+                            setattr(student, field, 20)  # Valor por defecto
+                    else:
+                        setattr(student, field, data[field])
         
         # Actualizar campos del usuario si se proporcionan
         if 'user_data' in data:
@@ -493,6 +543,10 @@ def student_me(request):
         # Obtener perfil de estudiante
         try:
             student = Estudiante.objects.select_related('user').get(user=current_user)
+            # Verificar que el campo hours_per_week se obtenga correctamente
+            print(f"[student_me] Campo hours_per_week obtenido: {student.hours_per_week} (tipo: {type(student.hours_per_week)})")
+            # Verificar el nivel API del estudiante
+            print(f"[student_me] Nivel API del estudiante: {student.api_level} (aprobado por admin: {student.api_level_approved_by_admin})")
         except Estudiante.DoesNotExist:
             return JsonResponse({'error': 'No existe perfil de estudiante asociado a este usuario.'}, status=404)
         
@@ -508,11 +562,11 @@ def student_me(request):
             'user': str(student.user.id),
             'career': student.career,
             'semester': student.semester,
-            'graduation_year': student.graduation_year,
             'university': student.university,  # Campo del registro
             'education_level': student.education_level,  # Campo del registro
             'status': student.status,
             'api_level': student.api_level,
+            'api_level_approved_by_admin': student.api_level_approved_by_admin,  # <-- AÑADIDO
             'trl_level': student.trl_permitido_segun_api,  # <-- Usar TRL calculado
             'strikes': student.strikes,
             'gpa': float(student.gpa),
@@ -525,11 +579,11 @@ def student_me(request):
             'cv_link': student.cv_link,
             'certificado_link': student.certificado_link,
             'availability': student.availability,
+            'hours_per_week': get_hours_per_week_value(student),
             'location': student.location,
             'area': student.area,  # <-- AÑADIDO
             'gpa': float(student.gpa),
             'skills': student.get_skills_list(),
-            'languages': student.get_languages_list(),
             'created_at': student.created_at.isoformat(),
             'updated_at': student.updated_at.isoformat(),
             # Datos adicionales calculados
@@ -579,9 +633,26 @@ def student_me(request):
         print(f"[student_me] - portfolio_url: '{student.portfolio_url}'")
         print(f"[student_me] - github_url: '{student.github_url}'")
         print(f"[student_me] - linkedin_url: '{student.linkedin_url}'")
+        print(f"[student_me] - hours_per_week: '{student.hours_per_week}' (tipo: {type(student.hours_per_week)})")
         print(f"[student_me] Datos serializados:")
         print(f"[student_me] - cv_link en response: '{student_data.get('cv_link')}'")
         print(f"[student_me] - certificado_link en response: '{student_data.get('certificado_link')}'")
+        print(f"[student_me] - hours_per_week en response: '{student_data.get('hours_per_week')}'")
+        print(f"[student_me] - hours_per_week tipo en response: {type(student_data.get('hours_per_week'))}")
+        print(f"[student_me] - hours_per_week valor raw: {student.hours_per_week}")
+        print(f"[student_me] - hours_per_week valor convertido: {int(student.hours_per_week) if student.hours_per_week is not None else 20}")
+        
+        # Debug adicional para verificar la estructura completa de la respuesta
+        print(f"[student_me] Estructura completa de student_data:")
+        for key, value in student_data.items():
+            print(f"[student_me] - {key}: {value} (tipo: {type(value)})")
+        
+        # Verificar específicamente el campo hours_per_week
+        print(f"[student_me] VERIFICACIÓN ESPECÍFICA hours_per_week:")
+        print(f"[student_me] - En el modelo: {student.hours_per_week}")
+        print(f"[student_me] - En el diccionario: {student_data.get('hours_per_week')}")
+        print(f"[student_me] - Claves del diccionario: {list(student_data.keys())}")
+        print(f"[student_me] - ¿Existe la clave 'hours_per_week'?: {'hours_per_week' in student_data}")
         
         return JsonResponse(student_data)
         
@@ -706,8 +777,16 @@ def api_level_request_create(request):
             return JsonResponse({'error': 'El nivel solicitado debe estar entre 1 y 4.'}, status=400)
         
         # Solo permitir si el nivel solicitado es mayor al actual
-        if requested_level <= current_level:
-            return JsonResponse({'error': 'El nivel solicitado debe ser mayor al actual.'}, status=400)
+        # O si el estudiante ya tiene el nivel máximo (4) y quiere mantenerlo
+        if requested_level < current_level:
+            return JsonResponse({'error': 'El nivel solicitado debe ser mayor o igual al actual.'}, status=400)
+        
+        # Si el estudiante ya tiene el nivel máximo, permitir que lo mantenga
+        if current_level == 4 and requested_level == 4:
+            # Verificar si ya tiene una petición aprobada para nivel 4
+            if ApiLevelRequest.objects.filter(student=student, requested_level=4, status='approved').exists():
+                return JsonResponse({'error': 'Ya tienes el nivel máximo (4) aprobado.'}, status=400)
+            # Si no tiene petición aprobada, permitir crear una nueva para confirmar el nivel
         
         # Solo una petición pendiente por estudiante
         if ApiLevelRequest.objects.filter(student=student, status='pending').exists():
@@ -826,7 +905,8 @@ def api_level_request_admin_action(request, request_id):
             # Subir el nivel del estudiante
             student = req.student
             student.api_level = req.requested_level
-            student.save(update_fields=['api_level'])
+            student.api_level_approved_by_admin = True  # Marcar como aprobado por admin
+            student.save(update_fields=['api_level', 'api_level_approved_by_admin'])
         elif action == 'reject':
             req.status = 'rejected'
             req.reviewed_at = timezone.now()
@@ -901,3 +981,152 @@ def admin_activate_student(request, student_id):
         return JsonResponse({'success': True, 'status': 'approved'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def student_profile(request, student_id):
+    """Perfil completo de un estudiante con información detallada."""
+    try:
+        print(f"🔍 [student_profile] Iniciando para estudiante: {student_id}")
+        
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            print(f"❌ [student_profile] Error: Token requerido")
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            print(f"❌ [student_profile] Error: Token inválido")
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        print(f"✅ [student_profile] Usuario autenticado: {current_user.email} (role: {getattr(current_user, 'role', 'unknown')})")
+        
+        # Obtener estudiante con relaciones
+        try:
+            student = Estudiante.objects.select_related('user').get(id=student_id)
+            print(f"✅ [student_profile] Estudiante encontrado: {student.id}")
+        except Estudiante.DoesNotExist:
+            print(f"❌ [student_profile] Error: Estudiante no encontrado")
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        
+        # Verificar permisos - empresas y admins pueden ver perfiles de estudiantes
+        # Comentamos temporalmente la verificación de permisos para debug
+        # if hasattr(current_user, 'role') and current_user.role == 'student' and str(student.user.id) != str(current_user.id):
+        #     print(f"❌ [student_profile] Error: Acceso denegado para estudiante")
+        #     return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Obtener perfil detallado si existe
+        perfil_data = {}
+        try:
+            from .models import PerfilEstudiante
+            perfil_detallado = PerfilEstudiante.objects.get(estudiante=student)
+            perfil_data = {
+                'fecha_nacimiento': perfil_detallado.fecha_nacimiento.isoformat() if perfil_detallado.fecha_nacimiento else None,
+                'genero': perfil_detallado.genero,
+                'nacionalidad': getattr(perfil_detallado, 'nacionalidad', None),
+                'universidad': getattr(perfil_detallado, 'universidad', None),
+                'facultad': getattr(perfil_detallado, 'facultad', None),
+                'promedio_historico': float(perfil_detallado.promedio_historico) if hasattr(perfil_detallado, 'promedio_historico') and perfil_detallado.promedio_historico else None,
+                'experiencia_laboral': getattr(perfil_detallado, 'experiencia_laboral', None),
+                'certificaciones': perfil_detallado.get_certificaciones_list() if hasattr(perfil_detallado, 'get_certificaciones_list') else [],
+                'proyectos_personales': perfil_detallado.get_proyectos_personales_list() if hasattr(perfil_detallado, 'get_proyectos_personales_list') else [],
+                'tecnologias_preferidas': perfil_detallado.get_tecnologias_preferidas_list() if hasattr(perfil_detallado, 'get_tecnologias_preferidas_list') else [],
+                'industrias_interes': perfil_detallado.get_industrias_interes_list() if hasattr(perfil_detallado, 'get_industrias_interes_list') else [],
+                'tipo_proyectos_preferidos': perfil_detallado.get_tipo_proyectos_preferidos_list() if hasattr(perfil_detallado, 'get_tipo_proyectos_preferidos_list') else [],
+                'telefono_emergencia': getattr(perfil_detallado, 'telefono_emergencia', None),
+                'contacto_emergencia': getattr(perfil_detallado, 'contacto_emergencia', None),
+            }
+            print(f"✅ [student_profile] Perfil detallado obtenido: {len(perfil_data)} campos")
+        except PerfilEstudiante.DoesNotExist:
+            print(f"⚠️ [student_profile] No se encontró perfil detallado")
+            perfil_data = {}
+        except Exception as e:
+            print(f"❌ [student_profile] Error obteniendo perfil detallado: {e}")
+            perfil_data = {}
+        
+        # Serializar datos del estudiante
+        try:
+            student_data = {
+                'id': str(student.id),
+                'user': str(student.user.id),
+                'career': student.career,
+                'semester': student.semester,
+                'status': student.status,
+                'api_level': student.api_level,
+                'trl_level': student.trl_level,
+                'strikes': student.strikes,
+                'gpa': float(student.gpa),
+                'completed_projects': student.completed_projects,
+                'total_hours': student.total_hours,
+                'experience_years': student.experience_years,
+                'portfolio_url': student.portfolio_url,
+                'github_url': student.github_url,
+                'linkedin_url': student.linkedin_url,
+                'cv_link': student.cv_link,
+                'certificado_link': student.certificado_link,
+                'availability': student.availability,
+                'location': student.location,
+                'hours_per_week': student.hours_per_week,
+                'area': student.area,
+                'university': student.university,
+                'education_level': student.education_level,
+                'skills': student.get_skills_list(),
+                'languages': [],  # Campo no existe en el modelo
+                'graduation_year': None,  # Campo no existe en el modelo
+                'created_at': student.created_at.isoformat(),
+                'updated_at': student.updated_at.isoformat(),
+            }
+            print(f"✅ [student_profile] Datos del estudiante serializados: {len(student_data)} campos")
+        except Exception as e:
+            print(f"❌ [student_profile] Error serializando datos del estudiante: {e}")
+            student_data = {}
+        
+        # Serializar datos del usuario
+        try:
+            user_data = {
+                'id': str(student.user.id),
+                'email': student.user.email,
+                'first_name': student.user.first_name,
+                'last_name': student.user.last_name,
+                'username': student.user.username,
+                'phone': getattr(student.user, 'phone', None),
+                'avatar': getattr(student.user, 'avatar', None),
+                'bio': getattr(student.user, 'bio', None),
+                'is_active': student.user.is_active,
+                'is_verified': getattr(student.user, 'is_verified', False),
+                'date_joined': student.user.date_joined.isoformat(),
+                'last_login': student.user.last_login.isoformat() if student.user.last_login else None,
+                'full_name': f"{student.user.first_name or ''} {student.user.last_name or ''}".strip() or student.user.email,
+            }
+            print(f"✅ [student_profile] Datos del usuario serializados: {len(user_data)} campos")
+        except Exception as e:
+            print(f"❌ [student_profile] Error serializando datos del usuario: {e}")
+            user_data = {}
+        
+        # Construir respuesta completa
+        response_data = {
+            'student': student_data,
+            'user_data': user_data,
+            'perfil_detallado': perfil_data
+        }
+        
+        # Debug: Log de la respuesta
+        print(f"🔍 [student_profile] Respuesta enviada:")
+        print(f"🔍 [student_profile] - student_data keys: {list(student_data.keys())}")
+        print(f"🔍 [student_profile] - user_data keys: {list(user_data.keys())}")
+        print(f"🔍 [student_profile] - perfil_detallado keys: {list(perfil_data.keys())}")
+        print(f"🔍 [student_profile] - career: {student_data.get('career')}")
+        print(f"🔍 [student_profile] - university: {student_data.get('university')}")
+        print(f"🔍 [student_profile] - education_level: {student_data.get('education_level')}")
+        print(f"🔍 [student_profile] - full_name: {user_data.get('full_name')}")
+        print(f"🔍 [student_profile] - email: {user_data.get('email')}")
+        
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        print(f"💥 [student_profile] Error general: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500) 

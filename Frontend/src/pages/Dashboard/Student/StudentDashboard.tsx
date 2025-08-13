@@ -342,7 +342,7 @@ export default function StudentDashboard() {
   const totalApplications = stats?.total_applications ?? 0;
   const availableProjects = stats?.available_projects ?? 0;
   const completedProjects = stats?.completed_projects ?? 0;
-  const apiLevel = stats?.api_level ?? 1;
+  const apiLevel = stats?.api_level ?? null; // NO usar valor por defecto
   const unreadNotifications = stats?.unread_notifications ?? 0;
 
   /**
@@ -574,9 +574,11 @@ export default function StudentDashboard() {
         {/* 🔧 TARJETA 8: NIVEL DE API */}
         <KPICard
           title="Nivel API"
-          value={apiLevel}
+          value={apiLevel || 'Cargando...'}
           description={
-            apiLevel === 1 
+            !apiLevel 
+              ? "Cargando nivel API..."
+              : apiLevel === 1 
               ? "Nivel API 1: Asesoría - Puedes comprender conceptos básicos y trabajar bajo supervisión directa. Horas máximas permitidas: 20 horas."
               : apiLevel === 2 
               ? "Nivel API 2: Asesoría + Propuesta - Puedes trabajar en tareas prácticas con guía y supervisión. Horas máximas permitidas: 40 horas."

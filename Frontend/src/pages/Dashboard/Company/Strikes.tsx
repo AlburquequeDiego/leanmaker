@@ -38,7 +38,7 @@ export const CompanyStrikes: React.FC = () => {
       
       // Llamar a la API real
       const response = await apiService.getCompanyStrikeReports();
-      setStrikeReports(response.results || []);
+      setStrikeReports((response as any).results || []);
     } catch (error) {
       console.error('Error cargando reportes de strikes:', error);
       setStrikeReports([]);

@@ -17,6 +17,7 @@ import {
   Checkbox,
   InputAdornment,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
@@ -1319,7 +1320,7 @@ export const Register = () => {
                                 const validation = validateChileanRut(formik.values.rut);
                                 if (validation.isValid) {
                                   return (
-                                    <Tooltip title="RUT válido">
+                                    <Tooltip title="RUT válido" arrow>
                                       <Box component="span" sx={{ color: 'success.main', fontSize: '1.2rem' }}>
                                         ✓
                                       </Box>

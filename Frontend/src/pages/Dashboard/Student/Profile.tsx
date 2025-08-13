@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -48,6 +48,7 @@ interface ProfileData {
   certificado_link: string;
   area?: string;
   modalidadesDisponibles?: string[];
+  horasSemanales?: number;
   experienciaPrevia?: string;
   linkedin?: string;
   github?: string;
@@ -342,6 +343,7 @@ export const Profile = () => {
     certificado_link: '',
     area: '',
     modalidadesDisponibles: [],
+    horasSemanales: 20,
     experienciaPrevia: '',
     linkedin: '',
     github: '',
@@ -364,6 +366,7 @@ export const Profile = () => {
     certificado_link: '',
     area: '',
     modalidadesDisponibles: [],
+    horasSemanales: 20,
     experienciaPrevia: '',
     linkedin: '',
     github: '',
@@ -385,13 +388,25 @@ export const Profile = () => {
     fetchProfile();
   }, []);
 
+  // Forzar re-renderizado cuando cambien los datos del perfil
+  useEffect(() => {
+    console.log('🚨 [StudentProfile] useEffect - profileData.horasSemanales cambió:', {
+      valor: profileData.horasSemanales,
+      tipo: typeof profileData.horasSemanales,
+      esVeinte: profileData.horasSemanales === 20,
+      esTreinta: profileData.horasSemanales === 30,
+      esCero: profileData.horasSemanales === 0
+    });
+  }, [profileData.horasSemanales]);
+
   // Limpiar habilidad cuando cambie el área
   useEffect(() => {
     setNewSkill('');
     setNewSkillLevel('Básico');
   }, [selectedArea]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
+    console.log('🚨 [StudentProfile] fetchProfile ejecutándose...');
     setLoading(true);
     try {
       // Obtener datos del usuario (que incluye birthdate y gender)
@@ -400,7 +415,24 @@ export const Profile = () => {
       
       // Obtener datos del estudiante
       const studentResponse = await apiService.get('/api/students/me/');
+      console.log('🚨 [StudentProfile] RESPUESTA RAW DEL BACKEND:', {
+        response: studentResponse,
+        tipo: typeof studentResponse,
+        esObject: typeof studentResponse === 'object',
+        keys: studentResponse && typeof studentResponse === 'object' ? Object.keys(studentResponse) : 'No es objeto'
+      });
       const studentDataResponse = studentResponse as any;
+      
+      console.log('🚨 [StudentProfile] RESPUESTA COMPLETA DEL BACKEND:', studentDataResponse);
+      console.log('🚨 [StudentProfile] CAMPO HOURS_PER_WEEK:', {
+        valor: studentDataResponse.hours_per_week,
+        tipo: typeof studentDataResponse.hours_per_week,
+        esNull: studentDataResponse.hours_per_week === null,
+        esUndefined: studentDataResponse.hours_per_week === undefined,
+        esCero: studentDataResponse.hours_per_week === 0,
+        esTreinta: studentDataResponse.hours_per_week === 30,
+        esVeinte: studentDataResponse.hours_per_week === 20
+      });
       
       console.log('📄 [StudentProfile] Datos de usuario recibidos:', userData);
       console.log('📄 [StudentProfile] Datos de estudiante recibidos:', studentDataResponse);
@@ -413,6 +445,8 @@ export const Profile = () => {
       console.log('📄 [StudentProfile] studentData.user_data?.gender:', studentDataResponse.user_data?.gender);
       
       // Mapear y unir los datos
+      console.log('🚨 [StudentProfile] ANTES DE CREAR safeData - studentDataResponse.hours_per_week:', studentDataResponse.hours_per_week);
+      
       const safeData: ProfileData = {
         nombre: userData.first_name || '',
         apellido: userData.last_name || '',
@@ -428,28 +462,110 @@ export const Profile = () => {
         cv_link: studentDataResponse.cv_link || '',
         certificado_link: studentDataResponse.certificado_link || '',
         area: studentDataResponse.area || '',
-        modalidadesDisponibles: studentDataResponse.availability ? [studentDataResponse.availability] : [],
+        modalidadesDisponibles: studentDataResponse.availability ? 
+          (studentDataResponse.availability.includes(',') ? 
+            studentDataResponse.availability.split(',').map((m: string) => m.trim()) : 
+            [studentDataResponse.availability]
+          ) : [],
+        horasSemanales: (() => {
+          const valorRaw = studentDataResponse.hours_per_week;
+          console.log('🚨 [StudentProfile] VALOR RAW RECIBIDO DEL BACKEND:', {
+            valorRaw: valorRaw,
+            tipo: typeof valorRaw,
+            esUndefined: valorRaw === undefined,
+            esNull: valorRaw === null,
+            esCero: valorRaw === 0,
+            esFalsy: !valorRaw,
+            esString: typeof valorRaw === 'string',
+            esNumber: typeof valorRaw === 'number'
+          });
+          
+          // Mejorar la lógica para manejar correctamente el valor
+          let valor: number;
+          if (valorRaw === undefined || valorRaw === null) {
+            valor = 20; // Solo usar 20 si es undefined o null
+            console.log('🚨 [StudentProfile] Usando valor por defecto 20 (undefined/null)');
+          } else if (typeof valorRaw === 'string') {
+            // Si es string, intentar convertirlo a número
+            const numValue = parseInt(valorRaw);
+            if (!isNaN(numValue) && numValue >= 5 && numValue <= 35) {
+              valor = numValue;
+              console.log('🚨 [StudentProfile] Convertido string a número válido:', valor);
+            } else {
+              valor = 20;
+              console.log('🚨 [StudentProfile] String inválido, usando valor por defecto 20');
+            }
+          } else if (typeof valorRaw === 'number') {
+            // Si es número, validar el rango
+            if (valorRaw >= 5 && valorRaw <= 35) {
+              valor = valorRaw;
+              console.log('🚨 [StudentProfile] Usando valor numérico válido del backend:', valor);
+            } else {
+              valor = 20;
+              console.log('🚨 [StudentProfile] Número fuera de rango, usando valor por defecto 20');
+            }
+          } else {
+            valor = 20;
+            console.log('🚨 [StudentProfile] Tipo no reconocido, usando valor por defecto 20');
+          }
+          
+          console.log('🚨 [StudentProfile] VALOR FINAL ASIGNADO:', {
+            valor: valor,
+            tipo: typeof valor,
+            esValido: valor >= 5 && valor <= 35
+          });
+          
+          return valor;
+        })(),
         experienciaPrevia: studentDataResponse.experience_years?.toString() || '',
         linkedin: studentDataResponse.linkedin_url || '',
         github: studentDataResponse.github_url || '',
         portafolio: studentDataResponse.portfolio_url || '',
       };
+      
+      console.log('🚨 [StudentProfile] DESPUÉS DE CREAR safeData:', {
+        horasSemanales: safeData.horasSemanales,
+        tipo: typeof safeData.horasSemanales,
+        esTreinta: safeData.horasSemanales === 30,
+        esVeinte: safeData.horasSemanales === 20
+      });
 
       console.log('📄 [StudentProfile] CV Link recibido del backend:', studentDataResponse.cv_link);
       console.log('📄 [StudentProfile] Certificado Link recibido del backend:', studentDataResponse.certificado_link);
+      console.log('📄 [StudentProfile] Hours per week recibido del backend:', studentDataResponse.hours_per_week);
+      console.log('📄 [StudentProfile] Tipo de hours_per_week:', typeof studentDataResponse.hours_per_week);
+      console.log('📄 [StudentProfile] Hours per week después de conversión:', studentDataResponse.hours_per_week || 20);
+      console.log('📄 [StudentProfile] Valor raw del backend:', studentDataResponse.hours_per_week);
+      console.log('📄 [StudentProfile] ¿Es 0?:', studentDataResponse.hours_per_week === 0);
+      console.log('📄 [StudentProfile] ¿Es undefined?:', studentDataResponse.hours_per_week === undefined);
+      console.log('📄 [StudentProfile] ¿Es null?:', studentDataResponse.hours_per_week === null);
+      console.log('📄 [StudentProfile] ¿Es falsy?:', !studentDataResponse.hours_per_week);
       console.log('📄 [StudentProfile] Datos mapeados:', safeData);
+      console.log('📄 [StudentProfile] ProfileData.horasSemanales:', safeData.horasSemanales);
+      console.log('📄 [StudentProfile] Tipo de ProfileData.horasSemanales:', typeof safeData.horasSemanales);
       
+      console.log('🚨 [StudentProfile] ANTES de setProfileData - safeData.horasSemanales:', safeData.horasSemanales);
+      console.log('🚨 [StudentProfile] OBJETO COMPLETO safeData:', safeData);
       setProfileData(safeData);
       setEditData(safeData);
       setStudentData(studentDataResponse);
       setUserId(studentDataResponse.id || '');
+      console.log('🚨 [StudentProfile] DESPUÉS de setProfileData - Estado actualizado');
+      
+      // Verificar que el estado se actualizó correctamente
+      console.log('🚨 [StudentProfile] VERIFICACIÓN DEL ESTADO:', {
+        safeDataHorasSemanales: safeData.horasSemanales,
+        safeDataTipo: typeof safeData.horasSemanales,
+        studentDataResponseHoursPerWeek: studentDataResponse.hours_per_week,
+        studentDataResponseTipo: typeof studentDataResponse.hours_per_week
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
       setShowError(true);
       setErrorMessage('Error al cargar el perfil');
     }
     setLoading(false);
-  };
+  }, []);
 
   // Validaciones
   const validateEmail = (email: string): boolean => {
@@ -508,6 +624,15 @@ export const Profile = () => {
       errors.biografia = 'La carta de presentación es requerida';
     } else if (editData.biografia.length < 50) {
       errors.biografia = 'La carta de presentación debe tener al menos 50 caracteres';
+    }
+
+    // Validar horas semanales
+    if (editData.horasSemanales === undefined || editData.horasSemanales === null) {
+      errors.horasSemanales = 'Las horas semanales son requeridas';
+    } else if (editData.horasSemanales < 5 || editData.horasSemanales > 35) {
+      errors.horasSemanales = 'Las horas semanales deben estar entre 5 y 35 horas';
+    } else if (!Number.isInteger(editData.horasSemanales)) {
+      errors.horasSemanales = 'Las horas semanales deben ser un número entero';
     }
 
     // Validar URLs
@@ -583,7 +708,28 @@ export const Profile = () => {
         linkedin_url: editData.linkedin,
         cv_link: editData.cv_link,
         certificado_link: editData.certificado_link,
-        availability: editData.modalidadesDisponibles?.[0] || 'flexible',
+        availability: editData.modalidadesDisponibles?.join(', ') || 'flexible',
+        hours_per_week: (() => {
+          // Mejorar la lógica para manejar correctamente el valor de horas semanales
+          const horasValue = editData.horasSemanales;
+          console.log('🔍 [StudentProfile] VALOR DE HORAS SEMANALES A ENVIAR:', {
+            valorOriginal: horasValue,
+            tipo: typeof horasValue,
+            esUndefined: horasValue === undefined,
+            esNull: horasValue === null,
+            esCero: horasValue === 0,
+            esValorValido: horasValue >= 5 && horasValue <= 35
+          });
+          
+          // Si no hay valor o es inválido, usar 20 por defecto
+          if (horasValue === undefined || horasValue === null || horasValue < 5 || horasValue > 35) {
+            console.log('🔍 [StudentProfile] Usando valor por defecto 20 (valor inválido o fuera de rango)');
+            return 20;
+          }
+          
+          console.log('🔍 [StudentProfile] Enviando valor real de horas semanales:', horasValue);
+          return horasValue;
+        })(),
         location: '', // Por ahora vacío
         area: editData.area,
         experience_years: parseInt(editData.experienciaPrevia || '0') || 0,
@@ -598,11 +744,68 @@ export const Profile = () => {
       console.log('🔍 [StudentProfile] Enviando datos de estudiante al backend:', studentUpdateData);
       console.log('📄 [StudentProfile] CV Link a enviar:', studentUpdateData.cv_link);
       console.log('📄 [StudentProfile] Certificado Link a enviar:', studentUpdateData.certificado_link);
+      console.log('📄 [StudentProfile] Hours per week a enviar:', studentUpdateData.hours_per_week);
+      console.log('📄 [StudentProfile] Tipo de hours_per_week a enviar:', typeof studentUpdateData.hours_per_week);
+      console.log('🔍 [StudentProfile] editData.horasSemanales antes de enviar:', editData.horasSemanales);
+      console.log('🔍 [StudentProfile] Tipo de editData.horasSemanales antes de enviar:', typeof editData.horasSemanales);
+      console.log('🔍 [StudentProfile] Valor raw de horasSemanales:', editData.horasSemanales);
+      console.log('🔍 [StudentProfile] ¿Es 0?:', editData.horasSemanales === 0);
+      console.log('🔍 [StudentProfile] ¿Es undefined?:', editData.horasSemanales === undefined);
+      console.log('🔍 [StudentProfile] ¿Es null?:', editData.horasSemanales === null);
       
       await apiService.put('/api/students/update/', studentUpdateData);
       
-      // Recargar el perfil para obtener los datos actualizados
-      await fetchProfile();
+      // ✅ SOLUCIÓN: Actualizar TODOS los campos relevantes en el estado local
+      const horasConfirmadas = studentUpdateData.hours_per_week;
+      console.log('🔍 [StudentProfile] Horas confirmadas por el backend:', horasConfirmadas);
+      
+      // Actualizar directamente el estado local para evitar el problema del backend
+      setProfileData(prev => ({
+        ...prev,
+        horasSemanales: horasConfirmadas,
+        experienciaPrevia: editData.experienciaPrevia,
+        carrera: editData.carrera,
+        area: editData.area,
+        modalidadesDisponibles: editData.modalidadesDisponibles,
+        habilidades: editData.habilidades,
+        portafolio: editData.portafolio,
+        github: editData.github,
+        linkedin: editData.linkedin,
+        cv_link: editData.cv_link,
+        certificado_link: editData.certificado_link,
+        nombre: editData.nombre,
+        apellido: editData.apellido,
+        telefono: editData.telefono,
+        fechaNacimiento: editData.fechaNacimiento,
+        genero: editData.genero,
+        institucion: editData.institucion,
+        nivel: editData.nivel,
+        biografia: editData.biografia
+      }));
+      
+      // También actualizar editData para mantener consistencia
+      setEditData(prev => ({
+        ...prev,
+        horasSemanales: horasConfirmadas,
+        experienciaPrevia: editData.experienciaPrevia,
+        carrera: editData.carrera,
+        area: editData.area,
+        modalidadesDisponibles: editData.modalidadesDisponibles,
+        habilidades: editData.habilidades,
+        portafolio: editData.portafolio,
+        github: editData.github,
+        linkedin: editData.linkedin,
+        cv_link: editData.cv_link,
+        certificado_link: editData.certificado_link,
+        nombre: editData.nombre,
+        apellido: editData.apellido,
+        telefono: editData.telefono,
+        fechaNacimiento: editData.fechaNacimiento,
+        genero: editData.genero,
+        institucion: editData.institucion,
+        nivel: editData.nivel,
+        biografia: editData.biografia
+      }));
       
       setIsEditing(false);
       setShowSuccess(true);
@@ -627,7 +830,25 @@ export const Profile = () => {
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
+    // Convertir horasSemanales a número si es necesario
+    let processedValue = value;
+    if (field === 'horasSemanales') {
+      const numValue = parseInt(value);
+      if (!isNaN(numValue) && numValue >= 0) {
+        processedValue = numValue;
+        console.log('🔍 [StudentProfile] handleInputChange - horasSemanales:', { 
+          valorOriginal: value, 
+          valorProcesado: processedValue, 
+          tipo: typeof processedValue,
+          esValido: processedValue >= 5 && processedValue <= 35
+        });
+      } else {
+        processedValue = '';
+        console.log('🔍 [StudentProfile] handleInputChange - horasSemanales: valor inválido:', value);
+      }
+    }
+    
+    setEditData(prev => ({ ...prev, [field]: processedValue }));
     
     // Limpiar error de validación cuando el usuario empiece a escribir
     if (validationErrors[field]) {
@@ -958,19 +1179,7 @@ export const Profile = () => {
             ))}
           </Box>
 
-          {/* Información del Nivel API */}
-          <Divider sx={{ my: 2 }} />
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" fontWeight={600} sx={{ mr: 2 }}>
-              API:
-            </Typography>
-            <Chip 
-              label={`Nivel ${studentData?.api_level || 1}`} 
-              color="primary" 
-              size="small" 
-              sx={{ fontWeight: 'bold' }}
-            />
-          </Box>
+
           {isEditing && (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
               <FormControl size="small" sx={{ minWidth: 200 }}>
@@ -1146,6 +1355,61 @@ export const Profile = () => {
                 ))}
                 {(!profileData.modalidadesDisponibles || profileData.modalidadesDisponibles.length === 0) && <Typography variant="body2">-</Typography>}
               </Box>
+            )}
+            
+            <Typography variant="subtitle1" fontWeight={600}>Horas semanales disponibles</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              ¿Cuántas horas semanales estás dispuesto a trabajar en proyectos?
+            </Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                type="number"
+                value={editData.horasSemanales !== undefined && editData.horasSemanales !== null ? editData.horasSemanales : ''}
+                onChange={e => handleInputChange('horasSemanales', e.target.value)}
+                placeholder="Ej: 20"
+                inputProps={{ 
+                  min: 5, 
+                  max: 35,
+                  step: 1
+                }}
+                helperText={validationErrors.horasSemanales || "Mínimo 5, máximo 35 horas por semana"}
+                error={!!validationErrors.horasSemanales}
+                sx={{ mb: 2 }}
+                onBlur={(e) => {
+                  // Validar al perder el foco
+                  const value = parseInt(e.target.value);
+                  if (value < 5 || value > 35) {
+                    setValidationErrors(prev => ({
+                      ...prev,
+                      horasSemanales: 'Las horas semanales deben estar entre 5 y 35'
+                    }));
+                  } else {
+                    setValidationErrors(prev => ({
+                      ...prev,
+                      horasSemanales: ''
+                    }));
+                  }
+                }}
+              />
+            ) : (
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                {(() => {
+                  const valorAMostrar = profileData.horasSemanales !== undefined && profileData.horasSemanales !== null ? `${profileData.horasSemanales} horas por semana` : '-';
+                  console.log('🚨 [StudentProfile] VALOR A MOSTRAR EN INTERFAZ:', {
+                    valorAMostrar: valorAMostrar,
+                    profileDataHorasSemanales: profileData.horasSemanales,
+                    tipo: typeof profileData.horasSemanales,
+                    condicion: profileData.horasSemanales !== undefined && profileData.horasSemanales !== null,
+                    esUndefined: profileData.horasSemanales === undefined,
+                    esNull: profileData.horasSemanales === null,
+                    esCero: profileData.horasSemanales === 0,
+                    esVeinte: profileData.horasSemanales === 20,
+                    esTreinta: profileData.horasSemanales === 30
+                  });
+                  return valorAMostrar;
+                })()}
+              </Typography>
             )}
             <Typography variant="subtitle1" fontWeight={600}>Experiencia previa</Typography>
             {isEditing ? (

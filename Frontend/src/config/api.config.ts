@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
   STUDENTS: '/api/students/',
   STUDENT_ME: '/api/students/me/',
   STUDENT_DETAIL: '/api/students/{id}/',
+  STUDENT_PROFILE: '/api/students/{id}/profile/',
   STUDENT_API_LEVEL_REQUEST: '/api/students/api-level-request/',
   STUDENT_API_LEVEL_REQUESTS: '/api/students/api-level-requests/',
   STUDENT_ADMIN_API_LEVEL_REQUESTS: '/api/students/admin/api-level-requests/',

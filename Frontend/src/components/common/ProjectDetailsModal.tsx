@@ -622,10 +622,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                     borderRadius: 1.5,
                     fontSize: '0.875rem'
                   }}>
-                    {project.duration_weeks || 0} semanas • {project.hours_per_week || 0} horas/semana
+                    {project.duration_weeks || 0} meses • {project.hours_per_week || 0} horas/semana
                   </Typography>
                   <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', mt: 0.5, display: 'block' }}>
-                    Horas totales: <b>{((project.duration_weeks || 0) * (project.hours_per_week || 0))}</b>
+                    Horas totales: <b>{project.required_hours || ((project.duration_weeks || 0) * (project.hours_per_week || 0))}</b>
                   </Typography>
                 </Box>
 
