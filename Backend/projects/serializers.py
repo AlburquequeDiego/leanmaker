@@ -125,6 +125,14 @@ class ProyectoSerializer:
                     value = int(data[field])
                     if value < 0:
                         errors[field] = f'El campo {field} no puede ser negativo'
+                    
+                    # Validación específica para hours_per_week
+                    if field == 'hours_per_week':
+                        if value < 5:
+                            errors[field] = 'Las horas semanales deben ser al menos 5'
+                        elif value > 35:
+                            errors[field] = 'Las horas semanales no pueden exceder 35'
+                    
                     data[field] = value
                 except (ValueError, TypeError):
                     errors[field] = f'El campo {field} debe ser un número entero'

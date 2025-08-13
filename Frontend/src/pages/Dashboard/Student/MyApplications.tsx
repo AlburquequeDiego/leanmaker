@@ -986,6 +986,7 @@ export const MyApplications: React.FC = () => {
         onClose={handleCloseDetailModal}
         project={selectedProjectDetail}
         userRole="student"
+        applicationData={applications.find(app => app.project_id === selectedProjectDetail?.id) || null}
       />
     </Box>
   );

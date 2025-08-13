@@ -101,6 +101,50 @@ class Proyecto(models.Model):
     def __str__(self):
         return f"{self.title} - {self.company.company_name if self.company else 'Sin empresa'}"
     
+    def calcular_fecha_fin_estimada(self):
+        """Calcula automáticamente la fecha de fin basada en horas totales y horas por semana"""
+        if not self.start_date or not self.required_hours or not self.hours_per_week:
+            return None
+        
+        if self.hours_per_week < 5:
+            return None  # Mínimo 5 horas por semana
+        
+        # Calcular semanas necesarias
+        semanas_necesarias = self.required_hours / self.hours_per_week
+        
+        # Convertir a días (aproximadamente)
+        dias_necesarios = int(semanas_necesarias * 7)
+        
+        # Calcular fecha de fin
+        from datetime import timedelta
+        fecha_fin = self.start_date + timedelta(days=dias_necesarios)
+        
+        return fecha_fin
+    
+    def actualizar_fecha_fin_estimada(self):
+        """Actualiza automáticamente la fecha de fin estimada"""
+        fecha_fin = self.calcular_fecha_fin_estimada()
+        if fecha_fin:
+            self.estimated_end_date = fecha_fin
+            self.save(update_fields=['estimated_end_date'])
+    
+    def get_duracion_semanas(self):
+        """Obtiene la duración en semanas del proyecto"""
+        if not self.start_date or not self.estimated_end_date:
+            return None
+        
+        from datetime import timedelta
+        diferencia = self.estimated_end_date - self.start_date
+        return int(diferencia.days / 7)
+    
+    def validar_horas_semanales(self):
+        """Valida que las horas semanales estén en el rango permitido (5-35)"""
+        if self.hours_per_week < 5:
+            return False, "Las horas semanales deben ser al menos 5"
+        if self.hours_per_week > 35:
+            return False, "Las horas semanales no pueden exceder 35"
+        return True, "Horas semanales válidas"
+    
     def get_required_skills_list(self):
         """Obtiene la lista de habilidades requeridas como lista de Python - coincide con frontend"""
         if self.required_skills:
