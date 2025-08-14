@@ -253,6 +253,9 @@ export const CompanyApplications: React.FC = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const { profile: studentProfile, loading: profileLoading, error: profileError, isLoaded } = useStudentProfileDetails(selectedStudentId);
   
+  // Estado para almacenar los perfiles de todos los estudiantes mostrados en las tarjetas
+  const [studentProfiles, setStudentProfiles] = useState<Record<string, any>>({});
+  
   // Debug: Log cuando cambie el perfil
   useEffect(() => {
     console.log('🔄 [Applications] selectedStudentId cambió:', selectedStudentId);
@@ -297,6 +300,9 @@ export const CompanyApplications: React.FC = () => {
       // Verificar si la respuesta tiene la estructura esperada
       const applicationsData = response.data || response.results || response.data?.results || [];
       console.log('📊 Datos de aplicaciones sin adaptar:', applicationsData);
+      
+      // Cargar los perfiles de todos los estudiantes para mostrar la carta de presentación correcta
+      await loadStudentProfiles(applicationsData);
       
       // Debug: Ver la primera aplicación sin adaptar
       if (applicationsData.length > 0) {
@@ -343,6 +349,41 @@ export const CompanyApplications: React.FC = () => {
       setError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Función para cargar los perfiles de todos los estudiantes
+  const loadStudentProfiles = async (applicationsData: any[]) => {
+    try {
+      const profiles: Record<string, any> = {};
+      
+      // Extraer IDs únicos de estudiantes - usar la misma lógica que el adaptador
+      const studentIds = [...new Set(applicationsData.map(app => {
+        const student = app.student || {};
+        // Usar la misma lógica que adaptApplication
+        return String(student.id || app.student || '');
+      }))].filter(Boolean);
+      
+      console.log('🔍 Cargando perfiles para estudiantes:', studentIds);
+      console.log('🔍 Estructura de la primera aplicación:', applicationsData[0]);
+      
+      // Cargar cada perfil individualmente
+      for (const studentId of studentIds) {
+        try {
+          const response = await api.get(`/api/students/${studentId}/profile/`);
+          if (response.data) {
+            profiles[studentId] = response.data;
+            console.log(`✅ Perfil cargado para estudiante ${studentId}:`, response.data);
+          }
+        } catch (error) {
+          console.warn(`⚠️ Error al cargar perfil del estudiante ${studentId}:`, error);
+        }
+      }
+      
+      setStudentProfiles(profiles);
+      console.log('📊 Perfiles de estudiantes cargados:', profiles);
+    } catch (error) {
+      console.error('❌ Error al cargar perfiles de estudiantes:', error);
     }
   };
 
@@ -934,7 +975,13 @@ export const CompanyApplications: React.FC = () => {
                       border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0',
                       color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'
                     }}>
-                      {application.student_data?.user_data?.bio || 'No se ha proporcionado carta de presentación'}
+                      {(() => {
+                        const studentId = application.student;
+                        const profile = studentProfiles[studentId];
+                        const bio = profile?.user_data?.bio;
+                        console.log(`🔍 [TARJETA] ID estudiante: ${studentId}, Perfil:`, profile, 'Bio:', bio);
+                        return bio || 'No se ha proporcionado carta de presentación';
+                      })()}
                     </Typography>
                   </Box>
 
@@ -1284,21 +1331,7 @@ export const CompanyApplications: React.FC = () => {
                     {studentProfile?.student?.career || 'No disponible'}
                   </Typography>
               </Box>
-                <Box>
-                  <Typography variant="body2" sx={{ 
-                    color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
-                    mb: 1,
-                    fontWeight: 500
-                  }}>
-                    Nivel API:
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
-                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                    fontWeight: 600
-                  }}>
-                    {studentProfile?.student?.api_level || 'No disponible'}
-                  </Typography>
-                </Box>
+
                 <Box>
                   <Typography variant="body2" sx={{ 
                     color: themeMode === 'dark' ? '#94a3b8' : '#64748b',

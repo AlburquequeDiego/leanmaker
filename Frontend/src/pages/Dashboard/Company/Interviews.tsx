@@ -53,7 +53,7 @@ import {
 import { useApi } from '../../../hooks/useApi';
 import { adaptCalendarEvent } from '../../../utils/adapters';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { useStudentProfile } from '../../../hooks/useStudentProfile';
+import { useStudentProfileDetails } from '../../../hooks/useStudentProfileDetails';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 import { apiService } from '../../../services/api.service';
 import StudentProfileModal from '../../../components/common/StudentProfileModal';
@@ -79,7 +79,7 @@ export const CompanyInterviews: React.FC = () => {
   const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
 
   // Hook para obtener el perfil detallado del estudiante
-  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfileDetails(selectedStudentId);
   
   const now = new Date();
   
@@ -143,7 +143,15 @@ export const CompanyInterviews: React.FC = () => {
       const data = response.results && Array.isArray(response.results)
         ? response.results
         : [];
-      const adaptedEvents = data.map(adaptCalendarEvent);
+      
+      // Preservar los datos originales del backend para acceso posterior
+      const adaptedEvents = data.map((backendEvent: any) => {
+        const adaptedEvent = adaptCalendarEvent(backendEvent);
+        // Agregar los datos originales del backend para poder acceder a la estructura original
+        adaptedEvent._originalData = backendEvent;
+        return adaptedEvent;
+      });
+      
       setEvents(adaptedEvents);
     } catch (err: any) {
       console.error('[Entrevistas] Error al cargar entrevistas:', err);
@@ -203,13 +211,47 @@ export const CompanyInterviews: React.FC = () => {
 
   const handleViewProfile = (event: any) => {
     console.log('🔍 Abriendo perfil del estudiante:', event);
-    // Extraer el ID del estudiante del evento
-    const studentId = event.attendees?.[0]?.id || event.student_id;
+    console.log('🔍 Evento completo:', JSON.stringify(event, null, 2));
+    console.log('🔍 Attendees:', event.attendees);
+    console.log('🔍 Attendees[0]:', event.attendees?.[0]);
+    
+    // Extraer el ID del estudiante del evento - probar diferentes caminos
+    let studentId = null;
+    
+    // Opción 1: Desde attendees[0].id
+    if (event.attendees?.[0]?.id) {
+      studentId = event.attendees[0].id;
+      console.log('✅ ID encontrado en attendees[0].id:', studentId);
+    }
+    // Opción 2: Desde attendees[0] si es un string (ID directo)
+    else if (event.attendees?.[0] && typeof event.attendees[0] === 'string') {
+      studentId = event.attendees[0];
+      console.log('✅ ID encontrado en attendees[0] (string):', studentId);
+    }
+    // Opción 3: Desde event.student_id
+    else if (event.student_id) {
+      studentId = event.student_id;
+      console.log('✅ ID encontrado en event.student_id:', studentId);
+    }
+    // Opción 4: Desde event.student
+    else if (event.student) {
+      studentId = event.student;
+      console.log('✅ ID encontrado en event.student:', studentId);
+    }
+    // Opción 5: Buscar en el objeto original del backend si existe
+    else if (event._originalData?.attendees?.[0]?.id) {
+      studentId = event._originalData.attendees[0].id;
+      console.log('✅ ID encontrado en _originalData.attendees[0].id:', studentId);
+    }
+    
     if (studentId) {
+      console.log('✅ Estableciendo selectedStudentId:', studentId);
       setSelectedStudentId(studentId);
       setShowProfileDialog(true);
     } else {
       console.error('❌ No se pudo obtener el ID del estudiante');
+      console.error('❌ Estructura del evento:', event);
+      console.error('❌ Attendees:', event.attendees);
     }
   };
 
@@ -1584,7 +1626,6 @@ export const CompanyInterviews: React.FC = () => {
         studentProfile={studentProfile}
         loading={profileLoading}
         error={profileError}
-        userRole="company"
       />
     </Box>
   );

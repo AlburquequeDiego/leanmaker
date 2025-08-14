@@ -46,7 +46,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { apiService } from '../../../services/api.service';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
-import { useStudentProfile } from '../../../hooks/useStudentProfile';
+import { useStudentProfileDetails } from '../../../hooks/useStudentProfileDetails';
 
 // Componente de estrellas personalizado
 interface StarRatingProps {
@@ -159,7 +159,7 @@ export const Evaluations = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
   // Hook para obtener el perfil detallado del estudiante
-  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfileDetails(selectedStudentId);
 
 
   // Cargar datos al montar el componente
@@ -1183,12 +1183,7 @@ export const Evaluations = () => {
                     {studentProfile.student?.career || 'No disponible'}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                    <strong>Nivel API:</strong><br />
-                    {studentProfile.student?.api_level || 'No disponible'}
-                  </Typography>
-                </Grid>
+
                 <Grid item xs={12} md={6}>
                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     <strong>Universidad:</strong><br />

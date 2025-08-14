@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { useApi } from '../../../hooks/useApi';
 import { notificationService } from '../../../services/notification.service';
-import { useStudentProfile } from '../../../hooks/useStudentProfile';
+import { useStudentProfileDetails } from '../../../hooks/useStudentProfileDetails';
 import type { Student } from '../../../types';
 import { useTheme } from '../../../contexts/ThemeContext';
 
@@ -55,7 +55,33 @@ export const SearchStudents: React.FC = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
   // Hook para obtener el perfil detallado del estudiante
-  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfileDetails(selectedStudentId);
+  
+  // Logs de depuración para el hook
+  console.log('🔍 [SearchStudents] Hook state:', {
+    selectedStudentId,
+    studentProfile: !!studentProfile,
+    profileLoading,
+    profileError
+  });
+  
+  // Log adicional cuando cambia el selectedStudentId
+  useEffect(() => {
+    console.log('🔍 [SearchStudents] selectedStudentId cambió:', selectedStudentId);
+    if (selectedStudentId) {
+      console.log('🔍 [SearchStudents] Iniciando carga del perfil para ID:', selectedStudentId);
+    }
+  }, [selectedStudentId]);
+  
+  // Efecto para manejar el estado del diálogo
+  useEffect(() => {
+    if (showProfileDialog && selectedStudentId) {
+      console.log('🔍 [SearchStudents] Dialog abierto y studentId establecido:', selectedStudentId);
+    } else if (showProfileDialog && !selectedStudentId) {
+      console.log('❌ [SearchStudents] Dialog abierto pero no hay studentId');
+      setShowProfileDialog(false);
+    }
+  }, [showProfileDialog, selectedStudentId]);
 
   // Cargar estudiantes al montar el componente
   useEffect(() => {
@@ -230,8 +256,25 @@ export const SearchStudents: React.FC = () => {
 
   const handleViewProfile = (student: Student & { userData?: any }) => {
     console.log('🔍 Abriendo perfil del estudiante:', student);
-    setSelectedStudentId(student.id);
+    console.log('🔍 Student ID:', student.id);
+    console.log('🔍 Student object completo:', student);
+    
+    // Verificar que el ID sea válido
+    if (!student.id) {
+      console.error('❌ Error: Student ID es undefined o null');
+      alert('Error: No se pudo obtener el ID del estudiante');
+      return;
+    }
+    
+    // Convertir a string si es necesario
+    const studentId = String(student.id);
+    console.log('🔍 Student ID convertido a string:', studentId);
+    
+    setSelectedStudentId(studentId);
     setShowProfileDialog(true);
+    
+    console.log('🔍 Estado actualizado - selectedStudentId:', studentId);
+    console.log('🔍 Estado actualizado - showProfileDialog:', true);
   };
 
   const handleSendMessage = async (student: Student & { userData?: any }) => {
@@ -952,20 +995,54 @@ export const SearchStudents: React.FC = () => {
         PaperProps={{
           sx: { borderRadius: 3 }
         }}
+        onEnter={() => console.log('🔍 [SearchStudents] Dialog abriendo con selectedStudentId:', selectedStudentId)}
+        onEntered={() => console.log('🔍 [SearchStudents] Dialog abierto completamente')}
       >
         <DialogTitle sx={{ 
           bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc', 
           borderBottom: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
-          gap: 2
+          justifyContent: 'space-between'
         }}>
-          <PersonIcon color="primary" />
-          <Typography variant="h6" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-            Perfil Completo del Estudiante
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <PersonIcon color="primary" />
+            <Typography variant="h6" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+              Perfil Completo del Estudiante
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+              ID: {selectedStudentId || 'N/A'}
+            </Typography>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => {
+                console.log('🔍 [SearchStudents] Estado actual del hook:', {
+                  selectedStudentId,
+                  profileLoading,
+                  profileError,
+                  studentProfile: !!studentProfile
+                });
+              }}
+              sx={{ ml: 1 }}
+            >
+              Debug
+            </Button>
+          </Box>
         </DialogTitle>
         <DialogContent sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
+          {(() => {
+            console.log('🔍 [SearchStudents] Renderizando contenido del diálogo:', { 
+              profileLoading, 
+              profileError, 
+              studentProfile: !!studentProfile,
+              selectedStudentId,
+              studentProfileData: studentProfile
+            });
+            return null;
+          })()}
           {profileLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
               <CircularProgress />
@@ -1017,13 +1094,13 @@ export const SearchStudents: React.FC = () => {
                 <Grid item xs={12} md={6}>
                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     <strong>Fecha de Nacimiento:</strong><br />
-                    {studentProfile.perfil_detallado?.fecha_nacimiento || 'No disponible'}
+                    {studentProfile.user_data?.birthdate || 'No disponible'}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     <strong>Género:</strong><br />
-                    {studentProfile.perfil_detallado?.genero || 'No disponible'}
+                    {studentProfile.user_data?.gender || 'No disponible'}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -1032,12 +1109,7 @@ export const SearchStudents: React.FC = () => {
                     {studentProfile.student?.career || 'No disponible'}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
-                    <strong>Nivel API:</strong><br />
-                    {studentProfile.student?.api_level || 'No disponible'}
-                  </Typography>
-                </Grid>
+
                 <Grid item xs={12} md={6}>
                   <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                     <strong>Universidad:</strong><br />

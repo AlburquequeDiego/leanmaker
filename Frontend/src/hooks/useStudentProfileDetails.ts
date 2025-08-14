@@ -43,6 +43,8 @@ export const useStudentProfileDetails = (studentId: string | null) => {
       setLoading(true);
       setError(null);
       console.log('🔍 [useStudentProfileDetails] Obteniendo perfil del estudiante:', id);
+      console.log('🔍 [useStudentProfileDetails] Tipo de ID:', typeof id);
+      console.log('🔍 [useStudentProfileDetails] Valor del ID:', id);
 
       const response = await apiService.getStudentProfileDetails(id);
       console.log('✅ [useStudentProfileDetails] Perfil obtenido:', response);
@@ -223,10 +225,15 @@ export const useStudentProfileDetails = (studentId: string | null) => {
   }, []);
 
   useEffect(() => {
+    console.log('🔍 [useStudentProfileDetails] useEffect ejecutándose');
+    console.log('🔍 [useStudentProfileDetails] studentId recibido:', studentId);
+    console.log('🔍 [useStudentProfileDetails] Tipo de studentId:', typeof studentId);
+    
     if (studentId) {
+      console.log('🔍 [useStudentProfileDetails] Llamando a fetchProfile con:', studentId);
       fetchProfile(studentId);
     } else {
-      // Reset state when studentId is null
+      console.log('🔍 [useStudentProfileDetails] studentId es null/undefined, limpiando estado');
       setProfile(null);
       setError(null);
     }

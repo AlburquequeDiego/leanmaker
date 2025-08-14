@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { apiService } from '../../../services/api.service';
-import { useStudentProfile } from '../../../hooks/useStudentProfile';
+import { useStudentProfileDetails } from '../../../hooks/useStudentProfileDetails';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 
 export const CompanyStrikes: React.FC = () => {
@@ -43,7 +43,7 @@ export const CompanyStrikes: React.FC = () => {
   const [selectedStrikeForDetails, setSelectedStrikeForDetails] = useState<any>(null);
 
   // Hook para obtener el perfil detallado del estudiante
-  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfileDetails(selectedStudentId);
 
   const totalReports = strikeReports.length;
   const pendingReports = strikeReports.filter(r => r.status === 'pending').length;
@@ -579,17 +579,15 @@ export const CompanyStrikes: React.FC = () => {
                   Información Personal
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Fecha de Nacimiento:</strong> {studentProfile.perfil_detallado?.fecha_nacimiento || 'No disponible'}
+                  <strong>Fecha de Nacimiento:</strong> {studentProfile.user_data?.birthdate || 'No disponible'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Género:</strong> {studentProfile.perfil_detallado?.genero || 'No disponible'}
+                  <strong>Género:</strong> {studentProfile.user_data?.gender || 'No disponible'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Carrera:</strong> {studentProfile.carrera || 'No disponible'}
+                  <strong>Carrera:</strong> {studentProfile.student?.career || 'No disponible'}
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Nivel API:</strong> {studentProfile.api_level || 'No disponible'}
-                </Typography>
+
               </Box>
 
               {/* Información académica */}
@@ -598,16 +596,16 @@ export const CompanyStrikes: React.FC = () => {
                   Información Académica
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Universidad:</strong> {studentProfile.university || 'No disponible'}
+                  <strong>Universidad:</strong> {studentProfile.student?.university || 'No disponible'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Nivel Educativo:</strong> {studentProfile.education_level || 'No disponible'}
+                  <strong>Nivel Educativo:</strong> {studentProfile.student?.education_level || 'No disponible'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Semestre:</strong> {studentProfile.semestre || 'No disponible'}
+                  <strong>Semestre:</strong> {studentProfile.student?.semester || 'No disponible'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Estado:</strong> {studentProfile.estado || 'No disponible'}
+                  <strong>Estado:</strong> {studentProfile.student?.status || 'No disponible'}
                 </Typography>
               </Box>
 
@@ -617,27 +615,27 @@ export const CompanyStrikes: React.FC = () => {
                   Habilidades y Experiencia
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Habilidades:</strong> {studentProfile.habilidades?.length > 0 ? studentProfile.habilidades.join(', ') : 'No hay habilidades registradas'}
+                  <strong>Habilidades:</strong> {studentProfile.student?.skills?.length > 0 ? studentProfile.student.skills.join(', ') : 'No hay habilidades registradas'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Idiomas:</strong> {studentProfile.idiomas?.length > 0 ? studentProfile.idiomas.join(', ') : 'No hay idiomas registrados'}
+                  <strong>Idiomas:</strong> {studentProfile.student?.languages?.length > 0 ? studentProfile.student.languages.join(', ') : 'No hay idiomas registrados'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Área de Interés:</strong> {studentProfile.area || 'No especificado'}
+                  <strong>Área de Interés:</strong> {studentProfile.student?.area || 'No especificado'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Modalidad:</strong> {studentProfile.modalidadesDisponibles?.length > 0 ? studentProfile.modalidadesDisponibles.join(', ') : 'No especificado'}
+                  <strong>Modalidad:</strong> {studentProfile.student?.availability || 'No especificado'}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Experiencia Previa:</strong> {studentProfile.experienciaPrevia || 'No disponible'}
+                  <strong>Experiencia Previa:</strong> {studentProfile.student?.experience_years || 0} años
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Horas Semanales:</strong> {studentProfile.horasSemanales || 'No disponible'}
+                  <strong>Horas Semanales:</strong> {studentProfile.student?.hours_per_week || 'No disponible'}
                 </Typography>
               </Box>
 
               {/* Carta de presentación */}
-              {studentProfile.cartaPresentacion && (
+              {studentProfile.user_data?.bio && (
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
                     Carta de Presentación
@@ -648,8 +646,70 @@ export const CompanyStrikes: React.FC = () => {
                     borderRadius: 2,
                     fontStyle: 'italic'
                   }}>
-                    {studentProfile.cartaPresentacion}
+                    {studentProfile.user_data.bio}
                   </Typography>
+                </Box>
+              )}
+
+              {/* Enlaces Profesionales */}
+              {(studentProfile.student?.linkedin_url || studentProfile.student?.github_url || studentProfile.student?.portfolio_url) && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                    Enlaces Profesionales
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {studentProfile.student?.linkedin_url && (
+                      <Typography variant="body2">
+                        <strong>LinkedIn:</strong> 
+                        <a href={studentProfile.student.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: '#0077b5', textDecoration: 'underline', marginLeft: 8 }}>
+                          Ver perfil
+                        </a>
+                      </Typography>
+                    )}
+                    {studentProfile.student?.github_url && (
+                      <Typography variant="body2">
+                        <strong>GitHub:</strong> 
+                        <a href={studentProfile.student.github_url} target="_blank" rel="noopener noreferrer" style={{ color: '#333', textDecoration: 'underline', marginLeft: 8 }}>
+                          Ver repositorio
+                        </a>
+                      </Typography>
+                    )}
+                    {studentProfile.student?.portfolio_url && (
+                      <Typography variant="body2">
+                        <strong>Portafolio:</strong> 
+                        <a href={studentProfile.student.portfolio_url} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline', marginLeft: 8 }}>
+                          Ver portafolio
+                        </a>
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              )}
+
+              {/* Documentos */}
+              {(studentProfile.student?.cv_link || studentProfile.student?.certificado_link) && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                    Documentos
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {studentProfile.student?.cv_link && (
+                      <Typography variant="body2">
+                        <strong>CV:</strong> 
+                        <a href={studentProfile.student.cv_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline', marginLeft: 8 }}>
+                          Ver CV
+                        </a>
+                      </Typography>
+                    )}
+                    {studentProfile.student?.certificado_link && (
+                      <Typography variant="body2">
+                        <strong>Certificado:</strong> 
+                        <a href={studentProfile.student.certificado_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline', marginLeft: 8 }}>
+                          Ver certificado
+                        </a>
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               )}
             </Box>

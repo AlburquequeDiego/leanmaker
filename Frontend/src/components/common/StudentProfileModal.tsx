@@ -20,13 +20,15 @@ import {
   GitHub as GitHubIcon,
   LinkedIn as LinkedInIcon,
 } from '@mui/icons-material';
-import { useStudentProfile } from '../../hooks/useStudentProfile';
+import { useStudentProfileDetails } from '../../hooks/useStudentProfileDetails';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface StudentProfileModalProps {
   open: boolean;
   onClose: () => void;
-  studentId: string | null;
+  studentProfile: any; // Cambiado para recibir el perfil ya obtenido
+  loading?: boolean;
+  error?: string | null;
   projectTitle?: string;
   applicationStatus?: string;
   coverLetter?: string;
@@ -37,7 +39,9 @@ interface StudentProfileModalProps {
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   open,
   onClose,
-  studentId,
+  studentProfile,
+  loading: profileLoading = false,
+  error: profileError = null,
   projectTitle,
   applicationStatus,
   coverLetter,
@@ -45,7 +49,6 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   updatingStatus = false,
 }) => {
   const { themeMode } = useTheme();
-  const { profile: studentProfile, loading: profileLoading, error: profileError, refreshProfile } = useStudentProfile(studentId || undefined);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -115,7 +118,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           borderRadius: '4px',
         },
       }}>
-        {studentId ? (
+        {studentProfile ? (
           <>
             {/* Indicador de carga del perfil */}
             {profileLoading && (
@@ -153,10 +156,10 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 </Alert>
                 <Button 
                   variant="outlined" 
-                  onClick={refreshProfile}
+                  onClick={handleClose}
                   sx={{ mr: 1 }}
                 >
-                  Reintentar
+                  Cerrar
                 </Button>
                 <Button 
                   variant="text" 
@@ -299,21 +302,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                         {studentProfile.student?.career || 'No disponible'}
                       </Typography>
                     </Box>
-                    <Box>
-                      <Typography variant="body2" sx={{ 
-                        color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
-                        mb: 1,
-                        fontWeight: 500
-                      }}>
-                        Nivel API:
-                      </Typography>
-                      <Typography variant="body1" sx={{ 
-                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                        fontWeight: 600
-                      }}>
-                        {studentProfile.student?.api_level || 'No disponible'}
-                      </Typography>
-                    </Box>
+
                     <Box>
                       <Typography variant="body2" sx={{ 
                         color: themeMode === 'dark' ? '#94a3b8' : '#64748b',

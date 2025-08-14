@@ -12,7 +12,7 @@ export interface CalendarEvent {
   all_day: boolean;
   location?: string;
   room?: string;
-  attendees: string[];
+  attendees: (string | { id: string; full_name: string; email?: string })[];
   attendee_names?: string[]; // Nombres de los participantes para mostrar
   created_by: string;
   created_at: string;
@@ -27,4 +27,6 @@ export interface CalendarEvent {
   duration?: string;
   representative_name?: string;
   representative_position?: string;
+  // Campo para preservar datos originales del backend
+  _originalData?: any;
 } 
