@@ -355,7 +355,8 @@ class ApiService {
     if (
       endpoint.includes('/api/students/') &&
       !endpoint.includes('api-level-request') &&
-      !endpoint.includes('/api/evaluations/')
+      !endpoint.includes('/api/evaluations/') &&
+      !endpoint.includes('/profile/') // ← EXCLUIR el endpoint del perfil
     ) {
       if (Array.isArray(data)) {
         return data.map(adaptStudent);
@@ -523,6 +524,10 @@ class ApiService {
 
   async getProjectDetails(projectId: string) {
     return this.get(`/api/projects/${projectId}/`);
+  }
+
+  async getStudentProfileDetails(studentId: string) {
+    return this.get(`/api/students/${studentId}/profile/`);
   }
 
   // MÉTODOS PARA ADMIN - GESTIÓN DE EVALUACIONES Y STRIKES

@@ -10,21 +10,40 @@ import {
   MenuItem,
   Chip,
   CircularProgress,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Warning as WarningIcon,
   Schedule as ScheduleIcon,
   Security as SecurityIcon,
   Assessment as AssessmentIcon,
+  Person as PersonIcon,
+  Work as WorkIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { apiService } from '../../../services/api.service';
+import { useStudentProfile } from '../../../hooks/useStudentProfile';
+import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 
 export const CompanyStrikes: React.FC = () => {
   const { themeMode } = useTheme();
   const [strikeReports, setStrikeReports] = useState<any[]>([]);
   const [showLimit, setShowLimit] = useState(15);
   const [loading, setLoading] = useState(true);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [projectDetailsModalOpen, setProjectDetailsModalOpen] = useState(false);
+  const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
+  const [strikeDetailsModalOpen, setStrikeDetailsModalOpen] = useState(false);
+  const [selectedStrikeForDetails, setSelectedStrikeForDetails] = useState<any>(null);
+
+  // Hook para obtener el perfil detallado del estudiante
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
 
   const totalReports = strikeReports.length;
   const pendingReports = strikeReports.filter(r => r.status === 'pending').length;
@@ -45,6 +64,58 @@ export const CompanyStrikes: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewProfile = (strike: any) => {
+    console.log('🔍 Abriendo perfil del estudiante:', strike);
+    if (strike.student_id) {
+      setSelectedStudentId(strike.student_id);
+      setShowProfileDialog(true);
+    } else {
+      console.error('❌ No se pudo obtener el ID del estudiante');
+    }
+  };
+
+  const handleViewProjectDetails = async (strike: any) => {
+    console.log('🔍 Abriendo detalles del proyecto:', strike);
+    
+    try {
+      // Obtener el ID del proyecto del strike
+      const projectId = strike.project_id;
+      
+      if (!projectId) {
+        console.error('❌ No se pudo obtener el ID del proyecto');
+        return;
+      }
+
+      // Obtener los datos completos del proyecto desde la API usando apiService
+      const response = await apiService.getProjectDetails(projectId);
+      console.log('🔍 Datos completos del proyecto obtenidos:', response);
+      
+      // Usar los datos reales del proyecto
+      setSelectedProjectForDetails(response);
+      setProjectDetailsModalOpen(true);
+      
+    } catch (error) {
+      console.error('❌ Error al obtener detalles del proyecto:', error);
+      
+      // Fallback: crear un objeto con la información disponible
+      const projectData = {
+        id: strike.project_id,
+        title: strike.project_title,
+        description: strike.project_description || 'Descripción no disponible',
+        company_name: strike.company_name || 'Empresa no especificada',
+        // Agregar otros campos que puedan estar disponibles
+      };
+      setSelectedProjectForDetails(projectData);
+      setProjectDetailsModalOpen(true);
+    }
+  };
+
+  const handleViewStrikeDetails = (strike: any) => {
+    console.log('🔍 Abriendo detalles del strike:', strike);
+    setSelectedStrikeForDetails(strike);
+    setStrikeDetailsModalOpen(true);
   };
 
   useEffect(() => {
@@ -378,6 +449,58 @@ export const CompanyStrikes: React.FC = () => {
                         )}
                       </Box>
                     </Box>
+                    
+                    {/* Botones de acción */}
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 2 }}>
+                      <Button 
+                        size="small" 
+                        startIcon={<PersonIcon />}
+                        variant="outlined"
+                        onClick={() => handleViewProfile(strike)}
+                        sx={{
+                          color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                          borderColor: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
+                          '&:hover': {
+                            borderColor: themeMode === 'dark' ? '#3b82f6' : '#1565c0',
+                            backgroundColor: themeMode === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(25, 118, 210, 0.1)'
+                          }
+                        }}
+                      >
+                        Ver Perfil
+                      </Button>
+                      <Button 
+                        size="small" 
+                        startIcon={<WorkIcon />}
+                        variant="outlined"
+                        onClick={() => handleViewProjectDetails(strike)}
+                        sx={{
+                          color: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                          borderColor: themeMode === 'dark' ? '#10b981' : '#388e3c',
+                          '&:hover': {
+                            borderColor: themeMode === 'dark' ? '#059669' : '#2e7d32',
+                            backgroundColor: themeMode === 'dark' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 142, 60, 0.1)'
+                          }
+                        }}
+                      >
+                        Ver Proyecto
+                      </Button>
+                      <Button 
+                        size="small" 
+                        startIcon={<VisibilityIcon />}
+                        variant="outlined"
+                        onClick={() => handleViewStrikeDetails(strike)}
+                        sx={{
+                          color: themeMode === 'dark' ? '#f59e0b' : '#f97316',
+                          borderColor: themeMode === 'dark' ? '#f59e0b' : '#f97316',
+                          '&:hover': {
+                            borderColor: themeMode === 'dark' ? '#d97706' : '#ea580c',
+                            backgroundColor: themeMode === 'dark' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(249, 115, 22, 0.1)'
+                          }
+                        }}
+                      >
+                        Ver Detalles
+                      </Button>
+                    </Box>
                   </CardContent>
                 </Card>
               ))}
@@ -385,6 +508,366 @@ export const CompanyStrikes: React.FC = () => {
           )}
         </Box>
       </Card>
+
+      {/* Modal de perfil del estudiante */}
+      <Dialog
+        open={showProfileDialog}
+        onClose={() => setShowProfileDialog(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            borderRadius: 3,
+            boxShadow: themeMode === 'dark' 
+              ? '0 20px 40px rgba(0,0,0,0.5)' 
+              : '0 20px 40px rgba(0,0,0,0.15)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          background: themeMode === 'dark' 
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 600,
+          borderRadius: '12px 12px 0 0'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <PersonIcon sx={{ fontSize: 28, color: 'white' }} />
+            <Typography variant="h6">Perfil del Estudiante</Typography>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ 
+          mt: 2,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          {profileLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : profileError ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography color="error">
+                Error al cargar el perfil: {profileError}
+              </Typography>
+            </Box>
+          ) : studentProfile ? (
+            <Box>
+              {/* Información básica */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Información Básica
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Nombre:</strong> {studentProfile.user_data?.full_name || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Email:</strong> {studentProfile.user_data?.email || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Teléfono:</strong> {studentProfile.user_data?.phone || 'No disponible'}
+                </Typography>
+              </Box>
+
+              {/* Información personal */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Información Personal
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Fecha de Nacimiento:</strong> {studentProfile.perfil_detallado?.fecha_nacimiento || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Género:</strong> {studentProfile.perfil_detallado?.genero || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Carrera:</strong> {studentProfile.carrera || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Nivel API:</strong> {studentProfile.api_level || 'No disponible'}
+                </Typography>
+              </Box>
+
+              {/* Información académica */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Información Académica
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Universidad:</strong> {studentProfile.university || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Nivel Educativo:</strong> {studentProfile.education_level || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Semestre:</strong> {studentProfile.semestre || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Estado:</strong> {studentProfile.estado || 'No disponible'}
+                </Typography>
+              </Box>
+
+              {/* Habilidades y experiencia */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Habilidades y Experiencia
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Habilidades:</strong> {studentProfile.habilidades?.length > 0 ? studentProfile.habilidades.join(', ') : 'No hay habilidades registradas'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Idiomas:</strong> {studentProfile.idiomas?.length > 0 ? studentProfile.idiomas.join(', ') : 'No hay idiomas registrados'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Área de Interés:</strong> {studentProfile.area || 'No especificado'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Modalidad:</strong> {studentProfile.modalidadesDisponibles?.length > 0 ? studentProfile.modalidadesDisponibles.join(', ') : 'No especificado'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Experiencia Previa:</strong> {studentProfile.experienciaPrevia || 'No disponible'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Horas Semanales:</strong> {studentProfile.horasSemanales || 'No disponible'}
+                </Typography>
+              </Box>
+
+              {/* Carta de presentación */}
+              {studentProfile.cartaPresentacion && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                    Carta de Presentación
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    p: 2, 
+                    bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                    borderRadius: 2,
+                    fontStyle: 'italic'
+                  }}>
+                    {studentProfile.cartaPresentacion}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          ) : (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography color="text.secondary">
+                No se pudo cargar el perfil del estudiante
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        
+        <DialogActions sx={{ 
+          p: 3, 
+          pt: 0,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e0e0e0'
+        }}>
+          <Button 
+            onClick={() => setShowProfileDialog(false)}
+            variant="contained"
+            sx={{
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)' 
+                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: themeMode === 'dark' 
+                  ? 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' 
+                  : 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de detalles del proyecto */}
+      <ProjectDetailsModal
+        open={projectDetailsModalOpen}
+        onClose={() => setProjectDetailsModalOpen(false)}
+        project={selectedProjectForDetails}
+      />
+
+      {/* Modal de detalles del strike */}
+      <Dialog
+        open={strikeDetailsModalOpen}
+        onClose={() => setStrikeDetailsModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            borderRadius: 3,
+            boxShadow: themeMode === 'dark' 
+              ? '0 20px 40px rgba(0,0,0,0.5)' 
+              : '0 20px 40px rgba(0,0,0,0.15)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          background: themeMode === 'dark' 
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+            : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          color: 'white',
+          fontWeight: 600,
+          borderRadius: '12px 12px 0 0'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <WarningIcon sx={{ fontSize: 28, color: 'white' }} />
+            <Typography variant="h6">Detalles del Strike</Typography>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ 
+          mt: 2,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          {selectedStrikeForDetails && (
+            <Box>
+              {/* Información del estudiante */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Estudiante Reportado
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Nombre:</strong> {selectedStrikeForDetails.student_name}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Email:</strong> {selectedStrikeForDetails.student_email}
+                </Typography>
+              </Box>
+
+              {/* Información del proyecto */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Proyecto Relacionado
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Título:</strong> {selectedStrikeForDetails.project_title}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>ID del Proyecto:</strong> {selectedStrikeForDetails.project_id}
+                </Typography>
+              </Box>
+
+              {/* Detalles del strike */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Motivo del Strike
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Razón:</strong> {selectedStrikeForDetails.reason}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Descripción:</strong> {selectedStrikeForDetails.description}
+                </Typography>
+              </Box>
+
+              {/* Estado del reporte */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Estado del Reporte
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                  <Chip
+                    label={selectedStrikeForDetails.status === 'pending' ? 'Pendiente' : 
+                           selectedStrikeForDetails.status === 'approved' ? 'Aceptado' : 'Rechazado'}
+                    color={selectedStrikeForDetails.status === 'pending' ? 'warning' : 
+                           selectedStrikeForDetails.status === 'approved' ? 'success' : 'error'}
+                    size="medium"
+                    sx={{ fontWeight: 600 }}
+                  />
+                  {selectedStrikeForDetails.status === 'pending' && (
+                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                      En revisión por administración
+                    </Typography>
+                  )}
+                </Box>
+                
+                {selectedStrikeForDetails.status !== 'pending' && (
+                  <Box>
+                    <Typography variant="body1" sx={{ mb: 1 }}>
+                      <strong>Revisado por:</strong> {selectedStrikeForDetails.reviewed_by_name || 'No especificado'}
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 1 }}>
+                      <strong>Fecha de revisión:</strong> {selectedStrikeForDetails.reviewed_at ? 
+                        new Date(selectedStrikeForDetails.reviewed_at).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) : 'No especificada'}
+                    </Typography>
+                    {selectedStrikeForDetails.admin_notes && (
+                      <Typography variant="body1" sx={{ mb: 1 }}>
+                        <strong>Notas del administrador:</strong> {selectedStrikeForDetails.admin_notes}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </Box>
+
+              {/* Fechas */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                  Fechas
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Fecha de reporte:</strong> {new Date(selectedStrikeForDetails.created_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Última actualización:</strong> {new Date(selectedStrikeForDetails.updated_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Typography>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        
+        <DialogActions sx={{ 
+          p: 3, 
+          pt: 0,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e0e0e0'
+        }}>
+          <Button 
+            onClick={() => setStrikeDetailsModalOpen(false)}
+            variant="contained"
+            sx={{
+              background: themeMode === 'dark' 
+                ? 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)' 
+                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: themeMode === 'dark' 
+                  ? 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' 
+                  : 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

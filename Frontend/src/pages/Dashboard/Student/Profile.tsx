@@ -49,7 +49,7 @@ interface ProfileData {
   area?: string;
   modalidadesDisponibles?: string[];
   horasSemanales?: number;
-  experienciaPrevia?: string;
+  experienciaPrevia?: number;
   linkedin?: string;
   github?: string;
   portafolio?: string;
@@ -344,7 +344,7 @@ export const Profile = () => {
     area: '',
     modalidadesDisponibles: [],
     horasSemanales: 20,
-    experienciaPrevia: '',
+    experienciaPrevia: 0,
     linkedin: '',
     github: '',
     portafolio: '',
@@ -367,7 +367,7 @@ export const Profile = () => {
     area: '',
     modalidadesDisponibles: [],
     horasSemanales: 20,
-    experienciaPrevia: '',
+    experienciaPrevia: 0,
     linkedin: '',
     github: '',
     portafolio: '',
@@ -517,7 +517,7 @@ export const Profile = () => {
           
           return valor;
         })(),
-        experienciaPrevia: studentDataResponse.experience_years?.toString() || '',
+        experienciaPrevia: parseInt(studentDataResponse.experience_years?.toString() || '0') || 0,
         linkedin: studentDataResponse.linkedin_url || '',
         github: studentDataResponse.github_url || '',
         portafolio: studentDataResponse.portfolio_url || '',
@@ -732,7 +732,7 @@ export const Profile = () => {
         })(),
         location: '', // Por ahora vacío
         area: editData.area,
-        experience_years: parseInt(editData.experienciaPrevia || '0') || 0,
+        experience_years: editData.experienciaPrevia || 0,
         // Datos del perfil detallado para mantener sincronizados birthdate y gender
         perfil_detallado: {
           fecha_nacimiento: editData.fechaNacimiento || null,
@@ -845,6 +845,23 @@ export const Profile = () => {
       } else {
         processedValue = '';
         console.log('🔍 [StudentProfile] handleInputChange - horasSemanales: valor inválido:', value);
+      }
+    }
+    
+    // Convertir experienciaPrevia a número si es necesario
+    if (field === 'experienciaPrevia') {
+      const numValue = parseInt(value);
+      if (!isNaN(numValue) && numValue >= 0) {
+        processedValue = numValue;
+        console.log('🔍 [StudentProfile] handleInputChange - experienciaPrevia:', { 
+          valorOriginal: value, 
+          valorProcesado: processedValue, 
+          tipo: typeof processedValue,
+          esValido: processedValue >= 0 && processedValue <= 50
+        });
+      } else {
+        processedValue = '';
+        console.log('🔍 [StudentProfile] handleInputChange - experienciaPrevia: valor inválido:', value);
       }
     }
     
@@ -1411,19 +1428,22 @@ export const Profile = () => {
                 })()}
               </Typography>
             )}
-            <Typography variant="subtitle1" fontWeight={600}>Experiencia previa</Typography>
+            <Typography variant="subtitle1" fontWeight={600}>Experiencia previa (años)</Typography>
             {isEditing ? (
               <TextField
                 fullWidth
-                multiline
-                minRows={2}
+                type="number"
+                inputProps={{ min: 0, max: 50 }}
                 value={editData.experienciaPrevia || ''}
                 onChange={e => handleInputChange('experienciaPrevia', e.target.value)}
-                placeholder="Describe tu experiencia previa en algún puesto, práctica, voluntariado, etc."
+                placeholder="0"
+                helperText="Ingresa los años de experiencia laboral o en proyectos"
                 sx={{ mb: 2 }}
               />
             ) : (
-              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.experienciaPrevia || '-'}</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                {profileData.experienciaPrevia ? `${profileData.experienciaPrevia} años` : 'Sin experiencia'}
+              </Typography>
             )}
             <Typography variant="subtitle1" fontWeight={600}>LinkedIn</Typography>
             {isEditing ? (

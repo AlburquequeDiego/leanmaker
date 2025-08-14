@@ -1094,6 +1094,8 @@ def student_profile(request, student_id):
                 'phone': getattr(student.user, 'phone', None),
                 'avatar': getattr(student.user, 'avatar', None),
                 'bio': getattr(student.user, 'bio', None),
+                'birthdate': student.user.birthdate.isoformat() if student.user.birthdate else None,
+                'gender': getattr(student.user, 'gender', None),
                 'is_active': student.user.is_active,
                 'is_verified': getattr(student.user, 'is_verified', False),
                 'date_joined': student.user.date_joined.isoformat(),
@@ -1122,6 +1124,18 @@ def student_profile(request, student_id):
         print(f"🔍 [student_profile] - education_level: {student_data.get('education_level')}")
         print(f"🔍 [student_profile] - full_name: {user_data.get('full_name')}")
         print(f"🔍 [student_profile] - email: {user_data.get('email')}")
+        print(f"🔍 [student_profile] - birthdate: {user_data.get('birthdate')}")
+        print(f"🔍 [student_profile] - gender: {user_data.get('gender')}")
+        print(f"🔍 [student_profile] - experience_years: {student_data.get('experience_years')}")
+        print(f"🔍 [student_profile] - hours_per_week: {student_data.get('hours_per_week')}")
+        print(f"🔍 [student_profile] - skills: {student_data.get('skills')}")
+        print(f"🔍 [student_profile] - area: {student_data.get('area')}")
+        print(f"🔍 [student_profile] - availability: {student_data.get('availability')}")
+        print(f"🔍 [student_profile] - linkedin_url: {student_data.get('linkedin_url')}")
+        print(f"🔍 [student_profile] - github_url: {student_data.get('github_url')}")
+        print(f"🔍 [student_profile] - portfolio_url: {student_data.get('portfolio_url')}")
+        print(f"🔍 [student_profile] - cv_link: {student_data.get('cv_link')}")
+        print(f"🔍 [student_profile] - certificado_link: {student_data.get('certificado_link')}")
         
         return JsonResponse(response_data)
         

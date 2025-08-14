@@ -55,6 +55,8 @@ import { adaptCalendarEvent } from '../../../utils/adapters';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useStudentProfile } from '../../../hooks/useStudentProfile';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
+import { apiService } from '../../../services/api.service';
+import StudentProfileModal from '../../../components/common/StudentProfileModal';
 
 export const CompanyInterviews: React.FC = () => {
   const api = useApi();
@@ -211,18 +213,40 @@ export const CompanyInterviews: React.FC = () => {
     }
   };
 
-  const handleViewProjectDetails = (event: any) => {
+  const handleViewProjectDetails = async (event: any) => {
     console.log('🔍 Abriendo detalles del proyecto:', event);
-    // Crear un objeto proyecto con la información disponible
-    const projectData = {
-      id: event.project_id || event.id,
-      title: event.project_title || event.title,
-      description: event.description || 'Descripción no disponible',
-      company: event.company || 'Empresa no especificada',
-      // Agregar otros campos que puedan estar disponibles
-    };
-    setSelectedProjectForDetails(projectData);
-    setProjectDetailsModalOpen(true);
+    
+    try {
+      // Obtener el ID del proyecto del evento
+      const projectId = event.project || event.project_id || event.id;
+      
+      if (!projectId) {
+        console.error('❌ No se pudo obtener el ID del proyecto');
+        return;
+      }
+
+      // Obtener los datos completos del proyecto desde la API usando apiService
+      const response = await apiService.getProjectDetails(projectId);
+      console.log('🔍 Datos completos del proyecto obtenidos:', response);
+      
+      // Usar los datos reales del proyecto
+      setSelectedProjectForDetails(response);
+      setProjectDetailsModalOpen(true);
+      
+    } catch (error) {
+      console.error('❌ Error al obtener detalles del proyecto:', error);
+      
+      // Fallback: crear un objeto con la información disponible
+      const projectData = {
+        id: event.project || event.project_id || event.id,
+        title: event.project_title || event.title,
+        description: event.description || 'Descripción no disponible',
+        company_name: event.company || 'Empresa no especificada',
+        // Agregar otros campos que puedan estar disponibles
+      };
+      setSelectedProjectForDetails(projectData);
+      setProjectDetailsModalOpen(true);
+    }
   };
 
   const handleCloseDetails = () => {
@@ -1544,6 +1568,24 @@ export const CompanyInterviews: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Modal de detalles del proyecto */}
+      <ProjectDetailsModal
+        open={projectDetailsModalOpen}
+        onClose={() => setProjectDetailsModalOpen(false)}
+        project={selectedProjectForDetails}
+        userRole="company"
+      />
+
+      {/* Modal del perfil del estudiante */}
+      <StudentProfileModal
+        open={showProfileDialog}
+        onClose={() => setShowProfileDialog(false)}
+        studentProfile={studentProfile}
+        loading={profileLoading}
+        error={profileError}
+        userRole="company"
+      />
     </Box>
   );
 };
