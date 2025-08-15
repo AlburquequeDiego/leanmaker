@@ -296,20 +296,29 @@ def send_company_message(request):
             return JsonResponse({'success': False, 'error': 'Datos JSON inválidos'}, status=400)
         
         # Validar datos requeridos
-        student_id = data.get('student_id')
+        user_id = data.get('student_id')  # Mantenemos el nombre del campo para compatibilidad
         message = data.get('message', '').strip()
         
-        if not student_id:
-            return JsonResponse({'success': False, 'error': 'El ID del estudiante es requerido'}, status=400)
+        if not user_id:
+            return JsonResponse({'success': False, 'error': 'El ID del usuario del estudiante es requerido'}, status=400)
         if not message:
             return JsonResponse({'success': False, 'error': 'El mensaje es requerido'}, status=400)
         
-        # Obtener el estudiante
-        from students.models import Estudiante
+        # Obtener el usuario directamente (más eficiente)
+        from users.models import User
         try:
-            student = Estudiante.objects.select_related('user').get(id=student_id)
-        except Estudiante.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Estudiante no encontrado'}, status=404)
+            # Intentar obtener por ID numérico primero
+            try:
+                target_user = User.objects.get(id=int(user_id))
+            except (ValueError, TypeError):
+                # Si no es numérico, intentar por UUID
+                target_user = User.objects.get(id=user_id)
+            
+            # Verificar que sea un estudiante
+            if not hasattr(target_user, 'estudiante_profile'):
+                return JsonResponse({'success': False, 'error': 'El usuario no es un estudiante'}, status=400)
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Usuario no encontrado'}, status=404)
         
         # Obtener datos de la empresa
         from companies.models import Empresa
@@ -321,9 +330,9 @@ def send_company_message(request):
         
         # Crear notificación para el estudiante
         notification = Notification.objects.create(
-            user=student.user,
+            user=target_user,
             title=f'Nueva comunicación de empresa',
-            message=f'La empresa {company_name} se quiere comunicar contigo a través de tu correo institucional. Revisa tu correo para más detalles.',
+            message=message,  # Usar el mensaje personalizado del frontend
             type='info',
             related_url='/dashboard/student/notifications',
         )

@@ -40,13 +40,13 @@ import { adaptApplication, adaptApplicationList } from '../../../utils/adapters'
 import { API_ENDPOINTS } from '../../../config/api.config';
 import type { Application, Student } from '../../../types';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { useStudentProfileDetails } from '../../../hooks/useStudentProfileDetails';
+import { useStudentProfile } from '../../../hooks/useStudentProfile';
 
 const cantidadOpciones = [5, 10, 50, 100, 150, 200, 'todas'];
 
 // Componente para mostrar el perfil rápido del estudiante
 const QuickProfileContent: React.FC<{ studentId: string; onClose: () => void; application?: Application }> = ({ studentId, onClose, application }) => {
-  const { profile, loading, error } = useStudentProfileDetails(studentId);
+  const { profile, loading, error } = useStudentProfile(studentId);
 
   // Debug: Log the profile structure
   console.log('🔍 [QuickProfileContent] Profile structure:', profile);
@@ -121,12 +121,6 @@ const QuickProfileContent: React.FC<{ studentId: string; onClose: () => void; ap
           <Typography variant="body2">
             <strong>Carta de Presentación:</strong> {userData.bio || 'No se ha proporcionado carta de presentación'}
           </Typography>
-          {/* Debug: Mostrar el valor real de bio */}
-          {userData && (
-            <Typography variant="caption" color="text.secondary">
-              Debug - bio (carta de presentación): "{userData.bio}"
-            </Typography>
-          )}
         </Box>
       </Paper>
 
@@ -251,7 +245,7 @@ export const CompanyApplications: React.FC = () => {
   
   // Hook para obtener el perfil del estudiante seleccionado
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
-  const { profile: studentProfile, loading: profileLoading, error: profileError, isLoaded } = useStudentProfileDetails(selectedStudentId);
+  const { profile: studentProfile, loading: profileLoading, error: profileError, isLoaded } = useStudentProfile(selectedStudentId);
   
   // Estado para almacenar los perfiles de todos los estudiantes mostrados en las tarjetas
   const [studentProfiles, setStudentProfiles] = useState<Record<string, any>>({});
@@ -263,6 +257,13 @@ export const CompanyApplications: React.FC = () => {
     console.log('🔄 [Applications] profileLoading:', profileLoading);
     console.log('🔄 [Applications] profileError:', profileError);
   }, [selectedStudentId, studentProfile, profileLoading, profileError]);
+  
+  // Log cuando cambia studentProfiles
+  useEffect(() => {
+    console.log('🔄 [useEffect] studentProfiles cambió:', studentProfiles);
+    console.log('🔄 [useEffect] Keys de studentProfiles:', Object.keys(studentProfiles));
+    console.log('🔄 [useEffect] Valores de studentProfiles:', studentProfiles);
+  }, [studentProfiles]);
 
   // Estados para diálogos de confirmación
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -301,19 +302,6 @@ export const CompanyApplications: React.FC = () => {
       const applicationsData = response.data || response.results || response.data?.results || [];
       console.log('📊 Datos de aplicaciones sin adaptar:', applicationsData);
       
-      // Cargar los perfiles de todos los estudiantes para mostrar la carta de presentación correcta
-      await loadStudentProfiles(applicationsData);
-      
-      // Debug: Ver la primera aplicación sin adaptar
-      if (applicationsData.length > 0) {
-        console.log('🔍 Primera aplicación sin adaptar:', applicationsData[0]);
-        console.log('🔍 Estructura del estudiante en la primera aplicación:', applicationsData[0].student);
-        console.log('🔍 Tipo del campo student:', typeof applicationsData[0].student);
-        if (applicationsData[0].student && typeof applicationsData[0].student === 'object') {
-          console.log('🔍 Propiedades del objeto student:', Object.keys(applicationsData[0].student));
-        }
-      }
-      
       // Aplicar adaptador a cada aplicación individualmente para mejor manejo
       const adaptedApplications = Array.isArray(applicationsData) 
         ? applicationsData.map(app => {
@@ -326,6 +314,13 @@ export const CompanyApplications: React.FC = () => {
       console.log('✅ Aplicaciones adaptadas:', adaptedApplications);
       
       setApplications(adaptedApplications);
+      
+      // Cargar los perfiles de todos los estudiantes DESPUÉS de adaptar las aplicaciones
+      console.log('📞 [loadApplications] Llamando a loadStudentProfiles con:', adaptedApplications);
+      console.log('📞 [loadApplications] Tipo de adaptedApplications:', typeof adaptedApplications);
+      console.log('📞 [loadApplications] Es array:', Array.isArray(adaptedApplications));
+      console.log('📞 [loadApplications] Longitud:', adaptedApplications.length);
+      await loadStudentProfiles(adaptedApplications);
       
     } catch (err: any) {
       console.error('❌ Error cargando aplicaciones:', err);
@@ -354,36 +349,119 @@ export const CompanyApplications: React.FC = () => {
 
   // Función para cargar los perfiles de todos los estudiantes
   const loadStudentProfiles = async (applicationsData: any[]) => {
+    console.log('🚀 [loadStudentProfiles] Función iniciada con:', applicationsData);
     try {
       const profiles: Record<string, any> = {};
       
-      // Extraer IDs únicos de estudiantes - usar la misma lógica que el adaptador
+      // Extraer IDs únicos de estudiantes de las aplicaciones adaptadas
       const studentIds = [...new Set(applicationsData.map(app => {
-        const student = app.student || {};
-        // Usar la misma lógica que adaptApplication
-        return String(student.id || app.student || '');
+        // Las aplicaciones ya están adaptadas, usar el campo student directamente
+        return String(app.student || '');
       }))].filter(Boolean);
       
       console.log('🔍 Cargando perfiles para estudiantes:', studentIds);
-      console.log('🔍 Estructura de la primera aplicación:', applicationsData[0]);
+      console.log('🔍 Estructura de la primera aplicación adaptada:', applicationsData[0]);
+      console.log('🔍 Campo student de la primera aplicación:', applicationsData[0]?.student);
+      console.log('🔍 Tipo del campo student:', typeof applicationsData[0]?.student);
       
       // Cargar cada perfil individualmente
       for (const studentId of studentIds) {
+        console.log(`🔍 [loadStudentProfiles] Intentando cargar perfil para: ${studentId}`);
         try {
           const response = await api.get(`/api/students/${studentId}/profile/`);
-          if (response.data) {
-            profiles[studentId] = response.data;
-            console.log(`✅ Perfil cargado para estudiante ${studentId}:`, response.data);
+          console.log(`🔍 [loadStudentProfiles] Response completa para ${studentId}:`, response);
+          console.log(`🔍 [loadStudentProfiles] Response.status para ${studentId}:`, response.status);
+          console.log(`🔍 [loadStudentProfiles] Response.data para ${studentId}:`, response);
+          console.log(`🔍 [loadStudentProfiles] Response.bio para ${studentId}:`, response?.bio);
+          console.log(`🔍 [loadStudentProfiles] Response.user_data para ${studentId}:`, response?.user_data);
+          console.log(`🔍 [loadStudentProfiles] Response.user_data.bio para ${studentId}:`, response?.user_data?.bio);
+          console.log(`🔍 [loadStudentProfiles] Keys de response:`, Object.keys(response));
+          console.log(`🔍 [loadStudentProfiles] Tipo de response:`, typeof response);
+          console.log(`🔍 [loadStudentProfiles] Es objeto:`, typeof response === 'object');
+          
+          // Verificar si la respuesta tiene datos
+          if (response && (response.student || response.user_data)) {
+            console.log(`✅ [loadStudentProfiles] Respuesta válida para ${studentId}`);
+            // Normalizar la estructura del perfil para mayor compatibilidad
+            const profileData = response;
+            console.log(`🔍 [loadStudentProfiles] Perfil original para ${studentId}:`, profileData);
+            
+            // Crear estructura normalizada
+            const normalizedProfile = {
+              ...profileData,
+              // Asegurar que user_data esté disponible
+              user_data: profileData.user_data || {
+                bio: profileData.bio || profileData.student?.bio || '',
+                full_name: profileData.full_name || profileData.student?.name || '',
+                email: profileData.email || profileData.student?.email || '',
+                phone: profileData.phone || profileData.student?.phone || '',
+                birthdate: profileData.birthdate || profileData.student?.birthdate || '',
+                gender: profileData.gender || profileData.student?.gender || ''
+              },
+              // Asegurar que student esté disponible
+              student: profileData.student || {
+                career: profileData.career || '',
+                university: profileData.university || '',
+                experience_years: profileData.experience_years || 0,
+                hours_per_week: profileData.hours_per_week || 20,
+                area: profileData.area || '',
+                availability: profileData.availability || 'flexible',
+                skills: profileData.skills || [],
+                linkedin_url: profileData.linkedin_url || '',
+                github_url: profileData.github_url || '',
+                portfolio_url: profileData.portfolio_url || '',
+                cv_link: profileData.cv_link || '',
+                certificado_link: profileData.certificado_link || ''
+              }
+            };
+            
+            profiles[studentId] = normalizedProfile;
+            console.log(`✅ Perfil normalizado para estudiante ${studentId}:`, normalizedProfile);
+            console.log(`✅ [loadStudentProfiles] profiles[${studentId}] después de asignar:`, profiles[studentId]);
+            console.log(`✅ [loadStudentProfiles] Object.keys(profiles) después de asignar:`, Object.keys(profiles));
+          } else {
+            console.warn(`⚠️ [loadStudentProfiles] Respuesta inválida para ${studentId}:`, {
+              response: response,
+              hasResponse: !!response,
+              hasStudent: !!response?.student,
+              hasUserData: !!response?.user_data,
+              responseType: typeof response,
+              responseKeys: response ? Object.keys(response) : []
+            });
           }
         } catch (error) {
           console.warn(`⚠️ Error al cargar perfil del estudiante ${studentId}:`, error);
+          console.warn(`⚠️ Error completo:`, error);
+          console.warn(`⚠️ Error.message:`, error.message);
+          console.warn(`⚠️ Error.response:`, error.response);
+          // Crear perfil básico con datos de la aplicación como fallback
+          const fallbackProfile = {
+            user_data: {
+              bio: applicationsData.find(app => String(app.student || app.student_data?.id) === studentId)?.student_bio || '',
+              full_name: applicationsData.find(app => String(app.student || app.student_data?.id) === studentId)?.student_name || '',
+              email: applicationsData.find(app => String(app.student || app.student_data?.id) === studentId)?.student_email || ''
+            },
+            student: {
+              career: applicationsData.find(app => String(app.student || app.student_data?.id) === studentId)?.student_major || '',
+              university: applicationsData.find(app => String(app.student || app.student_data?.id) === studentId)?.student_university || ''
+            }
+          };
+          profiles[studentId] = fallbackProfile;
+          console.log(`⚠️ Perfil fallback creado para estudiante ${studentId}:`, fallbackProfile);
         }
       }
       
+      console.log('📊 [loadStudentProfiles] Antes de setStudentProfiles, profiles:', profiles);
       setStudentProfiles(profiles);
+      console.log('📊 [loadStudentProfiles] Después de setStudentProfiles');
       console.log('📊 Perfiles de estudiantes cargados:', profiles);
+      console.log('📊 Keys de studentProfiles:', Object.keys(profiles));
+      console.log('📊 Valores de studentProfiles:', profiles);
     } catch (error) {
       console.error('❌ Error al cargar perfiles de estudiantes:', error);
+      console.error('❌ Error completo:', error);
+      console.error('❌ Error.message:', error.message);
+      console.error('❌ Error.response:', error.response);
     }
   };
 
@@ -963,26 +1041,139 @@ export const CompanyApplications: React.FC = () => {
                     <Typography variant="subtitle2" fontWeight={600} color="primary" gutterBottom sx={{ color: themeMode === 'dark' ? '#60a5fa' : 'primary.main' }}>
                       Carta de Presentación:
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ 
-                      lineHeight: 1.6,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
+                    <Box sx={{ 
                       p: 2,
                       bgcolor: themeMode === 'dark' ? '#334155' : '#fafafa',
                       borderRadius: 1,
                       border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0',
-                      color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'
+                      minHeight: '60px',
+                      display: 'flex',
+                      alignItems: 'center'
                     }}>
                       {(() => {
                         const studentId = application.student;
                         const profile = studentProfiles[studentId];
-                        const bio = profile?.user_data?.bio;
-                        console.log(`🔍 [TARJETA] ID estudiante: ${studentId}, Perfil:`, profile, 'Bio:', bio);
-                        return bio || 'No se ha proporcionado carta de presentación';
+                        
+                        console.log(`🔍 [TARJETA] application.student:`, application.student);
+                        console.log(`🔍 [TARJETA] studentId extraído:`, studentId);
+                        console.log(`🔍 [TARJETA] studentProfiles completo:`, studentProfiles);
+                        console.log(`🔍 [TARJETA] studentProfiles keys:`, Object.keys(studentProfiles));
+                        console.log(`🔍 [TARJETA] Profile encontrado:`, profile);
+                        console.log(`🔍 [TARJETA] Tipo de studentProfiles:`, typeof studentProfiles);
+                        console.log(`🔍 [TARJETA] studentProfiles es array:`, Array.isArray(studentProfiles));
+                        
+                        // Mostrar loading si no hay perfil cargado, pero solo por un tiempo limitado
+                        if (!profile) {
+                          console.log(`🔍 [TARJETA] No se encontró perfil para ${studentId}`);
+                          console.log(`🔍 [TARJETA] studentProfiles actual:`, studentProfiles);
+                          console.log(`🔍 [TARJETA] studentProfiles[${studentId}]:`, studentProfiles[studentId]);
+                          
+                          // Fallback: usar datos de la aplicación si están disponibles
+                          const fallbackBio = application.student_bio || application.student_data?.bio;
+                          
+                          if (fallbackBio) {
+                            return (
+                              <Box sx={{ width: '100%' }}>
+                                <Typography variant="body2" color="text.secondary" sx={{ 
+                                  lineHeight: 1.6,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 3,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                                  width: '100%'
+                                }}>
+                                  {fallbackBio}
+                                </Typography>
+                                <Typography variant="caption" color="warning.main" sx={{ mt: 1, display: 'block' }}>
+                                  ⚠️ Carta de presentación desde datos de aplicación (perfil en carga...)
+                                </Typography>
+                              </Box>
+                            );
+                          }
+                          
+                          // Si no hay datos de fallback, mostrar loading con botón de reintentar
+                          return (
+                            <Box sx={{ width: '100%' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                <CircularProgress size={16} />
+                                <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                                  Cargando carta de presentación... (ID: {studentId})
+                                </Typography>
+                              </Box>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                  // Reintentar cargar el perfil
+                                  if (studentId) {
+                                    loadStudentProfiles([application]);
+                                  }
+                                }}
+                                sx={{ 
+                                  fontSize: '0.75rem',
+                                  textTransform: 'none',
+                                  mt: 1
+                                }}
+                              >
+                                Reintentar
+                              </Button>
+                            </Box>
+                          );
+                        }
+                        
+                        // Intentar obtener bio de múltiples fuentes para mayor compatibilidad
+                        const bio = profile?.user_data?.bio || 
+                                   profile?.bio || 
+                                   profile?.student?.bio ||
+                                   application.student_bio; // Fallback a datos de la aplicación
+                        
+                        console.log(`🔍 [TARJETA] ID estudiante: ${studentId}`);
+                        console.log(`🔍 [TARJETA] Perfil completo:`, profile);
+                        console.log(`🔍 [TARJETA] Bio encontrada:`, bio);
+                        console.log(`🔍 [TARJETA] Fuentes de bio:`, {
+                          'profile.user_data.bio': profile?.user_data?.bio,
+                          'profile.bio': profile?.bio,
+                          'profile.student.bio': profile?.student?.bio,
+                          'application.student_bio': application.student_bio
+                        });
+                        
+                        return (
+                          <Box sx={{ width: '100%' }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ 
+                              lineHeight: 1.6,
+                              display: '-webkit-box',
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden',
+                              color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                              width: '100%'
+                            }}>
+                              {bio || 'No se ha proporcionado carta de presentación'}
+                            </Typography>
+                            {bio && bio.length > 150 && (
+                              <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Button
+                                  size="small"
+                                  variant="text"
+                                  color="primary"
+                                  onClick={() => handleViewQuickProfile(application)}
+                                  sx={{ 
+                                    p: 0, 
+                                    minWidth: 'auto',
+                                    fontSize: '0.75rem',
+                                    textTransform: 'none'
+                                  }}
+                                >
+                                  Ver más...
+                                </Button>
+                              </Box>
+                            )}
+                          </Box>
+                        );
                       })()}
-                    </Typography>
+                    </Box>
                   </Box>
 
                   <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>

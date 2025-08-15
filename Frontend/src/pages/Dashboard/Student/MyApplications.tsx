@@ -47,7 +47,6 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
-import { adaptApplication } from '../../../utils/adapters';
 import { MODALIDADES } from '../../../modalidades';
 import { useTheme } from '../../../contexts/ThemeContext';
 
@@ -55,7 +54,7 @@ interface Application {
   id: string;
   projectTitle: string;
   company: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'completed';
+  status: 'pending' | 'reviewing' | 'accepted' | 'rejected' | 'completed';
   appliedDate: string;
   responseDate?: string;
   requiredSkills: string[];
@@ -110,11 +109,9 @@ const tecnologias = ['React', 'Node.js', 'Python', 'Java', 'Figma'];
 // Componente de filtros
 interface FiltrosProyectosDisponiblesProps {
   onFilter?: (filters: FilterOptions) => void;
-  historyLimit: number;
-  setHistoryLimit: (limit: number) => void;
 }
 
-const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter, historyLimit, setHistoryLimit }) => {
+const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = ({ onFilter }) => {
   const { themeMode } = useTheme();
   const [busqueda, setBusqueda] = useState('');
   const [area, setArea] = useState('');
@@ -223,36 +220,7 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
           <MenuItem value="rejected">Rechazada</MenuItem>
         </Select>
       </FormControl>
-      <FormControl sx={{ minWidth: 150 }}>
-        <InputLabel sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>Mostrar</InputLabel>
-        <Select
-          value={historyLimit}
-          label="Mostrar"
-          onChange={(e) => setHistoryLimit(Number(e.target.value))}
-          sx={{ 
-            borderRadius: 2,
-            bgcolor: themeMode === 'dark' ? '#334155' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: themeMode === 'dark' ? '#475569' : '#d1d5db',
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
-            },
-            '& .MuiSvgIcon-root': {
-              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
-            },
-          }}
-        >
-          <MenuItem value={15}>15 últimas</MenuItem>
-          <MenuItem value={50}>50 últimas</MenuItem>
-          <MenuItem value={100}>100 últimas</MenuItem>
-          <MenuItem value={-1}>Todas</MenuItem>
-        </Select>
-      </FormControl>
+
       <Button 
         variant="outlined"
         onClick={handleFiltrar}
@@ -291,16 +259,16 @@ const FiltrosProyectosDisponibles: React.FC<FiltrosProyectosDisponiblesProps> = 
 
 // Función para adaptar los datos del backend al formato del frontend
 const adaptApplicationData = (backendData: any): Application => {
-  console.log('🔍 [Frontend] Adaptando datos:', backendData);
+  console.log('🔍 [Frontend] Adaptando datos del backend:', backendData);
   
   const adapted = {
-    id: backendData.id,
+    id: backendData.id || 'sin-id',
     projectTitle: backendData.project_title || 'Sin título',
     company: backendData.company || 'Sin empresa',
-    status: backendData.status as any,
-    appliedDate: backendData.applied_at || backendData.created_at,
+    status: backendData.status || 'pending',
+    appliedDate: backendData.applied_at || backendData.created_at || new Date().toISOString(),
     responseDate: backendData.responded_at || undefined,
-    requiredSkills: backendData.requiredSkills || [],
+    requiredSkills: Array.isArray(backendData.requiredSkills) ? backendData.requiredSkills : [],
     projectDuration: backendData.projectDuration || 'No especificado',
     location: backendData.location || 'No especificada',
     description: backendData.project_description || 'Sin descripción',
@@ -328,6 +296,7 @@ export const MyApplications: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
   const [historyLimit, setHistoryLimit] = useState(15);
+  const [loading, setLoading] = useState(true);
   
   // Estados para el modal de detalles del proyecto
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -336,71 +305,53 @@ export const MyApplications: React.FC = () => {
 
   useEffect(() => {
     async function fetchApplications() {
+      setLoading(true);
       try {
         console.log('🔍 [Frontend] Iniciando fetch de aplicaciones...');
         const timestamp = Date.now();
         const data = await apiService.get(`/api/applications/my_applications/?t=${timestamp}&nocache=true`);
         console.log('🔍 [Frontend] Datos recibidos del backend:', data);
         
-        const applicationsArray = (data as any).results || data;
-        console.log('🔍 [Frontend] applicationsArray:', applicationsArray);
+        // Obtener el array de aplicaciones
+        const applicationsArray = data.results || data || [];
+        console.log('🔍 [Frontend] Aplicaciones encontradas:', applicationsArray.length);
         
-        if (Array.isArray(applicationsArray) && applicationsArray.length > 0) {
-          console.log('🔍 [Frontend] Primera aplicación del backend:', applicationsArray[0]);
-          console.log('🔍 [Frontend] Campos disponibles en la primera aplicación:');
-          console.log('   - project_title:', applicationsArray[0].project_title);
-          console.log('   - company:', applicationsArray[0].company);
-          console.log('   - project_description:', applicationsArray[0].project_description);
-          console.log('   - project:', applicationsArray[0].project);
-          console.log('   - student:', applicationsArray[0].student);
-          
+        if (applicationsArray.length > 0) {
           const adaptedApplications = applicationsArray.map(app => adaptApplicationData(app));
-          console.log('🔍 [Frontend] Primera aplicación adaptada:', adaptedApplications[0]);
-          console.log('🔍 [Frontend] Total de aplicaciones adaptadas:', adaptedApplications.length);
+          console.log('🔍 [Frontend] Aplicaciones adaptadas:', adaptedApplications.length);
           
           setApplications(adaptedApplications);
           setFilteredApplications(adaptedApplications);
         } else {
-          console.log('🔍 [Frontend] No hay aplicaciones o no es un array válido');
           setApplications([]);
           setFilteredApplications([]);
         }
       } catch (error) {
-        console.error('Error fetching applications:', error);
+        console.error('❌ [Frontend] Error fetching applications:', error);
         setApplications([]);
         setFilteredApplications([]);
+      } finally {
+        setLoading(false);
       }
     }
+    
     fetchApplications();
   }, []);
 
   // Función para manejar la visualización de detalles del proyecto
   const handleViewProjectDetails = async (application: Application) => {
-    console.log('🔍 [MyApplications] Iniciando handleViewProjectDetails');
-    console.log('🔍 [MyApplications] Application:', application);
-    
     if (!application.project_id) {
       console.error('No se encontró el ID del proyecto');
       return;
     }
     
-    console.log('🔍 [MyApplications] Project ID:', application.project_id);
-    
     setLoadingProjectDetail(true);
     try {
-      console.log('🔍 [MyApplications] Haciendo llamada a API para obtener detalles del proyecto');
       const projectData = await apiService.get(`/api/projects/${application.project_id}/`);
-      console.log('🔍 [MyApplications] Datos del proyecto recibidos:', projectData);
-      
       setSelectedProjectDetail(projectData);
       setDetailModalOpen(true);
-      console.log('🔍 [MyApplications] Modal abierto correctamente');
     } catch (error) {
       console.error('Error fetching project details:', error);
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
-      });
     } finally {
       setLoadingProjectDetail(false);
     }
@@ -415,6 +366,7 @@ export const MyApplications: React.FC = () => {
   // Actualizar handleFilter para soportar solo los filtros esenciales
   const handleFilter = (filters: FilterOptions) => {
     let filtered = [...applications];
+    
     if (filters.busqueda) {
       filtered = filtered.filter(app =>
         app.projectTitle.toLowerCase().includes(filters.busqueda!.toLowerCase()) ||
@@ -428,12 +380,9 @@ export const MyApplications: React.FC = () => {
       );
     }
     if (filters.estado) {
-      if (filters.estado === 'pending') {
-        filtered = filtered.filter(app => app.status === 'pending');
-      } else {
-        filtered = filtered.filter(app => app.status === filters.estado);
-      }
+      filtered = filtered.filter(app => app.status === filters.estado);
     }
+    
     setFilteredApplications(filtered);
   };
 
@@ -478,6 +427,8 @@ export const MyApplications: React.FC = () => {
     switch (status) {
       case 'pending':
         return <ScheduleIcon />;
+      case 'reviewing':
+        return <TrendingUpIcon />;
       case 'accepted':
         return <CheckCircleIcon />;
       case 'rejected':
@@ -497,10 +448,20 @@ export const MyApplications: React.FC = () => {
 
   // Cambiar la lógica de tabs y agrupación:
   const pendingApplications = filteredApplications.filter(app => app.status === 'pending');
-  const reviewingApplications = filteredApplications.filter(app => app.status === 'pending');
+  const reviewingApplications = filteredApplications.filter(app => app.status === 'reviewing');
   const acceptedApplications = filteredApplications.filter(app => app.status === 'accepted');
   const completedApplications = filteredApplications.filter(app => app.status === 'completed');
   const rejectedApplications = filteredApplications.filter(app => app.status === 'rejected');
+
+  // Debug: Log de contadores para verificar que funcionen correctamente
+  console.log('🔍 [MyApplications] Contadores calculados:', {
+    total: filteredApplications.length,
+    pending: pendingApplications.length,
+    reviewing: reviewingApplications.length,
+    accepted: acceptedApplications.length,
+    completed: completedApplications.length,
+    rejected: rejectedApplications.length
+  });
 
   // Agregar tabs visuales:
   const [selectedTab, setSelectedTab] = useState(0);
@@ -589,7 +550,7 @@ export const MyApplications: React.FC = () => {
             }}>
               <AssignmentIcon sx={{ fontSize: 30, color: 'white' }} />
             </Avatar>
-            <Box>
+            <Box sx={{ flex: 1 }}>
               <Typography variant="h3" fontWeight={700} sx={{ 
                 color: 'white', 
                 textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
@@ -604,6 +565,20 @@ export const MyApplications: React.FC = () => {
                 Gestiona y revisa el estado de tus postulaciones
               </Typography>
             </Box>
+            <Button
+              variant="outlined"
+              onClick={() => window.location.reload()}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.3)',
+                color: 'white',
+                '&:hover': {
+                  borderColor: 'rgba(255,255,255,0.5)',
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                }
+              }}
+            >
+              Recargar
+            </Button>
           </Box>
         </Box>
       </Box>
@@ -730,8 +705,6 @@ export const MyApplications: React.FC = () => {
           </Box>
           <FiltrosProyectosDisponibles 
             onFilter={handleFilter} 
-            historyLimit={historyLimit}
-            setHistoryLimit={setHistoryLimit}
           />
         </CardContent>
       </Card>
@@ -836,7 +809,26 @@ export const MyApplications: React.FC = () => {
 
 
       {/* Tabla mejorada */}
-      {tabContents[selectedTab].data.length === 0 ? (
+      {loading ? (
+        <Box sx={{ 
+          textAlign: 'center', 
+          py: 6,
+          background: themeMode === 'dark' 
+            ? 'linear-gradient(145deg, #334155 0%, #475569 100%)' 
+            : 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+          borderRadius: 3,
+          border: themeMode === 'dark' 
+            ? '1px solid rgba(255,255,255,0.1)' 
+            : '1px solid rgba(0,0,0,0.05)'
+        }}>
+          <Typography variant="h6" color={themeMode === 'dark' ? '#f1f5f9' : 'text.secondary'} sx={{ mb: 2 }}>
+            Cargando aplicaciones...
+          </Typography>
+          <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'}>
+            Por favor espera mientras se cargan tus postulaciones
+          </Typography>
+        </Box>
+      ) : tabContents[selectedTab].data.length === 0 ? (
         <Box sx={{ 
           textAlign: 'center', 
           py: 6,

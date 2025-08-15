@@ -53,7 +53,7 @@ import {
 import { useApi } from '../../../hooks/useApi';
 import { adaptCalendarEvent } from '../../../utils/adapters';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { useStudentProfileDetails } from '../../../hooks/useStudentProfileDetails';
+import { useStudentProfile } from '../../../hooks/useStudentProfile';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 import { apiService } from '../../../services/api.service';
 import StudentProfileModal from '../../../components/common/StudentProfileModal';
@@ -79,7 +79,7 @@ export const CompanyInterviews: React.FC = () => {
   const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
 
   // Hook para obtener el perfil detallado del estudiante
-  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfileDetails(selectedStudentId);
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
   
   const now = new Date();
   
@@ -144,6 +144,8 @@ export const CompanyInterviews: React.FC = () => {
         ? response.results
         : [];
       
+      console.log('[Entrevistas] Datos del backend antes de adaptar:', data);
+      
       // Preservar los datos originales del backend para acceso posterior
       const adaptedEvents = data.map((backendEvent: any) => {
         const adaptedEvent = adaptCalendarEvent(backendEvent);
@@ -151,6 +153,12 @@ export const CompanyInterviews: React.FC = () => {
         adaptedEvent._originalData = backendEvent;
         return adaptedEvent;
       });
+      
+      console.log('[Entrevistas] Eventos adaptados:', adaptedEvents);
+      if (adaptedEvents.length > 0) {
+        console.log('[Entrevistas] Primera entrevista adaptada:', adaptedEvents[0]);
+        console.log('[Entrevistas] Attendees de la primera entrevista adaptada:', adaptedEvents[0].attendees);
+      }
       
       setEvents(adaptedEvents);
     } catch (err: any) {
@@ -210,48 +218,50 @@ export const CompanyInterviews: React.FC = () => {
   };
 
   const handleViewProfile = (event: any) => {
-    console.log('🔍 Abriendo perfil del estudiante:', event);
-    console.log('🔍 Evento completo:', JSON.stringify(event, null, 2));
-    console.log('🔍 Attendees:', event.attendees);
-    console.log('🔍 Attendees[0]:', event.attendees?.[0]);
+    console.log('🔍 [Interviews] Abriendo perfil del estudiante:', event);
+    console.log('🔍 [Interviews] Evento completo:', JSON.stringify(event, null, 2));
+    console.log('🔍 [Interviews] Attendees:', event.attendees);
+    console.log('🔍 [Interviews] Attendees[0]:', event.attendees?.[0]);
+    console.log('🔍 [Interviews] _originalData:', event._originalData);
+    console.log('🔍 [Interviews] _originalData.attendees:', event._originalData?.attendees);
     
-    // Extraer el ID del estudiante del evento - probar diferentes caminos
+    // Extraer el ID del estudiante del evento - usar el mismo patrón que en postulaciones
     let studentId = null;
     
-    // Opción 1: Desde attendees[0].id
+    // Opción 1: Desde attendees[0].id (si es objeto)
     if (event.attendees?.[0]?.id) {
       studentId = event.attendees[0].id;
-      console.log('✅ ID encontrado en attendees[0].id:', studentId);
+      console.log('✅ [Interviews] ID encontrado en attendees[0].id:', studentId);
     }
     // Opción 2: Desde attendees[0] si es un string (ID directo)
     else if (event.attendees?.[0] && typeof event.attendees[0] === 'string') {
       studentId = event.attendees[0];
-      console.log('✅ ID encontrado en attendees[0] (string):', studentId);
+      console.log('✅ [Interviews] ID encontrado en attendees[0] (string):', studentId);
     }
-    // Opción 3: Desde event.student_id
-    else if (event.student_id) {
-      studentId = event.student_id;
-      console.log('✅ ID encontrado en event.student_id:', studentId);
-    }
-    // Opción 4: Desde event.student
-    else if (event.student) {
-      studentId = event.student;
-      console.log('✅ ID encontrado en event.student:', studentId);
-    }
-    // Opción 5: Buscar en el objeto original del backend si existe
+    // Opción 3: Buscar en el objeto original del backend si existe
     else if (event._originalData?.attendees?.[0]?.id) {
       studentId = event._originalData.attendees[0].id;
-      console.log('✅ ID encontrado en _originalData.attendees[0].id:', studentId);
+      console.log('✅ [Interviews] ID encontrado en _originalData.attendees[0].id:', studentId);
+    }
+    // Opción 4: Buscar en el objeto original del backend si attendees[0] es string
+    else if (event._originalData?.attendees?.[0] && typeof event._originalData.attendees[0] === 'string') {
+      studentId = event._originalData.attendees[0];
+      console.log('✅ [Interviews] ID encontrado en _originalData.attendees[0] (string):', studentId);
     }
     
     if (studentId) {
-      console.log('✅ Estableciendo selectedStudentId:', studentId);
+      console.log('✅ [Interviews] Estableciendo selectedStudentId:', studentId);
       setSelectedStudentId(studentId);
+      setSelectedEvent(event); // Guardar el evento para obtener información del proyecto
       setShowProfileDialog(true);
     } else {
-      console.error('❌ No se pudo obtener el ID del estudiante');
-      console.error('❌ Estructura del evento:', event);
-      console.error('❌ Attendees:', event.attendees);
+      console.error('❌ [Interviews] No se pudo obtener el ID del estudiante');
+      console.error('❌ [Interviews] Estructura del evento:', event);
+      console.error('❌ [Interviews] Attendees:', event.attendees);
+      console.error('❌ [Interviews] _originalData:', event._originalData);
+      
+      // Mostrar alerta al usuario
+      alert('No se pudo obtener la información del estudiante. Revisa la consola para más detalles.');
     }
   };
 
@@ -1461,21 +1471,22 @@ export const CompanyInterviews: React.FC = () => {
                       width: 60, 
                       height: 60 
                     }}>
-                      {selectedEvent.attendees[0]?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase() || 'ES'}
+                      {selectedEvent.attendees?.[0]?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase() || 'ES'}
                     </Avatar>
                     <Box>
                       <Typography variant="h6" fontWeight={700}>
-                        {selectedEvent.attendees[0]?.full_name || selectedEvent.attendees[0]?.email || 'Estudiante no asignado'}
+                        {selectedEvent.attendees?.[0]?.full_name || selectedEvent.attendees?.[0]?.email || 'Estudiante no asignado'}
                       </Typography>
                       <Typography variant="body2" sx={{ 
                         color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
                       }}>
-                        {selectedEvent.attendees[0]?.email || 'Email no disponible'}
+                        {selectedEvent.attendees?.[0]?.email || 'Email no disponible'}
                       </Typography>
                     </Box>
                   </Box>
 
-                  {selectedEvent.attendees[0]?.career && (
+                  {/* Información del proyecto */}
+                  {selectedEvent.project_title && (
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <WorkIcon sx={{ 
                         mr: 2, 
@@ -1484,31 +1495,30 @@ export const CompanyInterviews: React.FC = () => {
                       }} />
                       <Box>
                         <Typography variant="body2" fontWeight={600}>
-                          Carrera
+                          Proyecto
                         </Typography>
                         <Typography variant="body1">
-                          {selectedEvent.attendees[0].career}
+                          {selectedEvent.project_title}
                         </Typography>
                       </Box>
                     </Box>
                   )}
 
-                  {selectedEvent.attendees[0]?.role && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <PersonIcon sx={{ 
+                  {/* Descripción del evento */}
+                  {selectedEvent.description && (
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                      <InfoIcon sx={{ 
                         mr: 2, 
                         color: themeMode === 'dark' ? '#60a5fa' : '#1976d2', 
-                        fontSize: 24 
+                        fontSize: 24,
+                        mt: 0.2
                       }} />
                       <Box>
                         <Typography variant="body2" fontWeight={600}>
-                          Rol
+                          Motivo/Descripción
                         </Typography>
                         <Typography variant="body1">
-                          {selectedEvent.attendees[0].role === 'student' ? 'Estudiante' : 
-                           selectedEvent.attendees[0].role === 'company' ? 'Empresa' : 
-                           selectedEvent.attendees[0].role === 'admin' ? 'Administrador' : 
-                           selectedEvent.attendees[0].role}
+                          {selectedEvent.description}
                         </Typography>
                       </Box>
                     </Box>
@@ -1516,7 +1526,7 @@ export const CompanyInterviews: React.FC = () => {
                 </Paper>
               </Grid>
 
-              {/* Información adicional */}
+              {/* Información de la entrevista */}
               <Grid item xs={12} md={6}>
                 <Paper sx={{ 
                   p: 3, 
@@ -1528,18 +1538,55 @@ export const CompanyInterviews: React.FC = () => {
                     mb: 2, 
                     color: themeMode === 'dark' ? '#60a5fa' : '#1976d2' 
                   }}>
-                    Información Adicional
+                    Detalles de la Entrevista
                   </Typography>
                   
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
                       <Typography variant="body2" fontWeight={600}>
-                        Tipo de Evento:
+                        Estado:
+                      </Typography>
+                      <Chip 
+                        label={getStatusLabel(selectedEvent.status)} 
+                        color={selectedEvent.status === 'completed' ? 'success' : selectedEvent.status === 'scheduled' ? 'warning' : 'error'}
+                        size="small"
+                        sx={{ mt: 0.5 }}
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body2" fontWeight={600}>
+                        Tipo:
                       </Typography>
                       <Typography variant="body2" sx={{ 
-                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                        mt: 0.5
                       }}>
                         Entrevista
+                      </Typography>
+                    </Grid>
+                    
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body2" fontWeight={600}>
+                        Fecha y Hora:
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                        mt: 0.5
+                      }}>
+                        {formatDate(selectedEvent.start_date)}
+                      </Typography>
+                    </Grid>
+                    
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body2" fontWeight={600}>
+                        Duración:
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                        mt: 0.5
+                      }}>
+                        {selectedEvent.duration_minutes || '60'} minutos
                       </Typography>
                     </Grid>
                     
@@ -1549,34 +1596,46 @@ export const CompanyInterviews: React.FC = () => {
                           Ubicación:
                         </Typography>
                         <Typography variant="body2" sx={{ 
-                          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                          mt: 0.5
                         }}>
                           {selectedEvent.location}
                         </Typography>
                       </Grid>
                     )}
                     
-                    <Grid item xs={12} sm={6}>
-                      <Typography variant="body2" fontWeight={600}>
-                        Sala:
-                      </Typography>
-                      <Typography variant="body2" sx={{ 
-                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
-                      }}>
-                        {selectedEvent.room || 'No especificada'}
-                      </Typography>
-                    </Grid>
-                    
-                    {selectedEvent.attendees && selectedEvent.attendees.length > 1 && (
+                    {selectedEvent.meeting_type && (
                       <Grid item xs={12} sm={6}>
                         <Typography variant="body2" fontWeight={600}>
-                          Participantes:
+                          Modalidad:
                         </Typography>
                         <Typography variant="body2" sx={{ 
-                          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' 
+                          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                          mt: 0.5
                         }}>
-                          {selectedEvent.attendees.map((att: any) => att.full_name || att.email || att.id).join(', ')}
+                          {selectedEvent.meeting_type === 'online' ? 'Online' : 
+                           selectedEvent.meeting_type === 'cowork' ? 'Cowork' : 
+                           selectedEvent.meeting_type === 'fablab' ? 'FabLab' : 
+                           selectedEvent.meeting_type}
                         </Typography>
+                      </Grid>
+                    )}
+                    
+                    {selectedEvent.meeting_link && (
+                      <Grid item xs={12}>
+                        <Typography variant="body2" fontWeight={600}>
+                          Enlace de Reunión:
+                        </Typography>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          href={selectedEvent.meeting_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{ mt: 0.5 }}
+                        >
+                          Abrir Enlace
+                        </Button>
                       </Grid>
                     )}
                   </Grid>
@@ -1622,10 +1681,18 @@ export const CompanyInterviews: React.FC = () => {
       {/* Modal del perfil del estudiante */}
       <StudentProfileModal
         open={showProfileDialog}
-        onClose={() => setShowProfileDialog(false)}
+        onClose={() => {
+          setShowProfileDialog(false);
+          setSelectedEvent(null);
+          setSelectedStudentId(null);
+        }}
         studentProfile={studentProfile}
         loading={profileLoading}
         error={profileError}
+        projectTitle={selectedEvent?.project_title || 'Entrevista'}
+        applicationStatus="interview"
+        onStatusChange={() => {}} // No se puede cambiar estado desde entrevistas
+        updatingStatus={false}
       />
     </Box>
   );

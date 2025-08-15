@@ -944,6 +944,12 @@ def company_students_to_evaluate(request):
                 student = application.student
                 print(f"[DEBUG] Procesando estudiante: {student.user.full_name}")
                 
+                # Debug: verificar cover_letter antes de procesar
+                print(f"[DEBUG] Cover letter original: '{application.cover_letter}'")
+                print(f"[DEBUG] Cover letter es None: {application.cover_letter is None}")
+                print(f"[DEBUG] Cover letter es string vacío: {application.cover_letter == ''}")
+                print(f"[DEBUG] Cover letter longitud: {len(application.cover_letter) if application.cover_letter else 0}")
+                
                 # Verificar si ya evaluó este estudiante para este proyecto
                 existing_evaluation = Evaluation.objects.filter(
                     project=project,
@@ -962,8 +968,13 @@ def company_students_to_evaluate(request):
                     'completion_date': application.updated_at.isoformat(),
                     'already_evaluated': existing_evaluation is not None,
                     'evaluation_id': str(existing_evaluation.id) if existing_evaluation else None,
-                    'score': existing_evaluation.score if existing_evaluation else None
+                    'score': existing_evaluation.score if existing_evaluation else None,
+                    'cover_letter': application.cover_letter or ''
                 })
+                
+                # Debug: verificar cover_letter
+                print(f"[DEBUG] Cover letter para {student.user.full_name}: '{application.cover_letter}'")
+                print(f"[DEBUG] Cover letter procesada: '{application.cover_letter or ''}'")
         
         return JsonResponse({
             'success': True,

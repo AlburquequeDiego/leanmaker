@@ -473,19 +473,27 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       if (applications.length > 0) {
         console.log('🔍 Primera aplicación:', applications[0]);
         console.log('🔍 Estructura del proyecto en primera aplicación:', applications[0].project);
+        console.log('🔍 Tipo del proyecto:', typeof applications[0].project);
         console.log('🔍 Estructura del estudiante en primera aplicación:', applications[0].student);
+        console.log('🔍 Tipo del estudiante:', typeof applications[0].student);
         console.log('🔍 ID del proyecto:', applications[0].project?.id);
         console.log('🔍 ID del estudiante:', applications[0].student?.user);
+        console.log('🔍 Nombre del estudiante:', applications[0].student?.name);
+        console.log('🔍 Email del estudiante:', applications[0].student?.email);
         
         // Verificar que todas las aplicaciones tengan la estructura correcta
         applications.forEach((app: any, index: number) => {
           console.log(`🔍 Aplicación ${index}:`, {
             id: app.id,
+            project: app.project,
+            projectType: typeof app.project,
             projectId: app.project?.id || app.project,
-            projectTitle: app.project?.title,
-            studentId: app.student?.id,
+            student: app.student,
+            studentType: typeof app.student,
+            studentId: app.student?.id || app.student,
             studentUserId: app.student?.user,
             studentName: app.student?.name,
+            studentEmail: app.student?.email,
             status: app.status
           });
         });
@@ -493,6 +501,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       
       // Normalizar la estructura de datos para asegurar consistencia
       const normalizedApplications = applications.map((app: any) => {
+        console.log(`🔍 [NORMALIZATION] Procesando aplicación ${app.id}:`, app);
+        
         // Extraer el ID del proyecto
         let projectId = null;
         if (app.project) {
@@ -503,40 +513,47 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           }
         }
         
-        // Extraer el ID del estudiante - CORREGIDO
-        let studentId = null;
+        // Extraer información del estudiante
+        let studentData = null;
         if (app.student) {
-          // Prioridad 1: app.student.user (ID del usuario)
-          if (app.student.user) {
-            studentId = app.student.user;
+          // Si app.student es un string (ID directo), crear objeto básico
+          if (typeof app.student === 'string') {
+            studentData = {
+              id: app.student,
+              user: app.student, // Usar el mismo ID para user
+              name: 'Estudiante', // Nombre por defecto
+              email: 'Sin email', // Email por defecto
+              career: null,
+              semester: null
+            };
           }
-          // Prioridad 2: app.student.id (ID del perfil de estudiante)
-          else if (app.student.id) {
-            studentId = app.student.id;
+          // Si app.student es un objeto, extraer datos
+          else if (typeof app.student === 'object') {
+            studentData = {
+              id: app.student.id || null,
+              user: app.student.user || app.student.id || null, // ID del usuario (User)
+              name: app.student.name || 'Sin nombre',
+              email: app.student.email || 'Sin email',
+              career: app.student.career || null,
+              semester: app.student.semester || null
+            };
           }
         }
         
-        console.log(`🔍 [NORMALIZATION] Aplicación ${app.id}:`, {
-          originalProject: app.project,
-          originalStudent: app.student,
-          normalizedProjectId: projectId,
-          normalizedStudentId: studentId
+        console.log(`🔍 [NORMALIZATION] Aplicación ${app.id} normalizada:`, {
+          projectId,
+          studentData,
+          status: app.status
         });
         
         return {
-          ...app,
-          // Asegurar que project tenga siempre un ID accesible
+          id: app.id,
           project: projectId,
-          // Asegurar que student tenga siempre un ID accesible
-          student: {
-            ...app.student,
-            // Usar el ID del usuario (student.user) como identificador principal
-            id: app.student?.id || null,
-            user: studentId, // Este será el ID que usaremos para attendees
-            name: app.student?.name || 'Estudiante',
-            career: app.student?.career || null,
-            semester: app.student?.semester || null
-          }
+          student: studentData,
+          status: app.status,
+          cover_letter: app.cover_letter,
+          applied_at: app.applied_at,
+          created_at: app.created_at
         };
       });
       
@@ -2120,8 +2137,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     project: u.project,
                     student: u.student,
                     studentUser: u.student?.user,
-                    studentId: u.student?.id,
-                    studentName: u.student?.name
+                    studentId: u.student?.id
                   })));
                   
                   if (filteredUsers.length === 0 && selectedProject) {
@@ -2139,7 +2155,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   return filteredUsers.map((user: any) => {
                     // Usar el ID del usuario (student.user) como valor del Select
                     const studentId = user.student?.user || user.student?.id || user.id;
-                    const studentName = user.student?.name || user.student_name || user.student_email || 'Estudiante';
+                    const studentName = user.student?.name || 'Estudiante';
                     const studentCareer = user.student?.career;
                     const studentSemester = user.student?.semester;
                     

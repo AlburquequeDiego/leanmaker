@@ -517,9 +517,15 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       location: backendEvent.location || '',
       room: backendEvent.room || backendEvent.meeting_room || '',
       attendees: Array.isArray(backendEvent.attendees)
-        ? backendEvent.attendees.map((att: any) =>
-            typeof att === 'object' ? att : { id: String(att), full_name: String(att), email: String(att) }
-          )
+        ? backendEvent.attendees.map((att: any) => {
+            // El backend ya envía los attendees con la estructura correcta
+            // Solo necesitamos asegurarnos de que tengan las propiedades necesarias
+            return {
+              id: String(att.id || ''),
+              full_name: att.full_name || att.email || 'Sin nombre',
+              email: att.email || 'Sin email'
+            };
+          })
         : [],
       attendee_names: Array.isArray(backendEvent.attendees)
         ? backendEvent.attendees.map((att: any) =>
@@ -530,7 +536,8 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       created_at: backendEvent.created_at || '',
       updated_at: backendEvent.updated_at || '',
       project: backendEvent.project && backendEvent.project.id && typeof backendEvent.project.id !== 'undefined' ? String(backendEvent.project.id) : undefined,
-      project_title: backendEvent.project && backendEvent.project.title ? backendEvent.project.title : backendEvent.project_title || 'Sin proyecto asociado',
+      project_title: backendEvent.project?.title || backendEvent.title || 'Sin título',
+      project: backendEvent.project?.id || backendEvent.project || null,
       status: backendEvent.status || 'scheduled',
       meeting_type: backendEvent.meeting_type,
       meeting_link: backendEvent.meeting_link,

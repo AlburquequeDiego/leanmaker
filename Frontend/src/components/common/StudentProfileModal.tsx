@@ -20,7 +20,7 @@ import {
   GitHub as GitHubIcon,
   LinkedIn as LinkedInIcon,
 } from '@mui/icons-material';
-import { useStudentProfileDetails } from '../../hooks/useStudentProfileDetails';
+import { useStudentProfile } from '../../hooks/useStudentProfile';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface StudentProfileModalProps {
@@ -391,40 +391,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                       </Box>
                     </Box>
                     
-                    <Box>
-                      <Typography variant="body2" sx={{ 
-                        color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
-                        mb: 1,
-                        fontWeight: 500
-                      }}>
-                        Idiomas:
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {studentProfile.student?.languages && Array.isArray(studentProfile.student.languages) && studentProfile.student.languages.length > 0 ? (
-                          studentProfile.student.languages.map((language: string, index: number) => (
-                            <Chip 
-                              key={index} 
-                              label={language} 
-                              color="secondary" 
-                              variant="outlined"
-                              size="small"
-                              sx={{ 
-                                borderColor: themeMode === 'dark' ? '#a78bfa' : 'secondary.main',
-                                color: themeMode === 'dark' ? '#a78bfa' : 'secondary.main',
-                                fontWeight: 600
-                              }}
-                            />
-                          ))
-                        ) : (
-                          <Typography variant="body2" sx={{ 
-                            color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
-                            fontStyle: 'italic'
-                          }}>
-                            No hay idiomas registrados
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
+
                   </Box>
                   
                   <Box sx={{ mt: 3, display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 3 }}>
@@ -461,93 +428,243 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                   </Box>
                 </Paper>
 
-                {/* Información académica básica */}
-                <Paper sx={{ 
-                  p: 3, 
-                  mb: 3, 
-                  borderRadius: 3, 
-                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa',
-                  border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
-                }}>
-                  <Typography variant="h6" fontWeight={600} sx={{ 
-                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                    mb: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}>
-                    <AssignmentIcon sx={{ fontSize: 20 }} />
-                    Información Académica
-                  </Typography>
-                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 3 }}>
-                    <Box>
-                      <Typography variant="body2" sx={{ 
-                        color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
-                        mb: 1,
-                        fontWeight: 500
-                      }}>
-                        Semestre:
-                      </Typography>
-                      <Typography variant="body1" sx={{ 
-                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                        fontWeight: 600
-                      }}>
-                        {studentProfile.student?.semester || 'No especificado'}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="body2" sx={{ 
-                        color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
-                        mb: 1,
-                        fontWeight: 500
-                      }}>
-                        Estado:
-                      </Typography>
-                      <Typography variant="body1" sx={{ 
-                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                        fontWeight: 600
-                      }}>
-                        {studentProfile.student?.status || 'No especificado'}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
+                                 {/* Información académica básica */}
+                 <Paper sx={{ 
+                   p: 3, 
+                   mb: 3, 
+                   borderRadius: 3, 
+                   bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa',
+                   border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
+                 }}>
+                   <Typography variant="h6" fontWeight={600} sx={{ 
+                     color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                     mb: 2,
+                     display: 'flex',
+                     alignItems: 'center',
+                     gap: 1
+                   }}>
+                     <AssignmentIcon sx={{ fontSize: 20 }} />
+                     Información Académica
+                   </Typography>
+                   
+                   
+                   {/* Enlaces Profesionales */}
+                   <Box sx={{ mt: 3 }}>
+                     <Typography variant="h6" fontWeight={600} sx={{ 
+                       color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                       mb: 2,
+                       display: 'flex',
+                       alignItems: 'center',
+                       gap: 1
+                     }}>
+                       <GitHubIcon sx={{ fontSize: 20 }} />
+                       Enlaces Profesionales
+                     </Typography>
+                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 3 }}>
+                       {studentProfile.student?.linkedin_url && (
+                         <Box>
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                             mb: 1,
+                             fontWeight: 500
+                           }}>
+                             LinkedIn:
+                           </Typography>
+                           <Button
+                             variant="outlined"
+                             size="small"
+                             href={studentProfile.student.linkedin_url}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             startIcon={<LinkedInIcon />}
+                             sx={{ 
+                               borderColor: themeMode === 'dark' ? '#0ea5e9' : '#0ea5e9',
+                               color: themeMode === 'dark' ? '#0ea5e9' : '#0ea5e9',
+                               '&:hover': {
+                                 borderColor: themeMode === 'dark' ? '#0284c7' : '#0284c7',
+                                 bgcolor: themeMode === 'dark' ? 'rgba(14, 165, 233, 0.1)' : 'rgba(14, 165, 233, 0.1)'
+                               }
+                             }}
+                           >
+                             Ver perfil
+                           </Button>
+                         </Box>
+                       )}
+                       
+                       {studentProfile.student?.github_url && (
+                         <Box>
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                             mb: 1,
+                             fontWeight: 500
+                           }}>
+                             GitHub:
+                           </Typography>
+                           <Button
+                             variant="outlined"
+                             size="small"
+                             href={studentProfile.student.github_url}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             startIcon={<GitHubIcon />}
+                             sx={{ 
+                               borderColor: themeMode === 'dark' ? '#475569' : '#475569',
+                               color: themeMode === 'dark' ? '#475569' : '#475569',
+                               '&:hover': {
+                                 borderColor: themeMode === 'dark' ? '#64748b' : '#64748b',
+                                 bgcolor: themeMode === 'dark' ? 'rgba(71, 85, 105, 0.1)' : 'rgba(71, 85, 105, 0.1)'
+                               }
+                             }}
+                           >
+                             Ver repositorio
+                           </Button>
+                         </Box>
+                       )}
+                       
+                       {studentProfile.student?.portfolio_url && (
+                         <Box>
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                             mb: 1,
+                             fontWeight: 500
+                           }}>
+                             Portafolio:
+                           </Typography>
+                           <Button
+                             variant="outlined"
+                             size="small"
+                             href={studentProfile.student.portfolio_url}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             sx={{ 
+                               borderColor: themeMode === 'dark' ? '#8b5cf6' : '#8b5cf6',
+                               color: themeMode === 'dark' ? '#8b5cf6' : '#8b5cf6',
+                               '&:hover': {
+                                 borderColor: themeMode === 'dark' ? '#7c3aed' : '#7c3aed',
+                                 bgcolor: themeMode === 'dark' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.1)'
+                               }
+                             }}
+                           >
+                             Ver portafolio
+                           </Button>
+                         </Box>
+                       )}
+                     </Box>
+                   </Box>
+                   
+                   {/* Documentos */}
+                   <Box sx={{ mt: 3 }}>
+                     <Typography variant="h6" fontWeight={600} sx={{ 
+                       color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                       mb: 2,
+                       display: 'flex',
+                       alignItems: 'center',
+                       gap: 1
+                     }}>
+                       <AssignmentIcon sx={{ fontSize: 20 }} />
+                       Documentos
+                     </Typography>
+                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 3 }}>
+                       {studentProfile.student?.cv_link && (
+                         <Box>
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                             mb: 1,
+                             fontWeight: 500
+                           }}>
+                             CV:
+                           </Typography>
+                           <Button
+                             variant="outlined"
+                             size="small"
+                             href={studentProfile.student.cv_link}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             sx={{ 
+                               borderColor: themeMode === 'dark' ? '#059669' : '#059669',
+                               color: themeMode === 'dark' ? '#059669' : '#059669',
+                               '&:hover': {
+                                 borderColor: themeMode === 'dark' ? '#047857' : '#047857',
+                                 bgcolor: themeMode === 'dark' ? 'rgba(5, 150, 105, 0.1)' : 'rgba(5, 150, 105, 0.1)'
+                               }
+                             }}
+                           >
+                             Ver CV
+                           </Button>
+                         </Box>
+                       )}
+                       
+                       {studentProfile.student?.certificado_link && (
+                         <Box>
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                             mb: 1,
+                             fontWeight: 500
+                           }}>
+                             Certificado:
+                           </Typography>
+                           <Button
+                             variant="outlined"
+                             size="small"
+                             href={studentProfile.student.certificado_link}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             sx={{ 
+                               borderColor: themeMode === 'dark' ? '#dc2626' : '#dc2626',
+                               color: themeMode === 'dark' ? '#dc2626' : '#dc2626',
+                               '&:hover': {
+                                 borderColor: themeMode === 'dark' ? '#b91c1c' : '#b91c1c',
+                                 bgcolor: themeMode === 'dark' ? 'rgba(220, 38, 38, 0.1)' : 'rgba(220, 38, 38, 0.1)'
+                               }
+                             }}
+                           >
+                             Ver certificado
+                           </Button>
+                         </Box>
+                       )}
+                     </Box>
+                   </Box>
+                 </Paper>
 
-                {/* Carta de Presentación */}
-                {coverLetter && (
-                  <Paper sx={{ 
-                    p: 3, 
-                    mb: 3, 
-                    borderRadius: 3, 
-                    bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa',
-                    border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
-                  }}>
-                    <Typography variant="h6" fontWeight={600} sx={{ 
-                      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                      mb: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}>
-                      <AssignmentIcon sx={{ fontSize: 20 }} />
-                      Carta de Presentación
-                    </Typography>
-                    <Box sx={{ 
+                  {/* Carta de Presentación - ELIMINADA TEMPORALMENTE */}
+                  {/* {(() => {
+                    console.log('🔍 [StudentProfileModal] coverLetter recibido:', coverLetter);
+                    console.log('🔍 [StudentProfileModal] coverLetter.trim():', coverLetter?.trim());
+                    console.log('🔍 [StudentProfileModal] Condición cumplida:', coverLetter && coverLetter.trim() !== '');
+                    return coverLetter && coverLetter.trim() !== '';
+                  })() && (
+                    <Paper sx={{ 
                       p: 3, 
-                      bgcolor: themeMode === 'dark' ? '#475569' : '#e2e8f0', 
-                      borderRadius: 2,
-                      border: themeMode === 'dark' ? '1px solid #64748b' : '1px solid #cbd5e1'
+                      mb: 3, 
+                      borderRadius: 3, 
+                      bgcolor: themeMode === 'dark' ? '#334155' : '#f8f9fa',
+                      border: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e0e0e0'
                     }}>
-                      <Typography variant="body1" sx={{ 
+                      <Typography variant="h6" fontWeight={600} sx={{ 
                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-                        lineHeight: 1.6,
-                        fontStyle: coverLetter ? 'normal' : 'italic'
+                        mb: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
                       }}>
-                        {coverLetter || 'No se ha proporcionado carta de presentación'}
+                        <AssignmentIcon sx={{ fontSize: 20 }} />
+                        Carta de Presentación
                       </Typography>
-                    </Box>
-                  </Paper>
-                )}
+                      <Box sx={{ 
+                        p: 3, 
+                        bgcolor: themeMode === 'dark' ? '#475569' : '#e2e8f0', 
+                        borderRadius: 2,
+                        border: themeMode === 'dark' ? '1px solid #64748b' : '1px solid #cbd5e1'
+                      }}>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                          lineHeight: 1.6
+                        }}>
+                          {coverLetter}
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  )} */}
               </Box>
             )}
           </>

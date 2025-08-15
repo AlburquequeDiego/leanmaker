@@ -1,144 +1,276 @@
-import { useState, useEffect, useCallback } from 'react';
-import { studentService, StudentProfileResponse } from '../services/student.service';
+import { useState, useCallback, useEffect } from 'react';
+import { studentService } from '../services/student.service';
+import type { StudentProfileResponse } from '../types';
+import { authService } from '../services/auth.service';
 
-interface UseStudentProfileReturn {
-  profile: StudentProfileResponse | null;
-  loading: boolean;
-  error: string | null;
-  refreshProfile: () => Promise<void>;
-  clearProfile: () => void;
-}
-
-/**
- * Hook personalizado para obtener y gestionar perfiles de estudiantes
- * @param studentId - ID del estudiante (opcional, se puede establecer después)
- * @returns Objeto con el perfil, estado de carga, errores y funciones de control
- */
-export const useStudentProfile = (studentId?: string): UseStudentProfileReturn => {
+export const useStudentProfile = (studentId: string | null) => {
   const [profile, setProfile] = useState<StudentProfileResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Obtiene el perfil del estudiante
-   */
   const fetchProfile = useCallback(async (id: string) => {
-    if (!id) return;
-
     try {
       setLoading(true);
       setError(null);
+      console.log('🔄 [useStudentProfile] Obteniendo perfil del estudiante:', id);
+
+      const response = await studentService.getStudentProfileDetails(id);
+      console.log('✅ [useStudentProfile] Perfil obtenido exitosamente:', response);
       
-      console.log('🔄 [useStudentProfile] Obteniendo perfil para estudiante:', id);
-      console.log('🔍 [useStudentProfile] ID del estudiante es válido:', !!id);
-      console.log('🔍 [useStudentProfile] Tipo del ID:', typeof id);
-      
-      const studentProfile = await studentService.getStudentProfile(id);
-      setProfile(studentProfile);
-      
-      console.log('✅ [useStudentProfile] Perfil obtenido exitosamente:', studentProfile);
+      setProfile(response);
     } catch (err: any) {
-      console.error('❌ [useStudentProfile] Error obteniendo perfil:', err);
-      console.error('❌ [useStudentProfile] Error completo:', {
-        message: err.message,
-        response: err.response,
-        stack: err.stack
-      });
-      
-      const errorMessage = err.response?.data?.error || err.message || 'Error al obtener el perfil del estudiante';
+      const errorMessage = err.message || 'Error al cargar el perfil del estudiante';
       setError(errorMessage);
-      setProfile(null);
+      console.error('❌ [useStudentProfile] Error obteniendo perfil:', err);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  /**
-   * Refresca el perfil del estudiante
-   */
-  const refreshProfile = useCallback(async () => {
-    if (profile?.student?.id) {
-      await fetchProfile(profile.student.id);
-    }
-  }, [profile?.student?.id, fetchProfile]);
-
-  /**
-   * Limpia el perfil actual
-   */
-  const clearProfile = useCallback(() => {
-    setProfile(null);
-    setError(null);
-    setLoading(false);
-  }, []);
-
-  // Efecto para cargar el perfil cuando cambie el studentId
   useEffect(() => {
-    console.log('🔄 [useStudentProfile] useEffect ejecutado');
+    console.log('🔍 [useStudentProfile] useEffect ejecutándose');
     console.log('🔍 [useStudentProfile] studentId recibido:', studentId);
-    console.log('🔍 [useStudentProfile] studentId es válido:', !!studentId);
-    console.log('🔍 [useStudentProfile] fetchProfile function:', typeof fetchProfile);
-    console.log('🔍 [useStudentProfile] clearProfile function:', typeof clearProfile);
     
     if (studentId) {
-      console.log('🚀 [useStudentProfile] Iniciando fetchProfile para:', studentId);
-      console.log('🚀 [useStudentProfile] Llamando a fetchProfile...');
+      console.log('🔍 [useStudentProfile] Llamando a fetchProfile con:', studentId);
       fetchProfile(studentId);
-      console.log('🚀 [useStudentProfile] fetchProfile llamado');
     } else {
-      console.log('⚠️ [useStudentProfile] No hay studentId, limpiando perfil');
-      clearProfile();
+      console.log('🔍 [useStudentProfile] studentId es null/undefined, limpiando estado');
+      setProfile(null);
+      setError(null);
     }
-  }, [studentId, fetchProfile, clearProfile]);
+  }, [studentId, fetchProfile]);
+
+  const refreshProfile = useCallback(() => {
+    if (studentId) {
+      fetchProfile(studentId);
+    }
+  }, [studentId, fetchProfile]);
 
   return {
     profile,
     loading,
     error,
     refreshProfile,
-    clearProfile
+    // Helper method to check if profile is loaded
+    isLoaded: !loading && !error && profile !== null
   };
 };
 
-/**
- * Hook para obtener múltiples perfiles de estudiantes
- * @param studentIds - Array de IDs de estudiantes
- * @returns Objeto con los perfiles, estado de carga y errores
- */
 export const useMultipleStudentProfiles = (studentIds: string[]) => {
   const [profiles, setProfiles] = useState<StudentProfileResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchProfiles = useCallback(async (ids: string[]) => {
+    if (ids.length === 0) {
+      setProfiles([]);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('🔄 [useMultipleStudentProfiles] Obteniendo múltiples perfiles:', ids);
+
+      const response = await studentService.getMultipleStudentProfiles(ids);
+      console.log('✅ [useMultipleStudentProfiles] Perfiles obtenidos exitosamente:', response.length);
+      
+      setProfiles(response);
+    } catch (err: any) {
+      const errorMessage = err.message || 'Error al cargar múltiples perfiles';
+      setError(errorMessage);
+      console.error('❌ [useMultipleStudentProfiles] Error obteniendo perfiles:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchProfiles = async () => {
-      if (studentIds.length === 0) {
-        setProfiles([]);
-        return;
+    console.log('🔍 [useMultipleStudentProfiles] useEffect ejecutándose');
+    console.log('🔍 [useMultipleStudentProfiles] studentIds recibidos:', studentIds);
+    
+    if (studentIds.length > 0) {
+      console.log('🔍 [useMultipleStudentProfiles] Llamando a fetchProfiles con:', studentIds);
+      fetchProfiles(studentIds);
+    } else {
+      console.log('🔍 [useMultipleStudentProfiles] No hay IDs, limpiando estado');
+      setProfiles([]);
+      setError(null);
+    }
+  }, [studentIds, fetchProfiles]);
+
+  const refreshProfiles = useCallback(() => {
+    if (studentIds.length > 0) {
+      fetchProfiles(studentIds);
+    }
+  }, [studentIds, fetchProfiles]);
+
+  return {
+    profiles,
+    loading,
+    error,
+    refreshProfiles,
+    // Helper method to check if profiles are loaded
+    isLoaded: !loading && !error && profiles.length > 0
+  };
+};
+
+export const useCompanyStudentsHistory = () => {
+  const [students, setStudents] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [studentProfiles, setStudentProfiles] = useState<Record<string, any>>({});
+
+  const fetchStudents = async () => {
+    console.log('🚀 [fetchStudents] INICIANDO - Obteniendo estudiantes de la empresa');
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // PASO 1: Obtener lista básica de estudiantes (IDs y datos mínimos)
+      console.log('🔍 [fetchStudents] PASO 1: Llamando a getCompanyStudentsHistory...');
+      const response = await studentService.getCompanyStudentsHistory();
+      console.log('✅ [fetchStudents] PASO 1 COMPLETADO - Respuesta recibida:', response);
+      
+      if (response && response.results) {
+        console.log('🔍 [fetchStudents] PASO 1: Estableciendo students con', response.results.length, 'estudiantes');
+        setStudents(response.results);
+        
+        // PASO 2: Obtener el token ANTES de llamar a loadStudentProfiles
+        console.log('🔍 [fetchStudents] PASO 2: Obteniendo token usando authService...');
+        const token = authService.getAccessToken();
+        console.log('🔑 [fetchStudents] Token obtenido:', token ? token.substring(0, 20) + '...' : 'No hay token');
+        
+        if (!token) {
+          console.error('❌ [fetchStudents] No hay token disponible para cargar perfiles');
+          setError('No hay token de autenticación disponible');
+          return;
+        }
+        
+        // PASO 3: Cargar perfiles completos de cada estudiante
+        console.log('🔍 [fetchStudents] PASO 3: Iniciando carga de perfiles completos...');
+        console.log('🔍 [fetchStudents] PASO 3: Llamando a loadStudentProfiles con:', response.results);
+        
+        // Llamar a loadStudentProfiles con los datos básicos Y el token
+        await loadStudentProfiles(response.results, token);
+        
+        console.log('✅ [fetchStudents] PASO 3 COMPLETADO - Perfiles cargados');
+      } else {
+        console.error('❌ [fetchStudents] Respuesta inválida:', response);
+        setError('Respuesta inválida del servidor');
       }
+    } catch (error) {
+      console.error('❌ [fetchStudents] Error general:', error);
+      setError(error instanceof Error ? error.message : 'Error desconocido');
+    } finally {
+      console.log('🔍 [fetchStudents] FINALIZANDO - Estableciendo loading = false');
+      setLoading(false);
+    }
+  };
 
-      try {
-        setLoading(true);
-        setError(null);
+  // Función para cargar perfiles individuales (igual que en Postulaciones)
+  const loadStudentProfiles = async (studentsData: any[], token: string) => {
+    console.log('🚀 [loadStudentProfiles] INICIANDO - Cargando perfiles completos para:', studentsData.length, 'estudiantes');
+    console.log('🔍 [loadStudentProfiles] Datos de entrada:', studentsData);
+    
+    try {
+      const profiles: Record<string, any> = {};
+      
+      // Extraer IDs únicos de estudiantes
+      const studentIds = [...new Set(studentsData.map(student => String(student.id)))].filter(Boolean);
+      
+      console.log('🔍 [loadStudentProfiles] IDs únicos de estudiantes:', studentIds);
+      
+      // Cargar cada perfil individualmente usando el MISMO endpoint que Postulaciones
+      for (const studentId of studentIds) {
+        console.log(`🔍 [loadStudentProfiles] Cargando perfil para estudiante: ${studentId}`);
         
-        console.log('🔄 [useMultipleStudentProfiles] Obteniendo perfiles para:', studentIds);
-        
-        const studentProfiles = await studentService.getMultipleStudentProfiles(studentIds);
-        setProfiles(studentProfiles);
-        
-        console.log('✅ [useMultipleStudentProfiles] Perfiles obtenidos:', studentProfiles.length);
-      } catch (err: any) {
-        console.error('❌ [useMultipleStudentProfiles] Error obteniendo perfiles:', err);
-        
-        const errorMessage = err.response?.data?.error || err.message || 'Error al obtener los perfiles';
-        setError(errorMessage);
-        setProfiles([]);
-      } finally {
-        setLoading(false);
+        try {
+          // LLAMAR AL MISMO ENDPOINT QUE POSTULACIONES
+          const response = await fetch(`/api/students/${studentId}/profile/`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          console.log(`🔍 [loadStudentProfiles] Response status para ${studentId}:`, response.status);
+          
+          if (response.ok) {
+            const profileData = await response.json();
+            console.log(`✅ [loadStudentProfiles] Perfil obtenido para ${studentId}:`, profileData);
+            
+            // Normalizar la estructura del perfil (igual que en Postulaciones)
+            const normalizedProfile = {
+              ...profileData,
+              // Asegurar que user_data esté disponible
+              user_data: profileData.user_data || {
+                bio: profileData.bio || profileData.student?.bio || '',
+                full_name: profileData.full_name || profileData.student?.name || '',
+                email: profileData.email || profileData.student?.email || '',
+                phone: profileData.phone || profileData.student?.phone || '',
+                birthdate: profileData.birthdate || profileData.student?.birthdate || '',
+                gender: profileData.gender || profileData.student?.gender || ''
+              },
+              // Asegurar que student esté disponible
+              student: profileData.student || {
+                career: profileData.career || '',
+                university: profileData.university || '',
+                experience_years: profileData.experience_years || 0,
+                hours_per_week: profileData.hours_per_week || 20,
+                area: profileData.area || '',
+                availability: profileData.availability || 'flexible',
+                skills: profileData.skills || [],
+                linkedin_url: profileData.linkedin_url || '',
+                github_url: profileData.github_url || '',
+                portfolio_url: profileData.portfolio_url || '',
+                cv_link: profileData.cv_link || '',
+                certificado_link: profileData.certificado_link || ''
+              }
+            };
+            
+            profiles[studentId] = normalizedProfile;
+            console.log(`✅ [loadStudentProfiles] Perfil normalizado para ${studentId}:`, normalizedProfile);
+          } else {
+            console.warn(`⚠️ [loadStudentProfiles] Error HTTP para ${studentId}:`, response.status);
+            if (response.status === 401) {
+              console.error(`❌ [loadStudentProfiles] Error de autenticación para ${studentId}. Token:`, token.substring(0, 20) + '...');
+            }
+          }
+        } catch (error) {
+          console.warn(`⚠️ [loadStudentProfiles] Error cargando perfil de ${studentId}:`, error);
+        }
       }
-    };
+      
+      console.log('📊 [loadStudentProfiles] Todos los perfiles cargados:', profiles);
+      console.log('📊 [loadStudentProfiles] Actualizando estado studentProfiles con:', Object.keys(profiles).length, 'perfiles');
+      setStudentProfiles(profiles);
+      
+    } catch (error) {
+      console.error('❌ [loadStudentProfiles] Error general:', error);
+    }
+  };
 
-    fetchProfiles();
-  }, [studentIds]);
+  // useEffect para ejecutar fetchStudents al montar el componente
+  useEffect(() => {
+    console.log('🔧 [useCompanyStudentsHistory] useEffect ejecutándose - Llamando a fetchStudents');
+    fetchStudents();
+  }, []); // Solo se ejecuta al montar el componente
 
-  return { profiles, loading, error };
+  const refreshStudents = useCallback(() => {
+    fetchStudents();
+  }, [fetchStudents]);
+
+  return {
+    students,
+    stats,
+    loading,
+    error,
+    refreshStudents,
+    studentProfiles, // ✅ NUEVO: perfiles completos de cada estudiante
+    // Helper method to check if data is loaded
+    isLoaded: !loading && !error && students.length > 0
+  };
 };

@@ -570,6 +570,7 @@ export const Notifications = () => {
               {[5, 10, 20, 30, 50].map(num => (
                 <MenuItem key={num} value={num}>{num} últimas</MenuItem>
               ))}
+              <MenuItem value={-1}>Mostrar todos</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -841,7 +842,7 @@ export const Notifications = () => {
           </Box>
         ) : (
           <List>
-            {filteredNotifications.slice(0, limit).map((notification, index) => (
+            {(limit === -1 ? filteredNotifications : filteredNotifications.slice(0, limit)).map((notification, index) => (
               <Box key={notification.id}>
                                  <ListItem
                    onClick={() => handleNotificationClick(notification)}

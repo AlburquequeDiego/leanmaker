@@ -639,3 +639,88 @@ export const UNIVERSITIES = [
 ] as const;
 
 export type University = typeof UNIVERSITIES[number]; 
+
+// Tipos para el sistema de perfiles de estudiantes
+export interface Student {
+  id: string;
+  user_id: string;
+  name: string;
+  email: string;
+  university: string;
+  career: string;
+  semester?: number;
+  api_level: number;
+  gpa?: number;
+  skills: string[];
+  experience_years: number;
+  availability: string;
+  bio: string;
+  phone: string;
+  location: string;
+  area: string;
+  portfolio_url: string;
+  github_url: string;
+  linkedin_url: string;
+  cv_link: string;
+  certificado_link: string;
+  education_level: string;
+  hours_per_week: number;
+  birthdate?: string;
+  gender: string;
+  department: string;
+  position: string;
+  company_name: string;
+  status: string;
+  strikes: number;
+  completed_projects: number;
+  total_hours: number;
+  created_at: string;
+  updated_at: string;
+  applications: Application[];
+}
+
+export interface Application {
+  id: string;
+  project_title: string;
+  project_id: string;
+  status: string;
+  applied_at: string;
+  cover_letter: string;
+}
+
+export interface StudentProfileResponse {
+  student: Student;
+  user_data: {
+    full_name: string;
+    email: string;
+    phone?: string;
+    bio?: string;
+    first_name: string;
+    last_name: string;
+    birthdate?: string;
+    gender?: string;
+  };
+  perfil_detallado?: {
+    fecha_nacimiento?: string;
+    genero?: string;
+    telefono?: string;
+    nacionalidad?: string;
+    universidad?: string;
+    facultad?: string;
+    promedio_historico?: number;
+    experiencia_laboral?: string;
+    certificaciones?: string[];
+    proyectos_personales?: string[];
+    tecnologias_preferidas?: string[];
+    industrias_interes?: string[];
+    tipo_proyectos_preferidos?: string[];
+    telefono_emergencia?: string;
+    contacto_emergencia?: string;
+  };
+}
+
+export interface CompanyStudentsResponse {
+  results: Student[];
+  count: number;
+  message: string;
+} 

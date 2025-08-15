@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { apiService } from '../../../services/api.service';
-import { useStudentProfileDetails } from '../../../hooks/useStudentProfileDetails';
+import { useStudentProfile } from '../../../hooks/useStudentProfile';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 
 export const CompanyStrikes: React.FC = () => {
@@ -43,7 +43,7 @@ export const CompanyStrikes: React.FC = () => {
   const [selectedStrikeForDetails, setSelectedStrikeForDetails] = useState<any>(null);
 
   // Hook para obtener el perfil detallado del estudiante
-  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfileDetails(selectedStudentId);
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
 
   const totalReports = strikeReports.length;
   const pendingReports = strikeReports.filter(r => r.status === 'pending').length;
@@ -113,7 +113,6 @@ export const CompanyStrikes: React.FC = () => {
   };
 
   const handleViewStrikeDetails = (strike: any) => {
-    console.log('🔍 Abriendo detalles del strike:', strike);
     setSelectedStrikeForDetails(strike);
     setStrikeDetailsModalOpen(true);
   };
@@ -792,18 +791,20 @@ export const CompanyStrikes: React.FC = () => {
         }}>
           {selectedStrikeForDetails && (
             <Box>
-              {/* Información del estudiante */}
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                  Estudiante Reportado
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Nombre:</strong> {selectedStrikeForDetails.student_name}
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Email:</strong> {selectedStrikeForDetails.student_email}
-                </Typography>
-              </Box>
+              
+              
+                             {/* Información del estudiante */}
+               <Box sx={{ mb: 3 }}>
+                 <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                   Estudiante Reportado
+                 </Typography>
+                 <Typography variant="body1" sx={{ mb: 1 }}>
+                   <strong>Nombre:</strong> {selectedStrikeForDetails.student_name}
+                 </Typography>
+                 <Typography variant="body1" sx={{ mb: 1 }}>
+                   <strong>Email:</strong> {studentProfile?.user_data?.email || 'No disponible'}
+                 </Typography>
+               </Box>
 
               {/* Información del proyecto */}
               <Box sx={{ mb: 3 }}>
@@ -825,9 +826,6 @@ export const CompanyStrikes: React.FC = () => {
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
                   <strong>Razón:</strong> {selectedStrikeForDetails.reason}
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>Descripción:</strong> {selectedStrikeForDetails.description}
                 </Typography>
               </Box>
 

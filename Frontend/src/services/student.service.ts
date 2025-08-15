@@ -1,140 +1,199 @@
 import { apiService } from './api.service';
-import { API_ENDPOINTS } from '../config/api.config';
-import type { Student, StudentProfileResponse } from '../types';
+import type { Student, StudentProfileResponse, CompanyStudentsResponse } from '../types';
 
 class StudentService {
   /**
-   * Obtiene el perfil completo de un estudiante por ID
-   * @param studentId - ID del estudiante
-   * @returns Perfil completo del estudiante
+   * Obtiene el historial de estudiantes únicos que han postulado a proyectos de la empresa
    */
-  async getStudentProfile(studentId: string): Promise<StudentProfileResponse> {
+  async getCompanyStudentsHistory(): Promise<CompanyStudentsResponse> {
     try {
-      console.log('🚀 [StudentService] Obteniendo perfil del estudiante:', studentId);
-      console.log('🔍 [StudentService] URL del endpoint:', API_ENDPOINTS.STUDENT_PROFILE);
-      console.log('🔍 [StudentService] URL construida:', API_ENDPOINTS.STUDENT_PROFILE.replace('{id}', studentId));
-      console.log('🔍 [StudentService] URL completa:', `${API_ENDPOINTS.STUDENT_PROFILE.replace('{id}', studentId)}`);
-      console.log('🔍 [StudentService] API_ENDPOINTS.STUDENT_PROFILE:', API_ENDPOINTS.STUDENT_PROFILE);
-      
-      const response = await apiService.get(API_ENDPOINTS.STUDENT_PROFILE.replace('{id}', studentId));
-      console.log('✅ [StudentService] Respuesta exitosa:', response);
-      
-      // La respuesta viene en response.data
-      return (response as any).data as StudentProfileResponse;
-    } catch (error: any) {
-      console.error('❌ [StudentService] Error obteniendo perfil:', error);
-      console.error('❌ [StudentService] Error completo:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        url: error.config?.url
-      });
-      
-      // Intentar obtener datos básicos como fallback
-      console.log('🔄 [StudentService] Intentando obtener datos básicos...');
-      try {
-        const basicData = await this.getBasicStudentData(studentId);
-        console.log('✅ [StudentService] Datos básicos obtenidos:', basicData);
-        return basicData;
-      } catch (fallbackError: any) {
-        console.error('❌ [StudentService] Error obteniendo datos básicos:', fallbackError);
-        throw new Error('No se pudo obtener el perfil del estudiante');
+      console.log('🚀 [StudentService] Obteniendo historial de estudiantes de la empresa');
+      console.log('🔍 [StudentService] URL que se va a llamar: /api/applications/company/students/');
+      const response = await apiService.get('/api/applications/company/students/');
+      console.log('✅ [StudentService] Historial obtenido:', response);
+      console.log('🔍 [StudentService] Tipo de respuesta:', typeof response);
+      console.log('🔍 [StudentService] Keys de la respuesta:', response ? Object.keys(response) : 'No hay respuesta');
+      if (response && response.results) {
+        console.log('🔍 [StudentService] Primer resultado:', response.results[0]);
+        console.log('🔍 [StudentService] Keys del primer resultado:', response.results[0] ? Object.keys(response.results[0]) : 'No hay primer resultado');
       }
+      return response;
+    } catch (error: any) {
+      console.error('❌ [StudentService] Error obteniendo historial:', error);
+      throw new Error(error.message || 'Error al obtener el historial de estudiantes');
     }
   }
 
   /**
-   * Obtiene perfiles de múltiples estudiantes
-   * @param studentIds - Array de IDs de estudiantes
-   * @returns Array de perfiles de estudiantes
+   * Obtiene el perfil detallado de un estudiante específico
+   */
+  async getStudentProfileDetails(studentId: string): Promise<StudentProfileResponse> {
+    try {
+      console.log('🚀 [StudentService] Obteniendo perfil del estudiante:', studentId);
+      const response = await apiService.get(`/api/students/${studentId}/profile/`);
+      console.log('✅ [StudentService] Perfil obtenido:', response);
+      return response;
+    } catch (error: any) {
+      console.error('❌ [StudentService] Error obteniendo perfil:', error);
+      throw new Error(error.message || 'Error al obtener el perfil del estudiante');
+    }
+  }
+
+  /**
+   * Obtiene múltiples perfiles de estudiantes
    */
   async getMultipleStudentProfiles(studentIds: string[]): Promise<StudentProfileResponse[]> {
     try {
-      console.log('🚀 [StudentService] Obteniendo perfiles de múltiples estudiantes:', studentIds);
-      
-      const profiles = await Promise.all(
-        studentIds.map(id => this.getStudentProfile(id))
-      );
-      
-      console.log('✅ [StudentService] Perfiles obtenidos:', profiles.length);
+      console.log('🚀 [StudentService] Obteniendo múltiples perfiles:', studentIds);
+      const promises = studentIds.map(id => this.getStudentProfileDetails(id));
+      const profiles = await Promise.all(promises);
+      console.log('✅ [StudentService] Perfiles múltiples obtenidos:', profiles.length);
       return profiles;
-    } catch (error) {
-      console.error('❌ [StudentService] Error obteniendo múltiples perfiles:', error);
-      throw error;
+    } catch (error: any) {
+      console.error('❌ [StudentService] Error obteniendo perfiles múltiples:', error);
+      throw new Error(error.message || 'Error al obtener múltiples perfiles');
     }
   }
 
   /**
-   * Busca estudiantes por criterios
-   * @param searchTerm - Término de búsqueda
-   * @param filters - Filtros adicionales
-   * @returns Lista de estudiantes que coinciden
+   * Busca estudiantes por criterios específicos
    */
-  async searchStudents(searchTerm: string, filters?: any): Promise<Student[]> {
+  async searchStudents(params: {
+    search?: string;
+    skills?: string[];
+    university?: string;
+    career?: string;
+    api_level?: number;
+    experience_min?: number;
+    experience_max?: number;
+  }): Promise<Student[]> {
     try {
-      console.log('🔍 [StudentService] Buscando estudiantes:', searchTerm, filters);
+      console.log('🚀 [StudentService] Buscando estudiantes con criterios:', params);
       
-      const response = await apiService.get(`${API_ENDPOINTS.STUDENTS}/search/?q=${searchTerm}`);
+      // Primero obtener todos los estudiantes
+      const response = await this.getCompanyStudentsHistory();
+      let students = response.results;
       
-      console.log('✅ [StudentService] Estudiantes encontrados:', (response as any).data.length);
-      return (response as any).data as Student[];
-    } catch (error) {
-      console.error('❌ [StudentService] Error buscando estudiantes:', error);
-      throw error;
+      // Aplicar filtros
+      if (params.search) {
+        const searchTerm = params.search.toLowerCase();
+        students = students.filter(student => 
+          student.name.toLowerCase().includes(searchTerm) ||
+          student.email.toLowerCase().includes(searchTerm) ||
+          student.university.toLowerCase().includes(searchTerm) ||
+          student.career.toLowerCase().includes(searchTerm) ||
+          student.skills.some(skill => skill.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      if (params.skills && params.skills.length > 0) {
+        students = students.filter(student =>
+          params.skills!.some(requiredSkill =>
+            student.skills.some(skill => 
+              skill.toLowerCase().includes(requiredSkill.toLowerCase())
+            )
+          )
+        );
+      }
+      
+      if (params.university) {
+        students = students.filter(student =>
+          student.university.toLowerCase().includes(params.university!.toLowerCase())
+        );
+      }
+      
+      if (params.career) {
+        students = students.filter(student =>
+          student.career.toLowerCase().includes(params.career!.toLowerCase())
+        );
+      }
+      
+      if (params.api_level) {
+        students = students.filter(student => student.api_level >= params.api_level!);
+      }
+      
+      if (params.experience_min !== undefined) {
+        students = students.filter(student => student.experience_years >= params.experience_min!);
+      }
+      
+      if (params.experience_max !== undefined) {
+        students = students.filter(student => student.experience_years <= params.experience_max!);
+      }
+      
+      console.log('✅ [StudentService] Estudiantes filtrados:', students.length);
+      return students;
+      
+    } catch (error: any) {
+      console.error('❌ [StudentService] Error en búsqueda:', error);
+      throw new Error(error.message || 'Error al buscar estudiantes');
     }
   }
 
   /**
-   * Obtiene estadísticas de un estudiante
-   * @param studentId - ID del estudiante
-   * @returns Estadísticas del estudiante
+   * Obtiene estadísticas de los estudiantes
    */
-  async getStudentStats(studentId: string): Promise<any> {
+  async getStudentsStats(): Promise<{
+    total: number;
+    by_university: Record<string, number>;
+    by_career: Record<string, number>;
+    by_api_level: Record<string, number>;
+    by_experience: Record<string, number>;
+    skills_distribution: Record<string, number>;
+  }> {
     try {
-      console.log('📊 [StudentService] Obteniendo estadísticas del estudiante:', studentId);
+      console.log('🚀 [StudentService] Obteniendo estadísticas de estudiantes');
+      const response = await this.getCompanyStudentsHistory();
+      const students = response.results;
       
-      const response = await apiService.get(`${API_ENDPOINTS.STUDENTS}/${studentId}/stats/`);
-      
-      console.log('✅ [StudentService] Estadísticas obtenidas:', (response as any).data);
-      return (response as any).data;
-    } catch (error) {
-      console.error('❌ [StudentService] Error obteniendo estadísticas:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Obtiene datos básicos del estudiante como fallback
-   * @param studentId - ID del estudiante
-   * @returns Datos básicos del estudiante
-   */
-  private async getBasicStudentData(studentId: string): Promise<StudentProfileResponse> {
-    try {
-      console.log('🔄 [StudentService] Obteniendo datos básicos para:', studentId);
-      
-      const response = await apiService.get(API_ENDPOINTS.STUDENT_DETAIL.replace('{id}', studentId));
-      console.log('🔄 [StudentService] Datos básicos obtenidos:', (response as any).data);
-      
-      // Crear respuesta básica
-      return {
-        student: (response as any).data as any,
-        user_data: {
-          full_name: ((response as any).data as any)?.user?.full_name || 'Nombre no disponible',
-          email: ((response as any).data as any)?.user?.email || 'Email no disponible',
-          phone: ((response as any).data as any)?.user?.phone,
-          bio: ((response as any).data as any)?.user?.bio,
-          first_name: ((response as any).data as any)?.user?.first_name || '',
-          last_name: ((response as any).data as any)?.user?.last_name || ''
-        },
-        perfil_detallado: {}
+      const stats = {
+        total: students.length,
+        by_university: {} as Record<string, number>,
+        by_career: {} as Record<string, number>,
+        by_api_level: {} as Record<string, number>,
+        by_experience: {} as Record<string, number>,
+        skills_distribution: {} as Record<string, number>
       };
-    } catch (error) {
-      console.error('❌ [StudentService] Error obteniendo datos básicos:', error);
-      throw error;
+      
+      students.forEach(student => {
+        // Contar por universidad
+        const university = student.university || 'No especificada';
+        stats.by_university[university] = (stats.by_university[university] || 0) + 1;
+        
+        // Contar por carrera
+        const career = student.career || 'No especificada';
+        stats.by_career[career] = (stats.by_career[career] || 0) + 1;
+        
+        // Contar por API level
+        const apiLevel = `Nivel ${student.api_level}`;
+        stats.by_api_level[apiLevel] = (stats.by_api_level[apiLevel] || 0) + 1;
+        
+        // Contar por experiencia
+        let experienceRange = 'Sin experiencia';
+        if (student.experience_years > 0 && student.experience_years <= 1) {
+          experienceRange = '0-1 años';
+        } else if (student.experience_years <= 3) {
+          experienceRange = '1-3 años';
+        } else if (student.experience_years <= 5) {
+          experienceRange = '3-5 años';
+        } else if (student.experience_years > 5) {
+          experienceRange = '5+ años';
+        }
+        stats.by_experience[experienceRange] = (stats.by_experience[experienceRange] || 0) + 1;
+        
+        // Contar habilidades
+        student.skills.forEach(skill => {
+          stats.skills_distribution[skill] = (stats.skills_distribution[skill] || 0) + 1;
+        });
+      });
+      
+      console.log('✅ [StudentService] Estadísticas generadas:', stats);
+      return stats;
+      
+    } catch (error: any) {
+      console.error('❌ [StudentService] Error obteniendo estadísticas:', error);
+      throw new Error(error.message || 'Error al obtener estadísticas');
     }
   }
 }
 
 export const studentService = new StudentService();
-export default studentService;

@@ -19,6 +19,10 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Tooltip,
+  Card,
+  CardContent,
+  Fade,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -28,6 +32,11 @@ import {
   Lock as LockIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
+  Lightbulb as LightbulbIcon,
+  Work as WorkIcon,
+  School as SchoolIcon,
+  Code as CodeIcon,
+  Business as BusinessIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 
@@ -315,6 +324,50 @@ const PasswordForm = ({
   );
 };
 
+// Componente de mensaje motivacional
+const MotivationalMessage = ({ 
+  icon, 
+  title, 
+  message, 
+  show, 
+  position = 'top' 
+}: {
+  icon: React.ReactNode;
+  title: string;
+  message: string;
+  show: boolean;
+  position?: 'top' | 'bottom' | 'left' | 'right';
+}) => (
+  <Fade in={show} timeout={300}>
+    <Card
+      sx={{
+        position: 'absolute',
+        zIndex: 1000,
+        maxWidth: 300,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+        border: '2px solid #667eea',
+        background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%)',
+        ...(position === 'top' && { bottom: '100%', left: '50%', transform: 'translateX(-50%)', mb: 1 }),
+        ...(position === 'bottom' && { top: '100%', left: '50%', transform: 'translateX(-50%)', mt: 1 }),
+        ...(position === 'left' && { right: '100%', top: '50%', transform: 'translateY(-50%)', mr: 1 }),
+        ...(position === 'right' && { left: '100%', top: '50%', transform: 'translateY(-50%)', ml: 1 }),
+      }}
+    >
+      <CardContent sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <Box sx={{ color: '#667eea', mr: 1 }}>{icon}</Box>
+          <Typography variant="subtitle2" fontWeight={600} color="#667eea">
+            {title}
+          </Typography>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {message}
+        </Typography>
+      </CardContent>
+    </Card>
+  </Fade>
+);
+
 
 export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -383,6 +436,13 @@ export const Profile = () => {
   const [dialogKey, setDialogKey] = useState(Date.now());
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+  
+  // Estados para mensajes motivacionales
+  const [showCvMotivation, setShowCvMotivation] = useState(false);
+  const [showCertMotivation, setShowCertMotivation] = useState(false);
+  const [showLinkedinMotivation, setShowLinkedinMotivation] = useState(false);
+  const [showGithubMotivation, setShowGithubMotivation] = useState(false);
+  const [showPortfolioMotivation, setShowPortfolioMotivation] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -1032,11 +1092,31 @@ export const Profile = () => {
             sx={{ 
               color: 'rgba(255, 255, 255, 0.9)',
               fontWeight: 400,
-              textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+              textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+              mb: 2
             }}
           >
             Administra tu información personal y mantén tu perfil actualizado para destacar ante las empresas
           </Typography>
+          
+          {/* Mensaje motivacional general */}
+          <Box sx={{ 
+            background: 'rgba(255, 255, 255, 0.15)', 
+            borderRadius: 2, 
+            p: 2, 
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <LightbulbIcon sx={{ color: '#ffd700', fontSize: 24 }} />
+              <Typography variant="subtitle1" fontWeight={600} sx={{ color: 'white' }}>
+                💡 Consejo Profesional
+              </Typography>
+            </Box>
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+              <strong>¡Completa tu perfil profesional!</strong> Agrega tu CV, certificados, LinkedIn y GitHub para aumentar tus oportunidades laborales y destacar ante las empresas.
+            </Typography>
+          </Box>
         </Box>
       </Box>
 
@@ -1183,7 +1263,24 @@ export const Profile = () => {
 
           {/* Habilidades */}
           <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" fontWeight={600}>Habilidades</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" fontWeight={600}>Habilidades</Typography>
+            {!isEditing && (!editData.habilidades || editData.habilidades.length === 0) && (
+              <Box sx={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+                borderRadius: 2, 
+                p: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}>
+                <LightbulbIcon sx={{ color: 'white', fontSize: 20 }} />
+                <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                  💡 Agrega habilidades para destacar
+                </Typography>
+              </Box>
+            )}
+          </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
             {(editData.habilidades || []).map((h) => (
               <Chip
@@ -1259,7 +1356,7 @@ export const Profile = () => {
             Sube tus documentos a Google Drive, OneDrive o similar y comparte los links aquí
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, position: 'relative' }}>
               <Typography variant="subtitle1" fontWeight={600}>CV</Typography>
               {isEditing ? (
                 <TextField
@@ -1270,6 +1367,8 @@ export const Profile = () => {
                   error={!!validationErrors.cv_link}
                   helperText={validationErrors.cv_link || 'Link al CV en Google Drive, OneDrive o similar'}
                   sx={{ mt: 1 }}
+                  onMouseEnter={() => !editData.cv_link && setShowCvMotivation(true)}
+                  onMouseLeave={() => setShowCvMotivation(false)}
                 />
               ) : (
                 <Box sx={{ mt: 1 }}>
@@ -1288,8 +1387,17 @@ export const Profile = () => {
                   )}
                 </Box>
               )}
+              
+              {/* Mensaje motivacional para CV */}
+              <MotivationalMessage
+                icon={<WorkIcon />}
+                title="📄 CV Profesional"
+                message="¡Un CV bien estructurado es tu primera impresión! Sube tu CV a Google Drive o OneDrive y comparte el link aquí. Incluye tu experiencia, educación y habilidades técnicas."
+                show={showCvMotivation && !editData.cv_link}
+                position="top"
+              />
             </Box>
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, position: 'relative' }}>
               <Typography variant="subtitle1" fontWeight={600}>Certificado</Typography>
               {isEditing ? (
                 <TextField
@@ -1300,6 +1408,8 @@ export const Profile = () => {
                   error={!!validationErrors.certificado_link}
                   helperText={validationErrors.certificado_link || 'Link al certificado en Google Drive, OneDrive o similar'}
                   sx={{ mt: 1 }}
+                  onMouseEnter={() => !editData.certificado_link && setShowCertMotivation(true)}
+                  onMouseLeave={() => setShowCertMotivation(false)}
                 />
               ) : (
                 <Box sx={{ mt: 1 }}>
@@ -1318,12 +1428,38 @@ export const Profile = () => {
                   )}
                 </Box>
               )}
+              
+              {/* Mensaje motivacional para Certificados */}
+              <MotivationalMessage
+                icon={<SchoolIcon />}
+                title="🏆 Certificados Institucionales"
+                message="¡Los certificados validan tus conocimientos! Sube tus certificados académicos, cursos técnicos o certificaciones profesionales. Esto demuestra tu compromiso con el aprendizaje continuo."
+                show={showCertMotivation && !editData.certificado_link}
+                position="top"
+              />
             </Box>
           </Box>
 
           {/* Carta de Presentación */}
           <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" fontWeight={600}>Carta de Presentación</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" fontWeight={600}>Carta de Presentación</Typography>
+            {!isEditing && (!editData.biografia || editData.biografia.length < 50) && (
+              <Box sx={{ 
+                background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)', 
+                borderRadius: 2, 
+                p: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}>
+                <LightbulbIcon sx={{ color: 'white', fontSize: 20 }} />
+                <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                  ✍️ Escribe tu carta de presentación
+                </Typography>
+              </Box>
+            )}
+          </Box>
           <TextField
             fullWidth
             multiline
@@ -1445,43 +1581,137 @@ export const Profile = () => {
                 {profileData.experienciaPrevia ? `${profileData.experienciaPrevia} años` : 'Sin experiencia'}
               </Typography>
             )}
-            <Typography variant="subtitle1" fontWeight={600}>LinkedIn</Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                value={editData.linkedin || ''}
-                onChange={e => handleInputChange('linkedin', e.target.value)}
-                placeholder="https://linkedin.com/in/usuario"
-                sx={{ mb: 2 }}
+            <Box sx={{ position: 'relative' }}>
+              <Typography variant="subtitle1" fontWeight={600}>LinkedIn</Typography>
+              {isEditing ? (
+                <TextField
+                  fullWidth
+                  value={editData.linkedin || ''}
+                  onChange={e => handleInputChange('linkedin', e.target.value)}
+                  placeholder="https://linkedin.com/in/usuario"
+                  sx={{ mb: 2 }}
+                  onMouseEnter={() => !editData.linkedin && setShowLinkedinMotivation(true)}
+                  onMouseLeave={() => setShowLinkedinMotivation(false)}
+                />
+              ) : (
+                <Typography variant="body2" sx={{ mb: 2 }}>{profileData.linkedin || '-'}</Typography>
+              )}
+              
+              {/* Mensaje motivacional para LinkedIn */}
+              <MotivationalMessage
+                icon={<BusinessIcon />}
+                title="💼 LinkedIn Profesional"
+                message="¡LinkedIn es tu tarjeta de presentación digital! Crea un perfil profesional, conecta con profesionales del sector y muestra tu experiencia. Es la plataforma más importante para networking laboral."
+                show={showLinkedinMotivation && !editData.linkedin}
+                position="right"
               />
-            ) : (
-              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.linkedin || '-'}</Typography>
-            )}
-            <Typography variant="subtitle1" fontWeight={600}>GitHub</Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                value={editData.github || ''}
-                onChange={e => handleInputChange('github', e.target.value)}
-                placeholder="https://github.com/usuario"
-                sx={{ mb: 2 }}
+            </Box>
+            <Box sx={{ position: 'relative' }}>
+              <Typography variant="subtitle1" fontWeight={600}>GitHub</Typography>
+              {isEditing ? (
+                <TextField
+                  fullWidth
+                  value={editData.github || ''}
+                  onChange={e => handleInputChange('github', e.target.value)}
+                  placeholder="https://github.com/usuario"
+                  sx={{ mb: 2 }}
+                  onMouseEnter={() => !editData.github && setShowGithubMotivation(true)}
+                  onMouseLeave={() => setShowGithubMotivation(false)}
+                />
+              ) : (
+                <Typography variant="body2" sx={{ mb: 2 }}>{profileData.github || '-'}</Typography>
+              )}
+              
+              {/* Mensaje motivacional para GitHub */}
+              <MotivationalMessage
+                icon={<CodeIcon />}
+                title="🐙 GitHub - Tu Portafolio de Código"
+                message="¡GitHub es tu portafolio técnico! Sube tus proyectos, contribuye a código abierto y demuestra tus habilidades de programación. Las empresas revisan GitHub para evaluar tu experiencia técnica."
+                show={showGithubMotivation && !editData.github}
+                position="right"
               />
-            ) : (
-              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.github || '-'}</Typography>
-            )}
-            <Typography variant="subtitle1" fontWeight={600}>Portafolio</Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                value={editData.portafolio || ''}
-                onChange={e => handleInputChange('portafolio', e.target.value)}
-                placeholder="https://miportafolio.com (opcional)"
-                sx={{ mb: 2 }}
+            </Box>
+            <Box sx={{ position: 'relative' }}>
+              <Typography variant="subtitle1" fontWeight={600}>Portafolio</Typography>
+              {isEditing ? (
+                <TextField
+                  fullWidth
+                  value={editData.portafolio || ''}
+                  onChange={e => handleInputChange('portafolio', e.target.value)}
+                  placeholder="https://miportafolio.com (opcional)"
+                  sx={{ mb: 2 }}
+                  onMouseEnter={() => !editData.portafolio && setShowPortfolioMotivation(true)}
+                  onMouseLeave={() => setShowPortfolioMotivation(false)}
+                />
+              ) : (
+                <Typography variant="body2" sx={{ mb: 2 }}>{profileData.portafolio || '-'}</Typography>
+              )}
+              
+              {/* Mensaje motivacional para Portafolio */}
+              <MotivationalMessage
+                icon={<CodeIcon />}
+                title="🌐 Portafolio Web Personal"
+                message="¡Un portafolio web te hace destacar! Crea una página personal que muestre tus proyectos, habilidades y experiencia. Es tu escaparate digital para las empresas."
+                show={showPortfolioMotivation && !editData.portafolio}
+                position="right"
               />
-            ) : (
-              <Typography variant="body2" sx={{ mb: 2 }}>{profileData.portafolio || '-'}</Typography>
-            )}
+            </Box>
           </Box>
+          
+          {/* Mensaje motivacional final */}
+          {!isEditing && (
+            <Box sx={{ 
+              mt: 3, 
+              p: 3, 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+              borderRadius: 3, 
+              color: 'white',
+              textAlign: 'center'
+            }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <LightbulbIcon sx={{ fontSize: 40, color: '#ffd700' }} />
+              </Box>
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+                🚀 ¡Tu perfil es tu pasaporte al éxito profesional!
+              </Typography>
+              <Typography variant="body1" sx={{ opacity: 0.9, mb: 2 }}>
+                Un perfil completo y actualizado aumenta significativamente tus posibilidades de ser seleccionado por las empresas. 
+                Dedica tiempo a completar cada sección y mantén tu información actualizada.
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                <Chip 
+                  label="CV" 
+                  color={editData.cv_link ? "success" : "default"} 
+                  icon={editData.cv_link ? <CheckCircleIcon /> : <WorkIcon />}
+                  sx={{ color: 'white', fontWeight: 600 }}
+                />
+                <Chip 
+                  label="Certificados" 
+                  color={editData.certificado_link ? "success" : "default"} 
+                  icon={editData.certificado_link ? <CheckCircleIcon /> : <SchoolIcon />}
+                  sx={{ color: 'white', fontWeight: 600 }}
+                />
+                <Chip 
+                  label="LinkedIn" 
+                  color={editData.linkedin ? "success" : "default"} 
+                  icon={editData.linkedin ? <CheckCircleIcon /> : <BusinessIcon />}
+                  sx={{ color: 'white', fontWeight: 600 }}
+                />
+                <Chip 
+                  label="GitHub" 
+                  color={editData.github ? "success" : "default"} 
+                  icon={editData.github ? <CheckCircleIcon /> : <CodeIcon />}
+                  sx={{ color: 'white', fontWeight: 600 }}
+                />
+                <Chip 
+                  label="Portafolio" 
+                  color={editData.portafolio ? "success" : "default"} 
+                  icon={editData.portafolio ? <CheckCircleIcon /> : <CodeIcon />}
+                  sx={{ color: 'white', fontWeight: 600 }}
+                />
+              </Box>
+            </Box>
+          )}
         </Box>
       </Paper>
 

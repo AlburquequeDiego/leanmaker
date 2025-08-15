@@ -157,6 +157,33 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+# CORS Expose Headers - Permitir que todos los campos personalizados lleguen al frontend
+CORS_EXPOSE_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    # Campos personalizados del estudiante
+    'student_university',
+    'student_major',
+    'student_skills',
+    'student_experience_years',
+    'student_availability',
+    'student_bio',
+    'student_phone',
+    'student_gpa',
+    'student_api_level',
+    'student_location',
+    'student_cv_url',
+    'student_certificates',
+    'student_data'
+]
+
 # JWT Settings
 JWT_SECRET_KEY = 'local-jwt-secret-key-change-in-production'
 JWT_ALGORITHM = 'HS256'

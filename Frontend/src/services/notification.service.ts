@@ -42,7 +42,7 @@ export interface NotificationStatsResponse {
 }
 
 export interface CompanyMessageRequest {
-  student_id: number;
+  student_id: string; // Cambiado de number a string para UUID
   message: string;
 }
 

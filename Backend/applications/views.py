@@ -3,10 +3,18 @@ Views para la app applications.
 """
 
 import json
+import uuid
+from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+from django.db.models import Q
+from django.core.paginator import Paginator
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.shortcuts import get_object_or_404
+
 from .models import Aplicacion
 from users.models import User
 from core.auth_utils import get_user_from_token, require_auth
@@ -411,90 +419,177 @@ def received_applications(request):
         traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
 
-@csrf_exempt
-@require_http_methods(["GET"])
 @require_auth
-def company_applications_list(request):
-    """Lista de postulaciones para proyectos de la empresa"""
+def company_students_history(request):
+    """
+    Obtiene el registro histórico único de todos los estudiantes que alguna vez 
+    postularon a proyectos de la empresa, sin duplicados.
+    
+    Esta es la lógica correcta para la interfaz de búsqueda de estudiantes:
+    - Muestra estudiantes únicos que han postulado
+    - Incluye información completa del perfil
+    - Permite a la empresa tener una red de contactos
+    """
     try:
+        print(f"🔍 [company_students_history] INICIANDO VISTA")
+        print(f"🔍 [company_students_history] Request method: {request.method}")
+        print(f"🔍 [company_students_history] Request headers: {dict(request.headers)}")
+        print(f"🔍 [company_students_history] Request user: {request.user}")
+        print(f"🔍 [company_students_history] Request user role: {getattr(request.user, 'role', 'NO ROLE')}")
+        print(f"🔍 [company_students_history] Iniciando para empresa: {request.user.email}")
+        
         # Verificar que sea una empresa
         if request.user.role != 'company':
-            return JsonResponse({'error': 'Solo las empresas pueden ver postulaciones'}, status=403)
+            return JsonResponse({'error': 'Solo las empresas pueden acceder a este endpoint'}, status=403)
         
         # Obtener proyectos de la empresa
-        company_projects = request.user.empresa_profile.proyectos.all()
+        try:
+            company = request.user.empresa_profile
+            company_projects = company.proyectos.all()
+            print(f"🔍 [company_students_history] Proyectos de la empresa: {company_projects.count()}")
+        except Exception as e:
+            print(f"❌ [company_students_history] Error obteniendo empresa: {e}")
+            return JsonResponse({'error': 'Error obteniendo información de la empresa'}, status=500)
         
-        # Obtener postulaciones para esos proyectos
-        print(f"🔍 [BACKEND] Buscando postulaciones para {company_projects.count()} proyectos de la empresa")
+        if company_projects.count() == 0:
+            print(f"⚠️ [company_students_history] No hay proyectos en la empresa")
+            return JsonResponse({
+                'results': [],
+                'count': 0,
+                'message': 'No hay proyectos registrados en tu empresa'
+            })
+        
+        # Obtener todas las postulaciones para proyectos de la empresa
         applications = Aplicacion.objects.filter(
             project__in=company_projects
         ).select_related(
             'student__user',
             'project'
         ).order_by('-created_at')
-        print(f"🔍 [BACKEND] Postulaciones encontradas: {applications.count()}")
         
-        applications_data = []
+        print(f"🔍 [company_students_history] Total de postulaciones encontradas: {applications.count()}")
+        
+        # Crear un mapa de estudiantes únicos basado en las postulaciones
+        unique_students = {}
+        
         for application in applications:
-            print(f"🔍 [BACKEND] Procesando aplicación {application.id}")
-            # Obtener datos del estudiante
             student = application.student
-            student_user = student.user
-            print(f"🔍 [BACKEND] Student: {student}, User: {student_user}")
+            if not student or not student.user:
+                continue
+                
+            student_id = str(student.id)
             
-            # Obtener habilidades del estudiante
-            student_skills = []
-            if hasattr(student, 'skills') and student.skills:
-                try:
-                    import json
-                    student_skills = json.loads(student.skills)
-                except:
-                    student_skills = []
+            # Si ya procesamos este estudiante, solo agregar la aplicación a su historial
+            if student_id in unique_students:
+                unique_students[student_id]['applications'].append({
+                    'id': str(application.id),
+                    'project_title': application.project.title,
+                    'project_id': str(application.project.id),
+                    'status': application.status,
+                    'applied_at': application.applied_at.isoformat(),
+                    'cover_letter': application.cover_letter or ''
+                })
+                continue
             
-            # Obtener certificados del estudiante
-            student_certificates = []
+            # Procesar nuevo estudiante
             try:
-                if hasattr(student, 'perfil_detallado') and student.perfil_detallado:
-                    student_certificates = student.perfil_detallado.get_certificaciones_list()
-            except:
-                student_certificates = []
-            
-            applications_data.append({
-                'id': str(application.id),
-                'student_name': student_user.full_name,
-                'student_email': student_user.email,
-                'student_id': str(student.id),
-                'project_title': application.project.title,
-                'project_id': str(application.project.id),
-                'status': application.status,
-                'cover_letter': application.cover_letter or '',
-                'applied_at': application.applied_at.isoformat() if application.applied_at else application.created_at.isoformat(),
-                'compatibility_score': None,  # Campo no disponible en el modelo actual
-                'portfolio_url': application.portfolio_url,
-                'github_url': application.github_url,
-                'linkedin_url': application.linkedin_url,
-                # Datos del estudiante
-                'student_api_level': getattr(student, 'api_level', None),
-                'student_gpa': getattr(student, 'gpa', None),
-                'student_skills': student_skills,
-                'student_experience_years': getattr(student, 'experience_years', None),
-                'student_availability': getattr(student, 'availability', None),
-                'student_bio': getattr(student_user, 'bio', None),
-                'student_phone': getattr(student_user, 'phone', None),
-                'student_location': getattr(student_user, 'location', None),
-                'student_university': getattr(student, 'university', None),
-                'student_major': getattr(student, 'career', None),  # Usar 'career' en lugar de 'major'
-                'student_certificates': student_certificates,
-                'student_cv_url': getattr(student, 'cv_link', None),  # Usar 'cv_link' en lugar de 'cv_url'
-            })
+                # Obtener habilidades del estudiante
+                student_skills = []
+                if hasattr(student, 'skills') and student.skills:
+                    try:
+                        if isinstance(student.skills, str):
+                            student_skills = json.loads(student.skills)
+                        elif isinstance(student.skills, list):
+                            student_skills = student.skills
+                    except:
+                        student_skills = []
+                
+                # Crear objeto del estudiante con toda su información
+                student_data = {
+                    'id': student_id,
+                    'user_id': str(student.user.id),
+                    'name': (
+                        student.user.full_name if student.user.full_name and student.user.full_name != student.user.email 
+                        else f"{student.user.first_name or ''} {student.user.last_name or ''}".strip() 
+                        if (student.user.first_name or student.user.last_name)
+                        else student.user.email
+                    ),
+                    'email': student.user.email,
+                    'university': getattr(student, 'university', None) or 'No especificada',
+                    'career': getattr(student, 'career', None) or 'No especificada',
+                    'semester': getattr(student, 'semester', None),
+                    'api_level': getattr(student, 'api_level', 1),
+                    'gpa': float(getattr(student, 'gpa', 0)) if getattr(student, 'gpa', None) else None,
+                    'skills': student_skills,
+                    'experience_years': getattr(student, 'experience_years', 0),
+                    'availability': getattr(student, 'availability', 'No especificada'),
+                    'bio': getattr(student.user, 'bio', '') or '',
+                    'phone': getattr(student.user, 'phone', '') or '',
+                    'location': getattr(student, 'location', '') or '',
+                    'area': getattr(student, 'area', '') or '',
+                    'portfolio_url': getattr(student, 'portfolio_url', '') or '',
+                    'github_url': getattr(student, 'github_url', '') or '',
+                    'linkedin_url': getattr(student, 'linkedin_url', '') or '',
+                    'cv_link': getattr(student, 'cv_link', '') or '',
+                    'certificado_link': getattr(student, 'certificado_link', '') or '',
+                    'education_level': getattr(student, 'education_level', '') or '',
+                    'hours_per_week': getattr(student, 'hours_per_week', 20),
+                    'birthdate': student.user.birthdate.isoformat() if student.user.birthdate else None,
+                    'gender': getattr(student.user, 'gender', '') or '',
+                    'department': getattr(student.user, 'department', '') or '',
+                    'position': getattr(student.user, 'position', '') or '',
+                    'company_name': getattr(student.user, 'company_name', '') or '',
+                    'status': student.status,
+                    'strikes': student.strikes,
+                    'completed_projects': student.completed_projects,
+                    'total_hours': student.total_hours,
+                    'created_at': student.created_at.isoformat(),
+                    'updated_at': student.updated_at.isoformat(),
+                    # Historial de aplicaciones
+                    'applications': [{
+                        'id': str(application.id),
+                        'project_title': application.project.title,
+                        'project_id': str(application.project.id),
+                        'status': application.status,
+                        'applied_at': application.applied_at.isoformat(),
+                        'cover_letter': application.cover_letter or ''
+                    }]
+                }
+                
+                unique_students[student_id] = student_data
+                print(f"✅ [company_students_history] Estudiante procesado: {student_data['name']}")
+                print(f"🔍 [company_students_history] Datos del estudiante: id={student_data['id']}, user_id={student_data['user_id']}, name={student_data['name']}")
+                
+            except Exception as e:
+                print(f"❌ [company_students_history] Error procesando estudiante {student_id}: {e}")
+                continue
+        
+        # Convertir el mapa a lista
+        students_list = list(unique_students.values())
+        
+        print(f"✅ [company_students_history] Total de estudiantes únicos: {len(students_list)}")
+        
+        # Logging detallado de lo que se devuelve
+        if students_list:
+            first_student = students_list[0]
+            print(f"🔍 [company_students_history] Primer estudiante devuelto:")
+            print(f"   - id: {first_student.get('id')}")
+            print(f"   - user_id: {first_student.get('user_id')}")
+            print(f"   - name: {first_student.get('name')}")
+            print(f"   - email: {first_student.get('email')}")
+            print(f"   - Keys disponibles: {list(first_student.keys())}")
         
         return JsonResponse({
-            'results': applications_data,
-            'count': len(applications_data)
+            'results': students_list,
+            'count': len(students_list),
+            'message': f'Se encontraron {len(students_list)} estudiantes únicos que han postulado a proyectos de tu empresa'
         })
         
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        print(f"💥 [company_students_history] Error general: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -576,3 +671,216 @@ def reject_application(request, application_id):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+@require_auth
+def test_company_endpoint(request):
+    """
+    Endpoint de prueba simple para verificar que el backend esté funcionando
+    """
+    try:
+        print(f"🔍 [test_company_endpoint] Test endpoint llamado por: {request.user.email}")
+        
+        # Verificar que sea una empresa
+        if request.user.role != 'company':
+            return JsonResponse({'error': 'Solo las empresas pueden acceder a este endpoint'}, status=403)
+        
+        # Retornar datos de prueba
+        test_data = {
+            'message': 'Backend funcionando correctamente',
+            'user_email': request.user.email,
+            'user_role': request.user.role,
+            'timestamp': timezone.now().isoformat(),
+            'test_students': [
+                {
+                    'id': 'test-1',
+                    'name': 'Estudiante de Prueba 1',
+                    'email': 'test1@example.com',
+                    'university': 'Universidad de Prueba',
+                    'career': 'Ingeniería de Prueba',
+                    'skills': ['Python', 'React', 'Django'],
+                    'applications': [
+                        {
+                            'id': 'app-1',
+                            'project_title': 'Proyecto de Prueba',
+                            'status': 'pending'
+                        }
+                    ]
+                }
+            ]
+        }
+        
+        return JsonResponse(test_data)
+        
+    except Exception as e:
+        print(f"💥 [test_company_endpoint] Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)
+
+@require_auth
+def debug_company_students_data(request):
+    """
+    Endpoint de debug para examinar exactamente qué datos están en la base de datos
+    """
+    try:
+        print(f"🔍 [debug_company_students_data] Iniciando debug para empresa: {request.user.email}")
+        
+        # Verificar que sea una empresa
+        if request.user.role != 'company':
+            return JsonResponse({'error': 'Solo las empresas pueden acceder a este endpoint'}, status=403)
+        
+        # Obtener proyectos de la empresa
+        try:
+            company = request.user.empresa_profile
+            company_projects = company.proyectos.all()
+            print(f"🔍 [debug_company_students_data] Proyectos de la empresa: {company_projects.count()}")
+        except Exception as e:
+            print(f"❌ [debug_company_students_data] Error obteniendo empresa: {e}")
+            return JsonResponse({'error': 'Error obteniendo información de la empresa'}, status=500)
+        
+        if company_projects.count() == 0:
+            return JsonResponse({'error': 'No hay proyectos registrados en tu empresa'})
+        
+        # Obtener todas las postulaciones para proyectos de la empresa
+        applications = Aplicacion.objects.filter(
+            project__in=company_projects
+        ).select_related(
+            'student__user',
+            'project'
+        ).order_by('-created_at')
+        
+        print(f"🔍 [debug_company_students_data] Total de postulaciones encontradas: {applications.count()}")
+        
+        # Crear un mapa de estudiantes únicos basado en las postulaciones
+        unique_students = {}
+        
+        for application in applications:
+            student = application.student
+            if not student or not student.user:
+                continue
+                
+            student_id = str(student.id)
+            
+            # Si ya procesamos este estudiante, solo agregar la aplicación a su historial
+            if student_id in unique_students:
+                unique_students[student_id]['applications'].append({
+                    'id': str(application.id),
+                    'project_title': application.project.title,
+                    'project_id': str(application.project.id),
+                    'status': application.status,
+                    'applied_at': application.applied_at.isoformat(),
+                    'cover_letter': application.cover_letter or ''
+                })
+                continue
+            
+            # Procesar nuevo estudiante
+            try:
+                # DEBUG: Mostrar datos crudos de la base de datos
+                print(f"🔍 [DEBUG] Datos crudos del estudiante {student_id}:")
+                print(f"  - student.id: {student.id}")
+                print(f"  - student.user.id: {student.user.id}")
+                print(f"  - student.user.email: {student.user.email}")
+                print(f"  - student.user.first_name: '{student.user.first_name}'")
+                print(f"  - student.user.last_name: '{student.user.last_name}'")
+                print(f"  - student.user.full_name: '{student.user.full_name}'")
+                print(f"  - student.university: '{getattr(student, 'university', None)}'")
+                print(f"  - student.career: '{getattr(student, 'career', None)}'")
+                print(f"  - student.skills: '{getattr(student, 'skills', None)}'")
+                
+                # Obtener habilidades del estudiante
+                student_skills = []
+                if hasattr(student, 'skills') and student.skills:
+                    try:
+                        if isinstance(student.skills, str):
+                            student_skills = json.loads(student.skills)
+                        elif isinstance(student.skills, list):
+                            student_skills = student.skills
+                    except:
+                        student_skills = []
+                
+                # Crear objeto del estudiante con toda su información
+                student_data = {
+                    'id': student_id,
+                    'user_id': str(student.user.id),
+                    'name': (
+                        student.user.full_name if student.user.full_name and student.user.full_name != student.user.email 
+                        else f"{student.user.first_name or ''} {student.user.last_name or ''}".strip() 
+                        if (student.user.first_name or student.user.last_name)
+                        else student.user.email
+                    ),
+                    'email': student.user.email,
+                    'university': getattr(student, 'university', None) or 'No especificada',
+                    'career': getattr(student, 'career', None) or 'No especificada',
+                    'semester': getattr(student, 'semester', None),
+                    'api_level': getattr(student, 'api_level', 1),
+                    'gpa': float(getattr(student, 'gpa', 0)) if getattr(student, 'gpa', None) else None,
+                    'skills': student_skills,
+                    'experience_years': getattr(student, 'experience_years', 0),
+                    'availability': getattr(student, 'availability', 'No especificada'),
+                    'bio': getattr(student.user, 'bio', '') or '',
+                    'phone': getattr(student.user, 'phone', '') or '',
+                    'location': getattr(student, 'location', '') or '',
+                    'area': getattr(student, 'area', '') or '',
+                    'portfolio_url': getattr(student, 'portfolio_url', '') or '',
+                    'github_url': getattr(student, 'github_url', '') or '',
+                    'linkedin_url': getattr(student, 'linkedin_url', '') or '',
+                    'cv_link': getattr(student, 'cv_link', '') or '',
+                    'certificado_link': getattr(student, 'certificado_link', '') or '',
+                    'education_level': getattr(student, 'education_level', '') or '',
+                    'hours_per_week': getattr(student, 'hours_per_week', 20),
+                    'birthdate': student.user.birthdate.isoformat() if student.user.birthdate else None,
+                    'gender': getattr(student.user, 'gender', '') or '',
+                    'department': getattr(student.user, 'department', '') or '',
+                    'position': getattr(student.user, 'position', '') or '',
+                    'company_name': getattr(student.user, 'company_name', '') or '',
+                    'status': student.status,
+                    'strikes': student.strikes,
+                    'completed_projects': student.completed_projects,
+                    'total_hours': student.total_hours,
+                    'created_at': student.created_at.isoformat(),
+                    'updated_at': student.updated_at.isoformat(),
+                    # Historial de aplicaciones
+                    'applications': [{
+                        'id': str(application.id),
+                        'project_title': application.project.title,
+                        'project_id': str(application.project.id),
+                        'status': application.status,
+                        'applied_at': application.applied_at.isoformat(),
+                        'cover_letter': application.cover_letter or ''
+                    }]
+                }
+                
+                unique_students[student_id] = student_data
+                print(f"✅ [debug_company_students_data] Estudiante procesado: {student_data['name']}")
+                
+            except Exception as e:
+                print(f"❌ [debug_company_students_data] Error procesando estudiante {student_id}: {e}")
+                continue
+        
+        # Convertir el mapa a lista
+        students_list = list(unique_students.values())
+        
+        print(f"✅ [debug_company_students_data] Total de estudiantes únicos: {len(students_list)}")
+        
+        # Retornar información de debug
+        debug_response = {
+            'debug_info': 'Datos de debug para frontend',
+            'company_projects_count': company_projects.count(),
+            'applications_count': applications.count(),
+            'unique_students_count': len(students_list),
+            'sample_student': students_list[0] if students_list else None,
+            'sample_student_keys': list(students_list[0].keys()) if students_list else [],
+            'full_response_structure': {
+                'results': students_list,
+                'count': len(students_list),
+                'message': f'Se encontraron {len(students_list)} estudiantes únicos que han postulado a proyectos de tu empresa'
+            }
+        }
+        
+        return JsonResponse(debug_response)
+        
+    except Exception as e:
+        print(f"💥 [debug_company_students_data] Error general: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)
