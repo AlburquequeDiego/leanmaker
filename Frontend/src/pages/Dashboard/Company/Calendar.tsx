@@ -364,6 +364,14 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     loadCalendarData();
   }, []); // Empty dependency array to run only once
 
+  // Debug: Monitorear cambios en newEvent.attendees
+  useEffect(() => {
+    console.log('🔍 [ATTENDEES MONITOR] newEvent.attendees cambió:', newEvent.attendees);
+    console.log('🔍 [ATTENDEES MONITOR] Tipo:', typeof newEvent.attendees);
+    console.log('🔍 [ATTENDEES MONITOR] Es array:', Array.isArray(newEvent.attendees));
+    console.log('🔍 [ATTENDEES MONITOR] Longitud:', newEvent.attendees?.length);
+  }, [newEvent.attendees]);
+
   const loadCalendarData = useCallback(async () => {
       try {
       setLoading(true);
@@ -494,7 +502,10 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             studentUserId: app.student?.user,
             studentName: app.student?.name,
             studentEmail: app.student?.email,
-            status: app.status
+            status: app.status,
+            // DEBUG: Mostrar estructura completa del estudiante
+            studentKeys: app.student ? Object.keys(app.student) : [],
+            studentValues: app.student ? Object.values(app.student) : []
           });
         });
       }
@@ -516,24 +527,68 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         // Extraer información del estudiante
         let studentData = null;
         if (app.student) {
-          // Si app.student es un string (ID directo), crear objeto básico
+          console.log(`🔍 [NORMALIZATION] Estudiante raw data:`, app.student);
+          console.log(`🔍 [NORMALIZATION] Estudiante type:`, typeof app.student);
+          console.log(`🔍 [NORMALIZATION] Estudiante keys:`, app.student && typeof app.student === 'object' ? Object.keys(app.student) : 'N/A');
+          
+          // Si app.student es un string (ID directo), buscar la información real del estudiante
           if (typeof app.student === 'string') {
-            studentData = {
-              id: app.student,
-              user: app.student, // Usar el mismo ID para user
-              name: 'Estudiante', // Nombre por defecto
-              email: 'Sin email', // Email por defecto
-              career: null,
-              semester: null
-            };
+            console.log(`🔍 [NORMALIZATION] app.student es string: ${app.student}`);
+            console.log(`🔍 [NORMALIZATION] Buscando información real del estudiante...`);
+            
+            // Buscar en companyProjects si este estudiante está asignado a algún proyecto
+            let foundStudent = null;
+            for (const project of companyProjects) {
+              if (project.estudiantes && Array.isArray(project.estudiantes)) {
+                foundStudent = project.estudiantes.find((s: any) => s.id === app.student);
+                if (foundStudent) break;
+              }
+            }
+            
+            if (foundStudent) {
+              console.log(`🔍 [NORMALIZATION] Estudiante encontrado en proyectos:`, foundStudent);
+              studentData = {
+                id: foundStudent.id,
+                user: foundStudent.id,
+                name: foundStudent.nombre || 'Estudiante sin nombre',
+                email: foundStudent.email || 'estudiante@sinemail.com',
+                career: foundStudent.career || null,
+                semester: foundStudent.semester || null
+              };
+            } else {
+              console.log(`🔍 [NORMALIZATION] Estudiante NO encontrado en proyectos, usando ID como fallback`);
+              studentData = {
+                id: app.student,
+                user: app.student,
+                name: `Estudiante ${app.student.slice(0, 8)}...`, // Mostrar parte del ID
+                email: `estudiante.${app.student.slice(0, 8)}@example.com`, // Email generado
+                career: null,
+                semester: null
+              };
+            }
           }
-          // Si app.student es un objeto, extraer datos
+          // Si app.student es un objeto, extraer datos del backend
           else if (typeof app.student === 'object') {
+            console.log(`🔍 [NORMALIZATION] Estudiante completo:`, app.student);
+            console.log(`🔍 [NORMALIZATION] Estudiante user object:`, app.student.user);
+            
+            // El backend devuelve la estructura correcta con student.user.full_name y student.user.email
+            // También tiene student.name y student.email como campos directos
+            const studentName = app.student.name || 
+                              (app.student.user && app.student.user.full_name) || 
+                              'Estudiante sin nombre';
+            const studentEmail = app.student.email || 
+                               (app.student.user && app.student.user.email) || 
+                               'estudiante@sinemail.com';
+            
+            console.log(`🔍 [NORMALIZATION] Nombre extraído: '${studentName}'`);
+            console.log(`🔍 [NORMALIZATION] Email extraído: '${studentEmail}'`);
+            
             studentData = {
               id: app.student.id || null,
-              user: app.student.user || app.student.id || null, // ID del usuario (User)
-              name: app.student.name || 'Sin nombre',
-              email: app.student.email || 'Sin email',
+              user: app.student.user?.id || app.student.id || null, // ID del usuario (User)
+              name: studentName,
+              email: studentEmail,
               career: app.student.career || null,
               semester: app.student.semester || null
             };
@@ -559,6 +614,15 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       
       console.log('🔍 Aplicaciones normalizadas:', normalizedApplications);
       
+      // Debug: Verificar la estructura de las aplicaciones normalizadas
+      if (normalizedApplications.length > 0) {
+        console.log('🔍 [DEBUG] Primera aplicación normalizada:', normalizedApplications[0]);
+        console.log('🔍 [DEBUG] Estructura de project:', normalizedApplications[0].project);
+        console.log('🔍 [DEBUG] Estructura de student:', normalizedApplications[0].student);
+        console.log('🔍 [DEBUG] Tipo de project:', typeof normalizedApplications[0].project);
+        console.log('🔍 [DEBUG] Tipo de student:', typeof normalizedApplications[0].student);
+      }
+      
       // Guardar todas las aplicaciones para filtrar después
       setUsers(normalizedApplications);
       
@@ -575,7 +639,51 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     console.log('🔍 Estado actual de users:', users);
     console.log('🔍 Estado actual de companyProjects:', companyProjects);
     console.log('🔍 Proyecto seleccionado:', selectedProject);
+    
+    // Debug adicional: Verificar estructura de users
+    if (users.length > 0) {
+      console.log('🔍 [DEBUG] Primera entrada en users:', users[0]);
+      console.log('🔍 [DEBUG] Estructura de users[0].project:', users[0].project);
+      console.log('🔍 [DEBUG] Estructura de users[0].student:', users[0].student);
+    }
   }, [users, companyProjects, selectedProject]);
+
+  // Función para traducir el estado del proyecto
+  const getProjectStatusLabel = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'published': 'Publicado',
+      'active': 'Activo',
+      'completed': 'Completado',
+      'cancelled': 'Cancelado',
+      'draft': 'Borrador',
+      'pending': 'Pendiente',
+      'reviewing': 'En Revisión',
+      'accepted': 'Aceptado',
+      'rejected': 'Rechazado',
+      'open': 'Abierto',
+      'in_progress': 'En Progreso',
+      'closed': 'Cerrado'
+    };
+    return statusMap[status] || status;
+  };
+
+  /*
+   * 🔍 LÓGICA DE SELECCIÓN DE ESTUDIANTES SEGÚN ESTADO DEL PROYECTO:
+   * 
+   * 📋 PROYECTOS PUBLICADOS (status: 'published'):
+   *    - Solo muestran estudiantes que POSTULARON al proyecto
+   *    - Se obtienen de la tabla de aplicaciones (users)
+   *    - Estados: pending, reviewing, accepted, rejected
+   * 
+   * ✅ PROYECTOS ACTIVOS (status: 'active'):
+   *    - Solo muestran estudiantes ACEPTADOS/ASIGNADOS al proyecto
+   *    - Se obtienen del campo 'estudiantes' del proyecto
+   *    - Son estudiantes que ya están trabajando en el proyecto
+   * 
+   * ⚠️ OTROS ESTADOS:
+   *    - Muestran ambos tipos de estudiantes
+   *    - Para casos especiales como draft, completed, etc.
+   */
 
   const messages = {
     allDay: 'Todo el día', 
@@ -643,7 +751,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
     const endHour = slotInfo.end.getHours();
     
     if (startHour < 8 || startHour >= 19 || endHour > 19) {
-      alert('Solo se pueden crear eventos entre las 8:00 AM y las 19:00 PM (7:00 PM)');
+      alert('❌ Error de horario: Solo se pueden crear eventos entre las 8:00 AM y las 19:00 PM (7:00 PM).\n\n🕐 Horario seleccionado: ' + startHour + ':00 - ' + endHour + ':00\n✅ Horario permitido: 8:00 AM - 19:00 PM');
       return;
     }
     
@@ -653,8 +761,15 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       start_date: format(slotInfo.start, "yyyy-MM-dd'T'HH:mm"),
       end_date: format(slotInfo.end, "yyyy-MM-dd'T'HH:mm"),
       title: 'Entrevista - [Selecciona un proyecto]', // Título sugerido
-      // IMPORTANTE: Preservar el array attendees
-      attendees: newEvent.attendees || []
+      // IMPORTANTE: NO sobrescribir attendees si ya hay estudiantes seleccionados
+      attendees: newEvent.attendees && newEvent.attendees.length > 0 ? newEvent.attendees : []
+    });
+    
+    console.log('🔍 [SLOT SELECT] newEvent actualizado:', {
+      ...newEvent,
+      start_date: format(slotInfo.start, "yyyy-MM-dd'T'HH:mm"),
+      end_date: format(slotInfo.end, "yyyy-MM-dd'T'HH:mm"),
+      attendees: newEvent.attendees && newEvent.attendees.length > 0 ? newEvent.attendees : []
     });
   };
 
@@ -666,13 +781,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       
       // Validar que se haya seleccionado un proyecto
       if (!selectedProject) {
-        alert('Debes seleccionar un proyecto para crear el evento.');
+        alert('❌ Error: Debes seleccionar un proyecto para crear el evento.\n\n🎯 Selecciona un proyecto de la lista de proyectos activos.');
         return;
       }
       
       // Validar que se haya seleccionado al menos un estudiante
       if (!newEvent.attendees || newEvent.attendees.length === 0) {
-        alert('Debes seleccionar al menos un estudiante para el evento.');
+        alert('❌ Error: Debes seleccionar al menos un estudiante para el evento.\n\n👥 Selecciona un estudiante de la lista de participantes disponibles.');
         return;
       }
       
@@ -695,12 +810,12 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       console.log('Validando horario - Inicio:', startHour, 'Fin:', endHour);
       
       if (startHour < 8 || startHour >= 19) {
-        alert(`Los eventos solo pueden programarse entre las 8:00 AM y las 19:00 PM (7:00 PM). Hora seleccionada: ${startHour}:00`);
+        alert(`❌ Error de horario: Los eventos solo pueden programarse entre las 8:00 AM y las 19:00 PM (7:00 PM).\n\n🕐 Hora seleccionada: ${startHour}:00\n✅ Horario permitido: 8:00 AM - 19:00 PM`);
         return;
       }
       
       if (endHour > 19) {
-        alert(`Los eventos no pueden extenderse más allá de las 19:00 PM (7:00 PM). Hora de fin: ${endHour}:00`);
+        alert(`❌ Error de horario: Los eventos no pueden extenderse más allá de las 19:00 PM (7:00 PM).\n\n🕐 Hora de fin: ${endHour}:00\n✅ Horario permitido: 8:00 AM - 19:00 PM`);
         return;
       }
       
@@ -708,7 +823,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       if (selectedProject) {
         const selectedProjectData = companyProjects.find(p => p.id === selectedProject);
         if (!selectedProjectData) {
-          alert('El proyecto seleccionado no está disponible o no está activo.');
+          alert('❌ Error: El proyecto seleccionado no está disponible o no está activo.\n\n🔍 Verifica que el proyecto esté en la lista de proyectos activos.');
           return;
         }
         
@@ -716,24 +831,36 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         const allowedStatuses = ['open', 'in-progress', 'active', 'published', 'activo', 'publicado'];
         
         if (!allowedStatuses.includes(projectStatus)) {
-          alert(`No se pueden crear eventos para proyectos con estado "${selectedProjectData.status}". Solo se permiten proyectos activos o publicados.`);
+          alert(`❌ Error: No se pueden crear eventos para proyectos con estado "${selectedProjectData.status}".\n\n✅ Solo se permiten proyectos con estado:\n• Abierto (Open)\n• En Progreso (In Progress)\n• Activo (Active)\n• Publicado (Published)`);
           return;
         }
       }
       
       // Asegurar que attendees sea siempre un array válido
       let attendees = [];
+      console.log('🔍 [EVENT CREATION] Procesando attendees:');
+      console.log('🔍 [EVENT CREATION] newEvent.attendees raw:', newEvent.attendees);
+      console.log('🔍 [EVENT CREATION] Tipo de newEvent.attendees:', typeof newEvent.attendees);
+      console.log('🔍 [EVENT CREATION] Es array:', Array.isArray(newEvent.attendees));
+      console.log('🔍 [EVENT CREATION] Longitud:', newEvent.attendees?.length);
+      
       if (Array.isArray(newEvent.attendees)) {
         attendees = [...newEvent.attendees];
+        console.log('🔍 [EVENT CREATION] Attendees es array, copiando:', attendees);
       } else if (typeof newEvent.attendees === 'string' && newEvent.attendees) {
         attendees = [newEvent.attendees];
+        console.log('🔍 [EVENT CREATION] Attendees es string, convirtiendo a array:', attendees);
       } else if (newEvent.attendees) {
         attendees = [newEvent.attendees];
+        console.log('🔍 [EVENT CREATION] Attendees es otro tipo, convirtiendo a array:', attendees);
+      } else {
+        console.log('🔍 [EVENT CREATION] Attendees es null/undefined/vacío');
       }
       
       // Validar que tengamos al menos un estudiante
       if (attendees.length === 0) {
-        alert('Debes seleccionar al menos un estudiante para el evento.');
+        console.error('❌ [EVENT CREATION] No hay attendees válidos');
+        alert('❌ Error: Debes seleccionar al menos un estudiante para el evento.\n\n👥 Selecciona un estudiante de la lista de participantes disponibles.');
         return;
       }
       
@@ -833,7 +960,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       setSelectedProject('');
       
       // Mostrar mensaje de éxito
-      alert('Evento creado exitosamente. Los estudiantes han sido notificados.');
+      alert('✅ Evento creado exitosamente!\n\n📧 Los estudiantes han sido notificados por email.\n📅 El evento aparecerá en sus calendarios.\n🎯 Puedes ver el evento en tu calendario principal.');
       
     } catch (error: any) {
       console.error('❌ [EVENT CREATION] Error creando evento:', error);
@@ -851,7 +978,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       }
       
       setError(errorMessage);
-      alert(`Error al crear el evento: ${errorMessage}`);
+      alert(`❌ Error al crear el evento:\n\n${errorMessage}\n\n🔍 Verifica que:\n• Hayas seleccionado un proyecto válido\n• Hayas seleccionado al menos un estudiante\n• Las fechas estén dentro del horario permitido (8:00 AM - 19:00 PM)`);
     }
   };
 
@@ -874,7 +1001,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           {error}
         </Alert>
         <Button onClick={loadCalendarData} variant="contained">
-          Reintentar
+          🔄 Reintentar
         </Button>
       </Box>
     );
@@ -977,7 +1104,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 }
               }}
             >
-              Agregar Evento
+              ➕ Agregar Evento
             </Button>
           </Box>
         </Box>
@@ -1000,7 +1127,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             : '1px solid rgba(102, 126, 234, 0.1)'
         }}>
           <Typography variant="h6" fontWeight={600} color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            📊 Resumen de Actividad
+            📊 Resumen de Actividad del Calendario
           </Typography>
           
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, gap: 2 }}>
@@ -1204,7 +1331,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" fontWeight={600} color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <ViewModuleIcon /> Vistas del Calendario
+              <ViewModuleIcon /> 🎨 Vistas del Calendario
           </Typography>
           
           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -1323,7 +1450,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   }
                 }}
               >
-                HOY
+                  📅 HOY
               </Button>
               <Button 
                 onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))} 
@@ -1338,7 +1465,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   }
                 }}
               >
-                ANTERIOR
+                  ⬅️ ANTERIOR
               </Button>
               <Button 
                 onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))} 
@@ -1353,7 +1480,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   }
                 }}
               >
-                SIGUIENTE
+                  ➡️ SIGUIENTE
               </Button>
             </Box>
             <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
@@ -1381,7 +1508,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   })
                 }}
               >
-                MES
+                  📅 MES
               </Button>
               <Button 
                 onClick={() => setView('week')} 
@@ -1404,7 +1531,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   })
                 }}
               >
-                SEMANA
+                  📊 SEMANA
               </Button>
               <Button 
                 onClick={() => setView('day')} 
@@ -1427,7 +1554,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   })
                 }}
               >
-                DÍA
+                  ☀️ DÍA
               </Button>
               <Button 
                 onClick={() => setView('agenda')} 
@@ -1450,7 +1577,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   })
                 }}
               >
-                AGENDA
+                  📋 AGENDA
               </Button>
             </Box>
           </Box>
@@ -1609,7 +1736,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     📅 No hay eventos programados
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    No tienes eventos en tu agenda. Crea tu primer evento para comenzar.
+                    No tienes eventos en tu agenda. Crea tu primer evento para comenzar a gestionar entrevistas y reuniones con estudiantes.
                   </Typography>
                   <Button 
                     variant="contained" 
@@ -1620,14 +1747,14 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       fontWeight: 600
                     }}
                   >
-                    Crear Evento
+                    Crear Primer Evento
                   </Button>
                 </Box>
               ) : (
                 <Box sx={{ height: '100%', overflow: 'auto' }}>
                   {/* Vista de agenda personalizada */}
                   <Typography variant="h5" fontWeight={600} color="primary" gutterBottom sx={{ mb: 3 }}>
-                    📅 Agenda de Eventos ({events.length} eventos)
+                    📅 Agenda de Eventos - {events.length} evento{events.length !== 1 ? 's' : ''}
                   </Typography>
                   
                   {events
@@ -1839,7 +1966,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
             🎯 ¡Comienza a programar eventos!
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            No tienes eventos programados aún. Haz clic en "Agregar Evento" para crear tu primera entrevista o reunión.
+            No tienes eventos programados aún. Haz clic en "Agregar Evento" para crear tu primera entrevista o reunión con estudiantes.
           </Typography>
           <Button 
             variant="contained" 
@@ -1888,7 +2015,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
           fontWeight: 600,
           borderRadius: '12px 12px 0 0'
         }}>
-          Programar Entrevista/Reunión
+          📅 Programar Entrevista/Reunión
         </DialogTitle>
         <DialogContent sx={{ 
           mt: 2,
@@ -1907,7 +2034,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                 mb: 2
               }}>
-                Información del Representante
+                👤 Información del Representante
               </Typography>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             <TextField 
@@ -1915,7 +2042,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   label="Nombre del Representante" 
                   value={newEvent.representative_name} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, representative_name: e.target.value }))} 
-                  placeholder="Ej: María González López"
+                  placeholder="Ej: María González López (Representante de RRHH)"
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
@@ -1943,7 +2070,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   label="Cargo" 
                   value={newEvent.representative_position} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, representative_position: e.target.value }))} 
-                  placeholder="Ej: Directora de Recursos Humanos"
+                  placeholder="Ej: Directora de Recursos Humanos / Gerente de Proyectos"
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
@@ -1980,7 +2107,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                 mb: 2
               }}>
-                Proyecto y Participante
+                🎯 Proyecto y Estudiante Participante
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <FormControl fullWidth>
@@ -2020,8 +2147,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               >
                 <MenuItem value="">Selecciona un proyecto (solo activos/publicados)</MenuItem>
                 {companyProjects.length === 0 ? (
-                  <MenuItem disabled>
-                    No hay proyectos activos disponibles
+                  <MenuItem disabled sx={{
+                    bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                    color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                    fontStyle: 'italic'
+                  }}>
+                    No hay proyectos activos disponibles. 
+                    Solo se muestran proyectos con estado: Abierto, En Progreso, Activo o Publicado.
                   </MenuItem>
                 ) : (
                   companyProjects.map(project => (
@@ -2039,7 +2171,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         <Typography variant="caption" sx={{ 
                           color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
                         }}>
-                          Estado: {project.status}
+                          Estado: {getProjectStatusLabel(project.status)} (Original: {project.status})
                         </Typography>
                       </Box>
                       </MenuItem>
@@ -2058,27 +2190,171 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     Participante
                   </InputLabel>
                   
-                  {/* Información de debug */}
-                  {selectedProject && (
-                    <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(255, 193, 7, 0.1)', borderRadius: 1, border: '1px solid rgba(255, 193, 7, 0.3)' }}>
-                      <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500 }}>
-                        🔍 Debug: {users.filter(u => String(u.project) === selectedProject).length} estudiantes disponibles para este proyecto
+                  {/* Mensaje informativo sobre la lógica de selección */}
+                  {selectedProject && (() => {
+                    const selectedProjectData = companyProjects.find((p: any) => p.id === selectedProject);
+                    if (!selectedProjectData) return null;
+                    
+                    return (
+                      <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(25, 118, 210, 0.1)', borderRadius: 1, border: '1px solid rgba(25, 118, 210, 0.3)' }}>
+                        <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500, display: 'block' }}>
+                          ℹ️ {selectedProjectData.status === 'active' 
+                            ? 'Proyecto ACTIVO: Solo estudiantes asignados disponibles'
+                            : selectedProjectData.status === 'published'
+                            ? 'Proyecto PUBLICADO: Solo estudiantes que postularon disponibles'
+                            : 'Proyecto en otro estado: Todos los estudiantes disponibles'
+                          }
+                        </Typography>
+                      </Box>
+                    );
+                  })()}
+                  
+                  {/* Indicador de estudiantes seleccionados */}
+                  {newEvent.attendees && newEvent.attendees.length > 0 && (
+                    <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(76, 175, 80, 0.1)', borderRadius: 1, border: '1px solid rgba(76, 175, 80, 0.3)' }}>
+                      <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 500, display: 'block' }}>
+                        ✅ Estudiante seleccionado: {newEvent.attendees.length} participante{newEvent.attendees.length !== 1 ? 's' : ''}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500, display: 'block', mt: 0.5 }}>
-                        📋 Attendees actuales: {newEvent.attendees.length > 0 ? newEvent.attendees.join(', ') : 'NINGUNO'}
+                      <Typography variant="caption" sx={{ 
+                        color: 'success.main', 
+                        fontSize: '10px',
+                        display: 'block',
+                        mt: 0.5
+                      }}>
+                        IDs: {newEvent.attendees.join(', ')}
                       </Typography>
                     </Box>
                   )}
+                  
+                  {/* Información de estudiantes según estado del proyecto */}
+                  {selectedProject && (() => {
+                    // Buscar el proyecto seleccionado en companyProjects
+                    const selectedProjectData = companyProjects.find((p: any) => p.id === selectedProject);
+                    const projectStudents = selectedProjectData?.estudiantes || [];
+                    
+                    // Obtener estudiantes que postularon a este proyecto
+                    const projectApplications = users.filter((u: any) => String(u.project) === selectedProject);
+                    
+                    // Lógica según estado del proyecto
+                    let relevantStudents = [];
+                    let studentType = '';
+                    let studentCount = 0;
+                    
+                    if (selectedProjectData?.status === 'active') {
+                      // PROYECTO ACTIVO: Solo estudiantes asignados
+                      relevantStudents = projectStudents;
+                      studentType = 'Estudiantes Asignados';
+                      studentCount = projectStudents.length;
+                    } else if (selectedProjectData?.status === 'published') {
+                      // PROYECTO PUBLICADO: Solo estudiantes que postularon
+                      relevantStudents = projectApplications;
+                      studentType = 'Estudiantes que Postularon';
+                      studentCount = projectApplications.length;
+                    } else {
+                      // Otros estados: mostrar ambos tipos
+                      relevantStudents = [...projectStudents, ...projectApplications];
+                      studentType = 'Estudiantes Disponibles';
+                      studentCount = projectStudents.length + projectApplications.length;
+                    }
+                    
+                    return (
+                    <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(255, 193, 7, 0.1)', borderRadius: 1, border: '1px solid rgba(255, 193, 7, 0.3)' }}>
+                      <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500 }}>
+                          🔍 {studentCount} {studentType.toLowerCase()} para este proyecto
+                      </Typography>
+                        {studentCount > 0 && (
+                          <Box sx={{ mt: 1 }}>
+                            {selectedProjectData?.status === 'active' && projectStudents.length > 0 && (
+                              <Box sx={{ mb: 1 }}>
+                                <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 500, display: 'block' }}>
+                                  ✅ Estudiantes Asignados ({projectStudents.length}):
+                                </Typography>
+                                {projectStudents.slice(0, 2).map((student: any, index: number) => (
+                                  <Typography key={index} variant="caption" sx={{ 
+                                    color: 'success.main', 
+                                    display: 'block', 
+                                    fontSize: '10px',
+                                    ml: 1
+                                  }}>
+                                    • {student.nombre || 'Sin nombre'} ({student.email || 'Sin email'})
+                                  </Typography>
+                                ))}
+                                {projectStudents.length > 2 && (
+                                  <Typography variant="caption" sx={{ 
+                                    color: 'success.main', 
+                                    fontSize: '10px',
+                                    ml: 1
+                                  }}>
+                                    ... y {projectStudents.length - 2} más asignados
+                                  </Typography>
+                                )}
+                              </Box>
+                            )}
+                            
+                            {selectedProjectData?.status === 'published' && projectApplications.length > 0 && (
+                              <Box>
+                                <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500, display: 'block' }}>
+                                  📝 Estudiantes que Postularon ({projectApplications.length}):
+                                </Typography>
+                                {projectApplications.slice(0, 2).map((app: any, index: number) => (
+                                  <Typography key={index} variant="caption" sx={{ 
+                                    color: 'info.main', 
+                                    display: 'block', 
+                                    fontSize: '10px',
+                                    ml: 1
+                                  }}>
+                                    • {app.student?.name || 'Estudiante'} ({app.student?.email || 'Sin email'}) - 
+                                    {app.status === 'pending' ? 'Pendiente' :
+                                     app.status === 'reviewing' ? 'En Revisión' :
+                                     app.status === 'accepted' ? 'Aceptado' :
+                                     app.status === 'rejected' ? 'Rechazado' : app.status}
+                                  </Typography>
+                                ))}
+                                {projectApplications.length > 2 && (
+                                  <Typography variant="caption" sx={{ 
+                                    color: 'info.main', 
+                                    fontSize: '10px',
+                                    ml: 1
+                                  }}>
+                                    ... y {projectApplications.length - 2} más postulando
+                                  </Typography>
+                                )}
+                              </Box>
+                            )}
+                            
+                            {selectedProjectData?.status !== 'active' && selectedProjectData?.status !== 'published' && (
+                              <Box>
+                                <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500, display: 'block' }}>
+                                  ⚠️ Estado del proyecto: {getProjectStatusLabel(selectedProjectData?.status)}
+                                </Typography>
+                                <Typography variant="caption" sx={{ 
+                                  color: 'warning.main', 
+                                  display: 'block', 
+                                  fontSize: '10px',
+                                  ml: 1
+                                }}>
+                                  • Proyectos ACTIVOS: Solo estudiantes asignados
+                                  • Proyectos PUBLICADOS: Solo estudiantes que postularon
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
+                        )}
+                      </Box>
+                    );
+                  })()}
               <Select
                     value={newEvent.attendees.length > 0 ? newEvent.attendees[0] : ''}
                     onChange={e => {
                       const selectedStudentId = e.target.value;
                       console.log('🔍 [SELECT CHANGE] Valor seleccionado:', selectedStudentId);
-                      console.log('🔍 [SELECT CHANGE] Estado previo:', newEvent);
+                      console.log('🔍 [SELECT CHANGE] Estado previo de newEvent:', newEvent);
+                      console.log('🔍 [SELECT CHANGE] Estado previo de attendees:', newEvent.attendees);
                       
                       if (selectedStudentId) {
                         const newState = { ...newEvent, attendees: [selectedStudentId] };
                         console.log('🔍 [SELECT CHANGE] Nuevo estado:', newState);
+                        console.log('🔍 [SELECT CHANGE] Nuevo attendees:', newState.attendees);
                         setNewEvent(newState);
                       } else {
                         const newState = { ...newEvent, attendees: [] };
@@ -2102,74 +2378,145 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       },
                     }}
               >
-                    <MenuItem value="">Selecciona un participante</MenuItem>
+                    <MenuItem value="">Selecciona un estudiante participante</MenuItem>
                 {!selectedProject && (
                   <MenuItem disabled sx={{
                     bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
                     color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
                     fontStyle: 'italic'
                   }}>
-                    Primero selecciona un proyecto
+                    Primero selecciona un proyecto para ver los estudiantes disponibles
                   </MenuItem>
                 )}
                 {(() => {
-                  console.log('🔍 [STUDENT FILTER] Filtrando usuarios para proyecto:', selectedProject);
-                  console.log('🔍 [STUDENT FILTER] Usuarios disponibles:', users);
-                  console.log('🔍 [STUDENT FILTER] Estructura de usuarios:', users.map((u: any) => ({
-                    id: u.id,
-                    project: u.project,
-                    student: u.student,
-                    studentUser: u.student?.user,
-                    studentId: u.student?.id
-                  })));
+                  console.log('🔍 [STUDENT FILTER] Filtrando estudiantes para proyecto:', selectedProject);
+                  console.log('🔍 [STUDENT FILTER] Proyectos disponibles:', companyProjects);
+                  console.log('🔍 [STUDENT FILTER] Aplicaciones recibidas:', users);
                   
-                  const filteredUsers = users.filter((u: any) => {
-                    // u.project ahora es directamente el ID del proyecto (string) después de la normalización
-                    const projectId = u.project;
-                    const isMatch = String(projectId) === selectedProject;
-                    console.log(`🔍 [STUDENT FILTER] Usuario ${u.id}: projectId=${projectId}, selectedProject=${selectedProject}, isMatch=${isMatch}`);
-                    return isMatch;
-                  });
+                  // Buscar el proyecto seleccionado en companyProjects
+                  const selectedProjectData = companyProjects.find((p: any) => p.id === selectedProject);
+                  console.log('🔍 [STUDENT FILTER] Proyecto seleccionado:', selectedProjectData);
                   
-                  console.log('🔍 [STUDENT FILTER] Usuarios filtrados:', filteredUsers);
-                  console.log('🔍 [STUDENT FILTER] Detalle de usuarios filtrados:', filteredUsers.map((u: any) => ({
-                    id: u.id,
-                    project: u.project,
-                    student: u.student,
-                    studentUser: u.student?.user,
-                    studentId: u.student?.id
-                  })));
-                  
-                  if (filteredUsers.length === 0 && selectedProject) {
+                  if (!selectedProjectData) {
                     return (
                       <MenuItem disabled sx={{
                         bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
                         color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
                         fontStyle: 'italic'
                       }}>
-                        No hay estudiantes postulados para este proyecto
+                        Proyecto no encontrado
                       </MenuItem>
                     );
                   }
                   
-                  return filteredUsers.map((user: any) => {
-                    // Usar el ID del usuario (student.user) como valor del Select
-                    const studentId = user.student?.user || user.student?.id || user.id;
-                    const studentName = user.student?.name || 'Estudiante';
-                    const studentCareer = user.student?.career;
-                    const studentSemester = user.student?.semester;
+                  // Obtener estudiantes del proyecto seleccionado (ya asignados)
+                  const projectStudents = selectedProjectData.estudiantes || [];
+                  console.log('🔍 [STUDENT FILTER] Estudiantes ya asignados:', projectStudents);
+                  
+                  // Para proyectos ACTIVOS: solo mostrar estudiantes asignados (no postulantes)
+                  // Para proyectos PUBLICADOS: mostrar estudiantes que postularon
+                  let allAvailableStudents = [];
+                  
+                  if (selectedProjectData.status === 'active') {
+                    // Solo estudiantes asignados para proyectos activos
+                    allAvailableStudents = projectStudents.map((student: any) => ({
+                      ...student,
+                      source: 'assigned',
+                      displayName: student.nombre || 'Estudiante sin nombre',
+                      displayEmail: student.email || 'estudiante@sinemail.com',
+                      displayStatus: 'Asignado al Proyecto'
+                    }));
+                    console.log('🔍 [STUDENT FILTER] Proyecto ACTIVO - Solo estudiantes asignados:', allAvailableStudents);
+                  } else {
+                    // Para proyectos publicados: mostrar estudiantes que postularon
+                    // El normalizedApplications tiene project como string (projectId)
+                    console.log('🔍 [STUDENT FILTER] Filtrando users para proyecto:', selectedProject);
+                    console.log('🔍 [STUDENT FILTER] Total de users disponibles:', users.length);
+                    console.log('🔍 [STUDENT FILTER] Muestra de users:', users.slice(0, 3));
+                    
+                    const projectApplications = users.filter((u: any) => {
+                      console.log(`🔍 [STUDENT FILTER] Comparando u.project: '${u.project}' (tipo: ${typeof u.project}) con selectedProject: '${selectedProject}' (tipo: ${typeof selectedProject})`);
+                      const matches = String(u.project) === selectedProject;
+                      console.log(`🔍 [STUDENT FILTER] ¿Coincide?: ${matches}`);
+                      return matches;
+                    });
+                    console.log('🔍 [STUDENT FILTER] Aplicaciones para este proyecto:', projectApplications);
+                    
+                    allAvailableStudents = projectApplications.map((app: any) => {
+                      console.log(`🔍 [STUDENT FILTER] Procesando aplicación:`, app);
+                      console.log(`🔍 [STUDENT FILTER] app.student:`, app.student);
+                      console.log(`🔍 [STUDENT FILTER] app.student.name:`, app.student?.name);
+                      console.log(`🔍 [STUDENT FILTER] app.student.email:`, app.student?.email);
+                      console.log(`🔍 [STUDENT FILTER] app.student.user:`, app.student?.user);
+                      
+                      // Asegurar que tenemos datos válidos del estudiante
+                      // Los datos ya están normalizados en normalizedApplications
+                      const studentName = app.student?.name || 'Estudiante sin nombre';
+                      const studentEmail = app.student?.email || 'estudiante@sinemail.com';
+                      const studentId = app.student?.id || app.student?.user || app.id;
+                      
+                      console.log(`🔍 [STUDENT FILTER] Datos extraídos:`, {
+                        name: studentName,
+                        email: studentEmail,
+                        id: studentId
+                      });
+                      
+                      return {
+                        id: studentId,
+                        nombre: studentName,
+                        email: studentEmail,
+                        status: app.status,
+                        source: 'applied',
+                        displayName: studentName,
+                        displayEmail: studentEmail,
+                        displayStatus: app.status === 'pending' ? 'Pendiente de Revisión' :
+                                     app.status === 'reviewing' ? 'En Revisión' :
+                                     app.status === 'accepted' ? 'Aceptado' :
+                                     app.status === 'rejected' ? 'Rechazado' : app.status
+                      };
+                    });
+                    console.log('🔍 [STUDENT FILTER] Proyecto PUBLICADO - Solo estudiantes que postularon:', allAvailableStudents);
+                  }
+                  
+                  console.log('🔍 [STUDENT FILTER] Todos los estudiantes disponibles:', allAvailableStudents);
+                  
+                  if (allAvailableStudents.length === 0) {
+                    return (
+                      <MenuItem disabled sx={{
+                        bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
+                        color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                        fontStyle: 'italic'
+                      }}>
+                        {selectedProjectData.status === 'active' 
+                          ? 'No hay estudiantes asignados a este proyecto activo. Los estudiantes deben ser asignados primero.'
+                          : selectedProjectData.status === 'published'
+                          ? 'No hay estudiantes que hayan postulado a este proyecto publicado. Los estudiantes deben postular primero.'
+                          : 'No hay estudiantes disponibles para este proyecto. Los estudiantes deben postular o ser asignados primero.'
+                        }
+                      </MenuItem>
+                    );
+                  }
+                  
+                  return allAvailableStudents.map((student: any, index: number) => {
+                    console.log(`🔍 [STUDENT SELECT] Estudiante ${index}:`, student);
+                    
+                    // Usar el ID del estudiante como valor del Select
+                    const studentId = student.id;
+                    const studentName = student.displayName || student.nombre || 'Estudiante sin nombre';
+                    const studentEmail = student.displayEmail || student.email || 'estudiante@sinemail.com';
+                    const studentStatus = student.displayStatus || 'Sin estado';
+                    const studentSource = student.source;
                     
                     console.log(`🔍 [STUDENT SELECT] Renderizando estudiante:`, {
                       id: studentId,
                       name: studentName,
-                      career: studentCareer,
-                      semester: studentSemester,
-                      studentUser: user.student?.user,
-                      studentId: user.student?.id
+                      email: studentEmail,
+                      status: studentStatus,
+                      source: studentSource
                     });
                     
                     return (
-                      <MenuItem key={studentId} value={studentId} sx={{
+                      <MenuItem key={`${studentSource}-${studentId}`} value={studentId} sx={{
                         bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
                         '&:hover': {
@@ -2183,24 +2530,12 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                           <Typography variant="caption" sx={{ 
                             color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
                           }}>
-                            Estado: {user.status === 'pending' ? 'Pendiente' : 
-                                   user.status === 'accepted' ? 'Aceptado' : 
-                                   user.status === 'rejected' ? 'Rechazado' : user.status}
+                            📧 {studentEmail}
                           </Typography>
-                          {studentCareer && (
                             <Typography variant="caption" sx={{ 
                               color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
                             }}>
-                              {studentCareer} - Semestre {studentSemester || 'N/A'}
-                            </Typography>
-                          )}
-                          {/* Debug: Mostrar IDs para verificación */}
-                          <Typography variant="caption" sx={{ 
-                            color: themeMode === 'dark' ? '#ef4444' : '#dc2626',
-                            fontFamily: 'monospace',
-                            fontSize: '10px'
-                          }}>
-                            User ID: {user.student?.user || 'N/A'} | Student ID: {user.student?.id || 'N/A'}
+                            {studentSource === 'assigned' ? '✅ ' : '📝 '}{studentStatus}
                           </Typography>
                         </Box>
                       </MenuItem>
@@ -2223,7 +2558,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                 mb: 2
               }}>
-                Detalles del Evento
+                ✨ Detalles del Evento
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField 
@@ -2231,7 +2566,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   label="Título del Evento" 
                   value={newEvent.title} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, title: e.target.value }))} 
-                  placeholder="Ej: Entrevista - Desarrollo de Aplicación Móvil"
+                  placeholder="Ej: Entrevista - [Selecciona un proyecto]"
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
@@ -2261,7 +2596,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   label="Descripción" 
                   value={newEvent.description} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, description: e.target.value }))} 
-                  placeholder="Ej: Reunión para discutir los detalles del proyecto, revisar el cronograma y establecer los próximos pasos de desarrollo."
+                  placeholder="Ej: Reunión para discutir los detalles del proyecto, revisar el cronograma y establecer los próximos pasos de desarrollo. Incluye entrevista técnica y evaluación de habilidades."
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
@@ -2295,7 +2630,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   
                   // Validar que la hora esté entre 8:00 AM y 19:00 PM
                   if (hour < 8 || hour >= 19) {
-                    alert('Los eventos solo pueden programarse entre las 8:00 AM y las 19:00 PM (7:00 PM)');
+                    alert('❌ Error de horario: Los eventos solo pueden programarse entre las 8:00 AM y las 19:00 PM (7:00 PM).\n\n🕐 Hora seleccionada: ' + hour + ':00\n✅ Horario permitido: 8:00 AM - 19:00 PM');
                     return;
                   }
                   
@@ -2357,6 +2692,8 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     }}>
                     La reunión durará exactamente <strong>1 hora</strong> desde la hora seleccionada. 
                     Por ejemplo: si seleccionas las 9:00 AM, la reunión terminará a las 10:00 AM.
+                    <br />
+                    <strong>Nota:</strong> Solo se permiten eventos entre las 8:00 AM y las 19:00 PM (7:00 PM).
                   </Typography>
                 </Box>
               </Alert>
@@ -2374,7 +2711,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                 mb: 2
               }}>
-                Tipo de Reunión
+                🏢 Tipo de Reunión
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <FormControl fullWidth>
@@ -2450,7 +2787,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     label="Link de la Videollamada" 
                     value={newEvent.meeting_link} 
                     onChange={(e) => setNewEvent((prev: any) => ({ ...prev, meeting_link: e.target.value }))} 
-                    placeholder="Ej: https://meet.google.com/abc-defg-hij"
+                    placeholder="Ej: https://meet.google.com/abc-defg-hij o https://zoom.us/j/123456789"
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
@@ -2660,7 +2997,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                 mb: 2
               }}>
-                Configuración Adicional
+                ⚙️ Configuración Adicional
               </Typography>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             <FormControl fullWidth>
@@ -2816,7 +3153,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               }
             }}
           >
-            Cancelar
+              ❌ Cancelar
           </Button>
           
           {/* Botón de debug temporal */}
@@ -2863,7 +3200,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               fontSize: '0.75rem'
             }}
           >
-            Debug
+              🐛 Debug
           </Button>
           
           <Button 
@@ -2880,7 +3217,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               }
             }}
           >
-            Programar Evento
+              ✅ Programar Evento
           </Button>
         </DialogActions>
       </Dialog>
@@ -2910,7 +3247,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {selectedEvent && getEventIcon(selectedEvent.event_type)}
-            <Typography variant="h6">Detalles del Evento</Typography>
+            <Typography variant="h6">📋 Detalles del Evento</Typography>
           </Box>
         </DialogTitle>
         <DialogContent sx={{ 
@@ -2936,7 +3273,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 <Typography variant="body1" sx={{ 
                   color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
                 }}>
-                  {selectedEvent.description || 'Sin descripción'}
+                  {selectedEvent.description || 'Sin descripción - Contacta al organizador para más detalles'}
                 </Typography>
               </Box>
 
@@ -2952,7 +3289,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                     mb: 2
                   }}>
-                    Representante de la Empresa
+                      👤 Representante de la Empresa
                   </Typography>
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                   <Box>
@@ -2962,7 +3299,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         Nombre:
                       </Typography>
                       <Typography variant="body1" fontWeight={600}>
-                        {selectedEvent.representative_name || 'No especificado'}
+                        {selectedEvent.representative_name || 'No especificado - Contacta a la empresa'}
                   </Typography>
                     </Box>
                     <Box>
@@ -2972,7 +3309,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         Cargo:
                       </Typography>
                       <Typography variant="body1" fontWeight={600}>
-                        {selectedEvent.representative_position || 'No especificado'}
+                        {selectedEvent.representative_position || 'No especificado - Contacta a la empresa'}
                   </Typography>
                     </Box>
                   </Box>
@@ -2990,7 +3327,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                   mb: 2
                 }}>
-                  Detalles de la Reunión
+                    📅 Detalles de la Reunión
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                   <Box>
@@ -3052,7 +3389,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                   mb: 2
                 }}>
-                  Ubicación
+                    📍 Ubicación
                   </Typography>
                 {selectedEvent.meeting_type === 'online' ? (
                   <Box>
@@ -3074,7 +3411,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         >
                           {selectedEvent.meeting_link}
                         </a>
-                      ) : 'No especificado'}
+                      ) : 'No especificado - Contacta al organizador'}
                   </Typography>
                   </Box>
                 ) : (selectedEvent.meeting_type === 'cowork' || selectedEvent.meeting_type === 'fablab') ? (
@@ -3094,7 +3431,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       Sala:
                     </Typography>
                     <Typography variant="body1" fontWeight={600}>
-                      {selectedEvent.meeting_room || 'No especificado'}
+                      {selectedEvent.meeting_room || 'No especificado - Contacta al organizador'}
                     </Typography>
                   </Box>
                 ) : (
@@ -3105,7 +3442,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       Ubicación:
                     </Typography>
                     <Typography variant="body1" fontWeight={600}>
-                      {selectedEvent.location || 'No especificado'}
+                      {selectedEvent.location || 'No especificado - Contacta al organizador'}
                     </Typography>
                   </Box>
                 )}
@@ -3122,7 +3459,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                   mb: 2
                 }}>
-                  Participantes
+                    👥 Participantes
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                   {selectedEvent.attendees && selectedEvent.attendees.length > 0 ? (
@@ -3148,7 +3485,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     <Typography variant="body2" sx={{ 
                       color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
                     }}>
-                      No hay participantes registrados
+                      No hay participantes registrados para este evento
                     </Typography>
                   )}
                 </Box>
@@ -3166,7 +3503,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                     mb: 2
                   }}>
-                    Proyecto
+                    🎯 Proyecto
                   </Typography>
                   <Typography variant="body1" fontWeight={600}>
                     {selectedEvent.project_title}
@@ -3185,7 +3522,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   color: themeMode === 'dark' ? '#60a5fa' : '#1976d2',
                   mb: 2
                 }}>
-                  Información Adicional
+                    ℹ️ Información Adicional
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                   <Box>
@@ -3210,7 +3547,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       Creado por:
                     </Typography>
                     <Typography variant="body1" fontWeight={600}>
-                      {selectedEvent.created_by || 'No especificado'}
+                                              {selectedEvent.created_by || 'No especificado - Sistema'}
                     </Typography>
                   </Box>
                 </Box>
@@ -3235,7 +3572,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               }
             }}
           >
-            Cerrar
+              ✋ Cerrar
           </Button>
         </DialogActions>
       </Dialog>

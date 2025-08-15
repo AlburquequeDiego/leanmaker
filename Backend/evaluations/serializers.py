@@ -166,7 +166,7 @@ class StudentSkillSerializer:
         return {
             'id': str(skill.id),
             'student_id': str(skill.student.id),
-            'student_name': skill.student.full_name,
+            'student_name': skill.student.user.full_name,
             'skill_name': skill.skill_name,
             'level': skill.level,
             'years_experience': skill.years_experience,

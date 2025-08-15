@@ -537,7 +537,6 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
       updated_at: backendEvent.updated_at || '',
       project: backendEvent.project && backendEvent.project.id && typeof backendEvent.project.id !== 'undefined' ? String(backendEvent.project.id) : undefined,
       project_title: backendEvent.project?.title || backendEvent.title || 'Sin título',
-      project: backendEvent.project?.id || backendEvent.project || null,
       status: backendEvent.status || 'scheduled',
       meeting_type: backendEvent.meeting_type,
       meeting_link: backendEvent.meeting_link,

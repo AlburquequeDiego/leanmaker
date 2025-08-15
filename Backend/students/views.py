@@ -284,15 +284,15 @@ def student_create(request):
         
         student_data = {
             'id': str(student.id),
-            'email': student.email,
-            'first_name': student.first_name,
-            'last_name': student.last_name,
-            'username': student.username,
-            'phone': student.phone,
-            'bio': student.bio,
-            'is_active': student.is_active,
-            'is_verified': student.is_verified,
-            'full_name': student.full_name
+            'email': student.user.email,
+            'first_name': student.user.first_name,
+            'last_name': student.user.last_name,
+            'username': student.user.username,
+            'phone': student.user.phone,
+            'bio': student.user.bio,
+            'is_active': student.user.is_active,
+            'is_verified': student.user.is_verified,
+            'full_name': student.user.full_name
         }
         
         return JsonResponse(student_data, status=201)

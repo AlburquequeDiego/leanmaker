@@ -362,19 +362,54 @@ def calendar_events_create(request):
             
             for i, attendee_id in enumerate(attendees_list):
                 print(f"🔍 [BACKEND] Procesando attendee {i}: {attendee_id} (tipo: {type(attendee_id)})")
+                attendee = None
+                
                 try:
-                    attendee = User.objects.get(id=attendee_id)
-                    print(f"🔍 [BACKEND] Usuario encontrado: {attendee.get_full_name()} (ID: {attendee.id})")
+                    # Primero intentar buscar directamente como User (por si acaso)
+                    try:
+                        attendee = User.objects.get(id=attendee_id)
+                        print(f"🔍 [BACKEND] Usuario encontrado directamente: {attendee.get_full_name()} (ID: {attendee.id})")
+                    except User.DoesNotExist:
+                        print(f"🔍 [BACKEND] Usuario no encontrado directamente, buscando como Estudiante...")
+                        # Si no se encuentra, buscar como Estudiante y obtener su usuario asociado
+                        from students.models import Estudiante
+                        try:
+                            student = Estudiante.objects.get(id=attendee_id)
+                            print(f"🔍 [BACKEND] Estudiante encontrado: {student.user.full_name if student.user else 'Sin usuario'} (ID: {student.id})")
+                            print(f"🔍 [BACKEND] student.user: {student.user}")
+                            print(f"🔍 [BACKEND] Tipo de student.user: {type(student.user)}")
+                            
+                            if student.user:
+                                attendee = student.user
+                                print(f"🔍 [BACKEND] Usuario asociado: {attendee.get_full_name()} (ID: {attendee.id})")
+                            else:
+                                print(f"❌ [BACKEND] Estudiante {attendee_id} no tiene usuario asociado")
+                                print(f"🔍 [BACKEND] Campos del estudiante: {[f.name for f in student._meta.fields]}")
+                                continue
+                        except Estudiante.DoesNotExist:
+                            print(f"❌ [BACKEND] No se encontró ni usuario ni estudiante con ID: {attendee_id}")
+                            continue
+                        except Exception as e:
+                            print(f"❌ [BACKEND] Error buscando estudiante {attendee_id}: {e}")
+                            import traceback
+                            traceback.print_exc()
+                            continue
+                    
+                    # Verificar que tenemos un attendee válido
+                    if attendee is None:
+                        print(f"❌ [BACKEND] No se pudo obtener attendee para ID: {attendee_id}")
+                        continue
+                    
+                    # Agregar el usuario al evento
+                    print(f"🔍 [BACKEND] Intentando agregar attendee: {attendee.get_full_name()} (ID: {attendee.id})")
                     event.attendees.add(attendee)
-                    print(f"✅ [BACKEND] Participante agregado: {attendee.get_full_name()} (ID: {attendee.id})")
-                except User.DoesNotExist:
-                    print(f"❌ [BACKEND] Usuario no encontrado con ID: {attendee_id}")
-                    pass
+                    print(f"✅ [BACKEND] Participante agregado exitosamente: {attendee.get_full_name()} (ID: {attendee.id})")
+                    
                 except Exception as e:
                     print(f"❌ [BACKEND] Error procesando attendee {attendee_id}: {e}")
                     import traceback
                     traceback.print_exc()
-                    pass
+                    continue
         else:
             print("⚠️ [BACKEND] No se recibieron participantes para el evento")
             print(f"⚠️ [BACKEND] data.keys(): {list(data.keys())}")

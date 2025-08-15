@@ -265,7 +265,7 @@ def admin_evaluations_list(request):
                 'project_id': str(evaluation.project.id) if evaluation.project else None,
                 'project_title': evaluation.project.title if evaluation.project else 'Sin proyecto',
                 'student_id': str(evaluation.student.id) if evaluation.student else None,
-                'student_name': evaluation.student.full_name if evaluation.student else 'Sin estudiante',
+                'student_name': evaluation.student.user.full_name if evaluation.student else 'Sin estudiante',
                 'evaluator_id': str(evaluation.evaluator.id) if evaluation.evaluator else None,
                 'evaluator_name': evaluation.evaluator.full_name if evaluation.evaluator else 'Sin evaluador',
                 'score': evaluation.score,

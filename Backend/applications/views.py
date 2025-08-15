@@ -306,6 +306,11 @@ def received_applications(request):
             print(f"🔍 [BACKEND] Procesando aplicación {app.id}")
             student_user = app.student.user if app.student else None
             print(f"🔍 [BACKEND] Student user: {student_user}")
+            if student_user:
+                print(f"🔍 [BACKEND]   User first_name: '{student_user.first_name}'")
+                print(f"🔍 [BACKEND]   User last_name: '{student_user.last_name}'")
+                print(f"🔍 [BACKEND]   User full_name: '{student_user.full_name}'")
+                print(f"🔍 [BACKEND]   User email: '{student_user.email}'")
             # Obtener perfil detallado si existe
             perfil_detallado = getattr(app.student, 'perfil_detallado', None) if app.student else None
             print(f"🔍 [BACKEND] Perfil detallado: {perfil_detallado}")
@@ -352,8 +357,12 @@ def received_applications(request):
                 } if app.project else {},
                 'student': {
                     'id': str(app.student.id) if app.student else None,
-                    'user': str(app.student.user.id) if app.student and app.student.user else None,
-                    'name': f"{student_user.first_name} {student_user.last_name}".strip() if student_user else 'Sin nombre',
+                    'user': {
+                        'id': str(app.student.user.id) if app.student and app.student.user else None,
+                        'full_name': student_user.full_name if student_user else 'Sin nombre',
+                        'email': student_user.email if student_user else '',
+                    } if app.student and app.student.user else None,
+                    'name': student_user.full_name if student_user else 'Sin nombre',
                     'email': student_user.email if student_user else '',
                     'career': app.student.career if app.student else None,
                     'semester': app.student.semester if app.student else None,

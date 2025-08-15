@@ -54,7 +54,7 @@ class NotificationService:
                 company_user = project.company.user
                 if company_user:
                     company_title = "Nueva Postulación Recibida"
-                    company_message = f"Has recibido una nueva postulación para el proyecto '{project.title}' de {student.full_name}."
+                    company_message = f"Has recibido una nueva postulación para el proyecto '{project.title}' de {student.user.full_name}."
                     company_url = f"/dashboard/company/applications"
                     
                     NotificationService.create_notification(
