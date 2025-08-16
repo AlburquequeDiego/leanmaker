@@ -2239,28 +2239,37 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     let relevantStudents = [];
                     let studentType = '';
                     let studentCount = 0;
+                    let studentSource = '';
                     
                     if (selectedProjectData?.status === 'active') {
                       // PROYECTO ACTIVO: Solo estudiantes asignados
                       relevantStudents = projectStudents;
                       studentType = 'Estudiantes Asignados';
                       studentCount = projectStudents.length;
+                      studentSource = 'projectStudents';
                     } else if (selectedProjectData?.status === 'published') {
                       // PROYECTO PUBLICADO: Solo estudiantes que postularon
-                      relevantStudents = projectApplications;
-                      studentType = 'Estudiantes que Postularon';
-                      studentCount = projectApplications.length;
+                      relevantStudents = projectStudents.length > 0 ? projectStudents : projectApplications;
+                      studentType = projectStudents.length > 0 ? 'Estudiantes que Postularon' : 'Estudiantes que Postularon (fallback)';
+                      studentCount = relevantStudents.length;
+                      studentSource = projectStudents.length > 0 ? 'projectStudents' : 'users';
                     } else {
                       // Otros estados: mostrar ambos tipos
                       relevantStudents = [...projectStudents, ...projectApplications];
                       studentType = 'Estudiantes Disponibles';
                       studentCount = projectStudents.length + projectApplications.length;
+                      studentSource = 'ambos';
                     }
                     
                     return (
                     <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(255, 193, 7, 0.1)', borderRadius: 1, border: '1px solid rgba(255, 193, 7, 0.3)' }}>
                       <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500 }}>
                           🔍 {studentCount} {studentType.toLowerCase()} para este proyecto
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'info.main', fontSize: '10px', display: 'block', mt: 0.5 }}>
+                          📊 Fuente de datos: {studentSource === 'projectStudents' ? 'Backend (estudiantes del proyecto)' : 
+                                           studentSource === 'users' ? 'Frontend (aplicaciones recibidas)' : 
+                                           'Combinado (ambas fuentes)'}
                       </Typography>
                         {studentCount > 0 && (
                           <Box sx={{ mt: 1 }}>
@@ -2276,7 +2285,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                                     fontSize: '10px',
                                     ml: 1
                                   }}>
-                                    • {student.nombre || 'Sin nombre'} ({student.email || 'Sin email'})
+                                    • {student.nombre || 'Sin nombre'} ({student.email || 'Sin email'}) - Tipo: {student.type || 'N/A'}
                                   </Typography>
                                 ))}
                                 {projectStudents.length > 2 && (
@@ -2291,32 +2300,69 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                               </Box>
                             )}
                             
-                            {selectedProjectData?.status === 'published' && projectApplications.length > 0 && (
+                            {selectedProjectData?.status === 'published' && (
                               <Box>
-                                <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500, display: 'block' }}>
-                                  📝 Estudiantes que Postularon ({projectApplications.length}):
-                                </Typography>
-                                {projectApplications.slice(0, 2).map((app: any, index: number) => (
-                                  <Typography key={index} variant="caption" sx={{ 
-                                    color: 'info.main', 
-                                    display: 'block', 
-                                    fontSize: '10px',
-                                    ml: 1
-                                  }}>
-                                    • {app.student?.name || 'Estudiante'} ({app.student?.email || 'Sin email'}) - 
-                                    {app.status === 'pending' ? 'Pendiente' :
-                                     app.status === 'reviewing' ? 'En Revisión' :
-                                     app.status === 'accepted' ? 'Aceptado' :
-                                     app.status === 'rejected' ? 'Rechazado' : app.status}
-                                  </Typography>
-                                ))}
-                                {projectApplications.length > 2 && (
-                                  <Typography variant="caption" sx={{ 
-                                    color: 'info.main', 
-                                    fontSize: '10px',
-                                    ml: 1
-                                  }}>
-                                    ... y {projectApplications.length - 2} más postulando
+                                {projectStudents.length > 0 ? (
+                                  <>
+                                    <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500, display: 'block' }}>
+                                      📝 Estudiantes que Postularon ({projectStudents.length}) - Desde Backend:
+                                    </Typography>
+                                    {projectStudents.slice(0, 2).map((student: any, index: number) => (
+                                      <Typography key={index} variant="caption" sx={{ 
+                                        color: 'info.main', 
+                                        display: 'block', 
+                                        fontSize: '10px',
+                                        ml: 1
+                                      }}>
+                                        • {student.nombre || 'Sin nombre'} ({student.email || 'Sin email'}) - 
+                                        {student.status === 'pending' ? 'Pendiente' :
+                                         student.status === 'reviewing' ? 'En Revisión' :
+                                         student.status === 'accepted' ? 'Aceptado' :
+                                         student.status === 'rejected' ? 'Rechazado' : student.status}
+                                      </Typography>
+                                    ))}
+                                    {projectStudents.length > 2 && (
+                                      <Typography variant="caption" sx={{ 
+                                        color: 'info.main', 
+                                        fontSize: '10px',
+                                        ml: 1
+                                      }}>
+                                        ... y {projectStudents.length - 2} más postulando
+                                      </Typography>
+                                    )}
+                                  </>
+                                ) : projectApplications.length > 0 ? (
+                                  <>
+                                    <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500, display: 'block' }}>
+                                      📝 Estudiantes que Postularon ({projectApplications.length}) - Desde Frontend:
+                                    </Typography>
+                                    {projectApplications.slice(0, 2).map((app: any, index: number) => (
+                                      <Typography key={index} variant="caption" sx={{ 
+                                        color: 'info.main', 
+                                        display: 'block', 
+                                        fontSize: '10px',
+                                        ml: 1
+                                      }}>
+                                        • {app.student?.name || 'Estudiante'} ({app.student?.email || 'Sin email'}) - 
+                                        {app.status === 'pending' ? 'Pendiente' :
+                                         app.status === 'reviewing' ? 'En Revisión' :
+                                         app.status === 'accepted' ? 'Aceptado' :
+                                         app.status === 'rejected' ? 'Rechazado' : app.status}
+                                      </Typography>
+                                    ))}
+                                    {projectApplications.length > 2 && (
+                                      <Typography variant="caption" sx={{ 
+                                        color: 'info.main', 
+                                        fontSize: '10px',
+                                        ml: 1
+                                      }}>
+                                        ... y {projectApplications.length - 2} más postulando
+                                      </Typography>
+                                    )}
+                                  </>
+                                ) : (
+                                  <Typography variant="caption" sx={{ color: 'warning.main', fontSize: '10px' }}>
+                                    ⚠️ No se encontraron estudiantes postulantes en ninguna fuente
                                   </Typography>
                                 )}
                               </Box>
@@ -2418,48 +2464,84 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   let allAvailableStudents = [];
                   
                   if (selectedProjectData.status === 'active') {
-                    // Solo estudiantes asignados para proyectos activos
+                    // PROYECTO ACTIVO: Solo estudiantes asignados
                     allAvailableStudents = projectStudents.map((student: any) => ({
                       ...student,
                       source: 'assigned',
                       displayName: student.nombre || 'Estudiante sin nombre',
                       displayEmail: student.email || 'estudiante@sinemail.com',
-                      displayStatus: 'Asignado al Proyecto'
+                      displayStatus: 'Asignado al Proyecto',
+                      type: 'assigned'
                     }));
                     console.log('🔍 [STUDENT FILTER] Proyecto ACTIVO - Solo estudiantes asignados:', allAvailableStudents);
-                  } else {
-                    // Para proyectos publicados: mostrar estudiantes que postularon
-                    // El normalizedApplications tiene project como string (projectId)
-                    console.log('🔍 [STUDENT FILTER] Filtrando users para proyecto:', selectedProject);
-                    console.log('🔍 [STUDENT FILTER] Total de users disponibles:', users.length);
-                    console.log('🔍 [STUDENT FILTER] Muestra de users:', users.slice(0, 3));
                     
-                    const projectApplications = users.filter((u: any) => {
-                      console.log(`🔍 [STUDENT FILTER] Comparando u.project: '${u.project}' (tipo: ${typeof u.project}) con selectedProject: '${selectedProject}' (tipo: ${typeof selectedProject})`);
-                      const matches = String(u.project) === selectedProject;
-                      console.log(`🔍 [STUDENT FILTER] ¿Coincide?: ${matches}`);
-                      return matches;
-                    });
-                    console.log('🔍 [STUDENT FILTER] Aplicaciones para este proyecto:', projectApplications);
+                  } else if (selectedProjectData.status === 'published') {
+                    // PROYECTO PUBLICADO: Solo estudiantes que postularon
+                    console.log('🔍 [STUDENT FILTER] Proyecto PUBLICADO - Buscando postulantes...');
                     
-                    allAvailableStudents = projectApplications.map((app: any) => {
-                      console.log(`🔍 [STUDENT FILTER] Procesando aplicación:`, app);
-                      console.log(`🔍 [STUDENT FILTER] app.student:`, app.student);
-                      console.log(`🔍 [STUDENT FILTER] app.student.name:`, app.student?.name);
-                      console.log(`🔍 [STUDENT FILTER] app.student.email:`, app.student?.email);
-                      console.log(`🔍 [STUDENT FILTER] app.student.user:`, app.student?.user);
+                    // Usar directamente los estudiantes del proyecto (ya vienen del backend)
+                    if (projectStudents && projectStudents.length > 0) {
+                      allAvailableStudents = projectStudents.map((student: any) => ({
+                        ...student,
+                        source: 'applied',
+                        displayName: student.nombre || 'Estudiante sin nombre',
+                        displayEmail: student.email || 'estudiante@sinemail.com',
+                        displayStatus: student.status === 'pending' ? 'Pendiente de Revisión' :
+                                     student.status === 'reviewing' ? 'En Revisión' :
+                                     student.status === 'accepted' ? 'Aceptado' :
+                                     student.status === 'rejected' ? 'Rechazado' : student.status,
+                        type: 'applied'
+                      }));
+                      console.log('🔍 [STUDENT FILTER] Proyecto PUBLICADO - Estudiantes que postularon (desde projectStudents):', allAvailableStudents);
+                    } else {
+                      // Fallback: buscar en users si no hay estudiantes en projectStudents
+                      console.log('🔍 [STUDENT FILTER] No hay estudiantes en projectStudents, buscando en users...');
+                      const projectApplications = users.filter((u: any) => String(u.project) === selectedProject);
+                      console.log('🔍 [STUDENT FILTER] Aplicaciones encontradas en users:', projectApplications);
                       
-                      // Asegurar que tenemos datos válidos del estudiante
-                      // Los datos ya están normalizados en normalizedApplications
+                      allAvailableStudents = projectApplications.map((app: any) => {
+                        const studentName = app.student?.name || 'Estudiante sin nombre';
+                        const studentEmail = app.student?.email || 'estudiante@sinemail.com';
+                        const studentId = app.student?.id || app.student?.user || app.id;
+                        
+                        return {
+                          id: studentId,
+                          nombre: studentName,
+                          email: studentEmail,
+                          status: app.status,
+                          source: 'applied',
+                          displayName: studentName,
+                          displayEmail: studentEmail,
+                          displayStatus: app.status === 'pending' ? 'Pendiente de Revisión' :
+                                       app.status === 'reviewing' ? 'En Revisión' :
+                                       app.status === 'accepted' ? 'Aceptado' :
+                                       app.status === 'rejected' ? 'Rechazado' : app.status,
+                          type: 'applied'
+                        };
+                      });
+                      console.log('🔍 [STUDENT FILTER] Proyecto PUBLICADO - Estudiantes que postularon (desde users):', allAvailableStudents);
+                    }
+                    
+                  } else {
+                    // Otros estados: mostrar ambos tipos
+                    console.log('🔍 [STUDENT FILTER] Otro estado - Mostrando ambos tipos de estudiantes...');
+                    
+                    // Estudiantes asignados
+                    const assignedStudents = projectStudents.map((student: any) => ({
+                      ...student,
+                      source: 'assigned',
+                      displayName: student.nombre || 'Estudiante sin nombre',
+                      displayEmail: student.email || 'estudiante@sinemail.com',
+                      displayStatus: 'Asignado al Proyecto',
+                      type: 'assigned'
+                    }));
+                    
+                    // Estudiantes que postularon
+                    const projectApplications = users.filter((u: any) => String(u.project) === selectedProject);
+                    const appliedStudents = projectApplications.map((app: any) => {
                       const studentName = app.student?.name || 'Estudiante sin nombre';
                       const studentEmail = app.student?.email || 'estudiante@sinemail.com';
                       const studentId = app.student?.id || app.student?.user || app.id;
-                      
-                      console.log(`🔍 [STUDENT FILTER] Datos extraídos:`, {
-                        name: studentName,
-                        email: studentEmail,
-                        id: studentId
-                      });
                       
                       return {
                         id: studentId,
@@ -2472,10 +2554,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         displayStatus: app.status === 'pending' ? 'Pendiente de Revisión' :
                                      app.status === 'reviewing' ? 'En Revisión' :
                                      app.status === 'accepted' ? 'Aceptado' :
-                                     app.status === 'rejected' ? 'Rechazado' : app.status
+                                     app.status === 'rejected' ? 'Rechazado' : app.status,
+                        type: 'applied'
                       };
                     });
-                    console.log('🔍 [STUDENT FILTER] Proyecto PUBLICADO - Solo estudiantes que postularon:', allAvailableStudents);
+                    
+                    allAvailableStudents = [...assignedStudents, ...appliedStudents];
+                    console.log('🔍 [STUDENT FILTER] Otro estado - Ambos tipos:', allAvailableStudents);
                   }
                   
                   console.log('🔍 [STUDENT FILTER] Todos los estudiantes disponibles:', allAvailableStudents);

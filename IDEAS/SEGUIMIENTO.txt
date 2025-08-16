@@ -1,10 +1,205 @@
-USUARIOS ACTIVOS EN LA BASE DE DATOS: 
+=== MAPA DE FRAGILIDAD DEL SISTEMA DE CALENDARIO ===
+Fecha: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 
-ADMINISTRADOS:
-admin@gmail.com                 admin123
+🚨 PROBLEMA IDENTIFICADO: Estados duplicados en la base de datos
+- ID 1: 'published' (minúscula)
+- ID 6: 'Publicado' (mayúscula)  
+- ID 2: 'active' (minúscula)
+- ID 7: 'Activo' (mayúscula)
 
-estudiantes:
-juan.perez@inacapmail.cl        Estudiante123!
+=== PUNTOS CRÍTICOS DE FRAGILIDAD ===
 
-EMPRESAS:
-lucia.amaya@gmail.com           Empresa123!
+1. COMPARACIONES DE ESTADO INCONSISTENTES
+   ❌ Backend: project_status in ['active', 'activo'] 
+   ❌ Frontend: selectedProjectData.status === 'active'
+   💥 PROBLEMA: Si el backend devuelve 'Activo' o 'Publicado', el frontend no lo reconoce
+
+2. DEPENDENCIA DE CAMPOS ESPECÍFICOS
+   ❌ Frontend espera: id, nombre, email, status, type
+   ❌ Si el backend cambia la estructura, se rompe todo
+   💥 PROBLEMA: No hay validación de campos requeridos
+
+3. LÓGICA DE FALLBACK FRÁGIL
+   ❌ Si projectStudents está vacío, busca en users
+   ❌ users tiene estructura completamente diferente
+   💥 PROBLEMA: Fallback puede devolver datos incompatibles
+
+4. MANEJO DE ERRORES INEXISTENTE
+   ❌ No hay validación de que selectedProjectData sea válido
+   ❌ Si es null/undefined, se rompe todo
+   💥 PROBLEMA: Sistema no es resiliente a errores
+
+5. DUPLICACIÓN DE ESTADOS EN BD
+   ❌ Estados duplicados con diferentes casos
+   ❌ Lógica de comparación inconsistente
+   💥 PROBLEMA: Mismo estado puede tener diferentes representaciones
+
+=== ESTRUCTURA ACTUAL FUNCIONANDO ===
+
+BACKEND (projects/views.py - company_projects):
+- Proyectos 'active'/'Activo': Solo estudiantes asignados (status: accepted, active, completed)
+- Proyectos 'published'/'Publicado': Todos los postulantes
+- Campo 'type': 'assigned' o 'applied'
+
+FRONTEND (Calendar.tsx):
+- projectStudents: Lista de estudiantes del proyecto (viene del backend)
+- users: Lista de aplicaciones recibidas (fallback)
+- Lógica de filtrado basada en selectedProjectData.status
+
+=== REGLAS DE NEGOCIO CRÍTICAS ===
+
+1. PROYECTOS ACTIVOS: Solo estudiantes asignados
+2. PROYECTOS PUBLICADOS: Solo estudiantes que postularon  
+3. El campo 'type' diferencia tipos de estudiantes
+4. Los estados de proyecto son case-insensitive (pero inconsistente)
+
+=== DEPENDENCIAS CRÍTICAS ===
+
+- /api/projects/company_projects/ (projectStudents)
+- /api/applications/received_applications/ (users - fallback)
+- Estructura exacta de datos entre frontend y backend
+- Nombres de estados de proyecto
+
+=== ANÁLISIS COMPLETO REALIZADO ===
+
+✅ CONTRATO DE DATOS CREADO: IDEAS/CONTRATO_DATOS_CALENDARIO.md
+✅ ESTRUCTURA DE ENDPOINTS DOCUMENTADA
+✅ VARIABLES CRÍTICAS IDENTIFICADAS
+✅ COMPARACIONES DE ESTADO MAPEADAS
+✅ PROBLEMAS ESPECÍFICOS IDENTIFICADOS
+✅ ANÁLISIS DE IMPACTO COMPLETADO: IDEAS/ANALISIS_IMPACTO_CAMBIO_ESTADOS.md
+
+=== PROBLEMAS CRÍTICOS IDENTIFICADOS ===
+
+1. **INCONSISTENCIA DE ESTADOS**
+   - Backend compara con ['active', 'activo'] y ['published', 'publicado']
+   - Frontend compara con === 'active' y === 'published'
+   - Base de datos tiene estados duplicados con diferentes casos
+
+2. **ESTRUCTURA DE DATOS DIFERENTE**
+   - projectStudents: Campos `id`, `nombre`, `email`, `status`, `type`
+   - users: Campos `id`, `project`, `student.name`, `student.email`, `status`
+
+3. **LÓGICA DE FALLBACK FRÁGIL**
+   - Si projectStudents está vacío, busca en users
+   - Estructuras incompatibles pueden causar errores
+
+=== ANÁLISIS DE IMPACTO DEL CAMBIO A INGLÉS ===
+
+🚨 **IMPACTO ALTO - REQUIERE MIGRACIÓN INMEDIATA:**
+
+1. **Dashboard de Estudiantes** (AvailableProjects.tsx)
+   - Línea 740: `project.status === 'Activo'` → `'active'`
+
+2. **Dashboard de Admin** (GestionProyectosAdmin.tsx)
+   - Líneas 885-890: Estados mixtos español/inglés
+   - Líneas 996-997: `'completado'` vs `'completed'`
+   - Líneas 1051-1057: Múltiples estados en español
+
+⚠️ **IMPACTO MEDIO - REQUIERE REVISIÓN:**
+
+3. **Backend - Múltiples Views**
+   - projects/views.py: Filtros con estados mixtos
+   - core/views.py: Múltiples filtros por status__name
+   - evaluations/views.py: Comparaciones con 'Completado'
+
+🔍 **IMPACTO BAJO - SOLO REVISIÓN:**
+
+4. **Otros archivos frontend** con filtros por status
+5. **Funcionalidades existentes** que ya usan inglés
+
+=== PLAN DE ROBUSTEZ (SIN ROMPER LO QUE FUNCIONA) ===
+
+FASE 1: ✅ COMPLETADA - Documentación y Análisis
+- [x] Mapear exactamente qué datos devuelve cada endpoint
+- [x] Documentar la estructura de datos esperada
+- [x] Identificar todas las comparaciones de estado
+- [x] Analizar impacto del cambio a inglés
+
+FASE 2: Normalización de Datos
+- [ ] Normalizar estados a minúsculas en el backend
+- [ ] Crear constantes para estados válidos
+- [ ] Implementar validación de datos
+- [ ] **NUEVO**: Plan de migración gradual a inglés
+
+FASE 3: Manejo de Errores
+- [ ] Agregar try-catch en puntos críticos
+- [ ] Implementar fallbacks robustos
+- [ ] Validación de campos requeridos
+
+FASE 4: Tests Seguros
+- [ ] Tests de integración (no unitarios)
+- [ ] Mocks que respeten la estructura real
+- [ ] Validación de contratos de datos
+
+=== PLAN DE MIGRACIÓN A INGLÉS ===
+
+**ESTRATEGIA**: Backend devuelve inglés, Frontend muestra español
+
+**FASE 1: PREPARACIÓN (SIN ROMPER NADA)**
+1. Crear estados en inglés en la base de datos
+2. Mantener estados duplicados temporalmente
+3. Implementar función de traducción en frontend
+
+**FASE 2: MIGRACIÓN GRADUAL**
+1. Actualizar backend para devolver solo estados en inglés
+2. Actualizar frontend para usar solo estados en inglés
+3. Mantener compatibilidad con estados existentes
+
+**FASE 3: LIMPIEZA**
+1. Migrar proyectos a nuevos estados
+2. Eliminar estados duplicados solo al final
+3. Validar que todo funcione
+
+=== SOLUCIONES RECOMENDADAS ===
+
+1. **Normalización de Estados**
+   - Backend: project_status = project.status.name.lower()
+   - Frontend: const normalizedStatus = selectedProjectData.status?.toLowerCase();
+
+2. **Validación de Campos**
+   - Crear interfaces TypeScript para validar estructura
+   - Validar antes de procesar datos
+
+3. **Fallback Robusto**
+   - Transformar datos del fallback a estructura compatible
+   - Validar que la transformación sea exitosa
+
+4. **Función de Traducción**
+   - Implementar getProjectStatusLabel() en frontend
+   - Mapear estados en inglés a etiquetas en español
+
+=== ADVERTENCIAS CRÍTICAS ===
+
+⚠️ NO MODIFICAR NADA hasta completar la documentación
+⚠️ NO CREAR TESTS que puedan romper la funcionalidad
+⚠️ NO CAMBIAR la estructura de datos sin validar
+⚠️ NO ELIMINAR estados duplicados sin migración
+⚠️ **NUEVO**: El cambio a inglés afecta MÚLTIPLES interfaces
+
+=== PRÓXIMOS PASOS ===
+
+1. ✅ COMPLETADO: Documentar exactamente qué devuelve cada endpoint
+2. ✅ COMPLETADO: Crear contrato de datos entre frontend y backend
+3. ✅ COMPLETADO: Identificar todos los puntos de comparación de estado
+4. ✅ COMPLETADO: Analizar impacto del cambio a inglés
+5. 🔄 EN PROGRESO: Planear migración gradual sin romper funcionalidad
+
+=== ARCHIVOS CRÍTICOS IDENTIFICADOS ===
+
+**PRIORIDAD ALTA (Migración inmediata):**
+- `Frontend/src/pages/Dashboard/Student/Projects/AvailableProjects.tsx` - Línea 740
+- `Frontend/src/pages/Dashboard/Admin/GestionProyectosAdmin.tsx` - Líneas 885-890, 996-997, 1051-1057
+- `Backend/projects/views.py` - Líneas 46, 1119
+
+**PRIORIDAD MEDIA (Revisión):**
+- `Backend/core/views.py` - Múltiples filtros por status__name
+- `Backend/evaluations/views.py` - Comparaciones con 'Completado'
+
+**PRIORIDAD BAJA (Solo revisión):**
+- Archivos que ya usan estados en inglés
+- Nuevas funcionalidades
+
+**DOCUMENTACIÓN:**
+- `IDEAS/CONTRATO_DATOS_CALENDARIO.md` - Contrato de datos completo
+- `IDEAS/ANALISIS_IMPACTO_CAMBIO_ESTADOS.md` - Análisis de impacto detallado

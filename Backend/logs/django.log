@@ -1,3 +1,145 @@
 INFO 2025-08-16 00:28:56,646 signals 23036 8544 Signals de notificaciones conectados exitosamente
 INFO 2025-08-16 00:28:57,288 signals 19148 10884 Signals de notificaciones conectados exitosamente
 INFO 2025-08-16 00:28:57,296 autoreload 19148 10884 Watching for file changes with StatReloader
+INFO 2025-08-16 08:37:20,810 signals 15476 20668 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:37:21,361 signals 15596 15448 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:37:21,363 autoreload 15596 15448 Watching for file changes with StatReloader
+INFO 2025-08-16 08:37:36,886 middleware 15596 17004 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:36,886 middleware 15596 7292 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:36,893 middleware 15596 17004 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 08:37:36,893 middleware 15596 7292 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 08:37:36,956 basehttp 15596 17004 "POST /api/token/verify/ HTTP/1.1" 200 16
+INFO 2025-08-16 08:37:36,962 basehttp 15596 7292 "POST /api/token/verify/ HTTP/1.1" 200 16
+INFO 2025-08-16 08:37:36,978 middleware 15596 5280 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:36,992 middleware 15596 5280 Respuesta: 401 - GET /api/users/profile/
+INFO 2025-08-16 08:37:36,996 middleware 15596 14516 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:36,997 middleware 15596 14516 Respuesta: 401 - GET /api/users/profile/
+WARNING 2025-08-16 08:37:37,005 log 15596 5280 Unauthorized: /api/users/profile/
+WARNING 2025-08-16 08:37:37,005 basehttp 15596 5280 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-08-16 08:37:37,013 middleware 15596 19348 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+WARNING 2025-08-16 08:37:37,018 log 15596 14516 Unauthorized: /api/users/profile/
+WARNING 2025-08-16 08:37:37,019 basehttp 15596 14516 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-08-16 08:37:37,020 middleware 15596 14940 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:37,128 middleware 15596 14940 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-08-16 08:37:37,128 middleware 15596 19348 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-08-16 08:37:37,161 basehttp 15596 19348 "POST /api/token/refresh/ HTTP/1.1" 200 273
+INFO 2025-08-16 08:37:37,165 basehttp 15596 14940 "POST /api/token/refresh/ HTTP/1.1" 200 273
+INFO 2025-08-16 08:37:37,167 middleware 15596 19232 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:37,171 middleware 15596 9664 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:37,181 middleware 15596 9664 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 08:37:37,182 middleware 15596 19232 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 08:37:37,200 basehttp 15596 19232 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 08:37:37,208 basehttp 15596 9664 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 08:37:42,081 middleware 15596 6672 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:42,405 middleware 15596 6672 Respuesta: 200 - POST /api/token/
+INFO 2025-08-16 08:37:42,429 basehttp 15596 6672 "POST /api/token/ HTTP/1.1" 200 1143
+INFO 2025-08-16 08:37:42,438 middleware 15596 2080 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:42,451 middleware 15596 2080 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 08:37:42,464 basehttp 15596 2080 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 08:37:42,554 middleware 15596 1676 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:42,686 middleware 15596 1676 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 08:37:43,023 basehttp 15596 1676 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 08:37:45,487 middleware 15596 13032 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:45,489 middleware 15596 272 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:45,649 middleware 15596 13032 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 08:37:45,784 middleware 15596 272 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 08:37:45,787 basehttp 15596 13032 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 46678
+INFO 2025-08-16 08:37:45,804 middleware 15596 13336 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:45,821 basehttp 15596 272 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 46678
+INFO 2025-08-16 08:37:45,827 middleware 15596 5948 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:46,187 middleware 15596 13336 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 08:37:46,236 middleware 15596 5948 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 08:37:47,070 basehttp 15596 13336 "GET /api/projects/company_projects/ HTTP/1.1" 200 31428
+INFO 2025-08-16 08:37:47,103 middleware 15596 12020 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:47,753 basehttp 15596 5948 "GET /api/projects/company_projects/ HTTP/1.1" 200 31428
+INFO 2025-08-16 08:37:47,760 middleware 15596 5776 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 08:37:47,989 middleware 15596 12020 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 08:37:48,102 basehttp 15596 12020 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 08:37:48,153 middleware 15596 5776 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 08:37:48,187 basehttp 15596 5776 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 08:44:36,606 signals 12796 10708 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:48:06,783 autoreload 15596 15448 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 08:48:07,768 signals 8220 8132 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:48:07,779 autoreload 8220 8132 Watching for file changes with StatReloader
+INFO 2025-08-16 08:48:10,796 middleware 8220 17888 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 08:48:10,803 middleware 8220 11344 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 08:48:10,957 middleware 8220 11344 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 08:48:10,957 middleware 8220 17888 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 08:48:11,043 basehttp 8220 11344 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 08:48:11,046 basehttp 8220 17888 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 08:48:11,050 middleware 8220 5704 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 08:48:11,053 middleware 8220 22404 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 08:48:11,063 middleware 8220 5704 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 08:48:11,066 middleware 8220 22404 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 08:48:11,115 basehttp 8220 5704 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 08:48:11,124 basehttp 8220 22404 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 08:48:11,241 middleware 8220 5280 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 08:48:11,242 middleware 8220 17380 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 08:48:11,262 middleware 8220 17380 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 08:48:11,264 middleware 8220 5280 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 08:48:11,421 basehttp 8220 5280 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 08:48:11,425 basehttp 8220 17380 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 08:48:14,673 autoreload 8220 8132 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 08:48:15,349 signals 7984 3148 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:48:15,366 autoreload 7984 3148 Watching for file changes with StatReloader
+INFO 2025-08-16 08:48:17,850 middleware 7984 9640 Petición: GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/ - IP: 127.0.0.1
+INFO 2025-08-16 08:48:18,031 middleware 7984 9640 Respuesta: 200 - GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/
+INFO 2025-08-16 08:48:18,115 basehttp 7984 9640 "GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/ HTTP/1.1" 200 1697
+INFO 2025-08-16 08:49:44,381 autoreload 7984 3148 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 08:49:45,072 signals 11360 14916 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:49:45,086 autoreload 11360 14916 Watching for file changes with StatReloader
+INFO 2025-08-16 08:50:48,514 middleware 11360 1512 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 08:50:48,514 middleware 11360 7256 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 08:50:48,899 middleware 11360 7256 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 08:50:48,902 middleware 11360 1512 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 08:50:49,082 basehttp 11360 7256 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 46678
+INFO 2025-08-16 08:50:49,085 basehttp 11360 1512 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 46678
+INFO 2025-08-16 08:50:49,092 middleware 11360 8648 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 08:50:49,095 middleware 11360 18548 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 08:50:49,607 middleware 11360 8648 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 08:50:50,323 middleware 11360 18548 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 08:50:50,838 basehttp 11360 8648 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 08:50:50,872 middleware 11360 8236 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 08:50:51,655 basehttp 11360 18548 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 08:50:51,660 middleware 11360 10768 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 08:50:51,838 middleware 11360 8236 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 08:50:51,961 basehttp 11360 8236 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 08:50:52,008 middleware 11360 10768 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 08:50:52,064 basehttp 11360 10768 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 08:54:12,827 autoreload 11360 14916 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 08:54:13,896 signals 21228 13128 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:54:13,910 autoreload 21228 13128 Watching for file changes with StatReloader
+INFO 2025-08-16 08:55:00,242 middleware 21228 9440 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 08:55:00,469 middleware 21228 9440 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 08:55:00,628 basehttp 21228 9440 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 46678
+INFO 2025-08-16 08:55:00,636 middleware 21228 14920 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 08:55:00,657 middleware 21228 14920 Respuesta: 400 - GET /api/projects/company_projects/
+WARNING 2025-08-16 08:55:00,675 log 21228 14920 Bad Request: /api/projects/company_projects/
+WARNING 2025-08-16 08:55:00,681 basehttp 21228 14920 "GET /api/projects/company_projects/ HTTP/1.1" 400 46
+INFO 2025-08-16 08:55:23,451 autoreload 21228 13128 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 08:55:24,176 signals 22708 16020 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:55:24,185 autoreload 22708 16020 Watching for file changes with StatReloader
+INFO 2025-08-16 08:55:45,187 autoreload 22708 16020 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 08:55:46,329 signals 21156 8104 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:55:46,352 autoreload 21156 8104 Watching for file changes with StatReloader
+INFO 2025-08-16 08:57:25,165 middleware 21156 17456 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 08:57:25,380 middleware 21156 17456 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 08:57:25,513 basehttp 21156 17456 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 46678
+INFO 2025-08-16 08:57:25,529 middleware 21156 20640 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 08:57:25,535 middleware 21156 20640 Respuesta: 400 - GET /api/projects/company_projects/
+WARNING 2025-08-16 08:57:25,546 log 21156 20640 Bad Request: /api/projects/company_projects/
+WARNING 2025-08-16 08:57:25,546 basehttp 21156 20640 "GET /api/projects/company_projects/ HTTP/1.1" 400 46
+INFO 2025-08-16 08:57:43,500 autoreload 21156 8104 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 08:57:44,469 signals 13492 9084 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 08:57:44,482 autoreload 13492 9084 Watching for file changes with StatReloader
+INFO 2025-08-16 08:57:45,829 middleware 13492 21560 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 08:57:46,146 middleware 13492 21560 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 08:57:46,296 basehttp 13492 21560 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 46678
+INFO 2025-08-16 08:57:46,296 middleware 13492 18688 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 08:57:46,604 middleware 13492 18688 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 08:57:47,702 basehttp 13492 18688 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 08:57:47,713 middleware 13492 11432 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 08:57:47,845 middleware 13492 11432 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 08:57:47,941 basehttp 13492 11432 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:06:14,960 signals 18712 14700 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:06:31,175 signals 2080 21584 Signals de notificaciones conectados exitosamente

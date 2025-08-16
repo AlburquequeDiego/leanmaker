@@ -859,31 +859,102 @@ def company_projects(request):
         
         projects_data = []
         for project in projects:
-            # Obtener estudiantes participantes (tanto aceptados como activos)
+            # Obtener estudiantes según el estado del proyecto
             from applications.models import Aplicacion
-            accepted_applications = Aplicacion.objects.filter(
-                project=project, 
-                status__in=['accepted', 'active', 'completed']
-            ).select_related('student', 'student__user')
             
-            # Calcular current_students basado en aplicaciones aceptadas
-            current_students = accepted_applications.count()
-            
-            estudiantes = []
-            for app in accepted_applications:
-                student_user = app.student.user if app.student else None
-                if student_user:
-                    estudiantes.append({
-                        'id': str(app.student.id),
-                        'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
-                        'email': student_user.email,
-                        'status': app.status,
-                        'applied_at': app.applied_at.isoformat() if app.applied_at else None,
-                    })
-            
-            # Debug: Imprimir información del proyecto
             project_status = project.status.name.lower() if project.status else 'Sin estado'
             print(f"  🔍 Proyecto {project.title}: estado = '{project_status}'")
+            
+            estudiantes = []
+            current_students = 0
+            
+            if project_status in ['active', 'activo']:
+                # PROYECTO ACTIVO: Solo estudiantes asignados/aceptados
+                accepted_applications = Aplicacion.objects.filter(
+                    project=project, 
+                    status__in=['accepted', 'active', 'completed']
+                ).select_related('student', 'student__user')
+                
+                current_students = accepted_applications.count()
+                
+                for app in accepted_applications:
+                    student_user = app.student.user if app.student else None
+                    if student_user:
+                        estudiantes.append({
+                            'id': str(app.student.id),
+                            'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
+                            'email': student_user.email,
+                            'status': app.status,
+                            'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                            'type': 'assigned'  # Estudiante asignado
+                        })
+                        
+            elif project_status in ['published', 'publicado']:
+                # PROYECTO PUBLICADO: Solo estudiantes que postularon
+                all_applications = Aplicacion.objects.filter(
+                    project=project
+                ).select_related('student', 'student__user')
+                
+                current_students = all_applications.count()
+                
+                for app in all_applications:
+                    student_user = app.student.user if app.student else None
+                    if student_user:
+                        estudiantes.append({
+                            'id': str(app.student.id),
+                            'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
+                            'email': student_user.email,
+                            'status': app.status,
+                            'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                            'type': 'applied'  # Estudiante que postuló
+                        })
+                        
+            else:
+                # Otros estados: mostrar ambos tipos
+                accepted_applications = Aplicacion.objects.filter(
+                    project=project, 
+                    status__in=['accepted', 'active', 'completed']
+                ).select_related('student', 'student__user')
+                
+                all_applications = Aplicacion.objects.filter(
+                    project=project
+                ).select_related('student', 'student__user')
+                
+                current_students = accepted_applications.count()
+                
+                # Agregar estudiantes asignados
+                for app in accepted_applications:
+                    student_user = app.student.user if app.student else None
+                    if student_user:
+                        estudiantes.append({
+                            'id': str(app.student.id),
+                            'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
+                            'email': student_user.email,
+                            'status': app.status,
+                            'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                            'type': 'assigned'
+                        })
+                
+                # Agregar estudiantes que postularon
+                for app in all_applications:
+                    if app.status not in ['accepted', 'active', 'completed']:
+                        student_user = app.student.user if app.student else None
+                        if student_user:
+                            estudiantes.append({
+                                'id': str(app.student.id),
+                                'nombre': f"{student_user.first_name} {student_user.last_name}".strip() or student_user.email,
+                                'email': student_user.email,
+                                'status': app.status,
+                                'applied_at': app.applied_at.isoformat() if app.applied_at else None,
+                                'type': 'applied'
+                            })
+            
+            # Debug: Imprimir información del proyecto y estudiantes
+            print(f"  🔍 Proyecto {project.title}: estado = '{project_status}', estudiantes = {len(estudiantes)}")
+            for est in estudiantes[:3]:  # Mostrar solo los primeros 3 para no saturar el log
+                print(f"    - {est['nombre']} ({est['email']}) - Tipo: {est.get('type', 'N/A')} - Status: {est['status']}")
+            if len(estudiantes) > 3:
+                print(f"    ... y {len(estudiantes) - 3} más")
             
             projects_data.append({
                 'id': str(project.id),
