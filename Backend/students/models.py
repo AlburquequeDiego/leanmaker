@@ -93,6 +93,16 @@ class Estudiante(models.Model):
         else:
             self.skills = None
     
+    def get_languages_list(self):
+        """Obtiene la lista de idiomas como lista de Python - para compatibilidad"""
+        # Campo languages fue eliminado, retornar lista vacía para compatibilidad
+        return []
+    
+    def set_languages_list(self, languages_list):
+        """Establece la lista de idiomas desde una lista de Python - para compatibilidad"""
+        # Campo languages fue eliminado, no hacer nada para compatibilidad
+        pass
+    
 
     
     @property

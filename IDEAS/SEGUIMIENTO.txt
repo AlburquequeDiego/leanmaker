@@ -8,3 +8,12 @@ juan.perez@inacapmail.cl        Estudiante123!
 
 EMPRESAS:
 lucia.amaya@gmail.com           Empresa123!
+
+# Actualizar main con los últimos cambios del remoto
+git pull origin main
+
+# Hacer el merge de MIRAMADIEGO a main
+git merge MIRAMADIEGO
+
+# Subir los cambios mergeados a main
+git push origin main
