@@ -81,6 +81,22 @@ export const CompanyInterviews: React.FC = () => {
   // Hook para obtener el perfil detallado del estudiante
   const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
   
+  // Debug: Log del estado del perfil
+  console.log('🔍 [Interviews] Estado del perfil del estudiante:');
+  console.log('🔍 [Interviews] - selectedStudentId:', selectedStudentId);
+  console.log('🔍 [Interviews] - studentProfile:', studentProfile);
+  console.log('🔍 [Interviews] - profileLoading:', profileLoading);
+  console.log('🔍 [Interviews] - profileError:', profileError);
+  
+  // Debug adicional: Log cuando cambia el perfil
+  useEffect(() => {
+    console.log('🔄 [Interviews] useEffect - Cambio en el perfil del estudiante:');
+    console.log('🔄 [Interviews] - selectedStudentId:', selectedStudentId);
+    console.log('🔄 [Interviews] - studentProfile:', studentProfile);
+    console.log('🔄 [Interviews] - profileLoading:', profileLoading);
+    console.log('🔄 [Interviews] - profileError:', profileError);
+  }, [selectedStudentId, studentProfile, profileLoading, profileError]);
+  
   const now = new Date();
   
   // Filtros y datos procesados
@@ -218,12 +234,24 @@ export const CompanyInterviews: React.FC = () => {
   };
 
   const handleViewProfile = (event: any) => {
-    console.log('🔍 [Interviews] Abriendo perfil del estudiante:', event);
-    console.log('🔍 [Interviews] Evento completo:', JSON.stringify(event, null, 2));
-    console.log('🔍 [Interviews] Attendees:', event.attendees);
+    console.log('🔍 [Interviews] handleViewProfile ejecutándose para evento:', event);
+    console.log('🔍 [Interviews] Estructura completa del evento:', JSON.stringify(event, null, 2));
+    console.log('🔍 [Interviews] Event ID:', event.id);
+    console.log('🔍 [Interviews] Event title:', event.title);
+    console.log('🔍 [Interviews] Event attendees:', event.attendees);
     console.log('🔍 [Interviews] Attendees[0]:', event.attendees?.[0]);
     console.log('🔍 [Interviews] _originalData:', event._originalData);
     console.log('🔍 [Interviews] _originalData.attendees:', event._originalData?.attendees);
+    console.log('🔍 [Interviews] Event student field:', event.student);
+    console.log('🔍 [Interviews] Event application field:', event.application);
+    console.log('🔍 [Interviews] Event project field:', event.project);
+    
+    // Verificar si hay datos de aplicación
+    if (event._originalData?.application) {
+      console.log('🔍 [Interviews] Application data:', event._originalData.application);
+      console.log('🔍 [Interviews] Application student:', event._originalData.application.student);
+      console.log('🔍 [Interviews] Application student ID:', event._originalData.application.student?.id);
+    }
     
     // Extraer el ID del estudiante del evento - usar el mismo patrón que en postulaciones
     let studentId = null;
@@ -248,17 +276,50 @@ export const CompanyInterviews: React.FC = () => {
       studentId = event._originalData.attendees[0];
       console.log('✅ [Interviews] ID encontrado en _originalData.attendees[0] (string):', studentId);
     }
+    // Opción 5: Buscar en el campo student si existe
+    else if (event.student?.id) {
+      studentId = event.student.id;
+      console.log('✅ [Interviews] ID encontrado en event.student.id:', studentId);
+    }
+    // Opción 6: Buscar en el campo student si es string
+    else if (event.student && typeof event.student === 'string') {
+      studentId = event.student;
+      console.log('✅ [Interviews] ID encontrado en event.student (string):', studentId);
+    }
+    // Opción 7: Buscar en la aplicación si existe
+    else if (event._originalData?.application?.student?.id) {
+      studentId = event._originalData.application.student.id;
+      console.log('✅ [Interviews] ID encontrado en application.student.id:', studentId);
+    }
+    // Opción 8: Buscar en la aplicación si student es string
+    else if (event._originalData?.application?.student && typeof event._originalData.application.student === 'string') {
+      studentId = event._originalData.application.student;
+      console.log('✅ [Interviews] ID encontrado en application.student (string):', studentId);
+    }
     
     if (studentId) {
       console.log('✅ [Interviews] Estableciendo selectedStudentId:', studentId);
-      setSelectedStudentId(studentId);
-      setSelectedEvent(event); // Guardar el evento para obtener información del proyecto
-      setShowProfileDialog(true);
+      console.log('✅ [Interviews] Tipo de studentId:', typeof studentId);
+      console.log('✅ [Interviews] studentId como string:', String(studentId));
+      
+      // Asegurar que el ID sea un string válido
+      const cleanStudentId = String(studentId).trim();
+      if (cleanStudentId) {
+        setSelectedStudentId(cleanStudentId);
+        setSelectedEvent(event); // Guardar el evento para obtener información del proyecto
+        setShowProfileDialog(true);
+        console.log('✅ [Interviews] Modal abierto con studentId:', cleanStudentId);
+      } else {
+        console.error('❌ [Interviews] studentId está vacío después de limpiar');
+        alert('ID del estudiante inválido');
+      }
     } else {
       console.error('❌ [Interviews] No se pudo obtener el ID del estudiante');
       console.error('❌ [Interviews] Estructura del evento:', event);
       console.error('❌ [Interviews] Attendees:', event.attendees);
       console.error('❌ [Interviews] _originalData:', event._originalData);
+      console.error('❌ [Interviews] Student field:', event.student);
+      console.error('❌ [Interviews] Application data:', event._originalData?.application);
       
       // Mostrar alerta al usuario
       alert('No se pudo obtener la información del estudiante. Revisa la consola para más detalles.');

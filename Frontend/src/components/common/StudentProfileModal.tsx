@@ -142,37 +142,70 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
             {/* Error al cargar el perfil */}
             {profileError && !profileLoading && (
-              <Box sx={{ 
-                p: 3, 
-                bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' 
-              }}>
+              <Box sx={{ p: 3, bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff' }}>
                 <Alert severity="error" sx={{ mb: 2 }}>
                   <Typography variant="h6" gutterBottom>
                     Error al cargar el perfil
                   </Typography>
-                  <Typography variant="body2">
+                  <Typography variant="body2" sx={{ mb: 2 }}>
                     {profileError}
                   </Typography>
+                  
+                  {/* Información adicional para debugging */}
+                  {profileError.includes('404') && (
+                    <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(255, 0, 0, 0.1)', borderRadius: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                        🔍 Información para debugging:
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                        • El ID del estudiante no se encuentra en la base de datos
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                        • Posible problema con la relación entre eventos y estudiantes
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                        • Verificar que el estudiante no haya sido eliminado
+                      </Typography>
+                    </Box>
+                  )}
                 </Alert>
-                <Button 
-                  variant="outlined" 
-                  onClick={handleClose}
-                  sx={{ mr: 1 }}
-                >
-                  Cerrar
-                </Button>
-                <Button 
-                  variant="text" 
-                  onClick={handleClose}
-                >
-                  Cerrar
-                </Button>
+                
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                  <Button 
+                    variant="outlined" 
+                    onClick={handleClose}
+                    sx={{ mr: 1 }}
+                  >
+                    Cerrar
+                  </Button>
+                  <Button 
+                    variant="contained"
+                    onClick={() => {
+                      // Intentar recargar el perfil
+                      if (window.location.reload) {
+                        window.location.reload();
+                      }
+                    }}
+                    color="primary"
+                  >
+                    Recargar Página
+                  </Button>
+                </Box>
               </Box>
             )}
 
             {/* Contenido del perfil cuando está cargado */}
             {!profileLoading && !profileError && studentProfile && (
               <Box sx={{ p: 3 }}>
+                {/* Alerta de información de fallback */}
+                {studentProfile._isFallback && (
+                  <Alert severity="warning" sx={{ mb: 3 }}>
+                    <Typography variant="body2">
+                      <strong>⚠️ Información limitada:</strong> Solo se pudo obtener información básica del estudiante. 
+                      El perfil completo no está disponible en este momento.
+                    </Typography>
+                  </Alert>
+                )}
                 
                 {/* Header con información principal */}
                 <Paper sx={{ 
@@ -669,13 +702,59 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
             )}
           </>
         ) : (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="body1" sx={{ 
-              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+          // Mostrar estado de carga cuando no hay perfil pero se está cargando
+          profileLoading ? (
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              p: 4,
+              bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
             }}>
-              No se ha seleccionado ningún estudiante
-            </Typography>
-          </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <CircularProgress size={40} sx={{ mb: 2 }} />
+                <Typography variant="body1" sx={{ 
+                  color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+                }}>
+                  Cargando perfil del estudiante...
+                </Typography>
+              </Box>
+            </Box>
+          ) : profileError ? (
+            // Mostrar error cuando no hay perfil pero hay error
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Alert severity="error" sx={{ mb: 2 }}>
+                <Typography variant="h6" gutterBottom>
+                  Error al cargar el perfil
+                </Typography>
+                <Typography variant="body2">
+                  {profileError}
+                </Typography>
+              </Alert>
+              <Button 
+                variant="outlined" 
+                onClick={handleClose}
+                sx={{ mr: 1 }}
+              >
+                Cerrar
+              </Button>
+              <Button 
+                variant="text" 
+                onClick={handleClose}
+              >
+                Cerrar
+              </Button>
+            </Box>
+          ) : (
+            // Mostrar mensaje cuando no hay perfil y no se está cargando
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="body1" sx={{ 
+                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+              }}>
+                No se ha seleccionado ningún estudiante
+              </Typography>
+            </Box>
+          )
         )}
       </DialogContent>
       

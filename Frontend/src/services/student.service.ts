@@ -25,16 +25,107 @@ class StudentService {
   }
 
   /**
+   * Verifica si un estudiante existe
+   */
+  async checkStudentExists(studentId: string): Promise<boolean> {
+    try {
+      console.log('🔍 [StudentService] Verificando si existe el estudiante:', studentId);
+      
+      // Intentar obtener la lista de estudiantes para verificar si existe
+      const response = await apiService.get('/api/students/');
+      console.log('🔍 [StudentService] Lista de estudiantes obtenida:', response);
+      
+      if (response && response.results) {
+        const studentExists = response.results.some((student: any) => 
+          String(student.id) === String(studentId)
+        );
+        
+        console.log('🔍 [StudentService] Estudiante encontrado:', studentExists);
+        console.log('🔍 [StudentService] IDs disponibles:', response.results.map((s: any) => s.id));
+        
+        return studentExists;
+      }
+      
+      return false;
+    } catch (error: any) {
+      console.error('❌ [StudentService] Error verificando existencia del estudiante:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Obtiene información básica del estudiante como fallback
+   */
+  async getStudentBasicInfo(studentId: string): Promise<any> {
+    try {
+      console.log('🔄 [StudentService] Obteniendo información básica del estudiante:', studentId);
+      
+      // Intentar obtener desde diferentes endpoints
+      const endpoints = [
+        `/api/students/${studentId}/`,
+        `/api/applications/?student=${studentId}`,
+        `/api/users/${studentId}/`
+      ];
+      
+      for (const endpoint of endpoints) {
+        try {
+          console.log('🔍 [StudentService] Intentando endpoint:', endpoint);
+          const response = await apiService.get(endpoint);
+          
+          if (response) {
+            console.log('✅ [StudentService] Información básica obtenida desde:', endpoint);
+            return response;
+          }
+        } catch (error) {
+          console.log('⚠️ [StudentService] Endpoint falló:', endpoint, error);
+          continue;
+        }
+      }
+      
+      console.log('❌ [StudentService] Ningún endpoint funcionó para obtener información básica');
+      return null;
+      
+    } catch (error: any) {
+      console.error('❌ [StudentService] Error obteniendo información básica:', error);
+      return null;
+    }
+  }
+
+  /**
    * Obtiene el perfil detallado de un estudiante específico
    */
   async getStudentProfileDetails(studentId: string): Promise<StudentProfileResponse> {
     try {
       console.log('🚀 [StudentService] Obteniendo perfil del estudiante:', studentId);
+      console.log('🔍 [StudentService] Tipo de studentId:', typeof studentId);
+      console.log('🔍 [StudentService] studentId como string:', String(studentId));
+      console.log('🔍 [StudentService] URL que se va a llamar:', `/api/students/${studentId}/profile/`);
+      
       const response = await apiService.get(`/api/students/${studentId}/profile/`);
       console.log('✅ [StudentService] Perfil obtenido:', response);
+      console.log('🔍 [StudentService] Tipo de respuesta:', typeof response);
+      console.log('🔍 [StudentService] Keys de la respuesta:', response ? Object.keys(response) : 'No hay respuesta');
+      
+      if (response) {
+        console.log('🔍 [StudentService] Estructura del perfil:');
+        console.log('🔍 [StudentService] - user_data:', response.user_data);
+        console.log('🔍 [StudentService] - student:', response.student);
+        console.log('🔍 [StudentService] - perfil_detallado:', response.perfil_detallado);
+      }
+      
       return response;
     } catch (error: any) {
       console.error('❌ [StudentService] Error obteniendo perfil:', error);
+      console.error('❌ [StudentService] Tipo de error:', typeof error);
+      console.error('❌ [StudentService] Mensaje de error:', error.message);
+      console.error('❌ [StudentService] Stack del error:', error.stack);
+      
+      if (error.response) {
+        console.error('❌ [StudentService] Respuesta del servidor:', error.response);
+        console.error('❌ [StudentService] Status:', error.response.status);
+        console.error('❌ [StudentService] Data:', error.response.data);
+      }
+      
       throw new Error(error.message || 'Error al obtener el perfil del estudiante');
     }
   }

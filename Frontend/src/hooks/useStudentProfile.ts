@@ -14,14 +14,64 @@ export const useStudentProfile = (studentId: string | null) => {
       setError(null);
       console.log('🔄 [useStudentProfile] Obteniendo perfil del estudiante:', id);
 
+      // Primero verificar si el estudiante existe
+      console.log('🔍 [useStudentProfile] Verificando existencia del estudiante...');
+      const studentExists = await studentService.checkStudentExists(id);
+      
+      if (!studentExists) {
+        const errorMessage = `El estudiante con ID ${id} no existe en la base de datos`;
+        setError(errorMessage);
+        console.error('❌ [useStudentProfile] Estudiante no encontrado:', errorMessage);
+        return;
+      }
+
+      console.log('✅ [useStudentProfile] Estudiante verificado, cargando perfil...');
       const response = await studentService.getStudentProfileDetails(id);
       console.log('✅ [useStudentProfile] Perfil obtenido exitosamente:', response);
+      console.log('🔍 [useStudentProfile] Tipo de respuesta:', typeof response);
+      console.log('🔍 [useStudentProfile] Keys de la respuesta:', response ? Object.keys(response) : 'No hay respuesta');
       
-      setProfile(response);
+      if (response) {
+        console.log('🔍 [useStudentProfile] Estructura del perfil:');
+        console.log('🔍 [useStudentProfile] - user_data:', response.user_data);
+        console.log('🔍 [useStudentProfile] - student:', response.student);
+        console.log('🔍 [useStudentProfile] - perfil_detallado:', response.perfil_detallado);
+        
+        setProfile(response);
+      } else {
+        // Si no se pudo obtener el perfil completo, intentar obtener información básica
+        console.log('⚠️ [useStudentProfile] Perfil completo no disponible, intentando información básica...');
+        const basicInfo = await studentService.getStudentBasicInfo(id);
+        
+        if (basicInfo) {
+          console.log('✅ [useStudentProfile] Información básica obtenida:', basicInfo);
+          // Crear un perfil básico con la información disponible
+          const fallbackProfile = {
+            user_data: {
+              full_name: basicInfo.name || basicInfo.full_name || basicInfo.email || 'Estudiante',
+              email: basicInfo.email || 'Email no disponible',
+              phone: basicInfo.phone || 'Teléfono no disponible'
+            },
+            student: {
+              career: basicInfo.career || 'Carrera no disponible',
+              university: basicInfo.university || 'Universidad no disponible',
+              skills: basicInfo.skills || []
+            },
+            perfil_detallado: {},
+            _isFallback: true // Marcar como perfil de fallback
+          };
+          
+          setProfile(fallbackProfile);
+        } else {
+          throw new Error('No se pudo obtener información del estudiante desde ningún endpoint');
+        }
+      }
     } catch (err: any) {
       const errorMessage = err.message || 'Error al cargar el perfil del estudiante';
       setError(errorMessage);
       console.error('❌ [useStudentProfile] Error obteniendo perfil:', err);
+      console.error('❌ [useStudentProfile] Tipo de error:', typeof err);
+      console.error('❌ [useStudentProfile] Stack del error:', err.stack);
     } finally {
       setLoading(false);
     }

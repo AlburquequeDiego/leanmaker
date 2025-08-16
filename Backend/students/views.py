@@ -108,7 +108,6 @@ def student_list(request):
                 'last_activity': student.user.last_login.isoformat() if student.user.last_login else None,
                 'career': student.career,
                 'semester': student.semester,
-                'graduation_year': student.graduation_year,
                 'status': student.status,
                 'api_level': student.api_level,
                 'trl_level': student.trl_permitido_segun_api,  # <-- Usar TRL calculado
@@ -126,7 +125,6 @@ def student_list(request):
                 'location': student.location,
                 'hours_per_week': student.hours_per_week,
                 'area': student.area,
-                'gpa': float(student.gpa),
                 'skills': student.get_skills_list(),
                 'languages': student.get_languages_list(),
                 'created_at': student.created_at.isoformat(),
@@ -1074,7 +1072,6 @@ def student_profile(request, student_id):
                 'education_level': student.education_level,
                 'skills': student.get_skills_list(),
                 'languages': [],  # Campo no existe en el modelo
-                'graduation_year': None,  # Campo no existe en el modelo
                 'created_at': student.created_at.isoformat(),
                 'updated_at': student.updated_at.isoformat(),
             }
