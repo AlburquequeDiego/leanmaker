@@ -526,7 +526,6 @@ def api_register(request):
                     university=data.get('university', ''),
                     education_level=data.get('education_level', ''),
                     semester=data.get('semester'),
-                    graduation_year=data.get('graduation_year'),
                     status='approved',  # Por defecto aprobado
                     api_level=1,  # Nivel inicial
                     trl_level=1,  # Nivel inicial
@@ -539,7 +538,6 @@ def api_register(request):
                     location=data.get('location', ''),
                     area=data.get('area', ''),
                     skills=json.dumps(data.get('skills', [])) if data.get('skills') else None,
-                    languages=json.dumps(data.get('languages', [])) if data.get('languages') else None,
                 )
                 print(f"[api_register] Estudiante creado exitosamente - ID: {estudiante.id}")
                 print(f"[api_register] Datos del estudiante - university: {estudiante.university}, education_level: {estudiante.education_level}")
@@ -659,7 +657,6 @@ def api_register(request):
                 'university': estudiante.university,
                 'education_level': estudiante.education_level,
                 'semester': estudiante.semester,
-                'graduation_year': estudiante.graduation_year,
                 'status': estudiante.status,
                 'api_level': estudiante.api_level,
                 'trl_level': estudiante.trl_level,
@@ -673,7 +670,6 @@ def api_register(request):
                 'area': estudiante.area,
                 'rating': 0.0,  # Valor por defecto ya que el modelo Estudiante no tiene campo rating
                 'skills': estudiante.get_skills_list(),
-                'languages': estudiante.get_languages_list(),
             }
             response_data['student_profile'] = {
                 'id': str(perfil.id),
