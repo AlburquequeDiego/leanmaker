@@ -257,7 +257,7 @@ export const Evaluations = () => {
   const studentsEvaluated = studentsToEvaluate.filter(student => student.already_evaluated);
   
   // Obtener estadísticas del dashboard si están disponibles
-  const { data: dashboardStats } = useDashboardStats('company');
+  const { data: dashboardStats, refresh: refreshDashboardStats } = useDashboardStats('company');
   
   // Usar estadísticas del dashboard para las tarjetas si están disponibles, con validación básica
   const evaluationsPending = (dashboardStats?.evaluations_pending >= 0) ? dashboardStats.evaluations_pending : studentsToEvaluateFiltered.length;
@@ -292,10 +292,16 @@ export const Evaluations = () => {
 
     try {
       console.log('📡 Enviando evaluación a la API...');
+      console.log('🔍 Datos a enviar:', {
+        student_id: selectedStudent.student_id,
+        project_id: selectedStudent.project_id,
+        rating: calificacion,
+        comments: ''
+      });
       const response = await apiService.companyEvaluateStudent({
         student_id: selectedStudent.student_id,
         project_id: selectedStudent.project_id,
-        score: calificacion,
+        rating: calificacion,
         comments: '' // Sin comentarios, solo calificación
       });
 
@@ -322,6 +328,11 @@ export const Evaluations = () => {
         setTimeout(() => {
           loadData();
         }, 500);
+        
+        // Refrescar estadísticas del dashboard para actualizar las tarjetas
+        setTimeout(() => {
+          refreshDashboardStats();
+        }, 1000);
       } else {
         setSnackbar({
           open: true,

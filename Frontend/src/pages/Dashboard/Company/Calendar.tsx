@@ -106,6 +106,299 @@ const additionalStyles = `
     visibility: visible !important;
     opacity: 1 !important;
   }
+  
+  /* Estilos para vistas de semana, día y agenda - Modo Claro */
+  .rbc-time-view {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #d1d5db !important;
+  }
+  
+  .rbc-time-header {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-time-header-content {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-header {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-time-content {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-time-gutter {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-day-slot {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-time-slot {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-current-time-indicator {
+    background-color: #ef4444 !important;
+  }
+  
+  .rbc-today {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+  }
+  
+  .rbc-off-range-bg {
+    background-color: #f1f5f9 !important;
+  }
+  
+  .rbc-off-range {
+    color: #94a3b8 !important;
+  }
+  
+  .rbc-agenda-view {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #d1d5db !important;
+  }
+  
+  .rbc-agenda-view table.rbc-agenda-table {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-agenda-view table.rbc-agenda-table tbody > tr:hover > td {
+    background-color: #f1f5f9 !important;
+  }
+  
+  /* Estilos adicionales para agenda - Modo Claro */
+  .rbc-agenda-view .rbc-agenda-date-cell {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-time-cell {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-event-cell {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  
+  /* Estilos para vistas de semana, día y agenda - Modo Oscuro */
+  [data-theme="dark"] .rbc-time-view {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+  }
+  
+  [data-theme="dark"] .rbc-time-header {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-time-header-content {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-header {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-time-content {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-time-gutter {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-day-slot {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-time-slot {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-today {
+    background-color: rgba(96, 165, 250, 0.1) !important;
+  }
+  
+  [data-theme="dark"] .rbc-off-range-bg {
+    background-color: #334155 !important;
+  }
+  
+  [data-theme="dark"] .rbc-off-range {
+    color: #64748b !important;
+  }
+  
+  [data-theme="dark"] .rbc-agenda-view {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+  }
+  
+  [data-theme="dark"] .rbc-agenda-view table.rbc-agenda-table {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-agenda-view table.rbc-agenda-table tbody > tr:hover > td {
+    background-color: #334155 !important;
+  }
+  
+  /* Estilos adicionales para agenda - Modo Oscuro */
+  [data-theme="dark"] .rbc-agenda-view .rbc-agenda-date-cell {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-agenda-view .rbc-agenda-time-cell {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  [data-theme="dark"] .rbc-agenda-view .rbc-agenda-event-cell {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-empty {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-message {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-content {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-table {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-table thead th {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-table tbody tr {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-table tbody tr:nth-child(even) {
+    background-color: #334155 !important;
+  }
+  
+  .rbc-agenda-view .rbc-agenda-table tbody tr:nth-child(odd) {
+    background-color: #1e293b !important;
+  }
+  
+  /* Estilos más específicos para agenda */
+  .rbc-agenda-view * {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .rbc-agenda-view table {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .rbc-agenda-view td {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  .rbc-agenda-view th {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+  }
+  
+  /* Estilos CSS con máxima especificidad para agenda */
+  div[class*="rbc-agenda"] {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  div[class*="rbc-agenda"] * {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  /* Forzar modo oscuro en agenda */
+  .rbc-agenda-view,
+  .rbc-agenda-view *,
+  .rbc-agenda-view table,
+  .rbc-agenda-view table *,
+  .rbc-agenda-view td,
+  .rbc-agenda-view th,
+  .rbc-agenda-view tr,
+  .rbc-agenda-view div,
+  .rbc-agenda-view span,
+  .rbc-agenda-view p {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #475569 !important;
+  }
+  
+  /* Encabezados específicos */
+  .rbc-agenda-view thead th,
+  .rbc-agenda-view th {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+  }
 `;
 
 // Agregar estilos al documento
@@ -1104,7 +1397,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                 }
               }}
             >
-              ➕ Agregar Evento
+              Agregar Evento
             </Button>
           </Box>
         </Box>
@@ -1314,114 +1607,19 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         </Box>
       )}
 
-      {/* Controles de vista mejorados */}
-      <Box sx={{ 
-        background: themeMode === 'dark' 
-          ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
-          : 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
-        borderRadius: 3,
-        p: 2,
-        mb: 3,
-        boxShadow: themeMode === 'dark' 
-          ? '0 4px 16px rgba(0,0,0,0.3)' 
-          : '0 4px 16px rgba(0,0,0,0.08)',
-        border: themeMode === 'dark' 
-          ? '1px solid #334155' 
-          : '1px solid rgba(102, 126, 234, 0.1)'
-      }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" fontWeight={600} color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <ViewModuleIcon /> 🎨 Vistas del Calendario
-          </Typography>
-          
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="Vista de mes">
-              <IconButton 
-                onClick={() => setView('month')} 
-                sx={{ 
-                  background: view === 'month' 
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                    : themeMode === 'dark' 
-                      ? 'rgba(255,255,255,0.1)' 
-                      : 'rgba(255,255,255,0.8)',
-                  color: view === 'month' ? 'white' : themeMode === 'dark' ? '#f1f5f9' : '#666',
-                  borderRadius: 2,
-                  p: 1.5,
-                  '&:hover': {
-                    background: view === 'month' 
-                      ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' 
-                      : themeMode === 'dark' 
-                        ? 'rgba(96, 165, 250, 0.2)' 
-                        : 'rgba(102, 126, 234, 0.1)',
-                    transform: 'translateY(-1px)'
-                  }
-                }}
-              >
-                <ViewModuleIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Vista de semana">
-              <IconButton 
-                onClick={() => setView('week')} 
-                sx={{ 
-                  background: view === 'week' 
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                    : themeMode === 'dark' 
-                      ? 'rgba(255,255,255,0.1)' 
-                      : 'rgba(255,255,255,0.8)',
-                  color: view === 'week' ? 'white' : themeMode === 'dark' ? '#f1f5f9' : '#666',
-                  borderRadius: 2,
-                  p: 1.5,
-                  '&:hover': {
-                    background: view === 'week' 
-                      ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' 
-                      : themeMode === 'dark' 
-                        ? 'rgba(96, 165, 250, 0.2)' 
-                        : 'rgba(102, 126, 234, 0.1)',
-                    transform: 'translateY(-1px)'
-                  }
-                }}
-              >
-                <ViewWeekIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Vista de día">
-              <IconButton 
-                onClick={() => setView('day')} 
-                sx={{ 
-                  background: view === 'day' 
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                    : themeMode === 'dark' 
-                      ? 'rgba(255,255,255,0.1)' 
-                      : 'rgba(255,255,255,0.8)',
-                  color: view === 'day' ? 'white' : themeMode === 'dark' ? '#f1f5f9' : '#666',
-                  borderRadius: 2,
-                  p: 1.5,
-                  '&:hover': {
-                    background: view === 'day' 
-                      ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)' 
-                      : themeMode === 'dark' 
-                        ? 'rgba(96, 165, 250, 0.2)' 
-                        : 'rgba(102, 126, 234, 0.1)',
-                    transform: 'translateY(-1px)'
-                  }
-                }}
-              >
-                <ViewDayIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-      </Box>
+
 
       {/* Calendario principal */}
-      <Paper sx={{ 
-        p: 3, 
-        mb: 3,
-        bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-        border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
-      }}>
+      <Paper 
+        sx={{ 
+          p: 3, 
+          mb: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+        }}
+        data-theme={themeMode}
+      >
         <Box sx={{ 
           border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #ddd', 
           borderRadius: 1, 
@@ -1766,15 +1964,17 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                           p: 3,
                           mb: 2,
                           borderRadius: 3,
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                          border: '1px solid rgba(102, 126, 234, 0.1)',
-                          background: 'linear-gradient(135deg, #ffffff 0%, #fafbff 100%)',
+                          boxShadow: themeMode === 'dark' ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.08)',
+                          border: themeMode === 'dark' ? '1px solid #475569' : '1px solid rgba(102, 126, 234, 0.1)',
+                          background: themeMode === 'dark' 
+                            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+                            : 'linear-gradient(135deg, #ffffff 0%, #fafbff 100%)',
                           cursor: 'pointer',
                           transition: 'all 0.3s ease',
                           '&:hover': {
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
-                            borderColor: 'rgba(102, 126, 234, 0.3)'
+                            boxShadow: themeMode === 'dark' ? '0 8px 25px rgba(0,0,0,0.4)' : '0 8px 25px rgba(102, 126, 234, 0.15)',
+                            borderColor: themeMode === 'dark' ? '#60a5fa' : 'rgba(102, 126, 234, 0.3)'
                           }
                         }}
                         onClick={() => handleSelectEvent(event)}
@@ -1798,9 +1998,9 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                           {/* Contenido del evento */}
                           <Box sx={{ flex: 1 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                              <Typography variant="h6" fontWeight={600} color="primary">
-                                {event.title}
-                              </Typography>
+                                                          <Typography variant="h6" fontWeight={600} color={themeMode === 'dark' ? '#f1f5f9' : 'primary'}>
+                              {event.title}
+                            </Typography>
                               <Chip 
                                 label={event.event_type === 'interview' ? 'Entrevista' : 
                                        event.event_type === 'meeting' ? 'Reunión' : 
@@ -1812,7 +2012,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                               />
                             </Box>
                             
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} sx={{ mb: 1 }}>
                               📅 {new Date(event.start).toLocaleDateString('es-ES', { 
                                 weekday: 'long', 
                                 day: 'numeric',
@@ -1821,7 +2021,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                               })}
                             </Typography>
                             
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} sx={{ mb: 1 }}>
                               🕐 {new Date(event.start).toLocaleTimeString('es-ES', { 
                                 hour: '2-digit', 
                                 minute: '2-digit' 
@@ -1832,13 +2032,13 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                             </Typography>
                             
                             {event.location && (
-                              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'} sx={{ mb: 1 }}>
                                 📍 {event.location}
                               </Typography>
                             )}
                             
                             {event.description && (
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography variant="body2" color={themeMode === 'dark' ? '#cbd5e1' : 'text.secondary'}>
                                 {event.description}
                               </Typography>
                             )}
@@ -1853,7 +2053,10 @@ export const CompanyCalendar = forwardRef((_, ref) => {
 
           {/* Vista de semana */}
           {view === 'week' && (
-            <Box sx={{ height: 'calc(100% - 80px)', p: 2 }}>
+            <Box 
+              sx={{ height: 'calc(100% - 80px)', p: 2 }}
+              data-theme={themeMode}
+            >
               <BigCalendar
                 localizer={localizer}
                 events={events}
@@ -1904,7 +2107,10 @@ export const CompanyCalendar = forwardRef((_, ref) => {
 
           {/* Vista de día */}
           {view === 'day' && (
-            <Box sx={{ height: 'calc(100% - 80px)', p: 2 }}>
+            <Box 
+              sx={{ height: 'calc(100% - 80px)', p: 2 }}
+              data-theme={themeMode}
+            >
               <BigCalendar
                 localizer={localizer}
                 events={events}
@@ -2127,7 +2333,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                       setNewEvent((prev: any) => ({ 
                         ...prev, 
                         attendees: [],
-                        title: projectId ? `Entrevista - ${companyProjects.find(p => p.id === projectId)?.title || 'Proyecto'}` : 'Entrevista - [Selecciona un proyecto]'
+                        title: ''
                       }));
                 }}
                 label="Proyecto"
@@ -2171,7 +2377,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                         <Typography variant="caption" sx={{ 
                           color: themeMode === 'dark' ? '#94a3b8' : '#64748b'
                         }}>
-                          Estado: {getProjectStatusLabel(project.status)} (Original: {project.status})
+                          Estado: {getProjectStatusLabel(project.status)}
                         </Typography>
                       </Box>
                       </MenuItem>
@@ -2180,16 +2386,6 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               </Select>
             </FormControl>
                 
-            <FormControl fullWidth>
-                  <InputLabel sx={{ 
-                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
-                    '&.Mui-focused': {
-                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
-                    },
-                  }}>
-                    Participante
-                  </InputLabel>
-                  
                   {/* Mensaje informativo sobre la lógica de selección */}
                   {selectedProject && (() => {
                     const selectedProjectData = companyProjects.find((p: any) => p.id === selectedProject);
@@ -2209,186 +2405,18 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                     );
                   })()}
                   
-                  {/* Indicador de estudiantes seleccionados */}
-                  {newEvent.attendees && newEvent.attendees.length > 0 && (
-                    <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(76, 175, 80, 0.1)', borderRadius: 1, border: '1px solid rgba(76, 175, 80, 0.3)' }}>
-                      <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 500, display: 'block' }}>
-                        ✅ Estudiante seleccionado: {newEvent.attendees.length} participante{newEvent.attendees.length !== 1 ? 's' : ''}
-                      </Typography>
-                      <Typography variant="caption" sx={{ 
-                        color: 'success.main', 
-                        fontSize: '10px',
-                        display: 'block',
-                        mt: 0.5
-                      }}>
-                        IDs: {newEvent.attendees.join(', ')}
-                      </Typography>
-                    </Box>
-                  )}
+
+
+            <FormControl fullWidth>
+                  <InputLabel sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    '&.Mui-focused': {
+                      color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6',
+                    },
+                  }}>
+                    Participante
+                  </InputLabel>
                   
-                  {/* Información de estudiantes según estado del proyecto */}
-                  {selectedProject && (() => {
-                    // Buscar el proyecto seleccionado en companyProjects
-                    const selectedProjectData = companyProjects.find((p: any) => p.id === selectedProject);
-                    const projectStudents = selectedProjectData?.estudiantes || [];
-                    
-                    // Obtener estudiantes que postularon a este proyecto
-                    const projectApplications = users.filter((u: any) => String(u.project) === selectedProject);
-                    
-                    // Lógica según estado del proyecto
-                    let relevantStudents = [];
-                    let studentType = '';
-                    let studentCount = 0;
-                    let studentSource = '';
-                    
-                    if (selectedProjectData?.status === 'active') {
-                      // PROYECTO ACTIVO: Solo estudiantes asignados
-                      relevantStudents = projectStudents;
-                      studentType = 'Estudiantes Asignados';
-                      studentCount = projectStudents.length;
-                      studentSource = 'projectStudents';
-                    } else if (selectedProjectData?.status === 'published') {
-                      // PROYECTO PUBLICADO: Solo estudiantes que postularon
-                      relevantStudents = projectStudents.length > 0 ? projectStudents : projectApplications;
-                      studentType = projectStudents.length > 0 ? 'Estudiantes que Postularon' : 'Estudiantes que Postularon (fallback)';
-                      studentCount = relevantStudents.length;
-                      studentSource = projectStudents.length > 0 ? 'projectStudents' : 'users';
-                    } else {
-                      // Otros estados: mostrar ambos tipos
-                      relevantStudents = [...projectStudents, ...projectApplications];
-                      studentType = 'Estudiantes Disponibles';
-                      studentCount = projectStudents.length + projectApplications.length;
-                      studentSource = 'ambos';
-                    }
-                    
-                    return (
-                    <Box sx={{ mb: 1, p: 1, bgcolor: 'rgba(255, 193, 7, 0.1)', borderRadius: 1, border: '1px solid rgba(255, 193, 7, 0.3)' }}>
-                      <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500 }}>
-                          🔍 {studentCount} {studentType.toLowerCase()} para este proyecto
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: 'info.main', fontSize: '10px', display: 'block', mt: 0.5 }}>
-                          📊 Fuente de datos: {studentSource === 'projectStudents' ? 'Backend (estudiantes del proyecto)' : 
-                                           studentSource === 'users' ? 'Frontend (aplicaciones recibidas)' : 
-                                           'Combinado (ambas fuentes)'}
-                      </Typography>
-                        {studentCount > 0 && (
-                          <Box sx={{ mt: 1 }}>
-                            {selectedProjectData?.status === 'active' && projectStudents.length > 0 && (
-                              <Box sx={{ mb: 1 }}>
-                                <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 500, display: 'block' }}>
-                                  ✅ Estudiantes Asignados ({projectStudents.length}):
-                                </Typography>
-                                {projectStudents.slice(0, 2).map((student: any, index: number) => (
-                                  <Typography key={index} variant="caption" sx={{ 
-                                    color: 'success.main', 
-                                    display: 'block', 
-                                    fontSize: '10px',
-                                    ml: 1
-                                  }}>
-                                    • {student.nombre || 'Sin nombre'} ({student.email || 'Sin email'}) - Tipo: {student.type || 'N/A'}
-                                  </Typography>
-                                ))}
-                                {projectStudents.length > 2 && (
-                                  <Typography variant="caption" sx={{ 
-                                    color: 'success.main', 
-                                    fontSize: '10px',
-                                    ml: 1
-                                  }}>
-                                    ... y {projectStudents.length - 2} más asignados
-                                  </Typography>
-                                )}
-                              </Box>
-                            )}
-                            
-                            {selectedProjectData?.status === 'published' && (
-                              <Box>
-                                {projectStudents.length > 0 ? (
-                                  <>
-                                    <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500, display: 'block' }}>
-                                      📝 Estudiantes que Postularon ({projectStudents.length}) - Desde Backend:
-                                    </Typography>
-                                    {projectStudents.slice(0, 2).map((student: any, index: number) => (
-                                      <Typography key={index} variant="caption" sx={{ 
-                                        color: 'info.main', 
-                                        display: 'block', 
-                                        fontSize: '10px',
-                                        ml: 1
-                                      }}>
-                                        • {student.nombre || 'Sin nombre'} ({student.email || 'Sin email'}) - 
-                                        {student.status === 'pending' ? 'Pendiente' :
-                                         student.status === 'reviewing' ? 'En Revisión' :
-                                         student.status === 'accepted' ? 'Aceptado' :
-                                         student.status === 'rejected' ? 'Rechazado' : student.status}
-                                      </Typography>
-                                    ))}
-                                    {projectStudents.length > 2 && (
-                                      <Typography variant="caption" sx={{ 
-                                        color: 'info.main', 
-                                        fontSize: '10px',
-                                        ml: 1
-                                      }}>
-                                        ... y {projectStudents.length - 2} más postulando
-                                      </Typography>
-                                    )}
-                                  </>
-                                ) : projectApplications.length > 0 ? (
-                                  <>
-                                    <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500, display: 'block' }}>
-                                      📝 Estudiantes que Postularon ({projectApplications.length}) - Desde Frontend:
-                                    </Typography>
-                                    {projectApplications.slice(0, 2).map((app: any, index: number) => (
-                                      <Typography key={index} variant="caption" sx={{ 
-                                        color: 'info.main', 
-                                        display: 'block', 
-                                        fontSize: '10px',
-                                        ml: 1
-                                      }}>
-                                        • {app.student?.name || 'Estudiante'} ({app.student?.email || 'Sin email'}) - 
-                                        {app.status === 'pending' ? 'Pendiente' :
-                                         app.status === 'reviewing' ? 'En Revisión' :
-                                         app.status === 'accepted' ? 'Aceptado' :
-                                         app.status === 'rejected' ? 'Rechazado' : app.status}
-                                      </Typography>
-                                    ))}
-                                    {projectApplications.length > 2 && (
-                                      <Typography variant="caption" sx={{ 
-                                        color: 'info.main', 
-                                        fontSize: '10px',
-                                        ml: 1
-                                      }}>
-                                        ... y {projectApplications.length - 2} más postulando
-                                      </Typography>
-                                    )}
-                                  </>
-                                ) : (
-                                  <Typography variant="caption" sx={{ color: 'warning.main', fontSize: '10px' }}>
-                                    ⚠️ No se encontraron estudiantes postulantes en ninguna fuente
-                                  </Typography>
-                                )}
-                              </Box>
-                            )}
-                            
-                            {selectedProjectData?.status !== 'active' && selectedProjectData?.status !== 'published' && (
-                              <Box>
-                                <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500, display: 'block' }}>
-                                  ⚠️ Estado del proyecto: {getProjectStatusLabel(selectedProjectData?.status)}
-                                </Typography>
-                                <Typography variant="caption" sx={{ 
-                                  color: 'warning.main', 
-                                  display: 'block', 
-                                  fontSize: '10px',
-                                  ml: 1
-                                }}>
-                                  • Proyectos ACTIVOS: Solo estudiantes asignados
-                                  • Proyectos PUBLICADOS: Solo estudiantes que postularon
-                                </Typography>
-                              </Box>
-                            )}
-                          </Box>
-                        )}
-                      </Box>
-                    );
-                  })()}
               <Select
                     value={newEvent.attendees.length > 0 ? newEvent.attendees[0] : ''}
                     onChange={e => {
@@ -2651,7 +2679,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
                   label="Título del Evento" 
                   value={newEvent.title} 
                   onChange={(e) => setNewEvent((prev: any) => ({ ...prev, title: e.target.value }))} 
-                  placeholder="Ej: Entrevista - [Selecciona un proyecto]"
+                  placeholder="Ej: Entrevista técnica para desarrollador frontend, Reunión de kickoff del proyecto, Evaluación de candidatos, etc."
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       bgcolor: themeMode === 'dark' ? '#475569' : '#ffffff',
@@ -3241,52 +3269,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
               ❌ Cancelar
           </Button>
           
-          {/* Botón de debug temporal */}
-          <Button 
-            onClick={() => {
-              console.log('🔍 DEBUG - Estado actual:');
-              console.log('🔍 users:', users);
-              console.log('🔍 companyProjects:', companyProjects);
-              console.log('🔍 selectedProject:', selectedProject);
-              console.log('🔍 newEvent:', newEvent);
-              
-              if (selectedProject) {
-                const filteredUsers = users.filter((u: any) => String(u.project) === selectedProject);
-                console.log('🔍 Usuarios filtrados para proyecto:', selectedProject, ':', filteredUsers);
-                
-                // Mostrar información detallada de cada usuario filtrado
-                filteredUsers.forEach((user: any, index: number) => {
-                  console.log(`🔍 Usuario ${index}:`, {
-                    id: user.id,
-                    project: user.project,
-                    student: user.student,
-                    studentId: user.student?.id,
-                    studentUserId: user.student?.user,
-                    studentName: user.student?.name,
-                    status: user.status
-                  });
-                });
-              }
-              
-              // Verificar la estructura de datos
-              console.log('🔍 Estructura de datos:');
-              console.log('  - users.length:', users.length);
-              console.log('  - companyProjects.length:', companyProjects.length);
-              console.log('  - selectedProject:', selectedProject);
-              console.log('  - newEvent.attendees:', newEvent.attendees);
-              console.log('  - newEvent.attendees type:', typeof newEvent.attendees);
-              console.log('  - newEvent.attendees isArray:', Array.isArray(newEvent.attendees));
-            }} 
-            variant="outlined"
-            color="warning"
-            sx={{ 
-              borderRadius: 2, 
-              px: 2,
-              fontSize: '0.75rem'
-            }}
-          >
-              🐛 Debug
-          </Button>
+
           
           <Button 
             onClick={handleAddEvent} 

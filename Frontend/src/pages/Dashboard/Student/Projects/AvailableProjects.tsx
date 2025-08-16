@@ -60,6 +60,7 @@ import {
 import { apiService } from '../../../../services/api.service';
 import { ShowLatestFilter, ProjectDetailsModal } from '../../../../components/common';
 import { useTheme } from '../../../../contexts/ThemeContext';
+import { getProjectStatusLabel, getProjectStatusColor } from '../../../../utils/projectStatusTranslator';
 
 import { MODALIDADES } from '../../../../modalidades';
 
@@ -737,8 +738,8 @@ export default function AvailableProjects() {
                     {project.title}
                   </Typography>
                   <Chip 
-                    label={translateProjectStatus(project.status)} 
-                    color={project.status === 'Activo' ? 'success' : 'default'} 
+                    label={getProjectStatusLabel(project.status)} 
+                    color={getProjectStatusColor(project.status)} 
                     size="small" 
                     sx={{ 
                       fontWeight: 600,

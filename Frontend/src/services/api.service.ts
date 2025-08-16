@@ -43,6 +43,8 @@ class ApiService {
     };
     
     console.log('🔍 [API] Headers de la petición:', config.headers);
+    console.log('🔍 [API] Body de la petición:', config.body);
+    console.log('🔍 [API] Config completa:', config);
 
 
     try {
@@ -114,6 +116,9 @@ class ApiService {
   }
 
   async post<T>(endpoint: string, data?: any): Promise<T> {
+    console.log('🔍 [API] POST - Endpoint:', endpoint);
+    console.log('🔍 [API] POST - Data:', data);
+    console.log('🔍 [API] POST - Data JSON:', data ? JSON.stringify(data) : 'undefined');
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -487,13 +492,16 @@ class ApiService {
   async companyEvaluateStudent(evaluationData: {
     student_id: string;
     project_id: string;
-    score: number;
+    rating: number;
     comments?: string;
     strike?: {
       reason: string;
       description?: string;
     };
   }) {
+    console.log('🔍 [API] companyEvaluateStudent - Datos recibidos:', evaluationData);
+    console.log('🔍 [API] companyEvaluateStudent - Tipo de rating:', typeof evaluationData.rating);
+    console.log('🔍 [API] companyEvaluateStudent - Rating value:', evaluationData.rating);
     return this.post('/api/evaluations/company-evaluate-student/', evaluationData);
   }
 
@@ -508,9 +516,12 @@ class ApiService {
   async studentEvaluateCompany(evaluationData: {
     company_id: string;
     project_id: string;
-    score: number;
+    rating: number;
     comments?: string;
   }) {
+    console.log('🔍 [API] studentEvaluateCompany - Datos recibidos:', evaluationData);
+    console.log('🔍 [API] studentEvaluateCompany - Tipo de rating:', typeof evaluationData.rating);
+    console.log('🔍 [API] studentEvaluateCompany - Rating value:', evaluationData.rating);
     return this.post('/api/evaluations/student-evaluate-company/', evaluationData);
   }
 

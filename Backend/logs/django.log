@@ -143,3 +143,1121 @@ INFO 2025-08-16 08:57:47,845 middleware 13492 11432 Respuesta: 200 - GET /api/ap
 INFO 2025-08-16 08:57:47,941 basehttp 13492 11432 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
 INFO 2025-08-16 09:06:14,960 signals 18712 14700 Signals de notificaciones conectados exitosamente
 INFO 2025-08-16 09:06:31,175 signals 2080 21584 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:21:20,960 autoreload 13492 9084 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:21:21,861 signals 15448 8664 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:21:21,861 autoreload 15448 8664 Watching for file changes with StatReloader
+INFO 2025-08-16 09:21:28,544 autoreload 15448 8664 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:21:29,203 signals 8764 13136 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:21:29,203 autoreload 8764 13136 Watching for file changes with StatReloader
+INFO 2025-08-16 09:21:47,105 autoreload 8764 13136 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:21:47,754 signals 7232 19884 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:21:47,774 autoreload 7232 19884 Watching for file changes with StatReloader
+INFO 2025-08-16 09:21:54,448 autoreload 7232 19884 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:21:55,165 signals 22156 11340 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:21:55,181 autoreload 22156 11340 Watching for file changes with StatReloader
+INFO 2025-08-16 09:22:32,485 autoreload 22156 11340 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:22:33,367 signals 19272 8872 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:22:33,367 autoreload 19272 8872 Watching for file changes with StatReloader
+INFO 2025-08-16 09:22:41,054 autoreload 19272 8872 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:22:41,750 signals 11864 17484 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:22:41,759 autoreload 11864 17484 Watching for file changes with StatReloader
+INFO 2025-08-16 09:22:48,422 autoreload 11864 17484 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:22:49,071 signals 16668 18288 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:22:49,087 autoreload 16668 18288 Watching for file changes with StatReloader
+INFO 2025-08-16 09:23:56,958 autoreload 16668 18288 C:\Users\albur\Desktop\leanmaker\Backend\projects\views.py changed, reloading.
+INFO 2025-08-16 09:23:57,752 signals 15112 11580 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:23:57,764 autoreload 15112 11580 Watching for file changes with StatReloader
+INFO 2025-08-16 09:24:38,818 middleware 15112 10280 Petición: POST /api/token/ - IP: 127.0.0.1
+INFO 2025-08-16 09:24:39,260 middleware 15112 10280 Respuesta: 200 - POST /api/token/
+INFO 2025-08-16 09:24:39,323 basehttp 15112 10280 "POST /api/token/ HTTP/1.1" 200 1224
+INFO 2025-08-16 09:24:39,341 middleware 15112 18044 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 09:24:39,341 middleware 15112 18044 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 09:24:39,371 basehttp 15112 18044 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 09:24:39,445 middleware 15112 8444 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 09:24:39,535 middleware 15112 8444 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 09:24:39,675 basehttp 15112 8444 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 894
+INFO 2025-08-16 09:24:42,935 middleware 15112 6992 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:24:42,936 middleware 15112 22952 Petición: GET /api/notifications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:24:42,963 middleware 15112 22952 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-16 09:24:42,964 middleware 15112 6992 Respuesta: 200 - GET /api/notifications/
+INFO 2025-08-16 09:24:43,006 basehttp 15112 22952 "GET /api/notifications/ HTTP/1.1" 200 10121
+INFO 2025-08-16 09:24:43,025 basehttp 15112 6992 "GET /api/notifications/ HTTP/1.1" 200 10121
+INFO 2025-08-16 09:24:44,014 middleware 15112 11912 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:24:44,016 middleware 15112 11516 Petición: GET /api/applications/my_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:24:44,426 middleware 15112 11516 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-16 09:24:44,429 middleware 15112 11912 Respuesta: 200 - GET /api/applications/my_applications/
+INFO 2025-08-16 09:24:44,625 basehttp 15112 11516 "GET /api/applications/my_applications/?t=1755350684010&nocache=true HTTP/1.1" 200 33105
+INFO 2025-08-16 09:24:44,643 basehttp 15112 11912 "GET /api/applications/my_applications/?t=1755350684009&nocache=true HTTP/1.1" 200 33105
+INFO 2025-08-16 09:29:02,437 signals 22592 2960 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:29:12,231 signals 4728 23468 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 09:30:55,390 middleware 15112 14028 Petición: GET /api/calendar/events/student_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:30:55,391 middleware 15112 19792 Petición: GET /api/calendar/events/student_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:30:55,456 middleware 15112 14028 Respuesta: 200 - GET /api/calendar/events/student_events/
+INFO 2025-08-16 09:30:55,467 middleware 15112 19792 Respuesta: 200 - GET /api/calendar/events/student_events/
+INFO 2025-08-16 09:30:55,652 basehttp 15112 14028 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 24479
+INFO 2025-08-16 09:30:55,670 basehttp 15112 19792 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 24479
+INFO 2025-08-16 09:31:43,118 middleware 15112 13816 Petición: POST /api/calendar/events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:31:44,995 middleware 15112 13816 Respuesta: 201 - POST /api/calendar/events/
+INFO 2025-08-16 09:31:45,092 basehttp 15112 13816 "POST /api/calendar/events/ HTTP/1.1" 201 848
+INFO 2025-08-16 09:31:52,854 middleware 15112 17668 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 09:31:52,854 middleware 15112 19560 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 09:31:52,864 middleware 15112 19560 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 09:31:52,864 middleware 15112 17668 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 09:31:52,887 basehttp 15112 19560 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 09:31:52,904 middleware 15112 10164 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 09:31:52,904 basehttp 15112 17668 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 09:31:52,904 middleware 15112 22904 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 09:31:52,904 middleware 15112 10164 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 09:31:52,921 middleware 15112 22904 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 09:31:52,939 basehttp 15112 10164 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 09:31:52,956 basehttp 15112 22904 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 09:31:53,018 middleware 15112 13540 Petición: GET /api/calendar/events/student_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:31:53,022 middleware 15112 22068 Petición: GET /api/calendar/events/student_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:31:53,114 middleware 15112 22068 Respuesta: 200 - GET /api/calendar/events/student_events/
+INFO 2025-08-16 09:31:53,120 middleware 15112 13540 Respuesta: 200 - GET /api/calendar/events/student_events/
+INFO 2025-08-16 09:31:53,160 basehttp 15112 22068 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 25577
+INFO 2025-08-16 09:31:53,175 basehttp 15112 13540 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 25577
+INFO 2025-08-16 09:32:30,212 middleware 15112 14972 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:30,212 middleware 15112 14516 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:30,538 middleware 15112 14972 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 09:32:30,539 middleware 15112 14516 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 09:32:31,338 basehttp 15112 14972 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 09:32:31,340 basehttp 15112 14516 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 09:32:31,340 middleware 15112 17756 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:31,349 middleware 15112 19112 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:31,389 middleware 15112 17756 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 09:32:31,395 middleware 15112 19112 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 09:32:31,488 basehttp 15112 17756 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 09:32:31,491 basehttp 15112 19112 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 09:32:42,548 middleware 15112 4108 Petición: POST /api/evaluations/student-evaluate-company/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:42,548 middleware 15112 4108 Respuesta: 400 - POST /api/evaluations/student-evaluate-company/
+WARNING 2025-08-16 09:32:42,563 log 15112 4108 Bad Request: /api/evaluations/student-evaluate-company/
+WARNING 2025-08-16 09:32:42,563 basehttp 15112 4108 "POST /api/evaluations/student-evaluate-company/ HTTP/1.1" 400 36
+INFO 2025-08-16 09:32:56,604 middleware 15112 4912 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:56,606 middleware 15112 5036 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:56,626 middleware 15112 4912 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 09:32:56,633 middleware 15112 5036 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 09:32:56,786 basehttp 15112 4912 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 09:32:56,800 basehttp 15112 5036 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 09:32:58,315 middleware 15112 21584 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:58,315 middleware 15112 18720 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:58,514 middleware 15112 18720 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:32:58,515 middleware 15112 21584 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:32:58,632 basehttp 15112 18720 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:32:58,632 middleware 15112 20560 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:58,665 basehttp 15112 21584 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:32:58,665 middleware 15112 20696 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:32:59,214 middleware 15112 20696 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:32:59,214 middleware 15112 20560 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:33:00,746 basehttp 15112 20696 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:33:00,765 basehttp 15112 20560 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:33:00,769 middleware 15112 9464 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:33:00,769 middleware 15112 1324 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:33:01,179 middleware 15112 9464 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:33:01,186 middleware 15112 1324 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:33:01,314 basehttp 15112 9464 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:33:01,331 basehttp 15112 1324 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:35:21,205 middleware 15112 19196 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:35:21,302 middleware 15112 19196 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:35:21,412 basehttp 15112 19196 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:35:21,428 middleware 15112 7984 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:35:21,716 middleware 15112 7984 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:35:22,791 basehttp 15112 7984 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:35:22,800 middleware 15112 10672 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:35:23,106 middleware 15112 10672 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:35:23,216 basehttp 15112 10672 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:36:20,179 middleware 15112 11736 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:36:20,333 middleware 15112 11736 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:36:20,450 basehttp 15112 11736 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:36:20,450 middleware 15112 12388 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:36:20,794 middleware 15112 12388 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:36:21,719 basehttp 15112 12388 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:36:21,806 middleware 15112 21644 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:36:21,935 middleware 15112 21644 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:36:22,014 basehttp 15112 21644 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:36:36,219 middleware 15112 19204 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:36:36,304 middleware 15112 19204 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:36:36,404 basehttp 15112 19204 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:36:36,411 middleware 15112 1948 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:36:36,654 middleware 15112 1948 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:36:37,489 basehttp 15112 1948 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:36:37,504 middleware 15112 11048 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:36:37,613 middleware 15112 11048 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:36:37,784 basehttp 15112 11048 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:37:09,204 middleware 15112 17376 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:09,308 middleware 15112 17376 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:37:09,420 basehttp 15112 17376 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:37:09,420 middleware 15112 14976 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:09,705 middleware 15112 14976 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:37:10,858 basehttp 15112 14976 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:37:10,858 middleware 15112 20980 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:11,108 middleware 15112 20980 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:37:11,257 basehttp 15112 20980 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:37:18,338 middleware 15112 3280 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:18,450 middleware 15112 3280 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:37:18,570 basehttp 15112 3280 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:37:18,578 middleware 15112 20924 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:18,923 middleware 15112 20924 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:37:19,203 middleware 15112 6016 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:19,907 basehttp 15112 20924 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:37:19,920 middleware 15112 12012 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:20,141 middleware 15112 6016 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:37:20,254 basehttp 15112 6016 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:37:20,263 middleware 15112 3760 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:20,267 middleware 15112 12012 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:37:20,370 basehttp 15112 12012 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:37:20,635 middleware 15112 3760 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:37:21,615 basehttp 15112 3760 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:37:21,615 middleware 15112 12580 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:37:21,891 middleware 15112 12580 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:37:21,973 basehttp 15112 12580 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:38:17,419 middleware 15112 18456 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:17,419 middleware 15112 18456 Respuesta: 401 - GET /api/calendar/events/company_events/
+WARNING 2025-08-16 09:38:17,454 log 15112 18456 Unauthorized: /api/calendar/events/company_events/
+WARNING 2025-08-16 09:38:17,454 basehttp 15112 18456 "GET /api/calendar/events/company_events/ HTTP/1.1" 401 32
+INFO 2025-08-16 09:38:17,463 middleware 15112 1528 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:17,466 middleware 15112 1528 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-08-16 09:38:17,496 basehttp 15112 1528 "POST /api/token/refresh/ HTTP/1.1" 200 273
+INFO 2025-08-16 09:38:17,504 middleware 15112 4480 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:17,601 middleware 15112 4480 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:38:17,704 basehttp 15112 4480 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:38:17,711 middleware 15112 1468 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:17,974 middleware 15112 1468 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:38:18,767 basehttp 15112 1468 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:38:18,785 middleware 15112 12460 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:19,011 middleware 15112 12460 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:38:19,084 basehttp 15112 12460 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:38:47,196 middleware 15112 19268 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:47,344 middleware 15112 19268 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:38:47,473 basehttp 15112 19268 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:38:47,479 middleware 15112 12836 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:47,807 middleware 15112 12836 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:38:48,784 basehttp 15112 12836 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:38:48,795 middleware 15112 19048 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:48,914 middleware 15112 19048 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:38:48,993 basehttp 15112 19048 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:38:54,295 middleware 15112 13172 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:54,422 middleware 15112 13172 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:38:54,612 basehttp 15112 13172 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:38:54,619 middleware 15112 22800 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:54,905 middleware 15112 22800 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:38:56,023 basehttp 15112 22800 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:38:56,038 middleware 15112 12024 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:38:56,170 middleware 15112 12024 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:38:56,271 basehttp 15112 12024 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:40:05,927 middleware 15112 3632 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:06,213 middleware 15112 3632 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:40:06,352 basehttp 15112 3632 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:40:06,366 middleware 15112 9276 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:06,678 middleware 15112 9276 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:40:07,769 basehttp 15112 9276 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:40:07,783 middleware 15112 9048 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:07,926 middleware 15112 9048 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:40:08,021 basehttp 15112 9048 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:40:17,307 middleware 15112 19572 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:17,404 middleware 15112 19572 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:40:17,503 basehttp 15112 19572 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:40:17,510 middleware 15112 7516 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:17,806 middleware 15112 7516 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:40:18,801 basehttp 15112 7516 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:40:18,808 middleware 15112 14288 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:19,063 middleware 15112 14288 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:40:19,144 basehttp 15112 14288 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:40:51,357 middleware 15112 21868 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:51,483 middleware 15112 21868 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:40:51,611 basehttp 15112 21868 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:40:51,611 middleware 15112 3244 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:51,879 middleware 15112 3244 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:40:52,757 basehttp 15112 3244 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:40:52,757 middleware 15112 20060 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:40:52,984 middleware 15112 20060 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:40:53,064 basehttp 15112 20060 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:41:01,435 middleware 15112 12580 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:41:01,517 middleware 15112 12580 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:41:01,617 basehttp 15112 12580 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:41:01,626 middleware 15112 9416 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:41:01,866 middleware 15112 9416 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:41:02,917 basehttp 15112 9416 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:41:02,931 middleware 15112 18236 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:41:03,065 middleware 15112 18236 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:41:03,152 basehttp 15112 18236 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:42:12,291 middleware 15112 9100 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:42:12,440 middleware 15112 9100 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:42:12,534 basehttp 15112 9100 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:42:12,541 middleware 15112 18104 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:42:12,811 middleware 15112 18104 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:42:13,768 basehttp 15112 18104 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:42:13,773 middleware 15112 23204 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:42:13,887 middleware 15112 23204 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:42:13,959 basehttp 15112 23204 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:42:25,069 middleware 15112 10460 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:42:25,163 middleware 15112 10460 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:42:25,297 basehttp 15112 10460 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:42:25,297 middleware 15112 6196 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:42:25,594 middleware 15112 6196 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:42:26,995 basehttp 15112 6196 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:42:26,995 middleware 15112 12772 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:42:27,151 middleware 15112 12772 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:42:27,278 basehttp 15112 12772 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:43:14,307 middleware 15112 12560 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:43:14,408 middleware 15112 12560 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:43:14,524 basehttp 15112 12560 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:43:14,540 middleware 15112 13248 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:43:14,829 middleware 15112 13248 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:43:15,691 basehttp 15112 13248 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:43:15,694 middleware 15112 8992 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:43:15,948 middleware 15112 8992 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:43:16,045 basehttp 15112 8992 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:43:28,308 middleware 15112 6992 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:43:28,401 middleware 15112 6992 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:43:28,522 basehttp 15112 6992 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:43:28,531 middleware 15112 12192 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:43:28,808 middleware 15112 12192 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:43:30,085 basehttp 15112 12192 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:43:30,099 middleware 15112 17768 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:43:30,265 middleware 15112 17768 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:43:30,381 basehttp 15112 17768 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:44:44,364 middleware 15112 12716 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:44:44,449 middleware 15112 12716 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:44:44,557 basehttp 15112 12716 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:44:44,564 middleware 15112 21352 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:44:44,919 middleware 15112 21352 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:44:45,714 basehttp 15112 21352 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:44:45,731 middleware 15112 18956 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:44:45,837 middleware 15112 18956 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:44:45,925 basehttp 15112 18956 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:44:52,310 middleware 15112 13964 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:44:52,399 middleware 15112 13964 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:44:52,494 basehttp 15112 13964 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:44:52,502 middleware 15112 20108 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:44:52,742 middleware 15112 20108 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:44:53,591 basehttp 15112 20108 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:44:53,608 middleware 15112 10596 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:44:53,719 middleware 15112 10596 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:44:53,789 basehttp 15112 10596 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:45:08,331 middleware 15112 10784 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:08,414 middleware 15112 10784 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:45:08,514 basehttp 15112 10784 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:45:08,514 middleware 15112 21048 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:08,783 middleware 15112 21048 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:45:09,827 basehttp 15112 21048 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:45:09,844 middleware 15112 14892 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:09,985 middleware 15112 14892 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:45:10,147 basehttp 15112 14892 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:45:17,561 middleware 15112 15708 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:17,654 middleware 15112 15708 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:45:17,804 basehttp 15112 15708 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:45:17,818 middleware 15112 2500 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:18,104 middleware 15112 2500 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:45:19,303 basehttp 15112 2500 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:45:19,303 middleware 15112 1196 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:19,453 middleware 15112 1196 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:45:19,544 basehttp 15112 1196 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:45:58,222 middleware 15112 8164 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:58,320 middleware 15112 8164 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:45:58,424 basehttp 15112 8164 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:45:58,431 middleware 15112 11876 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:58,671 middleware 15112 11876 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:45:59,563 basehttp 15112 11876 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:45:59,570 middleware 15112 4888 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:45:59,799 middleware 15112 4888 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:45:59,869 basehttp 15112 4888 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:46:06,216 middleware 15112 2448 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:06,313 middleware 15112 2448 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:46:06,430 basehttp 15112 2448 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:46:06,439 middleware 15112 13656 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:06,722 middleware 15112 13656 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:46:07,798 basehttp 15112 13656 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:46:07,798 middleware 15112 14644 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:07,922 middleware 15112 14644 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:46:08,013 basehttp 15112 14644 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:46:24,233 middleware 15112 23540 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:24,334 middleware 15112 23540 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:46:24,444 basehttp 15112 23540 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:46:24,452 middleware 15112 20484 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:24,686 middleware 15112 20484 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:46:25,614 basehttp 15112 20484 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:46:25,624 middleware 15112 19584 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:25,731 middleware 15112 19584 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:46:25,815 basehttp 15112 19584 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:46:32,211 middleware 15112 8132 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:32,290 middleware 15112 8132 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:46:32,400 basehttp 15112 8132 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:46:32,408 middleware 15112 9464 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:32,665 middleware 15112 9464 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:46:33,541 basehttp 15112 9464 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:46:33,541 middleware 15112 14668 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:46:33,791 middleware 15112 14668 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:46:33,875 basehttp 15112 14668 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:47:49,213 middleware 15112 12584 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:47:49,311 middleware 15112 12584 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:47:49,406 basehttp 15112 12584 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:47:49,413 middleware 15112 21296 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:47:49,657 middleware 15112 21296 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:47:50,494 basehttp 15112 21296 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:47:50,512 middleware 15112 17304 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:47:50,614 middleware 15112 17304 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:47:50,773 basehttp 15112 17304 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:47:59,201 middleware 15112 19920 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:47:59,288 middleware 15112 19920 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:47:59,490 basehttp 15112 19920 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:47:59,495 middleware 15112 6112 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:47:59,725 middleware 15112 6112 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:48:00,869 basehttp 15112 6112 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:48:00,886 middleware 15112 5292 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:48:00,995 middleware 15112 5292 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:48:01,136 basehttp 15112 5292 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:50:44,328 middleware 15112 12156 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:50:44,452 middleware 15112 12156 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:50:44,577 basehttp 15112 12156 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:50:44,581 middleware 15112 11928 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:50:44,911 middleware 15112 11928 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:50:45,916 basehttp 15112 11928 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:50:45,916 middleware 15112 10172 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:50:46,038 middleware 15112 10172 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:50:46,190 basehttp 15112 10172 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:50:55,632 middleware 15112 13020 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:50:55,842 middleware 15112 13020 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:50:55,986 basehttp 15112 13020 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:50:55,996 middleware 15112 12048 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:50:56,292 middleware 15112 12048 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:50:57,788 basehttp 15112 12048 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:50:57,797 middleware 15112 22804 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:50:57,916 middleware 15112 22804 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:50:58,011 basehttp 15112 22804 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:52:54,886 middleware 15112 3716 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:52:54,999 middleware 15112 3716 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:52:55,145 basehttp 15112 3716 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:52:55,152 middleware 15112 16104 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:52:55,437 middleware 15112 16104 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:52:56,409 basehttp 15112 16104 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:52:56,428 middleware 15112 18712 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:52:56,532 middleware 15112 18712 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:52:56,621 basehttp 15112 18712 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:53:03,597 middleware 15112 18876 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:53:03,702 middleware 15112 18876 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:53:03,819 basehttp 15112 18876 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:53:03,819 middleware 15112 16228 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:53:04,218 middleware 15112 16228 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:53:05,717 basehttp 15112 16228 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:53:05,734 middleware 15112 15520 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:53:05,867 middleware 15112 15520 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:53:05,967 basehttp 15112 15520 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:56:06,252 middleware 15112 9456 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:56:06,353 middleware 15112 9456 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:56:06,455 basehttp 15112 9456 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:56:06,463 middleware 15112 21760 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:56:06,714 middleware 15112 21760 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:56:07,685 basehttp 15112 21760 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:56:07,685 middleware 15112 2600 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:56:07,803 middleware 15112 2600 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:56:07,884 basehttp 15112 2600 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:56:13,698 middleware 15112 17364 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:56:13,794 middleware 15112 17364 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:56:13,900 basehttp 15112 17364 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:56:13,906 middleware 15112 22428 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:56:14,295 middleware 15112 22428 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:56:15,427 basehttp 15112 22428 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:56:15,437 middleware 15112 10896 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:56:15,577 middleware 15112 10896 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:56:15,677 basehttp 15112 10896 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:57:00,275 middleware 15112 14236 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:57:00,377 middleware 15112 14236 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:57:00,508 basehttp 15112 14236 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:57:00,526 middleware 15112 9196 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:57:00,777 middleware 15112 9196 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:57:01,754 basehttp 15112 9196 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:57:01,761 middleware 15112 13976 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:57:01,870 middleware 15112 13976 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:57:02,106 basehttp 15112 13976 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:57:08,905 middleware 15112 5744 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:57:09,002 middleware 15112 5744 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:57:09,115 basehttp 15112 5744 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:57:09,117 middleware 15112 23196 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:57:09,533 middleware 15112 23196 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:57:10,632 basehttp 15112 23196 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:57:10,649 middleware 15112 17900 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:57:10,782 middleware 15112 17900 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:57:10,882 basehttp 15112 17900 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:58:09,267 middleware 15112 2304 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:09,384 middleware 15112 2304 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:58:09,470 basehttp 15112 2304 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:58:09,471 middleware 15112 22848 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:09,732 middleware 15112 22848 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:58:10,733 basehttp 15112 22848 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:58:10,750 middleware 15112 10352 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:10,858 middleware 15112 10352 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:58:11,030 basehttp 15112 10352 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:58:15,988 middleware 15112 10864 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:16,118 middleware 15112 10864 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:58:16,285 basehttp 15112 10864 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:58:16,307 middleware 15112 4344 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:16,782 middleware 15112 4344 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:58:17,927 basehttp 15112 4344 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:58:17,946 middleware 15112 15788 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:18,132 middleware 15112 15788 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:58:18,233 basehttp 15112 15788 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 09:58:25,413 middleware 15112 13048 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:25,520 middleware 15112 13048 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 09:58:25,653 basehttp 15112 13048 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 09:58:25,660 middleware 15112 22504 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:25,985 middleware 15112 22504 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 09:58:27,003 basehttp 15112 22504 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 09:58:27,003 middleware 15112 4036 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 09:58:27,273 middleware 15112 4036 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 09:58:27,369 basehttp 15112 4036 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 10:00:14,271 middleware 15112 13020 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 10:00:14,365 middleware 15112 13020 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 10:00:14,479 basehttp 15112 13020 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 10:00:14,481 middleware 15112 18200 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 10:00:14,748 middleware 15112 18200 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 10:00:15,846 basehttp 15112 18200 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 10:00:15,846 middleware 15112 2880 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 10:00:15,971 middleware 15112 2880 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 10:00:16,058 basehttp 15112 2880 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 10:00:22,059 middleware 15112 14088 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 10:00:22,174 middleware 15112 14088 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 10:00:22,291 basehttp 15112 14088 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 10:00:22,291 middleware 15112 23340 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 10:00:22,674 middleware 15112 23340 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 10:00:23,806 basehttp 15112 23340 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 10:00:23,806 middleware 15112 21044 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 10:00:23,988 middleware 15112 21044 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 10:00:24,103 basehttp 15112 21044 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 10:04:42,520 middleware 15112 16000 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 10:04:42,661 middleware 15112 16000 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 10:04:42,810 basehttp 15112 16000 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 10:04:42,823 middleware 15112 8856 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 10:04:43,156 middleware 15112 8856 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 10:04:44,256 basehttp 15112 8856 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 10:04:44,273 middleware 15112 15036 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 10:04:44,406 middleware 15112 15036 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 10:04:44,506 basehttp 15112 15036 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 10:04:50,235 middleware 15112 11684 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 10:04:50,354 middleware 15112 11684 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 10:04:50,490 basehttp 15112 11684 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 10:04:50,490 middleware 15112 21076 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 10:04:50,814 middleware 15112 21076 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 10:04:51,838 basehttp 15112 21076 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 10:04:51,851 middleware 15112 5344 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 10:04:52,119 middleware 15112 5344 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 10:04:52,218 basehttp 15112 5344 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 10:05:18,230 middleware 15112 12852 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:18,317 middleware 15112 12852 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 10:05:18,401 basehttp 15112 12852 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 10:05:18,408 middleware 15112 1212 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:18,667 middleware 15112 1212 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 10:05:19,595 basehttp 15112 1212 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 10:05:19,612 middleware 15112 18424 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:19,850 middleware 15112 18424 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 10:05:19,911 basehttp 15112 18424 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 10:05:22,264 middleware 15112 16120 Petición: GET /api/calendar/events/company_events/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:22,356 middleware 15112 16120 Respuesta: 200 - GET /api/calendar/events/company_events/
+INFO 2025-08-16 10:05:22,460 basehttp 15112 16120 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 47765
+INFO 2025-08-16 10:05:22,460 middleware 15112 7132 Petición: GET /api/projects/company_projects/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:22,722 middleware 15112 7132 Respuesta: 200 - GET /api/projects/company_projects/
+INFO 2025-08-16 10:05:23,677 basehttp 15112 7132 "GET /api/projects/company_projects/ HTTP/1.1" 200 34440
+INFO 2025-08-16 10:05:23,690 middleware 15112 11464 Petición: GET /api/applications/received_applications/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:23,924 middleware 15112 11464 Respuesta: 200 - GET /api/applications/received_applications/
+INFO 2025-08-16 10:05:24,031 basehttp 15112 11464 "GET /api/applications/received_applications/ HTTP/1.1" 200 73704
+INFO 2025-08-16 10:05:47,641 middleware 15112 22140 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:47,643 middleware 15112 3220 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:47,723 middleware 15112 3220 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 10:05:47,723 middleware 15112 22140 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 10:05:47,806 basehttp 15112 3220 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 10:05:47,815 basehttp 15112 22140 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 10:05:50,561 middleware 15112 15920 Petición: GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:50,571 middleware 15112 15920 Respuesta: 200 - GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/
+INFO 2025-08-16 10:05:50,601 basehttp 15112 15920 "GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ HTTP/1.1" 200 2024
+INFO 2025-08-16 10:05:53,199 middleware 15112 2304 Petición: GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/ - IP: 127.0.0.1
+INFO 2025-08-16 10:05:53,209 middleware 15112 2304 Respuesta: 200 - GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/
+INFO 2025-08-16 10:05:53,233 basehttp 15112 2304 "GET /api/projects/75e5a2f7-5d1c-4da0-8660-69c4ed7d220a/ HTTP/1.1" 200 1697
+INFO 2025-08-16 10:06:44,160 middleware 15112 22556 Petición: GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:06:44,173 middleware 15112 19148 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:06:44,191 middleware 15112 19148 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 10:06:44,197 middleware 15112 22556 Respuesta: 200 - GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/
+INFO 2025-08-16 10:06:44,230 basehttp 15112 19148 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 10:06:44,241 basehttp 15112 22556 "GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ HTTP/1.1" 200 2024
+INFO 2025-08-16 10:06:51,718 middleware 15112 6112 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:06:51,718 middleware 15112 12236 Petición: GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:06:51,747 middleware 15112 6112 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 10:06:51,753 middleware 15112 12236 Respuesta: 200 - GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/
+INFO 2025-08-16 10:06:51,773 basehttp 15112 6112 "GET /api/strikes/reports/company/ HTTP/1.1" 200 639
+INFO 2025-08-16 10:06:51,781 basehttp 15112 12236 "GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ HTTP/1.1" 200 2024
+INFO 2025-08-16 10:07:02,326 middleware 15112 7104 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:02,328 middleware 15112 15676 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:02,329 middleware 15112 22840 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:02,626 middleware 15112 15676 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:07:02,659 middleware 15112 22840 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:07:02,924 middleware 15112 7104 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:07:03,108 basehttp 15112 15676 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:07:03,393 basehttp 15112 7104 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:07:03,393 middleware 15112 17292 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:03,410 basehttp 15112 22840 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:07:03,417 middleware 15112 21780 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:03,449 middleware 15112 17292 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:07:03,464 middleware 15112 21780 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:07:03,556 basehttp 15112 17292 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:07:03,569 basehttp 15112 21780 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:07:09,530 middleware 15112 11124 Petición: GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:09,545 middleware 15112 11124 Respuesta: 200 - GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/
+INFO 2025-08-16 10:07:09,600 basehttp 15112 11124 "GET /api/students/f5de34a4-43c4-4e84-929c-454e5e74a8d9/profile/ HTTP/1.1" 200 2024
+INFO 2025-08-16 10:07:18,732 middleware 15112 17616 Petición: GET /api/projects/ab5e9d09-fdc7-4ede-b45e-de25f073e003/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:18,753 middleware 15112 17616 Respuesta: 200 - GET /api/projects/ab5e9d09-fdc7-4ede-b45e-de25f073e003/
+INFO 2025-08-16 10:07:18,826 basehttp 15112 17616 "GET /api/projects/ab5e9d09-fdc7-4ede-b45e-de25f073e003/ HTTP/1.1" 200 1716
+INFO 2025-08-16 10:07:34,312 middleware 15112 13160 Petición: POST /api/evaluations/company-evaluate-student/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:34,318 middleware 15112 13160 Respuesta: 400 - POST /api/evaluations/company-evaluate-student/
+WARNING 2025-08-16 10:07:34,336 log 15112 13160 Bad Request: /api/evaluations/company-evaluate-student/
+WARNING 2025-08-16 10:07:34,337 basehttp 15112 13160 "POST /api/evaluations/company-evaluate-student/ HTTP/1.1" 400 36
+INFO 2025-08-16 10:07:44,348 middleware 15112 21264 Petición: POST /api/evaluations/student-evaluate-company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:07:44,358 middleware 15112 21264 Respuesta: 400 - POST /api/evaluations/student-evaluate-company/
+WARNING 2025-08-16 10:07:44,382 log 15112 21264 Bad Request: /api/evaluations/student-evaluate-company/
+WARNING 2025-08-16 10:07:44,382 basehttp 15112 21264 "POST /api/evaluations/student-evaluate-company/ HTTP/1.1" 400 36
+INFO 2025-08-16 10:09:26,154 middleware 15112 3536 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,157 middleware 15112 8088 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,164 middleware 15112 3536 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:09:26,164 middleware 15112 8088 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:09:26,201 basehttp 15112 8088 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:09:26,211 middleware 15112 1356 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,212 basehttp 15112 3536 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:09:26,221 middleware 15112 17264 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,221 middleware 15112 1356 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:09:26,228 middleware 15112 17264 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:09:26,250 basehttp 15112 1356 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:09:26,266 basehttp 15112 17264 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:09:26,384 middleware 15112 8516 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,397 middleware 15112 22916 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,614 middleware 15112 21380 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,620 middleware 15112 13688 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,624 middleware 15112 2992 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,629 middleware 15112 20748 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:26,651 middleware 15112 2992 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:09:26,765 basehttp 15112 2992 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:09:27,002 middleware 15112 5112 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:27,048 middleware 15112 5112 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:09:27,226 basehttp 15112 5112 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:09:27,291 middleware 15112 13688 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:09:27,655 middleware 15112 22916 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:09:27,686 middleware 15112 8516 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:09:27,838 basehttp 15112 13688 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:09:29,175 middleware 15112 21380 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:09:29,338 basehttp 15112 22916 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:09:29,405 middleware 15112 20748 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:09:29,406 middleware 15112 19960 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:29,456 basehttp 15112 8516 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:09:29,535 middleware 15112 21696 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:29,662 basehttp 15112 21380 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:09:29,692 middleware 15112 15924 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:29,722 basehttp 15112 20748 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:09:29,733 middleware 15112 9080 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:29,761 middleware 15112 21696 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:09:29,763 middleware 15112 19960 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:09:29,800 middleware 15112 15924 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:09:30,006 basehttp 15112 21696 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:09:30,012 middleware 15112 9080 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:09:30,014 basehttp 15112 19960 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:09:30,129 basehttp 15112 15924 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:09:30,146 basehttp 15112 9080 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:09:34,337 middleware 15112 19928 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,342 middleware 15112 19296 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,348 middleware 15112 2988 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,352 middleware 15112 10252 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,361 middleware 15112 9256 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,364 middleware 15112 11140 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,368 middleware 15112 14400 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,380 middleware 15112 2988 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:09:34,392 middleware 15112 11140 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:09:34,519 basehttp 15112 2988 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:09:34,539 basehttp 15112 11140 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:09:34,738 middleware 15112 21452 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,771 middleware 15112 21452 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:09:34,799 middleware 15112 13540 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:34,849 middleware 15112 13540 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:09:34,923 basehttp 15112 21452 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:09:34,985 basehttp 15112 13540 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:09:35,064 middleware 15112 19296 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:09:35,529 middleware 15112 10252 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:09:35,543 middleware 15112 19928 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:09:35,682 basehttp 15112 19296 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:09:36,070 basehttp 15112 10252 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:09:36,080 middleware 15112 13560 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:36,102 basehttp 15112 19928 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:09:36,108 middleware 15112 22872 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:36,225 middleware 15112 22872 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:09:36,252 middleware 15112 13560 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:09:36,400 basehttp 15112 22872 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:09:36,447 basehttp 15112 13560 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:09:36,462 middleware 15112 14400 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:09:36,468 middleware 15112 9256 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:09:37,551 basehttp 15112 14400 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:09:37,559 middleware 15112 22444 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:37,560 basehttp 15112 9256 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:09:37,576 middleware 15112 19780 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:37,599 middleware 15112 22444 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:09:37,617 middleware 15112 19780 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:09:37,683 basehttp 15112 22444 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:09:37,709 basehttp 15112 19780 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:09:43,297 middleware 15112 1960 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:43,389 middleware 15112 1960 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:09:43,792 basehttp 15112 1960 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:09:43,809 middleware 15112 9540 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:09:43,838 middleware 15112 9540 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:09:43,894 basehttp 15112 9540 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:10:02,261 middleware 15112 16900 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:10:02,440 middleware 15112 16900 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:10:03,182 basehttp 15112 16900 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:10:03,192 middleware 15112 12768 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:10:03,216 middleware 15112 12768 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:10:03,277 basehttp 15112 12768 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:11:10,327 middleware 15112 13172 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:10,463 middleware 15112 13172 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:11:10,882 basehttp 15112 13172 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:11:10,887 middleware 15112 22344 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:10,919 middleware 15112 22344 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:11:10,972 basehttp 15112 22344 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:11:20,263 middleware 15112 7236 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:20,438 middleware 15112 7236 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:11:21,029 basehttp 15112 7236 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:11:21,029 middleware 15112 4276 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:21,065 middleware 15112 4276 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:11:21,136 basehttp 15112 4276 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:11:32,302 middleware 15112 5588 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,306 middleware 15112 14924 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,311 middleware 15112 17860 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,320 middleware 15112 17472 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,327 middleware 15112 13632 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,333 middleware 15112 17860 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:11:32,335 middleware 15112 10556 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,342 middleware 15112 13444 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,361 middleware 15112 10556 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:11:32,488 basehttp 15112 17860 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:11:32,507 basehttp 15112 10556 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:11:32,661 middleware 15112 14104 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,688 middleware 15112 16212 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:32,697 middleware 15112 14104 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:11:32,756 middleware 15112 16212 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:11:32,859 basehttp 15112 14104 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:11:32,923 basehttp 15112 16212 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:11:33,100 middleware 15112 14924 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:11:33,159 middleware 15112 5588 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:11:33,507 middleware 15112 17472 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:11:33,634 basehttp 15112 14924 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:11:34,050 basehttp 15112 5588 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:11:34,057 basehttp 15112 17472 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:11:34,061 middleware 15112 12084 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:34,065 middleware 15112 8068 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:34,195 middleware 15112 12084 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:11:34,199 middleware 15112 8068 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:11:34,374 basehttp 15112 8068 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:11:34,387 basehttp 15112 12084 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:11:34,427 middleware 15112 13632 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:11:34,428 middleware 15112 13444 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:11:35,518 basehttp 15112 13632 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:11:35,536 basehttp 15112 13444 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:11:35,537 middleware 15112 19040 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:35,541 middleware 15112 18812 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:35,584 middleware 15112 18812 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:11:35,594 middleware 15112 19040 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:11:35,679 basehttp 15112 18812 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:11:35,691 basehttp 15112 19040 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:11:46,140 middleware 15112 22408 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,143 middleware 15112 2368 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,151 middleware 15112 18296 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,155 middleware 15112 1632 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,157 middleware 15112 2368 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:11:46,159 middleware 15112 22408 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:11:46,162 middleware 15112 18296 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:11:46,166 middleware 15112 1632 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:11:46,225 basehttp 15112 2368 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:11:46,228 basehttp 15112 18296 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:11:46,235 middleware 15112 17236 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,237 middleware 15112 12908 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,244 basehttp 15112 1632 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:11:46,251 middleware 15112 20352 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,260 middleware 15112 20352 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:11:46,263 middleware 15112 12908 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:11:46,267 basehttp 15112 22408 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:11:46,276 middleware 15112 9532 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,282 middleware 15112 17236 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:11:46,298 middleware 15112 9532 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:11:46,312 basehttp 15112 20352 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:11:46,360 basehttp 15112 12908 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:11:46,373 basehttp 15112 9532 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:11:46,391 basehttp 15112 17236 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:11:46,570 middleware 15112 8496 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,575 middleware 15112 20428 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,629 middleware 15112 18928 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,637 middleware 15112 15316 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:46,640 middleware 15112 9980 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:47,200 middleware 15112 15316 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:11:47,626 basehttp 15112 15316 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:11:47,651 middleware 15112 9980 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:11:47,669 middleware 15112 18928 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:11:48,293 basehttp 15112 9980 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:11:48,298 middleware 15112 3640 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:48,325 basehttp 15112 18928 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:11:48,336 middleware 15112 3116 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:48,410 middleware 15112 3640 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:11:48,423 middleware 15112 8496 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:11:48,434 middleware 15112 20428 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:11:48,435 middleware 15112 3116 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:11:48,524 basehttp 15112 3640 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:11:49,507 basehttp 15112 3116 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:11:49,525 basehttp 15112 20428 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:11:49,530 middleware 15112 8528 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:49,539 basehttp 15112 8496 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:11:49,550 middleware 15112 8968 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:11:49,582 middleware 15112 8528 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:11:49,595 middleware 15112 8968 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:11:49,658 basehttp 15112 8528 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:11:49,670 basehttp 15112 8968 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:12:00,267 middleware 15112 17916 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,282 middleware 15112 21672 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,382 middleware 15112 8172 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,386 middleware 15112 15820 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,389 middleware 15112 15252 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,394 middleware 15112 10652 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,400 middleware 15112 21672 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:00,401 middleware 15112 13664 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,419 middleware 15112 10652 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:00,522 basehttp 15112 21672 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:12:00,542 basehttp 15112 10652 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:12:00,724 middleware 15112 7680 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,758 middleware 15112 7680 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:00,798 middleware 15112 19692 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:00,860 middleware 15112 19692 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:00,918 basehttp 15112 7680 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:12:01,001 basehttp 15112 19692 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:12:01,073 middleware 15112 15252 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:12:01,483 basehttp 15112 15252 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:12:01,537 middleware 15112 13664 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:12:01,538 middleware 15112 15820 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:12:02,145 basehttp 15112 15820 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:12:02,154 middleware 15112 17668 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:02,164 basehttp 15112 13664 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:12:02,172 middleware 15112 20840 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:02,285 middleware 15112 17668 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:12:02,300 middleware 15112 20840 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:12:02,342 middleware 15112 8172 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:12:02,467 basehttp 15112 17668 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:12:02,470 middleware 15112 17916 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:12:02,471 basehttp 15112 20840 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:12:03,613 basehttp 15112 8172 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:12:03,829 middleware 15112 16112 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:03,858 basehttp 15112 17916 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:12:03,871 middleware 15112 16448 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:03,907 middleware 15112 16112 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:12:03,995 middleware 15112 16448 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:12:04,012 basehttp 15112 16112 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:12:04,036 basehttp 15112 16448 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:12:16,333 middleware 15112 20488 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,337 middleware 15112 22432 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,341 middleware 15112 11124 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,345 middleware 15112 21512 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,348 middleware 15112 7580 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,356 middleware 15112 22432 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:16,360 middleware 15112 11112 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,368 middleware 15112 19884 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,383 middleware 15112 11112 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:16,509 basehttp 15112 22432 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:12:16,525 basehttp 15112 11112 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:12:16,649 middleware 15112 7732 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,679 middleware 15112 11664 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:16,682 middleware 15112 7732 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:16,731 middleware 15112 11664 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:16,845 basehttp 15112 7732 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:12:16,908 basehttp 15112 11664 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:12:17,065 middleware 15112 7580 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:12:17,506 middleware 15112 11124 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:12:17,530 middleware 15112 19884 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:12:17,534 basehttp 15112 7580 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:12:18,084 basehttp 15112 11124 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:12:18,092 basehttp 15112 19884 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:12:18,096 middleware 15112 12284 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:18,101 middleware 15112 11616 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:18,226 middleware 15112 11616 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:12:18,245 middleware 15112 12284 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:12:18,404 middleware 15112 21512 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:12:18,421 basehttp 15112 11616 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:12:18,464 basehttp 15112 12284 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:12:19,143 middleware 15112 20488 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:12:19,144 basehttp 15112 21512 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:12:19,215 middleware 15112 12060 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:19,815 basehttp 15112 20488 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:12:19,825 middleware 15112 15092 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:19,837 middleware 15112 12060 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:12:19,933 basehttp 15112 12060 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:12:19,951 middleware 15112 15092 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:12:19,969 basehttp 15112 15092 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:12:29,155 middleware 15112 11976 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,157 middleware 15112 16884 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,160 middleware 15112 4748 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,167 middleware 15112 11976 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:29,170 middleware 15112 4748 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:29,172 middleware 15112 16884 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:29,174 middleware 15112 10844 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,184 middleware 15112 10844 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:12:29,231 basehttp 15112 11976 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:12:29,242 basehttp 15112 4748 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:12:29,245 middleware 15112 16288 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,258 basehttp 15112 16884 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:12:29,261 middleware 15112 20020 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,275 middleware 15112 6252 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,282 basehttp 15112 10844 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:12:29,289 middleware 15112 20020 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:29,295 middleware 15112 16288 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:29,297 middleware 15112 13588 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,299 middleware 15112 6252 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:29,319 middleware 15112 13588 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:12:29,378 basehttp 15112 16288 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:12:29,383 basehttp 15112 6252 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:12:29,391 basehttp 15112 20020 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:12:29,399 basehttp 15112 13588 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:12:29,683 middleware 15112 13268 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,700 middleware 15112 13708 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,807 middleware 15112 14700 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,817 middleware 15112 20028 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:29,824 middleware 15112 15216 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:30,431 middleware 15112 20028 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:12:30,891 basehttp 15112 20028 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1305
+INFO 2025-08-16 10:12:30,898 middleware 15112 15216 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:12:30,921 middleware 15112 14700 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:12:31,575 basehttp 15112 14700 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:12:31,586 middleware 15112 19684 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:31,598 basehttp 15112 15216 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6369
+INFO 2025-08-16 10:12:31,607 middleware 15112 10216 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:31,614 middleware 15112 13268 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:12:31,634 middleware 15112 13708 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:12:32,518 middleware 15112 19684 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:12:32,529 middleware 15112 10216 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:12:32,531 basehttp 15112 13268 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:12:32,538 basehttp 15112 13708 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3825
+INFO 2025-08-16 10:12:32,541 middleware 15112 18324 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:32,631 middleware 15112 10476 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:12:32,671 basehttp 15112 10216 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:12:32,688 basehttp 15112 19684 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4154
+INFO 2025-08-16 10:12:32,734 middleware 15112 18324 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:12:32,735 middleware 15112 10476 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:12:32,803 basehttp 15112 18324 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:12:32,821 basehttp 15112 10476 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 2774
+INFO 2025-08-16 10:13:27,491 middleware 15112 2284 Petición: POST /api/evaluations/company-evaluate-student/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:27,523 middleware 15112 2284 Respuesta: 201 - POST /api/evaluations/company-evaluate-student/
+INFO 2025-08-16 10:13:27,590 basehttp 15112 2284 "POST /api/evaluations/company-evaluate-student/ HTTP/1.1" 201 208
+INFO 2025-08-16 10:13:28,111 middleware 15112 14692 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:28,224 middleware 15112 14692 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:13:28,674 basehttp 15112 14692 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6401
+INFO 2025-08-16 10:13:28,674 middleware 15112 6416 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:28,707 middleware 15112 6416 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:13:28,824 basehttp 15112 6416 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4574
+INFO 2025-08-16 10:13:40,747 middleware 15112 22136 Petición: POST /api/evaluations/student-evaluate-company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:40,801 middleware 15112 22136 Respuesta: 201 - POST /api/evaluations/student-evaluate-company/
+INFO 2025-08-16 10:13:40,879 basehttp 15112 22136 "POST /api/evaluations/student-evaluate-company/ HTTP/1.1" 201 205
+INFO 2025-08-16 10:13:41,400 middleware 15112 17008 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:41,585 middleware 15112 17008 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:13:42,228 basehttp 15112 17008 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3411
+INFO 2025-08-16 10:13:42,228 middleware 15112 18448 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:42,272 middleware 15112 18448 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:13:42,362 basehttp 15112 18448 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 3220
+INFO 2025-08-16 10:13:44,512 middleware 15112 16660 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:44,564 middleware 15112 16660 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:13:44,715 basehttp 15112 16660 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 893
+INFO 2025-08-16 10:13:46,994 middleware 15112 11516 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:46,997 middleware 15112 13056 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:46,997 middleware 15112 13056 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:13:46,997 middleware 15112 11516 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:13:47,029 basehttp 15112 11516 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:13:47,042 basehttp 15112 13056 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:13:47,042 middleware 15112 13468 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:47,042 middleware 15112 21304 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:47,042 middleware 15112 13468 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:13:47,042 middleware 15112 21304 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:13:47,075 basehttp 15112 13468 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:13:47,085 basehttp 15112 21304 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:13:47,150 middleware 15112 15332 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:47,207 middleware 15112 15332 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:13:47,238 basehttp 15112 15332 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 893
+INFO 2025-08-16 10:13:50,419 middleware 15112 16688 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:13:50,512 middleware 15112 16688 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:13:50,871 basehttp 15112 16688 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1306
+INFO 2025-08-16 10:14:02,212 middleware 15112 4392 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:14:02,212 middleware 15112 20404 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:14:02,230 middleware 15112 20404 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:14:02,281 basehttp 15112 20404 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:14:02,303 middleware 15112 4392 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:14:02,413 middleware 15112 4280 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:14:02,440 middleware 15112 4280 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:14:02,440 basehttp 15112 4392 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 893
+INFO 2025-08-16 10:14:02,463 basehttp 15112 4280 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:14:03,395 middleware 15112 13004 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:14:03,395 middleware 15112 21388 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:14:03,412 middleware 15112 21388 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:14:03,483 basehttp 15112 21388 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:14:03,734 middleware 15112 13004 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:14:03,939 middleware 15112 15560 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:14:04,145 middleware 15112 15560 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:14:04,145 basehttp 15112 13004 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1306
+INFO 2025-08-16 10:14:04,171 basehttp 15112 15560 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:20:55,706 signals 8456 11156 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 10:22:03,745 middleware 15112 13064 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:03,751 middleware 15112 2528 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:03,759 middleware 15112 13064 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:22:03,761 middleware 15112 2528 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:22:03,800 basehttp 15112 13064 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:22:03,804 basehttp 15112 2528 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:22:03,810 middleware 15112 5604 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:03,815 middleware 15112 22844 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:03,924 middleware 15112 5604 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:22:03,926 middleware 15112 22844 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:22:03,954 basehttp 15112 22844 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:22:03,966 basehttp 15112 5604 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:22:04,092 middleware 15112 4280 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:04,329 middleware 15112 4280 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:22:04,407 basehttp 15112 4280 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1306
+INFO 2025-08-16 10:22:08,345 middleware 15112 20860 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:08,347 middleware 15112 9680 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:08,361 middleware 15112 20860 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:22:08,369 middleware 15112 9680 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:22:08,456 basehttp 15112 20860 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:22:08,461 middleware 15112 348 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:08,478 basehttp 15112 9680 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:22:08,482 middleware 15112 348 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:22:08,487 middleware 15112 144 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:08,503 middleware 15112 144 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:22:08,550 basehttp 15112 348 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:22:08,583 basehttp 15112 144 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:22:08,632 middleware 15112 23464 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:22:08,780 middleware 15112 23464 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:22:09,395 basehttp 15112 23464 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 893
+INFO 2025-08-16 10:24:37,070 signals 17636 13656 Signals de notificaciones conectados exitosamente
+INFO 2025-08-16 10:27:50,697 middleware 15112 22808 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:27:50,697 middleware 15112 11928 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:27:50,710 middleware 15112 3248 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:27:50,710 middleware 15112 22808 Respuesta: 401 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:27:50,712 middleware 15112 11928 Respuesta: 403 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:27:50,713 middleware 15112 3248 Respuesta: 403 - GET /api/evaluations/student-companies-to-evaluate/
+WARNING 2025-08-16 10:27:50,812 log 15112 3248 Forbidden: /api/evaluations/student-companies-to-evaluate/
+WARNING 2025-08-16 10:27:50,812 basehttp 15112 3248 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 403 61
+WARNING 2025-08-16 10:27:50,830 log 15112 11928 Forbidden: /api/evaluations/student-companies-to-evaluate/
+WARNING 2025-08-16 10:27:50,832 basehttp 15112 11928 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 403 61
+WARNING 2025-08-16 10:27:50,840 log 15112 22808 Unauthorized: /api/dashboard/student_stats/
+WARNING 2025-08-16 10:27:50,840 basehttp 15112 22808 "GET /api/dashboard/student_stats/ HTTP/1.1" 401 32
+INFO 2025-08-16 10:27:50,846 middleware 15112 1764 Petición: POST /api/token/refresh/ - IP: 127.0.0.1
+INFO 2025-08-16 10:27:50,861 middleware 15112 1764 Respuesta: 200 - POST /api/token/refresh/
+INFO 2025-08-16 10:27:50,915 basehttp 15112 1764 "POST /api/token/refresh/ HTTP/1.1" 200 277
+INFO 2025-08-16 10:27:50,929 middleware 15112 23452 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:27:51,076 middleware 15112 23452 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:27:51,145 basehttp 15112 23452 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 893
+INFO 2025-08-16 10:27:51,936 middleware 15112 5304 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:27:52,526 middleware 15112 5304 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:27:54,590 basehttp 15112 5304 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3411
+INFO 2025-08-16 10:27:54,610 middleware 15112 3896 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:27:54,707 middleware 15112 3896 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:27:54,996 basehttp 15112 3896 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 3220
+INFO 2025-08-16 10:28:02,719 middleware 15112 21440 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:02,719 middleware 15112 11340 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:02,735 middleware 15112 21440 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:28:02,735 middleware 15112 11340 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:28:02,819 basehttp 15112 21440 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:28:02,834 basehttp 15112 11340 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:28:02,835 middleware 15112 14812 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:02,843 middleware 15112 9788 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:02,853 middleware 15112 14812 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:28:02,853 middleware 15112 9788 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:28:02,932 basehttp 15112 14812 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:28:02,935 basehttp 15112 9788 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:28:03,002 middleware 15112 22404 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:03,004 middleware 15112 16372 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:03,004 middleware 15112 3280 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:03,234 middleware 15112 22404 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:28:03,850 basehttp 15112 22404 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 893
+INFO 2025-08-16 10:28:04,584 middleware 15112 16372 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:28:04,600 middleware 15112 3280 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:28:07,910 basehttp 15112 16372 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3411
+INFO 2025-08-16 10:28:07,915 basehttp 15112 3280 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3411
+INFO 2025-08-16 10:28:07,915 middleware 15112 13080 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:07,928 middleware 15112 22524 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:08,086 middleware 15112 22524 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:28:08,093 middleware 15112 13080 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:28:08,420 basehttp 15112 22524 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 3220
+INFO 2025-08-16 10:28:08,431 basehttp 15112 13080 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 3220
+INFO 2025-08-16 10:28:16,276 middleware 15112 5124 Petición: POST /api/evaluations/student-evaluate-company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:16,357 middleware 15112 5124 Respuesta: 201 - POST /api/evaluations/student-evaluate-company/
+INFO 2025-08-16 10:28:16,571 basehttp 15112 5124 "POST /api/evaluations/student-evaluate-company/ HTTP/1.1" 201 192
+INFO 2025-08-16 10:28:17,096 middleware 15112 15764 Petición: GET /api/evaluations/student-companies-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:17,589 middleware 15112 15824 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:17,637 middleware 15112 15764 Respuesta: 200 - GET /api/evaluations/student-companies-to-evaluate/
+INFO 2025-08-16 10:28:18,932 middleware 15112 15824 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:28:19,846 basehttp 15112 15764 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 3009
+INFO 2025-08-16 10:28:19,872 middleware 15112 23480 Petición: GET /api/evaluations/student-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:20,244 basehttp 15112 15824 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 893
+INFO 2025-08-16 10:28:20,308 middleware 15112 23480 Respuesta: 200 - GET /api/evaluations/student-completed-evaluations/
+INFO 2025-08-16 10:28:20,592 basehttp 15112 23480 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 3654
+INFO 2025-08-16 10:28:26,565 middleware 15112 6520 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:26,568 middleware 15112 14596 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:26,580 middleware 15112 6520 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:28:26,586 middleware 15112 14596 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:28:26,649 basehttp 15112 6520 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:28:26,660 basehttp 15112 14596 "POST /api/token/verify/ HTTP/1.1" 200 124
+INFO 2025-08-16 10:28:26,669 middleware 15112 11136 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:26,670 middleware 15112 5560 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:26,692 middleware 15112 11136 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:28:26,700 middleware 15112 5560 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:28:26,797 basehttp 15112 5560 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:28:26,815 basehttp 15112 11136 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-16 10:28:26,881 middleware 15112 1748 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:27,155 middleware 15112 1748 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:28:28,113 basehttp 15112 1748 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1306
+INFO 2025-08-16 10:28:30,651 middleware 15112 12088 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:30,651 middleware 15112 16132 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:30,661 middleware 15112 9416 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:31,320 middleware 15112 16132 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:28:31,493 middleware 15112 9416 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:28:31,500 middleware 15112 12088 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:28:31,511 basehttp 15112 16132 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1306
+INFO 2025-08-16 10:28:33,758 basehttp 15112 12088 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6401
+INFO 2025-08-16 10:28:33,776 middleware 15112 3556 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:33,784 basehttp 15112 9416 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6401
+INFO 2025-08-16 10:28:33,792 middleware 15112 15728 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:33,925 middleware 15112 3556 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:28:33,932 middleware 15112 15728 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:28:34,305 basehttp 15112 15728 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4574
+INFO 2025-08-16 10:28:34,311 basehttp 15112 3556 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 4574
+INFO 2025-08-16 10:28:41,586 middleware 15112 18412 Petición: POST /api/evaluations/company-evaluate-student/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:41,669 middleware 15112 18412 Respuesta: 201 - POST /api/evaluations/company-evaluate-student/
+INFO 2025-08-16 10:28:41,919 basehttp 15112 18412 "POST /api/evaluations/company-evaluate-student/ HTTP/1.1" 201 206
+INFO 2025-08-16 10:28:42,434 middleware 15112 10484 Petición: GET /api/evaluations/company-students-to-evaluate/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:42,707 middleware 15112 10484 Respuesta: 200 - GET /api/evaluations/company-students-to-evaluate/
+INFO 2025-08-16 10:28:42,984 middleware 15112 21296 Petición: GET /api/dashboard/company_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:44,161 basehttp 15112 10484 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 6433
+INFO 2025-08-16 10:28:44,176 middleware 15112 19640 Petición: GET /api/evaluations/company-completed-evaluations/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:44,475 middleware 15112 19640 Respuesta: 200 - GET /api/evaluations/company-completed-evaluations/
+INFO 2025-08-16 10:28:44,965 basehttp 15112 19640 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 5001
+INFO 2025-08-16 10:28:45,003 middleware 15112 21296 Respuesta: 200 - GET /api/dashboard/company_stats/
+INFO 2025-08-16 10:28:46,014 basehttp 15112 21296 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1306
+INFO 2025-08-16 10:28:50,225 middleware 15112 20396 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:50,346 middleware 15112 20396 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:28:50,814 basehttp 15112 20396 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 894
+INFO 2025-08-16 10:28:53,452 middleware 15112 1132 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:53,456 middleware 15112 1728 Petición: POST /api/token/verify/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:53,462 middleware 15112 1728 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:28:53,474 middleware 15112 1132 Respuesta: 200 - POST /api/token/verify/
+INFO 2025-08-16 10:28:53,544 basehttp 15112 1728 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:28:53,554 middleware 15112 2656 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:53,560 basehttp 15112 1132 "POST /api/token/verify/ HTTP/1.1" 200 127
+INFO 2025-08-16 10:28:53,570 middleware 15112 13152 Petición: GET /api/users/profile/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:53,570 middleware 15112 2656 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:28:53,586 middleware 15112 13152 Respuesta: 200 - GET /api/users/profile/
+INFO 2025-08-16 10:28:53,626 basehttp 15112 2656 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:28:53,658 basehttp 15112 13152 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-16 10:28:53,685 middleware 15112 12656 Petición: GET /api/dashboard/student_stats/ - IP: 127.0.0.1
+INFO 2025-08-16 10:28:53,808 middleware 15112 12656 Respuesta: 200 - GET /api/dashboard/student_stats/
+INFO 2025-08-16 10:28:53,875 basehttp 15112 12656 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 894
+INFO 2025-08-16 10:30:00,591 middleware 15112 12488 Petición: POST /api/strikes/reports/create/ - IP: 127.0.0.1
+INFO 2025-08-16 10:30:00,636 middleware 15112 12488 Respuesta: 201 - POST /api/strikes/reports/create/
+INFO 2025-08-16 10:30:00,837 basehttp 15112 12488 "POST /api/strikes/reports/create/ HTTP/1.1" 201 164
+INFO 2025-08-16 10:30:02,409 middleware 15112 2744 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:30:02,410 middleware 15112 22876 Petición: GET /api/strikes/reports/company/ - IP: 127.0.0.1
+INFO 2025-08-16 10:30:02,450 middleware 15112 22876 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 10:30:02,453 middleware 15112 2744 Respuesta: 200 - GET /api/strikes/reports/company/
+INFO 2025-08-16 10:30:02,786 basehttp 15112 2744 "GET /api/strikes/reports/company/ HTTP/1.1" 200 1218
+INFO 2025-08-16 10:30:02,800 basehttp 15112 22876 "GET /api/strikes/reports/company/ HTTP/1.1" 200 1218

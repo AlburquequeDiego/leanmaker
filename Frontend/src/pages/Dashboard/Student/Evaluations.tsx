@@ -43,6 +43,7 @@ import {
 } from '@mui/icons-material';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { apiService } from '../../../services/api.service';
+import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
 
 // Componente de estrellas personalizado
@@ -181,6 +182,9 @@ export const Evaluations = () => {
   const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
   const [limitToShow, setLimitToShow] = useState(5);
 
+  // Obtener estadísticas del dashboard para poder refrescarlas
+  const { refresh: refreshDashboardStats } = useDashboardStats('student');
+  
   // Cargar datos al montar el componente
   useEffect(() => {
     loadData();
@@ -309,10 +313,16 @@ export const Evaluations = () => {
 
     try {
       console.log('📡 Enviando evaluación a la API...');
+      console.log('🔍 Datos a enviar:', {
+        company_id: selectedProject.company_id,
+        project_id: selectedProject.project_id,
+        rating: calificacion,
+        comments: ''
+      });
       const response = await apiService.studentEvaluateCompany({
         company_id: selectedProject.company_id,
         project_id: selectedProject.project_id,
-        score: calificacion,
+        rating: calificacion,
         comments: '' // Sin comentarios, solo calificación
       });
 
@@ -339,6 +349,11 @@ export const Evaluations = () => {
         setTimeout(() => {
           loadData();
         }, 500);
+        
+        // Refrescar estadísticas del dashboard para actualizar las tarjetas
+        setTimeout(() => {
+          refreshDashboardStats();
+        }, 1000);
       } else {
         setSnackbar({
           open: true,

@@ -814,9 +814,7 @@ export const CompanyStrikes: React.FC = () => {
                 <Typography variant="body1" sx={{ mb: 1 }}>
                   <strong>Título:</strong> {selectedStrikeForDetails.project_title}
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  <strong>ID del Proyecto:</strong> {selectedStrikeForDetails.project_id}
-                </Typography>
+
               </Box>
 
               {/* Detalles del strike */}

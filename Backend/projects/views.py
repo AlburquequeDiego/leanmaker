@@ -789,7 +789,7 @@ def my_projects(request):
                 'id': str(project.id),
                 'title': project.title,
                 'company': project.company.company_name if project.company else 'Sin empresa',
-                'status': project_status,
+                'status': project_status.lower() if project_status else 'sin_estado',
                 'startDate': project.start_date.isoformat() if project.start_date else '',
                 'endDate': project.estimated_end_date.isoformat() if project.estimated_end_date else '',
                 'progress': progress,
@@ -868,7 +868,9 @@ def company_projects(request):
             estudiantes = []
             current_students = 0
             
-            if project_status in ['active', 'activo']:
+            from .constants import is_status_requiring_assigned_students, is_status_showing_all_applicants
+            
+            if is_status_requiring_assigned_students(project_status):
                 # PROYECTO ACTIVO: Solo estudiantes asignados/aceptados
                 accepted_applications = Aplicacion.objects.filter(
                     project=project, 
@@ -889,7 +891,7 @@ def company_projects(request):
                             'type': 'assigned'  # Estudiante asignado
                         })
                         
-            elif project_status in ['published', 'publicado']:
+            elif is_status_showing_all_applicants(project_status):
                 # PROYECTO PUBLICADO: Solo estudiantes que postularon
                 all_applications = Aplicacion.objects.filter(
                     project=project
@@ -960,7 +962,7 @@ def company_projects(request):
                 'id': str(project.id),
                 'title': project.title,
                 'description': project.description,
-                'status': project_status,
+                'status': project_status.lower() if project_status else 'sin_estado',
                 'status_id': project.status.id if project.status else None,
                 'area': project.area.name if project.area else 'Sin área',
                 'area_id': project.area.id if project.area else None,
