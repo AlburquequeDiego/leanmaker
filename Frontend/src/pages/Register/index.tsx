@@ -335,6 +335,15 @@ export const Register = () => {
   const [usernameWarning, setUsernameWarning] = useState('');
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
+  // Leer parámetro de URL para establecer el tipo de usuario automáticamente
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+    if (typeParam === 'company') {
+      setUserType('company');
+    }
+  }, []);
+
   // Función para verificar si el username existe
   const checkUsername = async (username: string) => {
     if (!username || username.length < 3) return;
