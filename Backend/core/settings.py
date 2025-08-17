@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     # Third party apps
     'corsheaders',
     'debug_toolbar',
+    'rest_framework',
     
     # Local apps
     'users',
@@ -352,4 +353,21 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'  # Más permisivo para desarrollo
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 FILE_UPLOAD_TEMP_DIR = BASE_DIR / 'temp'
-FILE_UPLOAD_PERMISSIONS = 0o644 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
+# Django REST Framework Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+} 

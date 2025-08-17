@@ -174,12 +174,12 @@ export const GestionEmpresasAdmin = () => {
     // Verificar que el estado se esté actualizando correctamente
     if (companies.length > 0) {
       const activeCompanies = companies.filter(c => c.status === 'active').length;
-      const suspendedCompanies = companies.filter(c => c.status === 'suspended').length;
+      const inactiveCompanies = companies.filter(c => c.status === 'inactive').length;
       const blockedCompanies = companies.filter(c => c.status === 'blocked').length;
       
       console.log('📊 Resumen del estado:');
       console.log(`  - Activas: ${activeCompanies}`);
-      console.log(`  - Suspendidas: ${suspendedCompanies}`);
+      console.log(`  - Inactivas: ${inactiveCompanies}`);
       console.log(`  - Bloqueadas: ${blockedCompanies}`);
     }
   }, [companies]);
@@ -198,18 +198,35 @@ export const GestionEmpresasAdmin = () => {
       if (filters.gpa) params.append('gpa', filters.gpa);
       
       console.log('🔍 Filtros aplicados:', filters);
-      console.log('📡 URL de la petición:', `/api/companies/admin/companies/?${params.toString()}`);
+      console.log('📡 URL de la petición:', `/api/companies/admin/companies-simple/?${params.toString()}`);
       
-      const response = await apiService.get(`/api/companies/admin/companies/?${params.toString()}`);
-             console.log('📊 Datos recibidos del backend:', response.results);
-       
-       // Log adicional para verificar el campo GPA del backend
-       if (response.results && response.results.length > 0) {
-         console.log('🔍 Verificando campo GPA del backend:');
-         response.results.slice(0, 3).forEach((company: any, index: number) => {
-           console.log(`  Empresa ${index + 1}: ${company.company_name} - GPA: ${company.gpa} - Rating: ${company.rating}`);
-         });
-       }
+      const response = await apiService.get(`/api/companies/admin/companies-simple/?${params.toString()}`);
+      console.log('📊 Datos recibidos del backend:', response.results);
+      
+      // 🔍 DEBUG DETALLADO: Ver la estructura completa de la primera empresa
+      if (response.results && response.results.length > 0) {
+        const primeraEmpresa = response.results[0];
+        console.log('🔍 [DEBUG] Primera empresa recibida del backend:');
+        console.log('   - Objeto completo:', primeraEmpresa);
+        console.log('   - Tipo:', typeof primeraEmpresa);
+        console.log('   - Es array?', Array.isArray(primeraEmpresa));
+        console.log('   - Keys disponibles:', Object.keys(primeraEmpresa));
+        console.log('   - Rating directo:', primeraEmpresa.rating);
+        console.log('   - GPA directo:', primeraEmpresa.gpa);
+        console.log('   - Rating con bracket notation:', primeraEmpresa['rating']);
+        console.log('   - GPA con bracket notation:', primeraEmpresa['gpa']);
+        
+        // Verificar si los campos están anidados
+        console.log('   - Tiene user_data?', 'user_data' in primeraEmpresa);
+        if (primeraEmpresa.user_data) {
+          console.log('   - user_data keys:', Object.keys(primeraEmpresa.user_data));
+        }
+      }
+      
+      console.log('🔍 Verificando campo GPA del backend:');
+       response.results.slice(0, 3).forEach((company: any, index: number) => {
+         console.log(`  Empresa ${index + 1}: ${company.company_name} - GPA: ${company.gpa} - Rating: ${company.rating}`);
+       });
       
       // Mapear datos del backend al formato esperado por el frontend
       const mappedCompanies = (response.results || []).map((c: any) => ({
@@ -304,8 +321,21 @@ export const GestionEmpresasAdmin = () => {
       // Refrescar datos
       await fetchData(); // Esperar a que se complete el fetch
       
+      // ✅ NUEVO: Llamar directamente a refreshUsers() igual que hace GestionEstudiantesAdmin
+      if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
+        console.log('🔄 Llamando directamente a refreshUsers()...');
+        try {
+          (window as any).refreshUsers();
+          console.log('✅ refreshUsers() ejecutado exitosamente');
+        } catch (error) {
+          console.error('❌ Error al ejecutar refreshUsers():', error);
+        }
+      } else {
+        console.log('⚠️ refreshUsers no está disponible para llamada directa');
+      }
+      
       // Refrescar otras interfaces si es necesario
-      refreshOtherInterfaces();
+        refreshOtherInterfaces();
       
       console.log('✅ Datos refrescados correctamente después de la acción');
       
@@ -353,12 +383,30 @@ export const GestionEmpresasAdmin = () => {
     console.log('✅ [refreshOtherInterfaces] Sincronización completada');
   };
 
+  // Función para traducir estados del inglés al español
+  const translateStatus = (status: string) => {
+    const statusTranslations: { [key: string]: string } = {
+      'active': 'Activa',
+      'inactive': 'Inactiva',
+      'blocked': 'Bloqueada',
+      'suspended': 'Suspendida'
+    };
+    return statusTranslations[status] || status;
+  };
+
+  // Función para obtener el color del chip según el estado
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'success';
-      case 'suspended': return 'warning';
-      case 'blocked': return 'error';
-      default: return 'default';
+      case 'active':
+        return 'success';
+      case 'inactive':
+        return 'warning';
+      case 'blocked':
+        return 'error';
+      case 'suspended':
+        return 'warning';
+      default:
+        return 'default';
     }
   };
 
@@ -413,7 +461,7 @@ export const GestionEmpresasAdmin = () => {
       label: 'Estado',
       render: (value: string) => (
         <Chip 
-          label={getStatusText(value)} 
+          label={translateStatus(value)} 
           color={getStatusColor(value) as any}
           variant="filled"
           size="small"
@@ -441,9 +489,9 @@ export const GestionEmpresasAdmin = () => {
       key: 'gpa', // Usamos 'gpa' que es el campo mapeado
       label: 'GPA promedio',
       render: (value: number) => (
-        <Typography variant="body2" fontWeight={600}>
+          <Typography variant="body2" fontWeight={600}>
           {value ? value.toFixed(2) : '-'}
-        </Typography>
+          </Typography>
       ),
       width: '150px',
       align: 'center' as const
@@ -467,7 +515,7 @@ export const GestionEmpresasAdmin = () => {
           <Tooltip title="Editar">
             <span>
               <IconButton
-                                onClick={() => {
+                onClick={() => {
                   setSelectedCompany(row);
                   setEditFormData({
                     name: row.name || '',
@@ -496,7 +544,7 @@ export const GestionEmpresasAdmin = () => {
                 }}
               >
                 {loading ? <CircularProgress size={20} color="inherit" /> : <EditIcon />}
-               </IconButton>
+              </IconButton>
             </span>
           </Tooltip>
           <Tooltip title="Activar">
@@ -504,108 +552,122 @@ export const GestionEmpresasAdmin = () => {
               <IconButton
                 onClick={() => handleAction(row, 'activate')}
                                  disabled={row.status === 'active' || !row.user || loading}
-                 sx={{
-                   background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
-                   color: 'white',
-                   '&:hover': {
-                     background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
-                     transform: 'scale(1.1)',
-                   },
-                   '&:disabled': {
-                     background: '#e0e0e0',
-                     color: '#9e9e9e',
-                   }
-                 }}
-               >
+                sx={{
+                  background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
+              >
                  {loading ? <CircularProgress size={20} color="inherit" /> : <CheckCircleIcon />}
-               </IconButton>
+              </IconButton>
             </span>
           </Tooltip>
           <Tooltip title="Suspender">
             <span>
               <IconButton
                 onClick={() => handleAction(row, 'suspend')}
-                                 disabled={row.status === 'suspended' || !row.user || loading}
-                 sx={{
-                   background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
-                   color: 'white',
-                   '&:hover': {
-                     background: 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)',
-                     transform: 'scale(1.1)',
-                   },
-                   '&:disabled': {
-                     background: '#e0e0e0',
-                     color: '#9e9e9e',
-                   }
-                 }}
-               >
+                disabled={row.status === 'inactive' || !row.user || loading}
+                sx={{
+                  background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
+              >
                  {loading ? <CircularProgress size={20} color="inherit" /> : <WarningIcon />}
-               </IconButton>
+              </IconButton>
             </span>
           </Tooltip>
           <Tooltip title="Bloquear">
             <span>
               <IconButton
                 onClick={() => handleAction(row, 'block')}
-                                 disabled={row.status === 'blocked' || !row.user || loading}
-                 sx={{
-                   background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
-                   color: 'white',
-                   '&:hover': {
-                     background: 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
-                     transform: 'scale(1.1)',
-                   },
-                   '&:disabled': {
-                     background: '#e0e0e0',
-                     color: '#9e9e9e',
-                   }
-                 }}
-               >
+                disabled={row.status === 'blocked' || !row.user || loading}
+                sx={{
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
+              >
                  {loading ? <CircularProgress size={20} color="inherit" /> : <BlockIcon />}
-               </IconButton>
+              </IconButton>
             </span>
           </Tooltip>
           <Tooltip title="Desbloquear">
             <span>
               <IconButton
-                                 onClick={async () => {
-                   if (!row.user) {
-                     setErrorMessage('Esta empresa no tiene usuario asociado. No se puede desbloquear.');
-                     setShowError(true);
-                     return;
-                   }
-                   try {
+                onClick={async () => {
+                  if (!row.user) {
+                    setErrorMessage('Esta empresa no tiene usuario asociado. No se puede desbloquear.');
+                    setShowError(true);
+                    return;
+                  }
+                  try {
                      setLoading(true);
                      await apiService.post(`/api/companies/admin/${row.user}/activate/`);
-                     setSuccessMessage('Empresa desbloqueada exitosamente');
+                    setSuccessMessage('Empresa desbloqueada exitosamente');
                      setShowSuccess(true);
                      // Refrescar datos inmediatamente después de la acción
                      await fetchData();
-                     refreshOtherInterfaces();
-                   } catch (error) {
-                     console.error('Error al desbloquear:', error);
-                     setErrorMessage('Error al desbloquear la empresa');
-                     setShowError(true);
+                     
+                     // ✅ NUEVO: Llamar directamente a refreshUsers() igual que hace GestionEstudiantesAdmin
+                     if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
+                       console.log('🔄 Llamando directamente a refreshUsers()...');
+                       try {
+                         (window as any).refreshUsers();
+                         console.log('✅ refreshUsers() ejecutado exitosamente');
+                       } catch (error) {
+                         console.error('❌ Error al ejecutar refreshUsers():', error);
+                       }
+                     } else {
+                       console.log('⚠️ refreshUsers no está disponible para llamada directa');
+                     }
+                     
+                      refreshOtherInterfaces();
+                  } catch (error) {
+                    console.error('Error al desbloquear:', error);
+                    setErrorMessage('Error al desbloquear la empresa');
+                    setShowError(true);
                    } finally {
                      setLoading(false);
-                   }
-                 }}
+                  }
+                }}
                                  disabled={row.status !== 'blocked' || !row.user || loading}
-                 sx={{
-                   background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
-                   color: 'white',
-                   '&:hover': {
-                     background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
-                     transform: 'scale(1.1)',
-                   },
-                   '&:disabled': {
-                     background: '#e0e0e0',
-                     color: '#9e9e9e',
-                   }
-                 }}
-               >
+                sx={{
+                  background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)',
+                    transform: 'scale(1.1)',
+                  },
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e',
+                  }
+                }}
+              >
                  {loading ? <CircularProgress size={20} color="inherit" /> : <CheckCircleIcon />}
-               </IconButton>
+              </IconButton>
             </span>
           </Tooltip>
         </Box>
@@ -686,33 +748,33 @@ export const GestionEmpresasAdmin = () => {
                 </Typography>
               </Box>
             </Box>
-                         <Button
-                variant="contained"
+            <Button
+              variant="contained"
                 startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
-                onClick={fetchData}
+              onClick={fetchData}
                 disabled={loading}
-                sx={{
+              sx={{
+                background: themeMode === 'dark'
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                color: 'white',
+                border: themeMode === 'dark'
+                  ? '1px solid rgba(255, 255, 255, 0.2)'
+                  : '1px solid rgba(255, 255, 255, 0.3)',
+                '&:hover': {
                   background: themeMode === 'dark'
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(255, 255, 255, 0.2)',
-                  backdropFilter: 'blur(10px)',
-                  color: 'white',
-                  border: themeMode === 'dark'
-                    ? '1px solid rgba(255, 255, 255, 0.2)'
-                    : '1px solid rgba(255, 255, 255, 0.3)',
-                  '&:hover': {
-                    background: themeMode === 'dark'
-                      ? 'rgba(255, 255, 255, 0.2)'
-                      : 'rgba(255, 255, 255, 0.3)',
+                    ? 'rgba(255, 255, 255, 0.2)'
+                    : 'rgba(255, 255, 255, 0.3)',
                   },
                   '&:disabled': {
                     background: 'rgba(255, 255, 255, 0.1)',
                     color: 'rgba(255, 255, 255, 0.5)',
-                  }
-                }}
-              >
+                }
+              }}
+            >
                 {loading ? 'Actualizando...' : 'Actualizar'}
-              </Button>
+            </Button>
           </Box>
         </CardContent>
       </Card>
@@ -734,9 +796,9 @@ export const GestionEmpresasAdmin = () => {
                 <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
                   Total Empresas
                 </Typography>
-                                 <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
                    {loading ? '...' : companies.length}
-                 </Typography>
+                </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
                   Registradas en la plataforma
                 </Typography>
@@ -768,9 +830,9 @@ export const GestionEmpresasAdmin = () => {
                 <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
                   Empresas Activas
                 </Typography>
-                                 <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
                    {loading ? '...' : companies.filter(c => c.status === 'active').length}
-                 </Typography>
+                </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
                   Operando normalmente
                 </Typography>
@@ -782,6 +844,40 @@ export const GestionEmpresasAdmin = () => {
                 backdropFilter: 'blur(10px)'
               }}>
                 <CheckCircleIcon sx={{ color: 'white', fontSize: 32 }} />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ 
+          minWidth: 200, 
+          flex: '1 1 200px',
+          background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
+          boxShadow: '0 8px 25px rgba(243, 156, 18, 0.3)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                  Empresas Inactivas
+                </Typography>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                   {loading ? '...' : companies.filter(c => c.status === 'inactive').length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
+                  Temporalmente suspendidas
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: 2, 
+                p: 1.5,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <WarningIcon sx={{ color: 'white', fontSize: 32 }} />
               </Box>
             </Box>
           </CardContent>
@@ -802,9 +898,9 @@ export const GestionEmpresasAdmin = () => {
                 <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
                   Empresas Bloqueadas
                 </Typography>
-                                 <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
                    {loading ? '...' : companies.filter(c => c.status === 'blocked').length}
-                 </Typography>
+                </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
                   Requieren atención
                 </Typography>
@@ -824,8 +920,8 @@ export const GestionEmpresasAdmin = () => {
         <Card sx={{ 
           minWidth: 200, 
           flex: '1 1 200px',
-          background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
-          boxShadow: '0 8px 25px rgba(243, 156, 18, 0.3)',
+          background: 'linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%)',
+          boxShadow: '0 8px 25px rgba(155, 89, 182, 0.3)',
           borderRadius: 3,
           position: 'relative',
           overflow: 'hidden'
@@ -836,9 +932,9 @@ export const GestionEmpresasAdmin = () => {
                 <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
                   Total Proyectos
                 </Typography>
-                                 <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
                    {loading ? '...' : companies.reduce((sum, company) => sum + company.projects_count, 0)}
-                 </Typography>
+                </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mt: 1 }}>
                   Creados por empresas
                 </Typography>
@@ -1001,21 +1097,21 @@ export const GestionEmpresasAdmin = () => {
             </FormControl>
           </Box>
 
-                     <DataTable
+          <DataTable
              title={`Lista de Empresas ${loading ? '(Actualizando...)' : ''}`}
-             data={companies}
-             columns={columns}
-             loading={loading}
-             error={null}
-             onPageChange={handlePageChange}
-             onPageSizeChange={handlePageSizeChange}
-             totalCount={totalCount}
-             currentPage={currentPage}
-             pageSize={pageSize}
-             pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
-             showPagination={false}
-             showPageSizeSelector={false}
-           />
+            data={companies}
+            columns={columns}
+            loading={loading}
+            error={null}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
+            showPagination={false}
+            showPageSizeSelector={false}
+          />
         </CardContent>
       </Card>
 
@@ -1089,52 +1185,52 @@ export const GestionEmpresasAdmin = () => {
           p: 3,
           backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
         }}>
-                     <Button 
-             onClick={() => setActionDialog(false)}
+          <Button 
+            onClick={() => setActionDialog(false)}
              disabled={loading}
-             sx={{ borderRadius: 2 }}
-           >
-             Cancelar
-           </Button>
-                     <Button 
-             variant="contained"
-             onClick={handleConfirmAction}
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            variant="contained"
+            onClick={handleConfirmAction}
              disabled={loading}
              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-             sx={{ 
-               borderRadius: 2,
-               background: actionType === 'activate' 
-                 ? 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)'
-                 : actionType === 'suspend'
-                 ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
-                 : 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
-               '&:hover': {
-                 background: actionType === 'activate' 
-                   ? 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)'
-                   : actionType === 'suspend'
-                   ? 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)'
-                   : 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
+            sx={{ 
+              borderRadius: 2,
+              background: actionType === 'activate' 
+                ? 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)'
+                : actionType === 'suspend'
+                ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
+                : 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+              '&:hover': {
+                background: actionType === 'activate' 
+                  ? 'linear-gradient(135deg, #44a08d 0%, #3a8c7a 100%)'
+                  : actionType === 'suspend'
+                  ? 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)'
+                  : 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
                },
                '&:disabled': {
                  background: 'rgba(0, 0, 0, 0.12)',
                  color: 'rgba(0, 0, 0, 0.38)',
-               }
-             }}
-           >
+              }
+            }}
+          >
              {loading ? 'Procesando...' : 'Confirmar'}
-           </Button>
+          </Button>
         </DialogActions>
       </Dialog>
 
       {/* Modal de edición de empresa */}
       <Dialog 
         open={showEditDialog} 
-                 onClose={() => {
+        onClose={() => {
            if (!loading) {
-             setShowEditDialog(false);
-             setEditFormData({});
+          setShowEditDialog(false);
+          setEditFormData({});
            }
-         }}
+        }}
         maxWidth="md"
         fullWidth
       >
@@ -1484,64 +1580,77 @@ export const GestionEmpresasAdmin = () => {
           p: 3,
           backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
         }}>
-                     <Button 
-             onClick={() => {
-               setShowEditDialog(false);
-               setEditFormData({});
-             }}
+          <Button 
+            onClick={() => {
+              setShowEditDialog(false);
+              setEditFormData({});
+            }}
              disabled={loading}
-             sx={{ borderRadius: 2 }}
-           >
-             Cancelar
-           </Button>
-                     <Button 
-             variant="contained"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            variant="contained"
              disabled={loading}
              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-             onClick={async () => {
-               try {
+            onClick={async () => {
+              try {
                  setLoading(true);
-                 if (selectedCompany) {
-                   const updateData = {
-                     company_name: editFormData.name || selectedCompany.name,
-                     contact_email: editFormData.email || selectedCompany.email,
-                     contact_phone: editFormData.phone || selectedCompany.phone,
-                     website: editFormData.website || selectedCompany.website,
-                     industry: editFormData.industry || selectedCompany.industry,
-                     size: editFormData.size || selectedCompany.size,
-                     description: editFormData.description || selectedCompany.description,
-                     status: editFormData.status || selectedCompany.status,
-                   };
+                if (selectedCompany) {
+                  const updateData = {
+                    company_name: editFormData.name || selectedCompany.name,
+                    contact_email: editFormData.email || selectedCompany.email,
+                    contact_phone: editFormData.phone || selectedCompany.phone,
+                    website: editFormData.website || selectedCompany.website,
+                    industry: editFormData.industry || selectedCompany.industry,
+                    size: editFormData.size || selectedCompany.size,
+                    description: editFormData.description || selectedCompany.description,
+                    status: editFormData.status || selectedCompany.status,
+                  };
 
-                   await apiService.patch(`/api/companies/${selectedCompany.id}/update/`, updateData);
-                   setSuccessMessage('Empresa actualizada exitosamente');
-                   setShowSuccess(true);
-                   setShowEditDialog(false);
-                   setEditFormData({});
+                  await apiService.patch(`/api/companies/${selectedCompany.id}/update/`, updateData);
+                  setSuccessMessage('Empresa actualizada exitosamente');
+                  setShowSuccess(true);
+                  setShowEditDialog(false);
+                  setEditFormData({});
                    await fetchData();
-                 }
-               } catch (error) {
-                 console.error('Error updating company:', error);
-                 setErrorMessage('Error al actualizar la empresa');
-                 setShowError(true);
+                   
+                   // ✅ NUEVO: Llamar directamente a refreshUsers() igual que hace GestionEstudiantesAdmin
+                   if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
+                     console.log('🔄 Llamando directamente a refreshUsers()...');
+                     try {
+                       (window as any).refreshUsers();
+                       console.log('✅ refreshUsers() ejecutado exitosamente');
+                     } catch (error) {
+                       console.error('❌ Error al ejecutar refreshUsers():', error);
+                     }
+                   } else {
+                     console.log('⚠️ refreshUsers no está disponible para llamada directa');
+                   }
+                }
+              } catch (error) {
+                console.error('Error updating company:', error);
+                setErrorMessage('Error al actualizar la empresa');
+                setShowError(true);
                } finally {
                  setLoading(false);
-               }
-             }}
-             sx={{ 
-               borderRadius: 2,
-               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-               '&:hover': {
-                 background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
                },
                '&:disabled': {
                  background: 'rgba(0, 0, 0, 0.12)',
                  color: 'rgba(0, 0, 0, 0.38)',
-               }
-             }}
-           >
+              }
+            }}
+          >
              {loading ? 'Guardando...' : 'Guardar Cambios'}
-           </Button>
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -1552,27 +1661,27 @@ export const GestionEmpresasAdmin = () => {
         onClose={() => setShowSuccess(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-                 <Alert 
-           onClose={() => setShowSuccess(false)} 
-           severity="success"
-           sx={{ 
-             borderRadius: 2,
-             background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
-             color: 'white',
-             '& .MuiAlert-icon': {
-               color: 'white'
-             }
-           }}
-         >
+        <Alert 
+          onClose={() => setShowSuccess(false)} 
+          severity="success"
+          sx={{ 
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
+            color: 'white',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
            <Box>
              <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-               {successMessage}
+          {successMessage}
              </Typography>
              <Typography variant="caption" sx={{ opacity: 0.9 }}>
                Los datos se han actualizado automáticamente
              </Typography>
            </Box>
-         </Alert>
+        </Alert>
       </Snackbar>
 
       {/* Snackbar de error */}

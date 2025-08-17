@@ -17,6 +17,8 @@ from projects.models import Proyecto
 from django.db import IntegrityError
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 @csrf_exempt
@@ -890,33 +892,35 @@ def student_completed_projects(request):
         print(f"Traceback completo: {traceback.format_exc()}")
         return JsonResponse({'error': str(e)}, status=500) 
 
-@csrf_exempt
-@require_http_methods(["GET"])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def admin_companies_list(request):
-    """Lista de empresas para administradores con información completa incluyendo GPA."""
+    """
+    Lista de empresas para administradores con información detallada
+    """
     try:
-        # Verificar autenticación
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Token requerido'}, status=401)
+        print("🚀 [ADMIN COMPANIES] Vista iniciada")
+        print(f"🔍 [ADMIN COMPANIES] Usuario: {request.user.email}")
+        print(f"🔍 [ADMIN COMPANIES] Rol: {request.user.role}")
         
-        token = auth_header.split(' ')[1]
-        current_user = verify_token(token)
-        if not current_user:
-            return JsonResponse({'error': 'Token inválido'}, status=401)
-        
-        # Solo administradores pueden acceder
-        if current_user.role != 'admin':
+        # Verificar que sea admin
+        if not hasattr(request.user, 'role') or request.user.role != 'admin':
+            print("❌ [ADMIN COMPANIES] Usuario no es admin")
             return JsonResponse({'error': 'Acceso denegado'}, status=403)
         
-        # Parámetros de paginación y filtros
+        print("✅ [ADMIN COMPANIES] Usuario es admin, continuando...")
+        
+        # Obtener parámetros de paginación y filtros
         limit = int(request.GET.get('limit', 20))
         offset = int(request.GET.get('offset', 0))
         search = request.GET.get('search', '')
         status = request.GET.get('status', '')
         
+        print(f"🔍 [ADMIN COMPANIES] Parámetros: limit={limit}, offset={offset}, search='{search}', status='{status}'")
+        
         # Query base
         queryset = Empresa.objects.select_related('user').all()
+        print(f"🔍 [ADMIN COMPANIES] Query base creada, total empresas: {queryset.count()}")
         
         # Aplicar filtros
         if search:
@@ -925,12 +929,15 @@ def admin_companies_list(request):
                 Q(description__icontains=search) |
                 Q(user__email__icontains=search)
             )
+            print(f"🔍 [ADMIN COMPANIES] Filtro de búsqueda aplicado: '{search}'")
         
         if status:
             queryset = queryset.filter(status=status)
+            print(f"🔍 [ADMIN COMPANIES] Filtro de estado aplicado: '{status}'")
         
         # Contar total
         total_count = queryset.count()
+        print(f"🔍 [ADMIN COMPANIES] Total después de filtros: {total_count}")
         
         # Paginar
         if limit > 0:
@@ -938,18 +945,46 @@ def admin_companies_list(request):
         else:
             companies = queryset
         
+        print(f"🔍 [ADMIN COMPANIES] Empresas a procesar: {len(companies)}")
+        
         # Serializar datos
         companies_data = []
         for company in companies:
-            # Calcular GPA basado en el rating (mantener rango 0-5)
-            gpa = float(company.rating)  # GPA de 0 a 5 con decimales
+            print(f"\n🏢 [ADMIN COMPANIES] Procesando empresa: {company.company_name}")
             
-            companies_data.append({
+            # ✅ CORREGIDO: Calcular GPA real usando el método del modelo
+            try:
+                gpa = company.calcular_gpa_real()  # GPA real de 0 a 5 con decimales
+                print(f"   - GPA calculado (real): {gpa} (tipo: {type(gpa)})")
+            except Exception as e:
+                print(f"   - ❌ Error al calcular GPA: {e}")
+                gpa = 0.0
+            
+            # ✅ NUEVO: Usar el estado real del usuario en lugar de company.status
+            user_status = 'active'
+            if not company.user.is_active:
+                user_status = 'inactive'
+            elif not company.user.is_verified:
+                user_status = 'blocked'
+            
+            # 🔍 DEBUG: Log del estado del usuario
+            print(f"   - User ID: {company.user.id}")
+            print(f"   - User is_active: {company.user.is_active}")
+            print(f"   - User is_verified: {company.user.is_verified}")
+            print(f"   - Status calculado: {user_status}")
+            
+            # 🔍 DEBUG: Log del campo rating y GPA
+            print(f"   - Company.rating (tipo): {type(company.rating)}")
+            print(f"   - Company.rating (valor): {company.rating}")
+            print(f"   - Company.rating (repr): {repr(company.rating)}")
+            
+            # 🔍 DEBUG: Verificar que los campos se estén agregando correctamente
+            empresa_data = {
                 'id': str(company.id),
                 'user': str(company.user.id),
                 'company_name': company.company_name,
                 'description': company.description,
-                'status': company.status,
+                'status': user_status,  # ✅ Estado real del usuario
                 'contact_phone': company.contact_phone,
                 'contact_email': company.contact_email,
                 'address': company.address,
@@ -957,8 +992,8 @@ def admin_companies_list(request):
                 'industry': company.industry,
                 'size': company.size,
                 'verified': company.verified,
-                'rating': float(company.rating),
-                'gpa': round(gpa, 2),  # GPA calculado
+                'rating': float(company.rating),  # Rating individual
+                'gpa': round(gpa, 2),  # ✅ GPA real calculado
                 'total_projects': company.total_projects,
                 'projects_completed': company.projects_completed,
                 'total_hours_offered': company.total_hours_offered,
@@ -980,7 +1015,26 @@ def admin_companies_list(request):
                     'last_login': company.user.last_login.isoformat() if company.user.last_login else None,
                     'full_name': company.user.full_name,
                 }
-            })
+            }
+            
+            # 🔍 DEBUG: Verificar que los campos se agregaron correctamente
+            print(f"   - Rating en empresa_data: {empresa_data.get('rating')}")
+            print(f"   - GPA en empresa_data: {empresa_data.get('gpa')}")
+            
+            companies_data.append(empresa_data)
+        
+        print(f"✅ [ADMIN COMPANIES] Datos serializados: {len(companies_data)} empresas")
+        
+        # 🔍 DEBUG: Ver la primera empresa para verificar los campos
+        if companies_data:
+            primera_empresa = companies_data[0]
+            print(f"🔍 [ADMIN COMPANIES] Primera empresa serializada:")
+            print(f"   - ID: {primera_empresa.get('id')}")
+            print(f"   - Nombre: {primera_empresa.get('company_name')}")
+            print(f"   - Rating: {primera_empresa.get('rating')}")
+            print(f"   - GPA: {primera_empresa.get('gpa')}")
+            print(f"   - Status: {primera_empresa.get('status')}")
+            print(f"   - Campos disponibles: {list(primera_empresa.keys())}")
         
         return JsonResponse({
             'results': companies_data,
@@ -990,4 +1044,259 @@ def admin_companies_list(request):
         })
         
     except Exception as e:
+        print(f"❌ [ADMIN COMPANIES] Error en la vista: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def test_gpa_calculation(request):
+    """
+    Endpoint de prueba para debuggear el cálculo de GPA
+    """
+    try:
+        print("🧪 [TEST GPA] Endpoint de prueba iniciado")
+        
+        # Obtener una empresa de prueba
+        empresa = Empresa.objects.first()
+        if not empresa:
+            return JsonResponse({'error': 'No hay empresas en la BD'}, status=404)
+        
+        print(f"🧪 [TEST GPA] Empresa de prueba: {empresa.company_name}")
+        print(f"🧪 [TEST GPA] Rating en modelo: {empresa.rating}")
+        print(f"🧪 [TEST GPA] Tipo de rating: {type(empresa.rating)}")
+        
+        # Intentar calcular GPA real
+        try:
+            gpa_real = empresa.calcular_gpa_real()
+            print(f"🧪 [TEST GPA] GPA calculado: {gpa_real}")
+            print(f"🧪 [TEST GPA] Tipo de GPA: {type(gpa_real)}")
+        except Exception as e:
+            print(f"🧪 [TEST GPA] ❌ Error al calcular GPA: {e}")
+            import traceback
+            traceback.print_exc()
+            gpa_real = 0.0
+        
+        # Verificar evaluaciones directamente
+        try:
+            from evaluations.models import Evaluation
+            evaluaciones = Evaluation.objects.filter(
+                project__company=empresa,
+                status='completed',
+                evaluation_type='student_to_company'
+            )
+            print(f"🧪 [TEST GPA] Evaluaciones encontradas: {evaluaciones.count()}")
+            
+            if evaluaciones.exists():
+                print("🧪 [TEST GPA] Detalle de evaluaciones:")
+                for eval in evaluaciones[:5]:
+                    print(f"   * Proyecto: {eval.project.title if eval.project else 'N/A'}")
+                    print(f"     Score: {eval.score}")
+                    print(f"     Tipo: {eval.evaluation_type}")
+                    print(f"     Status: {eval.status}")
+            else:
+                print("🧪 [TEST GPA] ⚠️ No hay evaluaciones completadas")
+                
+        except Exception as e:
+            print(f"🧪 [TEST GPA] ❌ Error al buscar evaluaciones: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        return JsonResponse({
+            'empresa': empresa.company_name,
+            'rating_modelo': str(empresa.rating),
+            'gpa_calculado': gpa_real,
+            'evaluaciones_count': evaluaciones.count() if 'evaluaciones' in locals() else 0
+        })
+        
+    except Exception as e:
+        print(f"🧪 [TEST GPA] ❌ Error en endpoint: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@require_http_methods(["GET"])
+def test_simple_response(request):
+    """Endpoint de prueba para verificar serialización simple"""
+    try:
+        print("🧪 [TEST SIMPLE] Endpoint de prueba iniciado")
+        
+        # Datos de prueba simples
+        test_data = {
+            'id': 'test-123',
+            'name': 'Empresa Test',
+            'rating': 4.5,
+            'gpa': 4.5,
+            'status': 'active'
+        }
+        
+        print(f"🧪 [TEST SIMPLE] Datos de prueba: {test_data}")
+        print(f"🧪 [TEST SIMPLE] Tipo de rating: {type(test_data['rating'])}")
+        print(f"🧪 [TEST SIMPLE] Tipo de gpa: {type(test_data['gpa'])}")
+        
+        return JsonResponse({
+            'results': [test_data],
+            'count': 1,
+            'message': 'Prueba de serialización'
+        })
+        
+    except Exception as e:
+        print(f"❌ [TEST SIMPLE] Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@require_http_methods(["GET"])
+def companies_list_admin(request):
+    """Lista de empresas para administradores - FUNCIONA COMO student_list"""
+    try:
+        print("🚀 [COMPANIES LIST ADMIN] Vista iniciada")
+        print(f"🔍 [COMPANIES LIST ADMIN] Headers: {dict(request.headers)}")
+        
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            print("❌ [COMPANIES LIST ADMIN] No hay token de autorización")
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        print(f"🔍 [COMPANIES LIST ADMIN] Token recibido: {token[:20]}...")
+        
+        current_user = verify_token(token)
+        if not current_user:
+            print("❌ [COMPANIES LIST ADMIN] Token inválido")
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        print(f"✅ [COMPANIES LIST ADMIN] Usuario autenticado: {current_user.email} - Rol: {current_user.role}")
+        
+        # Solo administradores pueden acceder
+        if current_user.role != 'admin':
+            print("❌ [COMPANIES LIST ADMIN] Usuario no es admin")
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        print("✅ [COMPANIES LIST ADMIN] Usuario es admin, continuando...")
+        
+        # Parámetros de paginación y filtros
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+        search = request.GET.get('search', '')
+        status = request.GET.get('status', '')
+        
+        print(f"🔍 [COMPANIES LIST ADMIN] Parámetros: page={page}, limit={limit}, offset={offset}, search='{search}', status='{status}'")
+        
+        # Query base
+        queryset = Empresa.objects.select_related('user').all()
+        print(f"🔍 [COMPANIES LIST ADMIN] Query base creada, total empresas: {queryset.count()}")
+        
+        # Aplicar filtros
+        if search:
+            queryset = queryset.filter(
+                Q(company_name__icontains=search) |
+                Q(description__icontains=search) |
+                Q(user__email__icontains=search)
+            )
+            print(f"🔍 [COMPANIES LIST ADMIN] Filtro de búsqueda aplicado: '{search}'")
+        
+        if status:
+            queryset = queryset.filter(status=status)
+            print(f"🔍 [COMPANIES LIST ADMIN] Filtro de estado aplicado: '{status}'")
+        
+        # Contar total
+        total_count = queryset.count()
+        print(f"🔍 [COMPANIES LIST ADMIN] Total después de filtros: {total_count}")
+        
+        # Paginar
+        companies = queryset[offset:offset + limit]
+        print(f"🔍 [COMPANIES LIST ADMIN] Empresas a procesar: {len(companies)}")
+        
+        # Serializar datos - EXACTAMENTE COMO student_list
+        companies_data = []
+        for company in companies:
+            print(f"\n🏢 [COMPANIES LIST ADMIN] Procesando empresa: {company.company_name}")
+            print(f"   - Rating: {company.rating} (tipo: {type(company.rating)})")
+            
+            # Determinar el estado del usuario
+            user_status = 'active'
+            if not company.user.is_active:
+                user_status = 'inactive'
+            elif not company.user.is_verified:
+                user_status = 'blocked'
+            
+            company_data = {
+                'id': str(company.id),
+                'user': str(company.user.id),
+                'company_name': company.company_name,
+                'description': company.description,
+                'status': user_status,
+                'contact_phone': company.contact_phone,
+                'contact_email': company.contact_email,
+                'address': company.address,
+                'website': company.website,
+                'industry': company.industry,
+                'size': company.size,
+                'verified': company.verified,
+                'rating': float(company.rating),  # ✅ EXACTAMENTE COMO student.gpa
+                'gpa': float(company.rating),    # ✅ EXACTAMENTE COMO student.gpa
+                'total_projects': company.total_projects,
+                'projects_completed': company.projects_completed,
+                'total_hours_offered': company.total_hours_offered,
+                'created_at': company.created_at.isoformat(),
+                'updated_at': company.updated_at.isoformat(),
+                # Datos del usuario
+                'user_data': {
+                    'id': str(company.user.id),
+                    'email': company.user.email,
+                    'first_name': company.user.first_name,
+                    'last_name': company.user.last_name,
+                    'username': company.user.username,
+                    'phone': company.user.phone,
+                    'avatar': company.user.avatar,
+                    'bio': company.user.bio,
+                    'is_active': company.user.is_active,
+                    'is_verified': company.user.is_verified,
+                    'date_joined': company.user.date_joined.isoformat(),
+                    'last_login': company.user.last_login.isoformat() if company.user.last_login else None,
+                    'full_name': company.user.full_name,
+                }
+            }
+            
+            print(f"   - Rating en company_data: {company_data.get('rating')}")
+            print(f"   - GPA en company_data: {company_data.get('gpa')}")
+            
+            companies_data.append(company_data)
+        
+        print(f"✅ [COMPANIES LIST ADMIN] Datos serializados: {len(companies_data)} empresas")
+        
+        # 🔍 DEBUG: Ver la primera empresa para verificar los campos
+        if companies_data:
+            primera_empresa = companies_data[0]
+            print(f"🔍 [COMPANIES LIST ADMIN] Primera empresa serializada:")
+            print(f"   - ID: {primera_empresa.get('id')}")
+            print(f"   - Nombre: {primera_empresa.get('company_name')}")
+            print(f"   - Rating: {primera_empresa.get('rating')}")
+            print(f"   - GPA: {primera_empresa.get('gpa')}")
+            print(f"   - Status: {primera_empresa.get('status')}")
+            print(f"   - Campos disponibles: {list(primera_empresa.keys())}")
+        
+        # 🔍 DEBUG: Ver la respuesta JSON completa
+        response_data = {
+            'results': companies_data,
+            'count': total_count,
+            'limit': limit,
+            'offset': offset
+        }
+        print(f"🔍 [COMPANIES LIST ADMIN] Respuesta JSON a enviar:")
+        print(f"   - Tipo de results: {type(companies_data)}")
+        print(f"   - Longitud de results: {len(companies_data)}")
+        print(f"   - Primer elemento tipo: {type(companies_data[0]) if companies_data else 'N/A'}")
+        print(f"   - Keys del primer elemento: {list(companies_data[0].keys()) if companies_data else 'N/A'}")
+        
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        print(f"❌ [COMPANIES LIST ADMIN] Error en la vista: {e}")
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500) 

@@ -50,6 +50,9 @@ import {
   Phone as PhoneIcon,
   Work as WorkIcon,
   School as SchoolIcon2,
+  Delete as DeleteIcon,
+  LockOpen as LockOpenIcon,
+  Pause as PauseIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -287,10 +290,22 @@ export default function UsuariosAdmin() {
       setShowCreateDialog(false);
       resetForm();
       await fetchUsers();
+      
+      // ✅ NUEVO: Llamar directamente a refreshCompanies() si se creó una empresa
+      if (formData.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+        console.log('🔄 Llamando directamente a refreshCompanies()...');
+        try {
+          (window as any).refreshCompanies();
+          console.log('✅ refreshCompanies() ejecutado exitosamente');
+        } catch (error) {
+          console.error('❌ Error al ejecutar refreshCompanies():', error);
+        }
+      }
+      
       // Luego sincronizar otras interfaces
       setTimeout(() => {
         refreshOtherInterfaces();
-      }, 200); // Reducido de 1000ms a 200ms
+      }, 200);
     } catch (error) {
       console.error('Error creating user:', error);
       // Si el error tiene response y status 201, considerar éxito
@@ -329,10 +344,22 @@ export default function UsuariosAdmin() {
       setShowEditDialog(false);
       resetForm();
       await fetchUsers();
+      
+      // ✅ NUEVO: Llamar directamente a refreshCompanies() si se actualizó una empresa
+      if (selectedUser && selectedUser.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+        console.log('🔄 Llamando directamente a refreshCompanies()...');
+        try {
+          (window as any).refreshCompanies();
+          console.log('✅ refreshCompanies() ejecutado exitosamente');
+        } catch (error) {
+          console.error('❌ Error al ejecutar refreshCompanies():', error);
+        }
+      }
+      
       // Luego sincronizar otras interfaces
       setTimeout(() => {
         refreshOtherInterfaces();
-      }, 200); // Reducido de 1000ms a 200ms
+      }, 200);
     } catch (error) {
       console.error('Error updating user:', error);
       setError('Error al actualizar el usuario');
@@ -355,10 +382,24 @@ export default function UsuariosAdmin() {
       
       // Primero actualizar usuarios locales
       await fetchUsers();
+      
+      // ✅ NUEVO: Llamar directamente a refreshCompanies() si se cambió el estado de una empresa
+      // Necesito encontrar el usuario para verificar su tipo
+      const user = users.find(u => u.id === userId);
+      if (user && user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+        console.log('🔄 Llamando directamente a refreshCompanies()...');
+        try {
+          (window as any).refreshCompanies();
+          console.log('✅ refreshCompanies() ejecutado exitosamente');
+        } catch (error) {
+          console.error('❌ Error al ejecutar refreshCompanies():', error);
+        }
+      }
+      
       // Luego sincronizar otras interfaces
       setTimeout(() => {
         refreshOtherInterfaces();
-      }, 200); // Reducido de 1000ms a 200ms
+      }, 200);
     } catch (error) {
       console.error('Error toggling user status:', error);
       setError('Error al cambiar el estado del usuario');
@@ -758,10 +799,22 @@ export default function UsuariosAdmin() {
                                   await apiService.post(`/api/users/${user.id}/activate/`);
                                   setSuccess('Usuario activado exitosamente');
                                   await fetchUsers();
+                                  
+                                  // ✅ NUEVO: Llamar directamente a refreshCompanies() si es una empresa
+                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
+                                    try {
+                                      (window as any).refreshCompanies();
+                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
+                                    } catch (error) {
+                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
+                                    }
+                                  }
+                                  
                                   // Luego sincronizar otras interfaces
                                   setTimeout(() => {
                                     refreshOtherInterfaces();
-                                  }, 200); // Reducido de 1000ms a 200ms
+                                  }, 200);
                                 }}
                                 disabled={user.is_active}
                                 sx={{
@@ -786,22 +839,34 @@ export default function UsuariosAdmin() {
                                   await apiService.post(`/api/users/${user.id}/suspend/`);
                                   setSuccess('Usuario suspendido exitosamente');
                                   await fetchUsers();
+                                  
+                                  // ✅ NUEVO: Llamar directamente a refreshCompanies() si es una empresa
+                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
+                                    try {
+                                      (window as any).refreshCompanies();
+                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
+                                    } catch (error) {
+                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
+                                    }
+                                  }
+                                  
                                   // Luego sincronizar otras interfaces
                                   setTimeout(() => {
                                     refreshOtherInterfaces();
-                                  }, 200); // Reducido de 1000ms a 200ms
+                                  }, 200);
                                 }}
                                 disabled={!user.is_active}
                                 sx={{
                                   background: !user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
                                   color: 'white',
                                   '&:hover': {
-                                    background: !user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)',
+                                    background: !user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #ff9800 0%, #ef6c00 100%)',
                                     transform: 'scale(1.1)',
                                   }
                                 }}
                               >
-                                <WarningIcon />
+                                <PauseIcon />
                               </IconButton>
                             </span>
                           </Tooltip>
@@ -814,10 +879,22 @@ export default function UsuariosAdmin() {
                                   await apiService.post(`/api/users/${user.id}/block/`);
                                   setSuccess('Usuario bloqueado exitosamente');
                                   await fetchUsers();
+                                  
+                                  // ✅ NUEVO: Llamar directamente a refreshCompanies() si es una empresa
+                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
+                                    try {
+                                      (window as any).refreshCompanies();
+                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
+                                    } catch (error) {
+                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
+                                    }
+                                  }
+                                  
                                   // Luego sincronizar otras interfaces
                                   setTimeout(() => {
                                     refreshOtherInterfaces();
-                                  }, 200); // Reducido de 1000ms a 200ms
+                                  }, 200);
                                 }}
                                 disabled={!user.is_verified}
                                 sx={{
@@ -842,10 +919,22 @@ export default function UsuariosAdmin() {
                                   await apiService.post(`/api/users/${user.id}/unblock/`);
                                   setSuccess('Usuario desbloqueado exitosamente');
                                   await fetchUsers();
+                                  
+                                  // ✅ NUEVO: Llamando directamente a refreshCompanies() si es una empresa
+                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
+                                    try {
+                                      (window as any).refreshCompanies();
+                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
+                                    } catch (error) {
+                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
+                                    }
+                                  }
+                                  
                                   // Luego sincronizar otras interfaces
                                   setTimeout(() => {
                                     refreshOtherInterfaces();
-                                  }, 200); // Reducido de 1000ms a 200ms
+                                  }, 200);
                                 }}
                                 disabled={user.is_verified}
                                 sx={{
@@ -857,7 +946,7 @@ export default function UsuariosAdmin() {
                                   }
                                 }}
                               >
-                                <CheckCircleIcon />
+                                <LockOpenIcon />
                               </IconButton>
                             </span>
                           </Tooltip>
