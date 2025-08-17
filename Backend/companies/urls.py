@@ -10,6 +10,7 @@ app_name = 'companies'
 
 urlpatterns = [
     path('', views.company_list, name='company_list'),
+    path('admin/companies/', views.admin_companies_list, name='admin_companies_list'),  # Nueva URL para admin
     path('<uuid:companies_id>/', views.companies_detail, name='company_detail'),  # GET detalle
     path('<uuid:companies_id>/update/', views.companies_update, name='company_update'),  # PATCH/PUT actualización
     path('admin/<uuid:company_id>/suspend/', views.admin_suspend_company, name='admin_suspend_company'),

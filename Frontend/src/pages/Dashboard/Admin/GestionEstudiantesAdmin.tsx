@@ -141,6 +141,45 @@ export default function GestionEstudiantesAdmin() {
 
   const navigate = useNavigate();
 
+  // useEffect para exposición global y listeners
+  useEffect(() => {
+    // Hacer la función loadStudents disponible globalmente como refreshStudents
+    if (typeof window !== 'undefined') {
+      (window as any).refreshStudents = loadStudents;
+      console.log('✅ [GestionEstudiantesAdmin] refreshStudents expuesto globalmente');
+      console.log('🔍 Verificando que refreshStudents esté disponible:', typeof (window as any).refreshStudents === 'function');
+      
+      // Verificación adicional inmediata
+      setTimeout(() => {
+        console.log('🔍 [GestionEstudiantesAdmin] Verificación post-exposición - refreshStudents disponible:', typeof (window as any).refreshStudents === 'function');
+        console.log('🔍 [GestionEstudiantesAdmin] Tipo de refreshStudents:', typeof (window as any).refreshStudents);
+        console.log('🔍 [GestionEstudiantesAdmin] Valor de refreshStudents:', (window as any).refreshStudents);
+      }, 100);
+    }
+    
+    // Agregar listener para cambios en otras interfaces
+    const handleUserStateChanged = () => {
+      console.log('🔄 [GestionEstudiantesAdmin] Evento userStateChanged recibido, refrescando datos...');
+      loadStudents();
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('userStateChanged', handleUserStateChanged);
+      console.log('✅ [GestionEstudiantesAdmin] Listener para userStateChanged agregado');
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        (window as any).refreshStudents = undefined;
+        console.log('🔄 [GestionEstudiantesAdmin] refreshStudents removido globalmente');
+        
+        window.removeEventListener('userStateChanged', handleUserStateChanged);
+        console.log('🔄 [GestionEstudiantesAdmin] Listener para userStateChanged removido');
+      }
+    };
+  }, []); // Dependency array vacío para exposición global
+
+  // useEffect para cargar datos cuando cambien los filtros
   useEffect(() => {
     loadStudents();
   }, [pageSize, currentPage, filters]);

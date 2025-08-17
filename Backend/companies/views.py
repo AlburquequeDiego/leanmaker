@@ -482,8 +482,22 @@ def companies_delete(request, companies_id):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def admin_suspend_company(request, current_user, company_id):
+def admin_suspend_company(request, company_id):
     try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo administradores pueden acceder
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
         user = User.objects.get(id=company_id)
         logger.info(f"Intentando suspender empresa para usuario {user.id} ({user.email}), role={user.role}")
         if user.role != 'company':
@@ -512,8 +526,22 @@ def admin_suspend_company(request, current_user, company_id):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def admin_block_company(request, current_user, company_id):
+def admin_block_company(request, company_id):
     try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo administradores pueden acceder
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
         user = User.objects.get(id=company_id)
         if user.role != 'company':
             return JsonResponse({'error': 'El usuario no es de tipo empresa.'}, status=400)
@@ -532,8 +560,22 @@ def admin_block_company(request, current_user, company_id):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def admin_activate_company(request, current_user, company_id):
+def admin_activate_company(request, company_id):
     try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo administradores pueden acceder
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
         user = User.objects.get(id=company_id)
         if user.role != 'company':
             return JsonResponse({'error': 'El usuario no es de tipo empresa.'}, status=400)
@@ -846,4 +888,106 @@ def student_completed_projects(request):
         print(f"Error en student_completed_projects: {str(e)}")
         import traceback
         print(f"Traceback completo: {traceback.format_exc()}")
+        return JsonResponse({'error': str(e)}, status=500) 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_companies_list(request):
+    """Lista de empresas para administradores con información completa incluyendo GPA."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        current_user = verify_token(token)
+        if not current_user:
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+        
+        # Solo administradores pueden acceder
+        if current_user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        # Parámetros de paginación y filtros
+        limit = int(request.GET.get('limit', 20))
+        offset = int(request.GET.get('offset', 0))
+        search = request.GET.get('search', '')
+        status = request.GET.get('status', '')
+        
+        # Query base
+        queryset = Empresa.objects.select_related('user').all()
+        
+        # Aplicar filtros
+        if search:
+            queryset = queryset.filter(
+                Q(company_name__icontains=search) |
+                Q(description__icontains=search) |
+                Q(user__email__icontains=search)
+            )
+        
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Contar total
+        total_count = queryset.count()
+        
+        # Paginar
+        if limit > 0:
+            companies = queryset[offset:offset + limit]
+        else:
+            companies = queryset
+        
+        # Serializar datos
+        companies_data = []
+        for company in companies:
+            # Calcular GPA basado en el rating (mantener rango 0-5)
+            gpa = float(company.rating)  # GPA de 0 a 5 con decimales
+            
+            companies_data.append({
+                'id': str(company.id),
+                'user': str(company.user.id),
+                'company_name': company.company_name,
+                'description': company.description,
+                'status': company.status,
+                'contact_phone': company.contact_phone,
+                'contact_email': company.contact_email,
+                'address': company.address,
+                'website': company.website,
+                'industry': company.industry,
+                'size': company.size,
+                'verified': company.verified,
+                'rating': float(company.rating),
+                'gpa': round(gpa, 2),  # GPA calculado
+                'total_projects': company.total_projects,
+                'projects_completed': company.projects_completed,
+                'total_hours_offered': company.total_hours_offered,
+                'created_at': company.created_at.isoformat(),
+                'updated_at': company.updated_at.isoformat(),
+                # Datos del usuario
+                'user_data': {
+                    'id': str(company.user.id),
+                    'email': company.user.email,
+                    'first_name': company.user.first_name,
+                    'last_name': company.user.last_name,
+                    'username': company.user.username,
+                    'phone': company.user.phone,
+                    'avatar': company.user.avatar,
+                    'bio': company.user.bio,
+                    'is_active': company.user.is_active,
+                    'is_verified': company.user.is_verified,
+                    'date_joined': company.user.date_joined.isoformat(),
+                    'last_login': company.user.last_login.isoformat() if company.user.last_login else None,
+                    'full_name': company.user.full_name,
+                }
+            })
+        
+        return JsonResponse({
+            'results': companies_data,
+            'count': total_count,
+            'limit': limit,
+            'offset': offset
+        })
+        
+    except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 

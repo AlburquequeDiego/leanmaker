@@ -36,6 +36,7 @@ export const API_ENDPOINTS = {
   COMPANY_DETAIL: '/api/companies/{id}/',
   COMPANY_UPDATE: '/api/companies/{id}/update/',
   COMPANY_ME: '/api/companies/company_me/',
+  COMPANIES_ADMIN_LIST: '/api/companies/admin/companies/',
   COMPANY_ADMIN_SUSPEND: '/api/companies/admin/{id}/suspend/',
   COMPANY_ADMIN_ACTIVATE: '/api/companies/admin/{id}/activate/',
   COMPANY_ADMIN_BLOCK: '/api/companies/admin/{id}/block/',

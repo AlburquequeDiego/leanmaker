@@ -62,6 +62,7 @@ interface User {
   last_name: string;
   user_type: 'student' | 'company' | 'admin';
   is_active: boolean;
+  is_verified: boolean; // <-- Agregado para sincronización
   date_joined: string;
   last_login?: string;
   phone?: string;
@@ -104,16 +105,41 @@ export default function UsuariosAdmin() {
 
   useEffect(() => {
     fetchUsers();
-    // Hacer la función fetchUsers disponible globalmente
+    
+    // Hacer la función fetchUsers disponible globalmente como refreshUsers
     if (typeof window !== 'undefined') {
       (window as any).refreshUsers = fetchUsers;
+      console.log('✅ [UsuariosAdmin] refreshUsers expuesto globalmente');
+      
+      // Verificación adicional inmediata
+      setTimeout(() => {
+        console.log('🔍 [UsuariosAdmin] Verificación post-exposición - refreshUsers disponible:', typeof (window as any).refreshUsers === 'function');
+        console.log('🔍 [UsuariosAdmin] Tipo de refreshUsers:', typeof (window as any).refreshUsers);
+        console.log('🔍 [UsuariosAdmin] Valor de refreshUsers:', (window as any).refreshUsers);
+      }, 100);
     }
+    
+    // Agregar listener para cambios en otras interfaces
+    const handleUserStateChanged = () => {
+      console.log('🔄 [UsuariosAdmin] Evento userStateChanged recibido, refrescando datos...');
+      fetchUsers();
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('userStateChanged', handleUserStateChanged);
+      console.log('✅ [UsuariosAdmin] Listener para userStateChanged agregado');
+    }
+    
     return () => {
       if (typeof window !== 'undefined') {
         (window as any).refreshUsers = undefined;
+        console.log('🔄 [UsuariosAdmin] refreshUsers removido globalmente');
+        
+        window.removeEventListener('userStateChanged', handleUserStateChanged);
+        console.log('🔄 [UsuariosAdmin] Listener para userStateChanged removido');
       }
     };
-  }, [statusFilter, typeFilter, limit]);
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -159,6 +185,76 @@ export default function UsuariosAdmin() {
     }
   };
 
+  const refreshOtherInterfaces = () => {
+    console.log('🔄 [UsuariosAdmin] Iniciando sincronización con otras interfaces...');
+    console.log('🔄 [UsuariosAdmin] Estado actual de usuarios:', users.length);
+    
+    // Función para intentar refrescar con reintentos
+    const attemptRefresh = (maxAttempts = 5, delay = 200) => {
+      let attempts = 0;
+      
+      const tryRefresh = () => {
+        attempts++;
+        console.log(`🔄 [UsuariosAdmin] Intento ${attempts} de sincronización...`);
+        
+        // Verificar qué funciones están disponibles
+        const refreshCompaniesAvailable = typeof (window as any).refreshCompanies === 'function';
+        const refreshStudentsAvailable = typeof (window as any).refreshStudents === 'function';
+        
+        console.log('🔍 refreshCompanies disponible:', refreshCompaniesAvailable);
+        console.log('🔍 refreshStudents disponible:', refreshStudentsAvailable);
+        
+        // Refrescar gestión de empresas si existe
+        if (refreshCompaniesAvailable) {
+          console.log('🔄 Llamando a refreshCompanies()...');
+          try {
+            (window as any).refreshCompanies();
+            console.log('✅ refreshCompanies() ejecutado exitosamente');
+          } catch (error) {
+            console.error('❌ Error al ejecutar refreshCompanies():', error);
+          }
+        }
+        
+        // Refrescar gestión de estudiantes si existe
+        if (refreshStudentsAvailable) {
+          console.log('🔄 Llamando a refreshStudents()...');
+          try {
+            (window as any).refreshStudents();
+            console.log('✅ refreshStudents() ejecutado exitosamente');
+          } catch (error) {
+            console.error('❌ Error al ejecutar refreshStudents():', error);
+          }
+        }
+        
+        // Si no están disponibles y aún tenemos intentos, reintentar
+        if (!refreshCompaniesAvailable && !refreshStudentsAvailable && attempts < maxAttempts) {
+          console.log(`⏳ Esperando ${delay}ms antes del siguiente intento...`);
+          setTimeout(tryRefresh, delay);
+        } else if (attempts >= maxAttempts) {
+          console.log('⚠️ Máximo de intentos alcanzado, algunas interfaces no están disponibles');
+        }
+      };
+      
+      tryRefresh();
+    };
+    
+    // Iniciar el proceso de reintentos
+    attemptRefresh();
+    
+    // Disparar evento personalizado para otras interfaces
+    if (typeof window !== 'undefined') {
+      console.log('🔄 Disparando evento userStateChanged...');
+      try {
+        window.dispatchEvent(new CustomEvent('userStateChanged'));
+        console.log('✅ Evento userStateChanged disparado exitosamente');
+      } catch (error) {
+        console.error('❌ Error al disparar evento userStateChanged:', error);
+      }
+    }
+    
+    console.log('✅ [UsuariosAdmin] Sincronización completada');
+  };
+
   const handleCreateUser = async () => {
     if (formData.password !== formData.confirm_password) {
       setError('Las contraseñas no coinciden');
@@ -191,6 +287,10 @@ export default function UsuariosAdmin() {
       setShowCreateDialog(false);
       resetForm();
       await fetchUsers();
+      // Luego sincronizar otras interfaces
+      setTimeout(() => {
+        refreshOtherInterfaces();
+      }, 200); // Reducido de 1000ms a 200ms
     } catch (error) {
       console.error('Error creating user:', error);
       // Si el error tiene response y status 201, considerar éxito
@@ -199,6 +299,10 @@ export default function UsuariosAdmin() {
         setShowCreateDialog(false);
         resetForm();
         await fetchUsers();
+        // Luego sincronizar otras interfaces
+        setTimeout(() => {
+          refreshOtherInterfaces();
+        }, 200); // Reducido de 1000ms a 200ms
         return;
       }
       setError('Error al crear el usuario');
@@ -225,6 +329,10 @@ export default function UsuariosAdmin() {
       setShowEditDialog(false);
       resetForm();
       await fetchUsers();
+      // Luego sincronizar otras interfaces
+      setTimeout(() => {
+        refreshOtherInterfaces();
+      }, 200); // Reducido de 1000ms a 200ms
     } catch (error) {
       console.error('Error updating user:', error);
       setError('Error al actualizar el usuario');
@@ -245,7 +353,12 @@ export default function UsuariosAdmin() {
         setSuccess('Usuario activado exitosamente');
       }
       
+      // Primero actualizar usuarios locales
       await fetchUsers();
+      // Luego sincronizar otras interfaces
+      setTimeout(() => {
+        refreshOtherInterfaces();
+      }, 200); // Reducido de 1000ms a 200ms
     } catch (error) {
       console.error('Error toggling user status:', error);
       setError('Error al cambiar el estado del usuario');
@@ -644,7 +757,11 @@ export default function UsuariosAdmin() {
                                 onClick={async () => {
                                   await apiService.post(`/api/users/${user.id}/activate/`);
                                   setSuccess('Usuario activado exitosamente');
-                                  fetchUsers();
+                                  await fetchUsers();
+                                  // Luego sincronizar otras interfaces
+                                  setTimeout(() => {
+                                    refreshOtherInterfaces();
+                                  }, 200); // Reducido de 1000ms a 200ms
                                 }}
                                 disabled={user.is_active}
                                 sx={{
@@ -668,7 +785,11 @@ export default function UsuariosAdmin() {
                                 onClick={async () => {
                                   await apiService.post(`/api/users/${user.id}/suspend/`);
                                   setSuccess('Usuario suspendido exitosamente');
-                                  fetchUsers();
+                                  await fetchUsers();
+                                  // Luego sincronizar otras interfaces
+                                  setTimeout(() => {
+                                    refreshOtherInterfaces();
+                                  }, 200); // Reducido de 1000ms a 200ms
                                 }}
                                 disabled={!user.is_active}
                                 sx={{
@@ -692,7 +813,11 @@ export default function UsuariosAdmin() {
                                 onClick={async () => {
                                   await apiService.post(`/api/users/${user.id}/block/`);
                                   setSuccess('Usuario bloqueado exitosamente');
-                                  fetchUsers();
+                                  await fetchUsers();
+                                  // Luego sincronizar otras interfaces
+                                  setTimeout(() => {
+                                    refreshOtherInterfaces();
+                                  }, 200); // Reducido de 1000ms a 200ms
                                 }}
                                 disabled={!user.is_verified}
                                 sx={{
@@ -716,7 +841,11 @@ export default function UsuariosAdmin() {
                                 onClick={async () => {
                                   await apiService.post(`/api/users/${user.id}/unblock/`);
                                   setSuccess('Usuario desbloqueado exitosamente');
-                                  fetchUsers();
+                                  await fetchUsers();
+                                  // Luego sincronizar otras interfaces
+                                  setTimeout(() => {
+                                    refreshOtherInterfaces();
+                                  }, 200); // Reducido de 1000ms a 200ms
                                 }}
                                 disabled={user.is_verified}
                                 sx={{
