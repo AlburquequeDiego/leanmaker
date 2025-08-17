@@ -77,25 +77,148 @@ export const CompanyInterviews: React.FC = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [projectDetailsModalOpen, setProjectDetailsModalOpen] = useState(false);
   const [selectedProjectForDetails, setSelectedProjectForDetails] = useState<any>(null);
+  const [directStudentProfile, setDirectStudentProfile] = useState<any>(null);
 
-  // Hook para obtener el perfil detallado del estudiante
-  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(selectedStudentId);
+  // Hook para obtener el perfil del estudiante seleccionado
+  const { profile: studentProfile, loading: profileLoading, error: profileError } = useStudentProfile(
+    selectedStudentId && !directStudentProfile?._isVirtualProfile ? selectedStudentId : null
+  );
   
   // Debug: Log del estado del perfil
-  console.log('🔍 [Interviews] Estado del perfil del estudiante:');
-  console.log('🔍 [Interviews] - selectedStudentId:', selectedStudentId);
-  console.log('🔍 [Interviews] - studentProfile:', studentProfile);
-  console.log('🔍 [Interviews] - profileLoading:', profileLoading);
-  console.log('🔍 [Interviews] - profileError:', profileError);
-  
-  // Debug adicional: Log cuando cambia el perfil
   useEffect(() => {
-    console.log('🔄 [Interviews] useEffect - Cambio en el perfil del estudiante:');
-    console.log('🔄 [Interviews] - selectedStudentId:', selectedStudentId);
-    console.log('🔄 [Interviews] - studentProfile:', studentProfile);
-    console.log('🔄 [Interviews] - profileLoading:', profileLoading);
-    console.log('🔄 [Interviews] - profileError:', profileError);
-  }, [selectedStudentId, studentProfile, profileLoading, profileError]);
+    console.log('🔍 [Interviews] - selectedStudentId:', selectedStudentId);
+    console.log('🔍 [Interviews] - directStudentProfile:', directStudentProfile);
+    console.log('🔍 [Interviews] - directStudentProfile?._isVirtualProfile:', directStudentProfile?._isVirtualProfile);
+    console.log('🔍 [Interviews] - Hook se ejecutará con ID:', selectedStudentId && !directStudentProfile?._isVirtualProfile ? selectedStudentId : null);
+    console.log('🔍 [Interviews] - profileLoading:', profileLoading);
+    console.log('🔍 [Interviews] - profileError:', profileError);
+  }, [selectedStudentId, directStudentProfile, profileLoading, profileError]);
+  
+  // Función para obtener el perfil del estudiante directamente (sin verificación previa)
+  const getStudentProfileDirectly = async (studentId: string, studentEmail?: string) => {
+    try {
+      console.log('🔍 [Interviews] getStudentProfileDirectly - Obteniendo perfil para ID:', studentId, 'y email:', studentEmail);
+      
+      // PRIMER INTENTO: Buscar por ID del perfil
+      const response = await fetch(`/api/students/${studentId}/profile/`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const profileData = await response.json();
+        console.log('✅ [Interviews] Perfil obtenido por ID:', profileData);
+        return profileData;
+      } else {
+        console.log('⚠️ [Interviews] No se encontró perfil por ID, intentando por email...');
+        
+        // SEGUNDO INTENTO: Buscar en la lista de estudiantes por email
+        if (studentEmail) {
+          try {
+            const studentsResponse = await fetch('/api/students/', {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (studentsResponse.ok) {
+              const studentsData = await studentsResponse.json();
+              console.log('🔍 [Interviews] Lista de estudiantes obtenida, buscando por email:', studentEmail);
+              
+              // Buscar el estudiante por email
+              const studentByEmail = studentsData.results?.find((student: any) => 
+                student.email === studentEmail
+              );
+              
+              if (studentByEmail) {
+                console.log('✅ [Interviews] Estudiante encontrado por email:', studentByEmail);
+                
+                // Ahora obtener el perfil completo usando el ID encontrado
+                const profileResponse = await fetch(`/api/students/${studentByEmail.id}/profile/`, {
+                  headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    'Content-Type': 'application/json'
+                  }
+                });
+                
+                if (profileResponse.ok) {
+                  const profileData = await profileResponse.json();
+                  console.log('✅ [Interviews] Perfil obtenido por email:', profileData);
+                  return profileData;
+                }
+              }
+            }
+          } catch (emailError) {
+            console.log('⚠️ [Interviews] Error buscando por email:', emailError);
+          }
+        }
+        
+        console.warn('⚠️ [Interviews] No se pudo obtener perfil ni por ID ni por email');
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ [Interviews] Error obteniendo perfil directamente:', error);
+      return null;
+    }
+  };
+
+  // Función para crear un perfil virtual del estudiante basado en la información de la entrevista
+  const createVirtualStudentProfile = (event: any) => {
+    console.log('🔍 [Interviews] createVirtualStudentProfile - Creando perfil virtual para evento:', event);
+    
+    // Extraer información del estudiante desde los attendees
+    const attendee = event.attendees?.[0];
+    if (!attendee) {
+      console.error('❌ [Interviews] No hay attendees en el evento');
+      return null;
+    }
+
+    // Crear un perfil virtual con la estructura que espera StudentProfileModal
+    const virtualProfile = {
+      user_data: {
+        full_name: attendee.full_name || attendee.email || 'Estudiante',
+        email: attendee.email || 'Email no disponible',
+        phone: 'No disponible',
+        birthdate: 'No disponible',
+        gender: 'No disponible',
+        bio: `Estudiante participante en la entrevista "${event.title}" para el proyecto "${event.project_title || 'Sin título'}".\n\nInformación de la entrevista:\n• Fecha: ${new Date(event.start_date).toLocaleDateString('es-ES')}\n• Hora: ${new Date(event.start_date).toLocaleTimeString('es-ES')}\n• Ubicación: ${event.location || 'Sede'}${event.room ? ` - Sala: ${event.room}` : ''}${event.meeting_room ? ` - Sala: ${event.meeting_room}` : ''}\n• Modalidad: ${event.meeting_type || 'Presencial'}\n• Estado: ${event.status === 'scheduled' ? 'Programada' : event.status === 'completed' ? 'Completada' : event.status}`
+      },
+      student: {
+        career: 'No disponible',
+        university: 'No disponible',
+        experience_years: 0,
+        hours_per_week: 20,
+        area: 'No disponible',
+        availability: 'flexible',
+        skills: [],
+        linkedin_url: '',
+        github_url: '',
+        portfolio_url: '',
+        cv_link: '',
+        certificado_link: ''
+      },
+      perfil_detallado: {
+        entrevista_info: {
+          titulo: event.title,
+          proyecto: event.project_title,
+          fecha: event.start_date,
+          ubicacion: event.location,
+          sala: event.room || event.meeting_room,
+          modalidad: event.meeting_type,
+          estado: event.status,
+          descripcion: event.description
+        }
+      },
+      _isVirtualProfile: true, // Marcar como perfil virtual
+      _sourceEvent: event // Guardar referencia al evento original
+    };
+
+    console.log('✅ [Interviews] Perfil virtual creado:', virtualProfile);
+    return virtualProfile;
+  };
   
   const now = new Date();
   
@@ -161,6 +284,19 @@ export const CompanyInterviews: React.FC = () => {
         : [];
       
       console.log('[Entrevistas] Datos del backend antes de adaptar:', data);
+      
+      // Log detallado de la primera entrevista para depuración
+      if (data.length > 0) {
+        const firstEvent = data[0];
+        console.log('🔍 [Entrevistas] Primera entrevista del backend:');
+        console.log('🔍 [Entrevistas] - ID:', firstEvent.id);
+        console.log('🔍 [Entrevistas] - Título:', firstEvent.title);
+        console.log('🔍 [Entrevistas] - Location:', firstEvent.location);
+        console.log('🔍 [Entrevistas] - Room:', firstEvent.room);
+        console.log('🔍 [Entrevistas] - Meeting Room:', firstEvent.meeting_room);
+        console.log('🔍 [Entrevistas] - Meeting Type:', firstEvent.meeting_type);
+        console.log('🔍 [Entrevistas] - Estructura completa:', firstEvent);
+      }
       
       // Preservar los datos originales del backend para acceso posterior
       const adaptedEvents = data.map((backendEvent: any) => {
@@ -229,11 +365,21 @@ export const CompanyInterviews: React.FC = () => {
   };
 
   const handleViewDetails = (event: any) => {
+    console.log('🔍 [Interviews] handleViewDetails - Evento completo:', event);
+    console.log('🔍 [Interviews] - location:', event.location);
+    console.log('🔍 [Interviews] - room:', event.room);
+    console.log('🔍 [Interviews] - meeting_room:', event.meeting_room);
+    console.log('🔍 [Interviews] - _originalData:', event._originalData);
+    if (event._originalData) {
+      console.log('🔍 [Interviews] - _originalData.location:', event._originalData.location);
+      console.log('🔍 [Interviews] - _originalData.room:', event._originalData.room);
+      console.log('🔍 [Interviews] - _originalData.meeting_room:', event._originalData.meeting_room);
+    }
     setSelectedEvent(event);
     setDetailDialogOpen(true);
   };
 
-  const handleViewProfile = (event: any) => {
+  const handleViewProfile = async (event: any) => {
     console.log('🔍 [Interviews] handleViewProfile ejecutándose para evento:', event);
     console.log('🔍 [Interviews] Estructura completa del evento:', JSON.stringify(event, null, 2));
     console.log('🔍 [Interviews] Event ID:', event.id);
@@ -305,10 +451,44 @@ export const CompanyInterviews: React.FC = () => {
       // Asegurar que el ID sea un string válido
       const cleanStudentId = String(studentId).trim();
       if (cleanStudentId) {
-        setSelectedStudentId(cleanStudentId);
-        setSelectedEvent(event); // Guardar el evento para obtener información del proyecto
-        setShowProfileDialog(true);
-        console.log('✅ [Interviews] Modal abierto con studentId:', cleanStudentId);
+        // Obtener el perfil directamente en lugar de usar el hook
+        console.log('🔍 [Interviews] Obteniendo perfil directamente para:', cleanStudentId);
+        
+        // Obtener el email del estudiante para búsqueda alternativa
+        const studentEmail = event.attendees?.[0]?.email || 
+                           event._originalData?.attendees?.[0]?.email ||
+                           event.student?.email;
+        
+        console.log('🔍 [Interviews] Email del estudiante para búsqueda alternativa:', studentEmail);
+        
+        const profileData = await getStudentProfileDirectly(cleanStudentId, studentEmail);
+        
+        if (profileData) {
+          // Si se obtuvo el perfil exitosamente, guardar el perfil y abrir el modal
+          console.log('✅ [Interviews] Perfil obtenido exitosamente:', profileData);
+          setDirectStudentProfile(profileData);
+          setSelectedStudentId(cleanStudentId); // Solo establecer el ID si tenemos perfil real
+          setSelectedEvent(event); // Guardar el evento para obtener información del proyecto
+          setShowProfileDialog(true);
+          console.log('✅ [Interviews] Modal abierto con studentId:', cleanStudentId);
+        } else {
+          // Si no se pudo obtener el perfil, crear un perfil virtual
+          console.log('⚠️ [Interviews] No se pudo obtener perfil del backend, creando perfil virtual...');
+          const virtualProfile = createVirtualStudentProfile(event);
+          
+          if (virtualProfile) {
+            console.log('✅ [Interviews] Perfil virtual creado exitosamente');
+            setDirectStudentProfile(virtualProfile);
+            // NO establecer selectedStudentId para evitar que se ejecute useStudentProfile
+            setSelectedEvent(event);
+            setShowProfileDialog(true);
+            console.log('✅ [Interviews] Modal abierto con perfil virtual (sin hook)');
+          } else {
+            // Si no se pudo crear el perfil virtual, mostrar error
+            console.error('❌ [Interviews] No se pudo crear el perfil virtual del estudiante');
+            alert('No se pudo obtener la información del estudiante. Revisa la consola para más detalles.');
+          }
+        }
       } else {
         console.error('❌ [Interviews] studentId está vacío después de limpiar');
         alert('ID del estudiante inválido');
@@ -906,18 +1086,18 @@ export const CompanyInterviews: React.FC = () => {
                               </Box>
                             )}
 
-                            {event.location && (
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                <WorkIcon sx={{ 
-                                  mr: 1.5, 
-                                  color: themeMode === 'dark' ? '#dc2626' : '#ff6b6b', 
-                                  fontSize: 20 
-                                }} />
-                                <Typography variant="body2">
-                                  <strong>Ubicación:</strong> {event.location}
-                                </Typography>
-                              </Box>
-                            )}
+                                                         {(event.location || event.room || event.meeting_room) && (
+                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                 <WorkIcon sx={{ 
+                                   mr: 1.5, 
+                                   color: themeMode === 'dark' ? '#dc2626' : '#ff6b6b', 
+                                   fontSize: 20 
+                                 }} />
+                                 <Typography variant="body2">
+                                   <strong>Ubicación:</strong> {event.location || event.room || event.meeting_room}
+                                 </Typography>
+                               </Box>
+                             )}
                           </Box>
                         </CardContent>
 
@@ -1166,18 +1346,18 @@ export const CompanyInterviews: React.FC = () => {
                               </Box>
                             )}
 
-                            {event.location && (
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                <WorkIcon sx={{ 
-                                  mr: 1.5, 
-                                  color: themeMode === 'dark' ? '#059669' : '#4ecdc4', 
-                                  fontSize: 20 
-                                }} />
-                                <Typography variant="body2">
-                                  <strong>Ubicación:</strong> {event.location}
-                                </Typography>
-                              </Box>
-                            )}
+                                                         {(event.location || event.room || event.meeting_room) && (
+                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                 <WorkIcon sx={{ 
+                                   mr: 1.5, 
+                                   color: themeMode === 'dark' ? '#059669' : '#4ecdc4', 
+                                   fontSize: 20 
+                                 }} />
+                                 <Typography variant="body2">
+                                   <strong>Ubicación:</strong> {event.location || event.room || event.meeting_room}
+                                 </Typography>
+                               </Box>
+                             )}
                           </Box>
                         </CardContent>
 
@@ -1437,11 +1617,11 @@ export const CompanyInterviews: React.FC = () => {
                             </Typography>
                           )}
                           
-                          {event.location && (
-                            <Typography variant="body2" sx={{ mb: 0.5 }}>
-                              <strong>Ubicación:</strong> {event.location}
-                            </Typography>
-                          )}
+                                                     {(event.location || event.room || event.meeting_room) && (
+                             <Typography variant="body2" sx={{ mb: 0.5 }}>
+                               <strong>Ubicación:</strong> {event.location || event.room || event.meeting_room}
+                             </Typography>
+                           )}
                         </CardContent>
                         
                         <CardActions sx={{ p: 2, pt: 0 }}>
@@ -1511,7 +1691,7 @@ export const CompanyInterviews: React.FC = () => {
           {selectedEvent && (
             <Grid container spacing={3}>
               {/* Información del estudiante */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12}>
                 <Paper sx={{ 
                   p: 3, 
                   borderRadius: 2, 
@@ -1588,7 +1768,7 @@ export const CompanyInterviews: React.FC = () => {
               </Grid>
 
               {/* Información de la entrevista */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12}>
                 <Paper sx={{ 
                   p: 3, 
                   borderRadius: 2, 
@@ -1651,19 +1831,35 @@ export const CompanyInterviews: React.FC = () => {
                       </Typography>
                     </Grid>
                     
-                    {selectedEvent.location && (
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="body2" fontWeight={600}>
-                          Ubicación:
-                        </Typography>
-                        <Typography variant="body2" sx={{ 
-                          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
-                          mt: 0.5
-                        }}>
-                          {selectedEvent.location}
-                        </Typography>
-                      </Grid>
-                    )}
+                                         {/* Información de ubicación - Mostrar todos los campos disponibles */}
+                     {(selectedEvent.location || selectedEvent.room || selectedEvent.meeting_room) && (
+                       <Grid item xs={12} sm={6}>
+                         <Typography variant="body2" fontWeight={600}>
+                           Ubicación:
+                         </Typography>
+                         <Typography variant="body2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                           mt: 0.5
+                         }}>
+                           {selectedEvent.location || 'Sede'}
+                         </Typography>
+                       </Grid>
+                     )}
+                     
+                     {/* Información de la sala - Mismo diseño que los otros campos */}
+                     {(selectedEvent.room || selectedEvent.meeting_room) && (
+                       <Grid item xs={12} sm={6}>
+                         <Typography variant="body2" fontWeight={600}>
+                           Sala:
+                         </Typography>
+                         <Typography variant="body2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+                           mt: 0.5
+                         }}>
+                           {selectedEvent.room || selectedEvent.meeting_room}
+                         </Typography>
+                       </Grid>
+                     )}
                     
                     {selectedEvent.meeting_type && (
                       <Grid item xs={12} sm={6}>
@@ -1743,17 +1939,20 @@ export const CompanyInterviews: React.FC = () => {
       <StudentProfileModal
         open={showProfileDialog}
         onClose={() => {
+          console.log('🔍 [Interviews] Cerrando modal de perfil, limpiando estados');
           setShowProfileDialog(false);
           setSelectedEvent(null);
           setSelectedStudentId(null);
+          setDirectStudentProfile(null); // Clear direct profile on close
         }}
-        studentProfile={studentProfile}
-        loading={profileLoading}
-        error={profileError}
+        studentProfile={directStudentProfile || studentProfile} // Prioritize direct profile
+        loading={profileLoading && !directStudentProfile} // Only show loading if no direct profile
+        error={directStudentProfile ? null : profileError} // Only show error if no direct profile
         projectTitle={selectedEvent?.project_title || 'Entrevista'}
         applicationStatus="interview"
         onStatusChange={() => {}} // No se puede cambiar estado desde entrevistas
         updatingStatus={false}
+        isVirtualProfile={directStudentProfile?._isVirtualProfile || false} // Pass virtual flag
       />
     </Box>
   );

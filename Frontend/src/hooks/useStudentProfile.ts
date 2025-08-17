@@ -46,16 +46,32 @@ export const useStudentProfile = (studentId: string | null) => {
         if (basicInfo) {
           console.log('✅ [useStudentProfile] Información básica obtenida:', basicInfo);
           // Crear un perfil básico con la información disponible
-          const fallbackProfile = {
+          const fallbackProfile: any = {
             user_data: {
               full_name: basicInfo.name || basicInfo.full_name || basicInfo.email || 'Estudiante',
               email: basicInfo.email || 'Email no disponible',
-              phone: basicInfo.phone || 'Teléfono no disponible'
+              phone: basicInfo.phone || 'Teléfono no disponible',
+              bio: 'Información básica del estudiante',
+              first_name: (basicInfo.name || basicInfo.full_name || '').split(' ')[0] || 'Estudiante',
+              last_name: (basicInfo.name || basicInfo.full_name || '').split(' ').slice(1).join(' ') || 'Estudiante'
             },
             student: {
+              id: id,
+              user: id,
               career: basicInfo.career || 'Carrera no disponible',
               university: basicInfo.university || 'Universidad no disponible',
-              skills: basicInfo.skills || []
+              skills: basicInfo.skills || [],
+              status: 'pending',
+              api_level: 1,
+              strikes: 0,
+              gpa: 0,
+              completed_projects: 0,
+              total_hours: 0,
+              experience_years: 0,
+              hours_per_week: 20,
+              availability: 'flexible',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
             },
             perfil_detallado: {},
             _isFallback: true // Marcar como perfil de fallback
@@ -229,7 +245,7 @@ export const useCompanyStudentsHistory = () => {
       const profiles: Record<string, any> = {};
       
       // Extraer IDs únicos de estudiantes
-      const studentIds = [...new Set(studentsData.map(student => String(student.id)))].filter(Boolean);
+      const studentIds = studentsData.map(student => String(student.id)).filter((id, index, arr) => arr.indexOf(id) === index);
       
       console.log('🔍 [loadStudentProfiles] IDs únicos de estudiantes:', studentIds);
       

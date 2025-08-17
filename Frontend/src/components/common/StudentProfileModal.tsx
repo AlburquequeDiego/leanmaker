@@ -34,6 +34,7 @@ interface StudentProfileModalProps {
   coverLetter?: string;
   onStatusChange?: (newStatus: string) => void;
   updatingStatus?: boolean;
+  isVirtualProfile?: boolean; // Nueva prop para indicar si es un perfil virtual
 }
 
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
@@ -47,6 +48,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   coverLetter,
   onStatusChange,
   updatingStatus = false,
+  isVirtualProfile = false,
 }) => {
   const { themeMode } = useTheme();
 
@@ -100,7 +102,21 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <PersonIcon sx={{ fontSize: 28 }} />
-          Perfil Completo del Estudiante
+          <Box>
+            <Typography variant="h6" component="div">
+              Perfil Completo del Estudiante
+            </Typography>
+            {isVirtualProfile && (
+              <Typography variant="caption" sx={{ 
+                opacity: 0.8, 
+                fontStyle: 'italic',
+                display: 'block',
+                mt: 0.5
+              }}>
+                ⚠️ Perfil generado desde la información de la entrevista
+              </Typography>
+            )}
+          </Box>
         </Box>
       </DialogTitle>
       
@@ -137,6 +153,37 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                     Cargando perfil del estudiante...
                   </Typography>
                 </Box>
+              </Box>
+            )}
+
+            {/* Indicador de perfil virtual */}
+            {isVirtualProfile && (
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: themeMode === 'dark' ? 'rgba(255, 193, 7, 0.1)' : 'rgba(255, 193, 7, 0.1)',
+                border: themeMode === 'dark' ? '1px solid rgba(255, 193, 7, 0.3)' : '1px solid rgba(255, 193, 7, 0.3)',
+                borderRadius: 1,
+                mx: 3,
+                mt: 2
+              }}>
+                <Alert severity="warning" sx={{ 
+                  bgcolor: 'transparent',
+                  '& .MuiAlert-icon': { color: themeMode === 'dark' ? '#fbbf24' : '#d97706' }
+                }}>
+                  <Typography variant="body2" sx={{ 
+                    color: themeMode === 'dark' ? '#fbbf24' : '#d97706',
+                    fontWeight: 600
+                  }}>
+                    📋 Perfil Generado desde la Entrevista
+                  </Typography>
+                  <Typography variant="caption" sx={{ 
+                    color: themeMode === 'dark' ? '#fbbf24' : '#d97706',
+                    display: 'block',
+                    mt: 0.5
+                  }}>
+                    Este perfil se creó usando la información disponible en la entrevista. Algunos datos pueden no estar completos.
+                  </Typography>
+                </Alert>
               </Box>
             )}
 
