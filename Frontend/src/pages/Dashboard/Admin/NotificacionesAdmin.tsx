@@ -30,7 +30,6 @@ import {
 import {
   Search as SearchIcon,
   Send as SendIcon,
-  Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   Info as InfoIcon,
   Warning as WarningIcon,
@@ -246,26 +245,7 @@ export default function NotificacionesAdmin() {
     }
   };
 
-  const handleDeleteNotification = async (notificationId: string) => {
-    try {
-      await apiService.delete(`/api/mass-notifications/${notificationId}/delete/`);
-      
-      setSnackbar({ 
-        open: true, 
-        message: 'Notificación masiva cancelada exitosamente', 
-        severity: 'success' 
-      });
-      
-      await fetchNotifications();
-    } catch (error) {
-      console.error('Error cancelling mass notification:', error);
-      setSnackbar({ 
-        open: true, 
-        message: 'Error al cancelar la notificación masiva', 
-        severity: 'error' 
-      });
-    }
-  };
+
 
   const resetForm = () => {
     setFormData({
@@ -921,18 +901,7 @@ export default function NotificacionesAdmin() {
                   >
                     <SendIcon />
                   </IconButton>
-                  <IconButton 
-                    size="small" 
-                    color="error"
-                    onClick={() => handleDeleteNotification(notification.id)}
-                    disabled={notification.status === 'cancelled'}
-                    sx={{ 
-                      borderRadius: 1,
-                      '&:hover': { bgcolor: 'error.light' }
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+
                 </Box>
                 <Button
                   variant="outlined"

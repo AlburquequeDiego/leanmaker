@@ -112,10 +112,10 @@ export default function AdminDashboard() {
   // Usar hook de tiempo real para estadísticas
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('admin');
 
-  // Cálculos de KPIs usando datos reales
+  // Cálculos de KPIs usando datos reales del backend
   const totalUsers = stats?.total_users || 0;
-  const totalStudents = stats?.students || 0; // Corregido: usar el campo mapeado por el adaptador
-  const totalCompanies = stats?.companies || 0; // Corregido: usar el campo mapeado por el adaptador
+  const totalStudents = stats?.students || 0; // Usar el campo adaptado 'students'
+  const totalCompanies = stats?.companies || 0; // Usar el campo adaptado 'companies'
   const totalProjects = stats?.total_projects || 0;
   const pendingApplications = stats?.pending_applications || 0;
   const strikesAlerts = stats?.strikes_alerts || 0;

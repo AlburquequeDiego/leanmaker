@@ -54,9 +54,9 @@ interface AdminProfile {
 }
 
 interface ChangePasswordData {
-  current_password: string;
+  old_password: string;
   new_password: string;
-  confirm_password: string;
+  new_password_confirm: string;
 }
 
 // Componente separado para el formulario de contraseña
@@ -72,9 +72,9 @@ const PasswordForm = ({
   success: string | null;
 }) => {
   const [passwordData, setPasswordData] = useState<ChangePasswordData>({
-    current_password: '',
+    old_password: '',
     new_password: '',
-    confirm_password: '',
+    new_password_confirm: '',
   });
 
   const [showPasswords, setShowPasswords] = useState({
@@ -90,9 +90,9 @@ const PasswordForm = ({
   useEffect(() => {
     // Limpiar el estado inmediatamente
     setPasswordData({
-      current_password: '',
+      old_password: '',
       new_password: '',
-      confirm_password: '',
+      new_password_confirm: '',
     });
     
     // Esperar a que el DOM esté listo
@@ -115,7 +115,7 @@ const PasswordForm = ({
   }, []);
 
   const handleSubmit = () => {
-    if (passwordData.new_password !== passwordData.confirm_password) {
+    if (passwordData.new_password !== passwordData.new_password_confirm) {
       return;
     }
     onSubmit(passwordData);
@@ -146,8 +146,8 @@ const PasswordForm = ({
               ref={currentPasswordRef}
               label="Contraseña actual"
               type={showPasswords.current ? 'text' : 'password'}
-              value={passwordData.current_password}
-              onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
+              value={passwordData.old_password}
+              onChange={(e) => setPasswordData({ ...passwordData, old_password: e.target.value })}
               fullWidth
               InputProps={{
                 endAdornment: (
@@ -182,12 +182,12 @@ const PasswordForm = ({
             <TextField
               label="Confirmar nueva contraseña"
               type={showPasswords.confirm ? 'text' : 'password'}
-              value={passwordData.confirm_password}
-              onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+              value={passwordData.new_password_confirm}
+              onChange={(e) => setPasswordData({ ...passwordData, new_password_confirm: e.target.value })}
               fullWidth
-              error={passwordData.new_password !== passwordData.confirm_password && passwordData.confirm_password !== ''}
+              error={passwordData.new_password !== passwordData.new_password_confirm && passwordData.new_password_confirm !== ''}
               helperText={
-                passwordData.new_password !== passwordData.confirm_password && passwordData.confirm_password !== ''
+                passwordData.new_password !== passwordData.new_password_confirm && passwordData.new_password_confirm !== ''
                   ? 'Las contraseñas no coinciden'
                   : ''
               }
@@ -211,10 +211,10 @@ const PasswordForm = ({
           variant="contained"
           onClick={handleSubmit}
           disabled={
-            !passwordData.current_password ||
+            !passwordData.old_password ||
             !passwordData.new_password ||
-            !passwordData.confirm_password ||
-            passwordData.new_password !== passwordData.confirm_password
+            !passwordData.new_password_confirm ||
+            passwordData.new_password !== passwordData.new_password_confirm
           }
         >
           Cambiar Contraseña

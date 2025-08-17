@@ -587,21 +587,28 @@ export const adaptCalendarEvent = (backendEvent: any): CalendarEvent => {
 /**
  * Adapta las estadísticas del dashboard del backend
  */
-export const adaptDashboardStats = (backendStats: any): DashboardStats => ({
-  total_users: backendStats.total_users || 0,
-  active_users: backendStats.active_users || 0,
-  verified_users: backendStats.verified_users || 0,
-  students: backendStats.total_students || 0, // Corregido: total_students del backend
-  companies: backendStats.total_companies || 0, // Corregido: total_companies del backend
-  total_projects: backendStats.total_projects || 0,
-  active_projects: backendStats.active_projects || 0,
-  total_applications: backendStats.total_applications || 0,
-  pending_applications: backendStats.pending_applications || 0,
-  strikes_alerts: backendStats.strikes_alerts || 0, // Agregado para coincidir con el backend
-  api_questionnaire_requests: backendStats.api_questionnaire_requests || 0, // Nuevo campo para solicitudes de cuestionario API
-  pending_hours: backendStats.pending_hours || 0, // Nuevo campo para horas pendientes
-  top_students: Array.isArray(backendStats.top_students) ? backendStats.top_students : [], // Nuevo campo
-});
+export const adaptDashboardStats = (backendStats: any): DashboardStats => {
+  console.log('🔍 [ADAPTER] Backend stats recibidos:', backendStats);
+  
+  const adapted = {
+    total_users: backendStats.total_users || 0,
+    active_users: backendStats.active_users || 0,
+    verified_users: backendStats.verified_users || 0,
+    students: backendStats.total_students || 0, // Mapear total_students del backend a students del frontend
+    companies: backendStats.total_companies || 0, // Mapear total_companies del backend a companies del frontend
+    total_projects: backendStats.total_projects || 0,
+    active_projects: backendStats.active_projects || 0,
+    total_applications: backendStats.total_applications || 0,
+    pending_applications: backendStats.pending_applications || 0,
+    strikes_alerts: backendStats.strikes_alerts || 0,
+    api_questionnaire_requests: backendStats.api_questionnaire_requests || 0,
+    pending_hours: backendStats.pending_hours || 0,
+    top_students: Array.isArray(backendStats.top_students) ? backendStats.top_students : [],
+  };
+  
+  console.log('🔍 [ADAPTER] Stats adaptados:', adapted);
+  return adapted;
+};
 
 // ============================================================================
 // ADAPTADORES PARA LISTAS

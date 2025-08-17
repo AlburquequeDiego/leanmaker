@@ -1555,10 +1555,30 @@ def api_dashboard_admin_stats(request):
         total_users = User.objects.count()
         print(f"👥 [ADMIN DASHBOARD] Total usuarios: {total_users}")
         
-        total_companies = Empresa.objects.count()
+        # Verificar empresas con más detalle
+        print("🏢 [ADMIN DASHBOARD] Verificando empresas...")
+        all_companies = Empresa.objects.all()
+        print(f"🏢 [ADMIN DASHBOARD] Empresas encontradas: {all_companies.count()}")
+        if all_companies.exists():
+            for company in all_companies[:3]:  # Mostrar primeras 3 empresas
+                print(f"🏢 [ADMIN DASHBOARD] Empresa: {company.company_name} (ID: {company.id})")
+        else:
+            print("🏢 [ADMIN DASHBOARD] No se encontraron empresas en la base de datos")
+        
+        total_companies = all_companies.count()
         print(f"🏢 [ADMIN DASHBOARD] Total empresas: {total_companies}")
         
-        total_students = Estudiante.objects.count()
+        # Verificar estudiantes con más detalle
+        print("🎓 [ADMIN DASHBOARD] Verificando estudiantes...")
+        all_students = Estudiante.objects.all()
+        print(f"🎓 [ADMIN DASHBOARD] Estudiantes encontrados: {all_students.count()}")
+        if all_students.exists():
+            for student in all_students[:3]:  # Mostrar primeros 3 estudiantes
+                print(f"🎓 [ADMIN DASHBOARD] Estudiante: {student.user.email if student.user else 'Sin usuario'} (ID: {student.id})")
+        else:
+            print("🎓 [ADMIN DASHBOARD] No se encontraron estudiantes en la base de datos")
+        
+        total_students = all_students.count()
         print(f"🎓 [ADMIN DASHBOARD] Total estudiantes: {total_students}")
         
         total_projects = Proyecto.objects.count()
@@ -1583,20 +1603,52 @@ def api_dashboard_admin_stats(request):
             print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo solicitudes de cuestionario API pendientes: {str(e)}")
             api_questionnaire_requests = 0
         
-        # Obtener proyectos activos
+        # Obtener proyectos activos con más detalle
         active_projects = 0
         try:
-            active_projects = Proyecto.objects.filter(status='active').count()
-            print(f"🚀 [ADMIN DASHBOARD] Proyectos activos: {active_projects}")
+            print("🚀 [ADMIN DASHBOARD] Verificando proyectos activos...")
+            
+            # Verificar si hay proyectos en la base de datos
+            all_projects = Proyecto.objects.all()
+            print(f"🚀 [ADMIN DASHBOARD] Total proyectos en BD: {all_projects.count()}")
+            
+            # Verificar el modelo ProjectStatus
+            from project_status.models import ProjectStatus
+            all_statuses = ProjectStatus.objects.all()
+            print(f"🚀 [ADMIN DASHBOARD] Estados de proyecto disponibles: {[s.name for s in all_statuses]}")
+            
+            # Buscar proyectos con status 'in-progress' o que tengan estudiantes trabajando
+            in_progress_status = ProjectStatus.objects.filter(name='in-progress').first()
+            
+            if in_progress_status:
+                print(f"🚀 [ADMIN DASHBOARD] Estado 'in-progress' encontrado: {in_progress_status.id}")
+                active_projects = Proyecto.objects.filter(status=in_progress_status).count()
+                print(f"🚀 [ADMIN DASHBOARD] Proyectos con estado 'in-progress': {active_projects}")
+            else:
+                print("🚀 [ADMIN DASHBOARD] Estado 'in-progress' no encontrado, buscando proyectos con aplicaciones aceptadas...")
+                # Si no existe el status, contar proyectos que tengan estudiantes trabajando
+                projects_with_accepted_apps = Proyecto.objects.filter(
+                    application_project__status__in=['accepted', 'completed']
+                ).distinct()
+                active_projects = projects_with_accepted_apps.count()
+                print(f"🚀 [ADMIN DASHBOARD] Proyectos con aplicaciones aceptadas/completadas: {active_projects}")
+                
+                # Mostrar algunos proyectos para debug
+                if projects_with_accepted_apps.exists():
+                    for project in projects_with_accepted_apps[:3]:
+                        print(f"🚀 [ADMIN DASHBOARD] Proyecto activo: {project.title} (ID: {project.id})")
+                
         except Exception as e:
             print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo proyectos activos: {str(e)}")
+            import traceback
+            print(f"⚠️ [ADMIN DASHBOARD] Traceback proyectos activos: {traceback.format_exc()}")
             active_projects = 0
         
         # Obtener horas pendientes de validación
         pending_hours = 0
         try:
             from work_hours.models import WorkHour
-            pending_hours = WorkHour.objects.filter(status='pending').count()
+            pending_hours = WorkHour.objects.filter(is_verified=False).count()
             print(f"⏰ [ADMIN DASHBOARD] Horas pendientes de validación: {pending_hours}")
         except Exception as e:
             print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo horas pendientes: {str(e)}")
