@@ -131,7 +131,7 @@ export const GestionEmpresasAdmin = () => {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [actionDialog, setActionDialog] = useState(false);
   const [actionType, setActionType] = useState<'block' | 'suspend' | 'activate' | null>(null);
-  const [actionReason, setActionReason] = useState('');
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showError, setShowError] = useState(false);
@@ -367,7 +367,11 @@ export const GestionEmpresasAdmin = () => {
     setSelectedCompany(company);
     setActionType(type);
     setActionDialog(true);
-    setActionReason('');
+    
+    // Si se está activando una empresa bloqueada, mostrar mensaje específico
+    if (type === 'activate' && company.status === 'blocked') {
+      console.log('🔄 Desbloqueando empresa bloqueada:', company.name);
+    }
   };
 
   const handleConfirmAction = async () => {
@@ -721,42 +725,7 @@ export const GestionEmpresasAdmin = () => {
           <Tooltip title="Desbloquear">
             <span>
               <IconButton
-                onClick={async () => {
-                  if (!row.user) {
-                    setErrorMessage('Esta empresa no tiene usuario asociado. No se puede desbloquear.');
-                    setShowError(true);
-                    return;
-                  }
-                  try {
-                     setLoading(true);
-                     await apiService.post(`/api/companies/admin/${row.user}/activate/`);
-                    setSuccessMessage('Empresa desbloqueada exitosamente');
-                     setShowSuccess(true);
-                     // Refrescar datos inmediatamente después de la acción
-                     await fetchData();
-                     
-                     // ✅ NUEVO: Llamar directamente a refreshUsers() igual que hace GestionEstudiantesAdmin
-                     if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
-                       console.log('🔄 Llamando directamente a refreshUsers()...');
-                       try {
-                         (window as any).refreshUsers();
-                         console.log('✅ refreshUsers() ejecutado exitosamente');
-                       } catch (error) {
-                         console.error('❌ Error al ejecutar refreshUsers():', error);
-                       }
-                     } else {
-                       console.log('⚠️ refreshUsers no está disponible para llamada directa');
-                     }
-                     
-                      refreshOtherInterfaces();
-                  } catch (error) {
-                    console.error('Error al desbloquear:', error);
-                    setErrorMessage('Error al desbloquear la empresa');
-                    setShowError(true);
-                   } finally {
-                     setLoading(false);
-                  }
-                }}
+                onClick={() => handleAction(row, 'activate')}
                                  disabled={row.status !== 'blocked' || !row.user || loading}
                 sx={{
                   background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
@@ -1236,7 +1205,7 @@ export const GestionEmpresasAdmin = () => {
             {actionType === 'suspend' && <WarningIcon />}
             {actionType === 'block' && <BlockIcon />}
             <Typography variant="h6">
-              {actionType === 'activate' && 'Activar Empresa'}
+              {actionType === 'activate' && (selectedCompany?.status === 'blocked' ? 'Desbloquear Empresa' : 'Activar Empresa')}
               {actionType === 'suspend' && 'Suspender Empresa'}
               {actionType === 'block' && 'Bloquear Empresa'}
             </Typography>
@@ -1268,7 +1237,12 @@ export const GestionEmpresasAdmin = () => {
                 }}>
                   ¿Estás seguro de que quieres{' '}
                   <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea' }}>
-                    {actionType === 'activate' ? 'activar' : actionType === 'suspend' ? 'suspender' : 'bloquear'}
+                    {actionType === 'activate' 
+                      ? (selectedCompany?.status === 'blocked' ? 'desbloquear' : 'activar')
+                      : actionType === 'suspend' 
+                      ? 'suspender' 
+                      : 'bloquear'
+                    }
                   </Box>{' '}
                   la empresa{' '}
                   <Box component="span" sx={{ fontWeight: 'bold', color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' }}>
@@ -1282,8 +1256,86 @@ export const GestionEmpresasAdmin = () => {
                 }}>
                   Esta acción cambiará el estado de la empresa y afectará su capacidad para usar la plataforma.
                 </Typography>
+
+                {/* Alertas específicas según el tipo de acción */}
+                {actionType === 'activate' && (
+                  <Alert severity="info" sx={{ mt: 2, borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                      <strong>ℹ️ Información:</strong> Al {selectedCompany?.status === 'blocked' ? 'desbloquear' : 'activar'} esta empresa:
+                    </Typography>
+                    <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Podrá acceder nuevamente a la plataforma
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Podrá crear y gestionar proyectos
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Los estudiantes podrán aplicar a sus proyectos
+                      </Typography>
+                      {selectedCompany?.status === 'blocked' && (
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5, fontWeight: 'bold', color: '#4caf50' }}>
+                          ✅ Se reactivarán todos los proyectos que estaban pausados
+                        </Typography>
+                      )}
+                    </Box>
+                  </Alert>
+                )}
+
+                {actionType === 'suspend' && (
+                  <Alert severity="warning" sx={{ mt: 2, borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                      <strong>⚠️ Advertencia:</strong> Al suspender esta empresa:
+                    </Typography>
+                    <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        No podrá acceder a la plataforma temporalmente
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Los proyectos activos se mantendrán pero no podrá crear nuevos
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Los estudiantes no podrán aplicar a nuevos proyectos
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Se recomienda revisar el motivo de la suspensión antes de proceder
+                      </Typography>
+                    </Box>
+                  </Alert>
+                )}
+
+                {actionType === 'block' && (
+                  <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                      <strong>🚫 Acción Crítica:</strong> Al bloquear esta empresa:
+                    </Typography>
+                    <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Se bloqueará permanentemente el acceso a la plataforma
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Todos los proyectos activos se pausarán automáticamente
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        Los estudiantes no podrán aplicar a proyectos de esta empresa
+                      </Typography>
+                      <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                        <strong>Esta acción es irreversible y requiere justificación</strong>
+                      </Typography>
+                    </Box>
+                  </Alert>
+                )}
+
+
               </CardContent>
             </Card>
+
+            {/* Alerta general de recordatorio */}
+            <Alert severity="info" sx={{ mt: 2, borderRadius: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                <strong>📋 Recordatorio:</strong> Todas las acciones administrativas quedan registradas en el sistema y pueden ser revisadas posteriormente por otros administradores.
+              </Typography>
+            </Alert>
           </Box>
         </DialogContent>
         <DialogActions sx={{ 
@@ -1322,7 +1374,12 @@ export const GestionEmpresasAdmin = () => {
               }
             }}
           >
-             {loading ? 'Procesando...' : 'Confirmar'}
+             {loading ? 'Procesando...' : actionType === 'activate' 
+              ? (selectedCompany?.status === 'blocked' ? 'Desbloquear' : 'Activar')
+              : actionType === 'suspend' 
+              ? 'Suspender' 
+              : 'Bloquear'
+            }
           </Button>
         </DialogActions>
       </Dialog>

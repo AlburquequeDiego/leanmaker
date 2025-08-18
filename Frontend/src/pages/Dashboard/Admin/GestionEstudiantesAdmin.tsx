@@ -133,6 +133,16 @@ export default function GestionEstudiantesAdmin() {
   const [showEditDialog, setShowEditDialog] = useState(false); // Nuevo estado para el modal de edición
   const [editFormData, setEditFormData] = useState<any>({}); // Estado para los datos del formulario de edición
 
+  // Estados para alertas de confirmación
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'suspend' | 'activate' | 'block';
+    message: string;
+    studentId: string;
+    studentName: string;
+    action: () => Promise<void>;
+  } | null>(null);
+
   // Estados para paginación y filtros
   const [pageSize, setPageSize] = useState<number>(20); // <-- Cambiado de 10 a 20
   const [currentPage, setCurrentPage] = useState(1);
@@ -360,20 +370,45 @@ export default function GestionEstudiantesAdmin() {
 
   // Acciones de estado para estudiantes
   const handleStudentAction = async (student: Student, action: 'suspend' | 'activate' | 'block') => {
-    try {
-      let endpoint = '';
-      if (action === 'activate') endpoint = `/api/students/admin/${student.id}/activate/`;
-      if (action === 'suspend') endpoint = `/api/students/admin/${student.id}/suspend/`;
-      if (action === 'block') endpoint = `/api/students/admin/${student.id}/block/`;
-      await apiService.post(endpoint, {});
-      setSuccessMsg(`Estudiante ${action === 'activate' ? 'activado' : action === 'suspend' ? 'suspendido' : 'bloqueado'} correctamente`);
-      loadStudents();
-      if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
-        (window as any).refreshUsers();
+    // Mostrar alerta de confirmación antes de ejecutar la acción
+    setConfirmAction({
+      type: action,
+      message: `¿Estás seguro de que quieres ${action === 'activate' ? 'activar' : action === 'suspend' ? 'suspender' : 'bloquear'} al estudiante "${student.name || student.email}"? Esta acción cambiará su estado y afectará su acceso a la plataforma.`,
+      studentId: student.id,
+      studentName: student.name || student.email,
+      action: async () => {
+        try {
+          let endpoint = '';
+          if (action === 'activate') endpoint = `/api/students/admin/${student.id}/activate/`;
+          if (action === 'suspend') endpoint = `/api/students/admin/${student.id}/suspend/`;
+          if (action === 'block') endpoint = `/api/students/admin/${student.id}/block/`;
+          await apiService.post(endpoint, {});
+          setSuccessMsg(`Estudiante ${action === 'activate' ? 'activado' : action === 'suspend' ? 'suspendido' : 'bloqueado'} correctamente`);
+          loadStudents();
+          if (typeof window !== 'undefined' && typeof (window as any).refreshUsers === 'function') {
+            (window as any).refreshUsers();
+          }
+        } catch (err: any) {
+          setError(err.response?.data?.message || 'Error al cambiar el estado del estudiante');
+        }
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al cambiar el estado del estudiante');
+    });
+    setShowConfirmDialog(true);
+  };
+
+  // Función para ejecutar la acción confirmada
+  const executeConfirmedAction = async () => {
+    if (confirmAction?.action) {
+      await confirmAction.action();
+      setShowConfirmDialog(false);
+      setConfirmAction(null);
     }
+  };
+
+  // Función para cancelar la confirmación
+  const cancelConfirmedAction = () => {
+    setShowConfirmDialog(false);
+      setConfirmAction(null);
   };
 
   const columns = [
@@ -614,11 +649,7 @@ export default function GestionEstudiantesAdmin() {
           <Tooltip title="Desbloquear">
             <span>
               <IconButton
-                onClick={async () => {
-                  await apiService.post(`/api/users/${row.id}/unblock/`);
-                  setSuccessMsg('Estudiante desbloqueado exitosamente');
-                  loadStudents();
-                }}
+                onClick={() => handleStudentAction(row, 'activate')}
                 disabled={row.status !== 'blocked' && row.status !== 'rejected'}
                 sx={{
                   background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
@@ -1643,6 +1674,172 @@ export default function GestionEstudiantesAdmin() {
               }}
             >
               Guardar Cambios
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Dialog de confirmación para acciones de estudiantes */}
+        <Dialog 
+          open={showConfirmDialog} 
+          onClose={cancelConfirmedAction}
+          maxWidth="sm" 
+          fullWidth
+        >
+          <DialogTitle sx={{ 
+            background: confirmAction?.type === 'activate' 
+              ? 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)'
+              : confirmAction?.type === 'suspend'
+              ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
+              : 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+            color: 'white',
+            fontWeight: 'bold',
+            py: 2.5,
+            px: 3,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1
+          }}>
+            {confirmAction?.type === 'activate' && <CheckCircleIcon sx={{ fontSize: 24 }} />}
+            {confirmAction?.type === 'suspend' && <WarningIcon sx={{ fontSize: 24 }} />}
+            {confirmAction?.type === 'block' && <BlockIcon sx={{ fontSize: 24 }} />}
+            <Typography variant="h6">
+              {confirmAction?.type === 'activate' && 'Confirmar Activación'}
+              {confirmAction?.type === 'suspend' && 'Confirmar Suspensión'}
+              {confirmAction?.type === 'block' && 'Confirmar Bloqueo'}
+            </Typography>
+          </DialogTitle>
+          <DialogContent sx={{ 
+            p: 3, 
+            pt: 4,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+          }}>
+            <Typography variant="body1" sx={{ 
+              fontSize: '1rem',
+              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+              lineHeight: 1.6,
+              mb: 2
+            }}>
+              {confirmAction?.message}
+            </Typography>
+            
+            {/* Alertas específicas según el tipo de acción */}
+            {confirmAction?.type === 'activate' && (
+              <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                  <strong>ℹ️ Información:</strong> Al activar este estudiante:
+                </Typography>
+                <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    Podrá acceder nuevamente a la plataforma
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    Podrá aplicar a proyectos disponibles
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    Mantendrá su nivel API y horas acumuladas
+                  </Typography>
+                </Box>
+              </Alert>
+            )}
+
+            {confirmAction?.type === 'suspend' && (
+              <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                  <strong>⚠️ Advertencia:</strong> Al suspender este estudiante:
+                </Typography>
+                <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    No podrá acceder a la plataforma temporalmente
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    No podrá aplicar a nuevos proyectos
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    Los proyectos en curso se mantendrán activos
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    Se recomienda revisar el motivo de la suspensión
+                  </Typography>
+                </Box>
+              </Alert>
+            )}
+
+            {confirmAction?.type === 'block' && (
+              <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                  <strong>🚫 Acción Crítica:</strong> Al bloquear este estudiante:
+                </Typography>
+                <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    Se bloqueará permanentemente el acceso a la plataforma
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    No podrá participar en ningún proyecto
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    Perderá acceso a todas las funcionalidades
+                  </Typography>
+                  <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Esta acción es irreversible y requiere justificación</strong>
+                  </Typography>
+                </Box>
+              </Alert>
+            )}
+
+            {/* Alerta general de recordatorio */}
+            <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                <strong>📋 Recordatorio:</strong> Todas las acciones administrativas quedan registradas en el sistema y pueden ser revisadas posteriormente por otros administradores.
+              </Typography>
+            </Alert>
+          </DialogContent>
+          <DialogActions sx={{ 
+            p: 3,
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e5e7eb'
+          }}>
+            <Button 
+              onClick={cancelConfirmedAction}
+              sx={{ 
+                borderRadius: 2,
+                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                '&:hover': {
+                  backgroundColor: themeMode === 'dark' ? '#334155' : '#f3f4f6',
+                }
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="contained"
+              onClick={executeConfirmedAction}
+              sx={{ 
+                borderRadius: 2,
+                background: confirmAction?.type === 'activate' 
+                  ? 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)'
+                  : confirmAction?.type === 'suspend'
+                  ? 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)'
+                  : 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                '&:hover': {
+                  background: confirmAction?.type === 'activate' 
+                    ? 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)'
+                    : confirmAction?.type === 'suspend'
+                    ? 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)'
+                    : 'linear-gradient(135deg, #ee5a24 0%, #c44569 100%)',
+                },
+                '&:disabled': {
+                  background: '#e0e0e0',
+                  color: '#9e9e9e'
+                }
+              }}
+            >
+              {confirmAction?.type === 'activate' 
+                ? 'Activar Estudiante'
+                : confirmAction?.type === 'suspend' 
+                ? 'Suspender Estudiante' 
+                : 'Bloquear Estudiante'
+              }
             </Button>
           </DialogActions>
         </Dialog>

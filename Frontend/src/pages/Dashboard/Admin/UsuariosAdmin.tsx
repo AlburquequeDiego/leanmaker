@@ -31,6 +31,8 @@ import {
   CardContent,
   Divider,
   Stack,
+  // Nuevos componentes para alertas
+  DialogContentText,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -90,6 +92,15 @@ export default function UsuariosAdmin() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+  // Nuevos estados para alertas de confirmación
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'create' | 'update' | 'activate' | 'suspend' | 'block' | 'unblock';
+    message: string;
+    userId?: string;
+    userType?: string;
+    action?: () => Promise<void>;
+  } | null>(null);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -269,141 +280,264 @@ export default function UsuariosAdmin() {
       return;
     }
 
-    try {
-      const userData = {
-        username: formData.username,
-        email: formData.email,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        role: formData.user_type, // Cambiado de user_type a role
-        phone: formData.phone,
-        company_name: formData.company_name,
-        career: formData.career,
-        position: formData.position,
-        password: formData.password,
-      };
-
-      const response = await apiService.post('/api/users/create/', userData);
-      console.log('Respuesta al crear usuario:', response);
-      
-      setSuccess('Usuario creado exitosamente');
-      setShowCreateDialog(false);
-      resetForm();
-      await fetchUsers();
-      
-      // ✅ NUEVO: Llamar directamente a refreshCompanies() si se creó una empresa
-      if (formData.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
-        console.log('🔄 Llamando directamente a refreshCompanies()...');
+    // Mostrar alerta de confirmación antes de crear
+    setConfirmAction({
+      type: 'create',
+      message: `¿Estás seguro de que quieres crear el usuario "${formData.username}"? Se enviará un email de verificación y se creará inmediatamente.`,
+      userType: formData.user_type,
+      action: async () => {
         try {
-          (window as any).refreshCompanies();
-          console.log('✅ refreshCompanies() ejecutado exitosamente');
+          const userData = {
+            username: formData.username,
+            email: formData.email,
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            role: formData.user_type, // Cambiado de user_type a role
+            phone: formData.phone,
+            company_name: formData.company_name,
+            career: formData.career,
+            position: formData.position,
+            password: formData.password,
+          };
+
+          const response = await apiService.post('/api/users/create/', userData);
+          console.log('Respuesta al crear usuario:', response);
+          
+          setSuccess('Usuario creado exitosamente');
+          setShowCreateDialog(false);
+          resetForm();
+          await fetchUsers();
+          
+          // ✅ NUEVO: Llamar directamente a refreshCompanies() si se creó una empresa
+          if (formData.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+            console.log('🔄 Llamando directamente a refreshCompanies()...');
+            try {
+              (window as any).refreshCompanies();
+              console.log('✅ refreshCompanies() ejecutado exitosamente');
+            } catch (error) {
+              console.error('❌ Error al ejecutar refreshCompanies():', error);
+            }
+          }
+          
+          // Luego sincronizar otras interfaces
+          setTimeout(() => {
+            refreshOtherInterfaces();
+          }, 200);
         } catch (error) {
-          console.error('❌ Error al ejecutar refreshCompanies():', error);
+          console.error('Error creating user:', error);
+          // Si el error tiene response y status 201, considerar éxito
+          if (error?.response?.status === 201) {
+            setSuccess('Usuario creado exitosamente');
+            setShowCreateDialog(false);
+            resetForm();
+            await fetchUsers();
+            // Luego sincronizar otras interfaces
+            setTimeout(() => {
+              refreshOtherInterfaces();
+            }, 200); // Reducido de 1000ms a 200ms
+            return;
+          }
+          setError('Error al crear el usuario');
         }
       }
-      
-      // Luego sincronizar otras interfaces
-      setTimeout(() => {
-        refreshOtherInterfaces();
-      }, 200);
-    } catch (error) {
-      console.error('Error creating user:', error);
-      // Si el error tiene response y status 201, considerar éxito
-      if (error?.response?.status === 201) {
-        setSuccess('Usuario creado exitosamente');
-        setShowCreateDialog(false);
-        resetForm();
-        await fetchUsers();
-        // Luego sincronizar otras interfaces
-        setTimeout(() => {
-          refreshOtherInterfaces();
-        }, 200); // Reducido de 1000ms a 200ms
-        return;
-      }
-      setError('Error al crear el usuario');
-    }
+    });
+    setShowConfirmDialog(true);
   };
 
   const handleUpdateUser = async () => {
     if (!selectedUser) return;
 
-    try {
-      const updateData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone: formData.phone,
-        company_name: formData.company_name,
-        career: formData.career,
-        position: formData.position,
-      };
-
-      await apiService.patch(`/api/users/${selectedUser.id}/`, updateData);
-      
-      setSuccess('Usuario actualizado exitosamente');
-      setShowEditDialog(false);
-      resetForm();
-      await fetchUsers();
-      
-      // ✅ NUEVO: Llamar directamente a refreshCompanies() si se actualizó una empresa
-      if (selectedUser && selectedUser.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
-        console.log('🔄 Llamando directamente a refreshCompanies()...');
+    // Mostrar alerta de confirmación antes de actualizar
+    setConfirmAction({
+      type: 'update',
+      message: `¿Estás seguro de que quieres actualizar el usuario "${selectedUser.username}"? Los cambios se aplicarán inmediatamente y podrían afectar su experiencia en la plataforma.`,
+      userId: selectedUser.id,
+      userType: selectedUser.user_type,
+      action: async () => {
         try {
-          (window as any).refreshCompanies();
-          console.log('✅ refreshCompanies() ejecutado exitosamente');
+          const updateData = {
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            email: formData.email,
+            phone: formData.phone,
+            company_name: formData.company_name,
+            career: formData.career,
+            position: formData.position,
+          };
+
+          await apiService.patch(`/api/users/${selectedUser.id}/`, updateData);
+          
+          setSuccess('Usuario actualizado exitosamente');
+          setShowEditDialog(false);
+          resetForm();
+          await fetchUsers();
+          
+          // ✅ NUEVO: Llamar directamente a refreshCompanies() si se actualizó una empresa
+          if (selectedUser && selectedUser.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+            console.log('🔄 Llamando directamente a refreshCompanies()...');
+            try {
+              (window as any).refreshCompanies();
+              console.log('✅ refreshCompanies() ejecutado exitosamente');
+            } catch (error) {
+              console.error('❌ Error al ejecutar refreshCompanies():', error);
+            }
+          }
+          
+          // Luego sincronizar otras interfaces
+          setTimeout(() => {
+            refreshOtherInterfaces();
+          }, 200);
         } catch (error) {
-          console.error('❌ Error al ejecutar refreshCompanies():', error);
+          console.error('Error updating user:', error);
+          setError('Error al actualizar el usuario');
         }
       }
-      
-      // Luego sincronizar otras interfaces
-      setTimeout(() => {
-        refreshOtherInterfaces();
-      }, 200);
-    } catch (error) {
-      console.error('Error updating user:', error);
-      setError('Error al actualizar el usuario');
+    });
+    setShowConfirmDialog(true);
+  };
+
+  const handleToggleUserStatus = async (userId: string, currentStatus: boolean) => {
+    // Mostrar alerta de confirmación antes de cambiar estado
+    const action = currentStatus ? 'suspender' : 'activar';
+    const message = currentStatus 
+      ? `¿Estás seguro de que quieres suspender este usuario? No podrá acceder a la plataforma hasta que sea reactivado.`
+      : `¿Estás seguro de que quieres activar este usuario? Tendrá acceso completo a la plataforma.`;
+
+    setConfirmAction({
+      type: currentStatus ? 'suspend' : 'activate',
+      message,
+      userId,
+      userType: users.find(u => u.id === userId)?.user_type,
+      action: async () => {
+        try {
+          if (currentStatus) {
+            // Usuario está activo, lo suspendemos
+            await apiService.post(`/api/users/${userId}/suspend/`);
+            setSuccess('Usuario suspendido exitosamente');
+          } else {
+            // Usuario está inactivo, lo activamos
+            await apiService.post(`/api/users/${userId}/activate/`);
+            setSuccess('Usuario activado exitosamente');
+          }
+          
+          // Primero actualizar usuarios locales
+          await fetchUsers();
+          
+          // ✅ NUEVO: Llamar directamente a refreshCompanies() si se cambió el estado de una empresa
+          // Necesito encontrar el usuario para verificar su tipo
+          const user = users.find(u => u.id === userId);
+          if (user && user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+            console.log('🔄 Llamando directamente a refreshCompanies()...');
+            try {
+              (window as any).refreshCompanies();
+              console.log('✅ refreshCompanies() ejecutado exitosamente');
+            } catch (error) {
+              console.error('❌ Error al ejecutar refreshCompanies():', error);
+            }
+          }
+          
+          // Luego sincronizar otras interfaces
+          setTimeout(() => {
+            refreshOtherInterfaces();
+          }, 200);
+        } catch (error) {
+          console.error('Error toggling user status:', error);
+          setError('Error al cambiar el estado del usuario');
+        }
+      }
+    });
+    setShowConfirmDialog(true);
+  };
+
+  // Función para manejar bloqueo de usuarios
+  const handleBlockUser = async (userId: string) => {
+    setConfirmAction({
+      type: 'block',
+      message: `¿Estás seguro de que quieres bloquear este usuario? No podrá acceder a la plataforma y se marcará como no verificado.`,
+      userId,
+      userType: users.find(u => u.id === userId)?.user_type,
+      action: async () => {
+        try {
+          await apiService.post(`/api/users/${userId}/block/`);
+          setSuccess('Usuario bloqueado exitosamente');
+          await fetchUsers();
+          
+          // ✅ NUEVO: Llamar directamente a refreshCompanies() si se bloqueó una empresa
+          const user = users.find(u => u.id === userId);
+          if (user && user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+            console.log('🔄 Llamando directamente a refreshCompanies()...');
+            try {
+              (window as any).refreshCompanies();
+              console.log('✅ refreshCompanies() ejecutado exitosamente');
+            } catch (error) {
+              console.error('❌ Error al ejecutar refreshCompanies():', error);
+            }
+          }
+          
+          // Luego sincronizar otras interfaces
+          setTimeout(() => {
+            refreshOtherInterfaces();
+          }, 200);
+        } catch (error) {
+          console.error('Error blocking user:', error);
+          setError('Error al bloquear el usuario');
+        }
+      }
+    });
+    setShowConfirmDialog(true);
+  };
+
+  // Función para manejar desbloqueo de usuarios
+  const handleUnblockUser = async (userId: string) => {
+    setConfirmAction({
+      type: 'unblock',
+      message: `¿Estás seguro de que quieres desbloquear este usuario? Tendrá acceso completo a la plataforma y se marcará como verificado.`,
+      userId,
+      userType: users.find(u => u.id === userId)?.user_type,
+      action: async () => {
+        try {
+          await apiService.post(`/api/users/${userId}/unblock/`);
+          setSuccess('Usuario desbloqueado exitosamente');
+          await fetchUsers();
+          
+          // ✅ NUEVO: Llamando directamente a refreshCompanies() si se desbloqueó una empresa
+          const user = users.find(u => u.id === userId);
+          if (user && user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
+            console.log('🔄 Llamando directamente a refreshCompanies()...');
+            try {
+              (window as any).refreshCompanies();
+              console.log('✅ refreshCompanies() ejecutado exitosamente');
+            } catch (error) {
+              console.error('❌ Error al ejecutar refreshCompanies():', error);
+            }
+          }
+          
+          // Luego sincronizar otras interfaces
+          setTimeout(() => {
+            refreshOtherInterfaces();
+          }, 200);
+        } catch (error) {
+          console.error('Error unblocking user:', error);
+          setError('Error al desbloquear el usuario');
+        }
+      }
+    });
+    setShowConfirmDialog(true);
+  };
+
+  // Función para ejecutar la acción confirmada
+  const executeConfirmedAction = async () => {
+    if (confirmAction?.action) {
+      await confirmAction.action();
+      setShowConfirmDialog(false);
+      setConfirmAction(null);
     }
   };
 
-
-
-  const handleToggleUserStatus = async (userId: string, currentStatus: boolean) => {
-    try {
-      if (currentStatus) {
-        // Usuario está activo, lo suspendemos
-        await apiService.post(`/api/users/${userId}/suspend/`);
-        setSuccess('Usuario suspendido exitosamente');
-      } else {
-        // Usuario está inactivo, lo activamos
-        await apiService.post(`/api/users/${userId}/activate/`);
-        setSuccess('Usuario activado exitosamente');
-      }
-      
-      // Primero actualizar usuarios locales
-      await fetchUsers();
-      
-      // ✅ NUEVO: Llamar directamente a refreshCompanies() si se cambió el estado de una empresa
-      // Necesito encontrar el usuario para verificar su tipo
-      const user = users.find(u => u.id === userId);
-      if (user && user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
-        console.log('🔄 Llamando directamente a refreshCompanies()...');
-        try {
-          (window as any).refreshCompanies();
-          console.log('✅ refreshCompanies() ejecutado exitosamente');
-        } catch (error) {
-          console.error('❌ Error al ejecutar refreshCompanies():', error);
-        }
-      }
-      
-      // Luego sincronizar otras interfaces
-      setTimeout(() => {
-        refreshOtherInterfaces();
-      }, 200);
-    } catch (error) {
-      console.error('Error toggling user status:', error);
-      setError('Error al cambiar el estado del usuario');
-    }
+  // Función para cancelar la confirmación
+  const cancelConfirmedAction = () => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
   };
 
   const handleEditUser = (user: User) => {
@@ -795,27 +929,7 @@ export default function UsuariosAdmin() {
                               <IconButton
                                 size="small"
                                 color="success"
-                                onClick={async () => {
-                                  await apiService.post(`/api/users/${user.id}/activate/`);
-                                  setSuccess('Usuario activado exitosamente');
-                                  await fetchUsers();
-                                  
-                                  // ✅ NUEVO: Llamar directamente a refreshCompanies() si es una empresa
-                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
-                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
-                                    try {
-                                      (window as any).refreshCompanies();
-                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
-                                    } catch (error) {
-                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
-                                    }
-                                  }
-                                  
-                                  // Luego sincronizar otras interfaces
-                                  setTimeout(() => {
-                                    refreshOtherInterfaces();
-                                  }, 200);
-                                }}
+                                onClick={() => handleToggleUserStatus(user.id, user.is_active)}
                                 disabled={user.is_active}
                                 sx={{
                                   background: user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
@@ -835,27 +949,7 @@ export default function UsuariosAdmin() {
                               <IconButton
                                 size="small"
                                 color="warning"
-                                onClick={async () => {
-                                  await apiService.post(`/api/users/${user.id}/suspend/`);
-                                  setSuccess('Usuario suspendido exitosamente');
-                                  await fetchUsers();
-                                  
-                                  // ✅ NUEVO: Llamar directamente a refreshCompanies() si es una empresa
-                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
-                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
-                                    try {
-                                      (window as any).refreshCompanies();
-                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
-                                    } catch (error) {
-                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
-                                    }
-                                  }
-                                  
-                                  // Luego sincronizar otras interfaces
-                                  setTimeout(() => {
-                                    refreshOtherInterfaces();
-                                  }, 200);
-                                }}
+                                onClick={() => handleToggleUserStatus(user.id, user.is_active)}
                                 disabled={!user.is_active}
                                 sx={{
                                   background: !user.is_active ? '#e0e0e0' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
@@ -875,27 +969,7 @@ export default function UsuariosAdmin() {
                               <IconButton
                                 size="small"
                                 color="error"
-                                onClick={async () => {
-                                  await apiService.post(`/api/users/${user.id}/block/`);
-                                  setSuccess('Usuario bloqueado exitosamente');
-                                  await fetchUsers();
-                                  
-                                  // ✅ NUEVO: Llamar directamente a refreshCompanies() si es una empresa
-                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
-                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
-                                    try {
-                                      (window as any).refreshCompanies();
-                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
-                                    } catch (error) {
-                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
-                                    }
-                                  }
-                                  
-                                  // Luego sincronizar otras interfaces
-                                  setTimeout(() => {
-                                    refreshOtherInterfaces();
-                                  }, 200);
-                                }}
+                                onClick={() => handleBlockUser(user.id)}
                                 disabled={!user.is_verified}
                                 sx={{
                                   background: !user.is_verified ? '#e0e0e0' : 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
@@ -915,27 +989,7 @@ export default function UsuariosAdmin() {
                               <IconButton
                                 size="small"
                                 color="info"
-                                onClick={async () => {
-                                  await apiService.post(`/api/users/${user.id}/unblock/`);
-                                  setSuccess('Usuario desbloqueado exitosamente');
-                                  await fetchUsers();
-                                  
-                                  // ✅ NUEVO: Llamando directamente a refreshCompanies() si es una empresa
-                                  if (user.user_type === 'company' && typeof window !== 'undefined' && typeof (window as any).refreshCompanies === 'function') {
-                                    console.log('🔄 Llamando directamente a refreshCompanies()...');
-                                    try {
-                                      (window as any).refreshCompanies();
-                                      console.log('✅ refreshCompanies() ejecutado exitosamente');
-                                    } catch (error) {
-                                      console.error('❌ Error al ejecutar refreshCompanies():', error);
-                                    }
-                                  }
-                                  
-                                  // Luego sincronizar otras interfaces
-                                  setTimeout(() => {
-                                    refreshOtherInterfaces();
-                                  }, 200);
-                                }}
+                                onClick={() => handleUnblockUser(user.id)}
                                 disabled={user.is_verified}
                                 sx={{
                                   background: user.is_verified ? '#e0e0e0' : 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
@@ -2056,6 +2110,131 @@ export default function UsuariosAdmin() {
             }}
           >
             Actualizar Usuario
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog de confirmación para acciones importantes */}
+      <Dialog 
+        open={showConfirmDialog} 
+        onClose={cancelConfirmedAction}
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+          color: 'white',
+          fontWeight: 'bold',
+          py: 2.5,
+          px: 3,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <WarningIcon sx={{ fontSize: 24 }} />
+          Confirmar Acción
+        </DialogTitle>
+        <DialogContent sx={{ 
+          p: 3, 
+          pt: 4,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          <DialogContentText sx={{ 
+            fontSize: '1rem',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            lineHeight: 1.6,
+            mb: 2
+          }}>
+            {confirmAction?.message}
+          </DialogContentText>
+          
+          {/* Información adicional según el tipo de acción */}
+          {confirmAction?.type === 'create' && (
+            <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                Tipo de usuario: <strong>{confirmAction.userType === 'student' ? 'Estudiante' : confirmAction.userType === 'company' ? 'Empresa' : 'Administrador'}</strong>
+              </Typography>
+            </Alert>
+          )}
+          
+          {confirmAction?.type === 'update' && (
+            <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                Los cambios se aplicarán inmediatamente y podrían afectar la experiencia del usuario en la plataforma.
+              </Typography>
+            </Alert>
+          )}
+          
+          {(confirmAction?.type === 'activate' || confirmAction?.type === 'suspend') && (
+            <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                {confirmAction.type === 'activate' 
+                  ? 'El usuario tendrá acceso completo a todas las funcionalidades de la plataforma.'
+                  : 'El usuario no podrá acceder a la plataforma hasta que sea reactivado.'
+                }
+              </Typography>
+            </Alert>
+          )}
+          
+          {(confirmAction?.type === 'block' || confirmAction?.type === 'unblock') && (
+            <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                {confirmAction.type === 'block'
+                  ? 'El usuario será marcado como no verificado y no podrá acceder a la plataforma.'
+                  : 'El usuario será marcado como verificado y tendrá acceso completo a la plataforma.'
+                }
+              </Typography>
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ 
+          p: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e5e7eb'
+        }}>
+          <Button 
+            onClick={cancelConfirmedAction}
+            sx={{ 
+              borderRadius: 2,
+              color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+              '&:hover': {
+                backgroundColor: themeMode === 'dark' ? '#334155' : '#f3f4f6',
+              }
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={executeConfirmedAction}
+            sx={{ 
+              borderRadius: 2,
+              background: confirmAction?.type === 'create' || confirmAction?.type === 'update' 
+                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                : confirmAction?.type === 'activate' || confirmAction?.type === 'unblock'
+                ? 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)'
+                : confirmAction?.type === 'suspend' || confirmAction?.type === 'block'
+                ? 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)'
+                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: confirmAction?.type === 'create' || confirmAction?.type === 'update' 
+                  ? 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
+                  : confirmAction?.type === 'activate' || confirmAction?.type === 'unblock'
+                  ? 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)'
+                  : confirmAction?.type === 'suspend' || confirmAction?.type === 'block'
+                  ? 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)'
+                  : 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            {confirmAction?.type === 'create' ? 'Crear Usuario' :
+             confirmAction?.type === 'update' ? 'Actualizar Usuario' :
+             confirmAction?.type === 'activate' ? 'Activar Usuario' :
+             confirmAction?.type === 'suspend' ? 'Suspender Usuario' :
+             confirmAction?.type === 'block' ? 'Bloquear Usuario' :
+             confirmAction?.type === 'unblock' ? 'Desbloquear Usuario' :
+             'Confirmar'}
           </Button>
         </DialogActions>
       </Dialog>

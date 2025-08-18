@@ -90,7 +90,7 @@ const GestionProyectosAdmin = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [actionDialog, setActionDialog] = useState(false);
   const [actionType, setActionType] = useState<'edit' | 'suspend' | 'delete' | 'view_students' | null>(null);
-  const [actionReason, setActionReason] = useState('');
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [projectStudents, setProjectStudents] = useState<any[]>([]);
@@ -199,7 +199,6 @@ const GestionProyectosAdmin = () => {
     setSelectedProject(project);
     setActionType(type);
     setActionDialog(true);
-    setActionReason('');
     
     // Si es ver estudiantes, cargar la lista
     if (type === 'view_students') {
@@ -335,18 +334,18 @@ const GestionProyectosAdmin = () => {
       let endpoint = '';
       let payload: any = {};
 
-      switch (actionType) {
-        case 'suspend':
-          endpoint = `/api/admin/projects/${selectedProject.id}/suspend/`;
-          payload = { reason: actionReason };
-          break;
-        case 'delete':
-          endpoint = `/api/admin/projects/${selectedProject.id}/delete/`;
-          payload = {}; // No enviar razón para eliminar
-          break;
-        default:
-          return;
-      }
+             switch (actionType) {
+         case 'suspend':
+           endpoint = `/api/admin/projects/${selectedProject.id}/suspend/`;
+           payload = {};
+           break;
+         case 'delete':
+           endpoint = `/api/admin/projects/${selectedProject.id}/delete/`;
+           payload = {};
+           break;
+         default:
+           return;
+       }
 
       await apiService.post(endpoint, payload);
 
@@ -1295,8 +1294,8 @@ const GestionProyectosAdmin = () => {
             {actionType === 'delete' && <DeleteIcon />}
             {actionType === 'view_students' && <PeopleIcon />}
             <Typography variant="h6">
-              {actionType === 'suspend' && 'Suspender Proyecto'}
-              {actionType === 'delete' && 'Eliminar Proyecto'}
+              {actionType === 'suspend' && 'Confirmar Suspensión de Proyecto'}
+              {actionType === 'delete' && 'Confirmar Eliminación de Proyecto'}
               {actionType === 'view_students' && 'Participante del Proyecto'}
             </Typography>
           </Box>
@@ -1468,7 +1467,7 @@ const GestionProyectosAdmin = () => {
               }}>
                 <CardContent sx={{ p: 2 }}>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 2 }}>
-                    Confirmar Acción
+                    Confirmar {actionType === 'suspend' ? 'Suspensión' : 'Eliminación'} de Proyecto
                   </Typography>
                   <Typography variant="body1" sx={{ color: '#2c3e50', lineHeight: 1.6 }}>
                     ¿Estás seguro de que quieres{' '}
@@ -1483,6 +1482,136 @@ const GestionProyectosAdmin = () => {
                   <Typography variant="body2" sx={{ color: '#7f8c8d', mt: 2, fontStyle: 'italic' }}>
                     Esta acción cambiará el estado del proyecto y afectará su visibilidad en la plataforma.
                   </Typography>
+
+                  {/* Información adicional del proyecto para contexto */}
+                  <Card sx={{ 
+                    mt: 2, 
+                    background: themeMode === 'dark' 
+                      ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                      : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                    borderRadius: 2
+                  }}>
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography variant="subtitle2" sx={{ 
+                        fontWeight: 'bold', 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+                        mb: 1
+                      }}>
+                        Información del Proyecto:
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                        <Box>
+                          <Typography variant="caption" sx={{ 
+                            color: themeMode === 'dark' ? '#94a3b8' : '#6b7280' 
+                          }}>
+                            Empresa:
+                          </Typography>
+                          <Typography variant="body2" sx={{ 
+                            fontWeight: 600,
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}>
+                            {selectedProject?.company_name || 'Sin empresa'}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" sx={{ 
+                            color: themeMode === 'dark' ? '#94a3b8' : '#6b7280' 
+                          }}>
+                            Estado:
+                          </Typography>
+                          <Chip 
+                            label={getStatusText(selectedProject?.status || '')} 
+                            color={getStatusColor(selectedProject?.status || '') as any}
+                            size="small"
+                            sx={{ ml: 1 }}
+                          />
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" sx={{ 
+                            color: themeMode === 'dark' ? '#94a3b8' : '#6b7280' 
+                          }}>
+                            Estudiantes:
+                          </Typography>
+                          <Typography variant="body2" sx={{ 
+                            fontWeight: 600,
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}>
+                            {selectedProject?.students_assigned || 0} / {selectedProject?.students_needed || 0}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" sx={{ 
+                            color: themeMode === 'dark' ? '#94a3b8' : '#6b7280' 
+                          }}>
+                            Aplicaciones:
+                          </Typography>
+                          <Typography variant="body2" sx={{ 
+                            fontWeight: 600,
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                          }}>
+                            {selectedProject?.applications_count || 0}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+
+                  {/* Alertas específicas según el tipo de acción */}
+                  {actionType === 'suspend' && (
+                    <Alert severity="warning" sx={{ mt: 2, borderRadius: 2 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                        <strong>⚠️ Advertencia:</strong> Al suspender este proyecto:
+                      </Typography>
+                      <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          No será visible para nuevos estudiantes
+                        </Typography>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          Los estudiantes ya asignados mantendrán su participación
+                        </Typography>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          No se podrán recibir nuevas aplicaciones
+                        </Typography>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          Se recomienda revisar el motivo de la suspensión
+                        </Typography>
+                      </Box>
+                    </Alert>
+                  )}
+
+                  {actionType === 'delete' && (
+                    <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                        <strong>🚫 Acción Crítica:</strong> Al eliminar este proyecto:
+                      </Typography>
+                      <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          Se eliminará permanentemente de la plataforma
+                        </Typography>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          Los estudiantes asignados perderán acceso al proyecto
+                        </Typography>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          Todas las aplicaciones pendientes se cancelarán
+                        </Typography>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                          La empresa no podrá gestionar este proyecto
+                        </Typography>
+                        <Typography component="li" variant="body2" sx={{ mb: 0.5, fontWeight: 'bold', color: '#d32f2f' }}>
+                          ⚠️ Esta acción es irreversible y requiere justificación
+                        </Typography>
+                      </Box>
+                    </Alert>
+                  )}
+
+
+
+                  {/* Alerta general de recordatorio */}
+                  <Alert severity="info" sx={{ mt: 2, borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                      <strong>📋 Recordatorio:</strong> Todas las acciones administrativas quedan registradas en el sistema y pueden ser revisadas posteriormente por otros administradores.
+                    </Typography>
+                  </Alert>
                 </CardContent>
               </Card>
             </Box>

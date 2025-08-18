@@ -88,6 +88,17 @@ export default function NotificacionesAdmin() {
     severity: 'success' 
   });
 
+  // Nuevos estados para alertas de confirmación
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'send_notification';
+    message: string;
+    notificationId: string;
+    notificationTitle: string;
+    totalRecipients: number;
+    action: () => Promise<void>;
+  } | null>(null);
+
   // Form states
   const [formData, setFormData] = useState({
     title: '',
@@ -225,24 +236,39 @@ export default function NotificacionesAdmin() {
   };
 
   const handleSendNotification = async (notificationId: string) => {
-    try {
-      await apiService.post(`/api/mass-notifications/${notificationId}/send/`);
-      
-      setSnackbar({ 
-        open: true, 
-        message: 'Notificación masiva enviada exitosamente', 
-        severity: 'success' 
-      });
-      
-      await fetchNotifications();
-    } catch (error) {
-      console.error('Error sending mass notification:', error);
-      setSnackbar({ 
-        open: true, 
-        message: 'Error al enviar la notificación masiva', 
-        severity: 'error' 
-      });
-    }
+    // Buscar la notificación para obtener información
+    const notification = notifications.find(n => n.id === notificationId);
+    if (!notification) return;
+
+    // Mostrar alerta de confirmación antes de enviar
+    setConfirmAction({
+      type: 'send_notification',
+      message: `¿Estás seguro de que quieres enviar la notificación "${notification.title}"? Esta acción enviará el mensaje a ${notification.total_recipients} destinatarios seleccionados y no se puede deshacer.`,
+      notificationId,
+      notificationTitle: notification.title,
+      totalRecipients: notification.total_recipients,
+      action: async () => {
+        try {
+          await apiService.post(`/api/mass-notifications/${notificationId}/send/`);
+          
+          setSnackbar({ 
+            open: true, 
+            message: 'Notificación masiva enviada exitosamente', 
+            severity: 'success' 
+          });
+          
+          await fetchNotifications();
+        } catch (error) {
+          console.error('Error sending mass notification:', error);
+          setSnackbar({ 
+            open: true, 
+            message: 'Error al enviar la notificación masiva', 
+            severity: 'error' 
+          });
+        }
+      }
+    });
+    setShowConfirmDialog(true);
   };
 
 
@@ -259,6 +285,21 @@ export default function NotificacionesAdmin() {
       target_company_ids: [],
     });
     setFormErrors({});
+  };
+
+  // Función para ejecutar la acción confirmada
+  const executeConfirmedAction = async () => {
+    if (confirmAction?.action) {
+      await confirmAction.action();
+      setShowConfirmDialog(false);
+      setConfirmAction(null);
+    }
+  };
+
+  // Función para cancelar la confirmación
+  const cancelConfirmedAction = () => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
   };
 
   const getTypeIcon = (type: string) => {
@@ -1186,6 +1227,98 @@ export default function NotificacionesAdmin() {
             </DialogActions>
           </>
         )}
+      </Dialog>
+
+      {/* Dialog de confirmación para envío de notificaciones */}
+      <Dialog 
+        open={showConfirmDialog} 
+        onClose={cancelConfirmedAction}
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+          color: 'white',
+          fontWeight: 'bold',
+          py: 2.5,
+          px: 3,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <SendIcon sx={{ fontSize: 24 }} />
+          Confirmar Envío de Notificación
+        </DialogTitle>
+        <DialogContent sx={{ 
+          p: 3, 
+          pt: 4,
+          bgcolor: 'background.paper'
+        }}>
+          <Typography variant="body1" sx={{ 
+            fontSize: '1rem',
+            lineHeight: 1.6,
+            mb: 2
+          }}>
+            {confirmAction?.message}
+          </Typography>
+          
+          {/* Información adicional sobre el envío */}
+          <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+              <strong>⚠️ Importante:</strong> Esta acción:
+            </Typography>
+            <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Enviará la notificación a <strong>{confirmAction?.totalRecipients} destinatarios</strong>
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                <strong>No se puede deshacer</strong> una vez enviada
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Los destinatarios recibirán la notificación inmediatamente
+              </Typography>
+            </Box>
+          </Alert>
+          
+          <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+              <strong>ℹ️ Recordatorio:</strong> Verifica que el contenido de la notificación sea correcto antes de confirmar el envío.
+            </Typography>
+          </Alert>
+        </DialogContent>
+        <DialogActions sx={{ 
+          p: 3,
+          bgcolor: 'background.paper',
+          borderTop: '1px solid',
+          borderColor: 'divider'
+        }}>
+          <Button 
+            onClick={cancelConfirmedAction}
+            sx={{ 
+              borderRadius: 2,
+              color: 'text.secondary',
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              }
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={executeConfirmedAction}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+              }
+            }}
+            startIcon={<SendIcon />}
+          >
+            Enviar Notificación
+          </Button>
+        </DialogActions>
       </Dialog>
 
       <Snackbar

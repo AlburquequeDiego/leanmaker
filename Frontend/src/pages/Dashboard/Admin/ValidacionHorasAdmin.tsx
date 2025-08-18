@@ -182,6 +182,16 @@ export default function ValidacionHorasAdmin() {
   const [pendingPageSize, setPendingPageSize] = useState<number | 'Todos'>(15);
   const [validatedPageSize, setValidatedPageSize] = useState<number | 'Todos'>(15);
 
+  // Nuevos estados para alertas de confirmación
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'validate_project_hours';
+    message: string;
+    projectId: string;
+    projectTitle: string;
+    action: () => Promise<void>;
+  } | null>(null);
+
   // Opciones para el selector
   const pageSizeOptions = [15, 50, 100, 150, 'Todos'];
 
@@ -192,6 +202,7 @@ export default function ValidacionHorasAdmin() {
 
   const loadWorkHours = async () => {
     try {
+      console.log('🔄 [DEBUG] Cargando horas trabajadas...');
       setLoading(true);
       setError(null);
       
@@ -210,16 +221,22 @@ export default function ValidacionHorasAdmin() {
 
       // Agregar filtros
       if (filters.search) params.append('search', filters.search);
-      if (filters.status) params.append('status', filters.status);
+      if (filters.status) params.append('search', filters.status);
       if (filters.project) params.append('project', filters.project);
       if (filters.date_from) params.append('date_from', filters.date_from);
       if (filters.date_to) params.append('date_to', filters.date_to);
 
+      console.log('🔍 [DEBUG] Parámetros de consulta:', params.toString());
       const response = await apiService.get(`/api/work-hours/?${params.toString()}`);
       
-      setWorkHours(response.results || []);
+      console.log('📊 [DEBUG] Respuesta de horas trabajadas:', response);
+      const hours = response.results || [];
+      console.log('📊 [DEBUG] Horas extraídas:', hours);
+      
+      setWorkHours(hours);
       setTotalCount(response.count || 0);
     } catch (err: any) {
+      console.error('❌ [DEBUG] Error al cargar horas trabajadas:', err);
       setError(err.response?.data?.message || 'Error al cargar horas trabajadas');
       setWorkHours([]);
       setTotalCount(0);
@@ -230,12 +247,18 @@ export default function ValidacionHorasAdmin() {
 
   const loadPendingProjects = async () => {
     try {
+      console.log('🔄 [DEBUG] Cargando proyectos pendientes...');
       setPendingLoading(true);
       setPendingError(null);
       const response = await apiService.get('/api/projects/completed_pending_hours/');
       
-      setPendingProjects(response.results || []);
+      console.log('📊 [DEBUG] Respuesta de proyectos pendientes:', response);
+      const projects = response.results || [];
+      console.log('📊 [DEBUG] Proyectos extraídos:', projects);
+      
+      setPendingProjects(projects);
     } catch (err: any) {
+      console.error('❌ [DEBUG] Error al cargar proyectos pendientes:', err);
       setPendingError(err.response?.data?.error || 'Error al cargar proyectos pendientes');
       setPendingProjects([]);
     } finally {
@@ -244,23 +267,45 @@ export default function ValidacionHorasAdmin() {
   };
 
   const handleValidateProject = async (projectId: string) => {
-    setValidatingProjectId(projectId);
-    try {
-      const response = await apiService.post(`/api/projects/${projectId}/validate_hours/`);
-      setSnackbarMsg('Horas validadas correctamente para el proyecto');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-      setSuccessMsg('Horas validadas correctamente para el proyecto');
-      loadPendingProjects();
-      loadWorkHours();
-    } catch (err: any) {
-      setPendingError(err.response?.data?.error || 'Error al validar horas del proyecto');
-      setSnackbarMsg(err.response?.data?.error || 'Error al validar horas del proyecto');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-    } finally {
-      setValidatingProjectId(null);
+    console.log('🔍 [DEBUG] handleValidateProject llamado con projectId:', projectId);
+    console.log('🔍 [DEBUG] pendingProjects:', pendingProjects);
+    
+    // Buscar el proyecto para obtener información
+    const project = pendingProjects.find(p => p.id === projectId);
+    console.log('🔍 [DEBUG] Proyecto encontrado:', project);
+    
+    if (!project) {
+      console.log('❌ [DEBUG] No se encontró el proyecto');
+      return;
     }
+
+    // Mostrar alerta de confirmación antes de validar
+    setConfirmAction({
+      type: 'validate_project_hours',
+      message: `¿Estás seguro de que quieres validar las horas del proyecto "${project.project_title}"? Esta acción también requiere que revises y evalúes los strikes pendientes del mismo estudiante por este proyecto, si los hay.`,
+      projectId,
+      projectTitle: project.project_title,
+      action: async () => {
+        setValidatingProjectId(projectId);
+        try {
+          const response = await apiService.post(`/api/projects/${projectId}/validate_hours/`);
+          setSnackbarMsg('Horas validadas correctamente para el proyecto');
+          setSnackbarSeverity('success');
+          setSnackbarOpen(true);
+          setSuccessMsg('Horas validadas correctamente para el proyecto');
+          loadPendingProjects();
+          loadWorkHours();
+        } catch (err: any) {
+          setPendingError(err.response?.data?.error || 'Error al validar horas del proyecto');
+          setSnackbarMsg(err.response?.data?.error || 'Error al validar horas del proyecto');
+          setSnackbarSeverity('error');
+          setSnackbarOpen(true);
+        } finally {
+          setValidatingProjectId(null);
+        }
+      }
+    });
+    setShowConfirmDialog(true);
   };
 
   const handleOpenModal = async (hour: WorkHour) => {
@@ -270,24 +315,35 @@ export default function ValidacionHorasAdmin() {
   };
 
   const handleOpenDetailModal = async (row: any) => {
+    console.log('🔍 [DEBUG] handleOpenDetailModal llamado con row:', row);
+    console.log('🔍 [DEBUG] row.project_id:', row.project_id);
+    console.log('🔍 [DEBUG] row.projectId:', row.projectId);
+    console.log('🔍 [DEBUG] row.id:', row.id);
+    
     // Evitar múltiples ejecuciones
     if (detailLoading || detailModalOpen) {
+      console.log('⚠️ [DEBUG] Modal ya está abierto o cargando');
       return;
     }
     
     if (!row.project_id) {
+      console.log('❌ [DEBUG] No se encontró project_id en la fila');
       setError('No se encontró el ID del proyecto');
       return;
     }
     
+    console.log('✅ [DEBUG] Abriendo modal para proyecto:', row.project_id);
     setDetailLoading(true);
     setDetailModalOpen(true); // Abrir modal inmediatamente
     
     try {
       // Obtener detalles del proyecto, no de la hora de trabajo
+      console.log('🔄 [DEBUG] Obteniendo detalles del proyecto:', row.project_id);
       const response = await apiService.get(`/api/projects/${row.project_id}/`);
+      console.log('📊 [DEBUG] Detalles del proyecto obtenidos:', response);
       setSelectedProjectDetail(response);
     } catch (err: any) {
+      console.error('❌ [DEBUG] Error al cargar detalles del proyecto:', err);
       setError('Error al cargar los detalles del proyecto');
       setDetailModalOpen(false); // Cerrar modal si hay error
     } finally {
@@ -337,6 +393,21 @@ export default function ValidacionHorasAdmin() {
 
   const handleCloseIntegrantes = () => setOpenIntegrantes(false);
 
+  // Función para ejecutar la acción confirmada
+  const executeConfirmedAction = async () => {
+    if (confirmAction?.action) {
+      await confirmAction.action();
+      setShowConfirmDialog(false);
+      setConfirmAction(null);
+    }
+  };
+
+  // Función para cancelar la confirmación
+  const cancelConfirmedAction = () => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved': return 'success';
@@ -356,28 +427,39 @@ export default function ValidacionHorasAdmin() {
   };
 
   // Unifico los datos: proyectos pendientes + horas validadas
+  console.log('🔄 [DEBUG] Generando unifiedRows...');
+  console.log('📊 [DEBUG] pendingProjects:', pendingProjects);
+  console.log('📊 [DEBUG] workHours:', workHours);
+  
   const unifiedRows = [
     // Proyectos pendientes de validación
-    ...pendingProjects.map((project) => ({
-      id: `pending-${project.id}`,
-      student_name: project.student_name || '—',
-      student_email: project.student_email || '—',
-      project_title: project.title || project.project_title || project.nombre || project.name || '-',
-      company_name: project.company_name || project.empresa || project.company || project.empresa_nombre || '-',
-      hours: project.offered_hours || project.horas || project.required_hours || project.project_required_hours || '-',
-      project_details: project.description || project.detalles || project.project_details || '-',
-      status: 'Pendiente',
-      isPending: true,
-      projectId: project.id,
-      estudiantes: project.estudiantes || project.participantes || [],
-      date: project.date || project.real_end_date || project.estimated_end_date || project.created_at,
-    })),
+    ...pendingProjects.map((project) => {
+      const mappedProject = {
+        id: `pending-${project.id}`,
+        student_name: project.student_name || '—',
+        student_email: project.student_email || '—',
+        project_title: project.title || project.project_title || project.nombre || project.name || '-',
+        company_name: project.company_name || project.empresa || project.company || project.empresa_nombre || '-',
+        hours: project.offered_hours || project.horas || project.required_hours || project.project_required_hours || '-',
+        project_details: project.description || project.detalles || project.project_details || '-',
+        status: 'Pendiente',
+        isPending: true,
+        projectId: project.id,
+        project_id: project.id, // Agregar también project_id para compatibilidad
+        estudiantes: project.estudiantes || project.participantes || [],
+        date: project.date || project.real_end_date || project.estimated_end_date || project.created_at,
+      };
+      console.log('📊 [DEBUG] Proyecto mapeado:', mappedProject);
+      return mappedProject;
+    }),
     // Horas ya validadas
     ...workHours.map((row) => ({
       ...row,
       isPending: false,
     })),
   ];
+  
+  console.log('📊 [DEBUG] unifiedRows generado:', unifiedRows);
 
   // Definir pendingRows correctamente justo después de unifiedRows
   const pendingRows = unifiedRows.filter(row => row.isPending);
@@ -1092,572 +1174,563 @@ export default function ValidacionHorasAdmin() {
         </DialogActions>
       </Dialog>
 
-             {/* Modal de detalle del proyecto con diseño mejorado */}
-       <Dialog open={detailModalOpen} onClose={handleCloseDetailModal} maxWidth="lg" fullWidth>
-         <DialogTitle sx={{ 
-           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-           color: 'white',
-           fontWeight: 'bold'
-         }}>
-           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-             <WorkIcon />
-             <Typography variant="h6">Detalle del Proyecto</Typography>
-           </Box>
-         </DialogTitle>
-         <DialogContent sx={{ 
-          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+      {/* Modal para ver detalles del proyecto */}
+      <Dialog 
+        open={detailModalOpen} 
+        onClose={handleCloseDetailModal}
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 'bold'
         }}>
-           {detailLoading ? (
-             <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-               <CircularProgress />
-             </Box>
-           ) : selectedProjectDetail && selectedProjectDetail.title ? (
-             <Box sx={{ mt: 2 }}>
-               {/* Información del proyecto */}
-               <Card sx={{ 
-                 mb: 3, 
-                 background: themeMode === 'dark' 
-                   ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
-                   : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                 borderRadius: 3,
-                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
-               }}>
-                 <CardContent sx={{ p: 3 }}>
-                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                     <Box sx={{ 
-                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-                       borderRadius: 2, 
-                       p: 1, 
-                       mr: 2
-                     }}>
-                       <WorkIcon sx={{ color: 'white', fontSize: 24 }} />
-                     </Box>
-                     <Typography variant="h6" sx={{ 
-                       fontWeight: 'bold', 
-                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50' 
-                     }}>
-                       Información del Proyecto
-                     </Typography>
-                   </Box>
-                   
-                   <Box sx={{ mb: 3 }}>
-                     <Typography variant="h5" sx={{ 
-                       color: '#667eea', 
-                       fontWeight: 'bold', 
-                       mb: 2 
-                     }}>
-                       {selectedProjectDetail.title}
-                     </Typography>
-                     <Typography variant="body1" sx={{ 
-                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                       lineHeight: 1.6 
-                     }}>
-                       {selectedProjectDetail.description}
-                     </Typography>
-                   </Box>
-                   
-                   <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Tipo de Actividad
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.tipo || 'No especificado'}
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Objetivo
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.objetivo || 'No especificado'}
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Encargado
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.encargado || 'No especificado'}
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Contacto
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.contacto || 'No especificado'}
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Nivel API Requerido
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.api_level || 'No especificado'}
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Horas Requeridas
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.required_hours || 'No especificadas'}
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Duración (meses)
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.duration_weeks} meses
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Horas por Semana
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.hours_per_week} horas
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Modalidad
-                       </Typography>
-                       <Chip 
-                         label={translateModality(selectedProjectDetail.modality)} 
-                         sx={{ 
-                           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                           color: 'white',
-                           fontWeight: 'bold'
-                         }} 
-                         size="small" 
-                       />
-                     </Box>
-                     
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Ubicación
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.location || 'No especificada'}
-                       </Typography>
-                     </Box>
-                     <Box sx={{ 
-                       p: 2, 
-                       borderRadius: 2, 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.7)',
-                       border: themeMode === 'dark' 
-                         ? '1px solid rgba(102, 126, 234, 0.3)'
-                         : '1px solid rgba(102, 126, 234, 0.1)'
-                     }}>
-                       <Typography variant="subtitle2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
-                         fontWeight: 600, 
-                         mb: 1 
-                       }}>
-                         Estudiantes
-                       </Typography>
-                       <Typography variant="body1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                         fontWeight: 500 
-                       }}>
-                         {selectedProjectDetail.current_students} / {selectedProjectDetail.max_students}
-                       </Typography>
-                     </Box>
-                   </Box>
-                   
-                   {/* Requisitos del proyecto */}
-                   <Box sx={{ mt: 4 }}>
-                     <Typography variant="subtitle1" sx={{ 
-                       fontWeight: 'bold', 
-                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                       mb: 2 
-                     }}>
-                       Requisitos del Proyecto
-                     </Typography>
-                     <Card sx={{ 
-                       background: themeMode === 'dark' 
-                         ? 'rgba(255, 255, 255, 0.1)'
-                         : 'rgba(255, 255, 255, 0.8)',
-                       borderRadius: 2
-                     }}>
-                       <CardContent sx={{ p: 2 }}>
-                         <Typography variant="body2" sx={{ 
-                           whiteSpace: 'pre-wrap', 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50', 
-                           lineHeight: 1.6 
-                         }}>
-                           {selectedProjectDetail.requirements}
-                         </Typography>
-                       </CardContent>
-                     </Card>
-                   </Box>
-                 </CardContent>
-               </Card>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <WorkIcon />
+            <Typography variant="h6">
+              {detailLoading ? 'Cargando...' : 'Detalles del Proyecto'}
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ 
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+          p: 3
+        }}>
+          {detailLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : selectedProjectDetail ? (
+            <Box sx={{ mt: 2 }}>
+              {/* Información básica del proyecto */}
+              <Card sx={{ 
+                mb: 3, 
+                background: themeMode === 'dark' 
+                  ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                  : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                borderRadius: 2
+              }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h5" sx={{ 
+                    fontWeight: 'bold', 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
+                    mb: 2
+                  }}>
+                    {selectedProjectDetail.title}
+                  </Typography>
+                  
+                  <Stack spacing={2}>
+                    <Box>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500
+                      }}>
+                        Descripción
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
+                        lineHeight: 1.6
+                      }}>
+                        {selectedProjectDetail.description}
+                      </Typography>
+                    </Box>
+                    
+                    <Box>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500
+                      }}>
+                        Requisitos
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                      }}>
+                        {selectedProjectDetail.requirements}
+                      </Typography>
+                    </Box>
+                    
+                    <Box>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500
+                      }}>
+                        Modalidad
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                      }}>
+                        {translateModality(selectedProjectDetail.modality)}
+                      </Typography>
+                    </Box>
+                    
+                    <Box>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500
+                      }}>
+                        Duración
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                      }}>
+                        {selectedProjectDetail.duration_weeks} semanas
+                      </Typography>
+                    </Box>
+                    
+                    <Box>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500
+                      }}>
+                        Horas por semana
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                      }}>
+                        {selectedProjectDetail.hours_per_week} horas
+                      </Typography>
+                    </Box>
 
-               {/* Información de la empresa */}
-               {selectedProjectDetail.company && (
-                 <Card sx={{ 
-                   mb: 3,
-                   background: themeMode === 'dark' 
-                     ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
-                     : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-                   borderRadius: 3,
-                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
-                 }}>
-                   <CardContent sx={{ p: 3 }}>
-                     <Typography variant="h6" sx={{ 
-                       fontWeight: 'bold',
-                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
-                       mb: 2
-                     }}>
-                       Información de la Empresa
-                     </Typography>
-                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                    {selectedProjectDetail.required_hours && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Horas totales requeridas
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {selectedProjectDetail.required_hours} horas
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.api_level && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Nivel API requerido
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          Nivel {selectedProjectDetail.api_level}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.min_api_level && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Nivel API mínimo
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          Nivel {selectedProjectDetail.min_api_level}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    <Box>
+                      <Typography variant="body2" sx={{ 
+                        color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                        fontWeight: 500
+                      }}>
+                        Estudiantes
+                      </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                      }}>
+                        {selectedProjectDetail.current_students} de {selectedProjectDetail.max_students} máximo
+                      </Typography>
+                    </Box>
+
+                    {selectedProjectDetail.location && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Ubicación
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {selectedProjectDetail.location}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.start_date && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Fecha de inicio
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {new Date(selectedProjectDetail.start_date).toLocaleDateString('es-ES')}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.estimated_end_date && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Fecha estimada de finalización
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {new Date(selectedProjectDetail.estimated_end_date).toLocaleDateString('es-ES')}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.real_end_date && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Fecha real de finalización
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {new Date(selectedProjectDetail.real_end_date).toLocaleDateString('es-ES')}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.application_deadline && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Fecha límite de aplicación
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {new Date(selectedProjectDetail.application_deadline).toLocaleDateString('es-ES')}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.objetivo && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Objetivo
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {selectedProjectDetail.objetivo}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedProjectDetail.encargado && (
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Encargado
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {selectedProjectDetail.encargado}
+                        </Typography>
+                      </Box>
+                    )}
+
+                                         {selectedProjectDetail.contacto && (
                        <Box>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Nombre
-                         </Typography>
-                         <Typography variant="body1" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                         }}>
-                           {selectedProjectDetail.company.name}
-                         </Typography>
-                       </Box>
-                       <Box>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Email
-                         </Typography>
-                         <Typography variant="body1" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                         }}>
-                           {selectedProjectDetail.company.email}
-                         </Typography>
-                       </Box>
-                       <Box>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Teléfono
-                         </Typography>
-                         <Typography variant="body1" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                         }}>
-                           {selectedProjectDetail.company.phone || 'No especificado'}
-                         </Typography>
-                       </Box>
-                       <Box>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Sitio Web
-                         </Typography>
-                         <Typography variant="body1" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                         }}>
-                           {selectedProjectDetail.company.website || 'No especificado'}
-                         </Typography>
-                       </Box>
-                       <Box>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Industria
-                         </Typography>
-                         <Typography variant="body1" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                         }}>
-                           {selectedProjectDetail.company.industry || 'No especificada'}
-                         </Typography>
-                       </Box>
-                       <Box>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Tamaño
-                         </Typography>
-                         <Typography variant="body1" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                         }}>
-                           {selectedProjectDetail.company.size || 'No especificado'}
-                         </Typography>
-                       </Box>
-                       <Box>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Ubicación
-                         </Typography>
-                         <Typography variant="body1" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                         }}>
-                           {selectedProjectDetail.company.location || 'No especificada'}
-                         </Typography>
-                       </Box>
-                     </Box>
-                     {selectedProjectDetail.company.description && (
-                       <Box sx={{ mt: 2 }}>
-                         <Typography variant="subtitle2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                         }}>
-                           Descripción
-                         </Typography>
                          <Typography variant="body2" sx={{ 
-                           color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                           fontWeight: 500
                          }}>
-                           {selectedProjectDetail.company.description}
+                           Contacto
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                         }}>
+                           {selectedProjectDetail.contacto}
                          </Typography>
                        </Box>
                      )}
+
+                     {selectedProjectDetail.area && (
+                       <Box>
+                         <Typography variant="body2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                           fontWeight: 500
+                         }}>
+                           Área
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                         }}>
+                           {selectedProjectDetail.area.name}
+                         </Typography>
+                         {selectedProjectDetail.area.description && (
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#94a3b8' : '#6b7280',
+                             fontStyle: 'italic',
+                             mt: 0.5
+                           }}>
+                             {selectedProjectDetail.area.description}
+                           </Typography>
+                         )}
+                       </Box>
+                     )}
+
+                     {selectedProjectDetail.trl && (
+                       <Box>
+                         <Typography variant="body2" sx={{ 
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                           fontWeight: 500
+                         }}>
+                           Nivel TRL
+                         </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                         }}>
+                           Nivel {selectedProjectDetail.trl.level}: {selectedProjectDetail.trl.name}
+                         </Typography>
+                         {selectedProjectDetail.trl.description && (
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#94a3b8' : '#6b7280',
+                             fontStyle: 'italic',
+                             mt: 0.5
+                           }}>
+                             {selectedProjectDetail.trl.description}
+                           </Typography>
+                         )}
+                       </Box>
+                     )}
+
+                     {/* Información adicional del proyecto */}
+                     <Box sx={{ 
+                       display: 'flex', 
+                       gap: 2, 
+                       flexWrap: 'wrap',
+                       mt: 2,
+                       p: 2,
+                       borderRadius: 2,
+                       background: themeMode === 'dark' 
+                         ? 'rgba(255, 255, 255, 0.05)' 
+                         : 'rgba(0, 0, 0, 0.02)'
+                     }}>
+                       {selectedProjectDetail.is_featured && (
+                         <Chip 
+                           label="Destacado" 
+                           color="primary" 
+                           size="small"
+                           icon={<TrendingUpIcon />}
+                         />
+                       )}
+                       {selectedProjectDetail.is_urgent && (
+                         <Chip 
+                           label="Urgente" 
+                           color="error" 
+                           size="small"
+                           icon={<ScheduleIcon />}
+                         />
+                       )}
+                       {selectedProjectDetail.is_project_completion && (
+                         <Chip 
+                           label="Completado" 
+                           color="success" 
+                           size="small"
+                           icon={<CheckCircleIcon />}
+                         />
+                       )}
+                     </Box>
+                                        </Stack>
                    </CardContent>
                  </Card>
-               )}
 
-               {/* Información del área y TRL */}
-               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                 {selectedProjectDetail.area && (
-                   <Card sx={{ 
-                     background: themeMode === 'dark' 
-                       ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
-                       : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-                     borderRadius: 3,
-                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
-                   }}>
-                     <CardContent sx={{ p: 3 }}>
-                       <Typography variant="h6" sx={{ 
-                         fontWeight: 'bold',
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
-                         mb: 2
-                       }}>
-                         Área del Proyecto
-                       </Typography>
-                       <Typography variant="subtitle1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                       }}>
-                         {selectedProjectDetail.area.name}
-                       </Typography>
-                       {selectedProjectDetail.area.description && (
+                 {/* Información de fechas */}
+                 <Card sx={{ 
+                   mb: 3, 
+                   background: themeMode === 'dark' 
+                     ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                     : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                   borderRadius: 2
+                 }}>
+                   <CardContent sx={{ p: 3 }}>
+                     <Typography variant="h6" sx={{ 
+                       fontWeight: 'bold', 
+                       color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
+                       mb: 2
+                     }}>
+                       Información de Fechas
+                     </Typography>
+                     
+                     <Stack spacing={2}>
+                       <Box>
                          <Typography variant="body2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
-                           mt: 1
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                           fontWeight: 500
                          }}>
-                           {selectedProjectDetail.area.description}
+                           Creado
                          </Typography>
-                       )}
-                     </CardContent>
-                   </Card>
-                 )}
-                 
-                 {selectedProjectDetail.trl && (
-                   <Card sx={{ 
-                     background: themeMode === 'dark' 
-                       ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
-                       : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-                     borderRadius: 3,
-                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
-                   }}>
-                     <CardContent sx={{ p: 3 }}>
-                       <Typography variant="h6" sx={{ 
-                         fontWeight: 'bold',
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
-                         mb: 2
-                       }}>
-                         Nivel TRL
-                       </Typography>
-                       <Typography variant="subtitle1" sx={{ 
-                         color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                       }}>
-                         {selectedProjectDetail.trl.name}
-                       </Typography>
-                       <Typography variant="body2" sx={{ 
-                         color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-                       }}>
-                         Nivel {selectedProjectDetail.trl.level}
-                       </Typography>
-                       {selectedProjectDetail.trl.description && (
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                         }}>
+                           {new Date(selectedProjectDetail.created_at).toLocaleDateString('es-ES')} a las {new Date(selectedProjectDetail.created_at).toLocaleTimeString('es-ES')}
+                         </Typography>
+                       </Box>
+                       
+                       <Box>
                          <Typography variant="body2" sx={{ 
-                           color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
-                           mt: 1
+                           color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                           fontWeight: 500
                          }}>
-                           {selectedProjectDetail.trl.description}
+                           Última actualización
                          </Typography>
+                         <Typography variant="body1" sx={{ 
+                           color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                         }}>
+                           {new Date(selectedProjectDetail.updated_at).toLocaleDateString('es-ES')} a las {new Date(selectedProjectDetail.updated_at).toLocaleTimeString('es-ES')}
+                         </Typography>
+                       </Box>
+
+                       {selectedProjectDetail.published_at && (
+                         <Box>
+                           <Typography variant="body2" sx={{ 
+                             color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                             fontWeight: 500
+                           }}>
+                             Publicado
+                           </Typography>
+                           <Typography variant="body1" sx={{ 
+                             color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                           }}>
+                             {new Date(selectedProjectDetail.published_at).toLocaleDateString('es-ES')} a las {new Date(selectedProjectDetail.published_at).toLocaleTimeString('es-ES')}
+                           </Typography>
+                         </Box>
                        )}
-                     </CardContent>
-                   </Card>
-                 )}
-               </Box>
+                     </Stack>
+                   </CardContent>
+                 </Card>
+               
+               {/* Información de la empresa */}
+              {selectedProjectDetail.company && (
+                <Card sx={{ 
+                  mb: 3, 
+                  background: themeMode === 'dark' 
+                    ? 'linear-gradient(135deg, #334155 0%, #475569 100%)'
+                    : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                  borderRadius: 2
+                }}>
+                  <CardContent sx={{ p: 3 }}>
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 'bold', 
+                      color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50',
+                      mb: 2
+                    }}>
+                      Información de la Empresa
+                    </Typography>
+                    
+                    <Stack spacing={2}>
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Nombre
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {selectedProjectDetail.company.name}
+                        </Typography>
+                      </Box>
+                      
+                      <Box>
+                        <Typography variant="body2" sx={{ 
+                          color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                          fontWeight: 500
+                        }}>
+                          Email
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                        }}>
+                          {selectedProjectDetail.company.email}
+                        </Typography>
+                      </Box>
+                      
+                      {selectedProjectDetail.company.phone && (
+                        <Box>
+                          <Typography variant="body2" sx={{ 
+                            color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                            fontWeight: 500
+                          }}>
+                            Teléfono
+                          </Typography>
+                          <Typography variant="body1" sx={{ 
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                          }}>
+                            {selectedProjectDetail.company.phone}
+                          </Typography>
+                        </Box>
+                      )}
+                      
+                      {selectedProjectDetail.company.website && (
+                        <Box>
+                          <Typography variant="body2" sx={{ 
+                            color: themeMode === 'dark' ? '#cbd5e1' : '#7f8c8d', 
+                            fontWeight: 500
+                          }}>
+                            Sitio web
+                          </Typography>
+                          <Typography variant="body1" sx={{ 
+                            color: themeMode === 'dark' ? '#f1f5f9' : '#2c3e50'
+                          }}>
+                            {selectedProjectDetail.company.website}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              )}
             </Box>
           ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <Typography variant="body1" sx={{ 
-                color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280' 
-              }}>
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="text.secondary">
                 No se pudieron cargar los detalles del proyecto
               </Typography>
             </Box>
@@ -1665,7 +1738,8 @@ export default function ValidacionHorasAdmin() {
         </DialogContent>
         <DialogActions sx={{ 
           p: 3,
-          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e5e7eb'
         }}>
           <Button 
             onClick={handleCloseDetailModal}
@@ -1682,6 +1756,104 @@ export default function ValidacionHorasAdmin() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Dialog de confirmación para validación de horas */}
+      <Dialog 
+        open={showConfirmDialog} 
+        onClose={cancelConfirmedAction}
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+          color: 'white',
+          fontWeight: 'bold',
+          py: 2.5,
+          px: 3,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <AssessmentIcon sx={{ fontSize: 24 }} />
+          Confirmar Validación de Horas
+        </DialogTitle>
+        <DialogContent sx={{ 
+          p: 3, 
+          pt: 4,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          <Typography variant="body1" sx={{ 
+            fontSize: '1rem',
+            color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+            lineHeight: 1.6,
+            mb: 2
+          }}>
+            {confirmAction?.message}
+          </Typography>
+          
+          {/* Información adicional sobre la validación */}
+          <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+              <strong>⚠️ Importante:</strong> Al validar las horas de este proyecto, también debes revisar:
+            </Typography>
+            <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Strikes pendientes del estudiante por este proyecto
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Evaluaciones pendientes de la empresa hacia el estudiante
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Cualquier incidencia reportada relacionada con este proyecto
+              </Typography>
+            </Box>
+          </Alert>
+          
+          <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+              <strong>ℹ️ Recordatorio:</strong> La validación de horas es un proceso que confirma la finalización exitosa del proyecto y asigna las horas correspondientes a todos los estudiantes participantes.
+            </Typography>
+          </Alert>
+        </DialogContent>
+        <DialogActions sx={{ 
+          p: 3,
+          bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          borderTop: themeMode === 'dark' ? '1px solid #475569' : '1px solid #e5e7eb'
+        }}>
+          <Button 
+            onClick={cancelConfirmedAction}
+            sx={{ 
+              borderRadius: 2,
+              color: themeMode === 'dark' ? '#cbd5e1' : '#6b7280',
+              '&:hover': {
+                backgroundColor: themeMode === 'dark' ? '#334155' : '#f3f4f6',
+              }
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={executeConfirmedAction}
+            disabled={validatingProjectId === confirmAction?.projectId}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+              },
+              '&:disabled': {
+                background: '#e0e0e0',
+                color: '#9e9e9e'
+              }
+            }}
+          >
+            {validatingProjectId === confirmAction?.projectId ? 'Validando...' : 'Validar Horas'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
