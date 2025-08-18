@@ -894,7 +894,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
                   />
                   {project.estudiantes && project.estudiantes.length > 0 && (
                     <Chip 
-                      label={`${project.estudiantes.length} participantes`} 
+                      label={`${project.estudiantes.length} postulaciones de estudiantes`} 
                       size="small" 
                       color="info"
                       variant="outlined"
@@ -1463,7 +1463,7 @@ const Projects: React.FC<{ initialTab?: number }> = ({ initialTab = 0 }) => {
               {projectDetails && projectDetails.estudiantes && (
                 <Grid item xs={12}>
                   <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
-                    Estudiantes participantes ({projectDetails.estudiantes.length})
+                    Postulaciones de estudiantes ({projectDetails.estudiantes.length})
                   </Typography>
                   {projectDetails.estudiantes.length === 0 ? (
                     <Typography variant="body2" color="text.secondary" sx={{ color: themeMode === 'dark' ? '#94a3b8' : 'text.secondary' }}>

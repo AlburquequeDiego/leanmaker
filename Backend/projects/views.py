@@ -897,7 +897,13 @@ def company_projects(request):
                     project=project
                 ).select_related('student', 'student__user')
                 
-                current_students = all_applications.count()
+                # Para proyectos publicados, current_students debe mostrar solo estudiantes ACEPTADOS
+                # no el total de postulaciones
+                accepted_applications = Aplicacion.objects.filter(
+                    project=project, 
+                    status__in=['accepted', 'active', 'completed']
+                )
+                current_students = accepted_applications.count()
                 
                 for app in all_applications:
                     student_user = app.student.user if app.student else None
