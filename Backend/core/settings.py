@@ -66,12 +66,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',  # Solo en desarrollo
     
-    # Middleware personalizado para monitoreo y seguridad
-    'core.middleware.TrafficMonitoringMiddleware',
-    'core.middleware.SecurityMiddleware',
-    'core.middleware.PerformanceMiddleware',
-    'core.middleware.LoggingMiddleware',
-    'core.middleware.DatabaseQueryMiddleware',
+    # ✅ MIDDLEWARES PERSONALIZADOS DESHABILITADOS TEMPORALMENTE PARA AISLAR PROBLEMA
+    # 'core.middleware.TrafficMonitoringMiddleware',
+    # 'core.middleware.SecurityMiddleware',
+    # 'core.middleware.PerformanceMiddleware',
+    # 'core.middleware.LoggingMiddleware',
+    # 'core.middleware.DatabaseQueryMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -358,16 +358,18 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 # Django REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.jwt_authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
+    # ✅ RENDERER AUTOMÁTICO DESHABILITADO TEMPORALMENTE PARA AISLAR PROBLEMA
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer',
+    #     'rest_framework.renderers.BrowsableAPIRenderer',
+    # ],
+    # ✅ PAGINACIÓN AUTOMÁTICA DESHABILITADA - CAUSABA INTERFERENCIA
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 20,
 } 

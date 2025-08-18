@@ -123,31 +123,83 @@ class Empresa(models.Model):
     def actualizar_calificacion(self, nueva_calificacion=None):
         """Actualiza la calificación promedio de la empresa basada en evaluaciones"""
         from evaluations.models import Evaluation
+        
         # Buscar evaluaciones donde esta empresa es evaluada por estudiantes
+        # Usar la misma lógica que el dashboard: project__company
         evaluaciones = Evaluation.objects.filter(
             project__company=self,
             status='completed',
             evaluation_type='student_to_company'
         )
+        
         if evaluaciones.exists():
-            promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
+            # Calcular promedio de todas las evaluaciones
+            scores = [e.score for e in evaluaciones]
+            promedio = sum(scores) / len(scores)
             self.rating = round(promedio, 2)
+            
+            # Log para debugging
+            print(f"🔄 [EMPRESA] {self.company_name}: {len(scores)} evaluaciones, scores: {scores}, promedio: {self.rating}")
         else:
+            # No hay evaluaciones, rating debe ser 0
             self.rating = 0
+            print(f"🔄 [EMPRESA] {self.company_name}: Sin evaluaciones, rating establecido a 0")
+        
+        # Guardar solo el campo rating para evitar loops infinitos
         self.save(update_fields=['rating'])
+        
+        return self.rating
     
-    def calcular_gpa_real(self):
-        """Calcula el GPA real basado en evaluaciones actuales"""
+
+    
+    def obtener_historial_evaluaciones(self):
+        """Obtiene el historial completo de evaluaciones de la empresa"""
         from evaluations.models import Evaluation
+        
+        return Evaluation.objects.filter(
+            project__company=self,
+            status='completed',
+            evaluation_type='student_to_company'
+        ).select_related('project', 'student__user').order_by('-evaluation_date')
+    
+    def obtener_estadisticas_evaluaciones(self):
+        """Obtiene estadísticas detalladas de las evaluaciones"""
+        from evaluations.models import Evaluation
+        from django.db.models import Avg, Count, Min, Max
+        
         evaluaciones = Evaluation.objects.filter(
             project__company=self,
             status='completed',
             evaluation_type='student_to_company'
         )
+        
         if evaluaciones.exists():
-            promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
-            return round(promedio, 2)
-        return 0.0
+            stats = evaluaciones.aggregate(
+                total_evaluaciones=Count('id'),
+                promedio=Avg('score'),
+                puntuacion_minima=Min('score'),
+                puntuacion_maxima=Max('score')
+            )
+            
+            # Agregar distribución de puntuaciones
+            distribucion = {}
+            for i in range(1, 6):
+                count = evaluaciones.filter(score=i).count()
+                if count > 0:
+                    distribucion[f"{i} estrellas"] = count
+            
+            stats['distribucion'] = distribucion
+            stats['promedio'] = round(stats['promedio'], 2)
+            
+            return stats
+        
+        return {
+            'total_evaluaciones': 0,
+            'promedio': 0.0,
+            'puntuacion_minima': None,
+            'puntuacion_maxima': None,
+            'distribucion': {}
+        }
     
     def incrementar_proyectos_publicados(self):
         """Incrementa el contador de proyectos publicados"""

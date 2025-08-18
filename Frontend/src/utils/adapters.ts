@@ -99,6 +99,8 @@ export const adaptCompany = (backendCompany: any): Company => {
   return {
     id: String(backendCompany.id),
     user: backendCompany.user ? String(backendCompany.user) : undefined,
+    // Alias que el frontend espera
+    user_id: backendCompany.user ? String(backendCompany.user) : (backendCompany.user_data?.id ? String(backendCompany.user_data.id) : undefined),
     company_name: backendCompany.company_name,
     description: backendCompany.description,
     industry: backendCompany.industry,
@@ -120,9 +122,16 @@ export const adaptCompany = (backendCompany: any): Company => {
     stipend_range: backendCompany.stipend_range,
     contact_email: backendCompany.contact_email,
     contact_phone: backendCompany.contact_phone,
+    // Alias para compatibilidad con vistas que esperan email/phone planos
+    email: backendCompany.contact_email || backendCompany.user_data?.email,
+    phone: backendCompany.contact_phone || backendCompany.user_data?.phone,
     status: backendCompany.status || 'active',
     created_at: backendCompany.created_at,
     updated_at: backendCompany.updated_at,
+    // Rating enviado por el backend
+    rating: typeof backendCompany.rating !== 'undefined' && backendCompany.rating !== null
+      ? Number(backendCompany.rating)
+      : 0,
     // Campos adicionales para el perfil de empresa
     rut: backendCompany.rut,
     personality: backendCompany.personality,

@@ -802,7 +802,6 @@ def api_user_profile(request):
             if user.role == "company":
                 try:
                     from companies.models import Empresa
-                    from companies.serializers import EmpresaSerializer
                     empresa = getattr(user, 'empresa_profile', None)
                     if not empresa:
                         # Crear empresa dummy si no existe
@@ -819,7 +818,17 @@ def api_user_profile(request):
                         user.empresa_profile = empresa
                         user.save()
                     # Validar que la empresa tiene id
-                    empresa_dict = EmpresaSerializer.to_dict(empresa)
+                    # ✅ RESPUESTA MANUAL SIN SERIALIZER AUTOMÁTICO
+                    empresa_dict = {
+                        'id': str(empresa.id),
+                        'company_name': empresa.company_name,
+                        'verified': empresa.verified,
+                        'rating': float(empresa.rating) if empresa.rating is not None else 0.0,
+                        'total_projects': empresa.total_projects,
+                        'projects_completed': empresa.projects_completed,
+                        'total_hours_offered': empresa.total_hours_offered,
+                        'status': empresa.status,
+                    }
                     if not empresa_dict.get('id'):
                         return JsonResponse({
                             'error': 'No se pudo asociar un perfil de empresa válido a este usuario.'
@@ -1273,7 +1282,7 @@ def api_dashboard_company_stats(request):
             'pending_applications': pending_applications,
             'completed_projects': completed_projects,
             'active_students': active_students,
-            'gpa': gpa,
+            'rating': gpa,  # Rating de la empresa basado en evaluaciones de estudiantes
             'total_hours_offered': total_hours_offered,
             'projects_this_month': projects_this_month,
             'applications_this_month': applications_this_month,

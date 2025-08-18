@@ -1,0 +1,78 @@
+{
+  "empresas": [
+    {
+      "id": "fef3f954-fa99-48ab-811a-77319964a173",
+      "company_name": "Empresa Actualizada Test",
+      "rating_original": 4.0,
+      "fecha_backup": "2025-08-17T04:54:54.356244+00:00"
+    },
+    {
+      "id": "cdfe827f-c310-4057-8dfe-13f3ceee7d76",
+      "company_name": "luciaaaaaaa",
+      "rating_original": 4.25,
+      "fecha_backup": "2025-08-03T00:08:12.988168+00:00"
+    },
+    {
+      "id": "857b9177-37b7-436d-a3d8-65857774af0d",
+      "company_name": "DERECHO",
+      "rating_original": 0.0,
+      "fecha_backup": "2025-08-07T15:20:13.658995+00:00"
+    },
+    {
+      "id": "f650e014-3eeb-4cc2-ba36-eb7cfaa667f1",
+      "company_name": "DERECHO",
+      "rating_original": 0.0,
+      "fecha_backup": "2025-08-07T15:26:32.370186+00:00"
+    },
+    {
+      "id": "3deb750a-94c5-457d-a411-1331c32d07f9",
+      "company_name": "test.company@empresa.cl",
+      "rating_original": 0.0,
+      "fecha_backup": "2025-08-08T16:36:52.738972+00:00"
+    },
+    {
+      "id": "ff504f6c-0f4a-488e-b79a-57c4e4e631cc",
+      "company_name": "lucia.amaya@gmail.com",
+      "rating_original": 4.25,
+      "fecha_backup": "2025-08-12T21:34:21.776272+00:00"
+    },
+    {
+      "id": "2ae763f2-ad7c-4266-bfc7-ac3ff1ffa183",
+      "company_name": "Empresa Test",
+      "rating_original": 0.0,
+      "fecha_backup": "2025-08-11T04:22:52.191676+00:00"
+    }
+  ],
+  "estudiantes": [
+    {
+      "id": "f5de34a4-43c4-4e84-929c-454e5e74a8d9",
+      "full_name": "juan  perez",
+      "gpa_original": 3.83,
+      "fecha_backup": "2025-08-18T01:28:36.561043+00:00"
+    },
+    {
+      "id": "90e86693-7e5d-4dcf-b8c3-62abd708d3c8",
+      "full_name": "joaco gomez",
+      "gpa_original": 0.0,
+      "fecha_backup": "2025-08-13T21:49:32.803612+00:00"
+    },
+    {
+      "id": "9e6f271e-6b00-4e36-a81e-665db6a9296f",
+      "full_name": "Juan Pérez",
+      "gpa_original": 4.5,
+      "fecha_backup": "2025-08-08T16:36:52.325043+00:00"
+    },
+    {
+      "id": "7b110b69-4b13-4abb-aa6c-48d50b32e26d",
+      "full_name": "Test JSON",
+      "gpa_original": 0.0,
+      "fecha_backup": "2025-08-08T16:36:53.034037+00:00"
+    },
+    {
+      "id": "2bad87e3-7d27-41d3-9998-b6db3d194445",
+      "full_name": "Empresa Test",
+      "gpa_original": 0.0,
+      "fecha_backup": "2025-08-11T04:22:21.475405+00:00"
+    }
+  ]
+}

@@ -184,18 +184,97 @@ class Estudiante(models.Model):
     def actualizar_calificacion(self, _=None):
         """Actualiza la calificación promedio del estudiante (GPA)"""
         from evaluations.models import Evaluation
-        # CORREGIDO: Buscar evaluaciones donde este estudiante es el evaluado
+        
+        # Buscar evaluaciones donde este estudiante es el evaluado
         evaluaciones = Evaluation.objects.filter(
-            student=self,  # ← CAMBIO: usar self en lugar de self.user.id
+            student=self,
             status='completed',
-            evaluation_type='company_to_student'  # ← AGREGADO: solo evaluaciones de empresas a estudiantes
+            evaluation_type='company_to_student'
         )
+        
         if evaluaciones.exists():
-            promedio = sum([e.score for e in evaluaciones]) / evaluaciones.count()
+            # Calcular promedio de todas las evaluaciones
+            scores = [e.score for e in evaluaciones]
+            promedio = sum(scores) / len(scores)
             self.gpa = round(promedio, 2)
+            
+            # Log para debugging
+            print(f"🔄 [ESTUDIANTE] {self.user.full_name}: {len(scores)} evaluaciones, scores: {scores}, GPA: {self.gpa}")
         else:
+            # No hay evaluaciones, GPA debe ser 0
             self.gpa = 0
+            print(f"🔄 [ESTUDIANTE] {self.user.full_name}: Sin evaluaciones, GPA establecido a 0")
+        
+        # Guardar solo el campo gpa para evitar loops infinitos
         self.save(update_fields=['gpa'])
+        
+        return self.gpa
+    
+    def calcular_gpa_real(self):
+        """Calcula el GPA real basado en evaluaciones actuales"""
+        from evaluations.models import Evaluation
+        
+        evaluaciones = Evaluation.objects.filter(
+            student=self,
+            status='completed',
+            evaluation_type='company_to_student'
+        )
+        
+        if evaluaciones.exists():
+            scores = [e.score for e in evaluaciones]
+            promedio = sum(scores) / len(scores)
+            return round(promedio, 2)
+        
+        return 0.0
+    
+    def obtener_historial_evaluaciones(self):
+        """Obtiene el historial completo de evaluaciones del estudiante"""
+        from evaluations.models import Evaluation
+        
+        return Evaluation.objects.filter(
+            student=self,
+            status='completed',
+            evaluation_type='company_to_student'
+        ).select_related('project', 'project__company').order_by('-evaluation_date')
+    
+    def obtener_estadisticas_evaluaciones(self):
+        """Obtiene estadísticas detalladas de las evaluaciones"""
+        from evaluations.models import Evaluation
+        from django.db.models import Avg, Count, Min, Max
+        
+        evaluaciones = Evaluation.objects.filter(
+            student=self,
+            status='completed',
+            evaluation_type='company_to_student'
+        )
+        
+        if evaluaciones.exists():
+            stats = evaluaciones.aggregate(
+                total_evaluaciones=Count('id'),
+                promedio=Avg('score'),
+                puntuacion_minima=Min('score'),
+                puntuacion_maxima=Max('score')
+            )
+            
+            # Agregar distribución de puntuaciones
+            distribucion = {}
+            for i in range(1, 6):
+                count = evaluaciones.filter(score=i).count()
+                if count > 0:
+                    distribucion[f"{i} estrellas"] = count
+            
+            stats['distribucion'] = distribucion
+            stats['promedio'] = round(stats['promedio'], 2)
+            
+            return stats
+        
+        return {
+            'total_evaluaciones': 0,
+            'promedio': 0.0,
+            'puntuacion_minima': None,
+            'puntuacion_maxima': None,
+            'distribucion': {}
+        }
 
     def proteger_api_level(self):
         """Protege el nivel de API para que no se baje automáticamente"""

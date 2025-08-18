@@ -1,4 +1,39 @@
-import { useState, useEffect } from 'react';
+/**
+ * GestionEmpresasAdmin.tsx
+ * 
+ * Componente principal para la gestión administrativa de empresas en la plataforma.
+ * Permite a los administradores ver, filtrar y gestionar todas las empresas registradas.
+ * 
+ * FUNCIONALIDADES PRINCIPALES:
+ * - Lista todas las empresas con información detallada
+ * - Filtros por estado, nombre y email
+ * - Paginación de resultados
+ * - Gestión de estados de empresas (Activa, Inactiva, Bloqueada)
+ * - Visualización de ratings y métricas de empresas
+ * 
+ * SISTEMA DE RATINGS:
+ * - Los ratings se obtienen del backend a través del campo 'rating'
+ * - Se muestran con formato de 2 decimales (ej: 4.25)
+ * - Empresas sin evaluaciones muestran 0.00
+ * - Los ratings se calculan automáticamente en el backend basándose en evaluaciones
+ * 
+ * AUTENTICACIÓN:
+ * - Utiliza JWT tokens para autenticación
+ * - Requiere rol de administrador
+ * - Tokens se verifican automáticamente en cada petición
+ * 
+ * INTEGRACIÓN CON BACKEND:
+ * - Endpoint: /api/companies/admin/companies-simple/
+ * - Método: GET
+ * - Headers: Authorization: Bearer {JWT_TOKEN}
+ * - Respuesta: {results: [...], count: number}
+ * 
+ * @author Sistema de Administración
+ * @version 2.0.0
+ * @lastUpdated 2025-01-17
+ */
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -57,7 +92,7 @@ interface Company {
   email: string;
   status: 'active' | 'suspended' | 'blocked' | string;
   projects_count: number;
-  gpa: number; // GPA de la empresa
+  rating: number; // Rating de la empresa
   join_date: string;
   last_activity: string;
   description?: string;
@@ -115,7 +150,7 @@ export const GestionEmpresasAdmin = () => {
     activeCompanies: 0,
     suspendedCompanies: 0,
     blockedCompanies: 0,
-    averageGpa: 0,
+    averageRating: 0,
     totalProjects: 0
   });
   const [filters, setFilters] = useState<any>({});
@@ -168,7 +203,7 @@ export const GestionEmpresasAdmin = () => {
   useEffect(() => {
     console.log('🔄 [useEffect] Estado de empresas actualizado:', companies.length, 'empresas');
     companies.forEach((company, index) => {
-      console.log(`  🏢 ${index + 1}: ${company.name} - Status: ${company.status} - GPA: ${company.gpa}`);
+              console.log(`  🏢 ${index + 1}: ${company.name} - Status: ${company.status} - Rating: ${company.rating}`);
     });
     
     // Verificar que el estado se esté actualizando correctamente
@@ -184,6 +219,33 @@ export const GestionEmpresasAdmin = () => {
     }
   }, [companies]);
 
+  /**
+   * Función principal para obtener datos de empresas desde el backend
+   * 
+   * Esta función realiza una petición GET al endpoint de administración de empresas
+   * y procesa la respuesta para mostrar la información en la interfaz.
+   * 
+   * FLUJO DE EJECUCIÓN:
+   * 1. Construye parámetros de consulta (paginación, filtros, ordenamiento)
+   * 2. Realiza petición HTTP al backend con autenticación JWT
+   * 3. Procesa la respuesta y mapea los datos usando el adaptador
+   * 4. Actualiza el estado local con las empresas procesadas
+   * 
+   * PARÁMETROS DE CONSULTA:
+   * - limit: Número de empresas por página (o "todos" para todas)
+   * - offset: Desplazamiento para paginación
+   * - search: Término de búsqueda por nombre o email
+   * - status: Filtro por estado de empresa
+   * - rating: Filtro por rango de rating
+   * 
+   * SISTEMA DE RATINGS:
+   * - Los ratings se obtienen directamente del campo 'rating' del backend
+   * - Se mapean a números para el frontend (0 si no hay rating)
+   * - Se muestran con formato de 2 decimales en la interfaz
+   * 
+   * @async
+   * @throws {Error} Si falla la petición HTTP o el procesamiento de datos
+   */
   const fetchData = async () => {
     console.log('🔄 [fetchData] Iniciando fetch de datos...');
     setLoading(true);
@@ -195,52 +257,59 @@ export const GestionEmpresasAdmin = () => {
       
       if (filters.search) params.append('search', filters.search);
       if (filters.status) params.append('status', filters.status);
-      if (filters.gpa) params.append('gpa', filters.gpa);
+      if (filters.rating) params.append('rating', filters.rating);
       
       console.log('🔍 Filtros aplicados:', filters);
       console.log('📡 URL de la petición:', `/api/companies/admin/companies-simple/?${params.toString()}`);
       
+      // ✅ VISTA PRINCIPAL LIMPIA
       const response = await apiService.get(`/api/companies/admin/companies-simple/?${params.toString()}`);
-      console.log('📊 Datos recibidos del backend:', response.results);
+      console.log('📊 [DEBUG] Response completa recibida:', response);
+      console.log('📊 [DEBUG] Response.results:', response?.results);
+      console.log('📊 [DEBUG] Response.companies:', response?.companies);
+      console.log('📊 [DEBUG] Response tipo:', typeof response);
+      console.log('📊 [DEBUG] Response keys:', response ? Object.keys(response) : 'undefined');
       
-      // 🔍 DEBUG DETALLADO: Ver la estructura completa de la primera empresa
-      if (response.results && response.results.length > 0) {
-        const primeraEmpresa = response.results[0];
+      // 🔍 DEBUG SIMPLIFICADO: Solo verificar rating
+      const companiesData = response?.results || [];
+      if (companiesData && companiesData.length > 0) {
+        const primeraEmpresa = companiesData[0];
         console.log('🔍 [DEBUG] Primera empresa recibida del backend:');
-        console.log('   - Objeto completo:', primeraEmpresa);
-        console.log('   - Tipo:', typeof primeraEmpresa);
-        console.log('   - Es array?', Array.isArray(primeraEmpresa));
-        console.log('   - Keys disponibles:', Object.keys(primeraEmpresa));
         console.log('   - Rating directo:', primeraEmpresa.rating);
-        console.log('   - GPA directo:', primeraEmpresa.gpa);
         console.log('   - Rating con bracket notation:', primeraEmpresa['rating']);
-        console.log('   - GPA con bracket notation:', primeraEmpresa['gpa']);
-        
-        // Verificar si los campos están anidados
-        console.log('   - Tiene user_data?', 'user_data' in primeraEmpresa);
-        if (primeraEmpresa.user_data) {
-          console.log('   - user_data keys:', Object.keys(primeraEmpresa.user_data));
-        }
+        console.log('   - ¿Tiene propiedad rating?', 'rating' in primeraEmpresa);
+        console.log('   - ¿Rating es undefined?', primeraEmpresa.rating === undefined);
+        console.log('   - ¿Rating es null?', primeraEmpresa.rating === null);
+        console.log('   - Keys disponibles:', Object.keys(primeraEmpresa));
       }
       
-      console.log('🔍 Verificando campo GPA del backend:');
-       response.results.slice(0, 3).forEach((company: any, index: number) => {
-         console.log(`  Empresa ${index + 1}: ${company.company_name} - GPA: ${company.gpa} - Rating: ${company.rating}`);
-       });
+      console.log('🔍 Verificando campo Rating del backend:');
+      companiesData.slice(0, 3).forEach((company: any, index: number) => {
+        console.log(`  Empresa ${index + 1}: ${company.company_name} - Rating: ${company.rating}`);
+      });
       
-      // Mapear datos del backend al formato esperado por el frontend
-      const mappedCompanies = (response.results || []).map((c: any) => ({
+      // ✅ MAPEO LIMPIO PARA VISTA PRINCIPAL
+      console.log('📊 [DEBUG] Companies data a mapear:', companiesData);
+      console.log('📊 [DEBUG] Companies data tipo:', typeof companiesData);
+      console.log('📊 [DEBUG] Companies data length:', companiesData?.length);
+      
+      const mappedCompanies = companiesData.map((c: any) => ({
         id: c.id,
-        user: typeof c.user === 'object' ? c.user.id : c.user,
+        user: c.user_id,
         name: c.company_name || 'Sin nombre',
-        email: c.user_data?.email || c.contact_email || 'Sin email',
-        status: c.status || 'active', // Asegurar que el status se mapee correctamente
+        email: c.email || 'Sin email',
+        status: c.status || 'active',
         projects_count: c.total_projects || 0,
-        gpa: c.gpa || 0,
+        rating: (() => {
+          console.log(`🔍 [MAPEO] Empresa ${c.company_name}: rating del backend = ${c.rating}, tipo = ${typeof c.rating}`);
+          const mappedRating = c.rating || 0;
+          console.log(`🔍 [MAPEO] Rating mapeado: ${mappedRating}, tipo = ${typeof mappedRating}`);
+          return mappedRating;
+        })(),
         join_date: c.created_at || '',
         last_activity: c.updated_at || '',
         description: c.description || '',
-        phone: c.contact_phone || c.user_data?.phone || '',
+        phone: c.phone || '',
         address: c.address || '',
         website: c.website || '',
         industry: c.industry || '',
@@ -248,21 +317,34 @@ export const GestionEmpresasAdmin = () => {
         verified: c.verified || false,
         // Datos adicionales del backend
         company_name: c.company_name,
-        contact_email: c.contact_email,
-        contact_phone: c.contact_phone,
+        contact_email: c.email,
+        contact_phone: c.phone,
         total_projects: c.total_projects,
         projects_completed: c.projects_completed,
         total_hours_offered: c.total_hours_offered,
-        user_data: c.user_data
+        user_data: {
+          id: c.user_id,
+          email: c.email,
+          first_name: c.first_name,
+          last_name: c.last_name,
+          username: c.username,
+          phone: c.phone,
+          avatar: c.avatar,
+          bio: c.bio,
+          is_active: c.is_active,
+          is_verified: c.is_verified,
+          date_joined: c.date_joined,
+          last_login: c.last_login
+        }
       }));
       
       console.log('🔄 Empresas mapeadas:', mappedCompanies);
       console.log('📈 Total de empresas:', mappedCompanies.length);
       
-             // Log adicional para verificar el estado de cada empresa y GPA
-       mappedCompanies.forEach((company, index) => {
-         console.log(`🏢 Empresa ${index + 1}: ${company.name} - Status: ${company.status} - GPA: ${company.gpa}`);
-       });
+      // Log adicional para verificar el estado de cada empresa
+      mappedCompanies.forEach((company, index) => {
+        console.log(`🏢 Empresa ${index + 1}: ${company.name} - Status: ${company.status} - Rating: ${company.rating}`);
+      });
       
       console.log('🔄 [fetchData] Actualizando estado con empresas:', mappedCompanies.length);
       setCompanies(mappedCompanies);
@@ -345,7 +427,7 @@ export const GestionEmpresasAdmin = () => {
         console.log(`🔄 Estado actualizado de la empresa ${updatedCompany.name}:`);
         console.log(`  - Estado anterior: ${selectedCompany.status}`);
         console.log(`  - Estado actual: ${updatedCompany.status}`);
-        console.log(`  - GPA: ${updatedCompany.gpa}`);
+        console.log(`  - Rating: ${updatedCompany.rating}`);
       }
       
     } catch (error) {
@@ -485,14 +567,37 @@ export const GestionEmpresasAdmin = () => {
       width: '100px',
       align: 'center' as const
     },
+    /**
+     * Columna de Rating Promedio
+     * 
+     * Muestra el rating promedio de cada empresa basado en las evaluaciones recibidas.
+     * Los ratings se obtienen del backend y se muestran con formato de 2 decimales.
+     * 
+     * FORMATO DE DISPLAY:
+     * - Ratings válidos: se muestran con 2 decimales (ej: 4.25)
+     * - Rating 0: se muestra como "0.00" (empresa sin evaluaciones)
+     * - Valores nulos/undefined: se muestran como "-"
+     * 
+     * VALORES ESPERADOS:
+     * - Tipo: number
+     * - Rango: 0.00 - 5.00
+     * - 0.00 = Sin evaluaciones
+     * - 4.00+ = Excelente
+     * - 3.00-3.99 = Bueno
+     * - 2.00-2.99 = Regular
+     * - 1.00-1.99 = Malo
+     */
     {
-      key: 'gpa', // Usamos 'gpa' que es el campo mapeado
-      label: 'GPA promedio',
-      render: (value: number) => (
+      key: 'rating', // Campo mapeado desde el backend
+      label: 'Rating promedio',
+      render: (value: number) => {
+        console.log(`🔍 [RENDER RATING] Valor recibido: ${value}, tipo: ${typeof value}, es 0: ${value === 0}`);
+        return (
           <Typography variant="body2" fontWeight={600}>
-          {value ? value.toFixed(2) : '-'}
+            {value !== null && value !== undefined ? value.toFixed(2) : '-'}
           </Typography>
-      ),
+        );
+      },
       width: '150px',
       align: 'center' as const
     },

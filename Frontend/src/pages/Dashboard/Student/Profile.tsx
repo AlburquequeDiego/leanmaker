@@ -540,7 +540,7 @@ export const Profile = () => {
             esNumber: typeof valorRaw === 'number'
           });
           
-          // Mejorar la lógica para manejar correctamente el valor
+          // Lógica simplificada: solo usar 20 si es realmente undefined o null
           let valor: number;
           if (valorRaw === undefined || valorRaw === null) {
             valor = 20; // Solo usar 20 si es undefined o null
@@ -548,22 +548,17 @@ export const Profile = () => {
           } else if (typeof valorRaw === 'string') {
             // Si es string, intentar convertirlo a número
             const numValue = parseInt(valorRaw);
-            if (!isNaN(numValue) && numValue >= 5 && numValue <= 35) {
+            if (!isNaN(numValue)) {
               valor = numValue;
-              console.log('🚨 [StudentProfile] Convertido string a número válido:', valor);
+              console.log('🚨 [StudentProfile] Convertido string a número:', valor);
             } else {
               valor = 20;
               console.log('🚨 [StudentProfile] String inválido, usando valor por defecto 20');
             }
           } else if (typeof valorRaw === 'number') {
-            // Si es número, validar el rango
-            if (valorRaw >= 5 && valorRaw <= 35) {
-              valor = valorRaw;
-              console.log('🚨 [StudentProfile] Usando valor numérico válido del backend:', valor);
-            } else {
-              valor = 20;
-              console.log('🚨 [StudentProfile] Número fuera de rango, usando valor por defecto 20');
-            }
+            // Si es número, usar el valor tal como está (no validar rango aquí)
+            valor = valorRaw;
+            console.log('🚨 [StudentProfile] Usando valor numérico del backend:', valor);
           } else {
             valor = 20;
             console.log('🚨 [StudentProfile] Tipo no reconocido, usando valor por defecto 20');
@@ -770,20 +765,19 @@ export const Profile = () => {
         certificado_link: editData.certificado_link,
         availability: editData.modalidadesDisponibles?.join(', ') || 'flexible',
         hours_per_week: (() => {
-          // Mejorar la lógica para manejar correctamente el valor de horas semanales
+          // Lógica simplificada: enviar el valor tal como está
           const horasValue = editData.horasSemanales;
           console.log('🔍 [StudentProfile] VALOR DE HORAS SEMANALES A ENVIAR:', {
             valorOriginal: horasValue,
             tipo: typeof horasValue,
             esUndefined: horasValue === undefined,
             esNull: horasValue === null,
-            esCero: horasValue === 0,
-            esValorValido: horasValue >= 5 && horasValue <= 35
+            esCero: horasValue === 0
           });
           
-          // Si no hay valor o es inválido, usar 20 por defecto
-          if (horasValue === undefined || horasValue === null || horasValue < 5 || horasValue > 35) {
-            console.log('🔍 [StudentProfile] Usando valor por defecto 20 (valor inválido o fuera de rango)');
+          // Solo usar 20 si es realmente undefined o null
+          if (horasValue === undefined || horasValue === null) {
+            console.log('🔍 [StudentProfile] Usando valor por defecto 20 (undefined/null)');
             return 20;
           }
           

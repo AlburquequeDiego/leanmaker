@@ -8,7 +8,7 @@ from users.models import User
 
 import uuid
 import json
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 class Evaluation(models.Model):
@@ -92,14 +92,54 @@ class Evaluation(models.Model):
         if not self.overall_rating:
             self.overall_rating = self.score
         
-        # NUEVO: Determinar automáticamente el tipo de evaluación
+        # Determinar automáticamente el tipo de evaluación
         if not self.evaluation_type:
-            if self.evaluator.role == 'company':
+            if hasattr(self.evaluator, 'role') and self.evaluator.role == 'company':
                 self.evaluation_type = 'company_to_student'
-            elif self.evaluator.role == 'student':
+            elif hasattr(self.evaluator, 'role') and self.evaluator.role == 'student':
                 self.evaluation_type = 'student_to_company'
         
+        # Guardar la evaluación
         super().save(*args, **kwargs)
+        
+        # Actualizar company si es necesario para evitar errores en signals
+        if not hasattr(self, 'company') and self.evaluation_type == 'student_to_company':
+            try:
+                self.company = self.project.company
+            except:
+                pass
+        
+        # Log para debugging
+        print(f"💾 [EVALUATION] Guardada evaluación {self.id}: {self.evaluation_type}, score: {self.score}")
+    
+    def delete(self, *args, **kwargs):
+        # Guardar referencias antes de eliminar para los signals
+        evaluation_type = self.evaluation_type
+        student_id = self.student.id if self.student else None
+        company_id = self.project.company.id if self.project and self.project.company else None
+        
+        # Eliminar la evaluación
+        super().delete(*args, **kwargs)
+        
+        # Log para debugging
+        print(f"🗑️ [EVALUATION] Eliminada evaluación {self.id}: {evaluation_type}")
+        
+        # Actualizar ratings después de eliminar (los signals se encargarán)
+        if evaluation_type == 'company_to_student' and student_id:
+            try:
+                from students.models import Estudiante
+                student = Estudiante.objects.get(id=student_id)
+                student.actualizar_calificacion()
+            except Exception as e:
+                print(f"⚠️ Error actualizando GPA después de eliminar: {e}")
+        
+        if evaluation_type == 'student_to_company' and company_id:
+            try:
+                from companies.models import Empresa
+                company = Empresa.objects.get(id=company_id)
+                company.actualizar_calificacion()
+            except Exception as e:
+                print(f"⚠️ Error actualizando rating después de eliminar: {e}")
 
     def get_strengths_list(self):
         return [s.strip() for s in (self.strengths or '').split(',') if s.strip()]
@@ -279,9 +319,44 @@ class StudentAchievement(models.Model):
 
 @receiver(post_save, sender=Evaluation)
 def actualizar_gpa_estudiante(sender, instance, **kwargs):
+    """Signal para actualizar GPA del estudiante cuando se crea/actualiza una evaluación"""
     try:
-        # instance.student ya es un Estudiante, no necesitamos buscarlo
-        instance.student.actualizar_calificacion()
+        if instance.evaluation_type == 'company_to_student' and instance.student:
+            print(f"🔄 [SIGNAL] Actualizando GPA para estudiante: {instance.student.user.full_name}")
+            instance.student.actualizar_calificacion()
     except Exception as e:
-        print(f"Error actualizando GPA en evaluations/models.py: {e}")
-        pass
+        print(f"❌ [SIGNAL] Error actualizando GPA del estudiante: {e}")
+        import traceback
+        traceback.print_exc()
+
+@receiver(post_save, sender=Evaluation)
+def actualizar_rating_empresa(sender, instance, **kwargs):
+    """Signal para actualizar rating de la empresa cuando se crea/actualiza una evaluación"""
+    try:
+        if instance.evaluation_type == 'student_to_company' and instance.project and instance.project.company:
+            print(f"🔄 [SIGNAL] Actualizando rating para empresa: {instance.project.company.company_name}")
+            instance.project.company.actualizar_calificacion()
+    except Exception as e:
+        print(f"❌ [SIGNAL] Error actualizando rating de la empresa: {e}")
+        import traceback
+        traceback.print_exc()
+
+@receiver(post_delete, sender=Evaluation)
+def actualizar_gpa_estudiante_delete(sender, instance, **kwargs):
+    """Signal para actualizar GPA del estudiante cuando se elimina una evaluación"""
+    try:
+        if instance.evaluation_type == 'company_to_student' and instance.student:
+            print(f"🔄 [SIGNAL DELETE] Actualizando GPA para estudiante: {instance.student.user.full_name}")
+            instance.student.actualizar_calificacion()
+    except Exception as e:
+        print(f"❌ [SIGNAL DELETE] Error actualizando GPA del estudiante: {e}")
+
+@receiver(post_delete, sender=Evaluation)
+def actualizar_rating_empresa_delete(sender, instance, **kwargs):
+    """Signal para actualizar rating de la empresa cuando se elimina una evaluación"""
+    try:
+        if instance.evaluation_type == 'student_to_company' and instance.project and instance.project.company:
+            print(f"🔄 [SIGNAL DELETE] Actualizando rating para empresa: {instance.project.company.company_name}")
+            instance.project.company.actualizar_calificacion()
+    except Exception as e:
+        print(f"❌ [SIGNAL DELETE] Error actualizando rating de la empresa: {e}")
