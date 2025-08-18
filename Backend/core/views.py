@@ -2232,10 +2232,9 @@ def api_hub_analytics_data(request):
                     proyecto__status__name__icontains='completed'
                 ).count()
                 
-                # Calcular rating promedio
-                ratings = student.user.membresias_proyecto.values_list('evaluacion_promedio', flat=True)
-                ratings = [r for r in ratings if r is not None]
-                average_rating = sum(ratings) / len(ratings) if ratings else 0
+                # Usar el GPA del estudiante como rating promedio
+                average_rating = float(student.gpa or 0)
+                print(f"  - GPA del estudiante {student.user.email}: {student.gpa} -> averageRating: {average_rating}")
                 
                 # Usar el valor real de las horas trabajadas (work_hours_sum) en lugar del campo total_hours
                 actual_hours = float(student.work_hours_sum or 0)
@@ -2559,10 +2558,15 @@ def api_hub_analytics_data(request):
                 count=Count('id')
             ).order_by('api_level')
             
-            # Proyectos por nivel TRL
-            projects_by_trl = Proyecto.objects.values('trl__level').annotate(
+            # Proyectos por nivel TRL - Solo proyectos que tienen TRL asignado
+            projects_by_trl = Proyecto.objects.filter(
+                trl__isnull=False  # Filtrar solo proyectos con TRL asignado
+            ).values('trl__level').annotate(
                 count=Count('id')
             ).order_by('trl__level')
+            
+            # Contar proyectos sin TRL asignado
+            projects_without_trl = Proyecto.objects.filter(trl__isnull=True).count()
             
             # Solicitudes de cambio de nivel API
             api_level_requests = ApiLevelRequest.objects.count()
@@ -2578,6 +2582,7 @@ def api_hub_analytics_data(request):
                     {'trl_level': item['trl__level'], 'count': item['count']}
                     for item in projects_by_trl
                 ],
+                'projectsWithoutTrl': projects_without_trl,
                 'totalApiRequests': api_level_requests,
                 'pendingApiRequests': pending_api_requests,
                 'approvedApiRequests': approved_api_requests
@@ -2592,6 +2597,193 @@ def api_hub_analytics_data(request):
                 'totalApiRequests': 0,
                 'pendingApiRequests': 0,
                 'approvedApiRequests': 0
+            }
+        
+        # 7. MÉTRICAS DE SATISFACCIÓN Y CALIDAD
+        try:
+            # Calificación promedio de proyectos (usando GPA de estudiantes como proxy)
+            students_with_gpa = Estudiante.objects.filter(gpa__isnull=False, gpa__gt=0)
+            average_project_rating = students_with_gpa.aggregate(avg_gpa=Avg('gpa'))
+            avg_rating = float(average_project_rating['avg_gpa'] or 0)
+            
+            # Tasa de satisfacción de empresas (proyectos completados vs total)
+            total_company_projects = Proyecto.objects.filter(company__isnull=False).count()
+            completed_company_projects = Proyecto.objects.filter(
+                company__isnull=False,
+                status__name__in=['completed']
+            ).count()
+            company_satisfaction_rate = (completed_company_projects / total_company_projects * 100) if total_company_projects > 0 else 0
+            
+            # Número de proyectos repetidos (empresas que vuelven)
+            companies_with_multiple_projects = Empresa.objects.annotate(
+                project_count=Count('proyectos')
+            ).filter(project_count__gt=1).count()
+            
+            # Distribución de calificaciones
+            rating_distribution = []
+            for rating in range(1, 6):
+                count = students_with_gpa.filter(gpa__gte=rating, gpa__lt=rating+1).count()
+                if count > 0:
+                    rating_distribution.append({
+                        'rating': rating,
+                        'count': count,
+                        'percentage': round((count / students_with_gpa.count()) * 100, 1)
+                    })
+            
+            satisfaction_metrics = {
+                'averageProjectRating': round(avg_rating, 1),
+                'companySatisfactionRate': round(company_satisfaction_rate, 1),
+                'repeatProjectsCount': companies_with_multiple_projects,
+                'ratingDistribution': rating_distribution,
+                'totalRatedProjects': students_with_gpa.count()
+            }
+            
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas de satisfacción: {str(e)}")
+            satisfaction_metrics = {
+                'averageProjectRating': 0,
+                'companySatisfactionRate': 0,
+                'repeatProjectsCount': 0,
+                'ratingDistribution': [],
+                'totalRatedProjects': 0
+            }
+        
+        # 8. MÉTRICAS DE EFICIENCIA DE PROYECTOS
+        try:
+            # Tiempo promedio de finalización vs estimado
+            completed_projects_with_dates = Proyecto.objects.filter(
+                status__name__in=['completed'],
+                created_at__isnull=False,
+                updated_at__isnull=False
+            )
+            
+            efficiency_data = []
+            total_completion_time = 0
+            total_estimated_time = 0
+            projects_extending_deadline = 0
+            
+            for project in completed_projects_with_dates:
+                # Calcular tiempo real de finalización
+                if project.updated_at and project.created_at:
+                    real_completion_time = (project.updated_at - project.created_at).days
+                    total_completion_time += real_completion_time
+                    
+                    # Tiempo estimado (asumiendo 30 días por defecto si no hay estimación)
+                    estimated_time = getattr(project, 'estimated_duration', 30) or 30
+                    total_estimated_time += estimated_time
+                    
+                    # Verificar si se extendió más allá de la fecha límite
+                    if real_completion_time > estimated_time:
+                        projects_extending_deadline += 1
+                    
+                    efficiency_data.append({
+                        'project_id': str(project.id),
+                        'title': project.title,
+                        'real_time': real_completion_time,
+                        'estimated_time': estimated_time,
+                        'efficiency': round((estimated_time / real_completion_time) * 100, 1) if real_completion_time > 0 else 0
+                    })
+            
+            # Calcular promedios
+            avg_real_completion = total_completion_time / len(efficiency_data) if efficiency_data else 0
+            avg_estimated_time = total_estimated_time / len(efficiency_data) if efficiency_data else 0
+            efficiency_rate = (avg_estimated_time / avg_real_completion * 100) if avg_real_completion > 0 else 0
+            
+            # Horas reales trabajadas vs estimadas
+            total_estimated_hours = sum([item['estimated_time'] * 8 for item in efficiency_data])  # 8 horas por día
+            total_real_hours = total_hours_value
+            hours_efficiency = (total_estimated_hours / total_real_hours * 100) if total_real_hours > 0 else 0
+            
+            # Tasa de éxito por tipo de proyecto (usando estados como proxy)
+            success_by_status = Proyecto.objects.values('status__name').annotate(
+                count=Count('id')
+            ).order_by('-count')
+            
+            efficiency_metrics = {
+                'averageCompletionTime': round(avg_real_completion, 1),
+                'averageEstimatedTime': round(avg_estimated_time, 1),
+                'efficiencyRate': round(efficiency_rate, 1),
+                'projectsExtendingDeadline': projects_extending_deadline,
+                'totalProjectsAnalyzed': len(efficiency_data),
+                'hoursEfficiency': round(hours_efficiency, 1),
+                'successByStatus': [
+                    {
+                        'status': item['status__name'],
+                        'count': item['count'],
+                        'success_rate': round((item['count'] / total_projects) * 100, 1) if total_projects > 0 else 0
+                    }
+                    for item in success_by_status
+                ]
+            }
+            
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas de eficiencia: {str(e)}")
+            efficiency_metrics = {
+                'averageCompletionTime': 0,
+                'averageEstimatedTime': 0,
+                'efficiencyRate': 0,
+                'projectsExtendingDeadline': 0,
+                'totalProjectsAnalyzed': 0,
+                'hoursEfficiency': 0,
+                'successByStatus': []
+            }
+        
+        # 9. MÉTRICAS FINANCIERAS E IMPACTO
+        try:
+            # Valor estimado de horas trabajadas (asumiendo $20/hora promedio)
+            hourly_rate = 20  # USD por hora
+            estimated_hours_value = total_hours_value * hourly_rate
+            
+            # Ahorro para empresas vs contratación tradicional (asumiendo 30% de ahorro)
+            traditional_hiring_cost = total_hours_value * (hourly_rate * 1.3)  # 30% más caro
+            savings_for_companies = traditional_hiring_cost - estimated_hours_value
+            savings_percentage = (savings_for_companies / traditional_hiring_cost * 100) if traditional_hiring_cost > 0 else 0
+            
+            # ROI para estudiantes (tiempo invertido vs experiencia ganada)
+            # Asumiendo que cada hora trabajada equivale a $50 de valor en experiencia
+            experience_value_per_hour = 50
+            total_experience_value = total_hours_value * experience_value_per_hour
+            student_roi = (total_experience_value / estimated_hours_value * 100) if estimated_hours_value > 0 else 0
+            
+            # Impacto económico por mes (últimos 6 meses)
+            monthly_impact = []
+            for i in range(6):
+                month_date = now - timedelta(days=30*i)
+                month_hours = WorkHour.objects.filter(
+                    date__year=month_date.year,
+                    date__month=month_date.month
+                ).aggregate(total=Sum('hours_worked'))
+                month_hours_value = float(month_hours['total'] or 0)
+                month_impact_value = month_hours_value * hourly_rate
+                
+                monthly_impact.append({
+                    'month': month_date.strftime('%Y-%m'),
+                    'hours': month_hours_value,
+                    'value': month_impact_value,
+                    'savings': month_impact_value * 0.3  # 30% de ahorro
+                })
+            monthly_impact.reverse()
+            
+            financial_metrics = {
+                'estimatedHoursValue': round(estimated_hours_value, 2),
+                'savingsForCompanies': round(savings_for_companies, 2),
+                'savingsPercentage': round(savings_percentage, 1),
+                'studentROI': round(student_roi, 1),
+                'totalExperienceValue': round(total_experience_value, 2),
+                'monthlyImpact': monthly_impact,
+                'hourlyRate': hourly_rate
+            }
+            
+        except Exception as e:
+            print(f"⚠️ [HUB ANALYTICS] Error obteniendo métricas financieras: {str(e)}")
+            financial_metrics = {
+                'estimatedHoursValue': 0,
+                'savingsForCompanies': 0,
+                'savingsPercentage': 0,
+                'studentROI': 0,
+                'totalExperienceValue': 0,
+                'monthlyImpact': [],
+                'hourlyRate': 0
             }
         
 
@@ -2620,6 +2812,10 @@ def api_hub_analytics_data(request):
             'strikesMetrics': strikes_metrics,
             'notificationsMetrics': notifications_metrics,
             'apiTrlMetrics': api_trl_metrics,
+            # Nuevas métricas implementadas
+            'satisfactionMetrics': satisfaction_metrics,
+            'efficiencyMetrics': efficiency_metrics,
+            'financialMetrics': financial_metrics,
         }
         
         # Debug: imprimir resumen de datos enviados
@@ -2634,6 +2830,9 @@ def api_hub_analytics_data(request):
         print(f"  - strikesMetrics: {strikes_metrics['activeStrikes']} strikes activos")
         print(f"  - notificationsMetrics: {notifications_metrics['totalNotifications']} notificaciones")
         print(f"  - apiTrlMetrics: {api_trl_metrics['totalApiRequests']} solicitudes API")
+        print(f"  - satisfactionMetrics: Rating promedio {satisfaction_metrics['averageProjectRating']}")
+        print(f"  - efficiencyMetrics: {efficiency_metrics['totalProjectsAnalyzed']} proyectos analizados")
+        print(f"  - financialMetrics: ${financial_metrics['estimatedHoursValue']} valor estimado")
         
         # Debug adicional para verificar datos específicos
         print(f"🔍 [HUB ANALYTICS] Debug adicional:")

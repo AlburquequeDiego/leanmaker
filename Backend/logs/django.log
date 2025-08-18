@@ -11209,3 +11209,274 @@ INFO 2025-08-18 11:25:33,853 basehttp 4068 6904 "GET /api/evaluations/admin/mana
 INFO 2025-08-18 11:25:33,858 basehttp 4068 12500 "GET /api/strikes/reports/?limit=1000 HTTP/1.1" 200 2888
 INFO 2025-08-18 11:25:36,897 basehttp 4068 2392 "GET /api/strikes/reports/?limit=1000 HTTP/1.1" 200 2888
 INFO 2025-08-18 11:25:36,907 basehttp 4068 10120 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 16126
+INFO 2025-08-18 11:25:46,882 basehttp 4068 4236 "GET /api/strikes/reports/?limit=1000 HTTP/1.1" 200 2888
+INFO 2025-08-18 11:25:46,889 basehttp 4068 2988 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 16126
+INFO 2025-08-18 11:25:47,877 basehttp 4068 10364 "GET /api/strikes/reports/?limit=1000 HTTP/1.1" 200 2888
+INFO 2025-08-18 11:25:47,895 basehttp 4068 11404 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 16126
+INFO 2025-08-18 11:25:51,627 basehttp 4068 7480 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-18 11:25:54,168 basehttp 4068 13744 "POST /api/token/ HTTP/1.1" 200 1224
+INFO 2025-08-18 11:25:54,200 basehttp 4068 12592 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-18 11:25:54,488 basehttp 4068 8856 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 862
+INFO 2025-08-18 11:26:02,647 basehttp 4068 11628 "GET /api/notifications/ HTTP/1.1" 200 8393
+INFO 2025-08-18 11:26:02,661 basehttp 4068 8244 "GET /api/notifications/ HTTP/1.1" 200 8393
+INFO 2025-08-18 11:26:07,509 basehttp 4068 9716 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 862
+INFO 2025-08-18 11:26:19,299 basehttp 4068 15904 "GET /api/hub/analytics/ HTTP/1.1" 200 8287
+INFO 2025-08-18 11:26:20,107 basehttp 4068 10200 "GET /api/hub/analytics/ HTTP/1.1" 200 8287
+INFO 2025-08-18 11:26:34,418 basehttp 4068 7656 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 11:26:34,424 basehttp 4068 11116 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 11:26:34,467 basehttp 4068 5660 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 11:26:34,470 basehttp 4068 16540 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 11:26:35,649 basehttp 4068 3076 "GET /api/hub/analytics/ HTTP/1.1" 200 8287
+INFO 2025-08-18 11:26:35,991 basehttp 4068 10556 "GET /api/hub/analytics/ HTTP/1.1" 200 8287
+INFO 2025-08-18 11:27:41,430 basehttp 4068 12548 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 11:27:41,435 basehttp 4068 14952 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 11:27:41,481 basehttp 4068 13628 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 11:27:41,497 basehttp 4068 15968 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 11:31:39,248 basehttp 4068 9436 "GET /api/hub/analytics/ HTTP/1.1" 200 8287
+INFO 2025-08-18 11:37:53,122 basehttp 4068 16836 "GET /api/hub/analytics/ HTTP/1.1" 200 8287
+INFO 2025-08-18 11:41:32,378 autoreload 4068 7456 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:41:34,981 signals 14072 14968 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:41:35,001 autoreload 14072 14968 Watching for file changes with StatReloader
+INFO 2025-08-18 11:41:45,987 autoreload 14072 14968 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:41:48,101 signals 8044 14120 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:41:48,106 autoreload 8044 14120 Watching for file changes with StatReloader
+INFO 2025-08-18 11:42:24,821 signals 3600 4708 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:42:48,592 basehttp 8044 15532 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-18 11:42:48,599 basehttp 8044 11716 "GET /api/users/profile/ HTTP/1.1" 200 634
+INFO 2025-08-18 11:42:48,684 basehttp 8044 16504 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:42:48,697 basehttp 8044 10352 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:42:49,823 basehttp 8044 15424 "GET /api/notifications/ HTTP/1.1" 200 8393
+INFO 2025-08-18 11:42:49,831 basehttp 8044 13008 "GET /api/notifications/ HTTP/1.1" 200 8393
+INFO 2025-08-18 11:42:51,190 basehttp 8044 10936 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:42:51,481 basehttp 8044 12732 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:42:51,503 basehttp 8044 12448 "GET /api/applications/ HTTP/1.1" 200 9957
+INFO 2025-08-18 11:42:51,601 basehttp 8044 7188 "GET /api/applications/ HTTP/1.1" 200 9957
+INFO 2025-08-18 11:42:51,625 basehttp 8044 4836 "GET /api/projects/ HTTP/1.1" 200 13748
+INFO 2025-08-18 11:42:51,672 basehttp 8044 10080 "GET /api/projects/ HTTP/1.1" 200 13748
+INFO 2025-08-18 11:42:53,021 basehttp 8044 11384 "GET /api/applications/my_applications/?t=1755531772462&nocache=true HTTP/1.1" 200 33154
+INFO 2025-08-18 11:42:53,026 basehttp 8044 888 "GET /api/applications/my_applications/?t=1755531772460&nocache=true HTTP/1.1" 200 33154
+INFO 2025-08-18 11:42:53,678 basehttp 8044 5080 "GET /api/projects/my_projects/ HTTP/1.1" 200 16538
+INFO 2025-08-18 11:42:53,681 basehttp 8044 8772 "GET /api/projects/my_projects/ HTTP/1.1" 200 16538
+INFO 2025-08-18 11:42:58,351 basehttp 8044 5424 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 862
+INFO 2025-08-18 11:42:59,481 basehttp 8044 16488 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 5862
+INFO 2025-08-18 11:43:00,506 basehttp 8044 788 "GET /api/evaluations/student-companies-to-evaluate/ HTTP/1.1" 200 5862
+INFO 2025-08-18 11:43:00,526 basehttp 8044 17404 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 3654
+INFO 2025-08-18 11:43:00,612 basehttp 8044 17352 "GET /api/evaluations/student-completed-evaluations/ HTTP/1.1" 200 3654
+INFO 2025-08-18 11:43:01,451 basehttp 8044 10848 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 27962
+INFO 2025-08-18 11:43:01,471 basehttp 8044 2084 "GET /api/calendar/events/student_events/ HTTP/1.1" 200 27962
+INFO 2025-08-18 11:43:11,042 basehttp 8044 13628 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:43:11,061 basehttp 8044 4276 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:43:11,766 basehttp 8044 9764 "GET /api/students/api-level-requests/ HTTP/1.1" 200 1141
+INFO 2025-08-18 11:43:11,798 basehttp 8044 11808 "GET /api/students/api-level-requests/ HTTP/1.1" 200 1141
+INFO 2025-08-18 11:43:11,801 basehttp 8044 11816 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:43:11,801 basehttp 8044 14324 "GET /api/students/me/ HTTP/1.1" 200 2051
+INFO 2025-08-18 11:43:15,741 basehttp 8044 12628 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 862
+INFO 2025-08-18 11:43:25,607 signals 10244 9320 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:44:06,606 basehttp 8044 10392 "GET /api/hub/analytics/ HTTP/1.1" 200 8297
+INFO 2025-08-18 11:44:27,051 autoreload 8044 14120 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:44:28,530 signals 2600 9464 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:44:28,541 autoreload 2600 9464 Watching for file changes with StatReloader
+INFO 2025-08-18 11:45:24,827 autoreload 2600 9464 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:45:26,185 signals 7480 16624 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:45:26,207 autoreload 7480 16624 Watching for file changes with StatReloader
+INFO 2025-08-18 11:48:12,040 autoreload 7480 16624 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:48:13,152 signals 8748 11792 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:48:13,170 autoreload 8748 11792 Watching for file changes with StatReloader
+INFO 2025-08-18 11:48:48,451 autoreload 8748 11792 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:48:49,321 signals 10064 13680 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:48:49,341 autoreload 10064 13680 Watching for file changes with StatReloader
+INFO 2025-08-18 11:48:53,376 autoreload 10064 13680 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:48:54,092 signals 11168 11632 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:48:54,100 autoreload 11168 11632 Watching for file changes with StatReloader
+INFO 2025-08-18 11:48:59,020 autoreload 11168 11632 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 11:48:59,842 signals 16436 5464 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:48:59,854 autoreload 16436 5464 Watching for file changes with StatReloader
+INFO 2025-08-18 11:49:42,836 basehttp 16436 8852 "GET /api/hub/analytics/ HTTP/1.1" 200 8289
+INFO 2025-08-18 11:49:45,186 basehttp 16436 4036 "GET /api/projects/my_projects/ HTTP/1.1" 200 16538
+INFO 2025-08-18 11:49:45,190 basehttp 16436 11700 "GET /api/projects/my_projects/ HTTP/1.1" 200 16538
+INFO 2025-08-18 11:49:47,262 basehttp 16436 18276 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-08-18 11:49:51,331 basehttp 16436 2564 "POST /api/token/ HTTP/1.1" 200 1143
+INFO 2025-08-18 11:49:51,483 basehttp 16436 9788 "GET /api/users/profile/ HTTP/1.1" 200 1876
+INFO 2025-08-18 11:49:53,350 basehttp 16436 8660 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1309
+INFO 2025-08-18 11:50:01,936 basehttp 16436 13548 "GET /api/projects/company_projects/ HTTP/1.1" 200 37299
+INFO 2025-08-18 11:50:01,942 basehttp 16436 17172 "GET /api/projects/company_projects/ HTTP/1.1" 200 37299
+INFO 2025-08-18 11:50:08,953 basehttp 16436 12376 "GET /api/projects/f3bf86c4-4255-49c9-8796-9c57cf558d39/ HTTP/1.1" 200 1590
+INFO 2025-08-18 11:50:16,615 basehttp 16436 16392 "GET /api/projects/091c4a24-6f95-4419-80b8-2d0c42527b2d/ HTTP/1.1" 200 1611
+INFO 2025-08-18 11:50:23,780 basehttp 16436 4400 "GET /api/projects/091c4a24-6f95-4419-80b8-2d0c42527b2d/ HTTP/1.1" 200 1611
+INFO 2025-08-18 11:52:28,647 autoreload 16436 5464 C:\Users\albur\Desktop\leanmaker\Backend\projects\models.py changed, reloading.
+INFO 2025-08-18 11:52:29,621 signals 10212 2848 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:52:29,636 autoreload 10212 2848 Watching for file changes with StatReloader
+INFO 2025-08-18 11:52:36,392 basehttp 10212 8748 "GET /api/hub/analytics/ HTTP/1.1" 200 8289
+INFO 2025-08-18 11:53:02,416 autoreload 10212 2848 C:\Users\albur\Desktop\leanmaker\Backend\projects\migrations\0010_make_trl_required.py changed, reloading.
+INFO 2025-08-18 11:53:03,321 signals 8480 7928 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:53:03,337 autoreload 8480 7928 Watching for file changes with StatReloader
+INFO 2025-08-18 11:53:58,529 autoreload 8480 7928 C:\Users\albur\Desktop\leanmaker\Backend\projects\migrations\0010_make_trl_required.py changed, reloading.
+INFO 2025-08-18 11:53:59,384 signals 12388 16984 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 11:53:59,394 autoreload 12388 16984 Watching for file changes with StatReloader
+INFO 2025-08-18 12:06:23,608 basehttp 12388 11736 "GET /api/hub/analytics/ HTTP/1.1" 200 8289
+INFO 2025-08-18 12:07:19,816 signals 11136 17412 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 12:09:23,151 basehttp 12388 9704 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 1309
+INFO 2025-08-18 12:13:38,731 basehttp 12388 11048 "POST /api/token/verify/ HTTP/1.1" 200 16
+INFO 2025-08-18 12:13:38,738 basehttp 12388 10036 "POST /api/token/verify/ HTTP/1.1" 200 16
+WARNING 2025-08-18 12:13:38,834 log 12388 14748 Unauthorized: /api/users/profile/
+WARNING 2025-08-18 12:13:38,835 basehttp 12388 14748 "GET /api/users/profile/ HTTP/1.1" 401 32
+WARNING 2025-08-18 12:13:38,853 log 12388 17276 Unauthorized: /api/users/profile/
+WARNING 2025-08-18 12:13:38,860 basehttp 12388 17276 "GET /api/users/profile/ HTTP/1.1" 401 32
+INFO 2025-08-18 12:13:38,966 basehttp 12388 4624 "POST /api/token/refresh/ HTTP/1.1" 200 262
+INFO 2025-08-18 12:13:38,978 basehttp 12388 16824 "POST /api/token/refresh/ HTTP/1.1" 200 262
+INFO 2025-08-18 12:13:39,028 basehttp 12388 11056 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:13:39,034 basehttp 12388 14468 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:13:40,546 basehttp 12388 10212 "GET /api/hub/analytics/ HTTP/1.1" 200 8289
+INFO 2025-08-18 12:13:41,063 basehttp 12388 14028 "GET /api/hub/analytics/ HTTP/1.1" 200 8289
+INFO 2025-08-18 12:16:54,231 autoreload 12388 16984 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 12:16:55,976 signals 1536 17212 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 12:16:55,993 autoreload 1536 17212 Watching for file changes with StatReloader
+INFO 2025-08-18 12:17:08,535 autoreload 1536 17212 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 12:17:09,379 signals 12620 1044 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 12:17:09,394 autoreload 12620 1044 Watching for file changes with StatReloader
+INFO 2025-08-18 12:17:27,894 autoreload 12620 1044 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 12:17:29,089 signals 8300 15552 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 12:17:29,103 autoreload 8300 15552 Watching for file changes with StatReloader
+INFO 2025-08-18 12:17:58,249 basehttp 8300 2392 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:19:16,804 basehttp 8300 5464 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:19:16,819 basehttp 8300 7516 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:19:16,854 basehttp 8300 11248 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:19:16,867 basehttp 8300 8952 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:19:28,776 basehttp 8300 2608 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:19:28,786 basehttp 8300 16548 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:19:28,819 basehttp 8300 4836 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:19:28,826 basehttp 8300 15660 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:19:47,927 basehttp 8300 2880 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:19:47,929 basehttp 8300 3228 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:19:47,997 basehttp 8300 17364 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:19:48,010 basehttp 8300 15080 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:00,787 basehttp 8300 14820 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:00,798 basehttp 8300 5288 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:00,835 basehttp 8300 10848 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:00,852 basehttp 8300 14380 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:10,773 basehttp 8300 4684 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:10,774 basehttp 8300 5092 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:10,808 basehttp 8300 11716 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:10,823 basehttp 8300 4032 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:21,786 basehttp 8300 14052 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:21,786 basehttp 8300 14888 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:21,833 basehttp 8300 1944 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:21,835 basehttp 8300 17476 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:36,802 basehttp 8300 1868 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:36,814 basehttp 8300 16516 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:36,850 basehttp 8300 2536 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:36,860 basehttp 8300 9672 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:45,783 basehttp 8300 1804 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:45,794 basehttp 8300 14396 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:45,823 basehttp 8300 2548 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:45,834 basehttp 8300 3900 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:57,534 basehttp 8300 7932 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:57,584 basehttp 8300 14740 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:20:57,642 basehttp 8300 16936 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:20:57,694 basehttp 8300 15756 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:21:02,776 basehttp 8300 4532 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:21:02,783 basehttp 8300 8964 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:21:08,777 basehttp 8300 9476 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:21:08,786 basehttp 8300 10464 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:21:08,812 basehttp 8300 13592 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:21:08,822 basehttp 8300 15204 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:21:34,775 basehttp 8300 3796 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:21:34,789 basehttp 8300 15964 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:21:34,833 basehttp 8300 11588 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:21:34,845 basehttp 8300 2212 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:21:36,015 basehttp 8300 7516 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:21:36,083 autoreload 8300 15552 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-18 12:21:37,322 signals 2828 17224 Signals de notificaciones conectados exitosamente
+INFO 2025-08-18 12:21:37,340 autoreload 2828 17224 Watching for file changes with StatReloader
+INFO 2025-08-18 12:21:41,572 basehttp 2828 16836 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:21:41,586 basehttp 2828 15464 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:21:41,615 basehttp 2828 2164 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:21:41,636 basehttp 2828 8952 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:21:43,525 basehttp 2828 15944 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:21:43,542 basehttp 2828 5872 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:23:56,236 basehttp 2828 2880 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:23:56,266 basehttp 2828 18312 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:23:56,744 basehttp 2828 15080 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:23:56,849 basehttp 2828 2180 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:24:01,399 basehttp 2828 9316 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:24:01,419 basehttp 2828 8748 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:24:25,814 basehttp 2828 15740 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:24:25,823 basehttp 2828 3348 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:24:25,867 basehttp 2828 13328 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:24:25,881 basehttp 2828 12648 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:24:41,799 basehttp 2828 6344 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:24:41,808 basehttp 2828 13364 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:24:41,864 basehttp 2828 9748 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:24:41,874 basehttp 2828 16676 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:24:51,776 basehttp 2828 2084 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:24:51,787 basehttp 2828 16432 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:24:51,819 basehttp 2828 16544 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:24:51,837 basehttp 2828 15188 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:25:12,869 basehttp 2828 2936 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:25:12,880 basehttp 2828 17424 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:25:12,999 basehttp 2828 15724 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:25:13,020 basehttp 2828 2364 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:00,478 basehttp 2828 7696 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:00,519 basehttp 2828 11204 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:00,564 basehttp 2828 15452 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:00,660 basehttp 2828 7396 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:03,416 basehttp 2828 13668 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:26:03,420 basehttp 2828 14620 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:26:15,814 basehttp 2828 6208 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:15,826 basehttp 2828 16132 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:15,868 basehttp 2828 12816 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:15,886 basehttp 2828 17636 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:29,790 basehttp 2828 16544 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:29,825 basehttp 2828 16396 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:29,855 basehttp 2828 2064 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:29,903 basehttp 2828 7892 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:42,744 basehttp 2828 12816 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:42,760 basehttp 2828 14620 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:26:42,811 basehttp 2828 17316 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:26:42,815 basehttp 2828 16852 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:27:02,793 basehttp 2828 13732 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:27:02,835 basehttp 2828 13724 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:27:02,855 basehttp 2828 13668 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:27:02,886 basehttp 2828 2796 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:32:34,916 basehttp 2828 15260 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:32:34,930 basehttp 2828 19396 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:32:34,977 basehttp 2828 15472 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:32:34,980 basehttp 2828 15396 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:32:36,502 basehttp 2828 19280 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:32:36,519 basehttp 2828 18116 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:32:39,923 basehttp 2828 18680 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:32:39,940 basehttp 2828 18684 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:32:40,473 basehttp 2828 18636 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:32:40,479 basehttp 2828 18588 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:32:45,351 basehttp 2828 18592 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:32:45,373 basehttp 2828 18700 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:33:03,831 basehttp 2828 12148 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:03,844 basehttp 2828 9744 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:03,923 basehttp 2828 12592 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:33:03,926 basehttp 2828 2176 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:33:19,699 basehttp 2828 13092 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:19,705 basehttp 2828 3076 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:19,767 basehttp 2828 10060 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:33:19,781 basehttp 2828 12928 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:33:21,530 basehttp 2828 18776 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:33:22,066 basehttp 2828 18404 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:33:33,485 basehttp 2828 17440 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:33,489 basehttp 2828 16588 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:33,557 basehttp 2828 7864 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:33:33,573 basehttp 2828 11800 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:33:39,106 basehttp 2828 9668 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:33:39,113 basehttp 2828 8488 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:33:49,796 basehttp 2828 10628 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:49,812 basehttp 2828 14912 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:33:49,865 basehttp 2828 13700 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:33:49,875 basehttp 2828 18108 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:34:43,784 basehttp 2828 17292 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:34:43,801 basehttp 2828 16496 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:34:43,833 basehttp 2828 4972 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:34:43,850 basehttp 2828 11208 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:35:39,923 basehttp 2828 4848 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:35:39,943 basehttp 2828 16332 "POST /api/token/verify/ HTTP/1.1" 200 116
+INFO 2025-08-18 12:35:40,406 basehttp 2828 19052 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:35:40,423 basehttp 2828 19444 "GET /api/users/profile/ HTTP/1.1" 200 586
+INFO 2025-08-18 12:35:45,307 basehttp 2828 13096 "GET /api/hub/analytics/ HTTP/1.1" 200 9604
+INFO 2025-08-18 12:35:45,793 basehttp 2828 17188 "GET /api/hub/analytics/ HTTP/1.1" 200 9604

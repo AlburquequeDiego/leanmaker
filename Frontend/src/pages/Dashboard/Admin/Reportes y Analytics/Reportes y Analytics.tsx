@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useHubAnalytics } from '../../../../hooks/useHubAnalytics';
 import { useTheme } from '../../../../contexts/ThemeContext';
+import { translateNotificationType } from '../../../../utils/notificationTranslations';
+import { 
+  powerBIColors, 
+  powerBIGradients, 
+  powerBITooltipStyles, 
+  powerBITooltipDarkStyles,
+  powerBICardStyles,
+  powerBIGraphConfig,
+  powerBIAxisConfig,
+  powerBIAxisDarkConfig,
+  powerBIGridConfig,
+  powerBIGridDarkConfig
+} from '../../../../utils/powerBIStyles';
 import {
   Box,
   Typography,
@@ -55,84 +68,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Paleta de colores estilo Power BI mejorada - Colores más claros y vibrantes
-const powerBIColors = [
-  '#00D4AA', // Teal brillante
-  '#6366F1', // Indigo vibrante
-  '#EF4444', // Rojo brillante
-  '#F59E0B', // Amarillo dorado
-  '#10B981', // Verde esmeralda
-  '#3B82F6', // Azul brillante
-  '#F97316', // Naranja vibrante
-  '#8B5CF6', // Púrpura vibrante
-  '#06B6D4', // Cian brillante
-  '#EC4899'  // Rosa vibrante
-];
-
-// Gradientes Power BI
-const powerBIGradients = {
-  primary: 'linear-gradient(135deg, #01B8AA 0%, #374649 100%)',
-  secondary: 'linear-gradient(135deg, #FD625E 0%, #F2C80F 100%)',
-  tertiary: 'linear-gradient(135deg, #8AD4EB 0%, #3599B8 100%)',
-  success: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-  warning: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-  error: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-  info: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-  purple: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
-};
-
 // Colores para los estados de proyectos mejorados
 const projectStatusColors = {
   'Activos': '#01B8AA',
   'Completados': '#374649', 
   'Pendientes': '#FD625E',
   'Cancelados': '#F2C80F'
-};
-
-// Estilos Power BI para cards
-const powerBICardStyles = {
-  borderRadius: '16px',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-  backdropFilter: 'blur(20px)',
-  position: 'relative' as const,
-  overflow: 'hidden' as const,
-  '&::before': {
-    content: '""',
-    position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '4px',
-    background: 'linear-gradient(90deg, #01B8AA 0%, #374649 50%, #FD625E 100%)',
-  }
-};
-
-// Estilos Power BI para tooltips
-const powerBITooltipStyles = {
-  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: '16px',
-  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1)',
-  padding: '16px 20px',
-  fontSize: '14px',
-  fontWeight: 600,
-  color: '#1e293b'
-};
-
-// Estilos Power BI para dark mode tooltips
-const powerBITooltipDarkStyles = {
-  backgroundColor: 'rgba(30, 41, 59, 0.95)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: '16px',
-  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2)',
-  padding: '16px 20px',
-  fontSize: '14px',
-  fontWeight: 600,
-  color: '#f1f5f9'
 };
 
 const getStatusColor = (status: string) => {
@@ -194,9 +135,36 @@ const translateMonthToSpanish = (month: string): string => {
   return month;
 };
 
+// Función para traducir estados de proyecto del inglés al español
+const translateProjectStatusToSpanish = (status: string): string => {
+  const statusTranslations: { [key: string]: string } = {
+    'active': 'Activo',
+    'published': 'Publicado',
+    'completed': 'Completado',
+    'draft': 'Borrador',
+    'deleted': 'Eliminado',
+    'suspended': 'Suspendido',
+    'pending': 'Pendiente',
+    'reviewing': 'En Revisión',
+    'accepted': 'Aceptado',
+    'rejected': 'Rechazado',
+    'open': 'Abierto',
+    'in-progress': 'En Progreso',
+    'cancelled': 'Cancelado',
+    'overdue': 'Atrasado',
+    'closed': 'Cerrado',
+    'terminated': 'Terminado'
+  };
+  
+  return statusTranslations[status.toLowerCase()] || status;
+};
+
 export const ReportesYAnalytics = () => {
   const { data, loading, error, refreshData } = useHubAnalytics();
   const { themeMode } = useTheme();
+  
+  // Alias para analyticsData para mantener compatibilidad
+  const analyticsData = data;
   
   // Usar datos del backend o valores por defecto
   const stats = data?.stats || {
@@ -222,6 +190,19 @@ export const ReportesYAnalytics = () => {
   if (topCompanies && topCompanies.length > 0) {
     console.log('🔍 [FRONTEND DEBUG] Primera empresa:', topCompanies[0]);
     console.log('🔍 [FRONTEND DEBUG] Segunda empresa:', topCompanies[1]);
+  }
+  
+  // Debug: Verificar datos de estudiantes
+  console.log('🔍 [FRONTEND DEBUG] Top Students:', topStudents);
+  if (topStudents && topStudents.length > 0) {
+    console.log('🔍 [FRONTEND DEBUG] Primer estudiante:', topStudents[0]);
+    console.log('🔍 [FRONTEND DEBUG] Segundo estudiante:', topStudents[1]);
+  }
+  
+  // Debug: Verificar datos de estados de proyecto
+  console.log('🔍 [FRONTEND DEBUG] Project Status Data:', projectStatusData);
+  if (projectStatusData && projectStatusData.length > 0) {
+    console.log('🔍 [FRONTEND DEBUG] Estados disponibles:', projectStatusData.map(s => s.name));
   }
   const recentActivity = data?.recentActivity || [];
   const pendingRequests = data?.pendingRequests || [];
@@ -508,7 +489,7 @@ export const ReportesYAnalytics = () => {
       </Box>
 
       {/* Gráficos y Tablas */}
-      <Box sx={{ display: 'flex', gap: 10, mb: 10, flexWrap: 'wrap' }}>
+      <Box sx={{ display: 'flex', gap: 4, mb: 10, flexWrap: 'wrap', alignItems: 'flex-start' }}>
         {/* Gráfico de Actividad Semanal */}
         <Box sx={{ flex: '2 1 600px', minWidth: 400 }}>
           <Card sx={{ 
@@ -540,57 +521,37 @@ export const ReportesYAnalytics = () => {
                   <LineChart data={activityData}>
                     <defs>
                       <linearGradient id="usuariosGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1}/>
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.2}/>
                       </linearGradient>
                       <linearGradient id="proyectosGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.2}/>
                       </linearGradient>
                       <linearGradient id="aplicacionesGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.1}/>
+                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.2}/>
                       </linearGradient>
                       <linearGradient id="horasGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.2}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid 
                       strokeDasharray="3 3" 
-                      stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
-                      opacity={0.3}
+                      stroke={themeMode === 'dark' ? powerBIGridDarkConfig.stroke : powerBIGridConfig.stroke}
+                      opacity={powerBIGridConfig.opacity}
                     />
                     <XAxis 
                       dataKey="name" 
-                      tick={{ 
-                        fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b', 
-                        fontSize: 12, 
-                        fontWeight: 600 
-                      }}
-                      axisLine={{ 
-                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                        strokeWidth: 2
-                      }}
-                      tickLine={{ 
-                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                        strokeWidth: 2
-                      }}
+                      tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                      axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
+                      tickLine={themeMode === 'dark' ? powerBIAxisDarkConfig.tickLine : powerBIAxisConfig.tickLine}
                     />
                     <YAxis 
-                      tick={{ 
-                        fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b', 
-                        fontSize: 12, 
-                        fontWeight: 600 
-                      }}
-                      axisLine={{ 
-                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                        strokeWidth: 2
-                      }}
-                      tickLine={{ 
-                        stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                        strokeWidth: 2
-                      }}
+                      tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                      axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
+                      tickLine={themeMode === 'dark' ? powerBIAxisDarkConfig.tickLine : powerBIAxisConfig.tickLine}
                     />
                     <Tooltip 
                       contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
@@ -729,7 +690,7 @@ export const ReportesYAnalytics = () => {
         </Box>
 
                         {/* Gráfico de Estado de Proyectos */}
-        <Box sx={{ flex: '1 1 300px', minWidth: 300 }}>
+        <Box sx={{ flex: '1 1 350px', minWidth: 350, maxWidth: 400 }}>
           <Card sx={{ 
             ...powerBICardStyles,
             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
@@ -759,7 +720,7 @@ export const ReportesYAnalytics = () => {
                   <PieChart>
                     <defs>
                       <filter id="pieShadow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                        <feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="rgba(0,0,0,0.2)"/>
                       </filter>
                     </defs>
                     <Pie
@@ -767,12 +728,12 @@ export const ReportesYAnalytics = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
-                      outerRadius={100}
-                      innerRadius={50}
+                      label={({ name, percent }) => `${translateProjectStatusToSpanish(name)} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
+                      outerRadius={120}
+                      innerRadius={60}
                       dataKey="value"
                       stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
-                      strokeWidth={3}
+                      strokeWidth={4}
                       filter="url(#pieShadow)"
                     >
                       {projectStatusData.map((entry, index) => (
@@ -780,12 +741,20 @@ export const ReportesYAnalytics = () => {
                           key={`cell-${index}`} 
                           fill={powerBIColors[index % powerBIColors.length]}
                           stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
-                          strokeWidth={2}
+                          strokeWidth={3}
                         />
                       ))}
                     </Pie>
                     <Tooltip 
-                      contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                      contentStyle={{
+                        backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                        border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                        borderRadius: '12px',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                        fontSize: '14px',
+                        fontWeight: 600
+                      }}
                       formatter={(value, name) => [
                         `${value} proyectos`, 
                         `${name}`
@@ -798,7 +767,7 @@ export const ReportesYAnalytics = () => {
                         fontWeight: 600,
                         paddingTop: '20px'
                       }}
-                      formatter={(value) => `📊 ${value}`}
+                      formatter={(value) => `📊 ${translateProjectStatusToSpanish(value)}`}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -912,7 +881,15 @@ export const ReportesYAnalytics = () => {
                       }}
                     />
                     <Tooltip 
-                      contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
+                      contentStyle={{
+                        backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                        border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                        borderRadius: '12px',
+                        color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                        fontSize: '14px',
+                        fontWeight: 600
+                      }}
                       formatter={(value, name) => {
                         const labels = {
                           estudiantes: '👥 Estudiantes',
@@ -943,31 +920,35 @@ export const ReportesYAnalytics = () => {
                     <Bar 
                       dataKey="estudiantes" 
                       fill="url(#estudiantesGradient)" 
-                      radius={[8, 8, 0, 0]}
+                      radius={[12, 12, 0, 0]}
                       stroke="#22c55e"
-                      strokeWidth={1}
+                      strokeWidth={2}
+                      filter="drop-shadow(0 4px 8px rgba(34, 197, 94, 0.3))"
                     />
                     <Bar 
                       dataKey="proyectos" 
                       fill="url(#proyectosGradient)" 
-                      radius={[8, 8, 0, 0]}
+                      radius={[12, 12, 0, 0]}
                       stroke="#3b82f6"
-                      strokeWidth={1}
+                      strokeWidth={2}
+                      filter="drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))"
                     />
                     <Bar 
                       dataKey="empresas" 
                       fill="url(#empresasGradient)" 
-                      radius={[8, 8, 0, 0]}
+                      radius={[12, 12, 0, 0]}
                       stroke="#f59e0b"
-                      strokeWidth={1}
+                      strokeWidth={2}
+                      filter="drop-shadow(0 4px 8px rgba(245, 158, 11, 0.3))"
                     />
                     {monthlyStats.some(item => item.horas !== undefined) && (
                       <Bar 
                         dataKey="horas" 
                         fill="url(#horasGradient)" 
-                        radius={[8, 8, 0, 0]}
+                        radius={[12, 12, 0, 0]}
                         stroke="#8b5cf6"
-                        strokeWidth={1}
+                        strokeWidth={2}
+                        filter="drop-shadow(0 4px 8px rgba(139, 92, 246, 0.3))"
                       />
                     )}
                   </BarChart>
@@ -1062,19 +1043,19 @@ export const ReportesYAnalytics = () => {
                                {student.totalHours.toLocaleString()}
                              </Typography>
                            </TableCell>
-                           <TableCell>
-                             <Chip 
-                               label={student.completedProjects}
-                               size="small"
-                               color={student.completedProjects > 0 ? 'primary' : 'default'}
-                               variant={student.completedProjects > 0 ? 'filled' : 'outlined'}
-                             />
-                           </TableCell>
-                           <TableCell>
-                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontStyle: 'italic' }}>
-                               En desarrollo ⚠️
-                             </Typography>
-                           </TableCell>
+                                                    <TableCell>
+                           <Chip 
+                             label={student.completedProjects}
+                             size="small"
+                             color={student.completedProjects > 0 ? 'primary' : 'default'}
+                             variant={student.completedProjects > 0 ? 'filled' : 'outlined'}
+                           />
+                         </TableCell>
+                         <TableCell>
+                           <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                             {student.averageRating !== null && student.averageRating !== undefined ? `${student.averageRating}/5` : 'N/A'}
+                           </Typography>
+                         </TableCell>
                          </TableRow>
                        ))}
                      </TableBody>
@@ -1168,9 +1149,9 @@ export const ReportesYAnalytics = () => {
                              </Typography>
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontStyle: 'italic' }}>
-                               En desarrollo ⚠️
-                             </Typography>
+                                                        <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                             {company.averageRating !== null && company.averageRating !== undefined ? `${company.averageRating}/5` : 'N/A'}
+                           </Typography>
                            </TableCell>
                          </TableRow>
                        ))}
@@ -1213,19 +1194,9 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            transition: 'all 0.3s ease',
-            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
-            }
-          }}>
+          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
             <CardContent sx={{ p: 4 }}>
-              {/* KPI Cards de Aplicaciones - Diseño Mejorado */}
+              {/* KPI Cards de Aplicaciones - Diseño Power BI Modern */}
               <Box sx={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
@@ -1234,61 +1205,58 @@ export const ReportesYAnalytics = () => {
               }}>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                  borderRadius: '16px',
+                  background: powerBIGradients.primary,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#475569' : '#e2e8f0',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#475569' : '#f1f5f9',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(16, 185, 129, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#3b82f6', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {applicationsMetrics.totalApplications}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Total de Aplicaciones
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
+                  borderRadius: '16px',
+                  background: powerBIGradients.success,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(34, 197, 94, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(34, 197, 94, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {applicationsMetrics.acceptanceRate}%
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Tasa de Aceptación
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fffbeb',
+                  borderRadius: '16px',
+                  background: powerBIGradients.warning,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(245, 158, 11, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fef3c7',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(245, 158, 11, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {applicationsMetrics.acceptedApplications}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Aplicaciones Aceptadas
                   </Typography>
                 </Box>
@@ -1327,39 +1295,19 @@ export const ReportesYAnalytics = () => {
                       </defs>
                       <CartesianGrid 
                         strokeDasharray="3 3" 
-                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        stroke={themeMode === 'dark' ? powerBIGridDarkConfig.stroke : powerBIGridConfig.stroke}
                         opacity={0.3}
                       />
                       <XAxis 
                         dataKey="name" 
-                        tick={{ 
-                          fontSize: 14, 
-                          fontWeight: 700, 
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
-                        tickLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                        tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                        axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
+                        tickLine={themeMode === 'dark' ? powerBIAxisDarkConfig.tickLine : powerBIAxisConfig.tickLine}
                       />
                       <YAxis 
-                        tick={{ 
-                          fontSize: 12, 
-                          fontWeight: 600, 
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
-                        tickLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                        tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                        axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
+                        tickLine={themeMode === 'dark' ? powerBIAxisDarkConfig.tickLine : powerBIAxisConfig.tickLine}
                       />
                       <Tooltip 
                         contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
@@ -1382,16 +1330,18 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="aplicaciones" 
                         fill="url(#totalAppsGradient)" 
-                        radius={[8, 8, 0, 0]}
+                        radius={powerBIGraphConfig.bar.radius}
                         stroke="#3b82f6"
-                        strokeWidth={1}
+                        strokeWidth={powerBIGraphConfig.bar.strokeWidth}
+                        filter={powerBIGraphConfig.bar.filter}
                       />
                       <Bar 
                         dataKey="aceptadas" 
                         fill="url(#acceptedAppsGradient)" 
-                        radius={[8, 8, 0, 0]}
+                        radius={powerBIGraphConfig.bar.radius}
                         stroke="#22c55e"
-                        strokeWidth={1}
+                        strokeWidth={powerBIGraphConfig.bar.strokeWidth}
+                        filter={powerBIGraphConfig.bar.filter}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -1442,12 +1392,12 @@ export const ReportesYAnalytics = () => {
                             ? '📊 Sin Datos' 
                             : `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`
                         }
-                        outerRadius={100}
-                        innerRadius={50}
+                        outerRadius={powerBIGraphConfig.pie.outerRadius}
+                        innerRadius={powerBIGraphConfig.pie.innerRadius}
                         stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
-                        strokeWidth={3}
+                        strokeWidth={powerBIGraphConfig.pie.strokeWidth}
                         dataKey="value"
-                        filter="url(#pieShadow2)"
+                        filter={powerBIGraphConfig.pie.filter}
                       >
                         {(
                           applicationsMetrics.totalApplications > 0 
@@ -1518,17 +1468,7 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            transition: 'all 0.3s ease',
-            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
-            }
-          }}>
+          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Strikes - Diseño Mejorado */}
               <Box sx={{ 
@@ -1539,61 +1479,58 @@ export const ReportesYAnalytics = () => {
               }}>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#450a0a' : '#fef2f2',
+                  borderRadius: '16px',
+                  background: powerBIGradients.danger,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#7f1d1d' : '#fecaca',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(239, 68, 68, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#7f1d1d' : '#fee2e2',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(239, 68, 68, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#ef4444', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {strikesMetrics.activeStrikes}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Strikes Activos
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fef3c7',
+                  borderRadius: '16px',
+                  background: powerBIGradients.warning,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(245, 158, 11, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fde68a',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(245, 158, 11, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {strikesMetrics.studentsWithStrikes}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Estudiantes con Strikes
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
+                  borderRadius: '16px',
+                  background: powerBIGradients.success,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(34, 197, 94, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(34, 197, 94, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {strikesMetrics.topReportingCompanies.length}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Empresas Reportando
                   </Typography>
                 </Box>
@@ -1732,39 +1669,19 @@ export const ReportesYAnalytics = () => {
                       </defs>
                       <CartesianGrid 
                         strokeDasharray="3 3" 
-                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        stroke={themeMode === 'dark' ? powerBIGridDarkConfig.stroke : powerBIGridConfig.stroke}
                         opacity={0.3}
                       />
                       <XAxis 
                         dataKey="categoria" 
-                        tick={{ 
-                          fontSize: 11, 
-                          fontWeight: 600,
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
-                        tickLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                        tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                        axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
+                        tickLine={themeMode === 'dark' ? powerBIAxisDarkConfig.tickLine : powerBIAxisConfig.tickLine}
                       />
-                      <YAxis 
-                        tick={{ 
-                          fontSize: 12, 
-                          fontWeight: 600,
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
-                        tickLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                                              <YAxis 
+                        tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                        axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
+                        tickLine={themeMode === 'dark' ? powerBIAxisDarkConfig.tickLine : powerBIAxisConfig.tickLine}
                       />
                       <Tooltip 
                         contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
@@ -1773,9 +1690,10 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="cantidad" 
                         fill="url(#activeStrikesGradient)" 
-                        radius={[8, 8, 0, 0]}
+                        radius={powerBIGraphConfig.bar.radius}
                         stroke="#ef4444"
-                        strokeWidth={1}
+                        strokeWidth={powerBIGraphConfig.bar.strokeWidth}
+                        filter={powerBIGraphConfig.bar.filter}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -1811,17 +1729,7 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            transition: 'all 0.3s ease',
-            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
-            }
-          }}>
+          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Notificaciones - Diseño Mejorado */}
               <Box sx={{ 
@@ -1832,61 +1740,58 @@ export const ReportesYAnalytics = () => {
               }}>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                  borderRadius: '16px',
+                  background: powerBIGradients.primary,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#475569' : '#e2e8f0',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#475569' : '#f1f5f9',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(16, 185, 129, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#3b82f6', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {notificationsMetrics.totalNotifications}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Total de Notificaciones
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
+                  borderRadius: '16px',
+                  background: powerBIGradients.success,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(34, 197, 94, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(34, 197, 94, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {notificationsMetrics.readRate}%
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Tasa de Lectura
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fffbeb',
+                  borderRadius: '16px',
+                  background: powerBIGradients.warning,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(245, 158, 11, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fef3c7',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(245, 158, 11, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {notificationsMetrics.massNotifications}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Notificaciones Masivas
                   </Typography>
                 </Box>
@@ -2004,9 +1909,10 @@ export const ReportesYAnalytics = () => {
                             strokeWidth: 2
                           }}
                           tickLine={{ 
-                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                            stroke: themeMode === 'dark' ? '#334155' : '#e2e8f9',
                             strokeWidth: 2
                           }}
+                          tickFormatter={(value) => translateNotificationType(value)}
                         />
                         <YAxis 
                           tick={{ 
@@ -2026,6 +1932,7 @@ export const ReportesYAnalytics = () => {
                         <Tooltip 
                           contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
                           formatter={(value, name) => [value, 'Notificaciones']}
+                          labelFormatter={(label) => translateNotificationType(label)}
                         />
                         <Bar 
                           dataKey="count" 
@@ -2069,17 +1976,7 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            transition: 'all 0.3s ease',
-            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
-            }
-          }}>
+          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de API - Diseño Mejorado */}
               <Box sx={{ 
@@ -2090,61 +1987,58 @@ export const ReportesYAnalytics = () => {
               }}>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc',
+                  borderRadius: '16px',
+                  background: powerBIGradients.primary,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#475569' : '#e2e8f0',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#475569' : '#f1f5f9',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(16, 185, 129, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#3b82f6', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {apiTrlMetrics.totalApiRequests}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Total de Solicitudes API
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#451a03' : '#fffbeb',
+                  borderRadius: '16px',
+                  background: powerBIGradients.warning,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#78350f' : '#fde68a',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(245, 158, 11, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#78350f' : '#fef3c7',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(245, 158, 11, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#f59e0b', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {apiTrlMetrics.pendingApiRequests}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Solicitudes Pendientes
                   </Typography>
                 </Box>
                 <Box sx={{ 
                   p: 3, 
-                  borderRadius: 2, 
-                  bgcolor: themeMode === 'dark' ? '#064e3b' : '#f0fdf4',
+                  borderRadius: '16px',
+                  background: powerBIGradients.success,
                   textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: themeMode === 'dark' ? '#065f46' : '#bbf7d0',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 8px 32px rgba(34, 197, 94, 0.3)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: themeMode === 'dark' ? '#065f46' : '#dcfce7',
-                    transform: 'translateY(-1px)'
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 40px rgba(34, 197, 94, 0.4)'
                   }
                 }}>
-                  <Typography variant="h3" sx={{ fontWeight: 800, color: '#22c55e', mb: 1 }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                     {apiTrlMetrics.approvedApiRequests}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
                     Solicitudes Aprobadas
                   </Typography>
                 </Box>
@@ -2197,39 +2091,22 @@ export const ReportesYAnalytics = () => {
                       </defs>
                       <CartesianGrid 
                         strokeDasharray="3 3" 
-                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        stroke={themeMode === 'dark' ? powerBIGridDarkConfig.stroke : powerBIGridConfig.stroke}
                         opacity={0.3}
                       />
                       <XAxis 
                         dataKey="estado" 
-                        tick={{ 
-                          fontSize: 12, 
-                          fontWeight: 600, 
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                        tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                        axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
                         tickLine={{ 
                           stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
                           strokeWidth: 2
                         }}
                       />
                       <YAxis 
-                        tick={{ 
-                          fontSize: 12, 
-                          fontWeight: 600, 
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
-                        tickLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                        tick={themeMode === 'dark' ? powerBIAxisDarkConfig.tick : powerBIAxisConfig.tick}
+                        axisLine={themeMode === 'dark' ? powerBIAxisDarkConfig.axisLine : powerBIAxisConfig.axisLine}
+                        tickLine={themeMode === 'dark' ? powerBIAxisDarkConfig.tickLine : powerBIAxisConfig.tickLine}
                       />
                       <Tooltip 
                         contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
@@ -2238,9 +2115,10 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="solicitudes" 
                         fill="url(#totalApiGradient)" 
-                        radius={[8, 8, 0, 0]}
+                        radius={powerBIGraphConfig.bar.radius}
                         stroke="#3b82f6"
-                        strokeWidth={1}
+                        strokeWidth={powerBIGraphConfig.bar.strokeWidth}
+                        filter={powerBIGraphConfig.bar.filter}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -2296,12 +2174,12 @@ export const ReportesYAnalytics = () => {
                             ? '📊 Sin Datos' 
                             : `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`
                         }
-                        outerRadius={100}
-                        innerRadius={50}
+                        outerRadius={powerBIGraphConfig.pie.outerRadius}
+                        innerRadius={powerBIGraphConfig.pie.innerRadius}
                         stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
-                        strokeWidth={3}
+                        strokeWidth={powerBIGraphConfig.pie.strokeWidth}
                         dataKey="value"
-                        filter="url(#pieShadow4)"
+                        filter={powerBIGraphConfig.pie.filter}
                       >
                         {(
                           apiTrlMetrics.totalApiRequests > 0 
@@ -2492,46 +2370,24 @@ export const ReportesYAnalytics = () => {
                         opacity={0.3}
                       />
                       <XAxis 
-                        dataKey="trl_level" 
-                        tick={{ 
-                          fontSize: 11, 
-                          fontWeight: 600,
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
-                        tickLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                        dataKey="trl_level"
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
                       />
                       <YAxis 
-                        tick={{ 
-                          fontSize: 12, 
-                          fontWeight: 600,
-                          fill: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        axisLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
-                        tickLine={{ 
-                          stroke: themeMode === 'dark' ? '#334155' : '#e2e8f0',
-                          strokeWidth: 2
-                        }}
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
                       />
                       <Tooltip 
-                        contentStyle={themeMode === 'dark' ? powerBITooltipDarkStyles : powerBITooltipStyles}
-                        formatter={(value, name) => [value, 'Proyectos']}
+                        contentStyle={{
+                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
                       />
                       <Bar 
                         dataKey="count" 
-                        fill="url(#trlLevelGradient)" 
-                        radius={[8, 8, 0, 0]}
-                        stroke="#f59e0b"
-                        strokeWidth={1}
+                        fill="url(#trlLevelGradient)"
+                        radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -2545,13 +2401,32 @@ export const ReportesYAnalytics = () => {
                       borderRadius: '12px',
                       border: '1px dashed rgba(255,255,255,0.2)'
                     }}>
-                      <Typography sx={{ 
-                        color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
-                        fontSize: '1.1rem',
-                        fontWeight: 500
-                      }}>
-                        📊 No hay datos de distribución de proyectos por nivel TRL
-                      </Typography>
+                              <Typography sx={{
+          color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary',
+          fontSize: '1.1rem',
+          fontWeight: 500,
+          textAlign: 'center'
+        }}>
+          📊 No hay proyectos con nivel TRL asignado
+          <br />
+          <Typography variant="body2" sx={{
+            color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+            mt: 1,
+            fontSize: '0.9rem'
+          }}>
+            Los proyectos deben tener un nivel TRL asignado para aparecer en esta métrica
+          </Typography>
+          {analyticsData?.apiTrlMetrics?.projectsWithoutTrl > 0 && (
+            <Typography variant="body2" sx={{
+              color: themeMode === 'dark' ? '#fbbf24' : '#d97706',
+              mt: 2,
+              fontSize: '0.9rem',
+              fontWeight: 500
+            }}>
+              ⚠️ {analyticsData.apiTrlMetrics.projectsWithoutTrl} proyecto(s) sin TRL asignado
+            </Typography>
+          )}
+        </Typography>
                     </Box>
                   )}
                 </Box>
@@ -2560,6 +2435,769 @@ export const ReportesYAnalytics = () => {
           </Card>
         </Box>
 
+        {/* ===== NUEVAS SECCIONES ===== */}
+        
+        {/* Sección: Métricas de Satisfacción y Calidad */}
+        <Box sx={{ mt: 6, mb: 4 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2, 
+            mb: 3,
+            pb: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider'
+          }}>
+            <Box sx={{ 
+              p: 1.5, 
+              borderRadius: 2, 
+              bgcolor: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Typography sx={{ fontSize: 20, color: 'white' }}>⭐</Typography>
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
+              Métricas de Satisfacción y Calidad
+            </Typography>
+          </Box>
+          
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            transition: 'all 0.3s ease',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
+            }
+          }}>
+            <CardContent sx={{ p: 4 }}>
+              {/* KPI Cards de Satisfacción */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: 3, 
+                mb: 4 
+              }}>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#10b981',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(16, 185, 129, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {analyticsData?.satisfactionMetrics?.averageProjectRating || 0}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    Calificación Promedio
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    ⭐⭐⭐⭐⭐
+                  </Typography>
+                </Box>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#3b82f6',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(59, 130, 246, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {analyticsData?.satisfactionMetrics?.companySatisfactionRate || 0}%
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                    Satisfacción Empresas
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Muy Satisfechas
+                  </Typography>
+                </Box>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#8b5cf6',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(139, 92, 246, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {analyticsData?.satisfactionMetrics?.repeatProjectsCount || 0}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    Empresas Recurrentes
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Proyectos Repetidos
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Gráficos de Satisfacción */}
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
+                {/* Gráfico de Calificaciones */}
+                <Box>
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    📊 Distribución de Calificaciones
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={analyticsData?.satisfactionMetrics?.ratingDistribution?.map(item => ({
+                      rating: `${item.rating}⭐`,
+                      count: item.count,
+                      color: powerBIColors[item.rating - 1] || powerBIColors[0]
+                    })) || [
+                      { rating: '1⭐', count: 0, color: '#ef4444' },
+                      { rating: '2⭐⭐', count: 0, color: '#f59e0b' },
+                      { rating: '3⭐⭐⭐', count: 0, color: '#eab308' },
+                      { rating: '4⭐⭐⭐⭐', count: 0, color: '#22c55e' },
+                      { rating: '5⭐⭐⭐⭐⭐', count: 0, color: '#10b981' }
+                    ]}>
+                      <defs>
+                        <linearGradient id="ratingGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="rating"
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        formatter={(value, name) => [`${value} proyectos`, 'Cantidad']}
+                      />
+                      <Bar 
+                        dataKey="count" 
+                        fill="url(#ratingGradient)"
+                        radius={[8, 8, 0, 0]}
+                        stroke="#10b981"
+                        strokeWidth={2}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Box>
+
+                {/* Gráfico de Satisfacción por Tipo */}
+                <Box>
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    🎯 Satisfacción por Tipo de Proyecto
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { type: 'Desarrollo Web', satisfaction: 92, color: '#3b82f6' },
+                      { type: 'App Móvil', satisfaction: 88, color: '#8b5cf6' },
+                      { type: 'IA/ML', satisfaction: 95, color: '#10b981' },
+                      { type: 'Análisis Datos', satisfaction: 85, color: '#f59e0b' },
+                      { type: 'Investigación', satisfaction: 90, color: '#ef4444' }
+                    ]}>
+                      <defs>
+                        <linearGradient id="satisfactionGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="type"
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                        domain={[0, 100]}
+                        tickFormatter={(value) => `${value}%`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        formatter={(value, name) => [`${value}%`, 'Satisfacción']}
+                      />
+                      <Bar 
+                        dataKey="satisfaction" 
+                        fill="url(#satisfactionGradient)"
+                        radius={[8, 8, 0, 0]}
+                        stroke="#8b5cf6"
+                        strokeWidth={2}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+
+        {/* Sección: Métricas de Eficiencia de Proyectos */}
+        <Box sx={{ mt: 6, mb: 4 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2, 
+            mb: 3,
+            pb: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider'
+          }}>
+            <Box sx={{ 
+              p: 1.5, 
+              borderRadius: 2, 
+              bgcolor: '#f59e0b',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Typography sx={{ fontSize: 20, color: 'white' }}>⚡</Typography>
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
+              Métricas de Eficiencia de Proyectos
+            </Typography>
+          </Box>
+          
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            transition: 'all 0.3s ease',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
+            }
+          }}>
+            <CardContent sx={{ p: 4 }}>
+              {/* KPI Cards de Eficiencia */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: 3, 
+                mb: 4 
+              }}>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#f59e0b',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(245, 158, 11, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {analyticsData?.efficiencyMetrics?.efficiencyRate || 0}%
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    Tasa de Éxito
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Proyectos Completados
+                  </Typography>
+                </Box>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#ef4444',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(239, 68, 68, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {analyticsData?.efficiencyMetrics?.projectsExtendingDeadline || 0}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    Proyectos Extendidos
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Más allá de fecha límite
+                  </Typography>
+                </Box>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#06b6d4',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(6, 182, 212, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {analyticsData?.efficiencyMetrics?.hoursEfficiency || 0}%
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    Precisión Estimación
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Horas reales vs. estimadas
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Gráficos de Eficiencia */}
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
+                {/* Gráfico de Tiempo vs Estimado */}
+                <Box>
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    ⏱️ Tiempo Real vs Estimado
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { project: 'Proyecto A', estimated: 80, actual: 85, color: '#10b981' },
+                      { project: 'Proyecto B', estimated: 120, actual: 110, color: '#3b82f6' },
+                      { project: 'Proyecto C', estimated: 60, actual: 75, color: '#f59e0b' },
+                      { project: 'Proyecto D', estimated: 100, actual: 95, color: '#8b5cf6' },
+                      { project: 'Proyecto E', estimated: 90, actual: 105, color: '#ef4444' }
+                    ]}>
+                      <defs>
+                        <linearGradient id="estimatedGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                        </linearGradient>
+                        <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="project"
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                        tickFormatter={(value) => `${value}h`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        formatter={(value, name) => [`${value} horas`, name === 'estimated' ? 'Estimado' : 'Real']}
+                      />
+                      <Legend />
+                      <Bar 
+                        dataKey="estimated" 
+                        fill="url(#estimatedGradient)"
+                        radius={[8, 8, 0, 0]}
+                        stroke="#3b82f6"
+                        strokeWidth={2}
+                        name="Estimado"
+                      />
+                      <Bar 
+                        dataKey="actual" 
+                        fill="url(#actualGradient)"
+                        radius={[8, 8, 0, 0]}
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        name="Real"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Box>
+
+                {/* Gráfico de Éxito por Tipo */}
+                <Box>
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    🎯 Tasa de Éxito por Tipo de Proyecto
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <defs>
+                        <filter id="efficiencyShadow" x="-50%" y="-50%" width="200%" height="200%">
+                          <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                        </filter>
+                      </defs>
+                      <Pie
+                        data={[
+                          { name: 'Desarrollo Web', value: 96, color: '#10b981' },
+                          { name: 'App Móvil', value: 92, color: '#3b82f6' },
+                          { name: 'IA/ML', value: 88, color: '#8b5cf6' },
+                          { name: 'Análisis Datos', value: 94, color: '#f59e0b' },
+                          { name: 'Investigación', value: 90, color: '#ef4444' }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, value }) => `${name}\n${value}%`}
+                        outerRadius={100}
+                        innerRadius={50}
+                        stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
+                        strokeWidth={3}
+                        dataKey="value"
+                        filter="url(#efficiencyShadow)"
+                      >
+                        {[
+                          { name: 'Desarrollo Web', value: 96, color: '#10b981' },
+                          { name: 'App Móvil', value: 92, color: '#3b82f6' },
+                          { name: 'IA/ML', value: 88, color: '#8b5cf6' },
+                          { name: 'Análisis Datos', value: 94, color: '#f59e0b' },
+                          { name: 'Investigación', value: 90, color: '#ef4444' }
+                        ].map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color}
+                            stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                            strokeWidth={2}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        formatter={(value, name) => [`${value}%`, 'Tasa de Éxito']}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+
+        {/* Sección: Métricas Financieras */}
+        <Box sx={{ mt: 6, mb: 4 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2, 
+            mb: 3,
+            pb: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider'
+          }}>
+            <Box sx={{ 
+              p: 1.5, 
+              borderRadius: 2, 
+              bgcolor: '#22c55e',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Typography sx={{ fontSize: 20, color: 'white' }}>💰</Typography>
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
+              Métricas Financieras e Impacto
+            </Typography>
+          </Box>
+          
+          <Card sx={{ 
+            borderRadius: 3, 
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            transition: 'all 0.3s ease',
+            bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+            color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 25px rgba(0,0,0,0.12)'
+            }
+          }}>
+            <CardContent sx={{ p: 4 }}>
+              {/* KPI Cards Financieros */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: 3, 
+                mb: 4 
+              }}>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#22c55e',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(34, 197, 94, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    ${(analyticsData?.financialMetrics?.estimatedHoursValue || 0).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    Valor Horas Trabajadas
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Tasa ${analyticsData?.financialMetrics?.hourlyRate || 0}/h promedio
+                  </Typography>
+                </Box>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#f97316',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(249, 115, 22, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {analyticsData?.financialMetrics?.savingsPercentage || 0}%
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    Ahorro Empresas
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    vs. Contratación Tradicional
+                  </Typography>
+                </Box>
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: '#ec4899',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(236, 72, 153, 0.3)'
+                  }
+                }}>
+                  <Typography variant="h3" sx={{ fontWeight: 800, color: 'white', mb: 1 }}>
+                    {(analyticsData?.financialMetrics?.studentROI || 0) / 100}x
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                    ROI Estudiantes
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                    Experiencia vs. Tiempo Invertido
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Gráficos Financieros */}
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
+                {/* Gráfico de Valor por Mes */}
+                <Box>
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    📈 Valor Generado por Mes
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={analyticsData?.financialMetrics?.monthlyImpact?.map(item => ({
+                      month: item.month,
+                      value: item.value,
+                      hours: item.hours
+                    })) || [
+                      { month: 'Sin datos', value: 0, hours: 0 }
+                    ]}>
+                      <defs>
+                        <linearGradient id="valueGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="month"
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                        tickFormatter={(value) => `$${(value/1000).toFixed(1)}K`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        formatter={(value, name) => [
+                          name === 'value' ? `$${value}` : `${value} horas`,
+                          name === 'value' ? 'Valor' : 'Horas'
+                        ]}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke="#22c55e" 
+                        strokeWidth={3}
+                        fill="url(#valueGradient)"
+                        fillOpacity={0.8}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </Box>
+
+                {/* Gráfico de Comparación de Costos */}
+                <Box>
+                  <Typography variant="h6" sx={{ 
+                    mb: 3, 
+                    fontWeight: 700, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                    fontSize: '1.1rem',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    💰 Comparación de Costos
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { category: 'Desarrollo Web', traditional: 15000, platform: 5250, savings: 9750 },
+                      { category: 'App Móvil', traditional: 25000, platform: 8750, savings: 16250 },
+                      { category: 'IA/ML', traditional: 35000, platform: 12250, savings: 22750 },
+                      { category: 'Análisis Datos', traditional: 12000, platform: 4200, savings: 7800 }
+                    ]}>
+                      <defs>
+                        <linearGradient id="traditionalGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0.3}/>
+                        </linearGradient>
+                        <linearGradient id="platformGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                        opacity={0.3}
+                      />
+                      <XAxis 
+                        dataKey="category"
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                        tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                        }}
+                        formatter={(value, name) => [
+                          `$${value}`,
+                          name === 'traditional' ? 'Contratación Tradicional' : 
+                          name === 'platform' ? 'Nuestra Plataforma' : 'Ahorro'
+                        ]}
+                      />
+                      <Legend />
+                      <Bar 
+                        dataKey="traditional" 
+                        fill="url(#traditionalGradient)"
+                        radius={[8, 8, 0, 0]}
+                        stroke="#ef4444"
+                        strokeWidth={2}
+                        name="Contratación Tradicional"
+                      />
+                      <Bar 
+                        dataKey="platform" 
+                        fill="url(#platformGradient)"
+                        radius={[8, 8, 0, 0]}
+                        stroke="#22c55e"
+                        strokeWidth={2}
+                        name="Nuestra Plataforma"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+
+        {/* ===== FIN DE NUEVAS SECCIONES ===== */}
 
     </Box>
   );

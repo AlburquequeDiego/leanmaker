@@ -126,11 +126,50 @@ export interface HubAnalyticsData {
       trl_level: number;
       count: number;
     }>;
+    projectsWithoutTrl: number;
     totalApiRequests: number;
     pendingApiRequests: number;
     approvedApiRequests: number;
   };
-
+  // Nuevas métricas implementadas
+  satisfactionMetrics: {
+    averageProjectRating: number;
+    companySatisfactionRate: number;
+    repeatProjectsCount: number;
+    ratingDistribution: Array<{
+      rating: number;
+      count: number;
+      percentage: number;
+    }>;
+    totalRatedProjects: number;
+  };
+  efficiencyMetrics: {
+    averageCompletionTime: number;
+    averageEstimatedTime: number;
+    efficiencyRate: number;
+    projectsExtendingDeadline: number;
+    totalProjectsAnalyzed: number;
+    hoursEfficiency: number;
+    successByStatus: Array<{
+      status: string;
+      count: number;
+      success_rate: number;
+    }>;
+  };
+  financialMetrics: {
+    estimatedHoursValue: number;
+    savingsForCompanies: number;
+    savingsPercentage: number;
+    studentROI: number;
+    totalExperienceValue: number;
+    monthlyImpact: Array<{
+      month: string;
+      hours: number;
+      value: number;
+      savings: number;
+    }>;
+    hourlyRate: number;
+  };
 }
 
 // Cache for analytics data

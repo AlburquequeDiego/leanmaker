@@ -46,8 +46,9 @@ class Proyecto(models.Model):
     encargado = models.CharField(max_length=200, blank=True, null=True, help_text="Responsable del proyecto de la empresa")
     contacto = models.CharField(max_length=200, blank=True, null=True, help_text="Contacto de la empresa")
     
-    # Campos opcionales (NULL permitido) - coinciden con frontend
-    trl = models.ForeignKey(TRLLevel, on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos')
+    # Campo TRL - será obligatorio después de la migración
+    trl = models.ForeignKey(TRLLevel, on_delete=models.SET_NULL, null=True, blank=True, related_name='proyectos', 
+                           help_text='Nivel TRL del proyecto (obligatorio)')
     api_level = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(4)])
     required_hours = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     
