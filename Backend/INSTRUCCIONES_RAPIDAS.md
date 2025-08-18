@@ -24,3 +24,6 @@ python manage.py showmigrations
 
 # Entrar al shell
 python manage.py shell
+
+
+timezone.now
