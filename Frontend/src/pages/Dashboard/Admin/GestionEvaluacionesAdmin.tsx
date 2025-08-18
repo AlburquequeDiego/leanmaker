@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Box,
+import {Box,
   Typography,
   Card,
   CardContent,
@@ -40,6 +39,9 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { useApi } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
 import type { Evaluation } from '../../../types';
+import { StudentProfileModal } from '../../../components/common/StudentProfileModal';
+import ProjectDetailsModal from '../../../components/common/ProjectDetailsModal';
+import { useStudentProfile } from '../../../hooks/useStudentProfile';
 
 interface EvaluationData {
   id: string;
@@ -63,7 +65,7 @@ interface EvaluationData {
   updated_at: string;
 }
 
-// Nueva interfaz para strikes y reportes
+// Nueva interfaz para strikes y reportes - Actualizada según el backend real
 interface StrikeData {
   id: string;
   type: 'strike' | 'report';
@@ -141,6 +143,19 @@ export const GestionEvaluacionesAdmin = () => {
   const [showStrikeModal, setShowStrikeModal] = useState(false);
   const [adminNotes, setAdminNotes] = useState('');
   const [processingStrike, setProcessingStrike] = useState(false);
+  
+  // Estados para modal de confirmación
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'approve' | 'reject' | null>(null);
+  const [confirmStrike, setConfirmStrike] = useState<StrikeData | null>(null);
+
+  // Estados para modales de detalles
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [showStudentModal, setShowStudentModal] = useState(false);
+  const [projectLoading, setProjectLoading] = useState(false);
+  const [studentLoading, setStudentLoading] = useState(false);
 
   // Cargar todas las evaluaciones al montar el componente
   useEffect(() => {
@@ -237,11 +252,27 @@ export const GestionEvaluacionesAdmin = () => {
     
     try {
       console.log(`🔍 [STRIKES] Cargando strikes y reportes...`);
-      const response = await api.get(`${API_ENDPOINTS.EVALUATIONS_ADMIN_STRIKES_MANAGEMENT}?limit=1000`);
+              // Cambiar al endpoint que funciona correctamente (el mismo que usa empresa)
+        const response = await api.get(`/api/strikes/reports/?limit=1000`);
       
       if (response) {
         console.log(`🔍 [STRIKES] Strikes cargados:`, response.results?.length || 0);
-        setStrikes((response.results as unknown as StrikeData[]) || []);
+        
+        const strikesData = (response.results as unknown as StrikeData[]) || [];
+        console.log('🔍 [STRIKES] Datos de strikes procesados:', strikesData);
+        
+        // Asignar el tipo correcto ya que el endpoint no lo envía
+        strikesData.forEach((strike, index) => {
+          // Si no tiene type, asumir que es un reporte (ya que viene del endpoint de reports)
+          if (!strike.type) {
+            strike.type = 'report';
+          }
+          console.log(`🔍 [STRIKE ${index}] ID: ${strike.id}, Status: ${strike.status}, Type: ${strike.type}`);
+          console.log(`🔍 [STRIKE ${index}] Datos completos:`, strike);
+          console.log(`🔍 [STRIKE ${index}] Campos disponibles:`, Object.keys(strike));
+        });
+        
+        setStrikes(strikesData);
         setStrikesCount(response.count || 0);
       }
     } catch (err: any) {
@@ -252,69 +283,200 @@ export const GestionEvaluacionesAdmin = () => {
     }
   };
 
-  // Función para aprobar strike
+  // Función para mostrar confirmación de aprobar
+  const showApproveConfirmation = () => {
+    setConfirmAction('approve');
+    setConfirmStrike(selectedStrike);
+    setShowConfirmModal(true);
+  };
+
+  // Función para mostrar confirmación de rechazar
+  const showRejectConfirmation = () => {
+    setConfirmAction('reject');
+    setConfirmStrike(selectedStrike);
+    setShowConfirmModal(true);
+  };
+
+  // Función para aprobar strike (después de confirmación)
   const handleApproveStrike = async () => {
-    if (!selectedStrike || selectedStrike.type !== 'report') return;
+    console.log('🔍 [APPROVE] Iniciando aprobación de strike:', confirmStrike);
+    if (!confirmStrike || !confirmStrike.id || !confirmStrike.student_id) {
+      console.log('❌ [APPROVE] Strike inválido o faltan datos requeridos');
+      return;
+    }
     
     setProcessingStrike(true);
     try {
-      const response = await api.patch(
-        `${API_ENDPOINTS.STRIKES_REPORTS_APPROVE.replace('{id}', selectedStrike.id)}`,
-        { admin_notes: adminNotes }
-      );
+      console.log('🔍 [APPROVE] Llamando API con:', {
+        url: `${API_ENDPOINTS.STRIKES_REPORTS_APPROVE.replace('{id}', confirmStrike.id)}`,
+        data: {},
+        strikeId: confirmStrike.id
+      });
+      
+             const response = await api.patch(
+         `${API_ENDPOINTS.STRIKES_REPORTS_APPROVE.replace('{id}', confirmStrike.id)}`,
+         {}
+       );
+      
+      console.log('🔍 [APPROVE] Respuesta de API:', response);
       
       if (response) {
         console.log('✅ Strike aprobado:', response);
         // Recargar strikes
         await loadStrikes();
         setShowStrikeModal(false);
+        setShowConfirmModal(false);
         setSelectedStrike(null);
-        setAdminNotes('');
-        // Mostrar mensaje de éxito
-        alert('Strike aprobado correctamente');
+        setConfirmStrike(null);
+        setConfirmAction(null);
+        // Sin mensaje - solo cerrar modales
       }
     } catch (err: any) {
       console.error('Error aprobando strike:', err);
-      alert(`Error al aprobar strike: ${err.message}`);
+      // Sin mensaje de error - solo log en consola
     } finally {
       setProcessingStrike(false);
     }
   };
 
-  // Función para rechazar strike
+  // Función para rechazar strike (después de confirmación)
   const handleRejectStrike = async () => {
-    if (!selectedStrike || selectedStrike.type !== 'report') return;
+    console.log('🔍 [REJECT] Iniciando rechazo de strike:', confirmStrike);
+    if (!confirmStrike || !confirmStrike.id || !confirmStrike.student_id) {
+      console.log('❌ [REJECT] Strike inválido o faltan datos requeridos');
+      return;
+    }
     
     setProcessingStrike(true);
     try {
-      const response = await api.patch(
-        `${API_ENDPOINTS.STRIKES_REPORTS_REJECT.replace('{id}', selectedStrike.id)}`,
-        { admin_notes: adminNotes }
-      );
+      console.log('🔍 [REJECT] Llamando API con:', {
+        url: `${API_ENDPOINTS.STRIKES_REPORTS_REJECT.replace('{id}', confirmStrike.id)}`,
+        data: {},
+        strikeId: confirmStrike.id
+      });
+      
+             const response = await api.patch(
+         `${API_ENDPOINTS.STRIKES_REPORTS_REJECT.replace('{id}', confirmStrike.id)}`,
+         {}
+       );
+      
+      console.log('🔍 [REJECT] Respuesta de API:', response);
       
       if (response) {
         console.log('❌ Strike rechazado:', response);
         // Recargar strikes
         await loadStrikes();
         setShowStrikeModal(false);
+        setShowConfirmModal(false);
         setSelectedStrike(null);
-        setAdminNotes('');
-        // Mostrar mensaje de éxito
-        alert('Strike rechazado correctamente');
+        setConfirmStrike(null);
+        setConfirmAction(null);
+        // Sin mensaje - solo cerrar modales
       }
     } catch (err: any) {
       console.error('Error rechazando strike:', err);
-      alert(`Error al rechazar strike: ${err.message}`);
+      // Sin mensaje de error - solo log en consola
     } finally {
       setProcessingStrike(false);
     }
   };
 
-  // Función para abrir modal de strike
-  const openStrikeModal = (strike: StrikeData) => {
-    setSelectedStrike(strike);
-    setAdminNotes(strike.admin_notes || '');
-    setShowStrikeModal(true);
+     // Función para abrir modal de strike
+   const openStrikeModal = (strike: StrikeData) => {
+     console.log('🔍 [STRIKE MODAL] Abriendo modal para:', strike);
+     setSelectedStrike(strike);
+     setShowStrikeModal(true);
+   };
+
+  // Función para abrir modal de proyecto
+  const openProjectModal = async (projectId: string) => {
+    setProjectLoading(true);
+    try {
+      // Obtener detalles completos del proyecto desde la API
+      const response = await api.get(`/api/projects/${projectId}/`);
+      if (response) {
+        console.log('🔍 [PROJECT] Detalles del proyecto obtenidos:', response);
+        setSelectedProject(response);
+        setShowProjectModal(true);
+      }
+    } catch (error) {
+      console.error('Error al cargar detalles del proyecto:', error);
+      // Fallback: usar datos básicos de la evaluación
+      const evaluation = evaluations.find(e => e.project_id === projectId);
+      if (evaluation) {
+        const projectData = {
+          id: evaluation.project_id,
+          title: evaluation.project_title,
+          company_name: evaluation.company_name,
+          description: 'Información limitada - Error al cargar detalles completos',
+          status: 'Sin estado',
+          area: 'Sin área',
+          trl_level: 1,
+          modality: 'No especificado',
+          duration_weeks: 0,
+          hours_per_week: 0,
+          required_hours: 0,
+          start_date: null,
+          estimated_end_date: null,
+          created_at: null,
+          estudiantes: []
+        };
+        setSelectedProject(projectData);
+        setShowProjectModal(true);
+      }
+    } finally {
+      setProjectLoading(false);
+    }
+  };
+
+  // Función para abrir modal de estudiante
+  const openStudentModal = async (studentId: string) => {
+    setStudentLoading(true);
+    try {
+      // Obtener perfil completo del estudiante desde la API
+      const response = await api.get(`/api/students/${studentId}/profile/`);
+      if (response) {
+        console.log('🔍 [STUDENT] Perfil del estudiante obtenido:', response);
+        setSelectedStudent(response);
+        setShowStudentModal(true);
+      }
+    } catch (error) {
+      console.error('Error al cargar detalles del estudiante:', error);
+      // Fallback: usar datos básicos de la evaluación
+      const evaluation = evaluations.find(e => e.student_id === studentId);
+      if (evaluation) {
+        const studentData = {
+          id: evaluation.student_id,
+          name: evaluation.student_name,
+          email: evaluation.student_email,
+          career: 'No especificado',
+          semester: 'No especificado',
+          status: 'No especificado',
+          api_level: 1,
+          trl_level: 1,
+          gpa: 0,
+          completed_projects: 0,
+          total_hours: 0,
+          experience_years: 0,
+          hours_per_week: 0,
+          area: 'No especificado',
+          skills: [],
+          created_at: null,
+          user_data: {
+            full_name: evaluation.student_name,
+            email: evaluation.student_email,
+            phone: null,
+            birthdate: null,
+            gender: null,
+            bio: null
+          }
+        };
+        setSelectedStudent(studentData);
+        setShowStudentModal(true);
+      }
+    } finally {
+      setStudentLoading(false);
+    }
   };
 
   // Función para buscar evaluaciones
@@ -367,17 +529,16 @@ export const GestionEvaluacionesAdmin = () => {
     }
   };
 
-  // Función para formatear fecha
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+     // Función para formatear fecha
+   const formatDate = (dateString: string) => {
+     if (!dateString) return 'N/A';
+     const date = new Date(dateString);
+     return date.toLocaleDateString('es-ES', {
+       year: 'numeric',
+       month: 'long',
+       day: 'numeric'
+     });
+   };
 
   // Función para cambiar pestaña activa
   const handleTabChange = (tab: 'student_to_company' | 'company_to_student' | 'strikes') => {
@@ -954,29 +1115,74 @@ export const GestionEvaluacionesAdmin = () => {
                               {formatDate(strike.issued_at || strike.created_at)}
                             </Typography>
                           </TableCell>
-                          <TableCell>
-                            <Box sx={{ display: 'flex', gap: 1 }}>
-                              <Tooltip title="Ver detalles">
-                                <IconButton size="small" color="primary" onClick={() => openStrikeModal(strike)}>
-                                  <VisibilityIcon />
-                                </IconButton>
-                              </Tooltip>
-                              {strike.status === 'pending' && (
-                                <>
-                                  <Tooltip title="Aprobar">
-                                    <IconButton size="small" color="success" onClick={() => openStrikeModal(strike)}>
-                                      <CheckCircleIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                  <Tooltip title="Rechazar">
-                                    <IconButton size="small" color="error" onClick={() => openStrikeModal(strike)}>
-                                      <WarningIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
-                            </Box>
-                          </TableCell>
+                                                     <TableCell>
+                             <Box sx={{ display: 'flex', gap: 1 }}>
+                               {/* Ver detalles del reporte/strike */}
+                               <Tooltip title="Ver detalles del reporte">
+                                 <IconButton size="small" color="primary" onClick={() => openStrikeModal(strike)}>
+                                   <VisibilityIcon />
+                                 </IconButton>
+                               </Tooltip>
+                               
+                               {/* Ver detalles del proyecto (si existe) */}
+                               {strike.project_id && (
+                                 <Tooltip title="Ver detalles del proyecto">
+                                   <IconButton 
+                                     size="small" 
+                                     color="info"
+                                     onClick={() => openProjectModal(strike.project_id!)}
+                                   >
+                                     <VisibilityIcon />
+                                   </IconButton>
+                                 </Tooltip>
+                               )}
+                               
+                               {/* Ver detalles del estudiante */}
+                               <Tooltip title="Ver detalles del estudiante">
+                                 <IconButton 
+                                   size="small" 
+                                   color="secondary"
+                                   onClick={() => openStudentModal(strike.student_id)}
+                                 >
+                                   <VisibilityIcon />
+                                 </IconButton>
+                               </Tooltip>
+                               
+                                                               {/* Acciones de aprobar/rechazar solo para reportes pendientes */}
+                                {strike.status === 'pending' && (
+                                 <>
+                                                                       <Tooltip title="Aprobar reporte">
+                                      <IconButton 
+                                        size="small" 
+                                        color="success" 
+                                        onClick={() => {
+                                          setSelectedStrike(strike);
+                                          setConfirmAction('approve');
+                                          setConfirmStrike(strike);
+                                          setShowConfirmModal(true);
+                                        }}
+                                      >
+                                        <CheckCircleIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Rechazar reporte">
+                                      <IconButton 
+                                        size="small" 
+                                        color="error" 
+                                        onClick={() => {
+                                          setSelectedStrike(strike);
+                                          setConfirmAction('reject');
+                                          setConfirmStrike(strike);
+                                          setShowConfirmModal(true);
+                                        }}
+                                      >
+                                        <WarningIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                 </>
+                               )}
+                             </Box>
+                           </TableCell>
                         </TableRow>
                       ))
                     )}
@@ -1081,25 +1287,28 @@ export const GestionEvaluacionesAdmin = () => {
                             {formatDate(evaluation.evaluation_date)}
                           </Typography>
                         </TableCell>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Tooltip title="Ver detalles">
-                              <IconButton size="small" color="primary">
-                                <VisibilityIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Editar">
-                              <IconButton size="small" color="secondary">
-                                <EditIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Eliminar">
-                              <IconButton size="small" color="error">
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                        </TableCell>
+                                                                           <TableCell>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                              <Tooltip title="Ver detalles del proyecto">
+                                <IconButton 
+                                  size="small" 
+                                  color="primary"
+                                  onClick={() => openProjectModal(evaluation.project_id)}
+                                >
+                                  <VisibilityIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Ver detalles del perfil del estudiante">
+                                <IconButton 
+                                  size="small" 
+                                  color="info"
+                                  onClick={() => openStudentModal(evaluation.student_id)}
+                                >
+                                  <VisibilityIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -1124,53 +1333,321 @@ export const GestionEvaluacionesAdmin = () => {
         </CardContent>
       </Card>
 
-      {/* Modal de Strike */}
-      {showStrikeModal && selectedStrike && (
-        <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, bgcolor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-          <Card sx={{ p: 4, maxWidth: 600, width: '90%', bgcolor: themeMode === 'dark' ? '#1e293b' : 'white', borderRadius: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-              {selectedStrike.type === 'strike' ? 'Aprobar Amonestación' : 'Aprobar Reporte'}
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
-              {selectedStrike.type === 'strike' ? '¿Estás seguro de que quieres aprobar esta amonestación?' : '¿Estás seguro de que quieres aprobar este reporte?'}
-            </Typography>
-            <TextField
-              label="Notas del Administrador"
-              multiline
-              rows={4}
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={adminNotes}
-              onChange={(e) => setAdminNotes(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-              <Button variant="outlined" onClick={() => setShowStrikeModal(false)}>
-                Cancelar
-              </Button>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleApproveStrike}
-                disabled={processingStrike}
-              >
-                {processingStrike ? <CircularProgress size={24} /> : 'Aprobar'}
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={handleRejectStrike}
-                disabled={processingStrike}
-              >
-                {processingStrike ? <CircularProgress size={24} /> : 'Rechazar'}
-              </Button>
-            </Box>
-          </Card>
-        </Box>
-      )}
-    </Box>
-  );
-};
+             {/* Modal de Detalles del Proyecto */}
+       <ProjectDetailsModal
+         open={showProjectModal}
+         onClose={() => setShowProjectModal(false)}
+         project={selectedProject}
+         loading={projectLoading}
+         userRole="admin"
+       />
+
+       {/* Modal de Perfil del Estudiante */}
+       <StudentProfileModal
+         open={showStudentModal}
+         onClose={() => setShowStudentModal(false)}
+         studentProfile={selectedStudent}
+         loading={studentLoading}
+         error={null}
+       />
+
+               {/* Modal de Strike */}
+        {showStrikeModal && selectedStrike && (
+         <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, bgcolor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+           <Card sx={{ p: 4, maxWidth: 800, width: '90%', bgcolor: themeMode === 'dark' ? '#1e293b' : 'white', borderRadius: 2, maxHeight: '90vh', overflow: 'auto' }}>
+             <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: selectedStrike.type === 'strike' ? 'success.main' : 'warning.main' }}>
+               {selectedStrike.type === 'strike' ? '📋 Detalles de Amonestación' : '⚠️ Detalles del Reporte'}
+             </Typography>
+             
+                           {/* Información del Estudiante Reportado */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                  👤 Estudiante Reportado
+                </Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                      Nombre:
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {selectedStrike.student_name}
+                    </Typography>
+                  </Box>
+                  
+                  <Box>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                      Email:
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {selectedStrike.student_email || 'No disponible'}
+                    </Typography>
+                  </Box>
+                </Box>
+                
+                
+              </Box>
+             
+             {/* Información del Proyecto Relacionado */}
+             {selectedStrike.project_id && selectedStrike.project_title && (
+               <Box sx={{ mb: 3 }}>
+                 <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                   📁 Proyecto Relacionado
+                 </Typography>
+                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                   Título: {selectedStrike.project_title}
+                 </Typography>
+               </Box>
+             )}
+             
+                           {/* Motivo del Strike */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                  ⚠️ Motivo del Strike
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500, mb: 1 }}>
+                  Razón: {selectedStrike.reason || 'No especificada'}
+                </Typography>
+                
+                {selectedStrike.description && (
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    {selectedStrike.description}
+                  </Typography>
+                )}
+                
+                {/* Mostrar información de la evaluación si no hay razón */}
+                {!selectedStrike.reason && (
+                  <Typography variant="body1" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                    Información de evaluación pendiente - No hay motivo de strike especificado
+                  </Typography>
+                )}
+              </Box>
+             
+             {/* Estado del Reporte */}
+             <Box sx={{ mb: 3 }}>
+               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                 📊 Estado del Reporte
+               </Typography>
+               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                 <Chip 
+                   label={getStrikeStatusText(selectedStrike.status)}
+                   color={getStrikeStatusColor(selectedStrike.status) as any}
+                   size="small"
+                 />
+                 {selectedStrike.status === 'pending' && (
+                   <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                     En revisión por administración
+                   </Typography>
+                 )}
+               </Box>
+               
+               {selectedStrike.severity && (
+                 <Box sx={{ mt: 1 }}>
+                   <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                     Severidad:
+                   </Typography>
+                   <Chip 
+                     label={getSeverityText(selectedStrike.severity)}
+                     color={getSeverityColor(selectedStrike.severity) as any}
+                     size="small"
+                   />
+                 </Box>
+               )}
+             </Box>
+             
+             {/* Fechas */}
+             <Box sx={{ mb: 3 }}>
+               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                 📅 Fechas
+               </Typography>
+               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+                 <Box>
+                   <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                     Fecha de reporte:
+                   </Typography>
+                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                     {formatDate(selectedStrike.created_at)}
+                   </Typography>
+                 </Box>
+                 
+                 {selectedStrike.issued_at && (
+                   <Box>
+                     <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                       Fecha de emisión:
+                     </Typography>
+                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                       {formatDate(selectedStrike.issued_at)}
+                     </Typography>
+                   </Box>
+                 )}
+                 
+                 <Box>
+                   <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                     Última actualización:
+                   </Typography>
+                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                     {formatDate(selectedStrike.updated_at)}
+                   </Typography>
+                 </Box>
+               </Box>
+             </Box>
+             
+             {/* Notas del Administrador */}
+             {selectedStrike.admin_notes && (
+               <Box sx={{ mb: 3 }}>
+                 <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                   📝 Notas del Administrador
+                 </Typography>
+                 <Typography variant="body1" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                   {selectedStrike.admin_notes}
+                 </Typography>
+               </Box>
+             )}
+             
+             {/* Acciones del Administrador */}
+             {selectedStrike.status === 'pending' && (
+               <Box sx={{ mb: 3 }}>
+                 <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                   ⚡ Acciones del Administrador
+                 </Typography>
+                 
+                 <TextField
+                   label="Notas del Administrador"
+                   multiline
+                   rows={4}
+                   fullWidth
+                   variant="outlined"
+                   margin="normal"
+                   value={adminNotes}
+                   onChange={(e) => setAdminNotes(e.target.value)}
+                   placeholder="Agrega notas sobre tu decisión..."
+                   sx={{ mb: 2 }}
+                 />
+                 
+                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                   <Button variant="outlined" onClick={() => setShowStrikeModal(false)}>
+                     Cancelar
+                   </Button>
+                                       <Button
+                      variant="contained"
+                      color="success"
+                      onClick={showApproveConfirmation}
+                      disabled={processingStrike}
+                      startIcon={processingStrike ? <CircularProgress size={20} /> : null}
+                    >
+                      {processingStrike ? 'Procesando...' : 'Aprobar Reporte'}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={showRejectConfirmation}
+                      disabled={processingStrike}
+                      startIcon={processingStrike ? <CircularProgress size={20} /> : null}
+                    >
+                      {processingStrike ? 'Procesando...' : 'Rechazar Reporte'}
+                    </Button>
+                 </Box>
+               </Box>
+             )}
+             
+             {/* Botón de cerrar para strikes ya procesados */}
+             {selectedStrike.status !== 'pending' && (
+               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                 <Button variant="outlined" onClick={() => setShowStrikeModal(false)}>
+                   Cerrar
+                 </Button>
+               </Box>
+             )}
+           </Card>
+         </Box>
+               )}
+
+        {/* Modal de Confirmación */}
+        {showConfirmModal && confirmStrike && confirmAction && (
+          <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, bgcolor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+            <Card sx={{ p: 4, maxWidth: 500, width: '90%', bgcolor: themeMode === 'dark' ? '#1e293b' : 'white', borderRadius: 2 }}>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: confirmAction === 'approve' ? 'warning.main' : 'error.main' }}>
+                {confirmAction === 'approve' ? '⚠️ Confirmar Aprobación' : '⚠️ Confirmar Rechazo'}
+              </Typography>
+              
+              <Typography variant="body1" sx={{ mb: 3, color: 'text.primary' }}>
+                {confirmAction === 'approve' 
+                  ? `¿Estás seguro de que quieres APROBAR este reporte contra el estudiante "${confirmStrike.student_name}"?`
+                  : `¿Estás seguro de que quieres RECHAZAR este reporte contra el estudiante "${confirmStrike.student_name}"?`
+                }
+              </Typography>
+
+              <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary', fontStyle: 'italic' }}>
+                <strong>⚠️ ADVERTENCIA:</strong> Esta acción NO se puede revertir.
+              </Typography>
+
+              {confirmAction === 'approve' && (
+                <Alert severity="warning" sx={{ mb: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Consecuencias de APROBAR:</strong>
+                  </Typography>
+                  <Typography variant="body2">
+                    • El estudiante recibirá 1 strike activo en su perfil
+                  </Typography>
+                  <Typography variant="body2">
+                    • El reporte quedará marcado como "Aprobado"
+                  </Typography>
+                  <Typography variant="body2">
+                    • La empresa quedará "vindicada" del reporte
+                  </Typography>
+                </Alert>
+              )}
+
+              {confirmAction === 'reject' && (
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Consecuencias de RECHAZAR:</strong>
+                  </Typography>
+                  <Typography variant="body2">
+                    • El estudiante NO recibirá strike
+                  </Typography>
+                  <Typography variant="body2">
+                    • El reporte quedará marcado como "Rechazado"
+                  </Typography>
+                  <Typography variant="body2">
+                    • La empresa quedará "desacreditada" del reporte
+                  </Typography>
+                </Alert>
+              )}
+
+              
+
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                <Button 
+                  variant="outlined" 
+                  onClick={() => {
+                    setShowConfirmModal(false);
+                    setConfirmAction(null);
+                    setConfirmStrike(null);
+                  }}
+                >
+                  Cancelar
+                </Button>
+                
+                <Button
+                  variant="contained"
+                  color={confirmAction === 'approve' ? 'success' : 'error'}
+                  onClick={confirmAction === 'approve' ? handleApproveStrike : handleRejectStrike}
+                  disabled={processingStrike}
+                  startIcon={processingStrike ? <CircularProgress size={20} /> : null}
+                >
+                  {processingStrike 
+                    ? 'Procesando...' 
+                    : confirmAction === 'approve' 
+                      ? 'Sí, Aprobar' 
+                      : 'Sí, Rechazar'
+                  }
+                </Button>
+              </Box>
+            </Card>
+          </Box>
+        )}
+      </Box>
+    );
+  };
 
 export default GestionEvaluacionesAdmin; 

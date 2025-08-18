@@ -57,7 +57,8 @@ export const CompanyStrikes: React.FC = () => {
       
       // Llamar a la API real
       const response = await apiService.getCompanyStrikeReports();
-      setStrikeReports((response as any).results || []);
+      const results = (response as any).results || [];
+      setStrikeReports(results);
     } catch (error) {
       console.error('Error cargando reportes de strikes:', error);
       setStrikeReports([]);
@@ -414,7 +415,7 @@ export const CompanyStrikes: React.FC = () => {
                           {strike.student_name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                          {strike.student_email}
+                          {strike.student_email || 'No disponible'}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                           <strong>Proyecto:</strong> {strike.project_title}
@@ -802,7 +803,7 @@ export const CompanyStrikes: React.FC = () => {
                    <strong>Nombre:</strong> {selectedStrikeForDetails.student_name}
                  </Typography>
                  <Typography variant="body1" sx={{ mb: 1 }}>
-                   <strong>Email:</strong> {studentProfile?.user_data?.email || 'No disponible'}
+                   <strong>Email:</strong> {selectedStrikeForDetails.student_email || 'No disponible'}
                  </Typography>
                </Box>
 
