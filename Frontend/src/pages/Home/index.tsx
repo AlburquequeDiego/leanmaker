@@ -199,15 +199,15 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* 3. Sección de Dos Columnas - EMPRESAS y ESTUDIANTES */}
-      <Box sx={{ py: { xs: 6, sm: 8, md: 12 }, bgcolor: 'white' }}>
+             {/* 3. Sección de Dos Columnas - EMPRESAS y ESTUDIANTES */}
+       <Box id="impacto-empresas" sx={{ py: { xs: 6, sm: 8, md: 12 }, bgcolor: 'white' }}>
         <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
-          <Box sx={{ 
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
-            gap: { xs: 3, sm: 4, md: 8 },
-            alignItems: 'start'
-          }}>
+                     <Box sx={{ 
+             display: 'grid',
+             gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+             gap: { xs: 3, sm: 4, md: 8 },
+             alignItems: 'stretch'
+           }}>
                          {/* Columna Izquierda - EMPRESAS */}
              <Box sx={{ 
                textAlign: 'center',
@@ -561,8 +561,8 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* 4. Sección Unificada - Proyectos Estudiantiles y Emprendimiento */}
-      <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
+             {/* 4. Sección Unificada - Proyectos Estudiantiles y Emprendimiento */}
+       <Box id="crecimiento-estudiantil" sx={{ py: { xs: 6, md: 8 }, bgcolor: 'white' }}>
         <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
           <Box sx={{ 
             display: 'grid',
@@ -600,7 +600,7 @@ export default function Home() {
                     src="/imagenes/trabajando.png" 
                     alt="Proyectos Propios" 
                     style={{ 
-                      width: '200px',
+                      width: '250px',
                       height: 'auto',
                       borderRadius: 16,
                       boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
@@ -695,7 +695,7 @@ export default function Home() {
                     src="/imagenes/Historias de Éxito.png" 
                     alt="Emprendimiento" 
                     style={{ 
-                      width: '200px',
+                      width: '250px',
                       height: 'auto',
                       borderRadius: 16,
                       boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
@@ -1056,112 +1056,7 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* 6.5. Sección de Ecosistema de Innovación INACAP */}
-      <Box sx={{ 
-        py: { xs: 5, sm: 6, md: 8 }, 
-        bgcolor: 'white',
-        borderTop: '1px solid #e0e0e0',
-        borderBottom: '1px solid #e0e0e0'
-      }}>
-        <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
-          <Typography variant="h4" fontWeight={700} align="center" sx={{ 
-            mb: 4, 
-            fontSize: { xs: '1.6rem', sm: '1.8rem', md: '2.2rem' },
-            color: '#0a2342'
-          }}>
-            🌟 Ecosistema de Innovación INACAP
-          </Typography>
-          
-          <Typography variant="h6" align="center" sx={{ 
-            mb: 6, 
-            color: '#1976d2',
-            fontSize: { xs: '1.1rem', md: '1.3rem' },
-            fontWeight: 500
-          }}>
-            Cómo funciona nuestro sistema de colaboración interdisciplinaria
-          </Typography>
 
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', lg: 'row' }, 
-            gap: { xs: 4, md: 6 }, 
-            alignItems: 'center'
-          }}>
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <Typography variant="h5" fontWeight={600} sx={{ 
-                mb: 3, 
-                color: '#0a2342',
-                fontSize: { xs: '1.3rem', md: '1.5rem' }
-              }}>
-                🔄 Flujo de Trabajo
-              </Typography>
-              
-              <Box sx={{ display: 'grid', gap: 2 }}>
-                {[
-                  '👨‍💼 Director de Carrera (PM) coordina todo el ecosistema',
-                  '👥 Líderes y Delegados (Alumnos Ayudantes) ejecutan proyectos',
-                  '🏗️ 5 Áreas Académicas: Tecnología, Diseño, Construcción, Salud y Administración',
-                  '🎯 Proyectos específicos con impacto comunitario real'
-                ].map((item, i) => (
-                  <Box key={i} sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 2,
-                    p: 2,
-                    borderRadius: 2,
-                    background: '#f8f9fa',
-                    border: '1px solid #e3f2fd'
-                  }}>
-                    <Typography variant="body1" sx={{ 
-                      color: '#0a2342',
-                      fontSize: { xs: '0.95rem', md: '1rem' },
-                      lineHeight: 1.5
-                    }}>
-                      {item}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <img 
-                src="/imagenes/filosofia.png" 
-                alt="Ecosistema de Innovación INACAP" 
-                style={{ 
-                  width: '100%', 
-                  maxWidth: '500px',
-                  height: 'auto',
-                  borderRadius: 16, 
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                  display: 'block',
-                  margin: '0 auto'
-                }} 
-              />
-            </Box>
-          </Box>
-
-          {/* Descripción simple del ecosistema */}
-          <Box sx={{ 
-            mb: 4,
-            p: 3,
-            borderRadius: 2,
-            background: '#f8f9fa',
-            border: '1px solid #e3f2fd',
-            textAlign: 'center'
-          }}>
-            <Typography variant="body1" sx={{ 
-              color: '#0a2342',
-              fontSize: { xs: '0.95rem', md: '1rem' },
-              lineHeight: 1.6
-            }}>
-              <strong>Descripción del Ecosistema:</strong> Esta sección debe mostrar el flujo de trabajo del Director de Carrera → Líderes → 5 Áreas Académicas → Proyectos específicos, 
-              incluyendo ejemplos como "Posiciona tu Pyme", "Masetero Sustentable", "Enseñanza Inmersiva", etc. 
-              También debe explicar las colaboraciones interdisciplinarias entre áreas y cómo LEAN MAKER se integra con este sistema.
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
 
       {/* 7. Sección de Eventos y Conferencias */}
       <Box sx={{ 

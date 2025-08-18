@@ -1,9 +1,9 @@
 
 ADMINISTRADOS:
-admin@gmail.com                 admin123
+admin@gmail.com              admin123
 
 estudiantes:
-juan.perez@inacapmail.cl        Estudiante123!
+juan.perez@inacapmail.cl     Estudiante123!
 
 EMPRESAS:
-lucia.amaya@gmail.com           Empresa123!
+lucia.amaya@gmail.com        Empresa123!
