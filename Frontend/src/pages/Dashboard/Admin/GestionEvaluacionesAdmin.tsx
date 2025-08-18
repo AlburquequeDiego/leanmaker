@@ -42,7 +42,7 @@ import type { Evaluation } from '../../../types';
 
 interface EvaluationData {
   id: string;
-  evaluation_type: 'company_to_student' | 'student_to_company';
+  evaluation_type?: 'company_to_student' | 'student_to_company';
   score: number;
   comments: string;
   status: 'pending' | 'completed' | 'flagged';
@@ -56,7 +56,8 @@ interface EvaluationData {
   company_name: string;
   evaluator_id: string;
   evaluator_name: string;
-  evaluator_role: string;
+  evaluator_role?: string;
+  evaluator_type?: string; // Campo que realmente envía el backend
   created_at: string;
   updated_at: string;
 }
@@ -88,13 +89,49 @@ export const GestionEvaluacionesAdmin = () => {
   // Estados para UI
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Estado para pestaña activa
+  const [activeTab, setActiveTab] = useState<'student_to_company' | 'company_to_student' | 'strikes'>('student_to_company');
 
-  // Cargar evaluaciones al montar el componente
+  // Cargar todas las evaluaciones al montar el componente
   useEffect(() => {
-    loadEvaluations();
-  }, [currentPage, showLimit, evaluationType, statusFilter]);
+    loadAllEvaluations();
+  }, []);
 
-  // Función para cargar evaluaciones
+  // Cargar evaluaciones filtradas cuando cambien los filtros (solo para paginación y límites)
+  useEffect(() => {
+    if (currentPage !== 1 || showLimit !== 15) {
+      console.log(`🔍 [USE_EFFECT] Cambio de paginación detectado`);
+      loadEvaluations();
+    }
+  }, [currentPage, showLimit]);
+
+  // Función para cargar todas las evaluaciones sin filtros
+  const loadAllEvaluations = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log(`🔍 [API] Cargando TODAS las evaluaciones...`);
+      const response = await api.get(`${API_ENDPOINTS.EVALUATIONS_ADMIN_MANAGEMENT}?limit=1000`);
+      
+             if (response) {
+         console.log(`🔍 [API] Todas las evaluaciones cargadas:`, response.results?.length || 0);
+         console.log(`🔍 [API] Primera evaluación completa:`, response.results?.[0]);
+         console.log(`🔍 [API] Campos disponibles:`, response.results?.[0] ? Object.keys(response.results[0]) : []);
+         setEvaluations(response.results || []);
+         setTotalCount(response.count || 0);
+         setTotalPages(response.total_pages || 1);
+       }
+    } catch (err: any) {
+      setError(err.message || 'Error al cargar todas las evaluaciones');
+      console.error('Error loading all evaluations:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para cargar evaluaciones filtradas
   const loadEvaluations = async () => {
     setLoading(true);
     setError(null);
@@ -105,17 +142,22 @@ export const GestionEvaluacionesAdmin = () => {
         limit: showLimit.toString(),
       });
       
-      if (evaluationType) {
-        params.append('evaluation_type', evaluationType);
+      // Solo aplicar filtros si no estamos en la pestaña de strikes
+      if (activeTab !== 'strikes') {
+        if (evaluationType) {
+          params.append('evaluation_type', evaluationType);
+        }
       }
       
       if (statusFilter) {
         params.append('status', statusFilter);
       }
 
+      console.log(`🔍 [API] Cargando evaluaciones filtradas con parámetros:`, params.toString());
       const response = await api.get(`${API_ENDPOINTS.EVALUATIONS_ADMIN_MANAGEMENT}?${params}`);
       
       if (response) {
+        console.log(`🔍 [API] Respuesta filtrada recibida:`, response);
         setEvaluations(response.results || []);
         setTotalCount(response.count || 0);
         setTotalPages(response.total_pages || 1);
@@ -162,7 +204,12 @@ export const GestionEvaluacionesAdmin = () => {
   };
 
   // Función para obtener el texto del tipo de evaluación
-  const getEvaluationTypeText = (type: string) => {
+  const getEvaluationTypeText = (type: string | undefined) => {
+    if (!type) {
+      // Si no hay evaluation_type, determinar por evaluator_type
+      return 'Tipo no especificado';
+    }
+    
     switch (type) {
       case 'company_to_student':
         return 'Empresa → Estudiante';
@@ -185,11 +232,150 @@ export const GestionEvaluacionesAdmin = () => {
     });
   };
 
+  // Función para cambiar pestaña activa
+  const handleTabChange = (tab: 'student_to_company' | 'company_to_student' | 'strikes') => {
+    console.log(`🔍 [TAB] Cambiando a pestaña: ${tab}`);
+    setActiveTab(tab);
+    setCurrentPage(1);
+    
+    // Filtrar por tipo de evaluación
+    if (tab === 'strikes') {
+      setEvaluationType(''); // Los strikes se manejarán por separado
+    } else {
+      setEvaluationType(tab);
+      console.log(`🔍 [TAB] Tipo de evaluación establecido: ${tab}`);
+    }
+    
+    // No recargar desde API, solo cambiar la pestaña
+    // Las evaluaciones ya están cargadas y se filtran localmente
+  };
+
+  // Función para obtener evaluaciones filtradas por pestaña activa
+  const getFilteredEvaluations = () => {
+    if (activeTab === 'strikes') {
+      return []; // Por ahora vacío, implementaremos strikes después
+    }
+    
+    console.log(`🔍 [FILTER] === INICIO FILTRADO ===`);
+    console.log(`🔍 [FILTER] Pestaña activa: ${activeTab}`);
+    console.log(`🔍 [FILTER] Total evaluaciones: ${evaluations.length}`);
+    
+         // Mostrar información detallada de las primeras 3 evaluaciones
+     evaluations.slice(0, 3).forEach((e, i) => {
+       console.log(`🔍 [FILTER] Evaluación ${i + 1}:`, {
+         id: e.id,
+         evaluation_type: e.evaluation_type,
+         evaluator_role: e.evaluator_role,
+         evaluator_type: e.evaluator_type,
+         evaluator_name: e.evaluator_name,
+         student_name: e.student_name,
+         company_name: e.company_name
+       });
+     });
+    
+    // Opción 1: Filtrar por evaluation_type si está disponible
+    let filtered = evaluations.filter(e => e.evaluation_type === activeTab);
+    console.log(`🔍 [FILTER] Opción 1 - Por evaluation_type: ${filtered.length} evaluaciones`);
+    
+    // Opción 2: Si no hay resultados, usar filtrado inteligente por evaluator_role
+    if (filtered.length === 0 && evaluations.length > 0) {
+      console.log(`🔍 [FILTER] Opción 2 - Usando filtrado inteligente por evaluator_role`);
+      
+             filtered = evaluations.filter(e => {
+         // Usar evaluator_type si está disponible, sino evaluator_role
+         const evaluatorRole = e.evaluator_type?.toLowerCase() || e.evaluator_role?.toLowerCase();
+         console.log(`🔍 [FILTER] Evaluando rol: ${evaluatorRole} para pestaña: ${activeTab}`);
+         
+         if (activeTab === 'student_to_company') {
+           return evaluatorRole === 'student';
+         } else if (activeTab === 'company_to_student') {
+           return evaluatorRole === 'company';
+         }
+         return false;
+       });
+      
+      console.log(`🔍 [FILTER] Filtrado inteligente encontrado: ${filtered.length} evaluaciones`);
+    }
+    
+    // Opción 3: Si aún no hay resultados, usar heurística basada en nombres
+    if (filtered.length === 0 && evaluations.length > 0) {
+      console.log(`🔍 [FILTER] Opción 3 - Usando heurística por nombres`);
+      
+      filtered = evaluations.filter(e => {
+        // Si el evaluador tiene el mismo nombre que el estudiante, es auto-evaluación
+        const isSelfEvaluation = e.evaluator_name === e.student_name;
+        
+        if (activeTab === 'student_to_company') {
+          // Estudiante evaluando empresa: no debe ser auto-evaluación
+          return !isSelfEvaluation;
+        } else if (activeTab === 'company_to_student') {
+          // Empresa evaluando estudiante: no debe ser auto-evaluación
+          return !isSelfEvaluation;
+        }
+        return false;
+      });
+      
+      console.log(`🔍 [FILTER] Heurística encontrada: ${filtered.length} evaluaciones`);
+    }
+    
+    console.log(`🔍 [FILTER] === RESULTADO FINAL ===`);
+    console.log(`🔍 [FILTER] Evaluaciones filtradas: ${filtered.length}`);
+    console.log(`🔍 [FILTER] Tipos disponibles:`, evaluations.map(e => e.evaluation_type));
+    console.log(`🔍 [FILTER] Roles de evaluadores:`, evaluations.map(e => e.evaluator_role));
+    
+    return filtered;
+  };
+
   // Estadísticas calculadas
   const totalEvaluations = totalCount;
   const completedEvaluations = evaluations.filter(e => e.status === 'completed').length;
   const pendingEvaluations = evaluations.filter(e => e.status === 'pending').length;
   const flaggedEvaluations = evaluations.filter(e => e.status === 'flagged').length;
+  
+  // Contadores por pestaña con filtrado robusto
+  const getStudentToCompanyCount = () => {
+    // Opción 1: Por evaluation_type
+    let count = evaluations.filter(e => e.evaluation_type === 'student_to_company').length;
+    
+    // Opción 2: Por evaluator_type o evaluator_role
+    if (count === 0 && evaluations.length > 0) {
+      count = evaluations.filter(e => {
+        const evaluatorRole = e.evaluator_type?.toLowerCase() || e.evaluator_role?.toLowerCase();
+        return evaluatorRole === 'student';
+      }).length;
+    }
+    
+    // Opción 3: Heurística por nombres (no auto-evaluaciones)
+    if (count === 0 && evaluations.length > 0) {
+      count = evaluations.filter(e => e.evaluator_name !== e.student_name).length;
+    }
+    
+    return count;
+  };
+
+  const getCompanyToStudentCount = () => {
+    // Opción 1: Por evaluation_type
+    let count = evaluations.filter(e => e.evaluation_type === 'company_to_student').length;
+    
+    // Opción 2: Por evaluator_type o evaluator_role
+    if (count === 0 && evaluations.length > 0) {
+      count = evaluations.filter(e => {
+        const evaluatorRole = e.evaluator_type?.toLowerCase() || e.evaluator_role?.toLowerCase();
+        return evaluatorRole === 'company';
+      }).length;
+    }
+    
+    // Opción 3: Heurística por nombres (no auto-evaluaciones)
+    if (count === 0 && evaluations.length > 0) {
+      count = evaluations.filter(e => e.evaluator_name !== e.student_name).length;
+    }
+    
+    return count;
+  };
+
+  const studentToCompanyCount = getStudentToCompanyCount();
+  const companyToStudentCount = getCompanyToStudentCount();
+  const strikesCount = 0; // Por ahora 0, implementaremos después
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -356,71 +542,111 @@ export const GestionEvaluacionesAdmin = () => {
 
       {/* Secciones de Evaluaciones */}
       <Box sx={{ mb: 4 }}>
-        {/* Pestañas de navegación */}
-        <Box sx={{ 
-          display: 'flex', 
-          gap: 2, 
-          mb: 3,
-          borderBottom: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
-          pb: 2
-        }}>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              color: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
-              borderBottom: '2px solid',
-              borderColor: themeMode === 'dark' ? '#60a5fa' : 'primary.main',
-              pb: 1,
-              cursor: 'pointer',
-              fontWeight: 600
-            }}
-          >
-            ESTUDIANTE → EMPRESA (0)
+        {/* Título de la sección activa */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" sx={{ 
+            fontWeight: 600,
+            color: themeMode === 'dark' ? '#ffffff' : '#1e293b',
+            mb: 1
+          }}>
+            {activeTab === 'strikes' 
+              ? 'Gestión de Strikes y Reportes'
+              : activeTab === 'student_to_company'
+              ? 'Evaluaciones de Estudiantes a Empresas'
+              : 'Evaluaciones de Empresas a Estudiantes'
+            }
           </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
-              pb: 1,
-              cursor: 'pointer',
-              fontWeight: 600,
-              '&:hover': {
-                color: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
-              }
-            }}
-          >
-            EMPRESA → ESTUDIANTE (0)
-          </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
-              pb: 1,
-              cursor: 'pointer',
-              fontWeight: 600,
-              '&:hover': {
-                color: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
-              }
-            }}
-          >
-            STRIKE (0)
+          <Typography variant="body2" sx={{ 
+            color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
+          }}>
+            {activeTab === 'strikes'
+              ? 'Revisa y gestiona todos los reportes de strikes y amonestaciones'
+              : activeTab === 'student_to_company'
+              ? 'Administra las evaluaciones que los estudiantes hacen a las empresas'
+              : 'Administra las evaluaciones que las empresas hacen a los estudiantes'
+            }
           </Typography>
         </Box>
 
-        {/* Contador de evaluaciones */}
+        {/* Pestañas de navegación con selector alineado */}
         <Box sx={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
           mb: 3,
-          p: 2,
-          bgcolor: themeMode === 'dark' ? '#1e293b' : '#f8fafc',
-          borderRadius: 2,
-          border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+          borderBottom: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+          pb: 2
         }}>
-          <Typography variant="body1" sx={{ fontWeight: 600 }}>
-            {totalCount} evaluaciones encontradas
-          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Typography 
+              variant="h6" 
+              onClick={() => handleTabChange('student_to_company')}
+              sx={{ 
+                color: activeTab === 'student_to_company' 
+                  ? (themeMode === 'dark' ? '#60a5fa' : 'primary.main')
+                  : (themeMode === 'dark' ? '#cbd5e1' : '#64748b'),
+                borderBottom: activeTab === 'student_to_company' ? '2px solid' : 'none',
+                borderColor: activeTab === 'student_to_company' 
+                  ? (themeMode === 'dark' ? '#60a5fa' : 'primary.main')
+                  : 'transparent',
+                pb: 1,
+                cursor: 'pointer',
+                fontWeight: 600,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  color: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
+                }
+              }}
+            >
+              ESTUDIANTE → EMPRESA ({studentToCompanyCount})
+            </Typography>
+            <Typography 
+              variant="h6" 
+              onClick={() => handleTabChange('company_to_student')}
+              sx={{ 
+                color: activeTab === 'company_to_student' 
+                  ? (themeMode === 'dark' ? '#60a5fa' : 'primary.main')
+                  : (themeMode === 'dark' ? '#cbd5e1' : '#64748b'),
+                borderBottom: activeTab === 'company_to_student' ? '2px solid' : 'none',
+                borderColor: activeTab === 'company_to_student' 
+                  ? (themeMode === 'dark' ? '#60a5fa' : 'primary.main')
+                  : 'transparent',
+                pb: 1,
+                cursor: 'pointer',
+                fontWeight: 600,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  color: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
+                }
+              }}
+            >
+              EMPRESA → ESTUDIANTE ({companyToStudentCount})
+            </Typography>
+            <Typography 
+              variant="h6" 
+              onClick={() => handleTabChange('strikes')}
+              sx={{ 
+                color: activeTab === 'strikes' 
+                  ? (themeMode === 'dark' ? '#60a5fa' : 'primary.main')
+                  : (themeMode === 'dark' ? '#cbd5e1' : '#64748b'),
+                borderBottom: activeTab === 'strikes' ? '2px solid' : 'none',
+                borderColor: activeTab === 'strikes' 
+                  ? (themeMode === 'dark' ? '#60a5fa' : 'primary.main')
+                  : 'transparent',
+                pb: 1,
+                cursor: 'pointer',
+                fontWeight: 600,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  color: themeMode === 'dark' ? '#60a5fa' : 'primary.main'
+                }
+              }}
+            >
+              STRIKE ({strikesCount})
+            </Typography>
+          </Box>
+          
+          {/* Selector de cantidad alineado con las pestañas */}
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <Select
               value={showLimit}
@@ -452,7 +678,7 @@ export const GestionEvaluacionesAdmin = () => {
             <Alert severity="error" sx={{ m: 2 }}>
               {error}
             </Alert>
-          ) : evaluations.length === 0 ? (
+          ) : getFilteredEvaluations().length === 0 ? (
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <Avatar sx={{ 
                 width: 80, 
@@ -468,14 +694,42 @@ export const GestionEvaluacionesAdmin = () => {
                 mb: 1,
                 color: themeMode === 'dark' ? '#ffffff' : '#1e293b'
               }}>
-                No hay evaluaciones para mostrar
+                {activeTab === 'strikes' 
+                  ? 'No hay strikes para mostrar'
+                  : activeTab === 'student_to_company'
+                  ? 'No hay evaluaciones de estudiantes a empresas'
+                  : 'No hay evaluaciones de empresas a estudiantes'
+                }
               </Typography>
               <Typography variant="body1" sx={{ 
                 mb: 3,
                 color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
               }}>
-                Las evaluaciones aparecerán aquí una vez que se creen en el sistema
+                {activeTab === 'strikes'
+                  ? 'Los strikes aparecerán aquí una vez que se reporten en el sistema'
+                  : 'Las evaluaciones aparecerán aquí una vez que se creen en el sistema'
+                }
               </Typography>
+                             {activeTab !== 'strikes' && (
+                 <Box>
+                   <Typography variant="body2" sx={{ 
+                     color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
+                     fontStyle: 'italic'
+                   }}>
+                     Total de evaluaciones en el sistema: {totalCount}
+                   </Typography>
+                   {evaluations.length > 0 && evaluations.some(e => !e.evaluation_type) && (
+                     <Typography variant="caption" sx={{ 
+                       color: themeMode === 'dark' ? '#fbbf24' : '#d97706',
+                       fontStyle: 'italic',
+                       display: 'block',
+                       mt: 1
+                     }}>
+                       ⚠️ Usando filtrado inteligente (campo evaluation_type no disponible)
+                     </Typography>
+                   )}
+                 </Box>
+               )}
             </Box>
           ) : (
             <>
@@ -495,7 +749,7 @@ export const GestionEvaluacionesAdmin = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {evaluations.map((evaluation) => (
+                    {getFilteredEvaluations().map((evaluation) => (
                       <TableRow key={evaluation.id} hover>
                         <TableCell>
                           <Chip 
@@ -525,16 +779,16 @@ export const GestionEvaluacionesAdmin = () => {
                             {evaluation.company_name}
                           </Typography>
                         </TableCell>
-                        <TableCell>
-                          <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {evaluation.evaluator_name}
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                              {evaluation.evaluator_role}
-                            </Typography>
-                          </Box>
-                        </TableCell>
+                                                 <TableCell>
+                           <Box>
+                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                               {evaluation.evaluator_name}
+                             </Typography>
+                             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                               {evaluation.evaluator_type || evaluation.evaluator_role || 'Rol no especificado'}
+                             </Typography>
+                           </Box>
+                         </TableCell>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
