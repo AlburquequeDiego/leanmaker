@@ -23,6 +23,7 @@ import {
   Pagination,
   TextField,
   InputAdornment,
+  Button,
 } from '@mui/material';
 import {
   Assessment as AssessmentIcon,
@@ -62,8 +63,45 @@ interface EvaluationData {
   updated_at: string;
 }
 
+// Nueva interfaz para strikes y reportes
+interface StrikeData {
+  id: string;
+  type: 'strike' | 'report';
+  student_id: string;
+  student_name: string;
+  student_email: string;
+  company_id: string;
+  company_name: string;
+  project_id: string | null;
+  project_title: string | null;
+  reason: string;
+  description: string;
+  severity?: 'low' | 'medium' | 'high';
+  status: 'pending' | 'approved' | 'rejected' | 'active' | 'inactive';
+  issued_by_id?: string | null;
+  issued_by_name?: string | null;
+  issued_at?: string;
+  expires_at?: string | null;
+  resolved_at?: string | null;
+  resolution_notes?: string | null;
+  reviewed_by_id?: string | null;
+  reviewed_by_name?: string | null;
+  reviewed_at?: string | null;
+  admin_notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 interface ApiResponse {
   results: EvaluationData[];
+  count: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
+interface StrikesApiResponse {
+  results: StrikeData[];
   count: number;
   page: number;
   limit: number;
@@ -80,6 +118,11 @@ export const GestionEvaluacionesAdmin = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
+  // Estados para strikes
+  const [strikes, setStrikes] = useState<StrikeData[]>([]);
+  const [strikesCount, setStrikesCount] = useState(0);
+  const [strikesLoading, setStrikesLoading] = useState(false);
+  
   // Estados para filtros
   const [showLimit, setShowLimit] = useState(15);
   const [evaluationType, setEvaluationType] = useState<string>('');
@@ -93,18 +136,35 @@ export const GestionEvaluacionesAdmin = () => {
   // Estado para pestaña activa
   const [activeTab, setActiveTab] = useState<'student_to_company' | 'company_to_student' | 'strikes'>('student_to_company');
 
+  // Estados para modal de strike
+  const [selectedStrike, setSelectedStrike] = useState<StrikeData | null>(null);
+  const [showStrikeModal, setShowStrikeModal] = useState(false);
+  const [adminNotes, setAdminNotes] = useState('');
+  const [processingStrike, setProcessingStrike] = useState(false);
+
   // Cargar todas las evaluaciones al montar el componente
   useEffect(() => {
     loadAllEvaluations();
   }, []);
 
+  // Cargar strikes cuando se active la pestaña
+  useEffect(() => {
+    if (activeTab === 'strikes') {
+      loadStrikes();
+    }
+  }, [activeTab]);
+
   // Cargar evaluaciones filtradas cuando cambien los filtros (solo para paginación y límites)
   useEffect(() => {
     if (currentPage !== 1 || showLimit !== 15) {
       console.log(`🔍 [USE_EFFECT] Cambio de paginación detectado`);
-      loadEvaluations();
+      if (activeTab === 'strikes') {
+        loadStrikes();
+      } else {
+        loadEvaluations();
+      }
     }
-  }, [currentPage, showLimit]);
+  }, [currentPage, showLimit, activeTab]);
 
   // Función para cargar todas las evaluaciones sin filtros
   const loadAllEvaluations = async () => {
@@ -168,6 +228,93 @@ export const GestionEvaluacionesAdmin = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Función para cargar strikes y reportes
+  const loadStrikes = async () => {
+    setStrikesLoading(true);
+    setError(null);
+    
+    try {
+      console.log(`🔍 [STRIKES] Cargando strikes y reportes...`);
+      const response = await api.get(`${API_ENDPOINTS.EVALUATIONS_ADMIN_STRIKES_MANAGEMENT}?limit=1000`);
+      
+      if (response) {
+        console.log(`🔍 [STRIKES] Strikes cargados:`, response.results?.length || 0);
+        setStrikes((response.results as unknown as StrikeData[]) || []);
+        setStrikesCount(response.count || 0);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Error al cargar strikes');
+      console.error('Error loading strikes:', err);
+    } finally {
+      setStrikesLoading(false);
+    }
+  };
+
+  // Función para aprobar strike
+  const handleApproveStrike = async () => {
+    if (!selectedStrike || selectedStrike.type !== 'report') return;
+    
+    setProcessingStrike(true);
+    try {
+      const response = await api.patch(
+        `${API_ENDPOINTS.STRIKES_REPORTS_APPROVE.replace('{id}', selectedStrike.id)}`,
+        { admin_notes: adminNotes }
+      );
+      
+      if (response) {
+        console.log('✅ Strike aprobado:', response);
+        // Recargar strikes
+        await loadStrikes();
+        setShowStrikeModal(false);
+        setSelectedStrike(null);
+        setAdminNotes('');
+        // Mostrar mensaje de éxito
+        alert('Strike aprobado correctamente');
+      }
+    } catch (err: any) {
+      console.error('Error aprobando strike:', err);
+      alert(`Error al aprobar strike: ${err.message}`);
+    } finally {
+      setProcessingStrike(false);
+    }
+  };
+
+  // Función para rechazar strike
+  const handleRejectStrike = async () => {
+    if (!selectedStrike || selectedStrike.type !== 'report') return;
+    
+    setProcessingStrike(true);
+    try {
+      const response = await api.patch(
+        `${API_ENDPOINTS.STRIKES_REPORTS_REJECT.replace('{id}', selectedStrike.id)}`,
+        { admin_notes: adminNotes }
+      );
+      
+      if (response) {
+        console.log('❌ Strike rechazado:', response);
+        // Recargar strikes
+        await loadStrikes();
+        setShowStrikeModal(false);
+        setSelectedStrike(null);
+        setAdminNotes('');
+        // Mostrar mensaje de éxito
+        alert('Strike rechazado correctamente');
+      }
+    } catch (err: any) {
+      console.error('Error rechazando strike:', err);
+      alert(`Error al rechazar strike: ${err.message}`);
+    } finally {
+      setProcessingStrike(false);
+    }
+  };
+
+  // Función para abrir modal de strike
+  const openStrikeModal = (strike: StrikeData) => {
+    setSelectedStrike(strike);
+    setAdminNotes(strike.admin_notes || '');
+    setShowStrikeModal(true);
   };
 
   // Función para buscar evaluaciones
@@ -253,25 +400,25 @@ export const GestionEvaluacionesAdmin = () => {
   // Función para obtener evaluaciones filtradas por pestaña activa
   const getFilteredEvaluations = () => {
     if (activeTab === 'strikes') {
-      return []; // Por ahora vacío, implementaremos strikes después
+      return []; // Los strikes se manejan por separado
     }
     
     console.log(`🔍 [FILTER] === INICIO FILTRADO ===`);
     console.log(`🔍 [FILTER] Pestaña activa: ${activeTab}`);
     console.log(`🔍 [FILTER] Total evaluaciones: ${evaluations.length}`);
     
-         // Mostrar información detallada de las primeras 3 evaluaciones
-     evaluations.slice(0, 3).forEach((e, i) => {
-       console.log(`🔍 [FILTER] Evaluación ${i + 1}:`, {
-         id: e.id,
-         evaluation_type: e.evaluation_type,
-         evaluator_role: e.evaluator_role,
-         evaluator_type: e.evaluator_type,
-         evaluator_name: e.evaluator_name,
-         student_name: e.student_name,
-         company_name: e.company_name
-       });
-     });
+    // Mostrar información detallada de las primeras 3 evaluaciones
+    evaluations.slice(0, 3).forEach((e, i) => {
+      console.log(`🔍 [FILTER] Evaluación ${i + 1}:`, {
+        id: e.id,
+        evaluation_type: e.evaluation_type,
+        evaluator_role: e.evaluator_role,
+        evaluator_type: e.evaluator_type,
+        evaluator_name: e.evaluator_name,
+        student_name: e.student_name,
+        company_name: e.company_name
+      });
+    });
     
     // Opción 1: Filtrar por evaluation_type si está disponible
     let filtered = evaluations.filter(e => e.evaluation_type === activeTab);
@@ -281,18 +428,18 @@ export const GestionEvaluacionesAdmin = () => {
     if (filtered.length === 0 && evaluations.length > 0) {
       console.log(`🔍 [FILTER] Opción 2 - Usando filtrado inteligente por evaluator_role`);
       
-             filtered = evaluations.filter(e => {
-         // Usar evaluator_type si está disponible, sino evaluator_role
-         const evaluatorRole = e.evaluator_type?.toLowerCase() || e.evaluator_role?.toLowerCase();
-         console.log(`🔍 [FILTER] Evaluando rol: ${evaluatorRole} para pestaña: ${activeTab}`);
-         
-         if (activeTab === 'student_to_company') {
-           return evaluatorRole === 'student';
-         } else if (activeTab === 'company_to_student') {
-           return evaluatorRole === 'company';
-         }
-         return false;
-       });
+      filtered = evaluations.filter(e => {
+        // Usar evaluator_type si está disponible, sino evaluator_role
+        const evaluatorRole = e.evaluator_type?.toLowerCase() || e.evaluator_role?.toLowerCase();
+        console.log(`🔍 [FILTER] Evaluando rol: ${evaluatorRole} para pestaña: ${activeTab}`);
+        
+        if (activeTab === 'student_to_company') {
+          return evaluatorRole === 'student';
+        } else if (activeTab === 'company_to_student') {
+          return evaluatorRole === 'company';
+        }
+        return false;
+      });
       
       console.log(`🔍 [FILTER] Filtrado inteligente encontrado: ${filtered.length} evaluaciones`);
     }
@@ -324,6 +471,68 @@ export const GestionEvaluacionesAdmin = () => {
     console.log(`🔍 [FILTER] Roles de evaluadores:`, evaluations.map(e => e.evaluator_role));
     
     return filtered;
+  };
+
+  // Función para obtener el color del estado de strike
+  const getStrikeStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'warning';
+      case 'approved':
+      case 'active':
+        return 'success';
+      case 'rejected':
+      case 'inactive':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  // Función para obtener el texto del estado de strike
+  const getStrikeStatusText = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'Pendiente';
+      case 'approved':
+        return 'Aprobado';
+      case 'rejected':
+        return 'Rechazado';
+      case 'active':
+        return 'Activo';
+      case 'inactive':
+        return 'Inactivo';
+      default:
+        return status;
+    }
+  };
+
+  // Función para obtener el color de severidad
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'low':
+        return 'success';
+      case 'medium':
+        return 'warning';
+      case 'high':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  // Función para obtener el texto de severidad
+  const getSeverityText = (severity: string) => {
+    switch (severity) {
+      case 'low':
+        return 'Baja';
+      case 'medium':
+        return 'Media';
+      case 'high':
+        return 'Alta';
+      default:
+        return severity;
+    }
   };
 
   // Estadísticas calculadas
@@ -375,7 +584,6 @@ export const GestionEvaluacionesAdmin = () => {
 
   const studentToCompanyCount = getStudentToCompanyCount();
   const companyToStudentCount = getCompanyToStudentCount();
-  const strikesCount = 0; // Por ahora 0, implementaremos después
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -678,88 +886,138 @@ export const GestionEvaluacionesAdmin = () => {
             <Alert severity="error" sx={{ m: 2 }}>
               {error}
             </Alert>
-          ) : getFilteredEvaluations().length === 0 ? (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-              <Avatar sx={{ 
-                width: 80, 
-                height: 80, 
-                bgcolor: themeMode === 'dark' ? '#64748b' : '#e2e8f0', 
-                mx: 'auto', 
-                mb: 3 
-              }}>
-                <AssessmentIcon sx={{ fontSize: 40, color: themeMode === 'dark' ? '#94a3b8' : '#64748b' }} />
-              </Avatar>
-              <Typography variant="h5" sx={{ 
-                fontWeight: 600, 
-                mb: 1,
-                color: themeMode === 'dark' ? '#ffffff' : '#1e293b'
-              }}>
-                {activeTab === 'strikes' 
-                  ? 'No hay strikes para mostrar'
-                  : activeTab === 'student_to_company'
-                  ? 'No hay evaluaciones de estudiantes a empresas'
-                  : 'No hay evaluaciones de empresas a estudiantes'
-                }
-              </Typography>
-              <Typography variant="body1" sx={{ 
-                mb: 3,
-                color: themeMode === 'dark' ? '#cbd5e1' : '#64748b'
-              }}>
-                {activeTab === 'strikes'
-                  ? 'Los strikes aparecerán aquí una vez que se reporten en el sistema'
-                  : 'Las evaluaciones aparecerán aquí una vez que se creen en el sistema'
-                }
-              </Typography>
-                             {activeTab !== 'strikes' && (
-                 <Box>
-                   <Typography variant="body2" sx={{ 
-                     color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
-                     fontStyle: 'italic'
-                   }}>
-                     Total de evaluaciones en el sistema: {totalCount}
-                   </Typography>
-                   {evaluations.length > 0 && evaluations.some(e => !e.evaluation_type) && (
-                     <Typography variant="caption" sx={{ 
-                       color: themeMode === 'dark' ? '#fbbf24' : '#d97706',
-                       fontStyle: 'italic',
-                       display: 'block',
-                       mt: 1
-                     }}>
-                       ⚠️ Usando filtrado inteligente (campo evaluation_type no disponible)
-                     </Typography>
-                   )}
-                 </Box>
-               )}
-            </Box>
+          ) : activeTab === 'strikes' ? (
+            <>
+              <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
+                <Table>
+                                     <TableHead>
+                     <TableRow sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }}>
+                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Estudiante</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Empresa</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Proyecto</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Fecha</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Acciones</TableCell>
+                     </TableRow>
+                   </TableHead>
+                  <TableBody>
+                                         {strikesLoading ? (
+                       <TableRow>
+                         <TableCell colSpan={7} align="center">
+                           <CircularProgress />
+                         </TableCell>
+                       </TableRow>
+                     ) : strikes.length === 0 ? (
+                       <TableRow>
+                         <TableCell colSpan={7} align="center">
+                           <Typography variant="body1" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}>
+                             No hay strikes o reportes para mostrar.
+                           </Typography>
+                         </TableCell>
+                       </TableRow>
+                    ) : (
+                      strikes.map((strike) => (
+                        <TableRow key={strike.id} hover>
+                          <TableCell>
+                            <Chip label={strike.type === 'strike' ? 'Amonestación' : 'Reporte'} size="small" />
+                          </TableCell>
+                          <TableCell>
+                            <Box>
+                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                {strike.student_name}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                {strike.student_email}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {strike.company_name}
+                            </Typography>
+                          </TableCell>
+                                                     <TableCell>
+                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                               {strike.project_title || 'N/A'}
+                             </Typography>
+                           </TableCell>
+                           <TableCell>
+                            <Chip
+                              label={getStrikeStatusText(strike.status)}
+                              color={getStrikeStatusColor(strike.status)}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                              {formatDate(strike.issued_at || strike.created_at)}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                              <Tooltip title="Ver detalles">
+                                <IconButton size="small" color="primary" onClick={() => openStrikeModal(strike)}>
+                                  <VisibilityIcon />
+                                </IconButton>
+                              </Tooltip>
+                              {strike.status === 'pending' && (
+                                <>
+                                  <Tooltip title="Aprobar">
+                                    <IconButton size="small" color="success" onClick={() => openStrikeModal(strike)}>
+                                      <CheckCircleIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Rechazar">
+                                    <IconButton size="small" color="error" onClick={() => openStrikeModal(strike)}>
+                                      <WarningIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                </>
+                              )}
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              {/* Paginación */}
+              {totalPages > 1 && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                  <Pagination 
+                    count={totalPages} 
+                    page={currentPage} 
+                    onChange={handlePageChange}
+                    color="primary"
+                    showFirstButton 
+                    showLastButton
+                  />
+                </Box>
+              )}
+            </>
           ) : (
             <>
               <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
                 <Table>
-                  <TableHead>
-                    <TableRow sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }}>
-                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Proyecto</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Estudiante</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Empresa</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Evaluador</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Calificación</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Fecha</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Acciones</TableCell>
-                    </TableRow>
-                  </TableHead>
+                                     <TableHead>
+                     <TableRow sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' }}>
+                       <TableCell sx={{ fontWeight: 600 }}>Proyecto</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Estudiante</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Empresa</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Evaluador</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Calificación</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Fecha</TableCell>
+                       <TableCell sx={{ fontWeight: 600 }}>Acciones</TableCell>
+                     </TableRow>
+                   </TableHead>
                   <TableBody>
-                    {getFilteredEvaluations().map((evaluation) => (
-                      <TableRow key={evaluation.id} hover>
-                        <TableCell>
-                          <Chip 
-                            label={getEvaluationTypeText(evaluation.evaluation_type)}
-                            size="small"
-                            color={evaluation.evaluation_type === 'company_to_student' ? 'primary' : 'secondary'}
-                            variant="outlined"
-                          />
-                        </TableCell>
-                        <TableCell>
+                                         {getFilteredEvaluations().map((evaluation) => (
+                       <TableRow key={evaluation.id} hover>
+                         <TableCell>
                           <Typography variant="body2" sx={{ fontWeight: 500 }}>
                             {evaluation.project_title}
                           </Typography>
@@ -865,6 +1123,52 @@ export const GestionEvaluacionesAdmin = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal de Strike */}
+      {showStrikeModal && selectedStrike && (
+        <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, bgcolor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <Card sx={{ p: 4, maxWidth: 600, width: '90%', bgcolor: themeMode === 'dark' ? '#1e293b' : 'white', borderRadius: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              {selectedStrike.type === 'strike' ? 'Aprobar Amonestación' : 'Aprobar Reporte'}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              {selectedStrike.type === 'strike' ? '¿Estás seguro de que quieres aprobar esta amonestación?' : '¿Estás seguro de que quieres aprobar este reporte?'}
+            </Typography>
+            <TextField
+              label="Notas del Administrador"
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              value={adminNotes}
+              onChange={(e) => setAdminNotes(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+              <Button variant="outlined" onClick={() => setShowStrikeModal(false)}>
+                Cancelar
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleApproveStrike}
+                disabled={processingStrike}
+              >
+                {processingStrike ? <CircularProgress size={24} /> : 'Aprobar'}
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleRejectStrike}
+                disabled={processingStrike}
+              >
+                {processingStrike ? <CircularProgress size={24} /> : 'Rechazar'}
+              </Button>
+            </Box>
+          </Card>
+        </Box>
+      )}
     </Box>
   );
 };
