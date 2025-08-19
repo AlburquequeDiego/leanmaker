@@ -2378,7 +2378,7 @@ def api_hub_analytics_data(request):
                 top_companies.append({
                     'id': company.id,
                     'name': company.company_name or company.user.email,
-                    'industry': company.industry or 'Tecnología',
+                    'industry': company.user.email if company.user else 'Sin correo',
                     'avatar': ''.join([n[0].upper() for n in (company.company_name or company.user.email).split()[:2]]),
                     'totalProjects': company.projects_count or 0,
                     'activeProjects': company.active_projects_count or 0,
@@ -2699,12 +2699,118 @@ def api_hub_analytics_data(request):
                         'percentage': round((count / students_with_gpa.count()) * 100, 1)
                     })
             
+            # 7.1. MÉTRICAS DE SATISFACCIÓN POR ÁREA DE PROYECTO
+            try:
+                # Obtener satisfacción por área de proyecto
+                satisfaction_by_area = []
+                
+                # Usar las mismas áreas que están en el frontend (AREAS_ESTATICAS)
+                areas_frontend = [
+                    'Tecnología y Sistemas',
+                    'Administración y Gestión', 
+                    'Comunicación y Marketing',
+                    'Salud y Ciencias',
+                    'Ingeniería y Construcción',
+                    'Educación y Formación',
+                    'Arte y Diseño',
+                    'Investigación y Desarrollo',
+                    'Servicios y Atención al Cliente',
+                    'Sostenibilidad y Medio Ambiente',
+                    'Otro'
+                ]
+                
+                # Intentar obtener áreas de la base de datos primero
+                try:
+                    from areas.models import Area
+                    areas_db = Area.objects.all()
+                    if areas_db.exists():
+                        # Si hay áreas en la BD, usarlas
+                        for area in areas_db:
+                            projects_in_area = Proyecto.objects.filter(area=area)
+                            total_projects_area = projects_in_area.count()
+                            
+                            if total_projects_area > 0:
+                                completed_projects_area = projects_in_area.filter(
+                                    status__name__in=['completed']
+                                ).count()
+                                satisfaction_rate = (completed_projects_area / total_projects_area) * 100
+                                
+                                students_in_area_projects = Estudiante.objects.filter(
+                                    aplicaciones__project__area=area
+                                ).distinct()
+                                avg_gpa_area = students_in_area_projects.aggregate(
+                                    avg_gpa=Avg('gpa')
+                                )['avg_gpa'] or 0
+                                
+                                satisfaction_by_area.append({
+                                    'area': area.name,
+                                    'satisfaction': round(satisfaction_rate, 1),
+                                    'totalProjects': total_projects_area,
+                                    'completedProjects': completed_projects_area,
+                                    'averageGPA': round(avg_gpa_area, 1),
+                                    'color': '#3b82f6'
+                                })
+                except Exception as e:
+                    print(f"⚠️ [HUB ANALYTICS] Error obteniendo áreas de BD: {str(e)}")
+                
+                # Si no hay datos de BD, mostrar todas las áreas del frontend con datos de ejemplo
+                if not satisfaction_by_area:
+                    # Colores para cada área
+                    area_colors = [
+                        '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444',
+                        '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#6366f1', '#a855f7'
+                    ]
+                    
+                    for i, area_name in enumerate(areas_frontend):
+                        satisfaction_by_area.append({
+                            'area': area_name,
+                            'satisfaction': 0,  # Sin proyectos aún
+                            'totalProjects': 0,
+                            'completedProjects': 0,
+                            'averageGPA': 0,
+                            'color': area_colors[i % len(area_colors)]
+                        })
+                
+            except Exception as e:
+                print(f"⚠️ [HUB ANALYTICS] Error obteniendo satisfacción por área: {str(e)}")
+                # Usar las mismas áreas del frontend en caso de error
+                areas_frontend = [
+                    'Tecnología y Sistemas',
+                    'Administración y Gestión', 
+                    'Comunicación y Marketing',
+                    'Salud y Ciencias',
+                    'Ingeniería y Construcción',
+                    'Educación y Formación',
+                    'Arte y Diseño',
+                    'Investigación y Desarrollo',
+                    'Servicios y Atención al Cliente',
+                    'Sostenibilidad y Medio Ambiente',
+                    'Otro'
+                ]
+                
+                area_colors = [
+                    '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444',
+                    '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#6366f1', '#a855f7'
+                ]
+                
+                satisfaction_by_area = []
+                for i, area_name in enumerate(areas_frontend):
+                    satisfaction_by_area.append({
+                        'area': area_name,
+                        'satisfaction': 0,
+                        'totalProjects': 0,
+                        'completedProjects': 0,
+                        'averageGPA': 0,
+                        'color': area_colors[i % len(area_colors)]
+                    })
+            
             satisfaction_metrics = {
                 'averageProjectRating': round(avg_rating, 1),
                 'companySatisfactionRate': round(company_satisfaction_rate, 1),
                 'repeatProjectsCount': companies_with_multiple_projects,
                 'ratingDistribution': rating_distribution,
-                'totalRatedProjects': students_with_gpa.count()
+                'totalRatedProjects': students_with_gpa.count(),
+                'satisfactionByArea': satisfaction_by_area
             }
             
         except Exception as e:
@@ -2763,10 +2869,72 @@ def api_hub_analytics_data(request):
             total_real_hours = total_hours_value
             hours_efficiency = (total_estimated_hours / total_real_hours * 100) if total_real_hours > 0 else 0
             
-            # Tasa de éxito por tipo de proyecto (usando estados como proxy)
+            # Tasa de éxito por estado de proyecto
             success_by_status = Proyecto.objects.values('status__name').annotate(
                 count=Count('id')
             ).order_by('-count')
+            
+            # Eficiencia por área de proyecto
+            efficiency_by_area = []
+            try:
+                from areas.models import Area
+                areas = Area.objects.all()
+                
+                for area in areas:
+                    projects_in_area = Proyecto.objects.filter(area=area)
+                    total_projects_area = projects_in_area.count()
+                    
+                    if total_projects_area > 0:
+                        # Proyectos completados en esta área
+                        completed_projects_area = projects_in_area.filter(
+                            status__name__in=['completed']
+                        ).count()
+                        
+                        # Calcular eficiencia de tiempo para esta área
+                        area_efficiency_data = []
+                        for project in projects_in_area.filter(status__name__in=['completed']):
+                            if project.updated_at and project.created_at:
+                                real_time = (project.updated_at - project.created_at).days
+                                estimated_time = getattr(project, 'estimated_duration', 30) or 30
+                                efficiency = round((estimated_time / real_time) * 100, 1) if real_time > 0 else 0
+                                area_efficiency_data.append(efficiency)
+                        
+                        avg_area_efficiency = sum(area_efficiency_data) / len(area_efficiency_data) if area_efficiency_data else 0
+                        
+                        efficiency_by_area.append({
+                            'area': area.name,
+                            'totalProjects': total_projects_area,
+                            'completedProjects': completed_projects_area,
+                            'successRate': round((completed_projects_area / total_projects_area) * 100, 1),
+                            'averageEfficiency': round(avg_area_efficiency, 1),
+                            'color': area.color or '#3b82f6'
+                        })
+            except Exception as e:
+                print(f"⚠️ [HUB ANALYTICS] Error obteniendo eficiencia por área: {str(e)}")
+            
+            # Si no hay áreas en BD, usar las del frontend
+            if not efficiency_by_area:
+                areas_frontend = [
+                    'Tecnología y Sistemas', 'Administración y Gestión', 'Comunicación y Marketing',
+                    'Salud y Ciencias', 'Ingeniería y Construcción', 'Educación y Formación',
+                    'Arte y Diseño', 'Investigación y Desarrollo', 'Servicios y Atención al Cliente',
+                    'Sostenibilidad y Medio Ambiente', 'Otro'
+                ]
+                
+                area_colors = [
+                    '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444',
+                    '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#6366f1', '#a855f7'
+                ]
+                
+                for i, area_name in enumerate(areas_frontend):
+                    efficiency_by_area.append({
+                        'area': area_name,
+                        'totalProjects': 0,
+                        'completedProjects': 0,
+                        'successRate': 0,
+                        'averageEfficiency': 0,
+                        'color': area_colors[i % len(area_colors)]
+                    })
             
             efficiency_metrics = {
                 'averageCompletionTime': round(avg_real_completion, 1),
@@ -2782,7 +2950,8 @@ def api_hub_analytics_data(request):
                         'success_rate': round((item['count'] / total_projects) * 100, 1) if total_projects > 0 else 0
                     }
                     for item in success_by_status
-                ]
+                ],
+                'efficiencyByArea': efficiency_by_area
             }
             
         except Exception as e:
@@ -2833,6 +3002,80 @@ def api_hub_analytics_data(request):
                 })
             monthly_impact.reverse()
             
+            # 9.1. COMPARACIÓN DE COSTOS POR ÁREA
+            cost_comparison_by_area = []
+            try:
+                # Valor hora hombre para practicantes: 1250 pesos chilenos
+                hourly_rate_clp = 1250  # CLP por hora
+                
+                # Obtener todas las áreas disponibles
+                from areas.models import Area
+                areas = Area.objects.all()
+                
+                if areas.exists():
+                    for area in areas:
+                        # Estudiantes en esta área con horas disponibles
+                        students_in_area = Estudiante.objects.filter(
+                            area=area.name,
+                            status='approved'
+                        )
+                        
+                        # Calcular horas totales disponibles por mes para esta área
+                        total_hours_available = 0
+                        for student in students_in_area:
+                            # Convertir horas por semana a horas por mes (4.33 semanas por mes)
+                            monthly_hours = (student.hours_per_week or 20) * 4.33
+                            total_hours_available += monthly_hours
+                        
+                        if total_hours_available > 0:
+                            # Costo con nuestra plataforma (practicantes)
+                            platform_cost = total_hours_available * hourly_rate_clp
+                            
+                            # Costo contratación tradicional (asumiendo 3x más caro)
+                            traditional_cost = platform_cost * 3
+                            
+                            # Ahorro para empresas
+                            savings = traditional_cost - platform_cost
+                            
+                            cost_comparison_by_area.append({
+                                'area': area.name,
+                                'traditional': round(traditional_cost),
+                                'platform': round(platform_cost),
+                                'savings': round(savings),
+                                'totalHoursAvailable': round(total_hours_available, 1),
+                                'studentsCount': students_in_area.count(),
+                                'color': area.color or '#3b82f6'
+                            })
+                
+                # Si no hay áreas en BD, usar las del frontend
+                if not cost_comparison_by_area:
+                    areas_frontend = [
+                        'Tecnología y Sistemas', 'Administración y Gestión', 'Comunicación y Marketing',
+                        'Salud y Ciencias', 'Ingeniería y Construcción', 'Educación y Formación',
+                        'Arte y Diseño', 'Investigación y Desarrollo', 'Servicios y Atención al Cliente',
+                        'Sostenibilidad y Medio Ambiente', 'Otro'
+                    ]
+                    
+                    area_colors = [
+                        '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444',
+                        '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#6366f1', '#a855f7'
+                    ]
+                    
+                    for i, area_name in enumerate(areas_frontend):
+                        cost_comparison_by_area.append({
+                            'area': area_name,
+                            'traditional': 0,
+                            'platform': 0,
+                            'savings': 0,
+                            'totalHoursAvailable': 0,
+                            'studentsCount': 0,
+                            'color': area_colors[i % len(area_colors)]
+                        })
+                        
+            except Exception as e:
+                print(f"⚠️ [HUB ANALYTICS] Error obteniendo comparación de costos por área: {str(e)}")
+                cost_comparison_by_area = []
+            
             financial_metrics = {
                 'estimatedHoursValue': round(estimated_hours_value, 2),
                 'savingsForCompanies': round(savings_for_companies, 2),
@@ -2840,7 +3083,8 @@ def api_hub_analytics_data(request):
                 'studentROI': round(student_roi, 1),
                 'totalExperienceValue': round(total_experience_value, 2),
                 'monthlyImpact': monthly_impact,
-                'hourlyRate': hourly_rate
+                'hourlyRate': hourly_rate,
+                'costComparisonByArea': cost_comparison_by_area
             }
             
         except Exception as e:

@@ -2616,64 +2616,73 @@ export const ReportesYAnalytics = () => {
                   </ResponsiveContainer>
                 </Box>
 
-                {/* Gráfico de Satisfacción por Tipo */}
-                <Box>
-                  <Typography variant="h6" sx={{ 
-                    mb: 3, 
-                    fontWeight: 700, 
-                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
-                    fontSize: '1.1rem',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                  }}>
-                    🎯 Satisfacción por Tipo de Proyecto
-                  </Typography>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={[
-                      { type: 'Desarrollo Web', satisfaction: 92, color: '#3b82f6' },
-                      { type: 'App Móvil', satisfaction: 88, color: '#8b5cf6' },
-                      { type: 'IA/ML', satisfaction: 95, color: '#10b981' },
-                      { type: 'Análisis Datos', satisfaction: 85, color: '#f59e0b' },
-                      { type: 'Investigación', satisfaction: 90, color: '#ef4444' }
-                    ]}>
-                      <defs>
-                        <linearGradient id="satisfactionGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
-                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid 
-                        strokeDasharray="3 3" 
-                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
-                        opacity={0.3}
-                      />
-                      <XAxis 
-                        dataKey="type"
-                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
-                        domain={[0, 100]}
-                        tickFormatter={(value) => `${value}%`}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
-                          borderRadius: '8px',
-                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        formatter={(value, name) => [`${value}%`, 'Satisfacción']}
-                      />
-                      <Bar 
-                        dataKey="satisfaction" 
-                        fill="url(#satisfactionGradient)"
-                        radius={[8, 8, 0, 0]}
-                        stroke="#8b5cf6"
-                        strokeWidth={2}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </Box>
+                {/* Gráfico de Satisfacción por Área - Solo se muestra cuando hay datos reales */}
+                {(() => {
+                  const satisfactionData = analyticsData?.satisfactionMetrics?.satisfactionByArea;
+                  const hasRealData = satisfactionData && satisfactionData.some(item => item.totalProjects > 0);
+                  
+                  if (!hasRealData) {
+                    return null; // No mostrar nada si no hay datos reales
+                  }
+                  
+                  return (
+                    <Box>
+                      <Typography variant="h6" sx={{ 
+                        mb: 3, 
+                        fontWeight: 700, 
+                        color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                        fontSize: '1.1rem',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}>
+                        🎯 Satisfacción por Área de Proyecto
+                      </Typography>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={satisfactionData.filter(item => item.totalProjects > 0)}>
+                          <defs>
+                            <linearGradient id="satisfactionGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
+                              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid 
+                            strokeDasharray="3 3" 
+                            stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                            opacity={0.3}
+                          />
+                          <XAxis 
+                            dataKey="area"
+                            tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                          />
+                          <YAxis 
+                            tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                            domain={[0, 100]}
+                            tickFormatter={(value) => `${value}%`}
+                          />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                              border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                              borderRadius: '8px',
+                              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                            }}
+                            formatter={(value, name, props) => [
+                              `${value}%`,
+                              `Satisfacción - ${props.payload.area}`
+                            ]}
+                            labelFormatter={(label) => `Área: ${label}`}
+                          />
+                          <Bar 
+                            dataKey="satisfaction" 
+                            fill="url(#satisfactionGradient)"
+                            radius={[8, 8, 0, 0]}
+                            stroke="#8b5cf6"
+                            strokeWidth={2}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Box>
+                  );
+                })()}
               </Box>
             </CardContent>
           </Card>
@@ -2797,142 +2806,140 @@ export const ReportesYAnalytics = () => {
 
               {/* Gráficos de Eficiencia */}
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
-                {/* Gráfico de Tiempo vs Estimado */}
-                <Box>
-                  <Typography variant="h6" sx={{ 
-                    mb: 3, 
-                    fontWeight: 700, 
-                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
-                    fontSize: '1.1rem',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                  }}>
-                    ⏱️ Tiempo Real vs Estimado
-                  </Typography>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={[
-                      { project: 'Proyecto A', estimated: 80, actual: 85, color: '#10b981' },
-                      { project: 'Proyecto B', estimated: 120, actual: 110, color: '#3b82f6' },
-                      { project: 'Proyecto C', estimated: 60, actual: 75, color: '#f59e0b' },
-                      { project: 'Proyecto D', estimated: 100, actual: 95, color: '#8b5cf6' },
-                      { project: 'Proyecto E', estimated: 90, actual: 105, color: '#ef4444' }
-                    ]}>
-                      <defs>
-                        <linearGradient id="estimatedGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                        </linearGradient>
-                        <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.3}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid 
-                        strokeDasharray="3 3" 
-                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
-                        opacity={0.3}
-                      />
-                      <XAxis 
-                        dataKey="project"
-                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
-                        tickFormatter={(value) => `${value}h`}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
-                          borderRadius: '8px',
-                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        formatter={(value, name) => [`${value} horas`, name === 'estimated' ? 'Estimado' : 'Real']}
-                      />
-                      <Legend />
-                      <Bar 
-                        dataKey="estimated" 
-                        fill="url(#estimatedGradient)"
-                        radius={[8, 8, 0, 0]}
-                        stroke="#3b82f6"
-                        strokeWidth={2}
-                        name="Estimado"
-                      />
-                      <Bar 
-                        dataKey="actual" 
-                        fill="url(#actualGradient)"
-                        radius={[8, 8, 0, 0]}
-                        stroke="#10b981"
-                        strokeWidth={2}
-                        name="Real"
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </Box>
-
-                {/* Gráfico de Éxito por Tipo */}
-                <Box>
-                  <Typography variant="h6" sx={{ 
-                    mb: 3, 
-                    fontWeight: 700, 
-                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
-                    fontSize: '1.1rem',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                  }}>
-                    🎯 Tasa de Éxito por Tipo de Proyecto
-                  </Typography>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <defs>
-                        <filter id="efficiencyShadow" x="-50%" y="-50%" width="200%" height="200%">
-                          <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
-                        </filter>
-                      </defs>
-                      <Pie
-                        data={[
-                          { name: 'Desarrollo Web', value: 96, color: '#10b981' },
-                          { name: 'App Móvil', value: 92, color: '#3b82f6' },
-                          { name: 'IA/ML', value: 88, color: '#8b5cf6' },
-                          { name: 'Análisis Datos', value: 94, color: '#f59e0b' },
-                          { name: 'Investigación', value: 90, color: '#ef4444' }
-                        ]}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${name}\n${value}%`}
-                        outerRadius={100}
-                        innerRadius={50}
-                        stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
-                        strokeWidth={3}
-                        dataKey="value"
-                        filter="url(#efficiencyShadow)"
-                      >
-                        {[
-                          { name: 'Desarrollo Web', value: 96, color: '#10b981' },
-                          { name: 'App Móvil', value: 92, color: '#3b82f6' },
-                          { name: 'IA/ML', value: 88, color: '#8b5cf6' },
-                          { name: 'Análisis Datos', value: 94, color: '#f59e0b' },
-                          { name: 'Investigación', value: 90, color: '#ef4444' }
-                        ].map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.color}
-                            stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                {/* Gráfico de Eficiencia por Área - Solo se muestra cuando hay datos reales */}
+                {(() => {
+                  const efficiencyData = analyticsData?.efficiencyMetrics?.efficiencyByArea;
+                  const hasRealData = efficiencyData && efficiencyData.some(item => item.totalProjects > 0);
+                  
+                  if (!hasRealData) {
+                    return null; // No mostrar nada si no hay datos reales
+                  }
+                  
+                  return (
+                    <Box>
+                      <Typography variant="h6" sx={{ 
+                        mb: 3, 
+                        fontWeight: 700, 
+                        color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                        fontSize: '1.1rem',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}>
+                        ⏱️ Eficiencia de Tiempo por Área
+                      </Typography>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={efficiencyData.filter(item => item.totalProjects > 0)}>
+                          <defs>
+                            <linearGradient id="efficiencyGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
+                              <stop offset="95%" stopColor="#10b981" stopOpacity={0.3}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid 
+                            strokeDasharray="3 3" 
+                            stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                            opacity={0.3}
+                          />
+                          <XAxis 
+                            dataKey="area"
+                            tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                          />
+                          <YAxis 
+                            tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                            tickFormatter={(value) => `${value}%`}
+                          />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                              border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                              borderRadius: '8px',
+                              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                            }}
+                            formatter={(value, name, props) => [
+                              `${value}%`,
+                              `Eficiencia - ${props.payload.area}`
+                            ]}
+                            labelFormatter={(label) => `Área: ${label}`}
+                          />
+                          <Bar 
+                            dataKey="averageEfficiency" 
+                            fill="url(#efficiencyGradient)"
+                            radius={[8, 8, 0, 0]}
+                            stroke="#10b981"
                             strokeWidth={2}
                           />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
-                          borderRadius: '8px',
-                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        formatter={(value, name) => [`${value}%`, 'Tasa de Éxito']}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </Box>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Box>
+                  );
+                })()}
+
+                {/* Gráfico de Éxito por Área - Solo se muestra cuando hay datos reales */}
+                {(() => {
+                  const efficiencyData = analyticsData?.efficiencyMetrics?.efficiencyByArea;
+                  const hasRealData = efficiencyData && efficiencyData.some(item => item.totalProjects > 0);
+                  
+                  if (!hasRealData) {
+                    return null; // No mostrar nada si no hay datos reales
+                  }
+                  
+                  return (
+                    <Box>
+                      <Typography variant="h6" sx={{ 
+                        mb: 3, 
+                        fontWeight: 700, 
+                        color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                        fontSize: '1.1rem',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}>
+                        🎯 Tasa de Éxito por Área de Proyecto
+                      </Typography>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <defs>
+                            <filter id="efficiencyShadow" x="-50%" y="-50%" width="200%" height="200%">
+                              <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.15)"/>
+                            </filter>
+                          </defs>
+                          <Pie
+                            data={efficiencyData.filter(item => item.totalProjects > 0).map(item => ({
+                              name: item.area,
+                              value: item.successRate,
+                              color: item.color
+                            }))}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, value }) => `${name}\n${value}%`}
+                            outerRadius={100}
+                            innerRadius={50}
+                            stroke={themeMode === 'dark' ? '#334155' : '#ffffff'}
+                            strokeWidth={3}
+                            dataKey="value"
+                            filter="url(#efficiencyShadow)"
+                          >
+                            {efficiencyData.filter(item => item.totalProjects > 0).map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={entry.color}
+                                stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
+                                strokeWidth={2}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                              border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                              borderRadius: '8px',
+                              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                            }}
+                            formatter={(value, name) => [`${value}%`, 'Tasa de Éxito']}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </Box>
+                  );
+                })()}
               </Box>
             </CardContent>
           </Card>
@@ -3119,79 +3126,88 @@ export const ReportesYAnalytics = () => {
                 </Box>
 
                 {/* Gráfico de Comparación de Costos */}
-                <Box>
-                  <Typography variant="h6" sx={{ 
-                    mb: 3, 
-                    fontWeight: 700, 
-                    color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
-                    fontSize: '1.1rem',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                  }}>
-                    💰 Comparación de Costos
-                  </Typography>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={[
-                      { category: 'Desarrollo Web', traditional: 15000, platform: 5250, savings: 9750 },
-                      { category: 'App Móvil', traditional: 25000, platform: 8750, savings: 16250 },
-                      { category: 'IA/ML', traditional: 35000, platform: 12250, savings: 22750 },
-                      { category: 'Análisis Datos', traditional: 12000, platform: 4200, savings: 7800 }
-                    ]}>
-                      <defs>
-                        <linearGradient id="traditionalGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
-                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0.3}/>
-                        </linearGradient>
-                        <linearGradient id="platformGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
-                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid 
-                        strokeDasharray="3 3" 
-                        stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
-                        opacity={0.3}
-                      />
-                      <XAxis 
-                        dataKey="category"
-                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
-                        tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
-                          border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
-                          borderRadius: '8px',
-                          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
-                        }}
-                        formatter={(value, name) => [
-                          `$${value}`,
-                          name === 'traditional' ? 'Contratación Tradicional' : 
-                          name === 'platform' ? 'Nuestra Plataforma' : 'Ahorro'
-                        ]}
-                      />
-                      <Legend />
-                      <Bar 
-                        dataKey="traditional" 
-                        fill="url(#traditionalGradient)"
-                        radius={[8, 8, 0, 0]}
-                        stroke="#ef4444"
-                        strokeWidth={2}
-                        name="Contratación Tradicional"
-                      />
-                      <Bar 
-                        dataKey="platform" 
-                        fill="url(#platformGradient)"
-                        radius={[8, 8, 0, 0]}
-                        stroke="#22c55e"
-                        strokeWidth={2}
-                        name="Nuestra Plataforma"
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </Box>
+                {(() => {
+                  const costData = analyticsData?.financialMetrics?.costComparisonByArea || [];
+                  const hasRealData = costData.some(item => item.totalHoursAvailable > 0);
+                  
+                  // Si no hay datos reales, no mostrar el gráfico
+                  if (!hasRealData) {
+                    return null;
+                  }
+                  
+                  return (
+                    <Box>
+                      <Typography variant="h6" sx={{ 
+                        mb: 3, 
+                        fontWeight: 700, 
+                        color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary',
+                        fontSize: '1.1rem',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}>
+                        💰 Comparación de Costos por Área
+                      </Typography>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={costData}>
+                          <defs>
+                            <linearGradient id="traditionalGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                              <stop offset="95%" stopColor="#ef4444" stopOpacity={0.3}/>
+                            </linearGradient>
+                            <linearGradient id="platformGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9}/>
+                              <stop offset="95%" stopColor="#22c55e" stopOpacity={0.3}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid 
+                            strokeDasharray="3 3" 
+                            stroke={themeMode === 'dark' ? '#334155' : '#f1f5f9'}
+                            opacity={0.3}
+                          />
+                          <XAxis 
+                            dataKey="area"
+                            tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                          />
+                          <YAxis 
+                            tick={{ fontSize: 12, fill: themeMode === 'dark' ? '#cbd5e1' : '#64748b' }}
+                            tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
+                          />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+                              border: `1px solid ${themeMode === 'dark' ? '#334155' : '#e2e8f0'}`,
+                              borderRadius: '8px',
+                              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                            }}
+                            formatter={(value, name) => [
+                              name === 'traditional' ? `$${value.toLocaleString()}` : 
+                              name === 'platform' ? `$${value.toLocaleString()}` : 
+                              `$${value.toLocaleString()}`,
+                              name === 'traditional' ? 'Contratación Tradicional' : 
+                              name === 'platform' ? 'Nuestra Plataforma' : 'Ahorro'
+                            ]}
+                          />
+                          <Legend />
+                          <Bar 
+                            dataKey="traditional" 
+                            fill="url(#traditionalGradient)"
+                            radius={[8, 8, 0, 0]}
+                            stroke="#ef4444"
+                            strokeWidth={2}
+                            name="Contratación Tradicional"
+                          />
+                          <Bar 
+                            dataKey="platform" 
+                            fill="url(#platformGradient)"
+                            radius={[8, 8, 0, 0]}
+                            stroke="#22c55e"
+                            strokeWidth={2}
+                            name="Nuestra Plataforma"
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Box>
+                  );
+                })()}
               </Box>
             </CardContent>
           </Card>

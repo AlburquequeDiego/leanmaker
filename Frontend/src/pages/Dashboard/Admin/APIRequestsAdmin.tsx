@@ -33,7 +33,13 @@ import {
   History as HistoryIcon,
   Refresh as RefreshIcon,
   ArrowBack as ArrowBackIcon,
-  Visibility as VisibilityIcon
+  Visibility as VisibilityIcon,
+  Person as PersonIcon,
+  School as SchoolIcon,
+  Work as WorkIcon,
+  Language as LanguageIcon,
+  GitHub as GitHubIcon,
+  LinkedIn as LinkedInIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../../services/api.service';
 import { useNavigate } from 'react-router-dom';
@@ -63,6 +69,13 @@ export default function APIRequestsAdmin() {
   const [pageSize, setPageSize] = useState<number>(20);
   const navigate = useNavigate();
 
+  // Estados para el modal de perfil del estudiante
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [studentProfile, setStudentProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
   useEffect(() => {
     fetchRequests();
   }, [pageSize]);
@@ -77,6 +90,30 @@ export default function APIRequestsAdmin() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Función para cargar el perfil del estudiante
+  const loadStudentProfile = async (studentId: string) => {
+    try {
+      setProfileLoading(true);
+      setProfileError(null);
+      
+      // Obtener perfil del estudiante
+      const response = await apiService.get(`/api/students/${studentId}/profile/`);
+      setStudentProfile(response);
+    } catch (err: any) {
+      setProfileError(err.message || 'Error al cargar el perfil del estudiante');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  // Función para abrir el modal de perfil
+  const handleViewProfile = (studentId: string, request: ApiLevelRequest) => {
+    setSelectedStudentId(studentId);
+    setSelectedRequest(request); // Establecer la solicitud seleccionada
+    setShowProfileDialog(true);
+    loadStudentProfile(studentId);
   };
 
   const handleAction = async (action: 'approve' | 'reject') => {
@@ -474,32 +511,60 @@ export default function APIRequestsAdmin() {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      {req.status === 'pending' ? (
-                        <Tooltip title="Revisar solicitud">
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                        {/* Botón Ver Perfil de Estudiante - siempre visible */}
+                        <Tooltip title="Ver perfil de estudiante">
                           <Button
-                            variant="contained"
-                            color="primary"
+                            variant="outlined"
+                            color="info"
                             size="small"
-                            startIcon={<VisibilityIcon />}
-                            onClick={() => { setSelectedRequest(req); setFeedback(''); }}
+                            startIcon={<PersonIcon />}
+                            onClick={() => handleViewProfile(req.student_id.toString(), req)}
                             sx={{ 
                               borderRadius: 2,
                               textTransform: 'none',
                               fontWeight: 600,
-                              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                              borderColor: themeMode === 'dark' ? '#3b82f6' : '#3b82f6',
+                              color: themeMode === 'dark' ? '#3b82f6' : '#3b82f6',
                               '&:hover': {
-                                boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)'
+                                borderColor: themeMode === 'dark' ? '#60a5fa' : '#60a5fa',
+                                backgroundColor: themeMode === 'dark' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                                transform: 'scale(1.02)'
                               }
                             }}
                           >
-                            Revisar
+                            Ver Perfil
                           </Button>
                         </Tooltip>
-                      ) : (
-                        <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', fontStyle: 'italic' }}>
-                          {req.status === 'approved' ? 'Aprobada' : 'Rechazada'}
-                        </Typography>
-                      )}
+                        
+                        {/* Botón Revisar - solo para solicitudes pendientes */}
+                        {req.status === 'pending' ? (
+                          <Tooltip title="Revisar solicitud">
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              size="small"
+                              startIcon={<VisibilityIcon />}
+                              onClick={() => { setSelectedRequest(req); setFeedback(''); }}
+                              sx={{ 
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                                '&:hover': {
+                                  boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)'
+                                }
+                              }}
+                            >
+                              Revisar
+                            </Button>
+                          </Tooltip>
+                        ) : (
+                          <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', fontStyle: 'italic' }}>
+                            {req.status === 'approved' ? 'Aprobada' : 'Rechazada'}
+                          </Typography>
+                        )}
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -656,6 +721,291 @@ export default function APIRequestsAdmin() {
             }}
           >
             Aprobar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal del perfil del estudiante */}
+      <Dialog
+        open={showProfileDialog}
+        onClose={() => {
+          setShowProfileDialog(false);
+          setSelectedStudentId(null);
+          setStudentProfile(null);
+          setFeedback(''); // Limpiar feedback al cerrar
+        }}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: themeMode === 'dark'
+              ? '0 20px 60px rgba(0, 0, 0, 0.4)'
+              : '0 20px 60px rgba(0, 0, 0, 0.2)',
+            background: themeMode === 'dark'
+              ? 'rgba(30, 41, 59, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          borderRadius: '12px 12px 0 0'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ 
+              background: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: 2,
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <PersonIcon sx={{ fontSize: 24, color: 'white' }} />
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Perfil del Estudiante
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ 
+          p: 3,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+          color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+        }}>
+          {profileLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+              <CircularProgress size={40} />
+              <Typography variant="body1" sx={{ ml: 2, color: 'text.secondary' }}>
+                Cargando perfil...
+              </Typography>
+            </Box>
+          ) : profileError ? (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {profileError}
+            </Alert>
+          ) : studentProfile ? (
+            <Box>
+              {/* Información Personal */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" sx={{ 
+                  mb: 2, 
+                  fontWeight: 600, 
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}>
+                  <PersonIcon />
+                  Información Personal
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', mb: 0.5 }}>
+                      Nombre
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {studentProfile.user_data?.full_name || studentProfile.user_data?.first_name + ' ' + studentProfile.user_data?.last_name || 'No disponible'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', mb: 0.5 }}>
+                      Email
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {studentProfile.user_data?.email || 'No disponible'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', mb: 0.5 }}>
+                      Teléfono
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {studentProfile.user_data?.phone || 'No disponible'}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Información Académica */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" sx={{ 
+                  mb: 2, 
+                  fontWeight: 600, 
+                  color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}>
+                  <SchoolIcon />
+                  Información Académica
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', mb: 0.5 }}>
+                      Carrera
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {studentProfile.student?.career || 'No disponible'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', mb: 0.5 }}>
+                      Nivel API Actual
+                    </Typography>
+                    <Chip 
+                      label={`API ${studentProfile.student?.api_level || 1}`} 
+                      color={getLevelColor(studentProfile.student?.api_level || 1) as any}
+                      size="small"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : '#64748b', mb: 0.5 }}>
+                      Horas por Semana
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {studentProfile.student?.hours_per_week || 'No disponible'} hrs
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Habilidades */}
+              {studentProfile.student?.skills && studentProfile.student.skills.length > 0 && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" sx={{ 
+                    mb: 2, 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}>
+                    <WorkIcon />
+                    Habilidades
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    {studentProfile.student.skills.map((skill: any, index: number) => (
+                      <Chip
+                        key={index}
+                        label={`${skill.name} - ${skill.level}`}
+                        color="primary"
+                        variant="outlined"
+                        size="small"
+                        sx={{ fontWeight: 500 }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              )}
+
+              {/* Enlaces */}
+              {(studentProfile.student?.linkedin_url || studentProfile.student?.github_url) && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" sx={{ 
+                    mb: 2, 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}>
+                    <LanguageIcon />
+                    Enlaces Profesionales
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    {studentProfile.student?.linkedin_url && (
+                      <Button
+                        href={studentProfile.student.linkedin_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="outlined"
+                        size="small"
+                        startIcon={<LinkedInIcon />}
+                        sx={{ 
+                          borderColor: '#0077b5',
+                          color: '#0077b5',
+                          '&:hover': {
+                            borderColor: '#005885',
+                            bgcolor: 'rgba(0, 119, 181, 0.1)'
+                          }
+                        }}
+                      >
+                        LinkedIn
+                      </Button>
+                    )}
+                    {studentProfile.student?.github_url && (
+                      <Button
+                        href={studentProfile.student.github_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="outlined"
+                        size="small"
+                        startIcon={<GitHubIcon />}
+                        sx={{ 
+                          borderColor: '#333',
+                          color: '#333',
+                          '&:hover': {
+                            borderColor: '#000',
+                            bgcolor: 'rgba(51, 51, 51, 0.1)'
+                          }
+                        }}
+                      >
+                        GitHub
+                      </Button>
+                    )}
+                  </Box>
+                </Box>
+              )}
+
+              {/* Biografía */}
+              {studentProfile.student?.biography && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" sx={{ 
+                    mb: 2, 
+                    fontWeight: 600, 
+                    color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+                  }}>
+                    Biografía
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                    lineHeight: 1.6
+                  }}>
+                    {studentProfile.student.biography}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          ) : (
+            <Typography variant="body1" color="text.secondary">
+              No se pudo cargar el perfil del estudiante.
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ 
+          p: 3, 
+          pt: 0,
+          backgroundColor: themeMode === 'dark' ? '#1e293b' : '#ffffff'
+        }}>
+          <Button 
+            onClick={() => {
+              setShowProfileDialog(false);
+              setSelectedStudentId(null);
+              setStudentProfile(null);
+              setFeedback(''); // Limpiar feedback al cerrar
+            }}
+            color="inherit"
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600
+            }}
+          >
+            Cerrar
           </Button>
         </DialogActions>
       </Dialog>

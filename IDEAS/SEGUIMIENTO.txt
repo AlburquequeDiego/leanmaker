@@ -1,14 +1,13 @@
 ADMINISTRADOR:
-admin@leanmaker.com              Admin123!
+admin@leanmaker.com          Admin123!
 
 
 estudiantes:
-juan.perez@inacapmail.cl    Estudiante123!
-joaco.perez@inacapmail.cl   Estudiante123!
-diego.amaya@inacapmail.cl   Estudiante123!
-daniel.rojas@inacapmail.cl  Estudiante123!
-omar.mesa@inacapmail.cl     Estudiante123!
-
+juan.perez@inacapmail.cl     Estudiante123!
+joaco.perez@inacapmail.cl    Estudiante123!
+diego.amaya@inacapmail.cl    Estudiante123!
+daniel.rojas@inacapmail.cl   Estudiante123!
+omar.mesa@inacapmail.cl      Estudiante123!
 
 EMPRESAS:
 lucia.amaya@gmail.com        Empresa123!

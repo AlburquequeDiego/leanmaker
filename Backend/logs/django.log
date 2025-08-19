@@ -32446,3 +32446,209 @@ INFO 2025-08-19 00:28:03,003 basehttp 14452 16332 "GET /api/students/?limit=20&o
 INFO 2025-08-19 00:28:03,012 basehttp 14452 17296 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
 INFO 2025-08-19 00:28:03,572 basehttp 14452 9404 "GET /api/companies/admin/companies-simple/?limit=20&offset=0 HTTP/1.1" 200 4375
 INFO 2025-08-19 00:28:03,589 basehttp 14452 11740 "GET /api/companies/admin/companies-simple/?limit=20&offset=0 HTTP/1.1" 200 4375
+INFO 2025-08-19 06:50:33,776 signals 11448 18064 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 06:50:34,447 signals 19632 13352 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 06:50:34,456 autoreload 19632 13352 Watching for file changes with StatReloader
+INFO 2025-08-19 06:51:12,444 basehttp 19632 14184 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-08-19 06:51:12,561 basehttp 19632 18456 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 06:51:13,193 basehttp 19632 6888 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-08-19 06:51:15,708 basehttp 19632 4920 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 06:51:15,721 basehttp 19632 17752 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 06:51:18,425 basehttp 19632 10300 "GET /api/strikes/reports/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 06:51:23,285 basehttp 19632 12056 "GET /api/hub/analytics/ HTTP/1.1" 200 5748
+INFO 2025-08-19 06:51:23,306 basehttp 19632 19508 "GET /api/hub/analytics/ HTTP/1.1" 200 5748
+INFO 2025-08-19 06:58:33,342 autoreload 19632 13352 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 06:58:35,127 signals 6476 13788 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 06:58:35,144 autoreload 6476 13788 Watching for file changes with StatReloader
+INFO 2025-08-19 06:58:48,770 basehttp 6476 14940 "GET /api/hub/analytics/ HTTP/1.1" 200 6428
+INFO 2025-08-19 07:00:38,445 signals 14644 20084 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:00:41,328 basehttp 6476 8068 "GET /api/hub/analytics/ HTTP/1.1" 200 6428
+INFO 2025-08-19 07:01:01,159 autoreload 6476 13788 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:01:02,242 signals 8784 12932 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:01:02,262 autoreload 8784 12932 Watching for file changes with StatReloader
+INFO 2025-08-19 07:02:48,571 signals 16092 19316 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:03:10,238 basehttp 8784 19216 "GET /api/hub/analytics/ HTTP/1.1" 200 6428
+INFO 2025-08-19 07:04:23,725 basehttp 8784 16776 "POST /api/token/ HTTP/1.1" 200 1177
+INFO 2025-08-19 07:04:23,785 basehttp 8784 15312 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-08-19 07:04:24,125 basehttp 8784 18892 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 809
+INFO 2025-08-19 07:04:27,637 basehttp 8784 19360 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-08-19 07:04:27,652 basehttp 8784 1840 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-08-19 07:04:38,164 basehttp 8784 18884 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 809
+INFO 2025-08-19 07:04:42,157 basehttp 8784 14144 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-08-19 07:04:42,159 basehttp 8784 5844 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-08-19 07:05:26,685 signals 2240 20440 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:07:15,016 autoreload 8784 12932 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:07:16,346 signals 10776 300 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:07:16,363 autoreload 10776 300 Watching for file changes with StatReloader
+INFO 2025-08-19 07:07:29,806 autoreload 10776 300 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:07:30,604 signals 10120 1676 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:07:30,613 autoreload 10120 1676 Watching for file changes with StatReloader
+INFO 2025-08-19 07:07:35,820 signals 7584 16520 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:07:38,766 basehttp 10120 15392 "GET /api/hub/analytics/ HTTP/1.1" 200 7317
+INFO 2025-08-19 07:07:46,522 autoreload 10120 1676 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:07:47,604 signals 3180 13476 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:07:47,607 autoreload 3180 13476 Watching for file changes with StatReloader
+INFO 2025-08-19 07:10:36,435 basehttp 3180 3504 "GET /api/hub/analytics/ HTTP/1.1" 200 7317
+INFO 2025-08-19 07:14:58,098 autoreload 3180 13476 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:14:59,498 signals 18184 8836 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:14:59,513 autoreload 18184 8836 Watching for file changes with StatReloader
+INFO 2025-08-19 07:15:12,081 basehttp 18184 11284 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:16:44,521 basehttp 18184 11172 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:17:03,301 autoreload 18184 8836 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:17:04,800 signals 8764 13808 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:17:04,814 autoreload 8764 13808 Watching for file changes with StatReloader
+INFO 2025-08-19 07:17:29,437 basehttp 8764 344 "POST /api/token/verify/ HTTP/1.1" 200 120
+INFO 2025-08-19 07:17:29,456 basehttp 8764 14012 "POST /api/token/verify/ HTTP/1.1" 200 120
+INFO 2025-08-19 07:17:29,478 basehttp 8764 13816 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 07:17:29,511 basehttp 8764 18164 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 07:17:30,842 basehttp 8764 15416 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:17:32,008 basehttp 8764 14464 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:28:23,185 basehttp 8764 12196 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:28:23,202 basehttp 8764 14324 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:28:27,011 basehttp 8764 19036 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 15
+INFO 2025-08-19 07:28:27,018 basehttp 8764 8120 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 15
+INFO 2025-08-19 07:28:44,985 basehttp 8764 13736 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:28:44,991 basehttp 8764 10192 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:28:45,323 basehttp 8764 9244 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 07:28:45,340 basehttp 8764 8428 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 07:28:47,041 basehttp 8764 11640 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 86
+INFO 2025-08-19 07:28:47,048 basehttp 8764 2656 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 86
+INFO 2025-08-19 07:28:48,960 basehttp 8764 6404 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:28:48,969 basehttp 8764 7492 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:28:49,613 basehttp 8764 9968 "GET /api/companies/admin/companies-simple/?limit=20&offset=0 HTTP/1.1" 200 4375
+INFO 2025-08-19 07:28:49,613 basehttp 8764 11696 "GET /api/companies/admin/companies-simple/?limit=20&offset=0 HTTP/1.1" 200 4375
+INFO 2025-08-19 07:29:02,390 signals 14012 900 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:29:06,918 basehttp 8764 4572 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:29:11,190 basehttp 8764 10640 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-08-19 07:29:11,207 basehttp 8764 10328 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-08-19 07:29:11,212 basehttp 8764 3920 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-08-19 07:29:11,226 basehttp 8764 18028 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-08-19 07:29:13,374 basehttp 8764 12832 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:29:13,393 basehttp 8764 19212 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:29:17,840 basehttp 8764 19692 "GET /api/mass-notifications/ HTTP/1.1" 200 86
+INFO 2025-08-19 07:29:17,846 basehttp 8764 18008 "GET /api/mass-notifications/ HTTP/1.1" 200 86
+INFO 2025-08-19 07:29:20,903 basehttp 8764 15544 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 07:29:20,917 basehttp 8764 12516 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 07:29:24,933 basehttp 8764 16092 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-08-19 07:29:26,830 basehttp 8764 11888 "GET /api/mass-notifications/ HTTP/1.1" 200 86
+INFO 2025-08-19 07:29:26,847 basehttp 8764 1064 "GET /api/mass-notifications/ HTTP/1.1" 200 86
+INFO 2025-08-19 07:29:51,537 signals 11704 20024 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:29:56,137 basehttp 8764 13996 "GET /api/hub/analytics/ HTTP/1.1" 200 8950
+INFO 2025-08-19 07:33:28,996 basehttp 8764 19364 "GET /api/mass-notifications/ HTTP/1.1" 200 86
+INFO 2025-08-19 07:33:29,002 basehttp 8764 12164 "GET /api/mass-notifications/ HTTP/1.1" 200 86
+INFO 2025-08-19 07:33:50,076 autoreload 8764 13808 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:33:51,450 signals 12172 208 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:33:51,472 autoreload 12172 208 Watching for file changes with StatReloader
+INFO 2025-08-19 07:33:54,487 basehttp 12172 17560 "POST /api/mass-notifications/create/ HTTP/1.1" 200 91
+INFO 2025-08-19 07:33:54,545 basehttp 12172 17184 "GET /api/mass-notifications/ HTTP/1.1" 200 1855
+INFO 2025-08-19 07:34:18,884 autoreload 12172 208 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:34:19,788 signals 11624 18024 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:34:19,804 autoreload 11624 18024 Watching for file changes with StatReloader
+INFO 2025-08-19 07:34:44,050 basehttp 11624 3256 "GET /api/hub/analytics/ HTTP/1.1" 200 10664
+INFO 2025-08-19 07:34:44,068 basehttp 11624 12328 "GET /api/hub/analytics/ HTTP/1.1" 200 10664
+INFO 2025-08-19 07:35:10,925 basehttp 11624 2536 "GET /api/mass-notifications/ HTTP/1.1" 200 1855
+INFO 2025-08-19 07:35:10,932 basehttp 11624 4076 "GET /api/mass-notifications/ HTTP/1.1" 200 1855
+INFO 2025-08-19 07:36:25,834 basehttp 11624 13660 "POST /api/mass-notifications/create/ HTTP/1.1" 200 91
+INFO 2025-08-19 07:36:25,883 basehttp 11624 20348 "GET /api/mass-notifications/ HTTP/1.1" 200 3356
+INFO 2025-08-19 07:37:59,871 signals 13476 10128 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:38:02,656 basehttp 11624 9204 "GET /api/hub/analytics/ HTTP/1.1" 200 10664
+INFO 2025-08-19 07:38:09,738 basehttp 11624 13396 "POST /api/mass-notifications/create/ HTTP/1.1" 200 91
+INFO 2025-08-19 07:38:09,802 basehttp 11624 7496 "GET /api/mass-notifications/ HTTP/1.1" 200 5133
+INFO 2025-08-19 07:38:45,063 signals 2600 17032 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:38:47,810 basehttp 11624 5752 "GET /api/hub/analytics/ HTTP/1.1" 200 10664
+INFO 2025-08-19 07:41:16,617 basehttp 11624 520 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-08-19 07:41:16,627 basehttp 11624 5948 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-08-19 07:41:16,643 basehttp 11624 15120 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-08-19 07:41:16,655 basehttp 11624 13820 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-08-19 07:41:20,184 basehttp 11624 12312 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:41:20,195 basehttp 11624 15220 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:41:24,813 basehttp 11624 10372 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-08-19 07:41:24,823 basehttp 11624 16256 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-08-19 07:41:24,828 basehttp 11624 12848 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-08-19 07:41:24,844 basehttp 11624 17452 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-08-19 07:41:26,672 basehttp 11624 3308 "GET /api/mass-notifications/ HTTP/1.1" 200 5133
+INFO 2025-08-19 07:41:26,684 basehttp 11624 2312 "GET /api/mass-notifications/ HTTP/1.1" 200 5133
+INFO 2025-08-19 07:42:04,864 basehttp 11624 15244 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:42:04,873 basehttp 11624 2572 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:43:49,006 autoreload 11624 18024 C:\Users\albur\Desktop\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-08-19 07:43:50,051 signals 13332 1584 Signals de notificaciones conectados exitosamente
+INFO 2025-08-19 07:43:50,073 autoreload 13332 1584 Watching for file changes with StatReloader
+INFO 2025-08-19 07:44:07,852 basehttp 13332 16256 "GET /api/hub/analytics/ HTTP/1.1" 200 10690
+INFO 2025-08-19 07:44:07,860 basehttp 13332 12848 "GET /api/hub/analytics/ HTTP/1.1" 200 10690
+INFO 2025-08-19 07:44:35,727 basehttp 13332 19468 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 07:44:35,748 basehttp 13332 6944 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 07:44:36,677 basehttp 13332 13308 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 86
+INFO 2025-08-19 07:44:36,694 basehttp 13332 15908 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 86
+INFO 2025-08-19 07:44:37,759 basehttp 13332 14972 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:44:37,775 basehttp 13332 8428 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:44:38,660 basehttp 13332 15240 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 15
+INFO 2025-08-19 07:44:38,679 basehttp 13332 16344 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 15
+INFO 2025-08-19 07:46:36,479 basehttp 13332 16692 "POST /api/token/ HTTP/1.1" 200 1175
+INFO 2025-08-19 07:46:36,578 basehttp 13332 18312 "GET /api/users/profile/ HTTP/1.1" 200 574
+INFO 2025-08-19 07:46:37,726 basehttp 13332 9592 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 670
+INFO 2025-08-19 07:46:37,743 basehttp 13332 4100 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 670
+INFO 2025-08-19 07:46:40,090 basehttp 13332 13336 "GET /api/students/me/ HTTP/1.1" 200 1554
+INFO 2025-08-19 07:46:40,098 basehttp 13332 2440 "GET /api/students/me/ HTTP/1.1" 200 1554
+INFO 2025-08-19 07:46:54,686 basehttp 13332 7832 "POST /api/students/api-level-request/ HTTP/1.1" 200 92
+INFO 2025-08-19 07:46:57,364 basehttp 13332 8104 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 670
+INFO 2025-08-19 07:46:57,381 basehttp 13332 19668 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 670
+INFO 2025-08-19 07:47:02,477 basehttp 13332 15396 "POST /api/token/verify/ HTTP/1.1" 200 120
+INFO 2025-08-19 07:47:02,492 basehttp 13332 1656 "POST /api/token/verify/ HTTP/1.1" 200 120
+INFO 2025-08-19 07:47:02,524 basehttp 13332 8188 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 07:47:02,541 basehttp 13332 10816 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 07:47:02,660 basehttp 13332 3708 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:47:02,663 basehttp 13332 5344 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:47:37,408 basehttp 13332 14296 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:47:37,419 basehttp 13332 15452 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:47:58,117 basehttp 13332 13140 "GET /api/dashboard/student_stats/ HTTP/1.1" 200 670
+INFO 2025-08-19 07:48:22,669 basehttp 13332 14660 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:48:22,686 basehttp 13332 15528 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:48:52,123 basehttp 13332 4920 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:48:53,158 basehttp 13332 12136 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:49:04,155 basehttp 13332 3308 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:49:16,632 basehttp 13332 19356 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-08-19 07:49:16,703 basehttp 13332 15780 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-08-19 07:49:17,272 basehttp 13332 14016 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-08-19 07:49:19,717 basehttp 13332 10120 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:19,728 basehttp 13332 16484 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:21,194 basehttp 13332 10316 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:49:21,205 basehttp 13332 18084 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:49:25,778 basehttp 13332 17708 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:25,787 basehttp 13332 15220 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:31,150 basehttp 13332 16092 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:49:31,167 basehttp 13332 20400 "GET /api/users/ HTTP/1.1" 200 6934
+INFO 2025-08-19 07:49:34,783 basehttp 13332 8472 "GET /api/mass-notifications/ HTTP/1.1" 200 5133
+INFO 2025-08-19 07:49:34,783 basehttp 13332 9396 "GET /api/mass-notifications/ HTTP/1.1" 200 5133
+INFO 2025-08-19 07:49:37,165 basehttp 13332 6656 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:37,178 basehttp 13332 13960 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:40,475 basehttp 13332 19532 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 86
+INFO 2025-08-19 07:49:40,477 basehttp 13332 6368 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 86
+INFO 2025-08-19 07:49:41,686 basehttp 13332 11864 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 07:49:41,702 basehttp 13332 7664 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-08-19 07:49:43,705 basehttp 13332 8812 "GET /api/hub/analytics/ HTTP/1.1" 200 11029
+INFO 2025-08-19 07:49:44,074 basehttp 13332 19600 "GET /api/hub/analytics/ HTTP/1.1" 200 11029
+INFO 2025-08-19 07:49:52,869 basehttp 13332 10592 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:52,883 basehttp 13332 3500 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:49:53,905 basehttp 13332 7288 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:49:53,914 basehttp 13332 7456 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:51:36,580 basehttp 13332 10856 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:51:36,597 basehttp 13332 8636 "GET /api/students/?limit=20&offset=0 HTTP/1.1" 200 5866
+INFO 2025-08-19 07:51:38,114 basehttp 13332 3932 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:51:38,122 basehttp 13332 20080 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:56:24,751 basehttp 13332 7204 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-08-19 07:56:47,163 basehttp 13332 12540 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 07:56:47,171 basehttp 13332 12804 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:00:48,205 basehttp 13332 11296 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:00:52,244 basehttp 13332 1016 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:00:52,274 basehttp 13332 3548 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:01:08,203 basehttp 13332 7504 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:03:06,882 basehttp 13332 10928 "GET /api/students/695c11d2-20d6-4087-97aa-273fdcbdaa2d/profile/ HTTP/1.1" 200 1502
+INFO 2025-08-19 08:03:26,435 basehttp 13332 8728 "GET /api/students/695c11d2-20d6-4087-97aa-273fdcbdaa2d/profile/ HTTP/1.1" 200 1502
+INFO 2025-08-19 08:05:59,903 basehttp 13332 19500 "GET /api/students/695c11d2-20d6-4087-97aa-273fdcbdaa2d/profile/ HTTP/1.1" 200 1502
+INFO 2025-08-19 08:06:28,161 basehttp 13332 18880 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:06:35,160 basehttp 13332 12016 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:06:51,773 basehttp 13332 12972 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:06:55,063 basehttp 13332 17496 "GET /api/students/695c11d2-20d6-4087-97aa-273fdcbdaa2d/profile/ HTTP/1.1" 200 1502
+INFO 2025-08-19 08:07:05,108 basehttp 13332 10808 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:07:05,115 basehttp 13332 13536 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-19 08:10:33,091 basehttp 13332 9736 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
