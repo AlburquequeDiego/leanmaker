@@ -119,17 +119,17 @@ const getFieldPlaceholder = (fieldName: string, userType: UserType) => {
     education_level: 'Ej: Universidad',
     
     // Campos específicos de empresa
-    rut: 'Ej: 12345678-9',
-    personality: 'Ej: Jurídica',
-    business_name: 'Ej: Empresa Tecnológica SPA',
-    company_name: 'Ej: TechCorp',
-    company_address: 'Ej: Av. Providencia 1234, Santiago',
-    company_phone: 'Ej: 912345678',
-    company_email: 'Ej: contacto@techcorp.cl',
-    industry: 'Ej: Tecnología',
-    size: 'Ej: Mediana',
-    website: 'Ej: https://www.techcorp.cl',
-    address: 'Ej: Av. Providencia 1234',
+    rut: 'Ej: 76.123.456-7',
+    personality: 'Ej: Sociedad Anónima',
+    business_name: 'Ej: Inversiones Tecnológicas del Sur S.A.',
+    company_name: 'Ej: TechSur Solutions',
+    company_address: 'Ej: Av. Apoquindo 3841, Las Condes, Santiago',
+    company_phone: 'Ej: 223456789',
+    company_email: 'Ej: contacto@techsur.cl',
+    industry: 'Ej: Desarrollo de Software',
+    size: 'Ej: Mediana (50-200 empleados)',
+    website: 'Ej: https://www.techsur.cl',
+    address: 'Ej: Av. Apoquindo 3841, Las Condes',
     city: 'Ej: Santiago',
   };
   
@@ -160,118 +160,172 @@ const getFieldHelperText = (fieldName: string, userType: UserType, hasError: boo
     education_level: 'Selecciona tu nivel educativo actual',
     
     // Campos específicos de empresa
-    rut: 'Ingresa el RUT sin puntos ni guión (ej: 123456789)',
-    personality: 'Selecciona el tipo de personalidad jurídica',
-    business_name: 'Ingresa la razón social registrada',
-    company_name: 'Ingresa el nombre comercial de la empresa',
-    company_address: 'Ingresa la dirección completa de la empresa',
-    company_phone: 'Ingresa solo números (9 dígitos)',
-    company_email: 'Ingresa el correo electrónico corporativo',
-    industry: 'Ingresa el sector o industria de la empresa',
-    size: 'Selecciona el tamaño de la empresa',
-    website: 'Ingresa la URL del sitio web (opcional)',
-    address: 'Ingresa la dirección de la empresa',
-    city: 'Ingresa la ciudad donde se ubica la empresa',
+    rut: 'Ingresa el RUT de la empresa (formato: 76.123.456-7)',
+    personality: 'Selecciona el tipo de personalidad jurídica (S.A., SPA, EIRL, etc.)',
+    business_name: 'Ingresa la razón social registrada en el SII',
+    company_name: 'Ingresa el nombre comercial o marca de la empresa',
+    company_address: 'Ingresa la dirección completa incluyendo comuna y ciudad',
+    company_phone: 'Ingresa el teléfono principal de la empresa',
+    company_email: 'Ingresa el correo electrónico corporativo principal',
+    industry: 'Ingresa el sector o industria principal de la empresa',
+    size: 'Selecciona el tamaño según número de empleados',
+    website: 'Ingresa la URL del sitio web corporativo (opcional)',
+    address: 'Ingresa la dirección física de la empresa',
+    city: 'Ingresa la ciudad donde se ubica la sede principal',
   };
   
   return helperTexts[fieldName as keyof typeof helperTexts] || '';
 };
 
-// Esquema de validación
+// ✅ ESQUEMA DE VALIDACIÓN DEFENSIVO Y ROBUSTO
 const getValidationSchema = (userType: UserType) => {
   const baseSchema = {
     email: yup
       .string()
       .email('Debe ser un correo válido')
       .required('El correo es requerido')
-      .test('institutional-email', 'Debe ser un correo institucional válido', function(value) {
-        if (userType === 'student' && value) {
-          const allowedDomains = INSTITUTIONS.map(i => i.domain);
-          const domain = value.split('@')[1];
-          return allowedDomains.includes(domain);
-        }
-        return true;
-      }),
+      .max(100, 'Email muy largo (máximo 100 caracteres)'),
+    
     password: yup
       .string()
       .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .matches(/[A-Z]/, 'La contraseña debe contener al menos una mayúscula')
-      .matches(/[!@#$%^&*(),.?":{}|<>]/, 'La contraseña debe contener al menos un caracter especial (!@#$%^&*)')
-      .required('La contraseña es requerida'),
+      .required('La contraseña es requerida')
+      .max(128, 'Contraseña muy larga'),
+    
     password_confirm: yup
       .string()
       .oneOf([yup.ref('password')], 'Las contraseñas deben coincidir')
       .required('Confirma tu contraseña'),
-    first_name: yup.string().required('El nombre es requerido'),
-    last_name: yup.string().required('El apellido es requerido'),
+    
+    first_name: yup
+      .string()
+      .required('El nombre es requerido')
+      .matches(/^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/, 'Solo letras y espacios')
+      .min(2, 'Nombre muy corto (mínimo 2 caracteres)')
+      .max(50, 'Nombre muy largo (máximo 50 caracteres)'),
+    
+    last_name: yup
+      .string()
+      .required('El apellido es requerido')
+      .matches(/^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/, 'Solo letras y espacios')
+      .min(2, 'Apellido muy corto (mínimo 2 caracteres)')
+      .max(50, 'Apellido muy largo (máximo 50 caracteres)'),
+    
     phone: yup
       .string()
       .required('El teléfono es requerido')
-      .matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 digitos XXXXXXXX)')
-      .test('phone-length', 'El teléfono debe tener 9 dígitos', function(value) {
-        return value ? value.length === 9 : false;
+      .matches(/^[0-9\s\-\+\(\)]+$/, 'Solo números y símbolos telefónicos')
+      .min(8, 'Teléfono muy corto (mínimo 8 dígitos)')
+      .max(15, 'Teléfono muy largo (máximo 15 dígitos)')
+      .test('debe-tener-numeros', 'Debe contener al menos 8 números', (value) => {
+        const numbers = (value || '').replace(/[^0-9]/g, '');
+        return numbers.length >= 8;
       }),
+    
     birthdate: yup
       .string()
-      .required('La fecha de nacimiento es requerida'),
-    gender: yup.string().required('El género es requerido'),
-    acceptTerms: yup.bool().oneOf([true], 'Debes aceptar los términos y condiciones'),
+      .required('La fecha de nacimiento es requerida')
+      .test('fecha-valida', 'Fecha inválida (debe ser entre 16 y 100 años)', (value) => {
+        if (!value) return false;
+        const date = new Date(value);
+        const today = new Date();
+        const age = today.getFullYear() - date.getFullYear();
+        return age >= 16 && age <= 100;
+      }),
+    
+    gender: yup
+      .string()
+      .required('El género es requerido')
+      .oneOf(['Masculino', 'Femenino', 'Otro'], 'Género inválido'),
+    
+    acceptTerms: yup
+      .bool()
+      .oneOf([true], 'Debes aceptar los términos y condiciones'),
   };
 
   if (userType === 'student') {
     return yup.object({
       ...baseSchema,
-      career: yup.string().required('La carrera es requerida'),
-      university: yup.string().required('La institución educativa es requerida'),
-      education_level: yup.string().required('El nivel educativo es requerido'),
+      career: yup
+        .string()
+        .required('La carrera es requerida')
+        .matches(/^[A-Za-zÁáÉéÍíÓóÚúÑñ\s\-]+$/, 'Solo letras, espacios y guiones')
+        .min(3, 'Carrera muy corta (mínimo 3 caracteres)')
+        .max(100, 'Carrera muy larga (máximo 100 caracteres)'),
+      
+      university: yup
+        .string()
+        .required('La institución educativa es requerida')
+        .oneOf(['INACAP'], 'Institución no válida'),
+      
+      education_level: yup
+        .string()
+        .required('El nivel educativo es requerido')
+        .oneOf(['CFT', 'IP', 'Universidad'], 'Nivel educativo inválido'),
     });
   } else {
+    // ✅ VALIDACIONES DEFENSIVAS PARA EMPRESAS - Previenen errores 500
     return yup.object({
       ...baseSchema,
       rut: yup
         .string()
         .required('El RUT es requerido')
-        .test('valid-rut', 'RUT inválido', function(value) {
-          if (!value) return false;
-          const validation = validateChileanRut(value);
-          return validation.isValid;
-        })
-        .test('rut-format', 'Formato de RUT incorrecto', function(value) {
-          if (!value) return false;
-          const validation = validateChileanRut(value);
-          if (!validation.isValid) {
-            // Mostrar el error específico del validador
-            return this.createError({
-              message: validation.error || 'RUT inválido'
-            });
-          }
-          return true;
+        .matches(/^[0-9Kk]+$/, 'Solo números y la letra K')
+        .min(7, 'RUT muy corto (mínimo 7 dígitos)')
+        .max(10, 'RUT muy largo (máximo 10 dígitos)')
+        .test('debe-tener-numeros', 'El RUT debe contener números', (value) => {
+          return /\d/.test(value || '');
         }),
-      personality: yup.string().required('La personalidad es requerida'),
-      business_name: yup.string().required('La razón social es requerida'),
-      company_name: yup.string().required('El nombre de la empresa es requerido'),
-      company_address: yup.string().required('La dirección es requerida'),
-      company_phone: yup.string().required('El teléfono es requerido').matches(/^9\d{8}$/, 'Debe ser un número chileno válido (9 XXXX XXXX)'),
+      
+      personality: yup
+        .string()
+        .required('La personalidad es requerida')
+        .oneOf(['Jurídica', 'Natural', 'Otra'], 'Personalidad inválida'),
+      
+      business_name: yup
+        .string()
+        .required('La razón social es requerida')
+        .matches(/^[A-Za-zÁáÉéÍíÓóÚúÑñ\s\.\-]+$/, 'Solo letras, espacios, puntos y guiones')
+        .min(3, 'Razón social muy corta (mínimo 3 caracteres)')
+        .max(100, 'Razón social muy larga (máximo 100 caracteres)')
+        .test('no-solo-espacios', 'No puede ser solo espacios', (value) => {
+          return value && value.trim().length > 0;
+        }),
+      
+      company_name: yup
+        .string()
+        .required('El nombre de la empresa es requerido')
+        .matches(/^[A-Za-zÁáÉéÍíÓóÚúÑñ\s\.\-]+$/, 'Solo letras, espacios, puntos y guiones')
+        .min(2, 'Nombre muy corto (mínimo 2 caracteres)')
+        .max(80, 'Nombre muy largo (máximo 80 caracteres)'),
+      
+      company_address: yup
+        .string()
+        .required('La dirección es requerida')
+        .matches(/^[A-Za-zÁáÉéÍíÓóÚúÑñ0-9\s\.\-,#]+$/, 'Caracteres inválidos en dirección')
+        .min(10, 'Dirección muy corta (mínimo 10 caracteres)')
+        .max(200, 'Dirección muy larga (máximo 200 caracteres)'),
+      
+      company_phone: yup
+        .string()
+        .required('El teléfono es requerido')
+        .matches(/^[0-9\s\-\+\(\)]+$/, 'Solo números y símbolos telefónicos')
+        .min(8, 'Teléfono muy corto (mínimo 8 dígitos)')
+        .max(15, 'Teléfono muy largo (máximo 15 dígitos)')
+        .test('debe-tener-numeros', 'Debe contener al menos 8 números', (value) => {
+          const numbers = (value || '').replace(/[^0-9]/g, '');
+          return numbers.length >= 8;
+        }),
+      
       company_email: yup
         .string()
         .email('Debe ser un correo válido')
         .required('El correo es requerido')
-        .test('unique-company-email', 'Este correo corporativo ya está registrado', async function(value) {
-          if (!value || userType !== 'company') return true;
-          
-          try {
-            const response = await fetch('http://localhost:8000/api/auth/check-company-email/', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ company_email: value }),
-            });
-            
-            const data = await response.json();
-            return !data.exists; // Retorna true si NO existe (válido)
-          } catch (error) {
-            console.error('Error checking company email:', error);
-            return true; // En caso de error, permitir el registro
-          }
+        .max(100, 'Email muy largo (máximo 100 caracteres)')
+        .test('formato-basico', 'Formato: usuario@dominio.com', (value) => {
+          if (!value) return false;
+          const parts = value.split('@');
+          return parts.length === 2 && parts[0].length > 0 && parts[1].includes('.');
         }),
     });
   }
@@ -1295,8 +1349,8 @@ export const Register = () => {
                         fullWidth 
                         name="rut" 
                         label="RUT" 
-                        placeholder="12345678-9"
-                        value={formik.values.rut} 
+                        placeholder={getFieldPlaceholder('rut', userType)}
+                        value={formik.values.rut}
                         onChange={(e) => {
                           const value = e.target.value;
                           // Limpiar y formatear automáticamente

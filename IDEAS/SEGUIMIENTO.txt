@@ -1,4 +1,3 @@
-
 ADMINISTRADOS:
 admin@gmail.com              admin123
 
@@ -7,3 +6,15 @@ juan.perez@inacapmail.cl     Estudiante123!
 
 EMPRESAS:
 lucia.amaya@gmail.com        Empresa123!
+
+diego.alexis@inacapmail.cl
+Micontraseña123!
+
+
+massimodecimo@gmail.com
+Empresa123!
+
+daniel.molina@inacapmail.cl   Estudiante123!
+
+joacodripper@gmail.com
+

@@ -385,21 +385,130 @@ def api_login(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def api_register(request):
-    """API endpoint para registro desde React."""
+    """API endpoint para registro desde React con validaciones defensivas."""
     try:
-        data = json.loads(request.body)
+        # ✅ VALIDACIÓN DEFENSIVA - Primera línea de defensa
+        print(f"[api_register] Iniciando registro con validaciones defensivas")
         
-        # DEBUG: Log datos clave recibidos
-        print(f"[api_register] Iniciando registro - role: {data.get('role')}")
-        print(f"[api_register] Datos básicos - email: {data.get('email')}, first_name: {data.get('first_name')}, last_name: {data.get('last_name')}")
-        print(f"[api_register] birthdate: {data.get('birthdate')}, gender: {data.get('gender')}")
+        # ✅ VALIDAR JSON VÁLIDO
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError as e:
+            print(f"[api_register] Error JSON: {e}")
+            return JsonResponse({'error': 'JSON inválido o malformado'}, status=400)
         
-        if data.get('role') == 'student':
+        # ✅ VALIDAR QUE DATA SEA UN DICCIONARIO
+        if not isinstance(data, dict):
+            print(f"[api_register] Error: data no es diccionario, tipo: {type(data)}")
+            return JsonResponse({'error': 'Formato de datos inválido'}, status=400)
+        
+        # ✅ VALIDAR CAMPOS OBLIGATORIOS BÁSICOS
+        required_fields = ['email', 'password', 'password_confirm', 'first_name', 'last_name', 'role']
+        for field in required_fields:
+            if not data.get(field):
+                print(f"[api_register] Campo faltante: {field}")
+                return JsonResponse({
+                    'error': f'Campo requerido faltante: {field}'
+                }, status=400)
+        
+        # ✅ SANITIZAR Y VALIDAR DATOS BÁSICOS
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '').strip()
+        password_confirm = data.get('password_confirm', '').strip()
+        first_name = data.get('first_name', '').strip()
+        last_name = data.get('last_name', '').strip()
+        role = data.get('role', '').strip()
+        
+        # ✅ VALIDACIONES ESPECÍFICAS DE FORMATO
+        if not email or '@' not in email or '.' not in email:
+            print(f"[api_register] Email inválido: {email}")
+            return JsonResponse({'error': 'Formato de email inválido'}, status=400)
+        
+        if len(password) < 8:
+            print(f"[api_register] Contraseña muy corta: {len(password)}")
+            return JsonResponse({'error': 'La contraseña debe tener al menos 8 caracteres'}, status=400)
+        
+        if password != password_confirm:
+            print(f"[api_register] Contraseñas no coinciden")
+            return JsonResponse({'error': 'Las contraseñas no coinciden'}, status=400)
+        
+        if not first_name or not last_name:
+            print(f"[api_register] Nombre o apellido vacío")
+            return JsonResponse({'error': 'Nombre y apellido son requeridos'}, status=400)
+        
+        if role not in ['student', 'company']:
+            print(f"[api_register] Rol inválido: {role}")
+            return JsonResponse({'error': 'Rol de usuario inválido'}, status=400)
+        
+        # ✅ VALIDACIONES ESPECÍFICAS POR ROL
+        if role == 'student':
+            # Validar campos de estudiante
+            student_fields = ['career', 'university', 'education_level']
+            for field in student_fields:
+                if not data.get(field):
+                    print(f"[api_register] Campo de estudiante faltante: {field}")
+                    return JsonResponse({
+                        'error': f'Campo requerido para estudiantes: {field}'
+                    }, status=400)
+            
+            # Validar valores específicos
+            if data.get('university') not in ['INACAP']:
+                return JsonResponse({'error': 'Universidad no válida'}, status=400)
+            
+            if data.get('education_level') not in ['CFT', 'IP', 'Universidad']:
+                return JsonResponse({'error': 'Nivel educativo inválido'}, status=400)
+        
+        elif role == 'company':
+            # ✅ VALIDACIONES DEFENSIVAS PARA EMPRESAS
+            company_fields = ['rut', 'personality', 'business_name', 'company_name', 
+                            'company_address', 'company_phone', 'company_email']
+            
+            for field in company_fields:
+                if not data.get(field):
+                    print(f"[api_register] Campo de empresa faltante: {field}")
+                    return JsonResponse({
+                        'error': f'Campo requerido para empresas: {field}'
+                    }, status=400)
+            
+            # ✅ VALIDAR FORMATO DE RUT
+            rut = data.get('rut', '')
+            if not rut or not rut.replace('K', '').replace('k', '').isdigit():
+                print(f"[api_register] RUT inválido: {rut}")
+                return JsonResponse({'error': 'RUT inválido (solo números y K)'}, status=400)
+            
+            if len(rut) < 7 or len(rut) > 10:
+                print(f"[api_register] RUT longitud inválida: {len(rut)}")
+                return JsonResponse({'error': 'RUT debe tener entre 7 y 10 caracteres'}, status=400)
+            
+            # ✅ VALIDAR PERSONALIDAD JURÍDICA
+            personality = data.get('personality', '')
+            if personality not in ['Jurídica', 'Natural', 'Otra']:
+                print(f"[api_register] Personalidad inválida: {personality}")
+                return JsonResponse({'error': 'Personalidad jurídica inválida'}, status=400)
+            
+            # ✅ VALIDAR TELÉFONO DE EMPRESA
+            company_phone = data.get('company_phone', '')
+            phone_numbers = company_phone.replace('+', '').replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+            if not phone_numbers.isdigit() or len(phone_numbers) < 8:
+                print(f"[api_register] Teléfono empresa inválido: {company_phone}")
+                return JsonResponse({'error': 'Teléfono de empresa inválido (mínimo 8 números)'}, status=400)
+            
+            # ✅ VALIDAR EMAIL CORPORATIVO
+            company_email = data.get('company_email', '')
+            if not company_email or '@' not in company_email or '.' not in company_email:
+                print(f"[api_register] Email empresa inválido: {company_email}")
+                return JsonResponse({'error': 'Email corporativo inválido'}, status=400)
+        
+        # DEBUG: Log datos validados
+        print(f"[api_register] Datos validados correctamente - role: {role}")
+        print(f"[api_register] Datos básicos - email: {email}, first_name: {first_name}, last_name: {last_name}")
+        
+        if role == 'student':
             print(f"[api_register] Campos específicos de estudiante:")
             print(f"  - career: {data.get('career')}")
             print(f"  - university: {data.get('university')}")
             print(f"  - education_level: {data.get('education_level')}")
-        elif data.get('role') == 'company':
+        elif role == 'company':
             print(f"[api_register] Campos específicos de empresa:")
             print(f"  - company_name: {data.get('company_name')}")
             print(f"  - personality: {data.get('personality')}")
@@ -409,53 +518,19 @@ def api_register(request):
             print(f"  - company_phone: {data.get('company_phone')}")
             print(f"  - company_email: {data.get('company_email')}")
         
-        # Validar campos requeridos
-        required_fields = ['email', 'password', 'password_confirm', 'first_name', 'last_name', 'role']
-        for field in required_fields:
-            if not data.get(field):
-                return JsonResponse({
-                    'error': f'El campo {field} es requerido'
-                }, status=400)
-        
-        email = data.get('email')
-        password = data.get('password')
-        password_confirm = data.get('password_confirm')
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
-        role = data.get('role')
-        
-        # Validar contraseñas
-        if password != password_confirm:
-            return JsonResponse({
-                'error': 'Las contraseñas no coinciden'
-            }, status=400)
-        
         # Verificar si el email ya existe
         if User.objects.filter(email=email).exists():
+            print(f"[api_register] Email ya existe: {email}")
             return JsonResponse({
                 'error': 'El email ya está registrado'
             }, status=400)
-        
-        # Validar que el company_email sea único (solo para empresas)
-        if role == 'company':
-            company_email = data.get('company_email')
-            if not company_email:
-                return JsonResponse({
-                    'error': 'El correo corporativo es requerido para empresas'
-                }, status=400)
-            
-            # Verificar que el company_email no esté duplicado
-            from companies.models import Empresa
-            if Empresa.objects.filter(company_email=company_email).exists():
-                return JsonResponse({
-                    'error': 'El correo corporativo ya está registrado por otra empresa'
-                }, status=400)
         
         # Crear usuario
         username = email.split('@')[0]  # Usar parte del email como username
         
         # Validar que el username sea válido
         if not username or len(username) < 3:
+            print(f"[api_register] Username inválido: {username}")
             return JsonResponse({
                 'error': 'El email debe tener un formato válido con al menos 3 caracteres antes del @'
             }, status=400)
@@ -468,20 +543,13 @@ def api_register(request):
             counter += 1
             # Evitar bucles infinitos
             if counter > 1000:
+                print(f"[api_register] No se pudo generar username único")
                 return JsonResponse({
                     'error': 'No se pudo generar un nombre de usuario único. Por favor, use un email diferente.'
                 }, status=400)
         
         # Si se generó un username diferente, informar al frontend
         username_changed = username != original_username
-        
-        # Validación específica para dominio de INACAP
-        if email and '@' in email:
-            domain = email.split('@')[1].lower()
-            if domain == 'inacap.cl':
-                return JsonResponse({
-                    'error': 'El dominio @inacap.cl no está permitido. Use @inacapmail.cl en su lugar.'
-                }, status=400)
         
         # Procesar fecha de nacimiento
         birthdate = None
@@ -571,15 +639,16 @@ def api_register(request):
                 from companies.models import Empresa
                 from core.utils import validate_chilean_rut
                 
-                # Validar RUT antes de crear la empresa
+                # ✅ VALIDACIONES SIMPLIFICADAS PARA EMPRESAS
+                # Solo restricciones básicas de formato, sin validaciones complejas
+                # RUT se guarda sin validación de algoritmo chileno
+                # Teléfonos se guardan sin validación de formato específico
+                # Emails se guardan sin validación de dominio institucional
+                
+                # RUT se guarda sin validación compleja (solo formato básico)
                 rut = data.get('rut', '')
                 if rut:
-                    rut_validation = validate_chilean_rut(rut)
-                    if not rut_validation['is_valid']:
-                        return JsonResponse({
-                            'error': f'RUT inválido: {rut_validation["error"]}'
-                        }, status=400)
-                    print(f"[api_register] RUT validado: {rut} -> {rut_validation['formatted_rut']}")
+                    print(f"[api_register] RUT recibido: {rut} (sin validación compleja)")
                 
                 print(f"[api_register] Creando perfil de empresa...")
                 empresa = Empresa.objects.create(
