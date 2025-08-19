@@ -5,8 +5,9 @@ import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// Componente para tarjetas KPI con tooltip
+// Componente para tarjetas KPI con tooltip y navegación
 interface KPICardProps {
   title: string;
   value: number;
@@ -14,33 +15,48 @@ interface KPICardProps {
   icon: React.ReactNode;
   bgColor: string;
   textColor: string;
+  route?: string;          // Ruta a la que navegar al hacer clic
+  onClick?: () => void;    // Función personalizada de clic
 }
 
-const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICardProps) => {
+const KPICard = ({ title, value, description, icon, bgColor, textColor, route, onClick }: KPICardProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const navigate = useNavigate();
+
+  // Función para manejar el clic en la tarjeta
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (route) {
+      navigate(route);
+    }
+  };
 
   return (
-        <Paper sx={{
-      p: 2.5,
-      width: '100%',
-      height: 160,
-      minHeight: 160,
-      maxHeight: 160,
-      display: 'flex',
-      flexDirection: 'column',
-      bgcolor: bgColor,
-      color: textColor,
-      boxShadow: 2,
-      borderRadius: 3,
-      justifyContent: 'space-between',
-      cursor: 'pointer',
-      transition: 'box-shadow 0.2s',
-      flexShrink: 0,
-      flexGrow: 0,
-      '&:hover': {
-        boxShadow: 4
-      }
-    }}>
+        <Paper 
+      onClick={handleCardClick}
+      sx={{
+        p: 2.5,
+        width: '100%',
+        height: 160,
+        minHeight: 160,
+        maxHeight: 160,
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: bgColor,
+        color: textColor,
+        boxShadow: 2,
+        borderRadius: 3,
+        justifyContent: 'space-between',
+        cursor: route || onClick ? 'pointer' : 'default',
+        transition: 'box-shadow 0.2s',
+        flexShrink: 0,
+        flexGrow: 0,
+        '&:hover': {
+          boxShadow: route || onClick ? 6 : 4,
+          transform: route || onClick ? 'translateY(-2px)' : 'none'
+        }
+      }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ 
@@ -132,9 +148,18 @@ export default function AdminDashboard() {
     }}>
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
-          Dashboard de Administrador - {getUserDisplayName()}
-        </Typography>
+                 <Box>
+           <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+             Dashboard de Administrador - {getUserDisplayName()}
+           </Typography>
+           <Typography variant="body2" sx={{ 
+             color: themeMode === 'dark' ? '#94a3b8' : '#64748b', 
+             mt: 0.5,
+             fontStyle: 'italic'
+           }}>
+             💡 Haz clic en cualquier tarjeta para ir a la sección específica correspondiente
+           </Typography>
+         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ConnectionStatus
             isConnected={!error}
@@ -172,95 +197,104 @@ export default function AdminDashboard() {
             maxWidth: '100%',
             width: '100%'
           }}>
-            {/* Usuarios - Azul primario vibrante */}
-            <KPICard
-              title="Usuarios"
-              value={totalUsers}
-              description="Total de usuarios registrados en el sistema, incluyendo estudiantes, empresas y administradores"
-              icon={<PeopleIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#3b82f6"
-              textColor="white"
-            />
+                         {/* Usuarios - Azul primario vibrante */}
+             <KPICard
+               title="Usuarios"
+               value={totalUsers}
+               description="Total de usuarios registrados en el sistema, incluyendo estudiantes, empresas y administradores"
+               icon={<PeopleIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#3b82f6"
+               textColor="white"
+               route="/dashboard/admin/usuarios"
+             />
             
-            {/* Empresas - Rojo primario vibrante */}
-            <KPICard
-              title="Empresas"
-              value={totalCompanies}
-              description="Empresas activas que han publicado proyectos y están participando en el programa"
-              icon={<BusinessIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#ef4444"
-              textColor="white"
-            />
+                         {/* Empresas - Rojo primario vibrante */}
+             <KPICard
+               title="Empresas"
+               value={totalCompanies}
+               description="Empresas activas que han publicado proyectos y están participando en el programa"
+               icon={<BusinessIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#ef4444"
+               textColor="white"
+               route="/dashboard/admin/gestion-empresas"
+             />
             
-            {/* Estudiantes - Verde primario vibrante */}
-            <KPICard
-              title="Estudiantes"
-              value={totalStudents}
-              description="Estudiantes universitarios activos que pueden aplicar a proyectos y registrar horas de trabajo"
-              icon={<SchoolIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#10b981"
-              textColor="white"
-            />
+                         {/* Estudiantes - Verde primario vibrante */}
+             <KPICard
+               title="Estudiantes"
+               value={totalStudents}
+               description="Estudiantes universitarios activos que pueden aplicar a proyectos y registrar horas de trabajo"
+               icon={<SchoolIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#10b981"
+               textColor="white"
+               route="/dashboard/admin/gestion-estudiantes"
+             />
             
-            {/* Proyectos - Amarillo primario vibrante */}
-            <KPICard
-              title="Proyectos"
-              value={totalProjects}
-              description="Proyectos activos disponibles para que los estudiantes apliquen y desarrollen sus habilidades"
-              icon={<WorkIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#f59e0b"
-              textColor="white"
-            />
+                         {/* Proyectos - Amarillo primario vibrante */}
+             <KPICard
+               title="Proyectos"
+               value={totalProjects}
+               description="Proyectos activos disponibles para que los estudiantes apliquen y desarrollen sus habilidades"
+               icon={<WorkIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#f59e0b"
+               textColor="white"
+               route="/dashboard/admin/gestion-proyectos"
+             />
             
-            {/* Postulaciones - Púrpura primario vibrante */}
-            <KPICard
-              title="Postulaciones"
-              value={pendingApplications}
-              description="Aplicaciones de estudiantes a proyectos que están pendientes de revisión por las empresas"
-              icon={<PendingIcon sx={{ fontSize: 32, mr: 1, color: '#ffffff' }} />}
-              bgColor="#8b5cf6"
-              textColor="white"
-            />
+                         {/* Postulaciones - Púrpura primario vibrante */}
+             <KPICard
+               title="Postulaciones"
+               value={pendingApplications}
+               description="Aplicaciones de estudiantes a proyectos que están pendientes de revisión por las empresas"
+               icon={<PendingIcon sx={{ fontSize: 32, mr: 1, color: '#ffffff' }} />}
+               bgColor="#8b5cf6"
+               textColor="white"
+               route="/dashboard/admin/gestion-evaluaciones"
+             />
             
-            {/* Asignaciones de Strikes - Naranja primario vibrante */}
-            <KPICard
-              title="Asignaciones de Strikes"
-              value={strikesAlerts}
-              description="Reportes de incidencias pendientes que requieren revisión administrativa y posible asignación de strikes"
-              icon={<PendingIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#f97316"
-              textColor="white"
-            />
+                         {/* Asignaciones de Strikes - Naranja primario vibrante */}
+             <KPICard
+               title="Asignaciones de Strikes"
+               value={strikesAlerts}
+               description="Reportes de incidencias pendientes que requieren revisión administrativa y posible asignación de strikes"
+               icon={<PendingIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#f97316"
+               textColor="white"
+               route="/dashboard/admin/gestion-evaluaciones"
+             />
             
-            {/* Solicitudes de Cuestionario API - Verde azulado vibrante */}
-            <KPICard
-              title="Cuestionarios API"
-              value={apiQuestionnaireRequests}
-              description="Solicitudes de cuestionario de API pendientes de revisión por el administrador para determinar el nivel del estudiante"
-              icon={<QuizIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#06b6d4"
-              textColor="white"
-            />
+                         {/* Solicitudes de Cuestionario API - Verde azulado vibrante */}
+             <KPICard
+               title="Cuestionarios API"
+               value={apiQuestionnaireRequests}
+               description="Solicitudes de cuestionario de API pendientes de revisión por el administrador para determinar el nivel del estudiante"
+               icon={<QuizIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#06b6d4"
+               textColor="white"
+               route="/dashboard/admin/api-requests"
+             />
             
-            {/* Proyectos Activos - Verde vibrante */}
-            <KPICard
-              title="Proyectos Activos"
-              value={activeProjects}
-              description="Proyectos que están actualmente en desarrollo con estudiantes trabajando activamente"
-              icon={<PlayArrowIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#22c55e"
-              textColor="white"
-            />
+                         {/* Proyectos Activos - Verde vibrante */}
+             <KPICard
+               title="Proyectos Activos"
+               value={activeProjects}
+               description="Proyectos que están actualmente en desarrollo con estudiantes trabajando activamente"
+               icon={<PlayArrowIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#22c55e"
+               textColor="white"
+               route="/dashboard/admin/gestion-proyectos"
+             />
             
-            {/* Horas Pendientes - Índigo vibrante */}
-            <KPICard
-              title="Horas Pendientes"
-              value={pendingHours}
-              description="Horas de trabajo registradas por estudiantes que están pendientes de validación por las empresas"
-              icon={<ScheduleIcon sx={{ fontSize: 32, mr: 1 }} />}
-              bgColor="#6366f1"
-              textColor="white"
-            />
+                         {/* Horas Pendientes - Índigo vibrante */}
+             <KPICard
+               title="Horas Pendientes"
+               value={pendingHours}
+               description="Horas de trabajo registradas por estudiantes que están pendientes de validación por las empresas"
+               icon={<ScheduleIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#6366f1"
+               textColor="white"
+               route="/dashboard/admin/validacion-horas"
+             />
           </Box>
         </>
       )}

@@ -27,8 +27,9 @@
  * VERSIÓN: 1.0
  */
 
-import { useEffect, useState } from 'react';
-import { Box, Paper, Typography, Tooltip, IconButton, Grid } from '@mui/material';
+import { useEffect, useState, memo, Suspense } from 'react';
+import { Box, Paper, Typography, Tooltip, IconButton, Grid, Skeleton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -37,11 +38,54 @@ import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CodeIcon from '@mui/icons-material/Code';
 import InfoIcon from '@mui/icons-material/Info';
-import { useDashboardStats } from '../../../hooks/useRealTimeData';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { useOptimizedDashboardStats } from '../../../hooks/useOptimizedDashboardStats';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
+
+/**
+ * 🦴 COMPONENTE SKELETON PARA CARGA DEL DASHBOARD
+ * Muestra esqueletos animados mientras se cargan los datos
+ */
+const DashboardSkeleton = () => (
+  <Box sx={{ p: 3 }}>
+    {/* Header skeleton */}
+    <Box sx={{ mb: 3 }}>
+      <Skeleton variant="text" width="60%" height={48} sx={{ mb: 1 }} />
+      <Skeleton variant="text" width="40%" height={24} />
+    </Box>
+    
+    {/* Grid de tarjetas skeleton */}
+    <Box sx={{ 
+      display: 'grid', 
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: 3, 
+      mb: 3 
+    }}>
+      {Array.from({ length: 9 }).map((_, index) => (
+        <Skeleton 
+          key={index}
+          variant="rectangular" 
+          width="100%" 
+          height={160}
+          sx={{ borderRadius: 2 }}
+        />
+      ))}
+    </Box>
+    
+    {/* Gráficos skeleton */}
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6}>
+        <Skeleton variant="rectangular" width="100%" height={400} sx={{ borderRadius: 2 }} />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Skeleton variant="rectangular" width="100%" height={400} sx={{ borderRadius: 2 }} />
+      </Grid>
+    </Grid>
+  </Box>
+);
 
 /**
  * 🎨 PALETA DE COLORES ESTILO POWER BI
@@ -138,6 +182,8 @@ interface KPICardProps {
   icon: React.ReactNode;   // Icono de Material-UI
   bgColor: string;         // Color de fondo de la tarjeta
   textColor: string;       // Color del texto y elementos
+  route?: string;          // Ruta a la que navegar al hacer clic
+  onClick?: () => void;    // Función personalizada de clic
 }
 
 /**
@@ -162,32 +208,56 @@ interface KPICardProps {
  * - bgColor: Color de fondo
  * - textColor: Color del texto
  */
-const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICardProps) => {
+const KPICard = memo(({ title, value, description, icon, bgColor, textColor, route, onClick }: KPICardProps) => {
   // Estado para controlar la visibilidad del tooltip
   const [showTooltip, setShowTooltip] = useState(false);
+  const navigate = useNavigate();
+
+  // Función para manejar el clic en la tarjeta
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (route) {
+      navigate(route);
+    }
+  };
 
   return (
-    <Paper sx={{
-      p: 2.5,                    // Padding interno
-      width: '100%',             // Ancho completo del contenedor
-      height: 160,               // Altura fija para consistencia visual
-      minHeight: 160,            // Altura mínima
-      maxHeight: 160,            // Altura máxima
-      display: 'flex',           // Layout flexbox
-      flexDirection: 'column',   // Dirección vertical
-      bgcolor: bgColor,          // Color de fondo personalizable
-      color: textColor,          // Color del texto personalizable
-      boxShadow: 2,              // Sombra base
-      borderRadius: 3,            // Bordes redondeados
-      justifyContent: 'space-between', // Distribución del espacio
-      cursor: 'pointer',         // Cursor de puntero
-      transition: 'box-shadow 0.2s', // Transición suave para hover
-      flexShrink: 0,             // No permitir reducción
-      flexGrow: 0,               // No permitir crecimiento
-      '&:hover': {
-        boxShadow: 4             // Sombra aumentada en hover
-      }
-    }}>
+    <Tooltip
+      title={route || onClick ? `Haz clic para ir a ${title}` : title}
+      placement="top"
+      arrow
+    >
+      <Paper 
+        onClick={handleCardClick}
+        sx={{
+        p: 2.5,                    // Padding interno
+        width: '100%',             // Ancho completo del contenedor
+        height: 160,               // Altura fija para consistencia visual
+        minHeight: 160,            // Altura mínima
+        maxHeight: 160,            // Altura máxima
+        display: 'flex',           // Layout flexbox
+        flexDirection: 'column',   // Dirección vertical
+        bgcolor: bgColor,          // Color de fondo personalizable
+        color: textColor,          // Color del texto personalizable
+        boxShadow: 2,              // Sombra base
+        borderRadius: 3,            // Bordes redondeados
+        justifyContent: 'space-between', // Distribución del espacio
+        cursor: 'pointer',         // Cursor de puntero
+        transition: 'all 0.2s ease', // Transición suave para hover
+        flexShrink: 0,             // No permitir reducción
+        flexGrow: 0,               // No permitir crecimiento
+        '&:hover': {
+          boxShadow: 6,            // Sombra aumentada en hover
+          transform: 'translateY(-2px)', // Efecto de elevación
+          bgcolor: `${bgColor}dd`  // Color ligeramente más oscuro en hover
+        },
+        '&:active': {
+          transform: 'translateY(0px)', // Efecto de presión al hacer clic
+          boxShadow: 3
+        }
+      }}
+    >
       {/* Header de la tarjeta con título e icono de información */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -211,36 +281,58 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
           </Typography>
         </Box>
         
-        {/* Tooltip informativo con botón de información */}
-        <Tooltip
-          title={description}
-          open={showTooltip}
-          onClose={() => setShowTooltip(false)}
-          placement="top"
-          arrow
-          sx={{
-            '& .MuiTooltip-tooltip': {
-              bgcolor: 'rgba(0, 0, 0, 0.9)',
-              color: 'white',
-              fontSize: '14px',
-              padding: '8px 12px',
-              borderRadius: '6px'
-            }
-          }}
-        >
-          <IconButton
-            size="small"
-            onClick={() => setShowTooltip(!showTooltip)}
+        {/* Indicador de navegación y tooltip informativo */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Flecha indicadora de navegación (solo si hay ruta o onClick) */}
+          {(route || onClick) && (
+            <ArrowForwardIcon 
+              sx={{ 
+                fontSize: 16, 
+                color: textColor,
+                opacity: 0.8,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  opacity: 1,
+                  transform: 'translateX(2px)'
+                }
+              }} 
+            />
+          )}
+          
+          {/* Tooltip informativo con botón de información */}
+          <Tooltip
+            title={description}
+            open={showTooltip}
+            onClose={() => setShowTooltip(false)}
+            placement="top"
+            arrow
             sx={{
-              color: textColor,
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.1)' // Efecto hover sutil
+              '& .MuiTooltip-tooltip': {
+                bgcolor: 'rgba(0, 0, 0, 0.9)',
+                color: 'white',
+                fontSize: '14px',
+                padding: '8px 12px',
+                borderRadius: '6px'
               }
             }}
           >
-            <InfoIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation(); // Evitar que se active el clic de la tarjeta
+                setShowTooltip(!showTooltip);
+              }}
+              sx={{
+                color: textColor,
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.1)' // Efecto hover sutil
+                }
+              }}
+            >
+              <InfoIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
       
       {/* Valor principal de la métrica con tipografía destacada */}
@@ -255,8 +347,9 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
         {value}
       </Typography>
     </Paper>
+    </Tooltip>
   );
-};
+});
 
 /**
  * 🎓 COMPONENTE PRINCIPAL DEL DASHBOARD DEL ESTUDIANTE
@@ -289,8 +382,12 @@ export default function StudentDashboard() {
   // Hook para obtener el modo de tema (claro/oscuro)
   const { themeMode } = useTheme();
   
-  // Hook para obtener estadísticas del dashboard en tiempo real
-  const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('student');
+  // Hook optimizado para obtener estadísticas del dashboard
+  const { data: stats, loading, error, lastUpdate, isPolling } = useOptimizedDashboardStats('student', {
+    pollingInterval: 30000, // 30 segundos
+    enablePolling: true,
+    cacheTime: 60000 // 1 minuto
+  });
 
   /**
    * 🔍 FUNCIÓN PARA OBTENER NOMBRE DE DISPLAY DEL USUARIO
@@ -371,16 +468,11 @@ export default function StudentDashboard() {
    * ⏳ ESTADO DE CARGA
    * 
    * DESCRIPCIÓN:
-   * Muestra un indicador de carga mientras se obtienen las estadísticas
-   * del backend. Incluye icono de reloj de arena y mensaje descriptivo.
+   * Muestra un skeleton animado mientras se obtienen las estadísticas
+   * del backend para una mejor experiencia de usuario.
    */
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <HourglassBottomIcon sx={{ fontSize: 48, color: 'primary.main', mr: 2 }} />
-        <Typography variant="h6">Cargando dashboard...</Typography>
-      </Box>
-    );
+    return <DashboardSkeleton />;
   }
 
   /**
@@ -476,9 +568,18 @@ export default function StudentDashboard() {
     }}>
       {/* Header del dashboard con título personalizado y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
-          Bienvenido a tu Dashboard - {getUserDisplayName()}
-        </Typography>
+        <Box>
+          <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+            Bienvenido a tu Dashboard - {getUserDisplayName()}
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            color: themeMode === 'dark' ? '#94a3b8' : '#64748b', 
+            mt: 0.5,
+            fontStyle: 'italic'
+          }}>
+            💡 Haz clic en cualquier tarjeta para ir a la sección correspondiente
+          </Typography>
+        </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* Componente de estado de conexión que muestra el estado del backend */}
           <ConnectionStatus
@@ -491,6 +592,7 @@ export default function StudentDashboard() {
       </Box>
       
       {/* Grid de tarjetas KPI principales - Diseño 3x3 con altura fija */}
+      {/* 💡 TIP: Todas las tarjetas son clickeables y te llevan a las secciones específicas */}
       <Box sx={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(3, 1fr)',    // 3 columnas de igual ancho
@@ -509,17 +611,19 @@ export default function StudentDashboard() {
           icon={<TrendingUpIcon sx={{ fontSize: 28 }} />}
           bgColor="#1565c0"  // Azul profesional
           textColor="white"
+          route="/dashboard/student/my-projects"
         />
         
-        {/* 📋 TARJETA 2: PROYECTOS DISPONIBLES */}
-        <KPICard
-          title="Proyectos Disponibles"
-          value={availableProjects}
-          description="Número de proyectos activos que están abiertos para aplicaciones. Estos proyectos representan nuevas oportunidades para desarrollar tus habilidades y ganar experiencia profesional."
-          icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
-          bgColor="#42a5f5"  // Azul claro
-          textColor="white"
-        />
+                 {/* 📋 TARJETA 2: PROYECTOS DISPONIBLES */}
+         <KPICard
+           title="Proyectos Disponibles"
+           value={availableProjects}
+           description="Número de proyectos activos que están abiertos para aplicaciones. Estos proyectos representan nuevas oportunidades para desarrollar tus habilidades y ganar experiencia profesional."
+           icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
+           bgColor="#42a5f5"  // Azul claro
+           textColor="white"
+           route="/dashboard/student/available-projects"
+         />
         
         {/* 📝 TARJETA 3: MIS APLICACIONES */}
         <KPICard
@@ -529,27 +633,29 @@ export default function StudentDashboard() {
           icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
           bgColor="#8e24aa"  // Púrpura
           textColor="white"
+          route="/dashboard/student/my-applications"
         />
         
-        {/* ⚠️ TARJETA 4: STRIKES */}
-        <KPICard
-          title="Strikes"
-          value={`${strikes} / ${maxStrikes}`}
-          description="Sistema de advertencias por incumplimiento de entregas. Tienes un máximo de 3 strikes antes de restricciones. Los strikes se asignan cuando no entregas proyectos en tiempo y forma."
-          icon={<WarningAmberIcon sx={{ fontSize: 28, color: '#d32f2f' }} />}
-          bgColor="#ff9800"  // Naranja de advertencia
-          textColor="white"
-        />
+                 {/* ⚠️ TARJETA 4: STRIKES */}
+         <KPICard
+           title="Strikes"
+           value={`${strikes} / ${maxStrikes}`}
+           description="Sistema de advertencias por incumplimiento de entregas. Tienes un máximo de 3 strikes antes de restricciones. Los strikes se asignan cuando no entregas proyectos en tiempo y forma."
+           icon={<WarningAmberIcon sx={{ fontSize: 28, color: '#d32f2f' }} />}
+           bgColor="#ff9800"  // Naranja de advertencia
+           textColor="white"
+         />
         
-        {/* ✅ TARJETA 5: PROYECTOS ACTIVOS */}
-        <KPICard
-          title="Proyectos Activos"
-          value={activeProjects}
-          description="Proyectos en los que actualmente estás participando y trabajando activamente. Estos son proyectos donde has sido aceptado y estás registrando horas de trabajo."
-          icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
-          bgColor="#2e7d32"  // Verde de éxito
-          textColor="white"
-        />
+                 {/* ✅ TARJETA 5: PROYECTOS ACTIVOS */}
+         <KPICard
+           title="Proyectos Activos"
+           value={activeProjects}
+           description="Proyectos en los que actualmente estás participando y trabajando activamente. Estos son proyectos donde has sido aceptado y estás registrando horas de trabajo."
+           icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
+           bgColor="#2e7d32"  // Verde de éxito
+           textColor="white"
+           route="/dashboard/student/my-projects?tab=1"
+         />
         
         {/* 📊 TARJETA 6: GPA ACTUAL */}
         <KPICard
@@ -559,17 +665,19 @@ export default function StudentDashboard() {
           icon={<TrendingUpIcon sx={{ fontSize: 28, color: 'white' }} />}
           bgColor="#f57c00"  // Naranja
           textColor="white"
+          route="/dashboard/student/evaluations"
         />
          
-        {/* 🏁 TARJETA 7: PROYECTOS COMPLETADOS */}
-        <KPICard
-          title="Proyectos Completados"
-          value={completedProjects}
-          description="Número total de proyectos que has terminado exitosamente. Cada proyecto completado representa una experiencia valiosa y contribuye a tu portafolio profesional."
-          icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
-          bgColor="#4caf50"  // Verde lima
-          textColor="white"
-        />
+                 {/* 🏁 TARJETA 7: PROYECTOS COMPLETADOS */}
+         <KPICard
+           title="Proyectos Completados"
+           value={completedProjects}
+           description="Número total de proyectos que has terminado exitosamente. Cada proyecto completado representa una experiencia valiosa y contribuye a tu portafolio profesional."
+           icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
+           bgColor="#4caf50"  // Verde lima
+           textColor="white"
+           route="/dashboard/student/my-projects?tab=2"
+         />
         
         {/* 🔧 TARJETA 8: NIVEL DE API */}
         <KPICard
@@ -589,6 +697,7 @@ export default function StudentDashboard() {
           icon={<CodeIcon sx={{ fontSize: 28 }} />}
           bgColor="#8e24aa"  // Púrpura
           textColor="white"
+          route="/dashboard/student/api-questionnaire"
         />
          
         {/* 🔔 TARJETA 9: NOTIFICACIONES NUEVAS */}
@@ -599,23 +708,40 @@ export default function StudentDashboard() {
           icon={<NotificationsIcon sx={{ fontSize: 28 }} />}
           bgColor="#f44336"  // Rojo de alerta
           textColor="white"
+          route="/dashboard/student/notifications"
         />
       </Box>
       
       {/* 📈 SECCIÓN DE GRÁFICOS DE VISUALIZACIÓN DE DATOS */}
       <Grid container spacing={3} sx={{ mt: 2 }}>
         
-        {/* 🥧 GRÁFICO 1: GRÁFICO DE DONA - DISTRIBUCIÓN DE APLICACIONES POR ESTADO */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ 
-            p: 3, 
-            height: 400,
-            bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
-            border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
-          }}>
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
-              Distribución de Aplicaciones por Estado
-            </Typography>
+                 {/* 🥧 GRÁFICO 1: GRÁFICO DE DONA - DISTRIBUCIÓN DE APLICACIONES POR ESTADO */}
+         <Grid item xs={12} md={6}>
+           <Paper sx={{ 
+             p: 3, 
+             height: 400,
+             bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+             border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+           }}>
+             <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+               Distribución de Aplicaciones por Estado
+             </Typography>
+             
+             {/* Loading state para gráficos */}
+             {!stats?.application_distribution && (
+               <Box sx={{ 
+                 display: 'flex', 
+                 flexDirection: 'column', 
+                 alignItems: 'center', 
+                 justifyContent: 'center', 
+                 height: 300,
+                 gap: 2
+               }}>
+                 <Skeleton variant="circular" width={100} height={100} />
+                 <Skeleton variant="text" width="60%" height={24} />
+                 <Skeleton variant="text" width="40%" height={20} />
+               </Box>
+             )}
             
             {/* Renderizado condicional del gráfico de dona */}
             {translatedApplicationData && translatedApplicationData.length > 0 ? (
@@ -689,17 +815,33 @@ export default function StudentDashboard() {
           </Paper>
         </Grid>
 
-        {/* 📊 GRÁFICO 2: GRÁFICO DE BARRAS - ACTIVIDAD MENSUAL */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ 
-            p: 3, 
-            height: 400,
-            bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
-            border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
-          }}>
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
-              Actividad Mensual
-            </Typography>
+                 {/* 📊 GRÁFICO 2: GRÁFICO DE BARRAS - ACTIVIDAD MENSUAL */}
+         <Grid item xs={12} md={6}>
+           <Paper sx={{ 
+             p: 3, 
+             height: 400,
+             bgcolor: themeMode === 'dark' ? '#1e293b' : 'white',
+             border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0'
+           }}>
+             <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+               Actividad Mensual
+             </Typography>
+             
+             {/* Loading state para gráficos */}
+             {!stats?.monthly_activity && (
+               <Box sx={{ 
+                 display: 'flex', 
+                 flexDirection: 'column', 
+                 alignItems: 'center', 
+                 justifyContent: 'center', 
+                 height: 300,
+                 gap: 2
+               }}>
+                 <Skeleton variant="rectangular" width="80%" height={200} sx={{ borderRadius: 1 }} />
+                 <Skeleton variant="text" width="60%" height={24} />
+                 <Skeleton variant="text" width="40%" height={20} />
+               </Box>
+             )}
             
             {/* Renderizado condicional del gráfico de barras */}
             {stats?.monthly_activity && stats.monthly_activity.length > 0 ? (

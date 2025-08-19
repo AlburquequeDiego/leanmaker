@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback, memo } from 'react';
 import { Box, Paper, Typography, CircularProgress, Tooltip, IconButton, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import BusinessIcon from '@mui/icons-material/Business';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -97,10 +98,22 @@ interface KPICardProps {
   icon: React.ReactNode;
   bgColor: string;
   textColor: string;
+  route?: string;          // Ruta a la que navegar al hacer clic
+  onClick?: () => void;    // Función personalizada de clic
 }
 
-const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICardProps) => {
+const KPICard = memo(({ title, value, description, icon, bgColor, textColor, route, onClick }: KPICardProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const navigate = useNavigate();
+
+  // Función para manejar el clic en la tarjeta - memoizada
+  const handleCardClick = useCallback(() => {
+    if (onClick) {
+      onClick();
+    } else if (route) {
+      navigate(route);
+    }
+  }, [onClick, route, navigate]);
 
   // Verificar si el valor es "Sin calificaciones" para aplicar estilos especiales
   const isNoData = value === 'Sin calificaciones';
@@ -109,44 +122,48 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
   const isGradient = bgColor.includes('gradient');
 
   return (
-    <Paper sx={{
-      p: 2.5,
-      width: '100%',
-      height: 160,
-      minHeight: 160,
-      maxHeight: 160,
-      display: 'flex',
-      flexDirection: 'column',
-      background: isGradient ? bgColor : bgColor,
-      bgcolor: isGradient ? 'transparent' : bgColor,
-      color: textColor,
-      boxShadow: isGradient ? '0 8px 32px rgba(99, 102, 241, 0.3)' : 2,
-      borderRadius: 3,
-      justifyContent: 'space-between',
-      cursor: 'pointer',
-      transition: 'box-shadow 0.2s',
-      flexShrink: 0,
-      flexGrow: 0,
-      position: 'relative',
-      overflow: 'hidden',
-      '&:hover': {
-        boxShadow: isGradient ? '0 12px 40px rgba(99, 102, 241, 0.4)' : 4
-      },
-      '&::before': isGradient ? {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: '-100%',
+    <Paper 
+      onClick={handleCardClick}
+      sx={{
+        p: 2.5,
         width: '100%',
-        height: '100%',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
-        transition: 'left 0.5s',
-        zIndex: 1
-      } : {},
-      '&:hover::before': isGradient ? {
-        left: '100%'
-      } : {}
-    }}>
+        height: 160,
+        minHeight: 160,
+        maxHeight: 160,
+        display: 'flex',
+        flexDirection: 'column',
+        background: isGradient ? bgColor : bgColor,
+        bgcolor: isGradient ? 'transparent' : bgColor,
+        color: textColor,
+        boxShadow: isGradient ? '0 8px 32px rgba(99, 102, 241, 0.3)' : 2,
+        borderRadius: 3,
+        justifyContent: 'space-between',
+        cursor: route || onClick ? 'pointer' : 'default',
+        transition: 'all 0.2s ease',
+        flexShrink: 0,
+        flexGrow: 0,
+        position: 'relative',
+        overflow: 'hidden',
+        '&:hover': {
+          boxShadow: isGradient ? '0 12px 40px rgba(99, 102, 241, 0.4)' : 6,
+          transform: route || onClick ? 'translateY(-2px)' : 'none'
+        },
+        '&::before': isGradient ? {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: '-100%',
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+          transition: 'left 0.5s',
+          zIndex: 1
+        } : {},
+        '&:hover::before': isGradient ? {
+          left: '100%'
+        } : {}
+      }}
+    >
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ 
@@ -301,7 +318,7 @@ const KPICard = ({ title, value, description, icon, bgColor, textColor }: KPICar
       </Typography>
     </Paper>
   );
-};
+});
 
 // Componente de tooltip personalizado para el gráfico circular
 const CustomPieTooltip = ({ active, payload, themeMode }: any) => {
@@ -440,9 +457,18 @@ export default function CompanyDashboard() {
     }}>
       {/* Header con título y estado de conexión */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
-          Dashboard de Empresa - {getUserDisplayName()}
-        </Typography>
+        <Box>
+          <Typography variant="h4" fontWeight={700} sx={{ color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' }}>
+            Dashboard de Empresa - {getUserDisplayName()}
+          </Typography>
+                     <Typography variant="body2" sx={{ 
+             color: themeMode === 'dark' ? '#94a3b8' : '#64748b', 
+             mt: 0.5,
+             fontStyle: 'italic'
+           }}>
+             💡 Haz clic en cualquier tarjeta para ir a la sección específica correspondiente
+           </Typography>
+        </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Tooltip title="Actualizar datos">
             <span>
@@ -498,6 +524,7 @@ export default function CompanyDashboard() {
                icon={<AssignmentIcon sx={{ fontSize: 28 }} />}
                bgColor="#2563eb"
                textColor="white"
+               route="/dashboard/company/projects?tab=0"
              />
              
              {/* Proyectos Activos - Verde esmeralda vibrante */}
@@ -508,6 +535,7 @@ export default function CompanyDashboard() {
                icon={<PlayArrowIcon sx={{ fontSize: 28 }} />}
                bgColor="#16a34a"
                textColor="white"
+               route="/dashboard/company/projects?tab=1"
              />
              
              {/* Proyectos Completados - Verde brillante */}
@@ -518,6 +546,7 @@ export default function CompanyDashboard() {
                icon={<CheckCircleIcon sx={{ fontSize: 28 }} />}
                bgColor="#15803d"
                textColor="white"
+               route="/dashboard/company/projects?tab=2"
              />
              
              {/* Proyectos Creados - Azul cielo vibrante */}
@@ -528,6 +557,7 @@ export default function CompanyDashboard() {
                icon={<BusinessIcon sx={{ fontSize: 28 }} />}
                bgColor="#0891b2"
                textColor="white"
+               route="/dashboard/company/projects"
              />
              
              {/* Postulantes Pendientes - Púrpura vibrante */}
@@ -538,6 +568,7 @@ export default function CompanyDashboard() {
                icon={<PeopleIcon sx={{ fontSize: 28 }} />}
                bgColor="#a855f7"
                textColor="white"
+               route="/dashboard/company/applications?tab=0"
              />
              
              {/* Solicitudes Totales - Naranja brillante */}
@@ -548,6 +579,7 @@ export default function CompanyDashboard() {
                icon={<AssignmentTurnedInIcon sx={{ fontSize: 28 }} />}
                bgColor="#ea580c"
                textColor="white"
+               route="/dashboard/company/applications"
              />
              
              {/* Estudiantes Activos - Verde lima vibrante */}
@@ -558,6 +590,7 @@ export default function CompanyDashboard() {
                icon={<SchoolIcon sx={{ fontSize: 28 }} />}
                bgColor="#8BC34A"
                textColor="white"
+               route="/dashboard/company/students"
              />
              
                                        {/* Rating Empresa - Azul índigo vibrante con gradiente */}
@@ -568,17 +601,19 @@ export default function CompanyDashboard() {
                 icon={<StarIcon sx={{ fontSize: 28 }} />}
                 bgColor="linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)"
                 textColor="white"
+                route="/dashboard/company/evaluations"
               />
               
-              {/* Horas Ofrecidas - Rojo vibrante */}
-              <KPICard
-                title="Horas Ofrecidas"
-                value={totalHoursOffered}
-                description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
-                icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
-                bgColor="#dc2626"
-                textColor="white"
-              />
+                             {/* Horas Ofrecidas - Rojo vibrante */}
+               <KPICard
+                 title="Horas Ofrecidas"
+                 value={totalHoursOffered}
+                 description="Total de horas de experiencia ofrecidas en todos los proyectos publicados por la empresa. Representa el volumen total de oportunidades de desarrollo profesional proporcionadas a los estudiantes."
+                 icon={<AccessTimeIcon sx={{ fontSize: 28 }} />}
+                 bgColor="#dc2626"
+                 textColor="white"
+                 route="/dashboard/company/projects?tab=2"
+               />
            </Box>
             
             {/* Gráficos */}

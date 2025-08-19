@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo, Suspense } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -22,6 +23,7 @@ import {
   Tab,
   Divider,
   Grid,
+  Skeleton,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -65,15 +67,55 @@ interface Project {
   objetivo?: string;
 }
 
+/**
+ * 🦴 COMPONENTE SKELETON PARA CARGA DE MIS PROYECTOS
+ * Muestra esqueletos animados mientras se cargan los datos
+ */
+const MyProjectsSkeleton = () => (
+  <Box sx={{ p: 3 }}>
+    {/* Header skeleton */}
+    <Box sx={{ mb: 4 }}>
+      <Skeleton variant="rectangular" width="100%" height={120} sx={{ borderRadius: 2 }} />
+    </Box>
+    
+    {/* Dashboard skeleton */}
+    <Box sx={{ mb: 3 }}>
+      <Skeleton variant="text" width="30%" height={32} sx={{ mb: 2 }} />
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3 }}>
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} variant="rectangular" width="100%" height={120} sx={{ borderRadius: 2 }} />
+        ))}
+      </Box>
+    </Box>
+    
+    {/* Tabs skeleton */}
+    <Box sx={{ mb: 2 }}>
+      <Skeleton variant="rectangular" width="100%" height={48} sx={{ borderRadius: 2 }} />
+    </Box>
+    
+    {/* Proyectos skeleton */}
+    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: 3 }}>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <Skeleton key={index} variant="rectangular" width="100%" height={320} sx={{ borderRadius: 2 }} />
+      ))}
+    </Box>
+  </Box>
+);
+
 export const MyProjects = () => {
   const { themeMode } = useTheme();
+  const [searchParams] = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [publishedLimit, setPublishedLimit] = useState(20);
   const [activeLimit, setActiveLimit] = useState(20);
   const [completedLimit, setCompletedLimit] = useState(20);
   const [deletedLimit, setDeletedLimit] = useState(5);
-  const [tab, setTab] = useState(0);
+  
+  // Obtener el tab inicial desde la URL o usar 0 por defecto
+  const initialTab = parseInt(searchParams.get('tab') || '0', 10);
+  const [tab, setTab] = useState(initialTab);
 
   // Estados para el modal de detalles
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -112,6 +154,7 @@ export const MyProjects = () => {
   useEffect(() => {
     async function fetchProjects() {
       try {
+        setIsLoading(true);
         console.log('[MyProjects] 🔍 Iniciando fetch de proyectos...');
         const response = await apiService.get('/api/projects/my_projects/');
         console.log('[MyProjects] 🔍 Response completa:', response);
@@ -141,6 +184,8 @@ export const MyProjects = () => {
       } catch (error) {
         console.error('[MyProjects] ❌ Error fetching projects:', error);
         setProjects([]);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchProjects();
@@ -168,6 +213,17 @@ export const MyProjects = () => {
   };
 
   const handleTabChange = (_: any, newValue: number) => setTab(newValue);
+
+  // Efecto para actualizar el tab cuando cambie el parámetro de la URL
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam !== null) {
+      const newTab = parseInt(tabParam, 10);
+      if (!isNaN(newTab) && newTab >= 0 && newTab <= 2) {
+        setTab(newTab);
+      }
+    }
+  }, [searchParams]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -229,6 +285,11 @@ export const MyProjects = () => {
   console.log('[MyProjects] Proyectos publicados:', publishedProjects);
   const deletedProjects = projects.filter(project => project.status === 'deleted');
   const totalHoursWorked = projects.reduce((sum, project) => sum + project.hoursWorked, 0);
+
+  // Mostrar skeleton mientras carga
+  if (isLoading) {
+    return <MyProjectsSkeleton />;
+  }
 
   return (
     <Box sx={{ 
