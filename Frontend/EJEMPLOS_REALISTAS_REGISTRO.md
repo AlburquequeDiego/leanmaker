@@ -4,6 +4,24 @@
 
 Se han actualizado los ejemplos y placeholders en el formulario de registro de empresa para que sean más realistas, didácticos y profesionales.
 
+ADMINISTRADOR:
+admin@leanmaker.com          Admin123!
+
+
+estudiantes:
+juan.perez@inacapmail.cl     Estudiante123!
+joaco.perez@inacapmail.cl    Estudiante123!
+diego.amaya@inacapmail.cl    Estudiante123!
+daniel.rojas@inacapmail.cl   Estudiante123!
+omar.mesa@inacapmail.cl      Estudiante123!
+
+EMPRESAS:
+lucia.amaya@gmail.com        Empresa123!
+jose.ruiz@gmail.com          Empresa123!
+diego.montenegro@gmail.com   Empresa123!
+ramona.florez@gmail.com      Empresa123!
+patricia.loretto@gmail.com   Empresa123!
+
 ## Cambios Implementados
 
 ### 1. Función `getFieldPlaceholder` Actualizada
