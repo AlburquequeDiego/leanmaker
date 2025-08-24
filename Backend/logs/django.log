@@ -32652,3 +32652,9 @@ INFO 2025-08-19 08:06:55,063 basehttp 13332 17496 "GET /api/students/695c11d2-20
 INFO 2025-08-19 08:07:05,108 basehttp 13332 10808 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
 INFO 2025-08-19 08:07:05,115 basehttp 13332 13536 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
 INFO 2025-08-19 08:10:33,091 basehttp 13332 9736 "GET /api/students/admin/api-level-requests/?limit=20 HTTP/1.1" 200 291
+INFO 2025-08-23 21:16:07,915 signals 12152 7580 Signals de notificaciones conectados exitosamente
+INFO 2025-08-23 21:16:42,018 signals 10188 20444 Signals de notificaciones conectados exitosamente
+INFO 2025-08-23 21:17:11,165 signals 4672 20724 Signals de notificaciones conectados exitosamente
+INFO 2025-08-23 21:20:09,997 signals 18820 17812 Signals de notificaciones conectados exitosamente
+INFO 2025-08-23 21:20:11,567 signals 14220 11704 Signals de notificaciones conectados exitosamente
+INFO 2025-08-23 21:20:11,597 autoreload 14220 11704 Watching for file changes with StatReloader
