@@ -32658,3 +32658,19 @@ INFO 2025-08-23 21:17:11,165 signals 4672 20724 Signals de notificaciones conect
 INFO 2025-08-23 21:20:09,997 signals 18820 17812 Signals de notificaciones conectados exitosamente
 INFO 2025-08-23 21:20:11,567 signals 14220 11704 Signals de notificaciones conectados exitosamente
 INFO 2025-08-23 21:20:11,597 autoreload 14220 11704 Watching for file changes with StatReloader
+INFO 2025-09-04 16:58:28,100 signals 20084 6968 Signals de notificaciones conectados exitosamente
+INFO 2025-09-04 16:58:50,063 signals 2152 19332 Signals de notificaciones conectados exitosamente
+INFO 2025-09-04 16:59:12,288 signals 11668 19804 Signals de notificaciones conectados exitosamente
+INFO 2025-09-04 16:59:13,037 signals 20632 12096 Signals de notificaciones conectados exitosamente
+INFO 2025-09-04 16:59:13,053 autoreload 20632 12096 Watching for file changes with StatReloader
+INFO 2025-09-04 16:59:19,629 basehttp 20632 20492 "GET / HTTP/1.1" 200 15327
+INFO 2025-09-04 16:59:19,692 basehttp 20632 6728 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2025-09-04 16:59:19,696 basehttp 20632 20492 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+INFO 2025-09-04 16:59:19,710 basehttp 20632 16260 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+INFO 2025-09-04 16:59:19,785 basehttp 20632 16260 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+INFO 2025-09-04 16:59:19,920 basehttp 20632 16260 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-09-04 16:59:19,941 basehttp 20632 16260 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-09-04 17:09:16,611 signals 292 4320 Signals de notificaciones conectados exitosamente
+INFO 2025-09-04 17:09:17,397 signals 6348 11052 Signals de notificaciones conectados exitosamente
+INFO 2025-09-04 17:09:17,419 autoreload 6348 11052 Watching for file changes with StatReloader
+INFO 2025-09-04 17:09:21,620 basehttp 6348 8092 "GET / HTTP/1.1" 200 15327
