@@ -66,12 +66,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',  # Solo en desarrollo
     
-    # ✅ MIDDLEWARES PERSONALIZADOS DESHABILITADOS TEMPORALMENTE PARA AISLAR PROBLEMA
-    # 'core.middleware.TrafficMonitoringMiddleware',
-    # 'core.middleware.SecurityMiddleware',
-    # 'core.middleware.PerformanceMiddleware',
-    # 'core.middleware.LoggingMiddleware',
-    # 'core.middleware.DatabaseQueryMiddleware',
+    # ✅ MIDDLEWARES PERSONALIZADOS ACTIVADOS PARA OPTIMIZACIÓN
+    'core.middleware.PerformanceMiddleware',  # Cache headers y compresión
+    # 'core.middleware.TrafficMonitoringMiddleware',  # Opcional
+    # 'core.middleware.SecurityMiddleware',  # Opcional
+    # 'core.middleware.LoggingMiddleware',  # Opcional
+    # 'core.middleware.DatabaseQueryMiddleware',  # Opcional
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -252,11 +252,25 @@ LOGGING = {
     },
 }
 
-# Cache - Configuración simple para desarrollo local
+# Cache - Configuración optimizada para desarrollo local
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,  # 5 minutos
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+            'CULL_FREQUENCY': 3,
+        }
+    },
+    # Cache específico para consultas pesadas
+    'database': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'database-cache',
+        'TIMEOUT': 600,  # 10 minutos
+        'OPTIONS': {
+            'MAX_ENTRIES': 500,
+        }
     }
 }
 

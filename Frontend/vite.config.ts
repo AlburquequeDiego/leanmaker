@@ -22,4 +22,42 @@ export default defineConfig({
       }
     }
   },
+  // 🚀 OPTIMIZACIONES DE BUILD PARA PRODUCCIÓN
+  build: {
+    // Code splitting automático
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separar vendor libraries
+          vendor: ['react', 'react-dom'],
+          mui: ['@mui/material', '@mui/icons-material'],
+          router: ['react-router-dom'],
+          charts: ['recharts'],
+        }
+      }
+    },
+    // Optimizaciones de tamaño
+    chunkSizeWarningLimit: 1000,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+  },
+  // 🚀 OPTIMIZACIONES DE DESARROLLO
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@mui/material',
+      '@mui/icons-material',
+      'react-router-dom',
+      'axios',
+      'recharts'
+    ],
+  },
+  // Cache para desarrollo
+  cacheDir: 'node_modules/.vite',
 })

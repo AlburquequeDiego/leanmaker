@@ -1,9 +1,29 @@
 import { authService } from './auth.service';
 import { API_BASE_URL } from '../config/api.config';
 import { adaptUser, adaptProject, adaptApplication, adaptStudent, adaptCompany, adaptNotification, adaptDashboardStats, adaptEvaluation } from '../utils/adapters';
+import { withCache, cacheService } from './cache.service';
 
 class ApiService {
   private async request<T>(
+    endpoint: string,
+    options: RequestInit = {},
+    useCache: boolean = false,
+    cacheKey?: string,
+    cacheTtl?: number
+  ): Promise<T> {
+    // Si se solicita cache y es una petición GET, usar cache
+    if (useCache && (!options.method || options.method === 'GET') && cacheKey) {
+      return withCache(
+        cacheKey,
+        () => this.makeRequest<T>(endpoint, options),
+        cacheTtl
+      );
+    }
+
+    return this.makeRequest<T>(endpoint, options);
+  }
+
+  private async makeRequest<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
@@ -533,8 +553,49 @@ class ApiService {
     return this.get('/api/evaluations/student-completed-evaluations/');
   }
 
-  async getProjectDetails(projectId: string) {
-    return this.get(`/api/projects/${projectId}/`);
+  // 🚀 MÉTODOS OPTIMIZADOS CON CACHE
+  async getDashboardStats(role: string): Promise<any> {
+    const endpoint = `/api/dashboard/${role}_stats/`;
+    const cacheKey = cacheService.generateKey(`dashboard_${role}_stats`);
+    return this.request(endpoint, {}, true, cacheKey, 5 * 60 * 1000); // Cache 5 minutos
+  }
+
+  async getProjectsList(params?: any): Promise<any> {
+    const endpoint = '/api/projects/';
+    const cacheKey = cacheService.generateKey('projects_list', params);
+    return this.request(endpoint, {}, true, cacheKey, 10 * 60 * 1000); // Cache 10 minutos
+  }
+
+  async getStudentsList(params?: any): Promise<any> {
+    const endpoint = '/api/students/';
+    const cacheKey = cacheService.generateKey('students_list', params);
+    return this.request(endpoint, {}, true, cacheKey, 10 * 60 * 1000); // Cache 10 minutos
+  }
+
+  async getCompaniesList(params?: any): Promise<any> {
+    const endpoint = '/api/companies/';
+    const cacheKey = cacheService.generateKey('companies_list', params);
+    return this.request(endpoint, {}, true, cacheKey, 10 * 60 * 1000); // Cache 10 minutos
+  }
+
+  async getAreasList(): Promise<any> {
+    const endpoint = '/api/areas/';
+    const cacheKey = cacheService.generateKey('areas_list');
+    return this.request(endpoint, {}, true, cacheKey, 30 * 60 * 1000); // Cache 30 minutos (datos estáticos)
+  }
+
+  // Método para invalidar cache cuando sea necesario
+  invalidateCache(pattern?: string): void {
+    if (pattern) {
+      const stats = cacheService.getStats();
+      stats.keys.forEach(key => {
+        if (key.includes(pattern)) {
+          cacheService.delete(key);
+        }
+      });
+    } else {
+      cacheService.clear();
+    }
   }
 
   async getStudentProfileDetails(studentId: string) {
