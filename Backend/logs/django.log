@@ -34184,3 +34184,8 @@ INFO 2025-09-09 18:52:25,031 signals 7816 28004 Signals de notificaciones conect
 INFO 2025-09-09 18:52:38,715 signals 23048 3612 Signals de notificaciones conectados exitosamente
 INFO 2025-09-09 18:52:39,481 signals 268 23564 Signals de notificaciones conectados exitosamente
 INFO 2025-09-09 18:52:39,499 autoreload 268 23564 Watching for file changes with StatReloader
+INFO 2025-09-09 18:52:42,300 basehttp 268 15416 "GET / HTTP/1.1" 200 15325
+INFO 2025-09-09 18:57:28,180 basehttp 268 17096 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 18:57:28,740 basehttp 268 29476 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:57:29,576 basehttp 268 8752 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:57:30,113 basehttp 268 14388 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
