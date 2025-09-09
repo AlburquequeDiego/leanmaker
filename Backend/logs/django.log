@@ -34176,3 +34176,11 @@ INFO 2025-09-09 18:29:10,070 basehttp 9572 8560 "GET /api/dashboard/teacher_stat
 INFO 2025-09-09 18:30:43,321 basehttp 9572 6944 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 18:32:10,488 basehttp 9572 1180 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 18:33:40,078 basehttp 9572 27240 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:51:17,980 signals 24116 12616 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:51:19,946 signals 21528 29132 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:51:19,984 autoreload 21528 29132 Watching for file changes with StatReloader
+INFO 2025-09-09 18:52:17,046 signals 27540 24012 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:52:25,031 signals 7816 28004 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:52:38,715 signals 23048 3612 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:52:39,481 signals 268 23564 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:52:39,499 autoreload 268 23564 Watching for file changes with StatReloader
