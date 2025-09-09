@@ -44,7 +44,6 @@ urlpatterns = [
     path('api/areas/', include('areas.urls')),
     path('project-status/', include('project_status.urls')),
     path('assignments/', include('assignments.urls')),
-    path('api/teachers/', include('teachers.urls')),  # URLs específicas del docente
 
     # path('ratings/', include('ratings.urls')),  # ELIMINADO - Sistema duplicado
     path('api/mass-notifications/', include('mass_notifications.urls')),

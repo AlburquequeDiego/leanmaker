@@ -1823,119 +1823,6 @@ def api_dashboard_admin_stats(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def api_dashboard_teacher_stats(request):
-    """API endpoint para estadísticas del dashboard de docente."""
-    import traceback
-    try:
-        print("🎓 [TEACHER DASHBOARD] Iniciando consulta de estadísticas...")
-        
-        # Verificar token de autenticación
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            print("❌ [TEACHER DASHBOARD] Token de autenticación requerido")
-            return JsonResponse({
-                'error': 'Token de autenticación requerido'
-            }, status=401)
-        
-        token = auth_header.split(' ')[1]
-        user = verify_token(token)
-        
-        if not user:
-            print("❌ [TEACHER DASHBOARD] Token inválido")
-            return JsonResponse({
-                'error': 'Token inválido'
-            }, status=401)
-        
-        if user.role != 'teacher':
-            print(f"❌ [TEACHER DASHBOARD] Usuario no es docente: {user.role}")
-            return JsonResponse({
-                'error': 'Acceso denegado: solo docentes pueden acceder'
-            }, status=403)
-        
-        print(f"✅ [TEACHER DASHBOARD] Usuario autenticado: {user.email}")
-        
-        # Importar modelos necesarios
-        from users.models import User
-        from projects.models import Proyecto
-        from students.models import Estudiante
-        from applications.models import Aplicacion
-        from evaluations.models import Evaluation
-        from teachers.models import TeacherStudent, TeacherProject, TeacherEvaluation, TeacherReport, TeacherSchedule
-        
-        # Obtener estadísticas específicas del docente usando las nuevas tablas
-        try:
-            # Estudiantes supervisados por este docente
-            supervised_students = TeacherStudent.objects.filter(teacher=user, status='active').count()
-            print(f"🎓 [TEACHER DASHBOARD] Estudiantes supervisados: {supervised_students}")
-        except Exception as e:
-            print(f"⚠️ [TEACHER DASHBOARD] Error obteniendo estudiantes supervisados: {str(e)}")
-            supervised_students = 0
-        
-        try:
-            # Proyectos supervisados por este docente
-            supervised_projects = TeacherProject.objects.filter(teacher=user).count()
-            print(f"🎓 [TEACHER DASHBOARD] Proyectos supervisados: {supervised_projects}")
-        except Exception as e:
-            print(f"⚠️ [TEACHER DASHBOARD] Error obteniendo proyectos supervisados: {str(e)}")
-            supervised_projects = 0
-        
-        # Obtener evaluaciones específicas del docente
-        try:
-            completed_evaluations = TeacherEvaluation.objects.filter(teacher=user, status='completed').count()
-            pending_evaluations = TeacherEvaluation.objects.filter(teacher=user, status='draft').count()
-            print(f"🎓 [TEACHER DASHBOARD] Evaluaciones completadas: {completed_evaluations}, pendientes: {pending_evaluations}")
-        except Exception as e:
-            print(f"⚠️ [TEACHER DASHBOARD] Error obteniendo evaluaciones: {str(e)}")
-            # Usar valores por defecto si no hay evaluaciones
-            completed_evaluations = 0
-            pending_evaluations = 0
-        
-        # Calcular horas supervisadas específicas del docente
-        total_hours_supervised = 0
-        try:
-            from django.db.models import Sum
-            result = TeacherStudent.objects.filter(teacher=user).aggregate(
-                total=Sum('total_hours_supervised')
-            )
-            total_hours_supervised = float(result['total'] or 0)
-            print(f"🎓 [TEACHER DASHBOARD] Horas supervisadas: {total_hours_supervised}")
-        except Exception as e:
-            print(f"⚠️ [TEACHER DASHBOARD] Error obteniendo horas supervisadas: {str(e)}")
-            total_hours_supervised = 0
-        
-        # Obtener notificaciones pendientes (placeholder)
-        notifications = 0  # Aquí se implementaría la lógica de notificaciones
-        
-        # Preparar respuesta con datos específicos del docente
-        response_data = {
-            'total_students': supervised_students,
-            'active_projects': supervised_projects,
-            'completed_evaluations': completed_evaluations,
-            'pending_evaluations': pending_evaluations,
-            'total_hours_supervised': float(total_hours_supervised),
-            'notifications': notifications,
-            'teacher_info': {
-                'id': str(user.id),
-                'email': user.email,
-                'full_name': user.full_name,
-                'department': user.department or 'No especificado',
-                'position': user.position or 'Docente'
-            }
-        }
-        
-        print(f"✅ [TEACHER DASHBOARD] Datos preparados: {response_data}")
-        return JsonResponse(response_data)
-        
-    except Exception as e:
-        print(f"❌ [TEACHER DASHBOARD] Error: {str(e)}")
-        print(f"❌ [TEACHER DASHBOARD] Traceback: {traceback.format_exc()}")
-        return JsonResponse({
-            'error': str(e),
-            'traceback': traceback.format_exc()
-        }, status=500)
-
-@csrf_exempt
-@require_http_methods(["GET"])
 def api_test_admin_stats(request):
     """Endpoint de prueba para verificar estadísticas del admin sin autenticación."""
     try:
@@ -3420,8 +3307,91 @@ def api_check_company_email(request):
             'exists': exists,
             'company_email': company_email
         })
-        
+    
     except Exception as e:
         return JsonResponse({
             'error': str(e)
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_dashboard_teacher_stats(request):
+    """API endpoint para estadísticas del dashboard del profesor."""
+    import traceback
+    try:
+        print("🔍 [TEACHER DASHBOARD] Iniciando consulta de estadísticas...")
+        
+        # Verificar token de autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            print("❌ [TEACHER DASHBOARD] Token de autenticación requerido")
+            return JsonResponse({
+                'error': 'Token de autenticación requerido'
+            }, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user:
+            print("❌ [TEACHER DASHBOARD] Token inválido")
+            return JsonResponse({
+                'error': 'Token inválido'
+            }, status=401)
+        
+        if user.role != 'teacher':
+            print(f"❌ [TEACHER DASHBOARD] Acceso denegado para rol: {user.role}")
+            return JsonResponse({
+                'error': 'Acceso denegado. Solo profesores pueden acceder a este endpoint.'
+            }, status=403)
+        
+        print(f"✅ [TEACHER DASHBOARD] Usuario autenticado: {user.email} (rol: {user.role})")
+        
+        # Importar modelos necesarios
+        from teachers.models import TeacherStudent, TeacherProject, TeacherEvaluation, TeacherReport, TeacherSchedule
+        from django.db import models
+        
+        # Obtener estadísticas del profesor
+        print("📊 [TEACHER DASHBOARD] Consultando estadísticas del profesor...")
+        
+        total_students = TeacherStudent.objects.filter(teacher=user).count()
+        print(f"👥 [TEACHER DASHBOARD] Total estudiantes supervisados: {total_students}")
+        
+        active_projects = TeacherProject.objects.filter(teacher=user).count()
+        print(f"💼 [TEACHER DASHBOARD] Total proyectos supervisados: {active_projects}")
+        
+        completed_evaluations = TeacherEvaluation.objects.filter(teacher=user, status='completed').count()
+        print(f"📝 [TEACHER DASHBOARD] Evaluaciones completadas: {completed_evaluations}")
+        
+        pending_evaluations = TeacherEvaluation.objects.filter(teacher=user, status='pending').count()
+        print(f"⏳ [TEACHER DASHBOARD] Evaluaciones pendientes: {pending_evaluations}")
+        
+        total_hours_supervised = TeacherStudent.objects.filter(teacher=user).aggregate(
+            total=models.Sum('total_hours_supervised')
+        )['total'] or 0
+        print(f"⏱️ [TEACHER DASHBOARD] Total horas supervisadas: {total_hours_supervised}")
+        
+        notifications = 0  # Placeholder para notificaciones
+        print(f"🔔 [TEACHER DASHBOARD] Notificaciones: {notifications}")
+        
+        # Preparar respuesta
+        response_data = {
+            'total_students': total_students,
+            'active_projects': active_projects,
+            'completed_evaluations': completed_evaluations,
+            'pending_evaluations': pending_evaluations,
+            'total_hours_supervised': float(total_hours_supervised),
+            'notifications': notifications,
+            'student_distribution': [],  # Placeholder para distribución de estudiantes
+            'monthly_activity': []  # Placeholder para actividad mensual
+        }
+        
+        print(f"✅ [TEACHER DASHBOARD] Datos preparados: {response_data}")
+        return JsonResponse(response_data)
+        
+    except Exception as e:
+        print(f"❌ [TEACHER DASHBOARD] Error: {str(e)}")
+        print(f"❌ [TEACHER DASHBOARD] Traceback: {traceback.format_exc()}")
+        return JsonResponse({
+            'error': str(e),
+            'traceback': traceback.format_exc()
         }, status=500)

@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'areas',
     'project_status',
     'assignments',
-    'teachers',  # Nueva app para funcionalidades del docente
+    'teachers',  # Nueva app para funcionalidades del profesor
 
     # 'ratings',  # ELIMINADO - Sistema duplicado
     'mass_notifications',

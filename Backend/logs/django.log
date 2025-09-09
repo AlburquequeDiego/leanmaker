@@ -34078,3 +34078,99 @@ INFO 2025-09-09 18:08:59,737 basehttp 22620 14912 "GET /api/dashboard/teacher_st
 INFO 2025-09-09 18:08:59,771 basehttp 22620 19680 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
 INFO 2025-09-09 18:09:01,184 basehttp 22620 13004 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
 INFO 2025-09-09 18:09:01,230 basehttp 22620 14080 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:10:02,065 basehttp 22620 20736 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:11:32,081 basehttp 22620 20516 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:12:03,983 autoreload 22620 21036 D:\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-09 18:12:06,048 signals 25808 2596 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:12:06,079 autoreload 25808 2596 Watching for file changes with StatReloader
+INFO 2025-09-09 18:17:40,358 signals 25276 9440 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:17:41,141 signals 27264 4000 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:17:41,159 autoreload 27264 4000 Watching for file changes with StatReloader
+INFO 2025-09-09 18:17:45,247 basehttp 27264 10328 "GET / HTTP/1.1" 200 15325
+INFO 2025-09-09 18:18:15,562 basehttp 27264 5516 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 18:18:15,651 basehttp 27264 22432 "GET /api/users/profile/ HTTP/1.1" 200 703
+WARNING 2025-09-09 18:18:16,097 log 27264 22728 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:16,098 basehttp 27264 22728 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18273
+WARNING 2025-09-09 18:18:16,143 log 27264 6528 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:16,144 basehttp 27264 6528 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18273
+INFO 2025-09-09 18:18:27,393 basehttp 27264 21620 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:18:27,438 basehttp 27264 4788 "GET /api/users/profile/ HTTP/1.1" 200 703
+WARNING 2025-09-09 18:18:28,484 log 27264 18768 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:28,485 basehttp 27264 18768 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:28,530 log 27264 25540 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:28,531 basehttp 27264 25540 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:31,880 log 27264 25628 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:31,881 basehttp 27264 25628 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:31,927 log 27264 26332 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:31,928 basehttp 27264 26332 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+INFO 2025-09-09 18:18:34,051 basehttp 27264 10328 "GET / HTTP/1.1" 200 15324
+WARNING 2025-09-09 18:18:34,415 log 27264 20932 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:34,416 basehttp 27264 20932 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:34,463 log 27264 18516 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:34,464 basehttp 27264 18516 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+INFO 2025-09-09 18:18:34,767 basehttp 27264 10328 "GET / HTTP/1.1" 200 15324
+INFO 2025-09-09 18:18:35,232 basehttp 27264 10328 "GET / HTTP/1.1" 200 15324
+INFO 2025-09-09 18:18:35,476 basehttp 27264 10328 "GET / HTTP/1.1" 200 15324
+INFO 2025-09-09 18:18:35,675 basehttp 27264 10328 "GET / HTTP/1.1" 200 15324
+WARNING 2025-09-09 18:18:40,702 log 27264 3636 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:40,703 basehttp 27264 3636 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:41,367 log 27264 10116 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:41,368 basehttp 27264 10116 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:41,747 log 27264 26012 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:41,748 basehttp 27264 26012 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:42,148 log 27264 18404 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:42,149 basehttp 27264 18404 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:18:42,460 log 27264 24464 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:18:42,461 basehttp 27264 24464 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:19:05,063 log 27264 16248 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:19:05,064 basehttp 27264 16248 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:19:35,127 log 27264 23952 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:19:35,129 basehttp 27264 23952 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:19:40,294 log 27264 6812 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:19:40,295 basehttp 27264 6812 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+WARNING 2025-09-09 18:20:05,097 log 27264 13868 Not Found: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:20:05,098 basehttp 27264 13868 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 404 18272
+INFO 2025-09-09 18:20:08,917 autoreload 27264 4000 D:\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 18:20:10,022 signals 14740 13740 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:20:10,044 autoreload 14740 13740 Watching for file changes with StatReloader
+INFO 2025-09-09 18:22:32,984 autoreload 14740 13740 D:\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 18:22:36,397 signals 5612 19256 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:22:36,456 autoreload 5612 19256 Watching for file changes with StatReloader
+INFO 2025-09-09 18:23:26,923 autoreload 5612 19256 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 18:23:28,366 signals 24044 20660 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:23:28,383 autoreload 24044 20660 Watching for file changes with StatReloader
+WARNING 2025-09-09 18:23:44,598 log 24044 19520 Unauthorized: /api/dashboard/teacher_stats/
+WARNING 2025-09-09 18:23:44,599 basehttp 24044 19520 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 401 32
+ERROR 2025-09-09 18:24:07,677 log 24044 22980 Internal Server Error: /api/dashboard/teacher_stats/
+ERROR 2025-09-09 18:24:07,678 basehttp 24044 22980 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 500 901
+INFO 2025-09-09 18:24:22,807 autoreload 24044 20660 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 18:24:24,284 signals 22632 16248 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:24:24,329 autoreload 22632 16248 Watching for file changes with StatReloader
+ERROR 2025-09-09 18:24:28,977 log 22632 12176 Internal Server Error: /api/dashboard/teacher_stats/
+ERROR 2025-09-09 18:24:28,977 basehttp 22632 12176 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 500 901
+ERROR 2025-09-09 18:24:28,986 log 22632 19880 Internal Server Error: /api/dashboard/teacher_stats/
+ERROR 2025-09-09 18:24:28,987 basehttp 22632 19880 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 500 901
+ERROR 2025-09-09 18:25:00,029 log 22632 27108 Internal Server Error: /api/dashboard/teacher_stats/
+ERROR 2025-09-09 18:25:00,030 basehttp 22632 27108 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 500 901
+INFO 2025-09-09 18:25:12,677 autoreload 22632 16248 D:\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-09 18:25:14,500 signals 15232 4872 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:25:14,519 autoreload 15232 4872 Watching for file changes with StatReloader
+INFO 2025-09-09 18:25:30,567 basehttp 15232 11340 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:27:13,277 signals 28572 12824 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:27:14,981 signals 28836 3360 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:27:15,013 autoreload 28836 3360 Watching for file changes with StatReloader
+INFO 2025-09-09 18:27:27,284 signals 27448 27032 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:27:28,970 signals 21740 29664 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:27:29,002 autoreload 21740 29664 Watching for file changes with StatReloader
+INFO 2025-09-09 18:27:31,570 signals 24996 13824 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:27:43,027 signals 8156 25108 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:27:44,721 signals 27016 3684 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:27:44,757 autoreload 27016 3684 Watching for file changes with StatReloader
+INFO 2025-09-09 18:28:00,059 basehttp 21740 18660 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:28:05,489 autoreload 21740 29664 D:\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-09 18:28:07,238 signals 9572 2216 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:28:07,265 autoreload 9572 2216 Watching for file changes with StatReloader
+INFO 2025-09-09 18:28:09,733 basehttp 9572 15216 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:28:09,767 basehttp 9572 3864 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:29:10,070 basehttp 9572 8560 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:30:43,321 basehttp 9572 6944 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
