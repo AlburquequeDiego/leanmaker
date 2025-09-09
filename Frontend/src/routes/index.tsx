@@ -36,6 +36,7 @@ import GestionProyectosAdmin from '../pages/Dashboard/Admin/GestionProyectosAdmi
 import GestionEvaluacionesAdmin from '../pages/Dashboard/Admin/GestionEvaluacionesAdmin';
 import ReportesYAnalytics from '../pages/Dashboard/Admin/Reportes y Analytics/Reportes y Analytics';
 import APIRequestsAdmin from '../pages/Dashboard/Admin/APIRequestsAdmin';
+import { LazyTeacherDashboard, LazyTeacherStudents, LazyTeacherProjects, LazyTeacherEvaluations, LazyTeacherCalendar, LazyTeacherReports, LazyTeacherProfile, LazyTeacherNotifications } from '../pages/Dashboard/Teacher/lazyRoutes';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -67,6 +68,8 @@ const RoleBasedDashboard = () => {
       return <Navigate to="/dashboard/company" replace />;
     case 'student':
       return <Navigate to="/dashboard/student" replace />;
+    case 'teacher':
+      return <Navigate to="/dashboard/teacher" replace />;
     default:
       return <Navigate to="/login" replace />;
   }
@@ -168,6 +171,26 @@ export const AppRoutes = () => {
           <Route path="api-questionnaire" element={<APIQuestionnaire />} />
           <Route path="api-results" element={<APIResults />} />
         </Route>
+
+        {/* Rutas del docente */}
+        <Route
+          path="/dashboard/teacher"
+          element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <DashboardLayout userRole="teacher" />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<LazyTeacherDashboard />} />
+          <Route path="profile" element={<LazyTeacherProfile />} />
+          <Route path="notifications" element={<LazyTeacherNotifications />} />
+          <Route path="students" element={<LazyTeacherStudents />} />
+          <Route path="projects" element={<LazyTeacherProjects />} />
+          <Route path="evaluations" element={<LazyTeacherEvaluations />} />
+          <Route path="calendar" element={<LazyTeacherCalendar />} />
+          <Route path="reports" element={<LazyTeacherReports />} />
+        </Route>
+
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

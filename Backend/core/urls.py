@@ -44,6 +44,7 @@ urlpatterns = [
     path('api/areas/', include('areas.urls')),
     path('project-status/', include('project_status.urls')),
     path('assignments/', include('assignments.urls')),
+    path('api/teachers/', include('teachers.urls')),  # URLs específicas del docente
 
     # path('ratings/', include('ratings.urls')),  # ELIMINADO - Sistema duplicado
     path('api/mass-notifications/', include('mass_notifications.urls')),
@@ -56,7 +57,8 @@ urlpatterns = [
         path('dashboard/student_stats/', views.api_dashboard_student_stats, name='api_dashboard_student_stats'),
         path('dashboard/company_stats/', views.api_dashboard_company_stats, name='api_dashboard_company_stats'),
         path('dashboard/admin_stats/', views.api_dashboard_admin_stats, name='api_dashboard_admin_stats'),
-    path('hub/analytics/', views.api_hub_analytics_data, name='api_hub_analytics_data'),
+        path('dashboard/teacher_stats/', views.api_dashboard_teacher_stats, name='api_dashboard_teacher_stats'),
+        path('hub/analytics/', views.api_hub_analytics_data, name='api_hub_analytics_data'),
         path('users/profile/', views.api_user_profile, name='api_user_profile'),
         path('users/change-password/', views.api_change_password, name='api_change_password'),
         path('token/', views.api_login, name='api_login'),

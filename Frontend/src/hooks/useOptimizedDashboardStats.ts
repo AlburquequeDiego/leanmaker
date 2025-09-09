@@ -34,7 +34,7 @@ interface UseOptimizedDashboardStatsReturn {
  * - Manejo inteligente de errores
  */
 export const useOptimizedDashboardStats = (
-  userType: 'student' | 'company' | 'admin',
+  userType: 'student' | 'company' | 'admin' | 'teacher',
   options: {
     pollingInterval?: number;
     enablePolling?: boolean;
@@ -54,7 +54,7 @@ export const useOptimizedDashboardStats = (
   const [isPolling, setIsPolling] = useState(false);
 
   const cacheRef = useRef<{ data: DashboardStats; timestamp: number } | null>(null);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingRef = useRef<number | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const endpoint = `/api/dashboard/${userType}_stats/`;
@@ -85,9 +85,7 @@ export const useOptimizedDashboardStats = (
 
       console.log(`[useOptimizedDashboardStats] 🔍 Fetching ${userType} stats...`);
       
-      const response = await apiService.get(endpoint, {
-        signal: abortControllerRef.current.signal
-      });
+      const response = await apiService.get(endpoint);
 
       const statsData = (response as any).data || response;
       

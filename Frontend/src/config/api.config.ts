@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
   DASHBOARD_COMPANY_STATS: '/api/dashboard/company_stats/',
   DASHBOARD_STUDENT_STATS: '/api/dashboard/student_stats/',
   DASHBOARD_ADMIN_STATS: '/api/dashboard/admin_stats/',
+  DASHBOARD_TEACHER_STATS: '/api/dashboard/teacher_stats/',
   
   // Students (endpoints reales del backend)
   STUDENTS: '/api/students/',

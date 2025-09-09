@@ -1,5 +1,5 @@
 // Tipos de usuario - Coinciden con el modelo Usuario del backend
-export type UserRole = 'admin' | 'student' | 'company';
+export type UserRole = 'admin' | 'student' | 'company' | 'teacher';
 
 export interface User {
   id: string;
@@ -640,87 +640,133 @@ export const UNIVERSITIES = [
 
 export type University = typeof UNIVERSITIES[number]; 
 
-// Tipos para el sistema de perfiles de estudiantes
-export interface Student {
-  id: string;
-  user_id: string;
-  name: string;
-  email: string;
-  university: string;
-  career: string;
-  semester?: number;
-  api_level: number;
-  gpa?: number;
-  skills: string[];
-  experience_years: number;
-  availability: string;
-  bio: string;
-  phone: string;
-  location: string;
-  area: string;
-  portfolio_url: string;
-  github_url: string;
-  linkedin_url: string;
-  cv_link: string;
-  certificado_link: string;
-  education_level: string;
-  hours_per_week: number;
-  birthdate?: string;
-  gender: string;
-  department: string;
-  position: string;
-  company_name: string;
-  status: string;
-  strikes: number;
-  completed_projects: number;
-  total_hours: number;
-  created_at: string;
-  updated_at: string;
-  applications: Application[];
-}
-
-export interface Application {
-  id: string;
-  project_title: string;
-  project_id: string;
-  status: string;
-  applied_at: string;
-  cover_letter: string;
-}
-
-export interface StudentProfileResponse {
-  student: Student;
-  user_data: {
-    full_name: string;
-    email: string;
-    phone?: string;
-    bio?: string;
-    first_name: string;
-    last_name: string;
-    birthdate?: string;
-    gender?: string;
-  };
-  perfil_detallado?: {
-    fecha_nacimiento?: string;
-    genero?: string;
-    telefono?: string;
-    nacionalidad?: string;
-    universidad?: string;
-    facultad?: string;
-    promedio_historico?: number;
-    experiencia_laboral?: string;
-    certificaciones?: string[];
-    proyectos_personales?: string[];
-    tecnologias_preferidas?: string[];
-    industrias_interes?: string[];
-    tipo_proyectos_preferidos?: string[];
-    telefono_emergencia?: string;
-    contacto_emergencia?: string;
-  };
-}
 
 export interface CompanyStudentsResponse {
   results: Student[];
   count: number;
   message: string;
+}
+
+// Tipos específicos para el profesor
+export interface TeacherStudent {
+  id: string;
+  student: {
+    id: string;
+    name: string;
+    email: string;
+    career?: string;
+    semester?: number;
+  };
+  supervision_type: 'thesis' | 'internship' | 'project' | 'course' | 'mentoring';
+  status: 'active' | 'completed' | 'suspended' | 'transferred';
+  start_date: string;
+  end_date?: string;
+  expected_completion_date?: string;
+  total_hours_supervised: number;
+  meetings_count: number;
+  evaluations_count: number;
+  progress_percentage: number;
+  notes?: string;
+  objectives?: string;
+}
+
+export interface TeacherProject {
+  id: string;
+  project: {
+    id: string;
+    title: string;
+    description: string;
+    company: string;
+    area?: string;
+    status?: string;
+  };
+  role: string;
+  current_phase: string;
+  assigned_date: string;
+  last_review_date?: string;
+  next_review_date?: string;
+  review_count: number;
+  feedback_count: number;
+  hours_supervised: number;
+  supervision_notes?: string;
+  evaluation_criteria: string[];
+}
+
+export interface TeacherEvaluation {
+  id: string;
+  student: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  project: {
+    id: string;
+    title: string;
+  };
+  evaluation_type: string;
+  status: string;
+  scores: {
+    technical_skills: number;
+    communication: number;
+    problem_solving: number;
+    teamwork: number;
+    punctuality: number;
+    overall_score: number;
+  };
+  comments: {
+    strengths: string;
+    areas_for_improvement: string;
+    general_comments: string;
+    recommendations: string;
+  };
+  evaluation_date: string;
+  due_date?: string;
+  completed_date?: string;
+}
+
+export interface TeacherReport {
+  id: string;
+  title: string;
+  report_type: string;
+  status: string;
+  summary: string;
+  date_from?: string;
+  date_to?: string;
+  generated_date: string;
+  published_date?: string;
+  file_path?: string;
+  parameters: Record<string, any>;
+}
+
+export interface TeacherSchedule {
+  id: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+  activity_type: string;
+  title: string;
+  description?: string;
+  location?: string;
+  is_recurring: boolean;
+  specific_date?: string;
+  duration_hours: number;
+}
+
+export interface TeacherDashboardStats {
+  total_students: number;
+  active_projects: number;
+  completed_evaluations: number;
+  pending_evaluations: number;
+  total_hours_supervised: number;
+  notifications: number;
+  student_distribution?: Array<{
+    name: string;
+    value: number;
+    color?: string;
+  }>;
+  monthly_activity?: Array<{
+    month: string;
+    students: number;
+    evaluations: number;
+  }>;
 } 

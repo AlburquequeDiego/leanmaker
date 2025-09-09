@@ -52,7 +52,7 @@ const drawerWidth = 280;
 const collapsedDrawerWidth = 70;
 
 interface DashboardLayoutProps {
-  userRole: 'admin' | 'company' | 'student';
+  userRole: 'admin' | 'company' | 'student' | 'teacher';
 }
 
 export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
@@ -117,6 +117,11 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/student/profile' },
         { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/student/notifications' },
       ],
+      teacher: [
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/teacher' },
+        { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/teacher/profile' },
+        { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/teacher/notifications' },
+      ],
     };
 
     const roleSpecificItems = {
@@ -146,6 +151,13 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/student/calendar' },
         { text: 'Cuestionario API', icon: <QuizIcon />, path: '/dashboard/student/api-questionnaire' },
         { text: 'Resultados API', icon: <AssessmentIcon />, path: '/dashboard/student/api-results' },
+      ],
+      teacher: [
+        { text: 'Mis Estudiantes', icon: <SchoolIcon />, path: '/dashboard/teacher/students' },
+        { text: 'Proyectos Asignados', icon: <AssignmentIcon />, path: '/dashboard/teacher/projects' },
+        { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/teacher/evaluations' },
+        { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/teacher/calendar' },
+        { text: 'Reportes', icon: <AnalyticsIcon />, path: '/dashboard/teacher/reports' },
       ],
     };
 
@@ -205,7 +217,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
           } else {
             // Para otros elementos, verificar si la ruta actual comienza con el path del item
             // pero solo si no es el dashboard
-            selected = location.pathname.startsWith(item.path) && item.path !== '/dashboard/admin' && item.path !== '/dashboard/company' && item.path !== '/dashboard/student';
+            selected = location.pathname.startsWith(item.path) && item.path !== '/dashboard/admin' && item.path !== '/dashboard/company' && item.path !== '/dashboard/student' && item.path !== '/dashboard/teacher';
           }
           
           return (
@@ -290,7 +302,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       if (item.text === 'Dashboard') {
         return false;
       }
-      return path.startsWith(item.path) && item.path !== '/dashboard/admin' && item.path !== '/dashboard/company' && item.path !== '/dashboard/student';
+      return path.startsWith(item.path) && item.path !== '/dashboard/admin' && item.path !== '/dashboard/company' && item.path !== '/dashboard/student' && item.path !== '/dashboard/teacher';
     });
     
     return partialMatch ? partialMatch.text : '';
@@ -377,7 +389,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
               },
             }}
           >
-            <MenuItem onClick={() => navigate(`/dashboard/${userRole === 'admin' ? 'admin/perfil' : userRole === 'student' ? 'student/profile' : 'company/profile'}`)}>
+            <MenuItem onClick={() => navigate(`/dashboard/${userRole === 'admin' ? 'admin/perfil' : userRole === 'student' ? 'student/profile' : userRole === 'teacher' ? 'teacher/profile' : 'company/profile'}`)}>
               <ListItemIcon>
                 <AccountCircleIcon fontSize="small" />
               </ListItemIcon>

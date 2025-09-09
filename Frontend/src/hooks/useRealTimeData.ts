@@ -131,11 +131,12 @@ export const useRealTimeData = <T = any>({
 };
 
 // Hook específico para estadísticas del dashboard
-export const useDashboardStats = (userRole: 'student' | 'company' | 'admin') => {
+export const useDashboardStats = (userRole: 'student' | 'company' | 'admin' | 'teacher') => {
   let endpoint = '';
   if (userRole === 'student') endpoint = API_ENDPOINTS.DASHBOARD_STUDENT_STATS;
   else if (userRole === 'company') endpoint = API_ENDPOINTS.DASHBOARD_COMPANY_STATS;
   else if (userRole === 'admin') endpoint = API_ENDPOINTS.DASHBOARD_ADMIN_STATS;
+  else if (userRole === 'teacher') endpoint = API_ENDPOINTS.DASHBOARD_TEACHER_STATS;
   
   return useRealTimeData({
     endpoint,

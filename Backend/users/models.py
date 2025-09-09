@@ -54,6 +54,7 @@ class User(AbstractUser):
         ('admin', 'Administrador'),
         ('student', 'Estudiante'),
         ('company', 'Empresa'),
+        ('teacher', 'Docente'),
     )
     
     # Override id to use UUID
@@ -124,7 +125,12 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         """Check if user is an admin."""
-        return self.role == 'admin' 
+        return self.role == 'admin'
+    
+    @property
+    def is_teacher(self):
+        """Check if user is a teacher."""
+        return self.role == 'teacher'
     
     @property
     def company_profile(self):

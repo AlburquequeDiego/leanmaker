@@ -67,7 +67,14 @@ class AuthService {
 
   async getCurrentUser(): Promise<User | null> {
     try {
-      // Get user from API endpoint
+      // Primero intentar obtener el usuario del localStorage
+      const storedUser = this.getUser();
+      if (storedUser) {
+        return storedUser;
+      }
+      
+      // Si no hay usuario almacenado, obtenerlo del API
+      console.log('Obteniendo usuario del API...');
       const user = await apiService.get<User>(API_ENDPOINTS.USER_PROFILE);
       // Update stored user data
       localStorage.setItem('user', JSON.stringify(user));
@@ -138,19 +145,22 @@ class AuthService {
       return false;
     }
     
+    // Verificar si el token está expirado sin hacer request al backend
     try {
-      // Verificar que el token sea válido
-      const isValid = await this.verifyToken(token);
-      if (!isValid) {
-        // Si el token no es válido, limpiar localStorage
-        this.logout();
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Date.now() / 1000;
+      
+      // Si el token expira en menos de 5 minutos, considerarlo como expirado
+      if (payload.exp < now + 300) {
+        console.log('Token expirado o próximo a expirar, limpiando...');
+        this.clearLocalStorage();
         return false;
       }
+      
       return true;
     } catch (error) {
-      console.error('Error verifying token:', error);
-      // Si hay error al verificar, limpiar localStorage
-      this.logout();
+      console.error('Error parsing token:', error);
+      this.clearLocalStorage();
       return false;
     }
   }
@@ -187,6 +197,11 @@ class AuthService {
   // Helper method to check if user is company
   isCompany(): boolean {
     return this.hasRole('company');
+  }
+
+  // Helper method to check if user is teacher
+  isTeacher(): boolean {
+    return this.hasRole('teacher');
   }
 }
 

@@ -675,6 +675,37 @@ class ApiService {
   async getCompanyStats() {
     return this.get('/api/dashboard/company_stats/');
   }
+
+  // 🎓 MÉTODOS ESPECÍFICOS DEL DOCENTE
+  async getTeacherStudents(params?: any): Promise<any> {
+    const endpoint = '/api/teachers/teacher/students/';
+    const cacheKey = cacheService.generateKey('teacher_students', params);
+    return this.request(endpoint, {}, true, cacheKey, 5 * 60 * 1000); // Cache 5 minutos
+  }
+
+  async getTeacherProjects(params?: any): Promise<any> {
+    const endpoint = '/api/teachers/teacher/projects/';
+    const cacheKey = cacheService.generateKey('teacher_projects', params);
+    return this.request(endpoint, {}, true, cacheKey, 5 * 60 * 1000); // Cache 5 minutos
+  }
+
+  async getTeacherEvaluations(params?: any): Promise<any> {
+    const endpoint = '/api/teachers/teacher/evaluations/';
+    const cacheKey = cacheService.generateKey('teacher_evaluations', params);
+    return this.request(endpoint, {}, true, cacheKey, 2 * 60 * 1000); // Cache 2 minutos
+  }
+
+  async getTeacherReports(params?: any): Promise<any> {
+    const endpoint = '/api/teachers/teacher/reports/';
+    const cacheKey = cacheService.generateKey('teacher_reports', params);
+    return this.request(endpoint, {}, true, cacheKey, 10 * 60 * 1000); // Cache 10 minutos
+  }
+
+  async getTeacherSchedule(): Promise<any> {
+    const endpoint = '/api/teachers/teacher/schedule/';
+    const cacheKey = cacheService.generateKey('teacher_schedule');
+    return this.request(endpoint, {}, true, cacheKey, 30 * 60 * 1000); // Cache 30 minutos
+  }
 }
 
 export const apiService = new ApiService();
