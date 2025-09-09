@@ -33956,3 +33956,108 @@ INFO 2025-09-09 16:17:01,851 basehttp 23416 5300 "GET /api/users/profile/ HTTP/1
 INFO 2025-09-09 16:17:01,897 basehttp 23416 20768 "GET /api/users/profile/ HTTP/1.1" 200 703
 INFO 2025-09-09 16:17:24,570 basehttp 23416 4300 "PATCH /api/users/profile/ HTTP/1.1" 200 703
 INFO 2025-09-09 16:17:24,663 basehttp 23416 24616 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 16:25:40,129 autoreload 23416 20192 D:\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 16:25:55,907 signals 20228 10724 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 16:25:56,130 autoreload 20228 10724 Watching for file changes with StatReloader
+INFO 2025-09-09 16:27:47,021 autoreload 20228 10724 D:\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 16:27:47,875 autoreload 8816 24312 Watching for file changes with StatReloader
+INFO 2025-09-09 16:28:02,088 autoreload 8816 24312 D:\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-09 16:28:03,551 signals 8076 2536 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 16:28:03,584 autoreload 8076 2536 Watching for file changes with StatReloader
+WARNING 2025-09-09 17:29:48,113 log 8076 19784 Not Found: /api/token/
+WARNING 2025-09-09 17:29:48,114 basehttp 8076 19784 "POST /api/token/ HTTP/1.1" 404 34
+INFO 2025-09-09 17:29:55,290 basehttp 8076 10276 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:29:55,447 basehttp 8076 5520 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:30:16,820 signals 8564 3064 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:30:17,732 signals 1916 9116 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:30:17,752 autoreload 1916 9116 Watching for file changes with StatReloader
+INFO 2025-09-09 17:30:43,103 basehttp 1916 24104 "POST /api/token/verify/ HTTP/1.1" 200 125
+INFO 2025-09-09 17:30:43,137 basehttp 1916 24772 "POST /api/token/verify/ HTTP/1.1" 200 125
+INFO 2025-09-09 17:30:43,263 basehttp 1916 15048 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:30:43,318 basehttp 1916 19288 "GET /api/users/profile/ HTTP/1.1" 200 703
+WARNING 2025-09-09 17:31:00,394 log 1916 22016 Not Found: /api/token/
+WARNING 2025-09-09 17:31:00,395 basehttp 1916 22016 "POST /api/token/ HTTP/1.1" 404 34
+WARNING 2025-09-09 17:31:15,343 log 1916 13884 Not Found: /api/token/
+WARNING 2025-09-09 17:31:15,344 basehttp 1916 13884 "POST /api/token/ HTTP/1.1" 404 34
+INFO 2025-09-09 17:33:35,475 basehttp 1916 20792 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:33:35,554 basehttp 1916 18372 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:36:11,714 signals 20504 11068 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:36:40,900 signals 7716 1212 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:36:48,567 basehttp 1916 6940 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:36:48,655 basehttp 1916 16076 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:37:01,471 signals 24252 22928 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:37:10,394 signals 7648 8432 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:37:19,847 signals 25572 6228 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:37:29,060 signals 9756 21084 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:38:01,215 signals 14612 22856 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:38:20,938 basehttp 1916 23144 "POST /api/token/ HTTP/1.1" 200 1139
+INFO 2025-09-09 17:39:40,423 basehttp 1916 21376 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:39:40,535 basehttp 1916 10612 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:40:26,579 signals 6768 6160 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:40:27,307 signals 14832 25048 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:40:27,323 autoreload 14832 25048 Watching for file changes with StatReloader
+INFO 2025-09-09 17:41:14,393 basehttp 14832 11388 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:41:14,495 basehttp 14832 14108 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:43:03,744 signals 23828 19452 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:43:30,664 signals 21588 2904 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:43:59,657 signals 20100 7788 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:44:00,464 basehttp 14832 6568 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:44:01,223 basehttp 14832 20952 "POST /api/token/ HTTP/1.1" 200 1139
+INFO 2025-09-09 17:45:16,222 autoreload 14832 25048 D:\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 17:45:18,343 signals 22908 24304 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:45:18,385 autoreload 22908 24304 Watching for file changes with StatReloader
+INFO 2025-09-09 17:47:51,806 autoreload 22908 24304 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 17:47:53,389 signals 7392 22264 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:47:53,428 autoreload 7392 22264 Watching for file changes with StatReloader
+INFO 2025-09-09 17:49:02,701 signals 13884 4168 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:49:04,131 basehttp 7392 11388 "POST /api/token/ HTTP/1.1" 200 1301
+ERROR 2025-09-09 17:49:04,235 log 7392 13088 Internal Server Error: /api/dashboard/teacher_stats/
+ERROR 2025-09-09 17:49:04,236 basehttp 7392 13088 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 500 901
+INFO 2025-09-09 17:49:27,917 autoreload 7392 22264 D:\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-09 17:49:29,350 signals 17588 8804 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:49:29,381 autoreload 17588 8804 Watching for file changes with StatReloader
+INFO 2025-09-09 17:49:33,418 signals 3752 22564 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:49:34,879 basehttp 17588 24104 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:49:35,075 basehttp 17588 17432 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 17:50:04,796 autoreload 17588 8804 D:\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-09 17:50:06,154 signals 17376 8644 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:50:06,193 autoreload 17376 8644 Watching for file changes with StatReloader
+INFO 2025-09-09 17:50:43,189 autoreload 17376 8644 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 17:50:44,383 signals 24952 18004 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:50:44,408 autoreload 24952 18004 Watching for file changes with StatReloader
+INFO 2025-09-09 17:51:24,217 basehttp 24952 7252 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:51:24,296 basehttp 24952 19484 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:54:40,211 basehttp 24952 20100 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 17:54:40,300 basehttp 24952 17716 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 17:54:55,214 autoreload 24952 18004 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 17:54:57,743 signals 22872 10932 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:54:57,786 autoreload 22872 10932 Watching for file changes with StatReloader
+INFO 2025-09-09 17:55:19,993 signals 12528 22864 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:56:09,566 signals 2784 14984 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:56:22,505 signals 11848 15060 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:56:34,472 signals 23208 22876 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:57:05,322 signals 20628 16764 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:57:51,134 signals 5020 16732 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:58:14,344 signals 21456 24056 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:58:15,643 signals 6672 2052 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 17:58:15,672 autoreload 6672 2052 Watching for file changes with StatReloader
+INFO 2025-09-09 18:00:11,898 signals 13052 14752 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:00:13,244 signals 13440 23568 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:00:13,274 autoreload 13440 23568 Watching for file changes with StatReloader
+INFO 2025-09-09 18:01:31,150 signals 7060 13912 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:01:31,979 signals 20020 2220 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:01:31,997 autoreload 20020 2220 Watching for file changes with StatReloader
+INFO 2025-09-09 18:01:35,464 basehttp 20020 11692 "GET / HTTP/1.1" 200 15325
+INFO 2025-09-09 18:01:35,776 basehttp 20020 11692 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-09-09 18:01:35,809 basehttp 20020 11692 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-09-09 18:02:04,054 basehttp 20020 13456 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 18:02:04,145 basehttp 20020 8272 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:02:50,078 basehttp 20020 21948 "POST /api/token/verify/ HTTP/1.1" 200 125
+INFO 2025-09-09 18:02:50,112 basehttp 20020 24560 "POST /api/token/verify/ HTTP/1.1" 200 125
+INFO 2025-09-09 18:02:50,180 basehttp 20020 21452 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:02:50,225 basehttp 20020 25088 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:03:11,980 basehttp 20020 14176 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 18:03:12,047 basehttp 20020 18104 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:05:20,510 autoreload 20020 2220 D:\leanmaker\Backend\users\models.py changed, reloading.
+INFO 2025-09-09 18:05:24,597 signals 27456 27000 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:05:24,674 autoreload 27456 27000 Watching for file changes with StatReloader
