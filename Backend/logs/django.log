@@ -34061,3 +34061,20 @@ INFO 2025-09-09 18:03:12,047 basehttp 20020 18104 "GET /api/users/profile/ HTTP/
 INFO 2025-09-09 18:05:20,510 autoreload 20020 2220 D:\leanmaker\Backend\users\models.py changed, reloading.
 INFO 2025-09-09 18:05:24,597 signals 27456 27000 Signals de notificaciones conectados exitosamente
 INFO 2025-09-09 18:05:24,674 autoreload 27456 27000 Watching for file changes with StatReloader
+INFO 2025-09-09 18:07:17,378 signals 22356 824 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:07:18,441 signals 14288 1872 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:07:18,459 autoreload 14288 1872 Watching for file changes with StatReloader
+INFO 2025-09-09 18:07:43,020 signals 1524 21972 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:07:44,079 signals 22620 21036 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 18:07:44,098 autoreload 22620 21036 Watching for file changes with StatReloader
+INFO 2025-09-09 18:07:50,470 basehttp 22620 25920 "GET / HTTP/1.1" 200 15325
+INFO 2025-09-09 18:08:37,812 basehttp 22620 5740 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 18:08:37,890 basehttp 22620 25584 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:08:38,258 basehttp 22620 5248 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:08:38,293 basehttp 22620 824 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:08:59,267 basehttp 22620 2916 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:08:59,313 basehttp 22620 23448 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 18:08:59,737 basehttp 22620 14912 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:08:59,771 basehttp 22620 19680 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:09:01,184 basehttp 22620 13004 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
+INFO 2025-09-09 18:09:01,230 basehttp 22620 14080 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 369
