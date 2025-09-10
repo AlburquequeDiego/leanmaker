@@ -23,22 +23,18 @@ const TeacherRouteFallback = () => (
       Cargando módulo de docente...
     </Typography>
     <Typography variant="body2" color="text.secondary" textAlign="center">
-      Preparando la interfaz para gestionar tus estudiantes y proyectos
+      Preparando la interfaz para gestionar tus actividades académicas
     </Typography>
   </Box>
 );
 
 // Componentes principales del dashboard de docente - Carga lazy
 export const TeacherDashboard = lazy(() => import('./TeacherDashboard'));
-
-// Componentes específicos del docente - Carga lazy
-export const TeacherStudents = lazy(() => import('./TeacherStudents'));
-export const TeacherProjects = lazy(() => import('./TeacherProjects'));
-export const TeacherEvaluations = lazy(() => import('./TeacherEvaluations'));
-export const TeacherCalendar = lazy(() => import('./TeacherCalendar'));
-export const TeacherReports = lazy(() => import('./TeacherReports'));
 export const TeacherProfile = lazy(() => import('./TeacherProfile'));
+export const TeacherChallenges = lazy(() => import('./TeacherChallenges'));
 export const TeacherNotifications = lazy(() => import('./TeacherNotifications'));
+export const TeacherSections = lazy(() => import('./TeacherSections'));
+export const TeacherProgress = lazy(() => import('./TeacherProgress'));
 
 // Wrapper para componentes lazy con fallback
 export const withLazyFallback = (Component: React.ComponentType<any>) => {
@@ -51,10 +47,8 @@ export const withLazyFallback = (Component: React.ComponentType<any>) => {
 
 // Exportar componentes con fallback
 export const LazyTeacherDashboard = withLazyFallback(TeacherDashboard);
-export const LazyTeacherStudents = withLazyFallback(TeacherStudents);
-export const LazyTeacherProjects = withLazyFallback(TeacherProjects);
-export const LazyTeacherEvaluations = withLazyFallback(TeacherEvaluations);
-export const LazyTeacherCalendar = withLazyFallback(TeacherCalendar);
-export const LazyTeacherReports = withLazyFallback(TeacherReports);
 export const LazyTeacherProfile = withLazyFallback(TeacherProfile);
+export const LazyTeacherChallenges = withLazyFallback(TeacherChallenges);
 export const LazyTeacherNotifications = withLazyFallback(TeacherNotifications);
+export const LazyTeacherSections = withLazyFallback(TeacherSections);
+export const LazyTeacherProgress = withLazyFallback(TeacherProgress);

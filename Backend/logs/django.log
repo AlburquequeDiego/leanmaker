@@ -34189,6 +34189,7 @@ INFO 2025-09-09 18:57:28,180 basehttp 268 17096 "POST /api/token/ HTTP/1.1" 200 
 INFO 2025-09-09 18:57:28,740 basehttp 268 29476 "GET /api/users/profile/ HTTP/1.1" 200 703
 INFO 2025-09-09 18:57:29,576 basehttp 268 8752 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 18:57:30,113 basehttp 268 14388 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+<<<<<<< HEAD
 INFO 2025-09-09 18:59:00,100 basehttp 268 23148 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 19:00:30,044 basehttp 268 3764 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 19:01:41,802 basehttp 268 23324 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
@@ -34528,3 +34529,327 @@ INFO 2025-09-10 11:26:51,670 basehttp 17380 22424 "GET /api/users/profile/ HTTP/
 INFO 2025-09-10 11:26:52,574 basehttp 17380 22860 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
 INFO 2025-09-10 11:26:57,345 basehttp 17380 16164 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
 INFO 2025-09-10 11:26:57,390 basehttp 17380 2980 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+=======
+INFO 2025-09-09 19:02:52,708 signals 16796 17260 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 19:02:53,292 signals 4208 11064 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 19:02:53,307 autoreload 4208 11064 Watching for file changes with StatReloader
+INFO 2025-09-09 19:03:23,842 signals 5320 10044 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 19:03:24,306 signals 14844 17208 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 19:03:24,315 autoreload 14844 17208 Watching for file changes with StatReloader
+INFO 2025-09-09 19:03:36,417 signals 11664 24200 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 19:03:36,800 signals 3136 9252 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 19:03:36,810 autoreload 3136 9252 Watching for file changes with StatReloader
+INFO 2025-09-09 19:05:01,859 basehttp 3136 3232 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 19:05:01,902 basehttp 3136 13876 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 19:05:02,243 basehttp 3136 10652 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:05:02,262 basehttp 3136 16728 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:05:15,249 basehttp 3136 22600 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 19:05:15,257 basehttp 3136 16564 "GET /api/users/profile/ HTTP/1.1" 200 703
+WARNING 2025-09-09 19:05:18,040 log 3136 23504 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:18,040 basehttp 3136 23504 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18492
+WARNING 2025-09-09 19:05:18,060 log 3136 6820 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:18,061 basehttp 3136 6820 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18492
+WARNING 2025-09-09 19:05:19,584 log 3136 21496 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:19,585 basehttp 3136 21496 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:19,599 log 3136 7856 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:19,600 basehttp 3136 7856 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:22,135 log 3136 20992 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:22,136 basehttp 3136 20992 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:22,148 log 3136 26544 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:22,148 basehttp 3136 26544 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:22,855 log 3136 10928 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:22,856 basehttp 3136 10928 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:23,291 log 3136 7040 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:23,292 basehttp 3136 7040 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:23,627 log 3136 14620 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:23,627 basehttp 3136 14620 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:23,925 log 3136 15376 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:23,926 basehttp 3136 15376 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:24,211 log 3136 21680 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:24,212 basehttp 3136 21680 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:24,372 log 3136 20300 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:24,373 basehttp 3136 20300 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:24,523 log 3136 1440 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:24,524 basehttp 3136 1440 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:24,675 log 3136 23512 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:24,676 basehttp 3136 23512 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:35,850 log 3136 3508 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:35,851 basehttp 3136 3508 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:35,866 log 3136 16760 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:35,867 basehttp 3136 16760 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+INFO 2025-09-09 19:05:36,676 basehttp 3136 17920 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 19:05:36,699 basehttp 3136 26148 "GET /api/users/profile/ HTTP/1.1" 200 703
+WARNING 2025-09-09 19:05:38,790 log 3136 3284 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:38,791 basehttp 3136 3284 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:38,808 log 3136 19308 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:38,808 basehttp 3136 19308 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+INFO 2025-09-09 19:05:39,676 basehttp 3136 17292 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:05:39,695 basehttp 3136 26744 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+WARNING 2025-09-09 19:05:41,721 log 3136 6128 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:41,723 basehttp 3136 6128 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:41,736 log 3136 18772 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:41,737 basehttp 3136 18772 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+INFO 2025-09-09 19:05:42,475 basehttp 3136 24696 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:05:42,497 basehttp 3136 24608 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:05:45,484 basehttp 3136 9832 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:05:45,499 basehttp 3136 6076 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 20:39:59,282 signals 1428 8292 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:40:00,132 signals 14764 10932 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:40:00,142 autoreload 14764 10932 Watching for file changes with StatReloader
+INFO 2025-09-09 20:40:44,304 basehttp 14764 16140 "POST /api/token/ HTTP/1.1" 200 1177
+INFO 2025-09-09 20:40:44,483 basehttp 14764 3468 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-09-09 20:40:45,313 basehttp 14764 2308 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 20:40:48,349 basehttp 14764 2332 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 20:40:48,378 basehttp 14764 25740 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 20:47:23,540 signals 16100 26360 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:48:56,163 autoreload 14764 10932 C:\Users\albur\Desktop\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-09 20:48:57,454 signals 20276 14288 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:48:57,482 autoreload 20276 14288 Watching for file changes with StatReloader
+INFO 2025-09-09 20:48:58,710 signals 26136 22616 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:49:05,298 signals 13840 27048 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:49:20,962 autoreload 20276 14288 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\models.py changed, reloading.
+INFO 2025-09-09 20:49:21,898 signals 11596 10036 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:49:21,911 autoreload 11596 10036 Watching for file changes with StatReloader
+INFO 2025-09-09 20:50:24,619 autoreload 11596 10036 C:\Users\albur\Desktop\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 20:50:26,152 signals 12544 14148 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:50:26,163 autoreload 12544 14148 Watching for file changes with StatReloader
+INFO 2025-09-09 20:51:08,738 autoreload 12544 14148 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\urls.py changed, reloading.
+INFO 2025-09-09 20:51:10,129 signals 11660 3132 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:51:10,147 autoreload 11660 3132 Watching for file changes with StatReloader
+INFO 2025-09-09 20:53:00,187 signals 1416 10072 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:53:01,324 signals 11204 19700 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:53:01,339 autoreload 11204 19700 Watching for file changes with StatReloader
+INFO 2025-09-09 20:58:46,740 signals 9716 17688 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:59:27,035 autoreload 11660 3132 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\views.py changed, reloading.
+INFO 2025-09-09 20:59:27,981 signals 25948 26080 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:59:27,989 autoreload 25948 26080 Watching for file changes with StatReloader
+INFO 2025-09-09 20:59:29,875 signals 5916 17108 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:02:44,586 autoreload 25948 26080 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\views.py changed, reloading.
+INFO 2025-09-09 21:02:45,438 signals 8512 17108 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:02:45,450 autoreload 8512 17108 Watching for file changes with StatReloader
+INFO 2025-09-09 21:03:13,127 signals 23444 21884 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:03:22,198 basehttp 8512 27300 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:03:22,214 basehttp 8512 22340 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:04:01,217 basehttp 8512 23952 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:04:01,231 basehttp 8512 2296 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:04:14,314 basehttp 8512 944 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:04:14,333 basehttp 8512 7592 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:06:55,285 basehttp 8512 19420 "POST /api/token/ HTTP/1.1" 200 1177
+INFO 2025-09-09 21:06:55,332 basehttp 8512 10928 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-09-09 21:06:55,704 basehttp 8512 22300 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:25:46,031 basehttp 8512 24040 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:26:08,399 basehttp 8512 23128 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:26:09,081 basehttp 8512 17460 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:27:25,053 basehttp 8512 25960 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:27:36,720 basehttp 8512 3160 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:27:49,033 basehttp 8512 17644 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:27:51,589 basehttp 8512 20252 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:27:57,069 basehttp 8512 12280 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:27:57,088 basehttp 8512 20872 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:27:58,205 basehttp 8512 10008 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:27:58,846 basehttp 8512 27600 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:27:58,867 basehttp 8512 16240 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:27:59,699 basehttp 8512 11032 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:33:57,775 autoreload 8512 17108 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\models.py changed, reloading.
+INFO 2025-09-09 21:33:58,971 signals 14796 9528 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:33:58,984 autoreload 14796 9528 Watching for file changes with StatReloader
+INFO 2025-09-09 21:39:14,922 basehttp 14796 25988 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:39:14,939 basehttp 14796 5112 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:54:23,745 basehttp 14796 13540 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 21:54:34,937 basehttp 14796 2888 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:54:34,955 basehttp 14796 24072 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 21:54:39,687 autoreload 14796 9528 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\models.py changed, reloading.
+INFO 2025-09-09 21:54:41,975 signals 17068 4764 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:54:42,001 autoreload 17068 4764 Watching for file changes with StatReloader
+INFO 2025-09-09 21:54:47,599 autoreload 17068 4764 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\views.py changed, reloading.
+INFO 2025-09-09 21:54:48,443 signals 5688 22236 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:54:48,452 autoreload 5688 22236 Watching for file changes with StatReloader
+INFO 2025-09-09 21:54:49,981 signals 6716 13092 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:54:56,233 signals 19552 18368 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:55:01,093 signals 17468 21992 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:55:10,795 autoreload 5688 22236 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\models.py changed, reloading.
+INFO 2025-09-09 21:55:11,830 signals 11412 22396 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:55:11,841 autoreload 11412 22396 Watching for file changes with StatReloader
+INFO 2025-09-09 21:58:06,811 basehttp 11412 6232 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 22:00:35,044 basehttp 11412 22108 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-09-09 22:00:35,079 basehttp 11412 23836 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-09-09 22:00:35,142 basehttp 11412 26812 "GET /api/companies/company_me/ HTTP/1.1" 200 1213
+INFO 2025-09-09 22:00:35,167 basehttp 11412 1040 "GET /api/companies/company_me/ HTTP/1.1" 200 1213
+INFO 2025-09-09 22:00:35,374 basehttp 11412 25672 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-09-09 22:00:35,381 basehttp 11412 7992 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-09-09 22:00:35,983 basehttp 11412 9288 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:00:36,008 basehttp 11412 18820 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:00:58,973 basehttp 11412 24684 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 22:01:01,792 basehttp 11412 8852 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-09-09 22:01:01,824 basehttp 11412 15096 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-09-09 22:01:01,941 basehttp 11412 3480 "GET /api/companies/company_me/ HTTP/1.1" 200 1213
+INFO 2025-09-09 22:01:02,000 basehttp 11412 1256 "GET /api/companies/company_me/ HTTP/1.1" 200 1213
+INFO 2025-09-09 22:01:09,228 basehttp 11412 24444 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-09-09 22:01:09,239 basehttp 11412 7520 "GET /api/notifications/ HTTP/1.1" 200 93
+INFO 2025-09-09 22:01:11,841 basehttp 11412 25500 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:11,863 basehttp 11412 26552 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:13,305 basehttp 11412 15920 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:14,179 basehttp 11412 6328 "GET /api/applications/company/students/ HTTP/1.1" 200 84
+INFO 2025-09-09 22:01:14,201 basehttp 11412 26520 "GET /api/applications/company/students/ HTTP/1.1" 200 84
+INFO 2025-09-09 22:01:16,709 basehttp 11412 14600 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 113
+INFO 2025-09-09 22:01:16,740 basehttp 11412 19728 "GET /api/evaluations/company-students-to-evaluate/ HTTP/1.1" 200 113
+INFO 2025-09-09 22:01:17,118 basehttp 11412 13504 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 22:01:17,208 basehttp 11412 12820 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 114
+INFO 2025-09-09 22:01:17,231 basehttp 11412 14376 "GET /api/evaluations/company-completed-evaluations/ HTTP/1.1" 200 114
+INFO 2025-09-09 22:01:19,834 basehttp 11412 24888 "GET /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:19,847 basehttp 11412 7220 "GET /api/calendar/events/company_events/?event_type=interview HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:21,316 basehttp 11412 2516 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:21,345 basehttp 11412 15352 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:21,568 basehttp 11412 5200 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:21,587 basehttp 11412 14704 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:21,848 basehttp 11412 1700 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:21,865 basehttp 11412 18860 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:23,233 basehttp 11412 23488 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:23,256 basehttp 11412 24652 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:23,828 basehttp 11412 7468 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:23,860 basehttp 11412 6232 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:01:24,116 basehttp 11412 6508 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:24,150 basehttp 11412 22600 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:24,389 basehttp 11412 17044 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:01:24,409 basehttp 11412 26868 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:02:56,736 basehttp 11412 12768 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:02:56,751 basehttp 11412 20468 "GET /api/strikes/reports/company/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:02:58,733 basehttp 11412 25744 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:02:58,752 basehttp 11412 26432 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:02:58,816 basehttp 11412 5328 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:02:58,832 basehttp 11412 10968 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:02:58,892 basehttp 11412 6508 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:02:58,900 basehttp 11412 3876 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:03:09,070 basehttp 11412 26976 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:03:09,125 basehttp 11412 10772 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:03:09,170 basehttp 11412 7596 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:03:12,729 basehttp 11412 23764 "GET /api/calendar/events/company_events/ HTTP/1.1" 200 15
+INFO 2025-09-09 22:03:12,760 basehttp 11412 20960 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:03:12,801 basehttp 11412 1576 "GET /api/applications/received_applications/ HTTP/1.1" 200 41
+INFO 2025-09-09 22:03:15,993 basehttp 11412 24548 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-09 22:06:44,226 basehttp 11412 2836 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-09-09 22:06:49,074 basehttp 11412 18840 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 22:06:49,233 basehttp 11412 25720 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:06:49,971 basehttp 11412 25916 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:06:49,995 basehttp 11412 2500 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:07:51,048 basehttp 11412 17972 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:07:53,060 basehttp 11412 20996 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:07:58,860 basehttp 11412 13020 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:08:58,956 basehttp 11412 17968 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:10:25,106 basehttp 11412 8572 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:10:39,054 basehttp 11412 15408 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:11:16,132 basehttp 11412 26432 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:11:16,158 basehttp 11412 21112 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:12:17,054 basehttp 11412 4108 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:12:39,145 basehttp 11412 11256 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:12:46,109 basehttp 11412 7892 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:13:47,062 basehttp 11412 18288 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:15:08,635 basehttp 11412 2652 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:15:08,655 basehttp 11412 15456 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:15:10,138 basehttp 11412 5916 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:15:10,160 basehttp 11412 21624 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:16:11,016 basehttp 11412 15664 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:17:16,410 basehttp 11412 20840 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:17:16,426 basehttp 11412 27200 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:17:24,879 basehttp 11412 7984 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:17:24,897 basehttp 11412 24020 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:17:25,835 basehttp 11412 12580 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:17:25,863 basehttp 11412 18540 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:17:49,455 basehttp 11412 26964 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:17:49,484 basehttp 11412 24884 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:17:51,214 basehttp 11412 11156 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:17:51,233 basehttp 11412 26692 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:18:51,978 basehttp 11412 18040 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:19:37,964 basehttp 11412 4504 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:19:37,993 basehttp 11412 17456 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:19:38,532 basehttp 11412 7884 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:19:38,553 basehttp 11412 22068 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:19:39,063 basehttp 11412 3160 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:19:39,087 basehttp 11412 3344 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:24:06,610 autoreload 11412 22396 C:\Users\albur\Desktop\leanmaker\Backend\collective_challenges\models.py changed, reloading.
+INFO 2025-09-09 22:24:08,110 signals 22384 15916 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 22:24:08,134 autoreload 22384 15916 Watching for file changes with StatReloader
+INFO 2025-09-09 22:24:47,098 basehttp 22384 20804 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:24:47,118 basehttp 22384 24064 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:29,480 basehttp 22384 26836 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 22:25:29,522 basehttp 22384 12232 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:25:29,859 basehttp 22384 3096 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:29,878 basehttp 22384 27316 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:35,861 basehttp 22384 10640 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:35,877 basehttp 22384 1392 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:37,790 basehttp 22384 26160 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:25:37,814 basehttp 22384 14028 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:25:38,575 basehttp 22384 2516 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:38,589 basehttp 22384 27492 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:41,695 basehttp 22384 25336 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 22:25:41,739 basehttp 22384 14380 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:25:42,041 basehttp 22384 2860 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:25:42,069 basehttp 22384 11112 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:26:34,936 basehttp 22384 22328 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:26:34,952 basehttp 22384 15340 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:27:36,117 basehttp 22384 18772 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:28:48,171 basehttp 22384 9668 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:28:48,201 basehttp 22384 1136 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:28:58,285 basehttp 22384 15352 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:28:58,310 basehttp 22384 2016 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:29:59,026 basehttp 22384 1768 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:31:29,041 basehttp 22384 6892 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:32:06,781 basehttp 22384 19368 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:32:13,907 basehttp 22384 13840 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:33:15,109 basehttp 22384 20760 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:34:45,072 basehttp 22384 8856 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 22:50:57,534 basehttp 22384 11668 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:50:57,546 basehttp 22384 8352 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:53:30,767 basehttp 22384 14944 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:53:30,793 basehttp 22384 12716 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:53:45,170 basehttp 22384 22784 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:53:45,186 basehttp 22384 25892 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:57:21,723 basehttp 22384 13096 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 22:57:21,734 basehttp 22384 14440 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:00:05,636 basehttp 22384 12180 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:00:05,668 basehttp 22384 12404 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:00:06,881 basehttp 22384 22360 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:00:06,906 basehttp 22384 21812 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:01:08,105 basehttp 22384 21540 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:02:38,078 basehttp 22384 21368 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:04:26,979 basehttp 22384 19248 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:05:40,584 basehttp 22384 13604 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:16:35,583 basehttp 22384 16100 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 23:16:35,632 basehttp 22384 13712 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:16:35,820 basehttp 22384 21980 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:16:35,837 basehttp 22384 26316 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:16:39,995 basehttp 22384 25892 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 23:16:40,036 basehttp 22384 3760 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:16:40,175 basehttp 22384 6336 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:16:40,208 basehttp 22384 6884 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:17:16,901 basehttp 22384 23312 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:17:16,917 basehttp 22384 18484 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:21:58,298 basehttp 22384 24380 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:21:58,317 basehttp 22384 16028 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:22:58,947 basehttp 22384 23084 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:24:46,532 basehttp 22384 1000 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:24:46,540 basehttp 22384 9612 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:24:46,809 basehttp 22384 24080 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:24:46,824 basehttp 22384 18196 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:25:21,709 basehttp 22384 19920 "POST /api/token/ HTTP/1.1" 200 1301
+INFO 2025-09-09 23:25:21,735 basehttp 22384 20440 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:25:21,848 basehttp 22384 4644 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:25:21,858 basehttp 22384 23916 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:26:21,943 basehttp 22384 24204 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:39,868 basehttp 22384 6672 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:39,885 basehttp 22384 20760 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:43,833 basehttp 22384 27312 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:27:43,850 basehttp 22384 12676 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:27:44,114 basehttp 22384 13852 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:44,132 basehttp 22384 22664 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:55,295 basehttp 22384 1124 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:28:55,311 basehttp 22384 21336 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:28:55,939 basehttp 22384 8180 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:55,945 basehttp 22384 18392 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:57,709 basehttp 22384 11820 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:57,729 basehttp 22384 1600 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:29:57,943 basehttp 22384 7964 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-10 11:26:47,810 signals 3748 6936 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 11:26:48,439 signals 18272 19292 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 11:26:48,455 autoreload 18272 19292 Watching for file changes with StatReloader
+>>>>>>> 16d093d5cdb47ac48b7bbbda08331bf5627c7549

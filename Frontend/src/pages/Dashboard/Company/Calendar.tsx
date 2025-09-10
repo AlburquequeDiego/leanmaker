@@ -2157,46 +2157,7 @@ export const CompanyCalendar = forwardRef((_, ref) => {
         </Box>
       </Paper>
       
-      {/* Mensaje cuando no hay eventos */}
-      {events.length === 0 && !loading && (
-        <Box sx={{ 
-          background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%)',
-          borderRadius: 3,
-          p: 4,
-          mt: 3,
-          textAlign: 'center',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-          border: '1px solid rgba(102, 126, 234, 0.1)'
-        }}>
-          <Typography variant="h5" fontWeight={600} color="primary" gutterBottom>
-            🎯 ¡Comienza a programar eventos!
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            No tienes eventos programados aún. Haz clic en "Agregar Evento" para crear tu primera entrevista o reunión con estudiantes.
-          </Typography>
-          <Button 
-            variant="contained" 
-            startIcon={<AddIcon />} 
-            onClick={() => setShowAddDialog(true)}
-            sx={{ 
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              fontWeight: 600,
-              px: 4,
-              py: 1.5,
-              borderRadius: 3,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-              '&:hover': {
-                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
-              }
-            }}
-          >
-            Crear Primer Evento
-          </Button>
-        </Box>
-      )}
+      
       
       {/* Modal para agregar evento mejorado */}
       <Dialog 

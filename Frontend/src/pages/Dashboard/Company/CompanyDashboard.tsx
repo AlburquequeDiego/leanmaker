@@ -14,6 +14,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import SchoolIcon from '@mui/icons-material/School';
 import InfoIcon from '@mui/icons-material/Info';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -103,7 +104,6 @@ interface KPICardProps {
 }
 
 const KPICard = memo(({ title, value, description, icon, bgColor, textColor, route, onClick }: KPICardProps) => {
-  const [showTooltip, setShowTooltip] = useState(false);
   const navigate = useNavigate();
 
   // Función para manejar el clic en la tarjeta - memoizada
@@ -179,8 +179,6 @@ const KPICard = memo(({ title, value, description, icon, bgColor, textColor, rou
         </Box>
         <Tooltip 
           title={description}
-          open={showTooltip}
-          onClose={() => setShowTooltip(false)}
           placement="top"
           arrow
           sx={{
@@ -189,24 +187,22 @@ const KPICard = memo(({ title, value, description, icon, bgColor, textColor, rou
               color: 'white',
               fontSize: '14px',
               padding: '8px 12px',
-              borderRadius: '6px'
+              borderRadius: '6px',
+              maxWidth: 300
             }
           }}
         >
-          <span>
-            <IconButton
-              size="small"
-              onClick={() => setShowTooltip(!showTooltip)}
-              sx={{ 
-                color: textColor,
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.1)'
-                }
-              }}
-            >
-              <InfoIcon fontSize="small" />
-            </IconButton>
-          </span>
+          <IconButton
+            size="small"
+            sx={{ 
+              color: textColor,
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            <InfoIcon fontSize="small" />
+          </IconButton>
         </Tooltip>
       </Box>
       <Typography 
@@ -613,6 +609,17 @@ export default function CompanyDashboard() {
                  bgColor="#dc2626"
                  textColor="white"
                  route="/dashboard/company/projects?tab=2"
+               />
+               
+               {/* Desafíos Colectivos - Púrpura vibrante */}
+               <KPICard
+                 title="Desafíos Colectivos"
+                 value="0"
+                 description="Desafíos trimestrales y semestrales publicados para la academia. Conecta con estudiantes talentosos a través de proyectos colaborativos innovadores."
+                 icon={<EmojiEventsIcon sx={{ fontSize: 28 }} />}
+                 bgColor="#7C3AED"
+                 textColor="white"
+                 route="/dashboard/company/challenges"
                />
            </Box>
             
