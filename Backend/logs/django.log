@@ -34495,3 +34495,19 @@ INFO 2025-09-09 23:25:21,735 basehttp 22384 20440 "GET /api/users/profile/ HTTP/
 INFO 2025-09-09 23:25:21,848 basehttp 22384 4644 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 23:25:21,858 basehttp 22384 23916 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 23:26:21,943 basehttp 22384 24204 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:39,868 basehttp 22384 6672 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:39,885 basehttp 22384 20760 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:43,833 basehttp 22384 27312 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:27:43,850 basehttp 22384 12676 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:27:44,114 basehttp 22384 13852 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:27:44,132 basehttp 22384 22664 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:55,295 basehttp 22384 1124 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:28:55,311 basehttp 22384 21336 "GET /api/users/profile/ HTTP/1.1" 200 703
+INFO 2025-09-09 23:28:55,939 basehttp 22384 8180 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:55,945 basehttp 22384 18392 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:57,709 basehttp 22384 11820 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:28:57,729 basehttp 22384 1600 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 23:29:57,943 basehttp 22384 7964 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-10 11:26:47,810 signals 3748 6936 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 11:26:48,439 signals 18272 19292 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 11:26:48,455 autoreload 18272 19292 Watching for file changes with StatReloader
