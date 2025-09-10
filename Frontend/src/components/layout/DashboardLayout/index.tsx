@@ -43,13 +43,9 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   Analytics as AnalyticsIcon,
-<<<<<<< HEAD
-  Groups as GroupsIcon,
-=======
   EmojiEvents as EmojiEventsIcon,
   Groups as GroupsIcon,
   TrendingUp as TrendingUpIcon,
->>>>>>> 16d093d5cdb47ac48b7bbbda08331bf5627c7549
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme as useCustomTheme } from '../../../contexts/ThemeContext';
