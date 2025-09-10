@@ -43,6 +43,7 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   Analytics as AnalyticsIcon,
+  Groups as GroupsIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme as useCustomTheme } from '../../../contexts/ThemeContext';
@@ -131,6 +132,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Gestión de Empresas', icon: <BusinessIcon />, path: '/dashboard/admin/gestion-empresas' },
         { text: 'Gestión de Estudiantes', icon: <SchoolIcon />, path: '/dashboard/admin/gestion-estudiantes' },
         { text: 'Gestión de Proyectos', icon: <AssignmentIcon />, path: '/dashboard/admin/gestion-proyectos' },
+        { text: 'Desafíos Colectivos', icon: <GroupsIcon />, path: '/dashboard/admin/desafios-colectivos' },
         { text: 'Gestión de Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/admin/gestion-evaluaciones' },
         { text: 'Reportes y Analytics', icon: <AnalyticsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
       ],

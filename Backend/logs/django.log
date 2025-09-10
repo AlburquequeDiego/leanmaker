@@ -34189,3 +34189,342 @@ INFO 2025-09-09 18:57:28,180 basehttp 268 17096 "POST /api/token/ HTTP/1.1" 200 
 INFO 2025-09-09 18:57:28,740 basehttp 268 29476 "GET /api/users/profile/ HTTP/1.1" 200 703
 INFO 2025-09-09 18:57:29,576 basehttp 268 8752 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-09 18:57:30,113 basehttp 268 14388 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 18:59:00,100 basehttp 268 23148 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:00:30,044 basehttp 268 3764 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:01:41,802 basehttp 268 23324 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:03:08,054 basehttp 268 17160 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-09 19:04:30,041 basehttp 268 7760 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+WARNING 2025-09-09 19:05:30,015 log 268 12996 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:30,016 basehttp 268 12996 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+WARNING 2025-09-09 19:05:30,061 log 268 12296 Not Found: /api/teachers/teacher/students/
+WARNING 2025-09-09 19:05:30,062 basehttp 268 12296 "GET /api/teachers/teacher/students/ HTTP/1.1" 404 18491
+INFO 2025-09-09 20:27:27,808 basehttp 268 28520 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-09-09 20:27:44,655 basehttp 268 18116 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-09-09 20:27:44,742 basehttp 268 24760 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-09 20:27:45,209 basehttp 268 20488 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 20:35:07,452 autoreload 268 23564 D:\leanmaker\Backend\students\models.py changed, reloading.
+INFO 2025-09-09 20:35:08,528 signals 26896 25912 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:35:08,549 autoreload 26896 25912 Watching for file changes with StatReloader
+INFO 2025-09-09 20:35:12,092 autoreload 26896 25912 D:\leanmaker\Backend\students\models.py changed, reloading.
+INFO 2025-09-09 20:35:12,980 signals 23536 24064 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:35:12,998 autoreload 23536 24064 Watching for file changes with StatReloader
+INFO 2025-09-09 20:35:17,984 autoreload 23536 24064 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 20:35:19,220 signals 19256 26612 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:35:19,242 autoreload 19256 26612 Watching for file changes with StatReloader
+INFO 2025-09-09 20:36:52,067 autoreload 19256 26612 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 20:36:53,020 signals 15324 17348 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:36:53,036 autoreload 15324 17348 Watching for file changes with StatReloader
+INFO 2025-09-09 20:36:59,114 autoreload 15324 17348 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 20:36:59,930 signals 28436 25268 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:36:59,947 autoreload 28436 25268 Watching for file changes with StatReloader
+ERROR 2025-09-09 20:40:06,997 log 28436 11492 Internal Server Error: /api/dashboard/admin_stats/
+ERROR 2025-09-09 20:40:06,998 basehttp 28436 11492 "GET /api/dashboard/admin_stats/ HTTP/1.1" 500 4901
+INFO 2025-09-09 20:58:36,882 signals 21456 22120 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:58:37,662 signals 14348 20680 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 20:58:37,682 autoreload 14348 20680 Watching for file changes with StatReloader
+INFO 2025-09-09 20:58:43,426 basehttp 14348 24184 "GET / HTTP/1.1" 200 15325
+INFO 2025-09-09 21:00:22,880 basehttp 14348 13436 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-09-09 21:00:23,406 basehttp 14348 16936 "GET /api/users/profile/ HTTP/1.1" 200 599
+ERROR 2025-09-09 21:00:23,560 log 14348 23328 Internal Server Error: /api/dashboard/admin_stats/
+ERROR 2025-09-09 21:00:23,561 basehttp 14348 23328 "GET /api/dashboard/admin_stats/ HTTP/1.1" 500 4901
+INFO 2025-09-09 21:00:27,696 basehttp 14348 22936 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-09 21:00:28,537 basehttp 14348 23560 "GET /api/users/profile/ HTTP/1.1" 200 599
+ERROR 2025-09-09 21:00:31,167 log 14348 324 Internal Server Error: /api/dashboard/admin_stats/
+ERROR 2025-09-09 21:00:31,169 basehttp 14348 324 "GET /api/dashboard/admin_stats/ HTTP/1.1" 500 4901
+ERROR 2025-09-09 21:00:38,282 log 14348 7352 Internal Server Error: /api/dashboard/admin_stats/
+ERROR 2025-09-09 21:00:38,284 basehttp 14348 7352 "GET /api/dashboard/admin_stats/ HTTP/1.1" 500 4901
+INFO 2025-09-09 21:01:07,706 autoreload 14348 20680 D:\leanmaker\Backend\students\models.py changed, reloading.
+INFO 2025-09-09 21:01:08,736 signals 24660 27328 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:01:08,754 autoreload 24660 27328 Watching for file changes with StatReloader
+INFO 2025-09-09 21:01:12,515 autoreload 24660 27328 D:\leanmaker\Backend\students\models.py changed, reloading.
+INFO 2025-09-09 21:01:13,724 signals 28264 22676 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:01:13,744 autoreload 28264 22676 Watching for file changes with StatReloader
+INFO 2025-09-09 21:01:23,633 signals 2212 11848 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:01:29,934 signals 9416 1828 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:02:54,380 basehttp 28264 19664 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 21:03:08,228 basehttp 28264 27360 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:03:08,265 basehttp 28264 10976 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:04:28,985 basehttp 28264 22004 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:04:29,032 basehttp 28264 21152 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:04:56,660 basehttp 28264 22760 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:04:56,705 basehttp 28264 25184 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:05:01,364 basehttp 28264 10832 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:05:01,398 basehttp 28264 24336 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:05:08,389 basehttp 28264 25224 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 2954
+INFO 2025-09-09 21:05:08,524 basehttp 28264 1932 "GET /api/admin/projects/?limit=50&offset=0 HTTP/1.1" 200 2954
+INFO 2025-09-09 21:05:15,345 basehttp 28264 8556 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:05:15,953 basehttp 28264 23064 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:10:27,415 basehttp 28264 8436 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:10:27,460 basehttp 28264 23576 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:10:30,163 basehttp 28264 25216 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:10:30,198 basehttp 28264 24516 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:10:34,445 basehttp 28264 18800 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:10:34,490 basehttp 28264 6948 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:10:38,026 basehttp 28264 24144 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:10:38,072 basehttp 28264 28888 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:15:46,489 autoreload 28264 22676 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 21:15:47,671 signals 23380 22768 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:15:47,696 autoreload 23380 22768 Watching for file changes with StatReloader
+INFO 2025-09-09 21:15:56,184 autoreload 23380 22768 D:\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 21:15:57,154 signals 15768 23684 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:15:57,175 autoreload 15768 23684 Watching for file changes with StatReloader
+INFO 2025-09-09 21:16:07,696 basehttp 15768 24720 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:16:07,741 basehttp 15768 20528 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:17:07,574 autoreload 15768 23684 D:\leanmaker\Backend\core\urls.py changed, reloading.
+INFO 2025-09-09 21:17:08,535 signals 20148 23512 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:17:08,552 autoreload 20148 23512 Watching for file changes with StatReloader
+INFO 2025-09-09 21:29:18,713 basehttp 20148 6944 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:29:18,748 basehttp 20148 20096 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:30:09,433 basehttp 20148 29156 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 21:30:09,477 basehttp 20148 29236 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+ERROR 2025-09-09 21:30:11,916 log 20148 3844 Internal Server Error: /api/admin/advanced-kpis/
+ERROR 2025-09-09 21:30:11,922 basehttp 20148 3844 "GET /api/admin/advanced-kpis/ HTTP/1.1" 500 81
+ERROR 2025-09-09 21:30:11,939 log 20148 26100 Internal Server Error: /api/admin/advanced-kpis/
+ERROR 2025-09-09 21:30:11,944 basehttp 20148 26100 "GET /api/admin/advanced-kpis/ HTTP/1.1" 500 81
+INFO 2025-09-09 21:30:15,203 basehttp 20148 16328 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+ERROR 2025-09-09 21:30:15,228 log 20148 20164 Internal Server Error: /api/admin/advanced-kpis/
+ERROR 2025-09-09 21:30:15,229 basehttp 20148 20164 "GET /api/admin/advanced-kpis/ HTTP/1.1" 500 81
+INFO 2025-09-09 21:30:15,247 basehttp 20148 17072 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+ERROR 2025-09-09 21:30:15,322 log 20148 14312 Internal Server Error: /api/admin/advanced-kpis/
+ERROR 2025-09-09 21:30:15,325 basehttp 20148 14312 "GET /api/admin/advanced-kpis/ HTTP/1.1" 500 81
+INFO 2025-09-09 21:30:18,107 basehttp 20148 24376 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:30:18,829 basehttp 20148 28292 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:31:23,257 autoreload 20148 23512 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 21:31:24,798 signals 7176 11252 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:31:24,830 autoreload 7176 11252 Watching for file changes with StatReloader
+INFO 2025-09-09 21:31:28,447 autoreload 7176 11252 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 21:31:29,976 signals 18100 23864 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:31:30,015 autoreload 18100 23864 Watching for file changes with StatReloader
+WARNING 2025-09-09 21:31:56,022 log 18100 28876 Forbidden: /api/admin/advanced-kpis/
+WARNING 2025-09-09 21:31:56,024 basehttp 18100 28876 "GET /api/admin/advanced-kpis/ HTTP/1.1" 403 28
+ERROR 2025-09-09 21:32:07,558 log 18100 9384 Internal Server Error: /api/admin/advanced-kpis/
+ERROR 2025-09-09 21:32:07,561 basehttp 18100 9384 "GET /api/admin/advanced-kpis/ HTTP/1.1" 500 706
+ERROR 2025-09-09 21:32:07,669 log 18100 17888 Internal Server Error: /api/admin/advanced-kpis/
+ERROR 2025-09-09 21:32:07,674 basehttp 18100 17888 "GET /api/admin/advanced-kpis/ HTTP/1.1" 500 706
+INFO 2025-09-09 21:32:11,473 basehttp 18100 18112 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:32:12,096 basehttp 18100 28944 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:32:28,900 signals 29500 7228 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:33:04,128 signals 27816 19184 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:33:16,888 signals 25764 20400 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:33:25,049 signals 21192 27264 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:33:33,890 signals 10788 9540 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:33:42,861 signals 27996 21428 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:33:54,274 signals 21568 3056 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:34:18,038 signals 28632 29120 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:34:33,756 signals 14792 264 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:34:49,844 autoreload 18100 23864 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 21:34:51,500 signals 27172 24612 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:34:51,537 autoreload 27172 24612 Watching for file changes with StatReloader
+INFO 2025-09-09 21:34:55,949 signals 25620 21548 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:35:19,628 autoreload 27172 24612 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 21:35:21,264 signals 16204 23668 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:35:21,300 autoreload 16204 23668 Watching for file changes with StatReloader
+INFO 2025-09-09 21:35:30,704 signals 26964 8896 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:35:48,973 autoreload 16204 23668 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 21:35:50,818 signals 1872 4592 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:35:50,863 autoreload 1872 4592 Watching for file changes with StatReloader
+INFO 2025-09-09 21:35:56,390 signals 19672 6560 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:36:13,684 autoreload 1872 4592 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 21:36:15,168 signals 22492 23936 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 21:36:15,195 autoreload 22492 23936 Watching for file changes with StatReloader
+INFO 2025-09-09 21:36:40,197 basehttp 22492 25372 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:36:40,254 basehttp 22492 20748 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:36:42,635 basehttp 22492 25660 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:36:42,681 basehttp 22492 28520 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:37:46,102 basehttp 22492 25444 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:37:51,222 basehttp 22492 28084 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:37:56,313 basehttp 22492 28972 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:38:41,824 basehttp 22492 14172 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:39:48,965 basehttp 22492 18008 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:39:50,725 basehttp 22492 20100 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:39:50,792 basehttp 22492 18392 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:39:53,213 basehttp 22492 9404 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:39:53,971 basehttp 22492 6252 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:41:36,900 basehttp 22492 26256 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:41:43,725 basehttp 22492 12456 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:42:21,644 basehttp 22492 27444 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:42:23,597 basehttp 22492 23500 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:42:23,654 basehttp 22492 20396 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:42:25,964 basehttp 22492 27772 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:42:26,936 basehttp 22492 10720 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:44:12,184 basehttp 22492 5580 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:44:12,406 basehttp 22492 27676 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:44:17,179 basehttp 22492 23444 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:44:19,679 basehttp 22492 28848 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:44:23,704 basehttp 22492 20200 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:44:26,386 basehttp 22492 16796 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:44:29,211 basehttp 22492 24984 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:44:42,539 basehttp 22492 1872 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:44:42,596 basehttp 22492 24656 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 21:44:45,438 basehttp 22492 26096 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 21:44:45,721 basehttp 22492 12736 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+WARNING 2025-09-09 22:48:19,101 log 22492 28356 Forbidden: /api/admin/advanced-kpis/
+WARNING 2025-09-09 22:48:19,107 log 22492 19436 Forbidden: /api/admin/advanced-kpis/
+WARNING 2025-09-09 22:48:19,109 basehttp 22492 28356 "GET /api/admin/advanced-kpis/ HTTP/1.1" 403 28
+WARNING 2025-09-09 22:48:19,111 basehttp 22492 19436 "GET /api/admin/advanced-kpis/ HTTP/1.1" 403 28
+INFO 2025-09-09 22:48:20,390 basehttp 22492 25904 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 22:48:21,248 basehttp 22492 29552 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 22:49:44,372 basehttp 22492 1420 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-09-09 22:49:44,462 basehttp 22492 13480 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-09 22:49:44,841 basehttp 22492 28668 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 22:53:01,157 basehttp 22492 25456 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 22:53:11,475 basehttp 22492 11692 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 22:55:11,911 basehttp 22492 29000 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 22:55:25,082 basehttp 22492 8684 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 22:55:42,744 basehttp 22492 27464 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:55:42,790 basehttp 22492 18244 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:59:26,317 basehttp 22492 13232 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:59:32,075 basehttp 22492 21352 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:59:32,121 basehttp 22492 29548 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:59:37,170 basehttp 22492 27464 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:59:42,217 basehttp 22492 10744 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:59:46,233 basehttp 22492 12408 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 22:59:56,149 basehttp 22492 25756 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:00:18,190 basehttp 22492 27584 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:00:48,207 basehttp 22492 27736 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:02:28,228 basehttp 22492 22684 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:02:31,253 basehttp 22492 5296 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:02:38,179 basehttp 22492 9832 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:02:55,174 basehttp 22492 4100 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 23:02:55,219 basehttp 22492 20704 "GET /api/evaluations/admin/management/?limit=1000 HTTP/1.1" 200 71
+INFO 2025-09-09 23:02:56,856 basehttp 22492 21032 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:02:56,914 basehttp 22492 13284 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:02:58,594 basehttp 22492 28024 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:02:59,106 basehttp 22492 20760 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:05:29,339 basehttp 22492 13296 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:29,385 basehttp 22492 20164 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:39,137 basehttp 22492 3848 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:39,183 basehttp 22492 10220 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:44,165 basehttp 22492 9412 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:44,198 basehttp 22492 21092 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:51,160 basehttp 22492 23052 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:51,206 basehttp 22492 14536 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:05:57,432 basehttp 22492 22692 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:06:08,607 basehttp 22492 14728 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:06:13,641 basehttp 22492 27244 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:06:20,527 basehttp 22492 8916 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:08:38,773 basehttp 22492 13808 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:08:40,199 basehttp 22492 19060 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:08:44,569 basehttp 22492 18672 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:08:49,672 basehttp 22492 13560 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:09:33,253 basehttp 22492 17572 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:10:36,293 basehttp 22492 25872 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:11:50,171 basehttp 22492 28148 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:12:24,017 basehttp 22492 6228 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-09-09 23:12:24,115 basehttp 22492 9736 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-09 23:12:24,504 basehttp 22492 29416 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:12:27,627 basehttp 22492 6936 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:12:31,751 basehttp 22492 6344 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:12:34,940 basehttp 22492 7640 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:12:37,542 basehttp 22492 23100 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:12:40,252 basehttp 22492 14752 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:12:50,398 basehttp 22492 29616 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:12:50,432 basehttp 22492 6352 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:14:15,556 basehttp 22492 28560 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:14:16,813 basehttp 22492 20660 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:14:20,830 basehttp 22492 18252 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:15:00,962 basehttp 22492 28228 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:15:01,042 basehttp 22492 27408 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:15:02,260 basehttp 22492 22580 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:15:03,100 basehttp 22492 27164 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:15:57,504 basehttp 22492 16332 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:04,396 basehttp 22492 27560 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:22,531 basehttp 22492 4180 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:27,558 basehttp 22492 20548 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:45,554 basehttp 22492 16052 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:47,444 basehttp 22492 23656 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:50,734 basehttp 22492 25468 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:50,804 basehttp 22492 7772 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:18:52,702 basehttp 22492 27748 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:18:53,138 basehttp 22492 26148 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:23:40,575 basehttp 22492 24320 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:24:40,274 basehttp 22492 5204 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:24:41,434 basehttp 22492 20384 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:25:50,468 basehttp 22492 7228 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:28:05,423 basehttp 22492 14384 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:28:08,407 basehttp 22492 7092 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:28:35,147 basehttp 22492 25872 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:29:02,111 basehttp 22492 16788 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:29:04,558 basehttp 22492 20200 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:29:04,604 basehttp 22492 12628 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:29:06,640 basehttp 22492 18244 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:29:06,721 basehttp 22492 5884 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:29:29,730 basehttp 22492 22480 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:30:37,538 basehttp 22492 10896 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:30:44,253 basehttp 22492 14824 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:30:46,688 basehttp 22492 26240 "GET /api/companies/admin/companies-simple/?limit=20&offset=0 HTTP/1.1" 200 4375
+INFO 2025-09-09 23:30:46,757 basehttp 22492 11444 "GET /api/companies/admin/companies-simple/?limit=20&offset=0 HTTP/1.1" 200 4375
+INFO 2025-09-09 23:31:09,900 basehttp 22492 29508 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:34:04,298 basehttp 22492 29536 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-09-09 23:34:04,345 basehttp 22492 4872 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-09-09 23:34:04,389 basehttp 22492 29064 "GET /api/work-hours/?limit=15&offset=0 HTTP/1.1" 200 106
+INFO 2025-09-09 23:34:04,435 basehttp 22492 29572 "GET /api/projects/completed_pending_hours/ HTTP/1.1" 200 27
+INFO 2025-09-09 23:34:05,867 basehttp 22492 23560 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:36:26,160 basehttp 22492 25700 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:36:43,811 basehttp 22492 21680 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:36:50,621 basehttp 22492 23068 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:36:53,688 basehttp 22492 27392 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:37:40,130 basehttp 22492 3224 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:37:43,233 basehttp 22492 24848 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:39:08,938 basehttp 22492 28504 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:39:15,330 basehttp 22492 20836 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:41:07,362 basehttp 22492 25168 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:42:03,129 basehttp 22492 24432 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 249
+INFO 2025-09-09 23:42:56,582 autoreload 22492 23936 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 23:42:58,541 signals 26448 25988 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 23:42:58,562 autoreload 26448 25988 Watching for file changes with StatReloader
+INFO 2025-09-09 23:43:05,989 autoreload 26448 25988 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 23:43:07,024 signals 13540 20432 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 23:43:07,053 autoreload 13540 20432 Watching for file changes with StatReloader
+INFO 2025-09-09 23:43:21,175 autoreload 13540 20432 D:\leanmaker\Backend\core\views.py changed, reloading.
+INFO 2025-09-09 23:43:22,195 signals 23100 3884 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 23:43:22,224 autoreload 23100 3884 Watching for file changes with StatReloader
+INFO 2025-09-09 23:44:00,642 basehttp 23100 20020 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:44:05,300 basehttp 23100 19212 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:44:17,117 basehttp 23100 8432 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:44:49,476 signals 13480 21588 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 23:44:50,446 signals 17380 15404 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 23:44:50,469 autoreload 17380 15404 Watching for file changes with StatReloader
+INFO 2025-09-09 23:46:20,811 basehttp 17380 21580 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-09-09 23:46:20,894 basehttp 17380 3292 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-09 23:46:21,194 basehttp 17380 10884 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+WARNING 2025-09-09 23:47:54,130 log 17380 22988 Unauthorized: /api/dashboard/admin_stats/
+WARNING 2025-09-09 23:47:54,132 basehttp 17380 22988 "GET /api/dashboard/admin_stats/ HTTP/1.1" 401 32
+WARNING 2025-09-09 23:48:36,965 log 17380 26892 Unauthorized: /api/dashboard/admin_stats/
+WARNING 2025-09-09 23:48:36,966 basehttp 17380 26892 "GET /api/dashboard/admin_stats/ HTTP/1.1" 401 32
+WARNING 2025-09-09 23:49:13,772 log 17380 22824 Unauthorized: /api/dashboard/admin_stats/
+WARNING 2025-09-09 23:49:13,773 basehttp 17380 22824 "GET /api/dashboard/admin_stats/ HTTP/1.1" 401 32
+INFO 2025-09-09 23:49:27,252 signals 27876 28096 Signals de notificaciones conectados exitosamente
+INFO 2025-09-09 23:50:02,672 basehttp 17380 25168 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:50:39,679 basehttp 17380 22880 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:50:47,068 basehttp 17380 23440 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:51:31,182 basehttp 17380 21472 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:51:48,173 basehttp 17380 26772 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:51:51,992 basehttp 17380 26572 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:51:58,142 basehttp 17380 19000 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:52:01,566 basehttp 17380 21376 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:52:01,601 basehttp 17380 21192 "GET /api/users/ HTTP/1.1" 200 10043
+INFO 2025-09-09 23:52:16,452 basehttp 17380 29180 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-09 23:52:26,169 basehttp 17380 17832 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:52:26,247 basehttp 17380 26576 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-09 23:52:27,616 basehttp 17380 21472 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-09 23:52:28,372 basehttp 17380 12072 "GET /api/hub/analytics/ HTTP/1.1" 200 9595
+INFO 2025-09-10 11:19:49,192 basehttp 17380 28452 "POST /api/token/ HTTP/1.1" 200 1157
+INFO 2025-09-10 11:19:49,318 basehttp 17380 22420 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-10 11:19:50,116 basehttp 17380 28740 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-10 11:20:01,398 basehttp 17380 1244 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-10 11:20:01,538 basehttp 17380 28976 "GET /api/users/profile/ HTTP/1.1" 200 599
+INFO 2025-09-10 11:20:02,798 basehttp 17380 7916 "GET /api/dashboard/admin_stats/ HTTP/1.1" 200 277
+INFO 2025-09-10 11:20:08,333 basehttp 17380 26420 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-10 11:20:08,489 basehttp 17380 23228 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-10 11:20:11,668 basehttp 17380 16244 "GET /api/hub/analytics/ HTTP/1.1" 200 9594
+INFO 2025-09-10 11:20:12,048 basehttp 17380 26820 "GET /api/hub/analytics/ HTTP/1.1" 200 9594
+INFO 2025-09-10 11:22:49,978 basehttp 17380 26968 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-10 11:23:07,586 basehttp 17380 12628 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-10 11:23:11,370 basehttp 17380 29084 "GET /api/admin/advanced-kpis/ HTTP/1.1" 200 626
+INFO 2025-09-10 11:26:26,652 basehttp 17380 13080 "POST /api/auth/logout/ HTTP/1.1" 200 47
+INFO 2025-09-10 11:26:51,444 basehttp 17380 26912 "POST /api/token/ HTTP/1.1" 200 1177
+INFO 2025-09-10 11:26:51,670 basehttp 17380 22424 "GET /api/users/profile/ HTTP/1.1" 200 1854
+INFO 2025-09-10 11:26:52,574 basehttp 17380 22860 "GET /api/dashboard/company_stats/ HTTP/1.1" 200 813
+INFO 2025-09-10 11:26:57,345 basehttp 17380 16164 "GET /api/projects/company_projects/ HTTP/1.1" 200 41
+INFO 2025-09-10 11:26:57,390 basehttp 17380 2980 "GET /api/projects/company_projects/ HTTP/1.1" 200 41

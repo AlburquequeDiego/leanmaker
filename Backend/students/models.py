@@ -30,6 +30,8 @@ class Estudiante(models.Model):
     # Campos opcionales (NULL permitido) - coinciden con frontend
     career = models.CharField(max_length=200, null=True, blank=True)
     semester = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)])
+    rut = models.CharField(max_length=12, null=True, blank=True, unique=True, help_text="RUT del estudiante")
+    section = models.CharField(max_length=50, null=True, blank=True, help_text="Sección del estudiante")
     
     # Campos adicionales del registro
     university = models.CharField(max_length=200, null=True, blank=True)

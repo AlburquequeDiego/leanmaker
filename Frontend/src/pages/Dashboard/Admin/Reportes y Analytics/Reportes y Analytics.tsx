@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useHubAnalytics } from '../../../../hooks/useHubAnalytics';
+import { useAdvancedKPIs } from '../../../../hooks/useAdvancedKPIs';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import { translateNotificationType } from '../../../../utils/notificationTranslations';
 import { 
@@ -49,6 +50,7 @@ import {
   Visibility as VisibilityIcon,
   Refresh as RefreshIcon,
   Event as EventIcon,
+  Groups as GroupsIcon,
 } from '@mui/icons-material';
 import {
   LineChart,
@@ -161,6 +163,7 @@ const translateProjectStatusToSpanish = (status: string): string => {
 
 export const ReportesYAnalytics = () => {
   const { data, loading, error, refreshData } = useHubAnalytics();
+  const { data: advancedKPIs, loading: kpisLoading, error: kpisError, refreshData: refreshKPIs } = useAdvancedKPIs();
   const { themeMode } = useTheme();
   
   // Alias para analyticsData para mantener compatibilidad
@@ -1021,7 +1024,7 @@ export const ReportesYAnalytics = () => {
                                  {index < 3 ? ['🥇', '🥈', '🥉'][index] : student.name.charAt(0)}
                                </Avatar>
                                <Box>
-                                 <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                                 <Typography component="span" variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                                    {student.name}
                                  </Typography>
                                  <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
@@ -1039,7 +1042,7 @@ export const ReportesYAnalytics = () => {
                              />
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ color: '#22c55e', fontWeight: 600 }}>
+                             <Typography component="span" variant="body2" sx={{ color: '#22c55e', fontWeight: 600 }}>
                                {student.totalHours.toLocaleString()}
                              </Typography>
                            </TableCell>
@@ -1052,7 +1055,7 @@ export const ReportesYAnalytics = () => {
                            />
                          </TableCell>
                          <TableCell>
-                           <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                           <Typography component="span" variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                              {student.averageRating !== null && student.averageRating !== undefined ? `${student.averageRating}/5` : 'N/A'}
                            </Typography>
                          </TableCell>
@@ -1063,7 +1066,7 @@ export const ReportesYAnalytics = () => {
                  </TableContainer>
                ) : (
                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                   <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de estudiantes disponibles</Typography>
+                   <Typography component="span" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de estudiantes disponibles</Typography>
                  </Box>
                )}
              </CardContent>
@@ -1113,7 +1116,7 @@ export const ReportesYAnalytics = () => {
                                  {index < 3 ? ['🏆', '🥈', '🥉'][index] : company.name.charAt(0)}
                                </Avatar>
                                <Box>
-                                 <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
+                                 <Typography component="span" variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>
                                    {company.name}
                                  </Typography>
                                  <Typography variant="caption" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
@@ -1123,7 +1126,7 @@ export const ReportesYAnalytics = () => {
                              </Box>
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 600 }}>
+                             <Typography component="span" variant="body2" sx={{ color: '#3b82f6', fontWeight: 600 }}>
                                {company.totalProjects}
                              </Typography>
                            </TableCell>
@@ -1144,12 +1147,12 @@ export const ReportesYAnalytics = () => {
                              />
                            </TableCell>
                            <TableCell>
-                             <Typography variant="body2" sx={{ color: '#10B981', fontWeight: 600 }}>
+                             <Typography component="span" variant="body2" sx={{ color: '#10B981', fontWeight: 600 }}>
                                {company.realHoursOffered ? company.realHoursOffered.toLocaleString() : '0'}
                              </Typography>
                            </TableCell>
                            <TableCell>
-                                                        <Typography variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
+                                                        <Typography component="span" variant="body2" sx={{ fontWeight: 600, color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>
                              {company.averageRating !== null && company.averageRating !== undefined ? `${company.averageRating}/5` : 'N/A'}
                            </Typography>
                            </TableCell>
@@ -1160,7 +1163,7 @@ export const ReportesYAnalytics = () => {
                  </TableContainer>
                ) : (
                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                   <Typography sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de empresas disponibles</Typography>
+                   <Typography component="span" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>No hay datos de empresas disponibles</Typography>
                  </Box>
                )}
              </CardContent>
@@ -1187,14 +1190,14 @@ export const ReportesYAnalytics = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Typography sx={{ fontSize: 20, color: 'white' }}>📝</Typography>
+              <Typography component="span" sx={{ fontSize: 20, color: 'white' }}>📝</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Aplicaciones y Proceso de Selección
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Aplicaciones - Diseño Power BI Modern */}
               <Box sx={{ 
@@ -1330,7 +1333,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="aplicaciones" 
                         fill="url(#totalAppsGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#3b82f6"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -1338,7 +1341,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="aceptadas" 
                         fill="url(#acceptedAppsGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#22c55e"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -1461,14 +1464,14 @@ export const ReportesYAnalytics = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Typography sx={{ fontSize: 20, color: 'white' }}>⚠️</Typography>
+              <Typography component="span" sx={{ fontSize: 20, color: 'white' }}>⚠️</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Strikes y Disciplina
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Strikes - Diseño Mejorado */}
               <Box sx={{ 
@@ -1480,7 +1483,7 @@ export const ReportesYAnalytics = () => {
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: '16px',
-                  background: powerBIGradients.danger,
+                  background: powerBIGradients.error,
                   textAlign: 'center',
                   boxShadow: '0 8px 32px rgba(239, 68, 68, 0.3)',
                   transition: 'all 0.3s ease',
@@ -1690,7 +1693,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="cantidad" 
                         fill="url(#activeStrikesGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#ef4444"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -1722,14 +1725,14 @@ export const ReportesYAnalytics = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Typography sx={{ fontSize: 20, color: 'white' }}>🔔</Typography>
+              <Typography component="span" sx={{ fontSize: 20, color: 'white' }}>🔔</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Notificaciones
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Notificaciones - Diseño Mejorado */}
               <Box sx={{ 
@@ -1969,14 +1972,14 @@ export const ReportesYAnalytics = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Typography sx={{ fontSize: 20, color: 'white' }}>📊</Typography>
+              <Typography component="span" sx={{ fontSize: 20, color: 'white' }}>📊</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Niveles API y TRL
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de API - Diseño Mejorado */}
               <Box sx={{ 
@@ -2115,7 +2118,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="solicitudes" 
                         fill="url(#totalApiGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#3b82f6"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -2456,7 +2459,7 @@ export const ReportesYAnalytics = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Typography sx={{ fontSize: 20, color: 'white' }}>⭐</Typography>
+              <Typography component="span" sx={{ fontSize: 20, color: 'white' }}>⭐</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Satisfacción y Calidad
@@ -2618,8 +2621,8 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico de Satisfacción por Área - Solo se muestra cuando hay datos reales */}
                 {(() => {
-                  const satisfactionData = analyticsData?.satisfactionMetrics?.satisfactionByArea;
-                  const hasRealData = satisfactionData && satisfactionData.some(item => item.totalProjects > 0);
+                  const satisfactionData = analyticsData?.satisfactionMetrics?.ratingDistribution || [];
+                  const hasRealData = satisfactionData && satisfactionData.length > 0;
                   
                   if (!hasRealData) {
                     return null; // No mostrar nada si no hay datos reales
@@ -2637,7 +2640,7 @@ export const ReportesYAnalytics = () => {
                         🎯 Satisfacción por Área de Proyecto
                       </Typography>
                       <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={satisfactionData.filter(item => item.totalProjects > 0)}>
+                        <BarChart data={satisfactionData.filter(item => item.count > 0)}>
                           <defs>
                             <linearGradient id="satisfactionGradient" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
@@ -2707,7 +2710,7 @@ export const ReportesYAnalytics = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Typography sx={{ fontSize: 20, color: 'white' }}>⚡</Typography>
+              <Typography component="span" sx={{ fontSize: 20, color: 'white' }}>⚡</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas de Eficiencia de Proyectos
@@ -2808,8 +2811,8 @@ export const ReportesYAnalytics = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 4 }}>
                 {/* Gráfico de Eficiencia por Área - Solo se muestra cuando hay datos reales */}
                 {(() => {
-                  const efficiencyData = analyticsData?.efficiencyMetrics?.efficiencyByArea;
-                  const hasRealData = efficiencyData && efficiencyData.some(item => item.totalProjects > 0);
+                  const efficiencyData = analyticsData?.efficiencyMetrics?.successByStatus || [];
+                  const hasRealData = efficiencyData && efficiencyData.length > 0;
                   
                   if (!hasRealData) {
                     return null; // No mostrar nada si no hay datos reales
@@ -2827,7 +2830,7 @@ export const ReportesYAnalytics = () => {
                         ⏱️ Eficiencia de Tiempo por Área
                       </Typography>
                       <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={efficiencyData.filter(item => item.totalProjects > 0)}>
+                        <BarChart data={efficiencyData.filter(item => item.count > 0)}>
                           <defs>
                             <linearGradient id="efficiencyGradient" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
@@ -2875,8 +2878,8 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico de Éxito por Área - Solo se muestra cuando hay datos reales */}
                 {(() => {
-                  const efficiencyData = analyticsData?.efficiencyMetrics?.efficiencyByArea;
-                  const hasRealData = efficiencyData && efficiencyData.some(item => item.totalProjects > 0);
+                  const efficiencyData = analyticsData?.efficiencyMetrics?.successByStatus || [];
+                  const hasRealData = efficiencyData && efficiencyData.length > 0;
                   
                   if (!hasRealData) {
                     return null; // No mostrar nada si no hay datos reales
@@ -2901,10 +2904,9 @@ export const ReportesYAnalytics = () => {
                             </filter>
                           </defs>
                           <Pie
-                            data={efficiencyData.filter(item => item.totalProjects > 0).map(item => ({
-                              name: item.area,
-                              value: item.successRate,
-                              color: item.color
+                            data={efficiencyData.filter(item => item.count > 0).map(item => ({
+                              name: item.status,
+                              value: item.success_rate
                             }))}
                             cx="50%"
                             cy="50%"
@@ -2917,10 +2919,10 @@ export const ReportesYAnalytics = () => {
                             dataKey="value"
                             filter="url(#efficiencyShadow)"
                           >
-                            {efficiencyData.filter(item => item.totalProjects > 0).map((entry, index) => (
+                            {efficiencyData.filter(item => item.count > 0).map((entry, index) => (
                               <Cell 
                                 key={`cell-${index}`} 
-                                fill={entry.color}
+                                fill={powerBIColors[index % powerBIColors.length]}
                                 stroke={themeMode === 'dark' ? '#1e293b' : '#ffffff'}
                                 strokeWidth={2}
                               />
@@ -2964,7 +2966,7 @@ export const ReportesYAnalytics = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Typography sx={{ fontSize: 20, color: 'white' }}>💰</Typography>
+              <Typography component="span" sx={{ fontSize: 20, color: 'white' }}>💰</Typography>
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: themeMode === 'dark' ? '#f1f5f9' : 'text.primary' }}>
               Métricas Financieras e Impacto
@@ -3127,8 +3129,8 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico de Comparación de Costos */}
                 {(() => {
-                  const costData = analyticsData?.financialMetrics?.costComparisonByArea || [];
-                  const hasRealData = costData.some(item => item.totalHoursAvailable > 0);
+                  const costData = analyticsData?.financialMetrics?.monthlyImpact || [];
+                  const hasRealData = costData.some(item => item.hours > 0);
                   
                   // Si no hay datos reales, no mostrar el gráfico
                   if (!hasRealData) {
@@ -3215,8 +3217,329 @@ export const ReportesYAnalytics = () => {
 
         {/* ===== FIN DE NUEVAS SECCIONES ===== */}
 
-    </Box>
-  );
-};
+        {/* ===== NUEVAS FUNCIONALIDADES DE ADMINISTRADOR ===== */}
+        
+        {/* ===== SECCIÓN ESPECÍFICA DE DESAFÍOS COLECTIVOS ===== */}
+        {!kpisLoading && advancedKPIs && (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" gutterBottom sx={{ 
+              color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+              fontWeight: 700,
+              mb: 3,
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>
+              🎯 Desafíos Colectivos - Análisis Detallado
+            </Typography>
+            {/* Métricas principales de desafíos colectivos */}
+            <Box sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 3,
+              mb: 4
+            }}>
+              {/* Total de desafíos activos */}
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                color: 'white',
+                border: '1px solid #8b5cf6'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Desafíos Activos
+                      </Typography>
+                      <Typography variant="h3" sx={{ fontWeight: 800 }}>
+                        {advancedKPIs.collective_challenges_by_company.reduce((sum, company) => sum + company.collective_projects, 0) || 0}
+                      </Typography>
+                    </Box>
+                    <GroupsIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+                  </Box>
+                  <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+                    Desafíos colectivos en curso
+                  </Typography>
+                </CardContent>
+              </Card>
 
-export default ReportesYAnalytics; 
+              {/* Participación promedio */}
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: 'white',
+                border: '1px solid #10b981'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Participación Promedio
+                      </Typography>
+                      <Typography variant="h3" sx={{ fontWeight: 800 }}>
+                        {advancedKPIs.completion_by_section.length > 0 
+                          ? Math.round(advancedKPIs.completion_by_section.reduce((sum, section) => sum + section.completion_rate, 0) / advancedKPIs.completion_by_section.length)
+                          : 0}%
+                      </Typography>
+                    </Box>
+                    <PeopleIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+                  </Box>
+                  <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+                    Tasa de participación en desafíos
+                  </Typography>
+                </CardContent>
+              </Card>
+
+              {/* Tiempo promedio de resolución */}
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: 'white',
+                border: '1px solid #f59e0b'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Tiempo Promedio
+                      </Typography>
+                      <Typography variant="h3" sx={{ fontWeight: 800 }}>
+                        {advancedKPIs.avg_resolution_time_days || 0}
+                      </Typography>
+                    </Box>
+                    <ScheduleIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+                  </Box>
+                  <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+                    Días promedio de resolución
+                  </Typography>
+                </CardContent>
+              </Card>
+
+              {/* Satisfacción del docente */}
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                color: 'white',
+                border: '1px solid #ef4444'
+              }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Satisfacción Docente
+                      </Typography>
+                      <Typography variant="h3" sx={{ fontWeight: 800 }}>
+                        {Array.isArray(advancedKPIs.teacher_satisfaction) 
+                          ? Math.round(advancedKPIs.teacher_satisfaction.reduce((sum, teacher) => sum + teacher.avg_satisfaction, 0) / advancedKPIs.teacher_satisfaction.length)
+                          : (advancedKPIs.teacher_satisfaction || 0)}%
+                      </Typography>
+                    </Box>
+                    <SchoolIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+                  </Box>
+                  <Typography variant="body2" sx={{ opacity: 0.9, mt: 1 }}>
+                    Nivel de satisfacción promedio
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+
+            {/* Ranking de empresas más activas en desafíos colectivos */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" gutterBottom sx={{ 
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                fontWeight: 600,
+                mb: 2
+              }}>
+                🏢 Empresas Más Activas en Desafíos Colectivos
+              </Typography>
+              
+              <Card>
+                <CardContent>
+                  <TableContainer>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Empresa</TableCell>
+                          <TableCell>Desafíos Creados</TableCell>
+                          <TableCell>Desafíos Completados</TableCell>
+                          <TableCell>Tasa de Éxito</TableCell>
+                          <TableCell>Participación</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {(() => {
+                          console.log('🔍 [DEBUG] advancedKPIs.active_companies_ranking:', advancedKPIs.active_companies_ranking);
+                          console.log('🔍 [DEBUG] Companies Length:', advancedKPIs.active_companies_ranking?.length);
+                          return null;
+                        })()}
+                        {advancedKPIs.active_companies_ranking && advancedKPIs.active_companies_ranking.length > 0 ? (
+                          advancedKPIs.active_companies_ranking.map((company, index) => (
+                            <TableRow key={index}>
+                              <TableCell>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Avatar sx={{ 
+                                    bgcolor: powerBIColors[index % powerBIColors.length],
+                                    fontWeight: 'bold'
+                                  }}>
+                                    {company.company_name?.[0] || 'E'}
+                                  </Avatar>
+                                  <Box>
+                                    <Typography variant="body2" fontWeight="bold">
+                                      {company.company_name || 'Empresa sin nombre'}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      Actividad: {company.activity_score || 0}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2" fontWeight="bold">
+                                  {company.collective_projects || 0}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2">
+                                  {company.total_projects || 0}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Chip 
+                                  label={`${company.activity_score || 0}%`}
+                                  color={company.activity_score >= 80 ? 'success' : 
+                                         company.activity_score >= 60 ? 'warning' : 'error'}
+                                  size="small"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Box sx={{ width: '100%', mr: 1 }}>
+                                  <LinearProgress 
+                                    variant="determinate" 
+                                    value={company.activity_score || 0} 
+                                    sx={{
+                                      height: 8,
+                                      borderRadius: 4,
+                                      backgroundColor: themeMode === 'dark' ? '#374151' : '#e5e7eb',
+                                      '& .MuiLinearProgress-bar': {
+                                        backgroundColor: company.activity_score >= 80 ? '#22c55e' : 
+                                                       company.activity_score >= 60 ? '#f59e0b' : '#ef4444'
+                                      }
+                                    }}
+                                  />
+                                </Box>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={5} sx={{ textAlign: 'center', py: 4 }}>
+                              <Typography variant="body2" color="text.secondary">
+                                No hay datos de empresas disponibles
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>
+              </Card>
+            </Box>
+
+            {/* Top 20 estudiantes en desafíos colectivos */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" gutterBottom sx={{ 
+                color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                fontWeight: 600,
+                mb: 2
+              }}>
+                🎓 Top 20 Estudiantes en Desafíos Colectivos
+              </Typography>
+              
+              <Card>
+                <CardContent>
+                  <TableContainer>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Estudiante</TableCell>
+                          <TableCell>Desafíos Participados</TableCell>
+                          <TableCell>Desafíos Completados</TableCell>
+                          <TableCell>Tasa de Éxito</TableCell>
+                          <TableCell>Puntuación</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {(() => {
+                          console.log('🔍 [DEBUG] advancedKPIs.top_students_collective:', advancedKPIs.top_students_collective);
+                          console.log('🔍 [DEBUG] Length:', advancedKPIs.top_students_collective?.length);
+                          return null;
+                        })()}
+                        {advancedKPIs.top_students_collective && advancedKPIs.top_students_collective.length > 0 ? (
+                          advancedKPIs.top_students_collective.slice(0, 20).map((student, index) => (
+                            <TableRow key={index}>
+                              <TableCell>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Avatar sx={{ 
+                                    bgcolor: powerBIColors[index % powerBIColors.length],
+                                    fontWeight: 'bold'
+                                  }}>
+                                    {student.student_name?.[0] || 'E'}
+                                  </Avatar>
+                                  <Box>
+                                    <Typography variant="body2" fontWeight="bold">
+                                      {student.student_name || 'Estudiante sin nombre'}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      {student.section || 'Sin sección'} - RUT: {student.rut || 'Sin RUT'}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2" fontWeight="bold">
+                                  {student.collective_applications || 0}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2">
+                                  {student.completed_collective || 0}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <Chip 
+                                  label={`${student.success_rate || 0}%`}
+                                  color={student.success_rate >= 80 ? 'success' : 
+                                         student.success_rate >= 60 ? 'warning' : 'error'}
+                                  size="small"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2" fontWeight="bold" sx={{ 
+                                  color: themeMode === 'dark' ? '#60a5fa' : '#3b82f6'
+                                }}>
+                                  {student.success_rate || 0}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={5} sx={{ textAlign: 'center', py: 4 }}>
+                              <Typography variant="body2" color="text.secondary">
+                                No hay datos de estudiantes disponibles
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>
+              </Card>
+            </Box>
+          </Box>
+        )}
+
+        {/* ===== FIN DE NUEVAS FUNCIONALIDADES ===== */}
+
+      </Box>
+    );
+  };
+
+  export default ReportesYAnalytics; 

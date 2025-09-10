@@ -1,16 +1,17 @@
 import { Box, Typography, CircularProgress, Paper, Chip, Tooltip, IconButton } from '@mui/material';
-import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, Pending as PendingIcon, Info as InfoIcon, Quiz as QuizIcon, PlayArrow as PlayArrowIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
+import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, Pending as PendingIcon, Info as InfoIcon, Quiz as QuizIcon, PlayArrow as PlayArrowIcon, Schedule as ScheduleIcon, GroupWork as GroupWorkIcon, TrendingUp as TrendingUpIcon, AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { List, ListItem, ListItemAvatar, ListItemText, Avatar } from '@mui/material';
 
 // Componente para tarjetas KPI con tooltip y navegación
 interface KPICardProps {
   title: string;
-  value: number;
+  value: number | string;  // Cambiar de 'number' a 'number | string'
   description: string;
   icon: React.ReactNode;
   bgColor: string;
@@ -127,6 +128,11 @@ export default function AdminDashboard() {
   
   // Usar hook de tiempo real para estadísticas
   const { data: stats, loading, error, lastUpdate, isPolling } = useDashboardStats('admin');
+
+  // Debug: Log de los datos recibidos
+  console.log('🔍 [ADMIN DASHBOARD DEBUG] Stats recibidos:', stats);
+  console.log('🔍 [ADMIN DASHBOARD DEBUG] collective_challenges:', stats?.collective_challenges);
+  console.log('🔍 [ADMIN DASHBOARD DEBUG] total_projects:', stats?.total_projects);
 
   // Cálculos de KPIs usando datos reales del backend
   const totalUsers = stats?.total_users || 0;
@@ -295,9 +301,20 @@ export default function AdminDashboard() {
                textColor="white"
                route="/dashboard/admin/validacion-horas"
              />
+
+             {/* Desafíos Colectivos por Empresa */}
+            <KPICard
+              title="Desafíos Colectivos"
+              value={stats?.collective_challenges || 0}
+              description="Número total de proyectos colectivos creados por empresas"
+              icon={<GroupWorkIcon sx={{ fontSize: 32, mr: 1 }} />}
+              bgColor="#8b5cf6"
+              textColor="white"
+              route="/dashboard/admin/desafios-colectivos"
+            />
           </Box>
         </>
       )}
     </Box>
   );
-} 
+}

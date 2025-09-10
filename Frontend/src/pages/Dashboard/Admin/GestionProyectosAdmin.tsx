@@ -370,6 +370,8 @@ const GestionProyectosAdmin = () => {
       case 'active':
       case 'activo':
         return 'Activo';
+      case 'in-progress':
+        return 'En Progreso';
       case 'completed':
       case 'completado':
         return 'Completado';
@@ -408,6 +410,8 @@ const GestionProyectosAdmin = () => {
       case 'active':
       case 'activo':
         return 'success'; // Verde
+      case 'in-progress':
+        return 'warning'; // Amarillo
       case 'completed':
       case 'completado':
         return 'primary'; // Azul fuerte
@@ -448,6 +452,8 @@ const GestionProyectosAdmin = () => {
       case 'active':
       case 'activo':
         return <CheckCircleIcon />;
+      case 'in-progress':
+        return <TimerIcon />;
       case 'published':
       case 'publicado':
         return <ScheduleIcon />;

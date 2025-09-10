@@ -152,7 +152,6 @@ class AuthService {
       
       // Si el token expira en menos de 5 minutos, considerarlo como expirado
       if (payload.exp < now + 300) {
-        console.log('Token expirado o próximo a expirar, limpiando...');
         this.clearLocalStorage();
         return false;
       }

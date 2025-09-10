@@ -612,6 +612,7 @@ export const adaptDashboardStats = (backendStats: any): DashboardStats => {
     strikes_alerts: backendStats.strikes_alerts || 0,
     api_questionnaire_requests: backendStats.api_questionnaire_requests || 0,
     pending_hours: backendStats.pending_hours || 0,
+    collective_challenges: backendStats.collective_challenges || 0, // ← NUEVO CAMPO
     top_students: Array.isArray(backendStats.top_students) ? backendStats.top_students : [],
   };
   
