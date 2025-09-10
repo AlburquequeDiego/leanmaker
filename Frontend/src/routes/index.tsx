@@ -25,6 +25,7 @@ import CompanyStudentSelection from '../pages/Dashboard/Company/Evaluations';
 import CompanyInterviews from '../pages/Dashboard/Company/Interviews';
 import CompanyCalendar from '../pages/Dashboard/Company/Calendar';
 import { CompanyStrikes } from '../pages/Dashboard/Company/Strikes';
+import { CompanyChallenges } from '../pages/Dashboard/Company/Challenges/CompanyChallenges';
 import AdminDashboard from '../pages/Dashboard/Admin';
 import UsuariosAdmin from '../pages/Dashboard/Admin/UsuariosAdmin';
 import ValidacionHorasAdmin from '../pages/Dashboard/Admin/ValidacionHorasAdmin';
@@ -36,7 +37,7 @@ import GestionProyectosAdmin from '../pages/Dashboard/Admin/GestionProyectosAdmi
 import GestionEvaluacionesAdmin from '../pages/Dashboard/Admin/GestionEvaluacionesAdmin';
 import ReportesYAnalytics from '../pages/Dashboard/Admin/Reportes y Analytics/Reportes y Analytics';
 import APIRequestsAdmin from '../pages/Dashboard/Admin/APIRequestsAdmin';
-import { LazyTeacherDashboard, LazyTeacherStudents, LazyTeacherProjects, LazyTeacherEvaluations, LazyTeacherCalendar, LazyTeacherReports, LazyTeacherProfile, LazyTeacherNotifications } from '../pages/Dashboard/Teacher/lazyRoutes';
+import { LazyTeacherDashboard, LazyTeacherProfile, LazyTeacherChallenges, LazyTeacherNotifications, LazyTeacherSections, LazyTeacherProgress } from '../pages/Dashboard/Teacher/lazyRoutes';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -149,6 +150,7 @@ export const AppRoutes = () => {
           <Route path="interviews" element={<CompanyInterviews />} />
           <Route path="calendar" element={<CompanyCalendar />} />
           <Route path="strikes" element={<CompanyStrikes />} />
+          <Route path="challenges" element={<CompanyChallenges />} />
         </Route>
 
         {/* Rutas del estudiante */}
@@ -182,13 +184,11 @@ export const AppRoutes = () => {
           }
         >
           <Route index element={<LazyTeacherDashboard />} />
-          <Route path="profile" element={<LazyTeacherProfile />} />
+          <Route path="challenges" element={<LazyTeacherChallenges />} />
+          <Route path="sections" element={<LazyTeacherSections />} />
+          <Route path="progress" element={<LazyTeacherProgress />} />
           <Route path="notifications" element={<LazyTeacherNotifications />} />
-          <Route path="students" element={<LazyTeacherStudents />} />
-          <Route path="projects" element={<LazyTeacherProjects />} />
-          <Route path="evaluations" element={<LazyTeacherEvaluations />} />
-          <Route path="calendar" element={<LazyTeacherCalendar />} />
-          <Route path="reports" element={<LazyTeacherReports />} />
+          <Route path="profile" element={<LazyTeacherProfile />} />
         </Route>
 
         {/* Ruta por defecto */}

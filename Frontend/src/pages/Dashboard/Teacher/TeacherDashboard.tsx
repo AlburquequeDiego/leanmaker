@@ -339,32 +339,23 @@ const TeacherDashboard: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ color: 'primary.main', mb: 1 }}>
-          🎓 Dashboard del Docente
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-          Bienvenido, {user?.full_name || user?.email}. Aquí tienes un resumen de tus actividades académicas.
-        </Typography>
-        
-        {/* Información de datos */}
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            {stats ? '📊 Datos en tiempo real' : '📋 Valores por defecto'}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
+        <Box>
+          <Typography variant="h4" fontWeight={700} sx={{ color: 'primary.main', mb: 1 }}>
+            🎓 Dashboard del Docente
           </Typography>
-          {lastUpdate && (
-            <Typography variant="caption" color="text.secondary">
-              Última actualización: {lastUpdate.toLocaleTimeString()}
-            </Typography>
-          )}
+          <Typography variant="body1" color="text.secondary">
+            Bienvenido, {user?.full_name || user?.email}. Aquí tienes un resumen de tus actividades académicas.
+          </Typography>
         </Box>
-        
-        <ConnectionStatus 
-          isConnected={!error}
-          isPolling={isPolling}
-          lastUpdate={lastUpdate}
-          error={error}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <ConnectionStatus 
+            isConnected={!error}
+            isPolling={isPolling}
+            lastUpdate={lastUpdate}
+            error={error}
+          />
+        </Box>
       </Box>
 
       {/* Tarjetas KPI */}
@@ -438,6 +429,43 @@ const TeacherDashboard: React.FC = () => {
             bgColor={powerBIColors[5]}
             textColor="white"
             route="/dashboard/teacher/notifications"
+          />
+        </Grid>
+        
+        {/* Nuevas tarjetas para futuras funcionalidades */}
+        <Grid item xs={12} sm={6} md={4}>
+          <KPICard
+            title="Sesiones de Mentoría"
+            value="--"
+            description="Sesiones de mentoría programadas con estudiantes"
+            icon={<SchoolIcon sx={{ fontSize: 32 }} />}
+            bgColor={powerBIColors[6]}
+            textColor="white"
+            route="/dashboard/teacher/mentoring"
+          />
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={4}>
+          <KPICard
+            title="Progreso Académico"
+            value="--"
+            description="Seguimiento del progreso académico de tus estudiantes"
+            icon={<TrendingUpIcon sx={{ fontSize: 32 }} />}
+            bgColor={powerBIColors[7]}
+            textColor="white"
+            route="/dashboard/teacher/progress"
+          />
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={4}>
+          <KPICard
+            title="Recursos Educativos"
+            value="--"
+            description="Recursos y materiales educativos disponibles"
+            icon={<AssignmentIcon sx={{ fontSize: 32 }} />}
+            bgColor={powerBIColors[8]}
+            textColor="white"
+            route="/dashboard/teacher/resources"
           />
         </Grid>
       </Grid>
@@ -516,17 +544,7 @@ const TeacherDashboard: React.FC = () => {
         </Grid>
       )}
 
-      {/* Mensaje cuando no hay datos para gráficos */}
-      {studentProjectDistribution.length === 0 && monthlyActivity.length === 0 && stats && (
-        <Paper elevation={2} sx={{ p: 3, borderRadius: 2, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-            📊 Gráficos y Visualizaciones
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Los gráficos se mostrarán cuando tengas datos de estudiantes y proyectos asignados.
-          </Typography>
-        </Paper>
-      )}
+      
     </Box>
   );
 };

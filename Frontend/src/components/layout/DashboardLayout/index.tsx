@@ -43,6 +43,9 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   Analytics as AnalyticsIcon,
+  EmojiEvents as EmojiEventsIcon,
+  Groups as GroupsIcon,
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme as useCustomTheme } from '../../../contexts/ThemeContext';
@@ -121,6 +124,9 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/teacher' },
         { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/teacher/profile' },
         { text: 'Notificaciones', icon: <NotificationsIcon />, path: '/dashboard/teacher/notifications' },
+        { text: 'Desafíos Académicos', icon: <EmojiEventsIcon />, path: '/dashboard/teacher/challenges' },
+        { text: 'Gestión de Secciones', icon: <GroupsIcon />, path: '/dashboard/teacher/sections' },
+        { text: 'Gestión de Avance', icon: <TrendingUpIcon />, path: '/dashboard/teacher/progress' },
       ],
     };
 
@@ -136,6 +142,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       ],
       company: [
         { text: 'Proyectos', icon: <AssignmentIcon />, path: '/dashboard/company/projects' },
+        { text: 'Desafíos Colectivos', icon: <EmojiEventsIcon />, path: '/dashboard/company/challenges' },
         { text: 'Postulaciones', icon: <PeopleIcon />, path: '/dashboard/company/applications' },
         { text: 'Buscar Estudiantes', icon: <SearchIcon />, path: '/dashboard/company/search-students' },
         { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/company/evaluations' },
@@ -153,15 +160,12 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Resultados API', icon: <AssessmentIcon />, path: '/dashboard/student/api-results' },
       ],
       teacher: [
-        { text: 'Mis Estudiantes', icon: <SchoolIcon />, path: '/dashboard/teacher/students' },
-        { text: 'Proyectos Asignados', icon: <AssignmentIcon />, path: '/dashboard/teacher/projects' },
-        { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/teacher/evaluations' },
-        { text: 'Calendario', icon: <CalendarIcon />, path: '/dashboard/teacher/calendar' },
-        { text: 'Reportes', icon: <AnalyticsIcon />, path: '/dashboard/teacher/reports' },
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard/teacher' },
+        { text: 'Perfil', icon: <AccountCircleIcon />, path: '/dashboard/teacher/profile' },
       ],
     };
 
-    return [...commonItems[userRole], ...roleSpecificItems[userRole]];
+    return userRole === 'teacher' ? commonItems[userRole] : [...commonItems[userRole], ...roleSpecificItems[userRole]];
   }, [userRole]);
 
   // Memoize the drawer content

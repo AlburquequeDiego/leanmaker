@@ -769,4 +769,150 @@ export interface TeacherDashboardStats {
     students: number;
     evaluations: number;
   }>;
+}
+
+// Tipos para Desafíos Colectivos - Nuevos tipos para el sistema de desafíos
+export type ChallengePeriodType = 'trimestral' | 'semestral';
+export type ChallengeStatus = 'draft' | 'published' | 'active' | 'completed' | 'cancelled';
+export type ChallengeModality = 'remote' | 'onsite' | 'hybrid';
+
+export interface CollectiveChallenge {
+  id: string;
+  title: string;
+  description: string;
+  requirements: string;
+  company: {
+    id: string;
+    name: string;
+    logo?: string;
+    description?: string;
+    website?: string;
+    industry?: string;
+  };
+  area?: {
+    id: number;
+    name: string;
+  };
+  period_type: ChallengePeriodType;
+  academic_year: string;
+  semester: string;
+  tipo?: string;
+  objetivo?: string;
+  encargado?: string;
+  contacto?: string;
+  max_teams: number;
+  students_per_team: number;
+  total_students_needed: number;
+  current_teams: number;
+  modality: ChallengeModality;
+  duration_weeks: number;
+  hours_per_week: number;
+  total_hours: number;
+  registration_start: string;
+  registration_end: string;
+  challenge_start: string;
+  challenge_end: string;
+  evaluation_criteria?: Record<string, any>;
+  prizes?: string[];
+  judges?: string[];
+  status: ChallengeStatus;
+  applications_count: number;
+  views_count: number;
+  is_featured: boolean;
+  is_urgent: boolean;
+  is_active: boolean;
+  is_registration_open: boolean;
+  is_challenge_active: boolean;
+  registration_progress: number;
+  time_remaining_registration: number;
+  time_remaining_challenge: number;
+  required_skills: string[];
+  preferred_skills?: string[];
+  technologies: string[];
+  benefits: string[];
+  created_at: string;
+  updated_at: string;
+  published_at?: string;
+}
+
+export interface ChallengeTeam {
+  id: string;
+  desafio: string; // UUID del desafío
+  team_name: string;
+  team_leader: string; // UUID del líder
+  description?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'active' | 'completed' | 'disqualified';
+  progress_percentage: number;
+  score?: number;
+  applied_at: string;
+  approved_at?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChallengeTeamMember {
+  id: string;
+  team: string; // UUID del equipo
+  student: string; // UUID del estudiante
+  role: 'leader' | 'member' | 'mentor';
+  joined_at: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipos para formularios de desafíos
+export interface ChallengeFormData {
+  // Problema Empresarial
+  title: string;
+  description: string;
+  academic_year: string;
+  period_type: ChallengePeriodType;
+  
+  // Contexto del Desafío
+  requirements: string;  // Contexto Completo del Problema
+  objetivo?: string;    // Criterios de Evaluación
+  tipo?: string;        // Recursos Disponibles
+  contacto?: string;    // Información de Contacto
+  
+  // Requisitos y Beneficios
+  area_id?: number;
+  encargado?: string;   // Responsable del Desafío en tu Empresa
+  required_skills: string[];
+  technologies: string[];
+  benefits: string[];
+  
+  // Estado
+  status?: ChallengeStatus;
+}
+
+// Tipos para respuestas de la API
+export interface ChallengeListResponse {
+  challenges: CollectiveChallenge[];
+  pagination: {
+    current_page: number;
+    total_pages: number;
+    total_count: number;
+    has_next: boolean;
+    has_previous: boolean;
+  };
+}
+
+export interface ChallengeDetailResponse {
+  challenge: CollectiveChallenge;
+}
+
+export interface ChallengeCreateResponse {
+  message: string;
+  challenge_id: string;
+}
+
+export interface ChallengeUpdateResponse {
+  message: string;
+  challenge_id: string;
+}
+
+export interface ChallengeDeleteResponse {
+  message: string;
 } 
