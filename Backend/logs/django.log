@@ -34853,3 +34853,8 @@ INFO 2025-09-10 11:26:47,810 signals 3748 6936 Signals de notificaciones conecta
 INFO 2025-09-10 11:26:48,439 signals 18272 19292 Signals de notificaciones conectados exitosamente
 INFO 2025-09-10 11:26:48,455 autoreload 18272 19292 Watching for file changes with StatReloader
 >>>>>>> 16d093d5cdb47ac48b7bbbda08331bf5627c7549
+INFO 2025-09-10 12:08:52,723 signals 23420 23404 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 12:08:57,162 signals 23200 18180 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 12:10:01,934 signals 13680 16980 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 12:10:02,727 signals 14548 10220 Signals de notificaciones conectados exitosamente
+INFO 2025-09-10 12:10:02,740 autoreload 14548 10220 Watching for file changes with StatReloader
