@@ -34864,3 +34864,26 @@ INFO 2025-09-10 12:13:20,891 basehttp 14548 4624 "GET /api/dashboard/teacher_sta
 INFO 2025-09-10 12:13:20,918 basehttp 14548 23648 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-10 12:14:21,402 basehttp 14548 14236 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-10 12:15:51,356 basehttp 14548 12128 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-11 03:39:07,643 signals 27512 25724 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 03:39:14,393 signals 22716 24888 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 03:39:15,518 signals 21788 23864 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 03:39:15,535 autoreload 21788 23864 Watching for file changes with StatReloader
+INFO 2025-09-11 12:30:20,405 autoreload 21788 23864 D:\leanmaker\Backend\core\settings.py changed, reloading.
+INFO 2025-09-11 12:30:26,819 signals 9264 17992 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 12:30:26,888 autoreload 9264 17992 Watching for file changes with StatReloader
+INFO 2025-09-11 12:30:36,328 signals 9416 10364 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 12:30:37,002 signals 6248 21796 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 12:30:37,018 autoreload 6248 21796 Watching for file changes with StatReloader
+INFO 2025-09-11 12:32:12,693 signals 2216 25016 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 12:32:13,352 signals 26828 10168 Signals de notificaciones conectados exitosamente
+INFO 2025-09-11 12:32:13,368 autoreload 26828 10168 Watching for file changes with StatReloader
+INFO 2025-09-11 12:34:41,449 basehttp 26828 10380 "GET / HTTP/1.1" 200 15326
+INFO 2025-09-11 12:34:41,508 basehttp 26828 10380 "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+INFO 2025-09-11 12:34:41,517 basehttp 26828 10380 "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+INFO 2025-09-11 12:34:41,552 basehttp 26828 26968 "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+INFO 2025-09-11 12:34:41,593 basehttp 26828 26968 "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+INFO 2025-09-11 12:34:41,768 basehttp 26828 26968 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-09-11 12:34:41,791 basehttp 26828 26968 "GET /static/favicon.ico HTTP/1.1" 404 1893
+INFO 2025-09-11 15:30:58,353 basehttp 26828 21612 "GET / HTTP/1.1" 200 15324
+INFO 2025-09-11 15:30:58,884 basehttp 26828 21612 "GET /favicon.ico HTTP/1.1" 302 0
+WARNING 2025-09-11 15:30:58,947 basehttp 26828 21612 "GET /static/favicon.ico HTTP/1.1" 404 1893
