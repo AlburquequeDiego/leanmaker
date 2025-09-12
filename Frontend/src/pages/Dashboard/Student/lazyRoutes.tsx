@@ -15,7 +15,8 @@ export const StudentDashboard = lazy(() => import('./StudentDashboard'));
 
 // Interfaces secundarias - Carga bajo demanda
 export const MyProjects = lazy(() => import('./MyProjects'));
-export const AvailableProjects = lazy(() => import('./AvailableProjects'));
+export const AvailableProjects = lazy(() => import('./Projects/AvailableProjects'));
+export const CollectiveChallenges = lazy(() => import('./CollectiveChallenges'));
 export const MyApplications = lazy(() => import('./MyApplications'));
 export const Evaluations = lazy(() => import('./Evaluations'));
 export const ApiQuestionnaire = lazy(() => import('./APIQuestionnaire'));

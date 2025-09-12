@@ -153,6 +153,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
       ],
       student: [
         { text: 'Proyectos Disponibles', icon: <AssignmentIcon />, path: '/dashboard/student/available-projects' },
+        { text: 'Desafíos Colectivos', icon: <EmojiEventsIcon />, path: '/dashboard/student/collective-challenges' },
         { text: 'Mis Aplicaciones', icon: <AssignmentIcon />, path: '/dashboard/student/my-applications' },
         { text: 'Mis Proyectos', icon: <AssignmentIcon />, path: '/dashboard/student/my-projects' },
         { text: 'Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/student/evaluations' },

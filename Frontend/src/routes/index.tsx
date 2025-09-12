@@ -15,6 +15,7 @@ import Calendar from '../pages/Dashboard/Student/Calendar';
 import APIQuestionnaire from '../pages/Dashboard/Student/APIQuestionnaire';
 import { APIResults } from '../pages/Dashboard/Student/APIResults';
 import { AvailableProjects } from '../pages/Dashboard/Student/Projects';
+import { CollectiveChallenges } from '../pages/Dashboard/Student/lazyRoutes';
 import CompanyDashboard from '../pages/Dashboard/Company/CompanyDashboard';
 import CompanyProfile from '../pages/Dashboard/Company/Profile';
 import CompanyNotifications from '../pages/Dashboard/Company/Notifications';
@@ -169,6 +170,7 @@ export const AppRoutes = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="available-projects" element={<AvailableProjects />} />
+          <Route path="collective-challenges" element={<CollectiveChallenges />} />
           <Route path="my-applications" element={<MyApplications />} />
           <Route path="my-projects" element={<MyProjects />} />
           <Route path="evaluations" element={<Evaluations />} />
