@@ -34952,3 +34952,6 @@ INFO 2025-09-11 21:11:19,455 basehttp 10696 24972 "POST /api/token/ HTTP/1.1" 20
 INFO 2025-09-11 21:11:19,495 basehttp 10696 13112 "GET /api/users/profile/ HTTP/1.1" 200 703
 INFO 2025-09-11 21:11:19,796 basehttp 10696 10152 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
 INFO 2025-09-11 21:11:19,803 basehttp 10696 24528 "GET /api/dashboard/teacher_stats/ HTTP/1.1" 200 202
+INFO 2025-09-12 00:00:23,272 signals 20200 24456 Signals de notificaciones conectados exitosamente
+INFO 2025-09-12 00:00:24,731 signals 26140 25652 Signals de notificaciones conectados exitosamente
+INFO 2025-09-12 00:00:24,763 autoreload 26140 25652 Watching for file changes with StatReloader
