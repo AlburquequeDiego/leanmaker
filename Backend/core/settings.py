@@ -365,12 +365,6 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'  # Más permisivo para desarrollo
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Comentado para desarrollo local
 # SECURE_HSTS_PRELOAD = True  # Comentado para desarrollo local
 
-# Configuración de archivos
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-FILE_UPLOAD_TEMP_DIR = BASE_DIR / 'temp'
-FILE_UPLOAD_PERMISSIONS = 0o644
-
 # Django REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
