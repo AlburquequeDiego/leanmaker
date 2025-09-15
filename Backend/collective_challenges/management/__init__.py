@@ -4,7 +4,7 @@ Comando de Django para poblar las áreas de desafíos colectivos
 
 from django.core.management.base import BaseCommand
 from collective_challenges.models import ChallengeArea
-from .challenge_areas_data import CHALLENGE_AREAS_DATA
+from .commands.challenge_areas_data import CHALLENGE_AREAS_DATA
 
 
 class Command(BaseCommand):
