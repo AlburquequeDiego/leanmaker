@@ -38,6 +38,7 @@ import GestionProyectosAdmin from '../pages/Dashboard/Admin/GestionProyectosAdmi
 import GestionEvaluacionesAdmin from '../pages/Dashboard/Admin/GestionEvaluacionesAdmin';
 import ReportesYAnalytics from '../pages/Dashboard/Admin/Reportes y Analytics/Reportes y Analytics';
 import APIRequestsAdmin from '../pages/Dashboard/Admin/APIRequestsAdmin';
+import DesafiosColectivos from '../pages/Dashboard/Admin/DesafiosColectivos';
 import { LazyTeacherDashboard, LazyTeacherProfile, LazyTeacherChallenges, LazyTeacherNotifications, LazyTeacherSections, LazyTeacherProgress } from '../pages/Dashboard/Teacher/lazyRoutes';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
@@ -130,6 +131,7 @@ export const AppRoutes = () => {
           <Route path="api-requests" element={<APIRequestsAdmin />} />
           <Route path="gestion-proyectos" element={<GestionProyectosAdmin />} />
           <Route path="gestion-evaluaciones" element={<GestionEvaluacionesAdmin />} />
+          <Route path="desafios-colectivos" element={<DesafiosColectivos />} />
           <Route path="configuracion-plataforma" element={<ReportesYAnalytics />} />
         </Route>
 

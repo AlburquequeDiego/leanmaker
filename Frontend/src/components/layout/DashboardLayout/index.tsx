@@ -139,6 +139,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Gestión de Docentes', icon: <SchoolIcon />, path: '/dashboard/admin/gestion-docentes' },
         { text: 'Gestión de Proyectos', icon: <AssignmentIcon />, path: '/dashboard/admin/gestion-proyectos' },
         { text: 'Gestión de Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/admin/gestion-evaluaciones' },
+        { text: 'Desafíos Colectivos', icon: <EmojiEventsIcon />, path: '/dashboard/admin/desafios-colectivos' },
         { text: 'Reportes y Analytics', icon: <AnalyticsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
       ],
       company: [
