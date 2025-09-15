@@ -26,3 +26,6 @@ yarn-error.log*
 .vscode/
 *.swp
 *.swo 
+
+# Django logs
+Backend/logs/
