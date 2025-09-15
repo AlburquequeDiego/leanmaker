@@ -29,4 +29,6 @@ yarn-error.log*
 
 # Django logs
 Backend/logs/
+
+# SQLite database
 Backend/db.sqlite3
