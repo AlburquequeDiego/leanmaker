@@ -1745,6 +1745,18 @@ def api_dashboard_admin_stats(request):
             print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo horas pendientes: {str(e)}")
             pending_hours = 0
         
+        # Obtener desafíos colectivos (proyectos colectivos)
+        collective_challenges = 0
+        try:
+            print("🎯 [ADMIN DASHBOARD] Verificando desafíos colectivos...")
+            # Contar proyectos que son colectivos (asumiendo que hay un campo o lógica para identificarlos)
+            # Por ahora, contaremos todos los proyectos como desafíos colectivos
+            collective_challenges = total_projects
+            print(f"🎯 [ADMIN DASHBOARD] Desafíos colectivos: {collective_challenges}")
+        except Exception as e:
+            print(f"⚠️ [ADMIN DASHBOARD] Error obteniendo desafíos colectivos: {str(e)}")
+            collective_challenges = 0
+        
         # Obtener top 10 estudiantes con más horas registradas
         from work_hours.models import WorkHour
         from django.db.models import Sum
@@ -1820,6 +1832,7 @@ def api_dashboard_admin_stats(request):
             'api_questionnaire_requests': api_questionnaire_requests,
             'active_projects': active_projects,
             'pending_hours': pending_hours,
+            'collective_challenges': collective_challenges,
             'top_students': top_students,
             'recent_activity': []  # Placeholder para actividad reciente
         }
@@ -3409,3 +3422,411 @@ def api_dashboard_teacher_stats(request):
             'error': str(e),
             'traceback': traceback.format_exc()
         }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_admin_advanced_kpis(request):
+    """API endpoint para KPIs avanzados del administrador."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user or user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        from users.models import User
+        from projects.models import Proyecto, AplicacionProyecto
+        from companies.models import Empresa
+        from students.models import Estudiante
+        from teachers.models import TeacherStudent, TeacherProject
+        from django.db.models import Count, Avg, Sum, Q
+        from django.utils import timezone
+        from datetime import datetime, timedelta
+        
+        # 1. Número de desafíos colectivos creados por empresa
+        collective_challenges_by_company = []
+        companies_with_projects = Empresa.objects.annotate(
+            total_projects_count=Count('proyectos'),
+            collective_projects=Count('proyectos', filter=Q(proyectos__max_students__gt=1))
+        ).filter(total_projects_count__gt=0).order_by('-collective_projects')[:10]
+        
+        for company in companies_with_projects:
+            collective_challenges_by_company.append({
+                'company_name': company.company_name,
+                'total_projects': company.total_projects_count,
+                'collective_projects': company.collective_projects,
+                'completion_rate': 0  # Se calculará después
+            })
+        
+        # 2. Tasa de completación de desafíos por sección
+        completion_by_section = []
+        sections = Estudiante.objects.values_list('section', flat=True).distinct().exclude(section__isnull=True)
+        
+        for section in sections:
+            students_in_section = Estudiante.objects.filter(section=section)
+            total_projects = AplicacionProyecto.objects.filter(
+                student__in=students_in_section
+            ).count()
+            completed_projects = AplicacionProyecto.objects.filter(
+                student__in=students_in_section,
+                status='completed'
+            ).count()
+            
+            completion_rate = (completed_projects / total_projects * 100) if total_projects > 0 else 0
+            
+            completion_by_section.append({
+                'section': section,
+                'total_projects': total_projects,
+                'completed_projects': completed_projects,
+                'completion_rate': round(completion_rate, 2)
+            })
+        
+        # 3. Satisfacción del docente con los desafíos
+        teacher_satisfaction = []
+        teachers = User.objects.filter(role='teacher')
+        
+        for teacher in teachers:
+            supervised_projects = TeacherProject.objects.filter(teacher=teacher)
+            avg_satisfaction = supervised_projects.aggregate(
+                avg_satisfaction=Avg('hours_supervised')
+            )['avg_satisfaction'] or 0
+            
+            teacher_satisfaction.append({
+                'teacher_name': teacher.full_name,
+                'supervised_projects': supervised_projects.count(),
+                'avg_satisfaction': round(float(avg_satisfaction), 2)
+            })
+        
+        # 4. Tiempo promedio de resolución de desafíos
+        avg_resolution_time = []
+        completed_projects = Proyecto.objects.filter(
+            real_end_date__isnull=False,
+            start_date__isnull=False
+        )
+        
+        total_days = 0
+        project_count = 0
+        
+        for project in completed_projects:
+            if project.start_date and project.real_end_date:
+                days = (project.real_end_date - project.start_date).days
+                total_days += days
+                project_count += 1
+        
+        avg_resolution_days = (total_days / project_count) if project_count > 0 else 0
+        
+        # 5. Ranking de empresas más activas en desafíos colectivos
+        active_companies_ranking = []
+        for company in companies_with_projects:
+            active_companies_ranking.append({
+                'company_name': company.company_name,
+                'collective_projects': company.collective_projects,
+                'total_projects': company.total_projects_count,
+                'activity_score': company.collective_projects * 2 + company.total_projects
+            })
+        
+        active_companies_ranking.sort(key=lambda x: x['activity_score'], reverse=True)
+        
+        # 6. Top 20 estudiantes con desafíos colectivos
+        top_students_collective = []
+        students_with_collective = Estudiante.objects.annotate(
+            collective_applications=Count(
+                'aplicaciones',
+                filter=Q(aplicaciones__project__max_students__gt=1)
+            ),
+            completed_collective=Count(
+                'aplicaciones',
+                filter=Q(
+                    aplicaciones__project__max_students__gt=1,
+                    aplicaciones__status='completed'
+                )
+            )
+        ).filter(collective_applications__gt=0).order_by('-collective_applications')[:20]
+        
+        for student in students_with_collective:
+            top_students_collective.append({
+                'student_name': student.user.full_name,
+                'rut': student.rut or 'No disponible',
+                'section': student.section or 'No asignada',
+                'collective_applications': student.collective_applications,
+                'completed_collective': student.completed_collective,
+                'success_rate': round(
+                    (student.completed_collective / student.collective_applications * 100) 
+                    if student.collective_applications > 0 else 0, 2
+                )
+            })
+        
+        return JsonResponse({
+            'collective_challenges_by_company': collective_challenges_by_company,
+            'completion_by_section': completion_by_section,
+            'teacher_satisfaction': teacher_satisfaction,
+            'avg_resolution_time_days': round(avg_resolution_days, 2),
+            'active_companies_ranking': active_companies_ranking[:10],
+            'top_students_collective': top_students_collective,
+            'generated_at': timezone.now().isoformat()
+        })
+        
+    except Exception as e:
+        print(f"❌ [ADVANCED KPIS] Error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_admin_students_by_section(request):
+    """API para obtener estudiantes organizados por sección."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user or user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        from students.models import Estudiante
+        from projects.models import AplicacionProyecto
+        from django.db.models import Count, Q
+        
+        students = Estudiante.objects.select_related('user').annotate(
+            applied_projects=Count('aplicaciones_estudiante'),
+            current_projects=Count('aplicaciones_estudiante', filter=Q(aplicaciones_estudiante__estado='accepted')),
+            collective_projects=Count(
+                'aplicaciones_estudiante',
+                filter=Q(aplicaciones_estudiante__proyecto__max_students__gt=1)
+            )
+        ).order_by('section', 'user__first_name')
+        
+        students_data = []
+        for student in students:
+            students_data.append({
+                'id': str(student.id),
+                'name': student.user.full_name,
+                'rut': student.rut or 'No disponible',
+                'email': student.user.email,
+                'section': student.section or 'Sin sección',
+                'career': student.career or 'No especificada',
+                'semester': student.semester,
+                'status': student.status,
+                'applied_projects': student.applied_projects,
+                'current_projects': student.current_projects,
+                'collective_projects': student.collective_projects,
+                'api_level': student.api_level,
+                'gpa': float(student.gpa)
+            })
+        
+        return JsonResponse({
+            'students': students_data,
+            'total_students': len(students_data)
+        })
+        
+    except Exception as e:
+        print(f"❌ [STUDENTS BY SECTION] Error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_admin_student_applications(request, student_id):
+    """API para obtener aplicaciones de un estudiante específico."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user or user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        from students.models import Estudiante
+        from projects.models import AplicacionProyecto
+        
+        try:
+            student = Estudiante.objects.get(id=student_id)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        
+        applications = AplicacionProyecto.objects.filter(
+            estudiante=student.user
+        ).select_related('proyecto__company').order_by('-applied_at')
+        
+        applications_data = []
+        for app in applications:
+            applications_data.append({
+                'id': str(app.id),
+                'project_title': app.proyecto.title,
+                'company_name': app.proyecto.company.company_name,
+                'status': app.estado,
+                'applied_at': app.applied_at.isoformat(),
+                'is_collective': app.proyecto.max_students > 1
+            })
+        
+        return JsonResponse({
+            'applications': applications_data,
+            'student_name': student.user.full_name
+        })
+        
+    except Exception as e:
+        print(f"❌ [STUDENT APPLICATIONS] Error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def api_admin_advanced_kpis(request):
+    """API endpoint para KPIs avanzados del administrador."""
+    try:
+        # Verificar autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return JsonResponse({'error': 'Token requerido'}, status=401)
+        
+        token = auth_header.split(' ')[1]
+        user = verify_token(token)
+        
+        if not user or user.role != 'admin':
+            return JsonResponse({'error': 'Acceso denegado'}, status=403)
+        
+        from users.models import User
+        from projects.models import Proyecto, AplicacionProyecto
+        from companies.models import Empresa
+        from students.models import Estudiante
+        from teachers.models import TeacherStudent, TeacherProject
+        from django.db.models import Count, Avg, Sum, Q
+        from django.utils import timezone
+        from datetime import datetime, timedelta
+        
+        # 1. Número de desafíos colectivos creados por empresa
+        collective_challenges_by_company = []
+        companies_with_projects = Empresa.objects.annotate(
+            total_projects_count=Count('proyectos'),
+            collective_projects=Count('proyectos', filter=Q(proyectos__max_students__gt=1))
+        ).filter(total_projects_count__gt=0).order_by('-collective_projects')[:10]
+        
+        for company in companies_with_projects:
+            collective_challenges_by_company.append({
+                'company_name': company.company_name,
+                'total_projects': company.total_projects_count,
+                'collective_projects': company.collective_projects,
+                'completion_rate': 0  # Se calculará después
+            })
+        
+        # 2. Tasa de completación de desafíos por sección
+        completion_by_section = []
+        sections = Estudiante.objects.values_list('section', flat=True).distinct().exclude(section__isnull=True)
+        
+        for section in sections:
+            students_in_section = Estudiante.objects.filter(section=section)
+            total_projects = AplicacionProyecto.objects.filter(
+                student__in=students_in_section
+            ).count()
+            completed_projects = AplicacionProyecto.objects.filter(
+                student__in=students_in_section,
+                status='completed'
+            ).count()
+            
+            completion_rate = (completed_projects / total_projects * 100) if total_projects > 0 else 0
+            
+            completion_by_section.append({
+                'section': section,
+                'total_projects': total_projects,
+                'completed_projects': completed_projects,
+                'completion_rate': round(completion_rate, 2)
+            })
+        
+        # 3. Satisfacción del docente con los desafíos
+        teacher_satisfaction = []
+        teachers = User.objects.filter(role='teacher')
+        
+        for teacher in teachers:
+            supervised_projects = TeacherProject.objects.filter(teacher=teacher)
+            avg_satisfaction = supervised_projects.aggregate(
+                avg_satisfaction=Avg('hours_supervised')
+            )['avg_satisfaction'] or 0
+            
+            teacher_satisfaction.append({
+                'teacher_name': teacher.full_name,
+                'supervised_projects': supervised_projects.count(),
+                'avg_satisfaction': round(float(avg_satisfaction), 2)
+            })
+        
+        # 4. Tiempo promedio de resolución de desafíos
+        avg_resolution_time = []
+        completed_projects = Proyecto.objects.filter(
+            real_end_date__isnull=False,
+            start_date__isnull=False
+        )
+        
+        total_days = 0
+        project_count = 0
+        
+        for project in completed_projects:
+            if project.start_date and project.real_end_date:
+                days = (project.real_end_date - project.start_date).days
+                total_days += days
+                project_count += 1
+        
+        avg_resolution_days = (total_days / project_count) if project_count > 0 else 0
+        
+        # 5. Ranking de empresas más activas en desafíos colectivos
+        active_companies_ranking = []
+        for company in companies_with_projects:
+            active_companies_ranking.append({
+                'company_name': company.company_name,
+                'collective_projects': company.collective_projects,
+                'total_projects': company.total_projects_count,
+                'activity_score': company.collective_projects * 2 + company.total_projects
+            })
+        
+        active_companies_ranking.sort(key=lambda x: x['activity_score'], reverse=True)
+        
+        # 6. Top 20 estudiantes con desafíos colectivos
+        top_students_collective = []
+        students_with_collective = Estudiante.objects.annotate(
+            collective_applications=Count(
+                'aplicaciones',
+                filter=Q(aplicaciones__project__max_students__gt=1)
+            ),
+            completed_collective=Count(
+                'aplicaciones',
+                filter=Q(
+                    aplicaciones__project__max_students__gt=1,
+                    aplicaciones__status='completed'
+                )
+            )
+        ).filter(collective_applications__gt=0).order_by('-collective_applications')[:20]
+        
+        for student in students_with_collective:
+            top_students_collective.append({
+                'student_name': student.user.full_name,
+                'rut': student.rut or 'No disponible',
+                'section': student.section or 'No asignada',
+                'collective_applications': student.collective_applications,
+                'completed_collective': student.completed_collective,
+                'success_rate': round(
+                    (student.completed_collective / student.collective_applications * 100) 
+                    if student.collective_applications > 0 else 0, 2
+                )
+            })
+        
+        return JsonResponse({
+            'collective_challenges_by_company': collective_challenges_by_company,
+            'completion_by_section': completion_by_section,
+            'teacher_satisfaction': teacher_satisfaction,
+            'avg_resolution_time_days': round(avg_resolution_days, 2),
+            'active_companies_ranking': active_companies_ranking[:10],
+            'top_students_collective': top_students_collective,
+            'generated_at': timezone.now().isoformat()
+        })
+        
+    except Exception as e:
+        print(f"❌ [ADVANCED KPIS] Error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
