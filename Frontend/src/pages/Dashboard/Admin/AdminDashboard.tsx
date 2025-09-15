@@ -1,5 +1,5 @@
 import { Box, Typography, CircularProgress, Paper, Chip, Tooltip, IconButton } from '@mui/material';
-import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, Pending as PendingIcon, Info as InfoIcon, Quiz as QuizIcon, PlayArrow as PlayArrowIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
+import { People as PeopleIcon, Business as BusinessIcon, School as SchoolIcon, Work as WorkIcon, Pending as PendingIcon, Info as InfoIcon, Quiz as QuizIcon, PlayArrow as PlayArrowIcon, Schedule as ScheduleIcon, Person as PersonIcon } from '@mui/icons-material';
 import { ConnectionStatus } from '../../../components/common/ConnectionStatus';
 import { useDashboardStats } from '../../../hooks/useRealTimeData';
 import { useAuth } from '../../../hooks/useAuth';
@@ -131,6 +131,7 @@ export default function AdminDashboard() {
   // Cálculos de KPIs usando datos reales del backend
   const totalUsers = stats?.total_users || 0;
   const totalStudents = stats?.students || 0; // Usar el campo adaptado 'students'
+  const totalTeachers = stats?.teachers || 0; // Usar el campo adaptado 'teachers'
   const totalCompanies = stats?.companies || 0; // Usar el campo adaptado 'companies'
   const totalProjects = stats?.total_projects || 0;
   const pendingApplications = stats?.pending_applications || 0;
@@ -187,10 +188,10 @@ export default function AdminDashboard() {
       {/* Contenido solo si hay datos */}
       {!loading && !error && stats && (
         <>
-          {/* KPIs principales - 3 filas × 3 columnas */}
+          {/* KPIs principales - 3 filas × 4 columnas */}
           <Box sx={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(4, 1fr)',
             gridTemplateRows: 'repeat(3, 160px)',
             gap: 3,
             mb: 4,
@@ -229,7 +230,18 @@ export default function AdminDashboard() {
                textColor="white"
                route="/dashboard/admin/gestion-estudiantes"
              />
-            
+             
+                         {/* Profesores - Naranja primario vibrante */}
+             <KPICard
+               title="Docentes"
+               value={totalTeachers}
+               description="Profesores universitarios que supervisan estudiantes y proyectos académicos"
+               icon={<PersonIcon sx={{ fontSize: 32, mr: 1 }} />}
+               bgColor="#f97316"
+               textColor="white"
+               route="/dashboard/admin/gestion-docentes"
+             />
+             
                          {/* Proyectos - Amarillo primario vibrante */}
              <KPICard
                title="Proyectos"

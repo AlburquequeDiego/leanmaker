@@ -591,6 +591,7 @@ export interface DashboardStats {
   active_users: number;
   verified_users: number;
   students: number;
+  teachers: number;
   companies: number;
   total_projects: number;
   active_projects: number;

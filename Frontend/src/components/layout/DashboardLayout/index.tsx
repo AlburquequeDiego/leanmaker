@@ -136,6 +136,7 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         { text: 'Validación de Horas', icon: <AccessTimeIcon />, path: '/dashboard/admin/validacion-horas' },
         { text: 'Gestión de Empresas', icon: <BusinessIcon />, path: '/dashboard/admin/gestion-empresas' },
         { text: 'Gestión de Estudiantes', icon: <SchoolIcon />, path: '/dashboard/admin/gestion-estudiantes' },
+        { text: 'Gestión de Docentes', icon: <SchoolIcon />, path: '/dashboard/admin/gestion-docentes' },
         { text: 'Gestión de Proyectos', icon: <AssignmentIcon />, path: '/dashboard/admin/gestion-proyectos' },
         { text: 'Gestión de Evaluaciones', icon: <AssessmentIcon />, path: '/dashboard/admin/gestion-evaluaciones' },
         { text: 'Reportes y Analytics', icon: <AnalyticsIcon />, path: '/dashboard/admin/configuracion-plataforma' },
@@ -173,7 +174,9 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
     <Box sx={{ 
       bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
       color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
-      height: '100%'
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
       <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
         {!sidebarCollapsed && (
@@ -207,7 +210,25 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
         )}
       </Toolbar>
       <Divider sx={{ bgcolor: themeMode === 'dark' ? '#334155' : '#e2e8f0' }} />
-      <List>
+      <Box sx={{ 
+        flex: 1, 
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)',
+          borderRadius: '3px',
+          '&:hover': {
+            background: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)',
+          },
+        },
+      }}>
+        <List>
         {menuItems.map((item) => {
           // Lógica mejorada para la selección
           let selected = false;
@@ -289,7 +310,8 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
             </ListItem>
           );
         })}
-      </List>
+        </List>
+      </Box>
     </Box>
   ), [menuItems, location.pathname, sidebarCollapsed, themeMode, navigate]);
 
@@ -432,6 +454,19 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
               bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
               borderRight: 0,
+              '&::-webkit-scrollbar': {
+                width: '6px',
+              },
+              '&::-webkit-scrollbar-track': {
+                background: 'transparent',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)',
+                borderRadius: '3px',
+                '&:hover': {
+                  background: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)',
+                },
+              },
             },
           }}
         >
@@ -451,6 +486,19 @@ export const DashboardLayout = ({ userRole }: DashboardLayoutProps) => {
               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
               borderRight: 0,
               transition: 'width 0.2s ease-in-out',
+              '&::-webkit-scrollbar': {
+                width: '6px',
+              },
+              '&::-webkit-scrollbar-track': {
+                background: 'transparent',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)',
+                borderRadius: '3px',
+                '&:hover': {
+                  background: themeMode === 'dark' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)',
+                },
+              },
             },
           }}
           open

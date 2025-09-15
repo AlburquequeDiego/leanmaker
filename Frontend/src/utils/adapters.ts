@@ -604,6 +604,7 @@ export const adaptDashboardStats = (backendStats: any): DashboardStats => {
     active_users: backendStats.active_users || 0,
     verified_users: backendStats.verified_users || 0,
     students: backendStats.total_students || 0, // Mapear total_students del backend a students del frontend
+    teachers: backendStats.total_teachers || 0, // Mapear total_teachers del backend a teachers del frontend
     companies: backendStats.total_companies || 0, // Mapear total_companies del backend a companies del frontend
     total_projects: backendStats.total_projects || 0,
     active_projects: backendStats.active_projects || 0,

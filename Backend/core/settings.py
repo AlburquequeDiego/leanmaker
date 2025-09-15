@@ -177,6 +177,9 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'cache-control',
+    'pragma',
+    'expires',
 ]
 
 # CORS Expose Headers - Permitir que todos los campos personalizados lleguen al frontend

@@ -1659,6 +1659,19 @@ def api_dashboard_admin_stats(request):
         total_students = all_students.count()
         print(f"🎓 [ADMIN DASHBOARD] Total estudiantes: {total_students}")
         
+        # Verificar profesores con más detalle
+        print("👨‍🏫 [ADMIN DASHBOARD] Verificando profesores...")
+        all_teachers = User.objects.filter(role='teacher')
+        print(f"👨‍🏫 [ADMIN DASHBOARD] Profesores encontrados: {all_teachers.count()}")
+        if all_teachers.exists():
+            for teacher in all_teachers[:3]:  # Mostrar primeros 3 profesores
+                print(f"👨‍🏫 [ADMIN DASHBOARD] Profesor: {teacher.email} (ID: {teacher.id})")
+        else:
+            print("👨‍🏫 [ADMIN DASHBOARD] No se encontraron profesores en la base de datos")
+        
+        total_teachers = all_teachers.count()
+        print(f"👨‍🏫 [ADMIN DASHBOARD] Total profesores: {total_teachers}")
+        
         total_projects = Proyecto.objects.count()
         print(f"💼 [ADMIN DASHBOARD] Total proyectos: {total_projects}")
         
@@ -1800,6 +1813,7 @@ def api_dashboard_admin_stats(request):
             'total_users': total_users,
             'total_companies': total_companies,
             'total_students': total_students,
+            'total_teachers': total_teachers,
             'total_projects': total_projects,
             'pending_applications': pending_applications,
             'strikes_alerts': strikes_alerts,

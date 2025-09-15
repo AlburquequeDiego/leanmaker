@@ -33,6 +33,7 @@ import PerfilAdmin from '../pages/Dashboard/Admin/PerfilAdmin';
 import NotificacionesAdmin from '../pages/Dashboard/Admin/NotificacionesAdmin';
 import GestionEmpresasAdmin from '../pages/Dashboard/Admin/GestionEmpresasAdmin';
 import GestionEstudiantesAdmin from '../pages/Dashboard/Admin/GestionEstudiantesAdmin';
+import GestionDocentesAdmin from '../pages/Dashboard/Admin/GestionDocentesAdmin';
 import GestionProyectosAdmin from '../pages/Dashboard/Admin/GestionProyectosAdmin';
 import GestionEvaluacionesAdmin from '../pages/Dashboard/Admin/GestionEvaluacionesAdmin';
 import ReportesYAnalytics from '../pages/Dashboard/Admin/Reportes y Analytics/Reportes y Analytics';
@@ -125,6 +126,7 @@ export const AppRoutes = () => {
           <Route path="notificaciones" element={<NotificacionesAdmin />} />
           <Route path="gestion-empresas" element={<GestionEmpresasAdmin />} />
           <Route path="gestion-estudiantes" element={<GestionEstudiantesAdmin />} />
+          <Route path="gestion-docentes" element={<GestionDocentesAdmin />} />
           <Route path="api-requests" element={<APIRequestsAdmin />} />
           <Route path="gestion-proyectos" element={<GestionProyectosAdmin />} />
           <Route path="gestion-evaluaciones" element={<GestionEvaluacionesAdmin />} />

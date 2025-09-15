@@ -65,7 +65,7 @@ interface User {
   email: string;
   first_name: string;
   last_name: string;
-  user_type: 'student' | 'company' | 'admin';
+  user_type: 'student' | 'company' | 'admin' | 'teacher';
   is_active: boolean;
   is_verified: boolean; // <-- Agregado para sincronización
   date_joined: string;
@@ -108,7 +108,7 @@ export default function UsuariosAdmin() {
     email: '',
     first_name: '',
     last_name: '',
-    user_type: 'student' as 'student' | 'company' | 'admin',
+    user_type: 'student' as 'student' | 'company' | 'admin' | 'teacher',
     phone: '',
     company_name: '',
     career: '',
@@ -168,7 +168,7 @@ export default function UsuariosAdmin() {
       console.log('Respuesta del backend:', response);
       
       // El backend envía {success: true, data: [...]}
-      const usersData = response.data || response;
+      const usersData = (response as any).data || response;
       
       const formattedUsers = Array.isArray(usersData) ? usersData.map((user: any) => ({
         id: user.id,
@@ -579,6 +579,7 @@ export default function UsuariosAdmin() {
       case 'admin': return <AdminIcon color="error" />;
       case 'company': return <BusinessIcon color="primary" />;
       case 'student': return <SchoolIcon color="success" />;
+      case 'teacher': return <SchoolIcon2 color="warning" />;
       default: return <PersonIcon color="action" />;
     }
   };
@@ -588,6 +589,7 @@ export default function UsuariosAdmin() {
       case 'admin': return 'error';
       case 'company': return 'primary';
       case 'student': return 'success';
+      case 'teacher': return 'warning';
       default: return 'default';
     }
   };
@@ -597,6 +599,7 @@ export default function UsuariosAdmin() {
       case 'admin': return 'Administrador';
       case 'company': return 'Empresa';
       case 'student': return 'Estudiante';
+      case 'teacher': return 'Docente';
       default: return type;
     }
   };
@@ -730,6 +733,7 @@ export default function UsuariosAdmin() {
                 <MenuItem value="">Todos</MenuItem>
                 <MenuItem value="student">Estudiantes</MenuItem>
                 <MenuItem value="company">Empresas</MenuItem>
+                <MenuItem value="teacher">Docentes</MenuItem>
                 <MenuItem value="admin">Administradores</MenuItem>
               </Select>
             </FormControl>
@@ -921,8 +925,8 @@ export default function UsuariosAdmin() {
                           </IconButton>
                         </span>
                       </Tooltip>
-                      {/* Acciones solo para empresas */}
-                      {(user.user_type === 'company' || user.user_type === 'student') && (
+                      {/* Acciones para empresas, estudiantes y profesores */}
+                      {(user.user_type === 'company' || user.user_type === 'student' || user.user_type === 'teacher') && (
                         <>
                           <Tooltip title="Activar">
                             <span>
@@ -1155,6 +1159,7 @@ export default function UsuariosAdmin() {
                 >
                   <MenuItem value="student">Estudiante</MenuItem>
                   <MenuItem value="company">Empresa</MenuItem>
+                  <MenuItem value="teacher">Docente</MenuItem>
                   <MenuItem value="admin">Administrador</MenuItem>
                 </Select>
               </FormControl>
@@ -1747,6 +1752,7 @@ export default function UsuariosAdmin() {
                 >
                   <MenuItem value="student">Estudiante</MenuItem>
                   <MenuItem value="company">Empresa</MenuItem>
+                  <MenuItem value="teacher">Profesor</MenuItem>
                   <MenuItem value="admin">Administrador</MenuItem>
                 </Select>
               </FormControl>
@@ -2153,7 +2159,7 @@ export default function UsuariosAdmin() {
           {confirmAction?.type === 'create' && (
             <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
               <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                Tipo de usuario: <strong>{confirmAction.userType === 'student' ? 'Estudiante' : confirmAction.userType === 'company' ? 'Empresa' : 'Administrador'}</strong>
+                Tipo de usuario: <strong>{confirmAction.userType === 'student' ? 'Estudiante' : confirmAction.userType === 'company' ? 'Empresa' : confirmAction.userType === 'teacher' ? 'Docente' : 'Administrador'}</strong>
               </Typography>
             </Alert>
           )}
