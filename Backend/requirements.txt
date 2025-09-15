@@ -11,9 +11,8 @@ django-cors-headers==4.3.1
 # Django REST Framework (REQUERIDO - se usa en serializers)
 djangorestframework==3.14.0
 
-# Database (SQL Server Azure)
-django-mssql-backend==2.8.1
-pyodbc>=5.2.0
+# Database (MySQL)
+mysqlclient==2.2.7
 
 # Development & Testing
 django-debug-toolbar==4.2.0
